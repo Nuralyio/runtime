@@ -1,6 +1,6 @@
 {
-  "name": "@encore/button",
-  "version": "0.0.1",
+  "name": "@hybridui/button",
+  "version": "0.0.14",
   "description": "",
   "main": "index.js",
   "scripts": {
