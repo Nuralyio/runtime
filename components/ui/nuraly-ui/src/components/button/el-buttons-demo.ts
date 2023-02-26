@@ -12,7 +12,6 @@ export class ElButtonDemoElement extends LitElement {
   override render() {
     return html`
       <el-button>Default Button</el-button>
-      <el-button>Default Button</el-button>
       <el-button autofocus @click="${this._onClick}" type="danger"
         >Danger Button</el-button
       >
