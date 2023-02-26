@@ -20,12 +20,14 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+    - name: Install browsers dependencies
+      run: sudo apt-get update &&  sudo apt-get install libvpx7 libevent-2.1-7 libopus0 libwoff1 libharfbuzz-icu0 libgstreamer-plugins-base1.0-0 libgstreamer-gl1.0-0  libhyphen0 libmanette-0.2-0 libgles2 gstreamer1.0-libav 
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
+    - run: npm i
     - run: npm run build --if-present
     - run: npm test
