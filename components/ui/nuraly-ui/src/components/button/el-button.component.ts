@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, css} from 'lit';
+import {LitElement, html, css, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {ButtonType, EMPTY_STRING} from './constats';
 
@@ -18,6 +18,9 @@ import {ButtonType, EMPTY_STRING} from './constats';
  * @attr autofocus
  * @attr icon
  * @attr shape
+ * @attr loading
+ * @attr disabled
+ * @attr block
  */
 @customElement('el-button')
 export class ElButtonElement extends LitElement {
@@ -33,6 +36,8 @@ export class ElButtonElement extends LitElement {
 
   @property({type: String})
   display = EMPTY_STRING;
+  @property({type: Boolean})
+  block = false;
   @property({type: String})
   size = EMPTY_STRING;
   @property({type: String})
@@ -71,11 +76,19 @@ export class ElButtonElement extends LitElement {
     }
   }
   override render() {
-    console.log(this.hasSlot);
+    const hostBlockStyle = html`<style>
+      :host {
+        width: 100%;
+      }
+    </style>`;
     return html`
+      ${this.block ? hostBlockStyle : nothing}
       <button
+        ?disabled="${this.disabled}"
         ?autofocus=${this.autofocus}
         data-type="${this.type}"
+        data-display=${this.block ? 'block' : nothing}
+        data-state="${this.loading ? 'loading' : nothing}"
         class="
         ${this.shape === 'circle' ? 'rounded' : EMPTY_STRING}
       ${!this.hasSlot ? 'icon-only' : EMPTY_STRING}
@@ -104,7 +117,13 @@ export class ElButtonElement extends LitElement {
     .rounded {
       border-radius: 50%;
     }
+    button[data-state='loading'] {
+      opacity: 0.5;
+    }
+
     button {
+      display: inline-block;
+
       user-select: none;
       padding-top: var(--hybrid-button-padding-y, 0.5rem);
       padding-bottom: var(--hybrid-button-padding-y, 0.5rem);
@@ -120,7 +139,7 @@ export class ElButtonElement extends LitElement {
       font-weight: var(--hybrid-button-font-weight, normal);
       text-transform: var(--hybrid-button-text-transform, none);
     }
-    button:hover {
+    button:hover:not(:disabled) {
       cursor: pointer;
       background-color: var(--hybrid-button-hover-background-color, #f9f9f9);
       color: var(--hybrid-button-hover-text-color, #303030);
@@ -140,7 +159,7 @@ export class ElButtonElement extends LitElement {
       outline: none;
       box-shadow: none;
     }
-    :host([disabled]) button:active {
+    :host([disabled]) button:active:not(:disabled) {
       outline: none;
       border-color: #aaa;
       box-shadow: none;
@@ -153,7 +172,7 @@ export class ElButtonElement extends LitElement {
       color: var(--hybrid-button-danger-text-color, #ffffff);
     }
 
-    button[data-type='danger']:hover {
+    button[data-type='danger']:hover:not(:disabled) {
       cursor: pointer;
       background-color: var(
         --hybrid-button-danger-hover-background-color,
@@ -170,7 +189,7 @@ export class ElButtonElement extends LitElement {
       color: var(--hybrid-button-primary-text-color, #ffffff);
     }
 
-    button[data-type='primary']:hover {
+    button[data-type='primary']:hover:not(:disabled) {
       cursor: pointer;
       background-color: var(
         --hybrid-button-primary-hover-background-color,
@@ -178,7 +197,7 @@ export class ElButtonElement extends LitElement {
       );
       border-color: var(--hybrid-button-primary-hover-border-color, #1677ff);
     }
-    button[data-type='primary']:active {
+    button[data-type='primary']:active:not(:disabled) {
       cursor: pointer;
       background-color: var(
         --hybrid-button-primary-hover-background-color,
@@ -193,13 +212,13 @@ export class ElButtonElement extends LitElement {
       border-style: dashed;
     }
 
-    button[data-type='dashed']:hover {
+    button[data-type='dashed']:hover:not(:disabled) {
       cursor: pointer;
 
       border-color: var(--hybrid-button-dashed-hover-border-color, #1677ff);
       color: var(--hybrid-button-dashed-hover-border-color, #1677ff);
     }
-    button[data-type='dashed']:active {
+    button[data-type='dashed']:active:not(:disabled) {
       cursor: pointer;
       border-color: var(--hybrid-button-dashed-hover-border-color, #1677ff);
     }
@@ -209,13 +228,13 @@ export class ElButtonElement extends LitElement {
     button[data-type='text'] {
       border: none;
     }
-    button[data-type='text']:hover {
+    button[data-type='text']:hover:not(:disabled) {
       cursor: pointer;
 
       background-color: var(--hybrid-button-text-hover-border-color, #e1e1e1);
       //color: var(--hybrid-button-text-hover-border-color, #1677ff);
     }
-    button[data-type='text']:active {
+    button[data-type='text']:active:not(:disabled) {
       cursor: pointer;
       background-color: var(--hybrid-button-text-hover-border-color, #c1c1c1);
     }
@@ -227,11 +246,11 @@ export class ElButtonElement extends LitElement {
       color: var(--hybrid-button-link-hover-border-color, #1677ff);
       background-color: transparent;
     }
-    button[data-type='link']:hover {
+    button[data-type='link']:hover:not(:disabled) {
       cursor: pointer;
       color: var(--hybrid-button-link-hover-border-color, #4a96ff);
     }
-    button[data-type='link']:active {
+    button[data-type='link']:active:not(:disabled) {
       cursor: pointer;
       color: var(--hybrid-button-link-hover-border-color, #0862df);
     }
@@ -242,15 +261,27 @@ export class ElButtonElement extends LitElement {
       border-style: text;
     }
 
-    button[data-type='text']:hover {
+    button[data-type='text']:hover:not(:disabled) {
       cursor: pointer;
     }
+    button:disabled:hover {
+      cursor: not-allowed;
+    }
 
+    button[data-display='block'] {
+      width: 100%;
+    }
+
+    button[data-display='block'] :host {
+      width: 100%;
+      display: inline-block;
+    }
     /** End Dashed button*/
 
     :host {
       user-select: none;
       -webkit-user-select: none;
+      display: inline-block;
     }
   `;
 }
