@@ -136,7 +136,7 @@ suite('el-button', () => {
 
   test('renders primary button', async () => {
     const el = await fixture(
-      html`<el-button ?disabled="${true}">disabled button</el-button>`
+      html`<el-button disabled>disabled button</el-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -274,8 +274,78 @@ suite('el-button', () => {
     assert.isUndefined(slot?.textContent);
   });
   //@TODO: Icon cicle
+
+  test('renders icon only button', async () => {
+    const el = await fixture(
+      html`<el-button icon="user" shape="circle"></el-button>`
+    );
+    assert.shadowDom.equal(
+      el,
+      `
+      <button data-type="default" class="icon-only rounded" >
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+        rel="stylesheet">
+         <i class="fa fa-user">
+       </i>
+        <slot id="slot">
+        </slot>
+       </button>
+    `
+    );
+
+    const button = el.shadowRoot!.querySelector('button')!;
+
+    assert.equal(getComputedStyle(button).borderRadius, '50%');
+
+    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
+    assert.isUndefined(slot?.textContent);
+  });
+
   //@TODO: loading
+
+  test('renders link button', async () => {
+    const el = await fixture(
+      html`<el-button loading>loading button</el-button>`
+    );
+    assert.shadowDom.equal(
+      el,
+      `
+      <button data-type="default" data-state="loading" >
+        <slot id="slot">
+        </slot>
+       </button>
+    `
+    );
+
+    const button = el.shadowRoot!.querySelector('button')!;
+
+    assert.equal(getComputedStyle(button).opacity, '0.5');
+
+    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
+    assert.equal(slot?.textContent, 'loading button');
+  });
   //@TODO: block
+
+  test('renders block button', async () => {
+    const el = await fixture(html`<el-button block>block button</el-button>`);
+    assert.shadowDom.equal(
+      el,
+      `
+      <button data-display="block" data-type="default" >
+        <slot id="slot">
+        </slot>
+       </button>
+    `
+    );
+
+    const button = el.shadowRoot!.querySelector('button')!;
+
+    assert.isAbove(parseInt(getComputedStyle(button).width), 100);
+
+    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
+    assert.equal(slot?.textContent, 'block button');
+  });
 
   /* test('renders with a set name', async () => {
     const el = await fixture(html`<el-button name="Test"></el-button>`);
