@@ -169,7 +169,6 @@ export const styles = css`
   :host {
     user-select: none;
     -webkit-user-select: none;
-    display: inline-block;
   }
 `;
 
