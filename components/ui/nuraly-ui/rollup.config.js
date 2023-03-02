@@ -10,9 +10,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 
 export default {
-  input: 'dist/components/button/el-button.js',
+  input: 'dist/components/button/hy-button.js',
   output: {
-    file: 'el-button.bundled.js',
+    file: 'hy-button.bundled.js',
     format: 'esm',
   },
   onwarn(warning) {

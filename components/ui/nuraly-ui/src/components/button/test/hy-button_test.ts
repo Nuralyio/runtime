@@ -4,23 +4,23 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import {ElButtonElement} from './el-button.component';
+import {HyButtonElement} from '../hy-button.component';
 import {sendMouse} from '@web/test-runner-commands';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
-import {getMiddleOfElement} from '../../helpers/test';
+import {getMiddleOfElement} from '../../../helpers/test';
 
 /*const button = el.shadowRoot!.querySelector('button')!;
     assert.equal(getComputedStyle(button).borderColor, '16px');*/
-suite('el-button', () => {
+suite('hy-button', () => {
   test('is defined', () => {
-    const el = document.createElement('el-button');
-    assert.instanceOf(el, ElButtonElement);
+    const el = document.createElement('hy-button');
+    assert.instanceOf(el, HyButtonElement);
   });
 
   test('renders with default values', async () => {
-    const el = await fixture(html`<el-button>button</el-button>`);
+    const el = await fixture(html`<hy-button>button</hy-button>`);
     assert.shadowDom.equal(
       el,
       `
@@ -35,10 +35,10 @@ suite('el-button', () => {
   });
 
   //@TODO: danger
-  const DANGER_BUTTON_BACKGOURND_COLOR = 'rgb(255, 23, 23)';
+  const DANGER_BUTTON_BACKGOURND_COLOR = 'rgb(255, 74, 0)';
   const DANGER_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(237, 81, 81)';
   test('renders danger button', async () => {
-    const el = await fixture(html`<el-button type="danger">button</el-button>`);
+    const el = await fixture(html`<hy-button type="danger">button</hy-button>`);
     assert.shadowDom.equal(
       el,
       `
@@ -70,7 +70,7 @@ suite('el-button', () => {
   //@TODO: dashed
   test('renders dashed button', async () => {
     const el = await fixture(
-      html`<el-button type="dashed">dashed button</el-button>`
+      html`<hy-button type="dashed">dashed button</hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -93,13 +93,12 @@ suite('el-button', () => {
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
     assert.equal(slot?.textContent, 'dashed button');
   });
-  //@TODO: primary
 
-  const PRIMARY_BUTTON_BACKGOURND_COLOR = 'rgb(18, 62, 255)';
+  const PRIMARY_BUTTON_BACKGOURND_COLOR = 'rgb(18, 119, 225)';
   const PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(10, 112, 255)';
   test('renders primary button', async () => {
     const el = await fixture(
-      html`<el-button type="primary">primary button</el-button>`
+      html`<hy-button type="primary">primary button</hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -129,14 +128,12 @@ suite('el-button', () => {
     assert.equal(slot?.textContent, 'primary button');
   });
 
-  //@TODO: disabled
-
   const DISABLED_BUTTON_BACKGOURND_COLOR = 'rgb(204, 204, 204)';
   const DISABLED_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(204, 204, 204)';
 
   test('renders primary button', async () => {
     const el = await fixture(
-      html`<el-button disabled>disabled button</el-button>`
+      html`<hy-button disabled>disabled button</hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -167,14 +164,12 @@ suite('el-button', () => {
     assert.equal(slot?.textContent, 'disabled button');
   });
 
-  //@TODO: text
-
   const TEXT_BUTTON_BACKGOURND_COLOR = 'rgb(249, 249, 249)';
   const TEXT_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(225, 225, 225)';
 
   test('renders primary button', async () => {
     const el = await fixture(
-      html`<el-button type="text">disabled button</el-button>`
+      html`<hy-button type="text">disabled button</hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -205,8 +200,6 @@ suite('el-button', () => {
     assert.equal(slot?.textContent, 'disabled button');
   });
 
-  //@TODO: link
-
   const LINK_BUTTON_COLOR = 'rgb(22, 119, 255)';
   const LINK_BUTTON_HOVER_COLOR = 'rgb(74, 150, 255)';
   const LINK_BUTTON_BACKGOURND_COLOR = 'rgba(0, 0, 0, 0)';
@@ -214,7 +207,7 @@ suite('el-button', () => {
 
   test('renders link button', async () => {
     const el = await fixture(
-      html`<el-button type="link">link button</el-button>`
+      html`<hy-button type="link">link button</hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -247,10 +240,9 @@ suite('el-button', () => {
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
     assert.equal(slot?.textContent, 'link button');
   });
-  //@TODO: Icon
 
   test('renders icon only button', async () => {
-    const el = await fixture(html`<el-button icon="user"></el-button>`);
+    const el = await fixture(html`<hy-button icon="user"></hy-button>`);
     assert.shadowDom.equal(
       el,
       `
@@ -273,11 +265,10 @@ suite('el-button', () => {
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
     assert.isUndefined(slot?.textContent);
   });
-  //@TODO: Icon cicle
 
   test('renders icon only button', async () => {
     const el = await fixture(
-      html`<el-button icon="user" shape="circle"></el-button>`
+      html`<hy-button icon="user" shape="circle"></hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -302,11 +293,9 @@ suite('el-button', () => {
     assert.isUndefined(slot?.textContent);
   });
 
-  //@TODO: loading
-
   test('renders link button', async () => {
     const el = await fixture(
-      html`<el-button loading>loading button</el-button>`
+      html`<hy-button loading>loading button</hy-button>`
     );
     assert.shadowDom.equal(
       el,
@@ -325,10 +314,9 @@ suite('el-button', () => {
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
     assert.equal(slot?.textContent, 'loading button');
   });
-  //@TODO: block
 
   test('renders block button', async () => {
-    const el = await fixture(html`<el-button block>block button</el-button>`);
+    const el = await fixture(html`<hy-button block>block button</hy-button>`);
     assert.shadowDom.equal(
       el,
       `
@@ -346,37 +334,4 @@ suite('el-button', () => {
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
     assert.equal(slot?.textContent, 'block button');
   });
-
-  /* test('renders with a set name', async () => {
-    const el = await fixture(html`<el-button name="Test"></el-button>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <h1>Hello, Test!</h1>
-      <button part="button">Click Count: 0</button>
-      <slot></slot>
-    `
-    );
-  });
-
-  test('handles a click', async () => {
-    const el = (await fixture(html`<el-button></el-button>`)) as MyElement;
-    const button = el.shadowRoot!.querySelector('button')!;
-    button.click();
-    await el.updateComplete;
-    assert.shadowDom.equal(
-      el,
-      `
-      <h1>Hello, World!</h1>
-      <button part="button">Click Count: 1</button>
-      <slot></slot>
-    `
-    );
-  });
-
-  test('styling applied', async () => {
-    const el = (await fixture(html`<el-button></el-button>`)) as MyElement;
-    await el.updateComplete;
-    assert.equal(getComputedStyle(el).paddingTop, '16px');
-  });*/
 });

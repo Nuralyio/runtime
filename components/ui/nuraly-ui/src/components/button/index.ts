@@ -1,1 +1,1 @@
-export * from './el-button.component';
+export * from './hy-button.component';
