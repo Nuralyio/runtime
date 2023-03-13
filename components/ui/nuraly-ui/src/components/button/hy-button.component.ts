@@ -16,12 +16,15 @@ import {hostBlockStyle, styles} from './hy-button.style';
  * @slot - This element has a slot
  * @csspart button - The button
  * @attr type
+ * @attr used-as
  * @attr autofocus
  * @attr icon
  * @attr shape
  * @attr loading
  * @attr disabled
  * @attr block
+ * @attr size
+ * @attr danger
  */
 @customElement('hy-button')
 export class HyButtonElement extends LitElement {
@@ -31,16 +34,18 @@ export class HyButtonElement extends LitElement {
   @property({type: Boolean})
   loading = false;
 
-  /**
-   * Styles
-   */
-
   @property({type: String})
   display = EMPTY_STRING;
+
   @property({type: Boolean})
   block = false;
+
   @property({type: String})
   size = EMPTY_STRING;
+
+  @property({type: Boolean})
+  danger = false;
+
   @property({type: String})
   type = ButtonType.Default as String;
 
@@ -49,6 +54,9 @@ export class HyButtonElement extends LitElement {
 
   @property({type: String})
   icon = EMPTY_STRING;
+
+  @property({reflect: true})
+  usedas!: string;
 
   /**
    * Content
@@ -60,11 +68,6 @@ export class HyButtonElement extends LitElement {
   @state()
   hasSlot = false;
 
-  static override get properties() {
-    return {
-      hasSlot: {attribute: false},
-    };
-  }
   override firstUpdated() {
     const slott: HTMLSlotElement = this.shadowRoot?.querySelector(
       '#slot'
@@ -73,29 +76,31 @@ export class HyButtonElement extends LitElement {
     if (slt.length === 0) {
       console.log(slott);
     } else {
-      this.hasSlot = true;
-      console.log('Content available', slt);
+      requestAnimationFrame(() => {
+        this.hasSlot = true;
+        this.requestUpdate();
+      });
     }
   }
   override render() {
     return html`
       ${this.block ? hostBlockStyle : nothing}
       <button
+        part="container"
         ?disabled="${this.disabled}"
         ?autofocus=${this.autofocus}
         data-type="${this.type}"
+        data-usedas="${this.usedas}"
         data-display=${this.block ? 'block' : nothing}
+        data-size=${this.size ? this.size : nothing}
         data-state="${this.loading ? 'loading' : nothing}"
+        ?data-danger="${this.danger}"
         class="
-        ${this.shape === 'circle' ? 'rounded' : EMPTY_STRING}
+        ${this.shape === 'circle' ? 'button-rounded' : EMPTY_STRING}
       ${!this.hasSlot ? 'icon-only' : EMPTY_STRING}
       "
       >
-        ${this.icon &&
-        html` <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-          /><i class="fa fa-${this.icon}"></i>`}
+        ${this.icon && html` <hy-icon name=${this.icon}></hy-icon>`}
         <slot id="slot"></slot>
       </button>
     `;

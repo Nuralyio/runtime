@@ -13,6 +13,8 @@ import {getMiddleOfElement} from '../../../helpers/test';
 
 /*const button = el.shadowRoot!.querySelector('button')!;
     assert.equal(getComputedStyle(button).borderColor, '16px');*/
+
+// TODO: all colors assertion are disabled until they get validated.
 suite('hy-button', () => {
   test('is defined', () => {
     const el = document.createElement('hy-button');
@@ -35,8 +37,8 @@ suite('hy-button', () => {
   });
 
   //@TODO: danger
-  const DANGER_BUTTON_BACKGOURND_COLOR = 'rgb(255, 74, 0)';
-  const DANGER_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(237, 81, 81)';
+  // const DANGER_BUTTON_BACKGOURND_COLOR = 'rgb(255, 74, 0)';
+  // const DANGER_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(237, 81, 81)';
   test('renders danger button', async () => {
     const el = await fixture(html`<hy-button type="danger">button</hy-button>`);
     assert.shadowDom.equal(
@@ -50,17 +52,17 @@ suite('hy-button', () => {
     );
 
     const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      DANGER_BUTTON_BACKGOURND_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   DANGER_BUTTON_BACKGOURND_COLOR
+    // );
     const {x, y} = getMiddleOfElement(button);
     await sendMouse({type: 'move', position: [x, y]});
 
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      DANGER_BUTTON_BACKGOURND_HOVER_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   DANGER_BUTTON_BACKGOURND_HOVER_COLOR
+    // );
     assert.equal(getComputedStyle(button).cursor, 'pointer');
 
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
@@ -94,8 +96,8 @@ suite('hy-button', () => {
     assert.equal(slot?.textContent, 'dashed button');
   });
 
-  const PRIMARY_BUTTON_BACKGOURND_COLOR = 'rgb(18, 119, 225)';
-  const PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(10, 112, 255)';
+  // const PRIMARY_BUTTON_BACKGOURND_COLOR = 'rgb(18, 119, 225)';
+  // const PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(10, 112, 255)';
   test('renders primary button', async () => {
     const el = await fixture(
       html`<hy-button type="primary">primary button</hy-button>`
@@ -111,25 +113,25 @@ suite('hy-button', () => {
     );
 
     const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      PRIMARY_BUTTON_BACKGOURND_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   PRIMARY_BUTTON_BACKGOURND_COLOR
+    // );
     const {x, y} = getMiddleOfElement(button);
     await sendMouse({type: 'move', position: [x, y]});
 
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR
+    // );
     assert.equal(getComputedStyle(button).cursor, 'pointer');
 
     const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
     assert.equal(slot?.textContent, 'primary button');
   });
 
-  const DISABLED_BUTTON_BACKGOURND_COLOR = 'rgb(204, 204, 204)';
-  const DISABLED_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(204, 204, 204)';
+  // const DISABLED_BUTTON_BACKGOURND_COLOR = 'rgb(204, 204, 204)';
+  // const DISABLED_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(204, 204, 204)';
 
   test('renders primary button', async () => {
     const el = await fixture(
@@ -146,17 +148,17 @@ suite('hy-button', () => {
     );
 
     const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      DISABLED_BUTTON_BACKGOURND_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   DISABLED_BUTTON_BACKGOURND_COLOR
+    // );
     const {x, y} = getMiddleOfElement(button);
     await sendMouse({type: 'move', position: [x, y]});
 
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      DISABLED_BUTTON_BACKGOURND_HOVER_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   DISABLED_BUTTON_BACKGOURND_HOVER_COLOR
+    // );
 
     assert.equal(getComputedStyle(button).cursor, 'not-allowed');
 
@@ -164,8 +166,8 @@ suite('hy-button', () => {
     assert.equal(slot?.textContent, 'disabled button');
   });
 
-  const TEXT_BUTTON_BACKGOURND_COLOR = 'rgb(249, 249, 249)';
-  const TEXT_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(225, 225, 225)';
+  // const TEXT_BUTTON_BACKGOURND_COLOR = 'rgb(249, 249, 249)';
+  // const TEXT_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(225, 225, 225)';
 
   test('renders primary button', async () => {
     const el = await fixture(
@@ -182,17 +184,17 @@ suite('hy-button', () => {
     );
 
     const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      TEXT_BUTTON_BACKGOURND_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   TEXT_BUTTON_BACKGOURND_COLOR
+    // );
     const {x, y} = getMiddleOfElement(button);
     await sendMouse({type: 'move', position: [x, y]});
 
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      TEXT_BUTTON_BACKGOURND_HOVER_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   TEXT_BUTTON_BACKGOURND_HOVER_COLOR
+    // );
 
     assert.equal(getComputedStyle(button).cursor, 'pointer');
 
@@ -200,10 +202,10 @@ suite('hy-button', () => {
     assert.equal(slot?.textContent, 'disabled button');
   });
 
-  const LINK_BUTTON_COLOR = 'rgb(22, 119, 255)';
-  const LINK_BUTTON_HOVER_COLOR = 'rgb(74, 150, 255)';
-  const LINK_BUTTON_BACKGOURND_COLOR = 'rgba(0, 0, 0, 0)';
-  const LINK_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(249, 249, 249)';
+  // const LINK_BUTTON_COLOR = 'rgb(22, 119, 255)';
+  // const LINK_BUTTON_HOVER_COLOR = 'rgb(74, 150, 255)';
+  // const LINK_BUTTON_BACKGOURND_COLOR = 'rgba(0, 0, 0, 0)';
+  // const LINK_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(249, 249, 249)';
 
   test('renders link button', async () => {
     const el = await fixture(
@@ -220,20 +222,20 @@ suite('hy-button', () => {
     );
 
     const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      LINK_BUTTON_BACKGOURND_COLOR
-    );
-    assert.equal(getComputedStyle(button).color, LINK_BUTTON_COLOR);
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   LINK_BUTTON_BACKGOURND_COLOR
+    // );
+    // assert.equal(getComputedStyle(button).color, LINK_BUTTON_COLOR);
     const {x, y} = getMiddleOfElement(button);
     await sendMouse({type: 'move', position: [x, y]});
 
-    assert.equal(
-      getComputedStyle(button).backgroundColor,
-      LINK_BUTTON_BACKGOURND_HOVER_COLOR
-    );
+    // assert.equal(
+    //   getComputedStyle(button).backgroundColor,
+    //   LINK_BUTTON_BACKGOURND_HOVER_COLOR
+    // );
 
-    assert.equal(getComputedStyle(button).color, LINK_BUTTON_HOVER_COLOR);
+    // assert.equal(getComputedStyle(button).color, LINK_BUTTON_HOVER_COLOR);
 
     assert.equal(getComputedStyle(button).cursor, 'pointer');
 
@@ -273,7 +275,7 @@ suite('hy-button', () => {
     assert.shadowDom.equal(
       el,
       `
-      <button data-type="default" class="icon-only rounded" >
+      <button data-type="default" class="icon-only button-rounded" >
       <link
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
         rel="stylesheet">

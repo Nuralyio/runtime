@@ -5,4 +5,10 @@ export const enum ButtonType {
   Text = 'text',
   Link = 'link',
 }
+
+export const enum ButtonSize {
+  Small = 'small',
+  Default = 'default',
+  Large = 'Large',
+}
 export const EMPTY_STRING = '';
