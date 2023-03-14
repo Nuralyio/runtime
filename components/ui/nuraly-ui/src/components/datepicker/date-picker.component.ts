@@ -4,19 +4,18 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, nothing} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import { LitElement, html, nothing } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import '../input/input.component';
 import '../icon/icon.component';
 import '../button/hy-button.component';
-import {getMonthDetails, months} from './core/month.helper';
-import {styles} from './date-picker.style';
-import {msg} from '@lit/localize';
-import {styleMap} from 'lit/directives/style-map.js';
-import {EMPTY_STRING, INVALID_DAY_CLASS_NAME, Mode} from './constants';
-import {renderMonthsTemplate} from './templates/months.template';
-import {renderDayHeaderTemplate} from './templates/headers.template';
-import {renderYearsTemplate} from './templates/years.template';
+import { getMonthDetails, months } from './core/month.helper';
+import { styles } from './date-picker.style';
+import { styleMap } from 'lit/directives/style-map.js';
+import { EMPTY_STRING, INVALID_DAY_CLASS_NAME, Mode } from './constants';
+import { renderMonthsTemplate } from './templates/months.template';
+import { renderDayHeaderTemplate } from './templates/headers.template';
+import { renderYearsTemplate } from './templates/years.template';
 
 /**
  * An Icon element.
@@ -25,10 +24,10 @@ import {renderYearsTemplate} from './templates/years.template';
  */
 @customElement('hy-datepicker')
 export class HyDatePickerElement extends LitElement {
-  @property({type: String})
+  @property({ type: String })
   name!: string;
 
-  @property({reflect: true})
+  @property({ reflect: true })
   mode = Mode.Day;
 
   @state()
@@ -88,7 +87,7 @@ export class HyDatePickerElement extends LitElement {
   }
   positionCalnder() {
     requestAnimationFrame(() => {
-      const {bottom} = this.dateInput.getBoundingClientRect();
+      const { bottom } = this.dateInput.getBoundingClientRect();
       const distanceFromBottom = window.innerHeight - bottom;
       if (distanceFromBottom < this.calendarContainer.offsetHeight + 10) {
         this.clendarContainerStyle = styleMap({
@@ -146,8 +145,8 @@ export class HyDatePickerElement extends LitElement {
     return html` <div class="days-container">
       ${renderDayHeaderTemplate()}
       ${this.daysPresentation?.map((day) => {
-        return html`<div class="day-container ${day.valid ? EMPTY_STRING : INVALID_DAY_CLASS_NAME}">${day.date}</div>`;
-      })}
+      return html`<div class="day-container ${day.valid ? EMPTY_STRING : INVALID_DAY_CLASS_NAME}">${day.date}</div>`;
+    })}
     </div>`;
   }
 
@@ -204,8 +203,8 @@ export class HyDatePickerElement extends LitElement {
           name="calendar"
           slot="suffix"
           @click=${() => {
-            this.toggleCaldendar();
-          }}
+        this.toggleCaldendar();
+      }}
         ></hy-icon>
       </hy-input>
       ${this.showCalendarContainer
@@ -216,18 +215,18 @@ export class HyDatePickerElement extends LitElement {
                 class="header-prev-button"
                 icon="angle-double-left"
                 @click=${() => {
-                  this.prevYear();
-                  this.firstUpdated();
-                }}
+            this.prevYear();
+            this.firstUpdated();
+          }}
               ></hy-button>
               <hy-button
                 type="text"
                 class="header-prev-button"
                 icon="angle-left"
                 @click=${() => {
-                  this.prevMonth();
-                  this.firstUpdated();
-                }}
+            this.prevMonth();
+            this.firstUpdated();
+          }}
               ></hy-button>
 
               <div class="year-month-header">
@@ -239,9 +238,9 @@ export class HyDatePickerElement extends LitElement {
                 type="text"
                 class="header-next-button"
                 @click=${() => {
-                  this.nextYear();
-                  this.firstUpdated();
-                }}
+            this.nextYear();
+            this.firstUpdated();
+          }}
                 icon="angle-double-right"
               ></hy-button>
               <hy-button
@@ -249,9 +248,9 @@ export class HyDatePickerElement extends LitElement {
                 class="header-next-button"
                 icon="angle-right"
                 @click=${() => {
-                  this.nextMonth();
-                  this.firstUpdated();
-                }}
+            this.nextMonth();
+            this.firstUpdated();
+          }}
               ></hy-button>
             </div>
             ${this.renderContainer()}
@@ -269,8 +268,8 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'hy-datepicker':
-        | React.DetailedHTMLProps<React.HTMLAttributes<HyDatePickerElement>, HyDatePickerElement>
-        | Partial<HyDatePickerElement>;
+      | React.DetailedHTMLProps<React.HTMLAttributes<HyDatePickerElement>, HyDatePickerElement>
+      | Partial<HyDatePickerElement>;
     }
   }
 }

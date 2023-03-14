@@ -4,47 +4,16 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, nothing} from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import {
   customElement,
   property,
   queryAssignedElements,
   state,
 } from 'lit/decorators.js';
-import {styles} from './input.style';
-import {classMap} from 'lit/directives/class-map.js';
-class Batching {
-  /* We declare and initialize a variable to keep track of whether or not an update has already been requested */
-  updateRequested = false;
+import { styles } from './input.style';
+import { classMap } from 'lit/directives/class-map.js';
 
-  scheduleUpdate() {
-    /**
-     * In here, we need a check to see if an update is already previously requested.
-     * If an update already is requested, we don't want to do any unnecessary work!
-     */
-    if (!this.updateRequested) {
-      /* If no update has yet been requested, we set the `updateRequested` flag to `true` */
-      this.updateRequested = true;
-
-      /**
-       * Since we now know that microtasks run after JavaScript has finished
-       * executing, we can use this knowledge to our advantage, and only set
-       * the `updateRequested` flag back to `false` again once all the tasks
-       * have run, essentially delaying, or _batching_ the update!
-       */
-      Promise.resolve().then(() => {
-        this.updateRequested = false;
-        this.update();
-      });
-    }
-  }
-
-  /* This is our `update` method that we only want to be called once */
-  update() {
-    console.log('updating!');
-  }
-}
-const batching = new Batching();
 
 export enum INPUT_TYPE {
   EMAIL = 'email',
@@ -66,25 +35,25 @@ export enum INPUT_TYPE {
 export class HyInputElement extends LitElement {
   // W3C standards
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   disabled = false;
 
-  @property({type: String})
+  @property({ type: String })
   alt!: string;
 
-  @property({type: String})
+  @property({ type: String })
   size!: string;
 
-  @property({type: String})
+  @property({ type: String })
   autocomplete!: string; // on off
 
-  @property({reflect: true})
+  @property({ reflect: true })
   type = INPUT_TYPE.TEXT;
 
-  @property({type: String})
+  @property({ type: String })
   placeholder!: string; // on off
 
-  @queryAssignedElements({slot: 'prefix', flatten: true})
+  @queryAssignedElements({ slot: 'prefix', flatten: true })
   _prefixItems!: Array<HTMLElement>;
 
   @queryAssignedElements({
@@ -120,8 +89,8 @@ export class HyInputElement extends LitElement {
   protected spanClasses: {
     inputfocuced?: boolean;
   } = {
-    inputfocuced: false,
-  };
+      inputfocuced: false,
+    };
 
   @state()
   protected slottedClasses: {
@@ -130,35 +99,35 @@ export class HyInputElement extends LitElement {
     post?: boolean;
     suffixed?: boolean;
   } = {
-    prefixed: false,
-    suffixed: false,
-  };
+      prefixed: false,
+      suffixed: false,
+    };
 
   focusHandler(_event: FocusEvent) {
-    this.spanClasses = {...this.spanClasses, inputfocuced: true};
+    this.spanClasses = { ...this.spanClasses, inputfocuced: true };
   }
 
   blurHandler(_event: FocusEvent) {
-    this.spanClasses = {...this.spanClasses, inputfocuced: false};
+    this.spanClasses = { ...this.spanClasses, inputfocuced: false };
   }
 
   override render() {
     return html`
       <slot name="pre"></slot>
       <span
-        class="${classMap({...this.spanClasses, ...this.slottedClasses})}"
+        class="${classMap({ ...this.spanClasses, ...this.slottedClasses })}"
         data-size=${this.size ? this.size : nothing}
       >
         <slot name="prefix"></slot>
         <input
           type="${this.type}"
           @input=${(e: Event) => {
-            this.dispatchEvent(
-              new CustomEvent('inputed', {
-                detail: e.target,
-              })
-            );
-          }}
+        this.dispatchEvent(
+          new CustomEvent('inputed', {
+            detail: e.target,
+          })
+        );
+      }}
           @focus=${(_event: FocusEvent) => this.focusHandler(_event)}
           @blur=${this.blurHandler}
           ?autofocus=${this.autofocus}
@@ -181,11 +150,11 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'hy-input':
-        | React.DetailedHTMLProps<
-            React.HTMLAttributes<HyInputElement>,
-            HyInputElement
-          >
-        | Partial<HyInputElement>;
+      | React.DetailedHTMLProps<
+        React.HTMLAttributes<HyInputElement>,
+        HyInputElement
+      >
+      | Partial<HyInputElement>;
     }
   }
 }

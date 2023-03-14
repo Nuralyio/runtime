@@ -1,8 +1,8 @@
 {
-  "name": "@lit/lit-starter-ts",
+  "name": "@hybridui/workspace",
   "private": true,
   "version": "1.0.5",
-  "description": "A simple web component",
+  "description": "A entreprise web component",
   "main": "my-element.js",
   "module": "my-element.js",
   "type": "module",
@@ -32,7 +32,7 @@
     "typescript",
     "lit"
   ],
-  "author": "Google LLC",
+  "author": "Laabidi Aymen",
   "license": "BSD-3-Clause",
   "dependencies": {
     "@icon/icofont": "^1.0.1-alpha.1",
