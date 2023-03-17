@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {ButtonType, EMPTY_STRING} from './hy-button.constats';
-import {hostBlockStyle, styles} from './hy-button.style';
+import { LitElement, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { ButtonType, EMPTY_STRING } from './hy-button.constats';
+import { hostBlockStyle, styles } from './hy-button.style';
 
 /**
  * An Button element.
@@ -28,42 +28,42 @@ import {hostBlockStyle, styles} from './hy-button.style';
  */
 @customElement('hy-button')
 export class HyButtonElement extends LitElement {
-  @property({type: Boolean})
+  @property({ type: Boolean })
   disabled = false;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   loading = false;
 
-  @property({type: String})
+  @property({ type: String })
   display = EMPTY_STRING;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   block = false;
 
-  @property({type: String})
+  @property({ type: String })
   size = EMPTY_STRING;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   danger = false;
 
-  @property({type: String})
+  @property({ type: String })
   type = ButtonType.Default as String;
 
-  @property({type: String})
+  @property({ type: String })
   shape = EMPTY_STRING;
 
-  @property({type: String})
+  @property({ type: String })
   icon = EMPTY_STRING;
 
-  @property({reflect: true})
+  @property({ reflect: true })
   usedas!: string;
 
   /**
    * Content
    */
-  @property({type: String})
+  @property({ type: String })
   link = EMPTY_STRING;
-  @property({type: String})
+  @property({ type: String })
   target = EMPTY_STRING;
   @state()
   hasSlot = false;
@@ -74,7 +74,6 @@ export class HyButtonElement extends LitElement {
     ) as HTMLSlotElement;
     const slt = slott?.assignedNodes();
     if (slt.length === 0) {
-      console.log(slott);
     } else {
       requestAnimationFrame(() => {
         this.hasSlot = true;
@@ -117,11 +116,11 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'hy-button':
-        | React.DetailedHTMLProps<
-            React.HTMLAttributes<HyButtonElement>,
-            HyButtonElement
-          >
-        | Partial<HyButtonElement>;
+      | React.DetailedHTMLProps<
+        React.HTMLAttributes<HyButtonElement>,
+        HyButtonElement
+      >
+      | Partial<HyButtonElement>;
     }
   }
 }
