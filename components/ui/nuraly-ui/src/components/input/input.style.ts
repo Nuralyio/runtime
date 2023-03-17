@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const defaultInputStyle = css`
   span {
@@ -39,7 +39,7 @@ const defaultInputStyle = css`
   }
 
   span.inputfocuced input::placeholder {
-    color: var(--hybrid-input-container-border-color, rgba(0, 0, 0, 0.88));
+    color: var(--hybrid-input-container-border-color, rgba(0, 0, 0, 0.4));
   }
 
   span.prefixed input {

@@ -2,10 +2,11 @@ import {css} from 'lit';
 
 const calendarContainerStyles = css`
   :host {
-    font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial, noto sans, sans-serif,
-      apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji;
+    font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial,
+      noto sans, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji;
   }
   .calendar-container {
+    z-index: 10000;
     margin-top: 2px;
     user-select: none;
     border-radius: var(--hybrid-button-border-radius, 0.25rem);

@@ -39,7 +39,13 @@ export class HyInputElement extends LitElement {
   disabled = false;
 
   @property({ type: String })
+  palceholder!: string;
+
+  @property({ type: String })
   alt!: string;
+
+  @property({ type: String })
+  value!: string;
 
   @property({ type: String })
   size!: string;
@@ -120,6 +126,8 @@ export class HyInputElement extends LitElement {
       >
         <slot name="prefix"></slot>
         <input
+          .placeholder="${this.palceholder ?? nothing}"
+          .value="${this.value}"
           type="${this.type}"
           @input=${(e: Event) => {
         this.dispatchEvent(
