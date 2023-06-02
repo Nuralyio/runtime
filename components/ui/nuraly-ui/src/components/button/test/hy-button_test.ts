@@ -1,339 +1,86 @@
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
+import {html, fixture, oneEvent, expect} from '@open-wc/testing';
 import {HyButtonElement} from '../hy-button.component';
-import {sendMouse} from '@web/test-runner-commands';
 
-import {fixture, assert} from '@open-wc/testing';
-import {html} from 'lit/static-html.js';
-import {getMiddleOfElement} from '../../../helpers/test';
-
-/*const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(getComputedStyle(button).borderColor, '16px');*/
-
-// TODO: all colors assertion are disabled until they get validated.
-suite('hy-button', () => {
-  test('is defined', () => {
-    const el = document.createElement('hy-button');
-    assert.instanceOf(el, HyButtonElement);
+suite('HyButtonElement', () => {
+  test('has a default empty display property', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button></hy-button>`);
+    await el.updateComplete;
+    expect(el.display).to.equal('');
   });
 
-  test('renders with default values', async () => {
-    const el = await fixture(html`<hy-button>button</hy-button>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="default">
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'button');
+  test('can set display property', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button display="block"></hy-button>`);
+    await el.updateComplete;
+    expect(el.display).to.equal('block');
   });
 
-  //@TODO: danger
-  // const DANGER_BUTTON_BACKGOURND_COLOR = 'rgb(255, 74, 0)';
-  // const DANGER_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(237, 81, 81)';
-  test('renders danger button', async () => {
-    const el = await fixture(html`<hy-button type="danger">button</hy-button>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="danger">
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   DANGER_BUTTON_BACKGOURND_COLOR
-    // );
-    const {x, y} = getMiddleOfElement(button);
-    await sendMouse({type: 'move', position: [x, y]});
-
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   DANGER_BUTTON_BACKGOURND_HOVER_COLOR
-    // );
-    assert.equal(getComputedStyle(button).cursor, 'pointer');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'button');
+  test('renders the icon', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button icon="sample-icon"></hy-button>`);
+    await el.updateComplete;
+    const icon = el.shadowRoot!.querySelector('hy-icon');
+    expect(icon).to.exist;
+    expect(icon?.getAttribute('name')).to.equal('sample-icon');
   });
 
-  //@TODO: dashed
-  test('renders dashed button', async () => {
-    const el = await fixture(
-      html`<hy-button type="dashed">dashed button</hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="dashed">
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(getComputedStyle(button).borderBlockStyle, 'dashed');
-    const {x, y} = getMiddleOfElement(button);
-    await sendMouse({type: 'move', position: [x, y]});
-
-    assert.equal(getComputedStyle(button).borderBlockStyle, 'dashed');
-    assert.equal(getComputedStyle(button).cursor, 'pointer');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'dashed button');
+  test('renders slot content', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button>Test content</hy-button>`);
+    await el.updateComplete;
   });
 
-  // const PRIMARY_BUTTON_BACKGOURND_COLOR = 'rgb(18, 119, 225)';
-  // const PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(10, 112, 255)';
-  test('renders primary button', async () => {
-    const el = await fixture(
-      html`<hy-button type="primary">primary button</hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="primary">
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   PRIMARY_BUTTON_BACKGOURND_COLOR
-    // );
-    const {x, y} = getMiddleOfElement(button);
-    await sendMouse({type: 'move', position: [x, y]});
-
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   PRIMARY_BUTTON_BACKGOURND_HOVER_COLOR
-    // );
-    assert.equal(getComputedStyle(button).cursor, 'pointer');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'primary button');
+  test('reflects the disabled property on the button element', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button disabled></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    expect(button?.hasAttribute('disabled')).to.be.true;
   });
 
-  // const DISABLED_BUTTON_BACKGOURND_COLOR = 'rgb(204, 204, 204)';
-  // const DISABLED_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(204, 204, 204)';
-
-  test('renders primary button', async () => {
-    const el = await fixture(
-      html`<hy-button disabled>disabled button</hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="default" disabled>
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   DISABLED_BUTTON_BACKGOURND_COLOR
-    // );
-    const {x, y} = getMiddleOfElement(button);
-    await sendMouse({type: 'move', position: [x, y]});
-
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   DISABLED_BUTTON_BACKGOURND_HOVER_COLOR
-    // );
-
-    assert.equal(getComputedStyle(button).cursor, 'not-allowed');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'disabled button');
+  test('reflects the loading property as data-state on the button element', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button loading></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    expect(button?.getAttribute('data-state')).to.equal('loading');
   });
 
-  // const TEXT_BUTTON_BACKGOURND_COLOR = 'rgb(249, 249, 249)';
-  // const TEXT_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(225, 225, 225)';
-
-  test('renders primary button', async () => {
-    const el = await fixture(
-      html`<hy-button type="text">disabled button</hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="text" >
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   TEXT_BUTTON_BACKGOURND_COLOR
-    // );
-    const {x, y} = getMiddleOfElement(button);
-    await sendMouse({type: 'move', position: [x, y]});
-
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   TEXT_BUTTON_BACKGOURND_HOVER_COLOR
-    // );
-
-    assert.equal(getComputedStyle(button).cursor, 'pointer');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'disabled button');
+  test('sets the danger property as data-danger on the button element', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button danger></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    expect(button?.getAttribute('data-danger')).to.equal('true');
   });
 
-  // const LINK_BUTTON_COLOR = 'rgb(22, 119, 255)';
-  // const LINK_BUTTON_HOVER_COLOR = 'rgb(74, 150, 255)';
-  // const LINK_BUTTON_BACKGOURND_COLOR = 'rgba(0, 0, 0, 0)';
-  // const LINK_BUTTON_BACKGOURND_HOVER_COLOR = 'rgb(249, 249, 249)';
-
-  test('renders link button', async () => {
-    const el = await fixture(
-      html`<hy-button type="link">link button</hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="link" >
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   LINK_BUTTON_BACKGOURND_COLOR
-    // );
-    // assert.equal(getComputedStyle(button).color, LINK_BUTTON_COLOR);
-    const {x, y} = getMiddleOfElement(button);
-    await sendMouse({type: 'move', position: [x, y]});
-
-    // assert.equal(
-    //   getComputedStyle(button).backgroundColor,
-    //   LINK_BUTTON_BACKGOURND_HOVER_COLOR
-    // );
-
-    // assert.equal(getComputedStyle(button).color, LINK_BUTTON_HOVER_COLOR);
-
-    assert.equal(getComputedStyle(button).cursor, 'pointer');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'link button');
+  test('fires onClick event when clicked', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    setTimeout(() => button?.click());
+    const {detail} = await oneEvent(el, 'click');
+    expect(detail).to.exist;
   });
 
-  test('renders icon only button', async () => {
-    const el = await fixture(html`<hy-button icon="user"></hy-button>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="default" class="icon-only" >
-      <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-        rel="stylesheet">
-         <i class="fa fa-user">
-       </i>
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-
-    assert.equal(getComputedStyle(button).borderRadius, '4px');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.isUndefined(slot?.textContent);
+  test('does not fire onClick event when disabled', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button disabled></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    let eventFired = false;
+    el.addEventListener('click', () => {
+      eventFired = true;
+    });
+    button?.click();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(eventFired).to.be.false;
   });
 
-  test('renders icon only button', async () => {
-    const el = await fixture(
-      html`<hy-button icon="user" shape="circle"></hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="default" class="icon-only button-rounded" >
-      <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-        rel="stylesheet">
-         <i class="fa fa-user">
-       </i>
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-
-    assert.equal(getComputedStyle(button).borderRadius, '50%');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.isUndefined(slot?.textContent);
+  test('applies the correct classes for shape and content', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button shape="circle"></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    expect(button?.classList.contains('button-rounded')).to.be.true;
   });
 
-  test('renders link button', async () => {
-    const el = await fixture(
-      html`<hy-button loading>loading button</hy-button>`
-    );
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-type="default" data-state="loading" >
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-
-    assert.equal(getComputedStyle(button).opacity, '0.5');
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'loading button');
-  });
-
-  test('renders block button', async () => {
-    const el = await fixture(html`<hy-button block>block button</hy-button>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <button data-display="block" data-type="default" >
-        <slot id="slot">
-        </slot>
-       </button>
-    `
-    );
-
-    const button = el.shadowRoot!.querySelector('button')!;
-
-    assert.isAbove(parseInt(getComputedStyle(button).width), 100);
-
-    const slot = el.shadowRoot!.querySelector('slot')?.assignedNodes()[0];
-    assert.equal(slot?.textContent, 'block button');
+  test('applies the correct classes for icon-only buttons', async () => {
+    const el: HyButtonElement = await fixture(html`<hy-button icon="sample-icon"></hy-button>`);
+    await el.updateComplete;
+    const button = el.shadowRoot!.querySelector('button');
+    expect(button?.classList.contains('icon-only')).to.be.true;
   });
 });

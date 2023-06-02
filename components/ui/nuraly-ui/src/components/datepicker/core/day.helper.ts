@@ -1,12 +1,6 @@
-const daysMap = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getDayDetails = (args: any) => {
@@ -19,8 +13,7 @@ export const getDayDetails = (args: any) => {
     prevYear--;
   }
   const prevMonthNumberOfDays = getNumberOfDays(prevYear, prevMonth);
-  const _date =
-    (date < 0 ? prevMonthNumberOfDays + date : date % args.numberOfDays) + 1;
+  const _date = (date < 0 ? prevMonthNumberOfDays + date : date % args.numberOfDays) + 1;
   const valid = date >= 0 && date < args.numberOfDays ? 1 : 0;
   const timestamp = new Date(args.year, args.month, _date).getTime();
   return {
@@ -29,10 +22,23 @@ export const getDayDetails = (args: any) => {
     valid,
     timestamp,
     dayString: daysMap[day],
+    month: args.month,
     reminder: args.reminders[timestamp] || null,
   };
 };
 
 export const getNumberOfDays = (year: number, month: number) => {
   return 32 - new Date(year, month, 32).getDate();
+};
+
+export const todayIsTheDay = (
+  navigationDates: any,
+  day: number,
+  dateRawObject: {curentYear: number; currentMonth: number; currentDay: number}
+): boolean => {
+  const isTheDate =
+    navigationDates.start.year === dateRawObject.curentYear &&
+    navigationDates.start.month === dateRawObject.currentMonth &&
+    day === dateRawObject.currentDay;
+  return isTheDate;
 };

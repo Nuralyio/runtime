@@ -30,13 +30,28 @@ export class HyDatePickerDemoElement extends LitElement {
       </select>
       <hy-datepicker
         locale=${this.selectedLanguage}
+        openedcalender=${true}
+        range="true"
         fieldFormat="DD/MM/YYYY"
         dateValue="20/11/2024"
         dateplaceholder="20.11.2024"
       ></hy-datepicker>
-      <!-- <div style="top : 130px; margin-top : 350px; margin-bottom : 44px">
-        <hy-datepicker></hy-datepicker>
-      </div> -->
+      <div style="top : 130px; margin-top : 350px; margin-bottom : 44px">
+        <hy-datepicker
+          dateValue="20/11/2024"
+          mode="month"
+          fieldFormat="DD/MM/YYYY"
+          fieldDisplayFormat="MM/YYYY"
+          dateplaceholder="20/11/2024"
+        ></hy-datepicker>
+        <hy-datepicker
+          dateValue="20/11/2024"
+          mode="year"
+          fieldFormat="DD/MM/YYYY"
+          fieldDisplayFormat="YYYY"
+          dateplaceholder="20/11/2024"
+        ></hy-datepicker>
+      </div>
       <div style="top : 130px; margin-top : 1050px; margin-bottom : 44px">
         <hy-datepicker></hy-datepicker>
       </div>

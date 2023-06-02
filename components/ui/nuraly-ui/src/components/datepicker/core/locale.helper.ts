@@ -141,3 +141,11 @@ import 'dayjs/esm/locale/zh-cn';
 import 'dayjs/esm/locale/zh-hk';
 import 'dayjs/esm/locale/zh-tw';
 import 'dayjs/esm/locale/zh';
+import customParseFormat from 'dayjs/esm/plugin/customParseFormat';
+import localeData from 'dayjs/esm/plugin/localeData';
+import toObject from 'dayjs/esm/plugin/toObject';
+import dayjs from 'dayjs/esm';
+
+dayjs.extend(localeData);
+dayjs.extend(customParseFormat);
+dayjs.extend(toObject);

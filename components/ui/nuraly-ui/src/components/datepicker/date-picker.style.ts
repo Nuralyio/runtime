@@ -2,8 +2,8 @@ import {css} from 'lit';
 
 const calendarContainerStyles = css`
   :host {
-    font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial,
-      noto sans, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji;
+    font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial, noto sans, sans-serif,
+      apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji;
   }
   .calendar-container {
     z-index: 10000;
@@ -22,6 +22,10 @@ const calendarContainerStyles = css`
     background-color: white;
   }
 
+  .calendar-container-range {
+    width: 600px;
+  }
+
   .header-month-year-sepration {
     font-size: 11px;
   }
@@ -36,6 +40,10 @@ const calendarContainerStyles = css`
 `;
 
 const dayStyles = css`
+  .day-containers {
+    display: flex;
+    flex-flow: row;
+  }
   .days-container {
     display: flex;
     flex-grow: 1;
@@ -86,7 +94,6 @@ const monthsStyle = css`
 
   .month-container {
     width: 33%;
-    height: 37%;
     vertical-align: middle;
     text-align: center;
     line-height: 4.3;
@@ -109,7 +116,6 @@ const yearsStyle = css`
 
   .year-container {
     width: 33%;
-    height: 37%;
     vertical-align: middle;
     text-align: center;
     line-height: 4.3;

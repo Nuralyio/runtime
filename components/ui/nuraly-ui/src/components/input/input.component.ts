@@ -45,7 +45,7 @@ export class HyInputElement extends LitElement {
   alt!: string;
 
   @property({ type: String })
-  value!: string;
+  value = "";
 
   @property({ type: String })
   size!: string;
