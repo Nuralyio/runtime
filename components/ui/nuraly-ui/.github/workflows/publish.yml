@@ -1,7 +1,9 @@
 name: Publish Package to npmjs
 on:
-  release:
-    types: [published]
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,7 +15,8 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - run: cd cd dist/components/button
-      - run: npm publish
+      - run: npm run build
+      - run: npm i -g publish-if-not-published
+      - run: cd dist/components/button &&  publish-if-not-published
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
