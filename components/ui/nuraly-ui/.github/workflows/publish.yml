@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: ['main']
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,5 +18,8 @@ jobs:
       - run: npm run build
       - run: npm i -g publish-if-not-published
       - run: cd dist/components/button &&  publish-if-not-published
+      - run: cd dist/components/datepicker &&  publish-if-not-published
+      - run: cd dist/components/icon &&  publish-if-not-published
+      - run: cd dist/components/input &&  publish-if-not-published
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
