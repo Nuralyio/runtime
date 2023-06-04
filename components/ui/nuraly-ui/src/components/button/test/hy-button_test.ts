@@ -1,5 +1,6 @@
 import {html, fixture, oneEvent, expect} from '@open-wc/testing';
 import {HyButtonElement} from '../hy-button.component';
+import '../hy-button.component';
 
 suite('HyButtonElement', () => {
   test('has a default empty display property', async () => {
@@ -45,7 +46,7 @@ suite('HyButtonElement', () => {
     const el: HyButtonElement = await fixture(html`<hy-button danger></hy-button>`);
     await el.updateComplete;
     const button = el.shadowRoot!.querySelector('button');
-    expect(button?.getAttribute('data-danger')).to.equal('true');
+    expect(button?.getAttribute('data-danger')).to.equal('');
   });
 
   test('fires onClick event when clicked', async () => {

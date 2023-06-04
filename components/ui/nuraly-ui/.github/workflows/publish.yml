@@ -16,6 +16,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm run build
+      - run: npm run test
       - run: npm i -g publish-if-not-published
       - run: cd dist/components/button &&  publish-if-not-published
       - run: cd dist/components/datepicker &&  publish-if-not-published
