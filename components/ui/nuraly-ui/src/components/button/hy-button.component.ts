@@ -71,8 +71,7 @@ export class HyButtonElement extends LitElement {
   override firstUpdated() {
     const slott: HTMLSlotElement = this.shadowRoot?.querySelector('#slot') as HTMLSlotElement;
     const slt = slott?.assignedNodes();
-    if (slt.length === 0) {
-    } else {
+    if (slt.length !== 0) {
       requestAnimationFrame(() => {
         this.hasSlot = true;
         this.requestUpdate();

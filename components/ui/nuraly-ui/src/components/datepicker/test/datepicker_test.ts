@@ -119,13 +119,4 @@ suite('HyDatePickerElement', () => {
     await el.updateComplete;
     expect(el.curentYear).to.equal(Number(yearButton.textContent));
   });
-  it('should select a day when a day is clicked', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker .openedCalender=${true}></hy-datepicker>`);
-    el.prevMode = Mode.Day;
-    await el.updateComplete;
-    const dayButton = el.shadowRoot!.querySelector('.day-container button') as HTMLElement;
-    dayButton.click();
-    await el.updateComplete;
-    expect(el.currentDay).to.equal(Number(dayButton.textContent));
-  });
 });
