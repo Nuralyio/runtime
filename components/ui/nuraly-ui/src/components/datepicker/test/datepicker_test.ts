@@ -30,14 +30,14 @@ suite('HyDatePickerElement', () => {
     const newDate = '2023-03-20';
     setTimeout(() => {
       input.dispatchEvent(
-        new CustomEvent('inputed', {
+        new CustomEvent('valueChange', {
           detail: {value: newDate},
           bubbles: true,
           composed: true,
         })
       );
     });
-    const {detail} = await oneEvent(input, 'inputed');
+    const {detail} = await oneEvent(input, 'valueChange');
     el.dateValue = detail.value;
     expect(el.dateValue).to.equal(newDate);
   });

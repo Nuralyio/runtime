@@ -15,11 +15,7 @@ export class ElButtonDemoElement extends LitElement {
   override render() {
     return html` <style></style>
       <div>
-        <hy-input
-          placeholder="text placeholder"
-          @inputed=${this.changeHandler}
-          size="large"
-        >
+        <hy-input placeholder="text placeholder" @valueChange=${this.changeHandler} size="large">
           <span slot="prefix">
             <hy-icon name="user"></hy-icon>
           </span>
@@ -31,33 +27,21 @@ export class ElButtonDemoElement extends LitElement {
           </span>
         </hy-input>
         <br />
-        <hy-input
-          placeholder="text placeholder"
-          @focus=${() => {}}
-          size="small"
-        >
+        <hy-input placeholder="text placeholder" @focus=${() => {}} size="small">
           <span slot="prefix">
             <hy-icon name="user"></hy-icon>
           </span>
         </hy-input>
 
         <br />
-        <hy-input
-          placeholder="text placeholder"
-          @focus=${() => {}}
-          size="small"
-        >
+        <hy-input placeholder="text placeholder" @focus=${() => {}} size="small">
           <span slot="suffix">
             <hy-icon name="check"></hy-icon>
           </span>
         </hy-input>
 
         <br />
-        <hy-input
-          placeholder="text placeholder"
-          @focus=${() => {}}
-          size="small"
-        >
+        <hy-input placeholder="text placeholder" @focus=${() => {}} size="small">
           <span slot="suffix">
             <hy-icon name="times-circle"></hy-icon>
           </span>
@@ -107,11 +91,7 @@ export class ElButtonDemoElement extends LitElement {
         </hy-input>
 
         <br />
-        <hy-input
-          placeholder="text placeholder"
-          size="large"
-          @focus=${() => {}}
-        >
+        <hy-input placeholder="text placeholder" size="large" @focus=${() => {}}>
           <span slot="prefix">
             <hy-icon name="user"></hy-icon>
           </span>

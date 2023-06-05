@@ -6,6 +6,6 @@ export const HyInput = createComponent({
   elementClass: HyInputElement,
   react: React,
   events: {
-    inputed: 'inputed',
+    valueChange: 'valueChange',
   },
 });

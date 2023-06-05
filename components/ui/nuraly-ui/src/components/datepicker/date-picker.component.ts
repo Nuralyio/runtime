@@ -416,7 +416,7 @@ export class HyDatePickerElement extends LitElement {
       <hy-input
         id="date-input"
         .value=${this.inputFieldValue}
-        @inputed=${this.inputChanged}
+        @valueChange=${this.inputChanged}
         @focus=${() => {
           this.openedCalender = true;
           this.requestUpdate();

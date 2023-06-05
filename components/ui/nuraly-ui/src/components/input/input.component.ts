@@ -4,16 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing } from 'lit';
-import {
-  customElement,
-  property,
-  queryAssignedElements,
-  state,
-} from 'lit/decorators.js';
-import { styles } from './input.style';
-import { classMap } from 'lit/directives/class-map.js';
-
+import {LitElement, html, nothing} from 'lit';
+import {customElement, property, queryAssignedElements, state} from 'lit/decorators.js';
+import {styles} from './input.style';
+import {classMap} from 'lit/directives/class-map.js';
 
 export enum INPUT_TYPE {
   EMAIL = 'email',
@@ -35,31 +29,31 @@ export enum INPUT_TYPE {
 export class HyInputElement extends LitElement {
   // W3C standards
 
-  @property({ type: Boolean })
+  @property({type: Boolean})
   disabled = false;
 
-  @property({ type: String })
+  @property({type: String})
   palceholder!: string;
 
-  @property({ type: String })
+  @property({type: String})
   alt!: string;
 
-  @property({ type: String })
-  value = "";
+  @property({type: String})
+  value = '';
 
-  @property({ type: String })
+  @property({type: String})
   size!: string;
 
-  @property({ type: String })
+  @property({type: String})
   autocomplete!: string; // on off
 
-  @property({ reflect: true })
+  @property({reflect: true})
   type = INPUT_TYPE.TEXT;
 
-  @property({ type: String })
+  @property({type: String})
   placeholder!: string; // on off
 
-  @queryAssignedElements({ slot: 'prefix', flatten: true })
+  @queryAssignedElements({slot: 'prefix', flatten: true})
   _prefixItems!: Array<HTMLElement>;
 
   @queryAssignedElements({
@@ -95,8 +89,8 @@ export class HyInputElement extends LitElement {
   protected spanClasses: {
     inputfocuced?: boolean;
   } = {
-      inputfocuced: false,
-    };
+    inputfocuced: false,
+  };
 
   @state()
   protected slottedClasses: {
@@ -105,23 +99,23 @@ export class HyInputElement extends LitElement {
     post?: boolean;
     suffixed?: boolean;
   } = {
-      prefixed: false,
-      suffixed: false,
-    };
+    prefixed: false,
+    suffixed: false,
+  };
 
   focusHandler(_event: FocusEvent) {
-    this.spanClasses = { ...this.spanClasses, inputfocuced: true };
+    this.spanClasses = {...this.spanClasses, inputfocuced: true};
   }
 
   blurHandler(_event: FocusEvent) {
-    this.spanClasses = { ...this.spanClasses, inputfocuced: false };
+    this.spanClasses = {...this.spanClasses, inputfocuced: false};
   }
 
   override render() {
     return html`
       <slot name="pre"></slot>
       <span
-        class="${classMap({ ...this.spanClasses, ...this.slottedClasses })}"
+        class="${classMap({...this.spanClasses, ...this.slottedClasses})}"
         data-size=${this.size ? this.size : nothing}
       >
         <slot name="prefix"></slot>
@@ -130,12 +124,12 @@ export class HyInputElement extends LitElement {
           .value="${this.value}"
           type="${this.type}"
           @input=${(e: Event) => {
-        this.dispatchEvent(
-          new CustomEvent('inputed', {
-            detail: e.target,
-          })
-        );
-      }}
+            this.dispatchEvent(
+              new CustomEvent('valueChange', {
+                detail: e.target,
+              })
+            );
+          }}
           @focus=${(_event: FocusEvent) => this.focusHandler(_event)}
           @blur=${this.blurHandler}
           ?autofocus=${this.autofocus}
@@ -158,11 +152,8 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'hy-input':
-      | React.DetailedHTMLProps<
-        React.HTMLAttributes<HyInputElement>,
-        HyInputElement
-      >
-      | Partial<HyInputElement>;
+        | React.DetailedHTMLProps<React.HTMLAttributes<HyInputElement>, HyInputElement>
+        | Partial<HyInputElement>;
     }
   }
 }
