@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Laabidi Aymen
+ * Copyright 2023 HybridUI, Laabidi Aymen
  * SPDX-License-Identifier: MIT
  */
 
@@ -8,11 +8,11 @@ import {LitElement, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {ButtonType, EMPTY_STRING} from './hy-button.constats';
 import {hostBlockStyle, styles} from './hy-button.style';
-
 /**
- * An Button element.
+ * `hy-button` is a LitElement that provides a customizable button.
+ * @customElement 'hy-button'
  *
- * @fires onClick - Indicates when the count changes
+ * Attributes
  * @slot - This element has a slot
  * @csspart button - The button
  * @attr type
@@ -25,7 +25,10 @@ import {hostBlockStyle, styles} from './hy-button.style';
  * @attr block
  * @attr size
  * @attr danger
+ * Events
+ * @fires onClick - Indicates when the count changes
  */
+
 @customElement('hy-button')
 export class HyButtonElement extends LitElement {
   @property({type: Boolean})
@@ -69,9 +72,9 @@ export class HyButtonElement extends LitElement {
   hasSlot = false;
 
   override firstUpdated() {
-    const slott: HTMLSlotElement = this.shadowRoot?.querySelector('#slot') as HTMLSlotElement;
-    const slt = slott?.assignedNodes();
-    if (slt.length !== 0) {
+    const slot: HTMLSlotElement = this.shadowRoot?.querySelector('#slot') as HTMLSlotElement;
+    const assignedNodes = slot?.assignedNodes();
+    if (assignedNodes.length !== 0) {
       requestAnimationFrame(() => {
         this.hasSlot = true;
         this.requestUpdate();
@@ -101,7 +104,6 @@ export class HyButtonElement extends LitElement {
       </button>
     `;
   }
-
   static override styles = styles;
 }
 

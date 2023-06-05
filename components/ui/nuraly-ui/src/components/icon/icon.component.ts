@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Laabidi Aymen
+ * Copyright 2023 HybridUI Laabidi Aymen
  * SPDX-License-Identifier: MIT
  */
 
@@ -19,11 +19,8 @@ export class HyIconElement extends LitElement {
 
   override render() {
     return html`
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-      />
-
+      <!-- this is temporary -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
       <i class="fa fa-${this.name}"></i>
     `;
   }
@@ -36,12 +33,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'hy-icon':
-        | React.DetailedHTMLProps<
-            React.HTMLAttributes<HyIconElement>,
-            HyIconElement
-          >
-        | Partial<HyIconElement>;
+      'hy-icon': React.DetailedHTMLProps<React.HTMLAttributes<HyIconElement>, HyIconElement> | Partial<HyIconElement>;
     }
   }
 }
