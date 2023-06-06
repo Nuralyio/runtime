@@ -8,6 +8,7 @@
 
 import {LitElement, html} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
+
 import '../hy-dropdown.component';
 import '../../button/hy-button.component';
 import '../../input/input.component';
@@ -18,6 +19,9 @@ export class ElButtonDemoElement extends LitElement {
   dropdwon2Selected!: any;
   @state()
   dropdwon4Selected!: any;
+
+  @state()
+  dropdwon4isOpen!: boolean;
 
   placeholderDropdown2 = 'file';
 
@@ -152,6 +156,7 @@ export class ElButtonDemoElement extends LitElement {
       <hy-dropdown
         handler="click"
         placeholder="Menu"
+        .open=${this.dropdwon4isOpen}
         .selected=${this.dropdwon4Selected}
         @change=${(e: any) => {
           this.dropdwon4Selected = e.detail.value;
@@ -180,13 +185,20 @@ export class ElButtonDemoElement extends LitElement {
           },
           {label: 'Close project'},
         ]}
-        ><hy-input slot="label" .value=${this.dropdwon4Selected?.label || ''} icon="ellipsis-v"
+        ><hy-input
+          slot="label"
+          .value=${this.dropdwon4Selected?.label || ''}
+          icon="ellipsis-v"
+          @valueChange=${(e: any) => {
+            this.dropdwon4Selected = {label: e.detail.value};
+          }}
           ><span slot="suffix">
             <hy-icon
               style="cursor:pointer"
               name="times-circle"
               @click=${() => {
-                this.dropdwon4Selected = {};
+                this.dropdwon4Selected = undefined;
+                this.dropdwon4isOpen = false;
               }}
             ></hy-icon> </span></hy-input
       ></hy-dropdown>
