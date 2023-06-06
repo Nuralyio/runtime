@@ -11,7 +11,7 @@ The ultimate toolkit for building beautiful and responsive user interfaces with 
 
 </div>
 
-## ⚠ This is not ready for production!
+## ⚠ This is not ready for production usage!
 
 This library is still in early stages and once we'll collect enough feedback from the community we'll release the first beta version.
 
