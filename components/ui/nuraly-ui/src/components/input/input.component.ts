@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @license
  * Copyright 2023 Google Laabidi Aymen
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, nothing} from 'lit';
+import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, queryAssignedElements, state} from 'lit/decorators.js';
 import {styles} from './input.style';
 import {classMap} from 'lit/directives/class-map.js';
@@ -109,6 +110,13 @@ export class HyInputElement extends LitElement {
 
   blurHandler(_event: FocusEvent) {
     this.spanClasses = {...this.spanClasses, inputfocuced: false};
+  }
+  override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('value')) {
+      this.requestUpdate();
+    }
   }
 
   override render() {
