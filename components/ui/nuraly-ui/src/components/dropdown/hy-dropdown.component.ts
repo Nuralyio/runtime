@@ -1,118 +1,102 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, html, css} from 'lit';
-import {property} from 'lit/decorators.js';
+import {LitElement, html, nothing} from 'lit';
+import {property, queryAssignedElements, state} from 'lit/decorators.js';
 import {ref, createRef, Ref} from 'lit/directives/ref.js';
 import '../icon/icon.component';
+import {EMPTY_STRING, NOTHING_STRING} from './hy-dropdown.constants';
+import {styles} from './hy-dropdown.style';
 export class HyDropdownComponent extends LitElement {
-  static override styles = css`
-    .dropdown {
-      position: relative;
-      display: inline-block;
-      border: 1px solid #ccc;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      min-width: 160px;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
-    }
-
-    .dropdown-content ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .dropdown-content ul li {
-      padding: 12px 16px;
-      cursor: pointer;
-    }
-
-    .nested {
-      display: none;
-      position: absolute;
-      left: 100%;
-      width: 100%;
-      top: 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .dropdown-content ul li:hover > .nested {
-      display: block;
-    }
-
-    .dropdown-content.show {
-      display: block;
-      opacity: 1;
-    }
-
-    .selected {
-      background-color: #ddd;
-    }
-    .has-childrens {
-      color: #444444;
-      margin-left: 6px;
-      float: right;
-    }
-  `;
+  static override styles = styles;
 
   @property({type: Array})
   options = [];
 
   @property({type: Object})
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selected: any;
 
   @property({type: Boolean})
   open = false;
 
+  @property({type: String})
+  placeholder = EMPTY_STRING;
+
+  @property({type: String})
+  handler = 'hover';
+
+  @queryAssignedElements({slot: 'label', flatten: true})
+  _prefixItems!: Array<HTMLElement>;
+  @state()
+  hasSlotLabel = false;
+
+  override firstUpdated() {
+    this.hasSlotLabel = !!this._prefixItems.length;
+    this.performUpdate();
+  }
+
   override render() {
     return html`
       <div class="dropdown">
-        <button class="dropbtn" @click="${this.toggleDropdown}">
-          ${this.selected ? this.selected.label : 'Select an option'}
-        </button>
-        <div class="dropdown-content ${this.open ? 'show' : ''}">
-          <ul>
-            ${this.options.map((option) => this.renderOption(option))}
-          </ul>
-        </div>
+        ${this.renderDropDownIntiator()} ${(this.open && this.renderDropdowContent()) || nothing}
+      </div>
+    `;
+  }
+
+  renderDropDownIntiator() {
+    return html`
+      <slot
+        name="label"
+        @click="${() => this.handler === 'click' && this.toggleDropdown()}"
+        @mouseover="${() => this.handler === 'hover' && this.showDropdown()}"
+      ></slot>
+      ${(!this.hasSlotLabel &&
+        html`<button
+          class="dropbtn"
+          @click="${() => this.handler === 'click' && this.toggleDropdown()}"
+          @mouseover="${() => this.handler === 'hover' && this.showDropdown()}"
+        >
+          ${this.selected ? this.selected.label : this.placeholder}
+        </button>`) ||
+      nothing}
+    `;
+  }
+
+  renderDropdowContent() {
+    return html`
+      <div class="dropdown-content show">
+        <ul>
+          ${this.options.map((option) => this.renderOption(option))}
+        </ul>
       </div>
     `;
   }
 
   renderOption(option: any) {
-    const inputRef: Ref<HTMLInputElement> = createRef();
+    const childMenuRef: Ref<HTMLInputElement> = createRef();
     const parentRef: Ref<HTMLInputElement> = createRef();
     return html`
       <li
         ${ref(parentRef)}
         @click="${(e: any) => this.handleSelect(option, e)}"
-        class=${option === this.selected ? 'selected' : ''}
-        @mouseover="${() => {
-          if (inputRef.value) {
-            inputRef.value!.style.marginTop = parentRef.value?.offsetTop + 'px';
-          }
-        }}"
+        class=${option === this.selected ? 'selected' : NOTHING_STRING}
+        @mouseover="${() => this.onItemMouseOver(parentRef, childMenuRef)}"
       >
         ${option.label}
         ${option.children
           ? html`
               <hy-icon name="caret-right" class="has-childrens"></hy-icon>
-              <ul ${ref(inputRef)} class="nested">
-                ${option.children.map((child: any) => this.renderOption(child))}
+              <ul ${ref(childMenuRef)} class="nested">
+                <div class="block">${option.children.map((child: any) => this.renderOption(child))}</div>
               </ul>
             `
           : ''}
       </li>
     `;
   }
+  onItemMouseOver = (parentRef: Ref<HTMLInputElement>, childMenuRef: Ref<HTMLInputElement>): void => {
+    if (childMenuRef.value) {
+      childMenuRef.value!.style.marginTop = parentRef.value?.offsetTop + 'px';
+    }
+  };
 
   handleSelect(option: any, e: any) {
     if (e) e.stopPropagation();
@@ -128,6 +112,26 @@ export class HyDropdownComponent extends LitElement {
 
   toggleDropdown() {
     this.open = !this.open;
+  }
+
+  showDropdown() {
+    this.open = true;
+  }
+
+  _onClickOutside(e: MouseEvent) {
+    if (!e.composedPath().includes(this)) {
+      this.open = false;
+    }
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('click', this._onClickOutside.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('click', this._onClickOutside.bind(this));
   }
 }
 

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @license
  * Copyright 2023 Google Laabidi Aymen
@@ -6,13 +7,24 @@
  */
 
 import {LitElement, html} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement, state} from 'lit/decorators.js';
 import '../hy-dropdown.component';
+import '../../button/hy-button.component';
+import '../../input/input.component';
+
 @customElement('hy-dropdwon-demo')
 export class ElButtonDemoElement extends LitElement {
+  @state()
+  dropdwon2Selected!: any;
+  @state()
+  dropdwon4Selected!: any;
+
+  placeholderDropdown2 = 'file';
+
   override render() {
     return html`
       <hy-dropdown
+        placeholder="Select an option"
         .options=${[
           {
             label: 'Option 1',
@@ -30,8 +42,17 @@ export class ElButtonDemoElement extends LitElement {
         ]}
         @change="${(e: any) => console.log(e.detail.value)}"
       ></hy-dropdown>
-
+      <br />
+      <br />
+      <br />
+      <br />
       <hy-dropdown
+        placeholder="Menu"
+        .selected=${this.dropdwon2Selected}
+        @change=${(e: any) => {
+          this.dropdwon2Selected = e.detail.value;
+          console.log(e.detail.value.label);
+        }}
         .options=${[
           {
             label: 'New',
@@ -44,19 +65,130 @@ export class ElButtonDemoElement extends LitElement {
               {
                 label: 'Recent',
                 children: [
-                  {
-                    label: 'Ladoc app 22',
-                  },
-                  {
-                    label: 'Ladoc app today',
-                  },
+                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
+                    return {
+                      label: 'Ladoc app ' + i,
+                    };
+                  }),
                 ],
               },
             ],
           },
           {label: 'Close project'},
         ]}
-        @change="${(e: any) => console.log(e.detail.value)}"
+        ><span slot="label">${this.placeholderDropdown2}</span></hy-dropdown
+      >
+      <br />
+      <br />
+      <hy-dropdown
+        placeholder="Menu"
+        .selected=${this.dropdwon2Selected}
+        @change=${(e: any) => {
+          this.dropdwon2Selected = e.detail.value;
+          console.log(e.detail.value.label);
+        }}
+        .options=${[
+          {
+            label: 'New',
+            children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
+          },
+          // {label: 'Open'},
+          {
+            label: 'Open',
+            children: [
+              {
+                label: 'Recent',
+                children: [
+                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
+                    return {
+                      label: 'Ladoc app ' + i,
+                    };
+                  }),
+                ],
+              },
+            ],
+          },
+          {label: 'Close project'},
+        ]}
+        ><hy-button slot="label">${this.dropdwon2Selected?.label || this.placeholderDropdown2}</hy-button></hy-dropdown
+      >
+
+      <br />
+      <br />
+      <hy-dropdown
+        placeholder="Menu"
+        .selected=${this.dropdwon2Selected}
+        @change=${(e: any) => {
+          this.dropdwon2Selected = e.detail.value;
+          console.log(e.detail.value.label);
+        }}
+        .options=${[
+          {
+            label: 'New',
+            children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
+          },
+          // {label: 'Open'},
+          {
+            label: 'Open',
+            children: [
+              {
+                label: 'Recent',
+                children: [
+                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
+                    return {
+                      label: 'Ladoc app ' + i,
+                    };
+                  }),
+                ],
+              },
+            ],
+          },
+          {label: 'Close project'},
+        ]}
+        ><hy-button slot="label" icon="ellipsis-v"></hy-button
+      ></hy-dropdown>
+      <br />
+      <br />
+      <hy-dropdown
+        handler="click"
+        placeholder="Menu"
+        .selected=${this.dropdwon4Selected}
+        @change=${(e: any) => {
+          this.dropdwon4Selected = e.detail.value;
+          console.log(e.detail.value.label);
+        }}
+        .options=${[
+          {
+            label: 'New',
+            children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
+          },
+          // {label: 'Open'},
+          {
+            label: 'Open',
+            children: [
+              {
+                label: 'Recent',
+                children: [
+                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
+                    return {
+                      label: 'Ladoc app ' + i,
+                    };
+                  }),
+                ],
+              },
+            ],
+          },
+          {label: 'Close project'},
+        ]}
+        ><hy-input slot="label" .value=${this.dropdwon4Selected?.label || ''} icon="ellipsis-v"
+          ><span slot="suffix">
+            <hy-icon
+              style="cursor:pointer"
+              name="times-circle"
+              @click=${() => {
+                this.dropdwon4Selected = {};
+              }}
+            ></hy-icon> </span></hy-input
       ></hy-dropdown>
     `;
   }
