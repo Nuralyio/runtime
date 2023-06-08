@@ -53,7 +53,7 @@ const dropdwonStyle = css`
     background-color: var(--hybrid-dropdown-item-hover-background-color, #ddd);
   }
   .dropdown-content ul li:hover > .nested {
-    display: block;
+    //display: block;
   }
 
   .nested-search {

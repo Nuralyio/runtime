@@ -12,6 +12,7 @@ import {customElement, state} from 'lit/decorators.js';
 import '../hy-dropdown.component';
 import '../../button/hy-button.component';
 import '../../input/input.component';
+import {styleMap} from 'lit/directives/style-map.js';
 
 @customElement('hy-dropdwon-demo')
 export class ElButtonDemoElement extends LitElement {
@@ -158,7 +159,7 @@ export class ElButtonDemoElement extends LitElement {
       <br />
       <hy-dropdown
         .search=${this.search}
-        handler="click"
+        trigger="click"
         placeholder="Menu"
         .open=${this.dropdwon4isOpen}
         .selected=${this.dropdwon4Selected}
@@ -214,7 +215,7 @@ export class ElButtonDemoElement extends LitElement {
       <hy-dropdown
         style="float : right;"
         placeholder="Menu"
-        handler="hover"
+        trigger="hover"
         .selected=${this.dropdwon2Selected}
         @change=${(e: any) => {
           this.dropdwon2Selected = e.detail.value;
@@ -245,6 +246,59 @@ export class ElButtonDemoElement extends LitElement {
         ]}
         ><hy-button slot="label" icon="ellipsis-v"></hy-button
       ></hy-dropdown>
+
+      <br />
+      <br />
+      <hy-dropdown
+        trigger="context-menu"
+        .selected=${this.dropdwon2Selected}
+        @change=${(e: any) => {
+          this.dropdwon2Selected = e.detail.value;
+          console.log(e.detail.value.label);
+        }}
+        .options=${[
+          {
+            label: 'New',
+            children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
+          },
+          // {label: 'Open'},
+          {
+            label: 'Open',
+            children: [
+              {
+                label: 'Recent',
+                children: [
+                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
+                    return {
+                      label: 'Ladoc app ' + i,
+                    };
+                  }),
+                ],
+              },
+            ],
+          },
+          {label: 'Close project'},
+        ]}
+      >
+        <!-- <div
+          slot="label"
+          style=${styleMap({
+          color: 'white',
+          background: 'gray',
+          height: '200px',
+          width: '400px',
+          textAlign: 'center',
+          lineHeight: '200px',
+        })}
+        >
+          Right Click on here
+        </div> -->
+
+        <img
+          slot="label"
+          src="https://fastly.picsum.photos/id/588/200/300.jpg?hmac=Bb5mvfvSw-sKhocAA4Mfdb78ysl5ktbClTt-Lc0IyWk"
+        />
+      </hy-dropdown>
     `;
   }
 }

@@ -24,7 +24,7 @@ export class HyDropdownComponent extends LitElement {
   search = EMPTY_STRING;
 
   @property({type: String})
-  handler = 'click';
+  trigger = 'click';
 
   @state()
   positioningStyle = EMPTY_STRING;
@@ -49,6 +49,26 @@ export class HyDropdownComponent extends LitElement {
   dropdownContentRef: Ref<HTMLInputElement> = createRef();
   dropdownInitiatorRef: Ref<HTMLInputElement> = createRef();
 
+  constructor() {
+    super();
+    this.addEventListener('contextmenu', this.handleRightClick);
+  }
+
+  handleRightClick(event: any) {
+    if (this.trigger == 'context-menu') {
+      event.preventDefault(); // Prevent the default context menu from appearing
+      this.open = true;
+      setTimeout(() => {
+        const positionedElement: any = this.shadowRoot!.querySelector('.dropdown-content');
+        console.log(event);
+        positionedElement.style.left = `${event.clientX}px`;
+        positionedElement.style.top = `${event.pageY}px`;
+        positionedElement.style.position = `fixed`;
+        this.requestUpdate();
+      });
+    }
+  }
+
   override firstUpdated() {
     this.hasSlotLabel = !!this._prefixItems.length;
     this.performUpdate();
@@ -71,14 +91,14 @@ export class HyDropdownComponent extends LitElement {
       <span ${ref(this.dropdownInitiatorRef)} class="initiator">
         <slot
           name="label"
-          @click="${() => this.handler === 'click' && this.toggleDropdown()}"
-          @mouseover="${() => this.handler === 'hover' && this.showDropdown()}"
+          @click="${() => this.trigger === 'click' && this.toggleDropdown()}"
+          @mouseover="${() => this.trigger === 'hover' && this.showDropdown()}"
         ></slot>
         ${(!this.hasSlotLabel &&
           html`<button
             class="dropbtn"
-            @click="${() => this.handler === 'click' && this.toggleDropdown()}"
-            @mouseover="${() => this.handler === 'hover' && this.showDropdown()}"
+            @click="${() => this.trigger === 'click' && this.toggleDropdown()}"
+            @mouseover="${() => this.trigger === 'hover' && this.showDropdown()}"
           >
             ${this.selected ? this.selected.label : this.placeholder}
           </button>`) ||
@@ -91,7 +111,7 @@ export class HyDropdownComponent extends LitElement {
     return html`
       <div class="dropdown-content show" ${ref(this.dropdownContentRef)}>
         <ul>
-          ${this.options.map((option) => this.renderOption(option))}
+          ${this.options?.map((option) => this.renderOption(option))}
         </ul>
       </div>
     `;
