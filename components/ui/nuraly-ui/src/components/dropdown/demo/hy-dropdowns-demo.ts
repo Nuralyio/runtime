@@ -21,6 +21,9 @@ export class ElButtonDemoElement extends LitElement {
   dropdwon4Selected!: any;
 
   @state()
+  search = '';
+
+  @state()
   dropdwon4isOpen!: boolean;
 
   placeholderDropdown2 = 'file';
@@ -154,6 +157,7 @@ export class ElButtonDemoElement extends LitElement {
       <br />
       <br />
       <hy-dropdown
+        .search=${this.search}
         handler="click"
         placeholder="Menu"
         .open=${this.dropdwon4isOpen}
@@ -190,6 +194,9 @@ export class ElButtonDemoElement extends LitElement {
           .value=${this.dropdwon4Selected?.label || ''}
           icon="ellipsis-v"
           @valueChange=${(e: any) => {
+            ``;
+            this.search = e.detail.value;
+
             this.dropdwon4Selected = {label: e.detail.value};
           }}
           ><span slot="suffix">
@@ -201,6 +208,42 @@ export class ElButtonDemoElement extends LitElement {
                 this.dropdwon4isOpen = false;
               }}
             ></hy-icon> </span></hy-input
+      ></hy-dropdown>
+      <br />
+      <br />
+      <hy-dropdown
+        style="float : right;"
+        placeholder="Menu"
+        handler="hover"
+        .selected=${this.dropdwon2Selected}
+        @change=${(e: any) => {
+          this.dropdwon2Selected = e.detail.value;
+          console.log(e.detail.value.label);
+        }}
+        .options=${[
+          {
+            label: 'New',
+            children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
+          },
+          // {label: 'Open'},
+          {
+            label: 'Open',
+            children: [
+              {
+                label: 'Recent',
+                children: [
+                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
+                    return {
+                      label: 'Ladoc app ' + i,
+                    };
+                  }),
+                ],
+              },
+            ],
+          },
+          {label: 'Close project'},
+        ]}
+        ><hy-button slot="label" icon="ellipsis-v"></hy-button
       ></hy-dropdown>
     `;
   }

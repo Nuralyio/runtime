@@ -56,6 +56,10 @@ const dropdwonStyle = css`
     display: block;
   }
 
+  .nested-search {
+    display: block;
+  }
+
   .dropdown-content.show {
     display: block;
     opacity: 1;
@@ -68,6 +72,34 @@ const dropdwonStyle = css`
     color: var(--hybrid-dropdown-chilrends-arrow-icon-color, #444444);
     margin: var(--hybrid-dropdown-chilrends-arrow-icon-margin, 0 6px 0 0);
     float: var(--hybrid-dropdown-chilrends-arrow-icon-floating, right);
+  }
+
+  .carret-boundery-right {
+    transform: rotateZ(-180deg);
+    float: left;
+    margin-right: 20px;
+  }
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  .arrow-ccontainer {
+    margin-top: 9px;
+    float: right;
+    margin-right: -50px;
+    transform: rotateZ(-180deg);
+  }
+  .arrow {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    transform: rotate(45deg);
+    animation: bounce 1s infinite;
   }
 `;
 export const styles = [dropdwonStyle];
