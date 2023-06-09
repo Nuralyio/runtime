@@ -62,7 +62,7 @@ export class HyDropdownComponent extends LitElement {
         const positionedElement: any = this.shadowRoot!.querySelector('.dropdown-content');
         console.log(event);
         positionedElement.style.left = `${event.clientX}px`;
-        positionedElement.style.top = `${event.pageY}px`;
+        positionedElement.style.top = `${event.clientY}px`;
         positionedElement.style.position = `fixed`;
         this.requestUpdate();
       });
