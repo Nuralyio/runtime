@@ -209,6 +209,7 @@ export class HyDropdownComponent extends LitElement {
     this.recursivesearch(stacks, this.options, this.search);
     this.showChildrenMap = new Map<any, boolean>();
     this.selectedElementMap = new Map<any, boolean>();
+    this.searchedELement = undefined;
     for (const stack of stacks) {
       this.showChildrenMap.set(stack, true);
       this.selectedElementMap.set(stack, true);
