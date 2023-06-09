@@ -236,7 +236,6 @@ export class HyDropdownComponent extends LitElement {
   }
 
   handleSelect(option: any, e: any) {
-    alert('se');
     if (e) e.stopPropagation();
     this.selected = option;
     this.open = false;
