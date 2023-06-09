@@ -141,10 +141,8 @@ export class HyDropdownComponent extends LitElement {
           this.requestUpdate();
         }}"
         @mouseleave="${() => {
-          if (!this.search) {
-            this.showChildrenMap.set(option, false);
-            this.requestUpdate();
-          }
+          this.showChildrenMap.set(option, false);
+          this.requestUpdate();
         }}"
       >
         ${html`${option.template ? option.template(option) : option.label}`}
