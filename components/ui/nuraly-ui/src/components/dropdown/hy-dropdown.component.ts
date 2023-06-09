@@ -2,9 +2,9 @@
 import {LitElement, html, nothing, PropertyValueMap} from 'lit';
 import {property, queryAssignedElements, state} from 'lit/decorators.js';
 import {ref, createRef, Ref} from 'lit/directives/ref.js';
-import '../icon/icon.component';
 import {EMPTY_STRING, NOTHING_STRING} from './hy-dropdown.constants';
 import {styles} from './hy-dropdown.style';
+
 export class HyDropdownComponent extends LitElement {
   static override styles = styles;
 
@@ -120,7 +120,6 @@ export class HyDropdownComponent extends LitElement {
   renderOption(option: any) {
     const childMenuRef: Ref<HTMLInputElement> = createRef();
     const parentRef: Ref<HTMLInputElement> = createRef();
-
     const showChildren = this.showChildrenMap.get(option) || false;
     // delegate the showing to the css until shifted to js
     //const showChildren = true;
@@ -142,7 +141,7 @@ export class HyDropdownComponent extends LitElement {
           }
         }}"
       >
-        ${option.label}
+        ${html`${option.template ? option.template(option) : option.label}`}
         ${this.searchedELement?.label === option.label
           ? html`<span class="arrow arrow-ccontainer">
               <hy-icon name="arrow-left"></hy-icon>
