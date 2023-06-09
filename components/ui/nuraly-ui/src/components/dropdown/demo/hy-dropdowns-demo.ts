@@ -188,7 +188,12 @@ export class ElButtonDemoElement extends LitElement {
               },
             ],
           },
-          {label: 'Close project'},
+          {
+            label: 'Close project',
+            template: function (item: any) {
+              return html`<div style="display: flex"><hy-input  style="width: 80%; text: red !important" value="${item.label} "> </hy-input><hy-button  style="width: 19%" > ok</hy-button></span> </div>`;
+            },
+          },
         ]}
         ><hy-input
           slot="label"

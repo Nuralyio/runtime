@@ -128,7 +128,13 @@ export class HyDropdownComponent extends LitElement {
       <li
         id="${parentId}"
         ${ref(parentRef)}
-        @click="${(e: any) => this.handleSelect(option, e)}"
+        @click="${(e: any) => {
+          if (!option.template) {
+            this.handleSelect(option, e);
+          } else {
+            if (e) e.stopPropagation();
+          }
+        }}"
         class=${option === this.selected || this.selectedElementMap.get(option) ? 'selected' : NOTHING_STRING}
         @mouseover="${() => {
           this.showChildrenMap.set(option, true);
@@ -231,6 +237,7 @@ export class HyDropdownComponent extends LitElement {
   }
 
   handleSelect(option: any, e: any) {
+    alert('se');
     if (e) e.stopPropagation();
     this.selected = option;
     this.open = false;
