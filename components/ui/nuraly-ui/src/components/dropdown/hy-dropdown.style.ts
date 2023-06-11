@@ -104,7 +104,7 @@ const dropdwonStyle = css`
     animation: bounce 1s infinite;
   }
   .dropdown-content ul li.divider {
-    height: 1.5px;
+    height: 1px;
     padding: 0px;
     margin: 0px;
     background-color: rgb(219 219 219);
