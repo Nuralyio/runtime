@@ -36,8 +36,61 @@ export class ElButtonDemoElement extends LitElement {
         .options=${[
           {
             label: 'Option 1',
-            children: [{label: 'Sub-option 1'}, {label: 'Sub-option 2', children: [{label: 'Sub-sub-option 10'}]}],
           },
+          {type: 'divider'},
+          {label: 'Option 2'},
+          {
+            label: 'Option 3',
+            children: [
+              {
+                label: 'Sub-option 3',
+              },
+            ],
+          },
+        ]}
+        @change="${(e: any) => console.log(e.detail.value)}"
+      ></hy-dropdown>
+      <br />
+      <br />
+      <br />
+
+      <hy-dropdown
+        placeholder="Select an option"
+        .options=${[
+          {
+            label: 'Option 1',
+            type: 'group',
+            children: [{label: 'Sub-option 1'}, {label: 'Sub-option 2'}],
+          },
+          {type: 'divider'},
+          {label: 'Option 2'},
+          {
+            label: 'Option 3',
+            children: [
+              {
+                label: 'Sub-option 3',
+              },
+            ],
+          },
+        ]}
+        @change="${(e: any) => console.log(e.detail.value)}"
+      ></hy-dropdown>
+      <br />
+      <br />
+      <br />
+
+      <hy-dropdown
+        placeholder="Select an option"
+        .options=${[
+          {
+            label: 'Option 1',
+            type: 'group',
+            children: [
+              {label: 'Sub-option 1'},
+              {label: 'Sub-option 2', type: 'group', children: [{label: 'Sub-sub-option 10'}]},
+            ],
+          },
+          {type: 'divider'},
           {label: 'Option 2'},
           {
             label: 'Option 3',

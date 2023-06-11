@@ -4,6 +4,7 @@ import {property, queryAssignedElements, state} from 'lit/decorators.js';
 import {ref, createRef, Ref} from 'lit/directives/ref.js';
 import {EMPTY_STRING, NOTHING_STRING} from './hy-dropdown.constants';
 import {styles} from './hy-dropdown.style';
+import {classMap} from 'lit/directives/class-map.js';
 
 export class HyDropdownComponent extends LitElement {
   static override styles = styles;
@@ -125,49 +126,64 @@ export class HyDropdownComponent extends LitElement {
     //const showChildren = true;
     const parentId = this.getRandomId();
     return html`
-      <li
-        id="${parentId}"
-        ${ref(parentRef)}
-        @click="${(e: any) => {
-          if (!option.template) {
-            this.handleSelect(option, e);
-          } else {
-            if (e) e.stopPropagation();
-          }
-        }}"
-        class=${option === this.selected || this.selectedElementMap.get(option) ? 'selected' : NOTHING_STRING}
-        @mouseover="${() => {
-          this.showChildrenMap.set(option, true);
-          this.requestUpdate();
-        }}"
-        @mouseleave="${() => {
-          this.showChildrenMap.set(option, false);
-          this.requestUpdate();
-        }}"
-      >
-        ${html`${option.template ? option.template(option) : option.label}`}
-        ${this.searchedELement?.label === option.label
-          ? html`<span class="arrow arrow-ccontainer">
-              <hy-icon name="arrow-left"></hy-icon>
-            </span>`
-          : NOTHING_STRING}
-        ${option.children
-          ? html`
-              <hy-icon
-                style="z-index:0"
-                name="caret-right"
-                class="has-childrens ${(this.boundery.right && 'carret-boundery-right') || NOTHING_STRING}"
-              ></hy-icon>
-              <ul
-                ${ref(childMenuRef)}
-                class="nested ${showChildren ? 'nested-search' : NOTHING_STRING} "
-                style="${this.positioningStyle}; ${this.calculateOffsetTop(parentId)}"
-              >
-                <div class="block">${option.children.map((child: any) => this.renderOption(child))}</div>
-              </ul>
-            `
-          : NOTHING_STRING}
-      </li>
+      ${option.type === 'divider'
+        ? html`<li class="divider"></li>`
+        : html`
+            <li
+              id="${parentId}"
+              ${ref(parentRef)}
+              @click="${(e: any) => {
+                if (!option.template) {
+                  this.handleSelect(option, e);
+                } else {
+                  if (e) e.stopPropagation();
+                }
+              }}"
+              class=${classMap({
+                selected: Boolean(option === this.selected || this.selectedElementMap.get(option)),
+                'group-element': option.type === 'group',
+              })}
+              @mouseover="${() => {
+                this.showChildrenMap.set(option, true);
+                this.requestUpdate();
+              }}"
+              @mouseleave="${() => {
+                this.showChildrenMap.set(option, false);
+                this.requestUpdate();
+              }}"
+            >
+              <span class=${classMap({'group-label': option.type === 'group'})}
+                >${html`${option.template ? option.template(option) : option.label}`}
+                ${this.searchedELement?.label === option.label
+                  ? html`<span class="arrow arrow-ccontainer">
+                      <hy-icon name="arrow-left"></hy-icon>
+                    </span>`
+                  : NOTHING_STRING}
+              </span>
+              ${option.children
+                ? html`
+                    ${option.type != 'group'
+                      ? html`<hy-icon
+                          style="z-index:0"
+                          name="caret-right"
+                          class="has-childrens ${(this.boundery.right && 'carret-boundery-right') || NOTHING_STRING}"
+                        ></hy-icon>`
+                      : ''}
+                    <ul
+                      ${ref(childMenuRef)}
+                      class="  ${classMap({
+                        'nested-search': showChildren,
+                        nested: option.type != 'group',
+                        'nested-group': option.type === 'group',
+                      })}"
+                      style="${this.positioningStyle}; ${this.calculateOffsetTop(parentId)}"
+                    >
+                      <div class="block">${option.children.map((child: any) => this.renderOption(child))}</div>
+                    </ul>
+                  `
+                : NOTHING_STRING}
+            </li>
+          `}
     `;
   }
 

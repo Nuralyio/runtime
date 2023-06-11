@@ -38,6 +38,7 @@ const dropdwonStyle = css`
     width: 100%;
     top: 0;
   }
+
   .block {
     margin: 0px 3px;
     // ensure space between praent and childrens
@@ -49,7 +50,8 @@ const dropdwonStyle = css`
       0 9px 9px 4px rgba(0, 0, 0, 0.05)
     );
   }
-  .dropdown-content ul li:hover {
+
+  .dropdown-content ul li:not(.group-element):hover {
     background-color: var(--hybrid-dropdown-item-hover-background-color, #ddd);
   }
   .dropdown-content ul li:hover > .nested {
@@ -100,6 +102,30 @@ const dropdwonStyle = css`
     height: 20px;
     transform: rotate(45deg);
     animation: bounce 1s infinite;
+  }
+  .dropdown-content ul li.divider {
+    height: 1.5px;
+    padding: 0px;
+    margin: 0px;
+    background-color: rgb(219 219 219);
+  }
+
+  .dropdown-content ul .group-element {
+    padding: 7px 0 0 0;
+  }
+
+  .dropdown-content ul li span.group-label {
+    color: #555555d4;
+    font-weight: 700;
+    margin: 15px;
+  }
+  .nested-group > div.block {
+    padding: 0%;
+    margin: 0%;
+    box-shadow: none;
+  }
+  .nested-group > div.block > li {
+    padding-left: 25px;
   }
 `;
 export const styles = [dropdwonStyle];
