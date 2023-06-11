@@ -8,7 +8,7 @@ const dropdwonStyle = css`
   .dropdown-content {
     display: none;
     position: absolute;
-    min-width: var(--hybrid-dropdown-min-width, 160px);
+    min-width: var(--hybrid-dropdown-min-width, 180px);
     z-index: var(--hybrid-dropdown-z-index, 400);
     box-shadow: var(
       --hybrid-dropdown-box-shadow,
