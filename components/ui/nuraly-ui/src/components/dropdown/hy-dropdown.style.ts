@@ -90,7 +90,7 @@ const dropdwonStyle = css`
       transform: translateY(-10px);
     }
   }
-  .arrow-ccontainer {
+  .arrow-container {
     margin-top: 9px;
     float: right;
     margin-right: -50px;

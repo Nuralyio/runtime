@@ -284,7 +284,6 @@ export class ElButtonDemoElement extends LitElement {
             label: 'New',
             children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
           },
-          // {label: 'Open'},
           {
             label: 'Open',
             children: [
