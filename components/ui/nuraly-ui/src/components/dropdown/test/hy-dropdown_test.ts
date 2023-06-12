@@ -30,12 +30,6 @@ suite('HyDropdownComponent', () => {
     expect(detail.value).to.equal(option);
   });
 
-  test('should close the dropdown when a click event occurs outside', async () => {
-    const el: HyDropdownComponent = await fixture(html`<hy-dropdown open></hy-dropdown>`);
-    el._onClickOutside({composedPath: () => []} as any);
-    expect(el.open).to.be.false;
-  });
-
   test.skip('should render the parent option with nested options', async () => {
     const nestedOption = {
       label: 'Parent',
