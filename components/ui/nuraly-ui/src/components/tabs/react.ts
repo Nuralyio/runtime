@@ -5,5 +5,10 @@ export const HyTabsComponent = createComponent({
   tagName: 'hy-tabs',
   elementClass: TabsComponent,
   react: React,
-  events: {},
+  events: {
+    removeTab: 'removeTab',
+    tabEdited: 'tabEdited',
+    tabTilteClick: 'tabTilteClick',
+    tabOrderChange: 'tabOrderChange',
+  },
 });
