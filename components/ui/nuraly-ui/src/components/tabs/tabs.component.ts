@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {LitElement, html, nothing} from 'lit';
-import {property, state} from 'lit/decorators.js';
+import {property} from 'lit/decorators.js';
 import {styles} from './tabs.style';
 import {classMap} from 'lit/directives/class-map.js';
-import {TabEditable, TabOrientation} from './menu.type';
+import {LABEL_ATTRIBUTES, NOTHING_STRING, TabEditable, TabEvent, TabOrientation} from './tabs.constant';
 
 /**
  * `hy-tabs` is a LitElement that provides a customizable tabs.
@@ -68,6 +68,7 @@ class TabsComponent extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.observeChildrenChanges();
+    this.addEventListener('dragover', this.handleDragOver);
   }
 
   private observeChildrenChanges() {
@@ -77,44 +78,99 @@ class TabsComponent extends LitElement {
 
     mutationObserver.observe(this, {childList: true});
   }
-  renderTabs() {
+
+  private handleDragStart(event: any) {
+    event.dataTransfer.setData('text/plain', event.currentTarget.dataset.index);
+    event.dataTransfer.effectAllowed = 'move';
+    event.target.closest('.tab-label').classList.add('dragging-start');
+  }
+
+  private handleDragOver(event: any) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }
+
+  private handleDragEnter(event: any) {
+    event.preventDefault();
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+    event.currentTarget.classList.add('dragging');
+  }
+
+  private handleDragLeave(event: any) {
+    event.preventDefault();
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+    if (event.currentTarget.classList.contains('dragging')) {
+      event.currentTarget.classList.remove('dragging');
+    }
+  }
+
+  private handleDrop(event: any) {
+    event.preventDefault();
+    const sourceIndex = event.dataTransfer.getData('text/plain');
+    const targetIndex = event.currentTarget.dataset.index;
+    if (sourceIndex !== targetIndex) {
+      const tabs = Array.from(this.children);
+      const sourceTab = tabs[sourceIndex];
+      const targetTab = tabs[targetIndex];
+      this.dispatchEvent(
+        new CustomEvent(TabEvent.tabOrderChange, {
+          detail: {sourceTab, targetTab, sourceIndex: parseInt(sourceIndex), targetIndex: parseInt(targetIndex)},
+        })
+      );
+    }
+    this.shadowRoot!.querySelector('.dragging')?.classList.remove('dragging');
+    event.target.classList.remove('dragging');
+    this.shadowRoot!.querySelector('.dragging-start')?.classList.remove('dragging-start');
+  }
+
+  private renderTabs() {
     const tabs = [];
     const children = [...this.children];
     for (let tabIndex = 0; tabIndex < children.length; tabIndex++) {
       const tab = html`
         <div
+          data-index=${tabIndex}
+          draggable=${true}
+          @dragenter=${this.handleDragEnter}
+          @dragleave=${this.handleDragLeave}
+          @dragstart=${(e: any) => this.handleDragStart(e)}
+          @drop=${(event: Event) => this.handleDrop(event)}
           class=${tabIndex === this.activeTab ? 'tab-label active' : 'tab-label'}
           @click=${(e: Event) => this.setActiveTab(tabIndex, children[tabIndex], e)}
         >
           <span
             contenteditable=${this.editable?.canEditTabTitle ? true : nothing}
-            @blur=${(e: Event) => {
+            @blur=${(event: Event) => {
               this.dispatchEvent(
-                new CustomEvent('tabEdited', {
+                new CustomEvent(TabEvent.tabEdited, {
                   detail: {
                     tab: {
-                      label: (e.target as HTMLElement)?.textContent,
+                      label: (event.target as HTMLElement)?.textContent,
                       index: tabIndex,
                     },
                   },
                 })
               );
             }}
-            >${children[tabIndex].getAttribute('label')}</span
+            >${children[tabIndex].getAttribute(LABEL_ATTRIBUTES)}</span
           >
           ${this.editable?.canDeleteTab
             ? html`<hy-icon
                 @click=${() => {
                   this.dispatchEvent(
-                    new CustomEvent('removeTab', {
+                    new CustomEvent(TabEvent.removeTab, {
                       detail: {index: tabIndex},
                     })
                   );
                 }}
                 name="window-close"
-                style="    font-size: 13px;"
+                class="close-icon"
               ></hy-icon>`
-            : ''}
+            : NOTHING_STRING}
         </div>
       `;
       tabs.push(tab);
@@ -122,8 +178,7 @@ class TabsComponent extends LitElement {
     if (this.editable?.canAddTab) {
       const tab = html`
         <div
-          class="tab-label"
-          style="font-size: 13px;text-align: center;"
+          class="tab-label add-tab-label"
           @click=${() => {
             this.dispatchEvent(new Event('addTab'));
           }}
@@ -133,17 +188,20 @@ class TabsComponent extends LitElement {
       `;
       tabs.push(tab);
     }
-
     return tabs;
   }
 
-  override updated(changedProperties: Map<string, any>) {
+  override updated() {
     if (!this.children[this.activeTab]) {
-      this.activeTab--;
+      if (!this.children[this.activeTab - 1]) {
+        this.activeTab++;
+      } else {
+        this.activeTab--;
+      }
     }
   }
 
-  renderActiveTab() {
+  private renderActiveTab() {
     const children = [...this.children];
     if (children.length > 0 && this.activeTab >= 0 && this.activeTab < children.length) {
       return children[this.activeTab].cloneNode(true);
@@ -151,10 +209,14 @@ class TabsComponent extends LitElement {
     return html``;
   }
 
-  setActiveTab(index: number, element: Element, e: Event) {
-    e.preventDefault();
+  private setActiveTab(index: number, element: Element, event: Event) {
+    event.preventDefault();
     this.activeTab = index;
-    element.dispatchEvent(new Event('tabTilteClick', e));
+    element.dispatchEvent(
+      new CustomEvent(TabEvent.tabTilteClick, {
+        detail: event,
+      })
+    );
   }
 }
 

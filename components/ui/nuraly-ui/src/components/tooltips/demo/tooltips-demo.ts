@@ -19,15 +19,20 @@ export class ElMeenuElement extends LitElement {
   protected override render() {
     return html`
       <tooltip-element>
-        <button data-tooltip="This is a tooltip" data-tooltip-position="bottom">Hover me</button>
+        <br />
+        <br />
+        <br />
+        <br />
+
+        <button data-tooltip="This is a tooltip" data-tooltip-position="bottom">bottom</button>
         <br />
         <br />
         <div>
-          <button data-tooltip="Another tooltip" data-tooltip-position="corner-right">Hover over me</button>
+          <button data-tooltip="Another tooltip" data-tooltip-position="corner-right">corner-right</button>
         </div>
         <br />
         <div>
-          <button data-tooltip="Another tooltip" data-tooltip-position="top">Hover over me</button>
+          <button data-tooltip="Another tooltip" data-tooltip-position="top">top</button>
         </div>
       </tooltip-element>
     `;

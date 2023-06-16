@@ -18,7 +18,7 @@ import '../../input/input.component';
 export class ElMeenuElement extends LitElement {
   @state()
   float = 'left';
-  moreTemplate = (option: any) => {
+  moreTemplate = () => {
     return html`<hy-dropdown
       placeholder="Menu"
       .options=${[

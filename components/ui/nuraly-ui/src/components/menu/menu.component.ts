@@ -113,7 +113,6 @@ export class HyMenuComponent extends LitElement {
     const isSelected = Boolean(option === this.selected || this.showChildrenMap.get(option));
     const isGroupElement = option.type === OPTION_TYPES.GROUP;
     const hasChildren = option.children && option.children.length > 0;
-    const showArrow = option.type !== OPTION_TYPES.GROUP;
 
     return html`
       <li

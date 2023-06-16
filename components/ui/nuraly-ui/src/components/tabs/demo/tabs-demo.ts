@@ -36,6 +36,21 @@ export class ElMeenuElement extends LitElement {
   @state()
   editableActiveTab = 0;
 
+  @state()
+  editableConfig = {
+    canDeleteTab: false,
+    canEditTabTitle: false,
+    canAddTab: true,
+    canMove: true,
+  };
+
+  swapElements(arr: any, index1: any, index2: any) {
+    const temp = arr[index1];
+    arr[index1] = arr[index2];
+    arr[index2] = temp;
+    return arr;
+  }
+
   protected override render() {
     return html`
       <hy-tabs>
@@ -44,13 +59,34 @@ export class ElMeenuElement extends LitElement {
         <div label="Tab 3">Content for Tab 3</div>
       </hy-tabs>
       <br />
+      <button
+        @click=${() => {
+          this.editableConfig.canDeleteTab = !this.editableConfig?.canDeleteTab;
+          this.requestUpdate();
+          this.editableConfig = {...this.editableConfig};
+        }}
+      >
+        ${this.editableConfig?.canDeleteTab ? 'Disable delete' : 'Enable delete'} mode
+      </button>
+      <button
+        @click=${() => {
+          this.editableConfig.canEditTabTitle = !this.editableConfig?.canEditTabTitle;
+          this.requestUpdate();
+          this.editableConfig = {...this.editableConfig};
+        }}
+      >
+        ${this.editableConfig?.canEditTabTitle ? 'Disable edition' : 'Enable edition'} mode
+      </button>
       <br />
       <hy-tabs
+        orientation="vertical"
+        @tabOrderChange=${(e: any) => {
+          this.editableTabs = this.swapElements(this.editableTabs, e.detail.sourceIndex, e.detail.targetIndex);
+          this.editableTabs = [...this.editableTabs];
+        }}
         activeTab=${this.editableActiveTab}
         .editable=${{
-          canDeleteTab: true,
-          canEditTabTitle: true,
-          canAddTab: true,
+          ...this.editableConfig,
         }}
         @addTab=${() => {
           this.editableTabs.push({
@@ -61,9 +97,15 @@ export class ElMeenuElement extends LitElement {
           this.editableActiveTab = this.editableTabs.length - 1;
         }}
         @removeTab=${(e: any) => {
-          console.log(e.detail.index);
           this.editableTabs.splice(e.detail.index, 1);
           this.editableTabs = [...this.editableTabs];
+        }}
+        @tabEdited=${(e: any) => {
+          const {tab} = e.detail;
+          this.editableTabs[tab.index] = {
+            ...this.editableTabs[tab.index],
+            label: tab.label,
+          };
         }}
       >
         ${this.editableTabs.map((tab: any) => {
@@ -75,8 +117,9 @@ export class ElMeenuElement extends LitElement {
       <hy-tabs
         activeTab=${this.editableActiveTab}
         .editable=${{
-          canEditTabTitle: true,
+          //canEditTabTitle: true,
           canAddTab: true,
+          canMove: true,
         }}
         @tabEdited=${(e: CustomEvent) => {
           console.log('tab', e.detail.tab);
