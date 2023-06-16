@@ -10,5 +10,6 @@ export const HyTabsComponent = createComponent({
     tabEdited: 'tabEdited',
     tabTilteClick: 'tabTilteClick',
     tabOrderChange: 'tabOrderChange',
+    addTab: 'addTab',
   },
 });

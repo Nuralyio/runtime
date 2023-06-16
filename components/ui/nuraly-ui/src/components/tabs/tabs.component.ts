@@ -180,7 +180,7 @@ export class TabsComponent extends LitElement {
         <div
           class="tab-label add-tab-label"
           @click=${() => {
-            this.dispatchEvent(new Event('addTab'));
+            this.dispatchEvent(new CustomEvent(TabEvent.addTab));
           }}
         >
           <hy-icon name="plus"></hy-icon>

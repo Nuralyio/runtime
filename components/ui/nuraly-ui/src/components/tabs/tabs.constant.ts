@@ -15,6 +15,7 @@ export enum TabEvent {
   tabEdited = 'tabEdited',
   tabTilteClick = 'tabTilteClick',
   tabOrderChange = 'tabOrderChange',
+  addTab = 'addTab',
 }
 
 export const NOTHING_STRING = '';
