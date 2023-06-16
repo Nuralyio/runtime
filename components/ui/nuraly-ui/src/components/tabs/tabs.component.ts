@@ -19,7 +19,7 @@ import {LABEL_ATTRIBUTES, NOTHING_STRING, TabEditable, TabEvent, TabOrientation}
  * @fires removeTab - Indicates when tab removed
  * @fires addTab - Indicates when tab added
  */
-class TabsComponent extends LitElement {
+export class TabsComponent extends LitElement {
   @property({type: Number})
   activeTab!: number;
 
