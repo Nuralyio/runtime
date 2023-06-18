@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, html, nothing} from 'lit';
+import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {property} from 'lit/decorators.js';
 import {styles} from './tabs.style';
 import {classMap} from 'lit/directives/class-map.js';
@@ -191,7 +191,8 @@ export class TabsComponent extends LitElement {
     return tabs;
   }
 
-  override updated() {
+  override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
+    super.updated(changedProperties);
     if (!this.children[this.activeTab]) {
       if (!this.children[this.activeTab - 1]) {
         this.activeTab++;
