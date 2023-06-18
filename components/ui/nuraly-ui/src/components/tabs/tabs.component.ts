@@ -134,7 +134,7 @@ export class TabsComponent extends LitElement {
       const tab = html`
         <div
           data-index=${tabIndex}
-          draggable=${true}
+          draggable=${this.editable?.canMove}
           @dragenter=${this.handleDragEnter}
           @dragleave=${this.handleDragLeave}
           @dragstart=${(e: any) => this.handleDragStart(e)}
