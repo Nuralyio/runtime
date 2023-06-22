@@ -6,6 +6,7 @@ import {EMPTY_STRING, NOTHING_STRING, OPTION_TYPES, TRIGGERS} from './hy-dropdow
 import {styles} from './hy-dropdown.style';
 import {classMap} from 'lit/directives/class-map.js';
 import {childrensArrow} from './templates/has-children-arrow.template';
+import {styleMap} from 'lit/directives/style-map.js';
 
 export class HyDropdownComponent extends LitElement {
   static override styles = styles;
@@ -20,10 +21,16 @@ export class HyDropdownComponent extends LitElement {
   open = false;
 
   @property({type: String})
+  template = EMPTY_STRING;
+
+  @property({type: String})
   placeholder = EMPTY_STRING;
 
   @property({type: String})
   search = EMPTY_STRING;
+
+  @property({type: Object})
+  customStyles = {};
 
   @property({type: String})
   trigger = 'click';
@@ -120,14 +127,19 @@ export class HyDropdownComponent extends LitElement {
   }
 
   renderDropdowContent() {
+    setTimeout(() => {
+      this.adjustDropdownPosition();
+    });
     return html`
-      <div class="dropdown-content show" ${ref(this.dropdownContentRef)}>
+      <div class="dropdown-content show" ${ref(this.dropdownContentRef)} style=${styleMap(this.customStyles || {})}>
+        ${html`${this.template}`}
         <ul>
           ${this.options?.map((option) => this.renderOption(option))}
         </ul>
       </div>
     `;
   }
+
   renderOption(option: any) {
     const childMenuRef: Ref<HTMLInputElement> = createRef();
     const parentRef: Ref<HTMLInputElement> = createRef();
@@ -181,6 +193,7 @@ export class HyDropdownComponent extends LitElement {
               </span>`
             : NOTHING_STRING}
         </span>
+
         ${hasChildren
           ? html`
               ${showArrow ? childrensArrow(this.boundery) : ''}

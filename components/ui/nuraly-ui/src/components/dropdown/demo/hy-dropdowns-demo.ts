@@ -11,6 +11,7 @@ import {customElement, state} from 'lit/decorators.js';
 
 import '../hy-dropdown.component';
 import '../../button/hy-button.component';
+import '../../tabs/tabs.component';
 import '../../input/input.component';
 import {styleMap} from 'lit/directives/style-map.js';
 
@@ -31,6 +32,26 @@ export class ElButtonDemoElement extends LitElement {
 
   override render() {
     return html`
+      <hy-dropdown
+        style="float: right"
+        .customStyles=${{width: '400px', height: '250px'}}
+        placeholder="Select an option"
+        .template=${html`<div>
+          <hy-tabs
+            .editable=${{
+              //canEditTabTitle: true,
+              canAddTab: true,
+              canMove: true,
+            }}
+          >
+            <div label="Tab 1">Content for Tab 1</div>
+            <div label="Tab 2">Content for Tab 2</div>
+            <div label="Tab 3">Content for Tab 3</div>
+          </hy-tabs>
+        </div>`}
+      ></hy-dropdown>
+      <br />
+      <br />
       <hy-dropdown
         placeholder="Select an option"
         .options=${[
