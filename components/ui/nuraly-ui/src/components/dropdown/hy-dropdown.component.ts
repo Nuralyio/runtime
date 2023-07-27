@@ -2,21 +2,15 @@
 import {LitElement, html, nothing, PropertyValueMap} from 'lit';
 import {property, queryAssignedElements, state} from 'lit/decorators.js';
 import {ref, createRef, Ref} from 'lit/directives/ref.js';
-import {EMPTY_STRING, NOTHING_STRING, OPTION_TYPES, TRIGGERS} from './hy-dropdown.constants.js';
+import {EMPTY_STRING, NOTHING_STRING} from './hy-dropdown.constants.js';
 import {styles} from './hy-dropdown.style.js';
 import {classMap} from 'lit/directives/class-map.js';
-import {childrensArrow} from './templates/has-children-arrow.template.js';
-import {styleMap} from 'lit/directives/style-map.js';
-import {NotFoundTemplate} from './templates/empty.template.js';
-import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 export class HyDropdownComponent extends LitElement {
   static override styles = styles;
 
   @property({type: Array})
   options = [];
-  @state()
-  shallowOptions = new Map<any, any>();
 
   @property({type: Object})
   selected: any;
@@ -25,16 +19,10 @@ export class HyDropdownComponent extends LitElement {
   open = false;
 
   @property({type: String})
-  template = EMPTY_STRING;
-
-  @property({type: String})
   placeholder = EMPTY_STRING;
 
   @property({type: String})
   search = EMPTY_STRING;
-
-  @property({type: Object})
-  customStyles = {};
 
   @property({type: String})
   trigger = 'click';
@@ -51,8 +39,8 @@ export class HyDropdownComponent extends LitElement {
   searchedELement: any;
 
   @state()
-  private showChildrenMap = new Map<any, boolean>();
-  private selectedElementMap = new Map<any, boolean>();
+  private showChildrenMap = new Map<any, boolean>(); // Map to store showChildren values
+  private selectedElementMap = new Map<any, boolean>(); // Map to store showChildren values
 
   @queryAssignedElements({slot: 'label', flatten: true})
   _prefixItems!: Array<HTMLElement>;
@@ -64,22 +52,19 @@ export class HyDropdownComponent extends LitElement {
 
   constructor() {
     super();
-    // this.addEventListener('contextmenu', this.handleContextMenu);
+    this.addEventListener('contextmenu', this.handleRightClick);
   }
 
-  handleContextMenu(event: MouseEvent) {
-    const shouldOpenOnContextMenu = this.trigger === TRIGGERS.ContextMenu;
-
-    if (shouldOpenOnContextMenu) {
-      event.preventDefault();
+  handleRightClick(event: any) {
+    if (this.trigger == 'context-menu') {
+      event.preventDefault(); // Prevent the default context menu from appearing
       this.open = true;
       setTimeout(() => {
-        const positionedElement: HTMLElement | null = this.shadowRoot!.querySelector('.dropdown-content');
-        if (positionedElement !== null) {
-          positionedElement.style.left = `${event.clientX}px`;
-          positionedElement.style.top = `${event.clientY}px`;
-          positionedElement.style.position = 'fixed';
-        }
+        const positionedElement: any = this.shadowRoot!.querySelector('.dropdown-content');
+        console.log(event);
+        positionedElement.style.left = `${event.clientX}px`;
+        positionedElement.style.top = `${event.clientY}px`;
+        positionedElement.style.position = `fixed`;
         this.requestUpdate();
       });
     }
@@ -103,46 +88,32 @@ export class HyDropdownComponent extends LitElement {
   }
 
   renderDropDownIntiator() {
-    const hasLabelSlot = this.hasSlotLabel;
-    const hasSelected = Boolean(this.selected);
-    const shouldToggleDropdownOnClick = this.trigger === TRIGGERS.Click;
-    const shouldShowDropdownOnHover = this.trigger === TRIGGERS.Hover;
-
     return html`
       <span ${ref(this.dropdownInitiatorRef)} class="initiator">
         <slot
           name="label"
-          @click="${() => shouldToggleDropdownOnClick && this.toggleDropdown()}"
-          @mouseover="${() => shouldShowDropdownOnHover && this.showDropdown()}"
+          @click="${() => this.trigger === 'click' && this.toggleDropdown()}"
+          @mouseover="${() => this.trigger === 'hover' && this.showDropdown()}"
         ></slot>
-        ${!hasLabelSlot
-          ? html`
-              <button
-                class="dropbtn"
-                @click="${() => shouldToggleDropdownOnClick && this.toggleDropdown()}"
-                @mouseover="${() => shouldShowDropdownOnHover && this.showDropdown()}"
-              >
-                ${hasSelected ? this.selected.label : this.placeholder}
-              </button>
-            `
-          : NOTHING_STRING}
+        ${(!this.hasSlotLabel &&
+          html`<button
+            class="dropbtn"
+            @click="${() => this.trigger === 'click' && this.toggleDropdown()}"
+            @mouseover="${() => this.trigger === 'hover' && this.showDropdown()}"
+          >
+            ${this.selected ? this.selected.label : this.placeholder}
+          </button>`) ||
+        nothing}
       </span>
     `;
   }
 
   renderDropdowContent() {
-    console.log(this.options);
-    setTimeout(() => {
-      // this.adjustDropdownPosition();
-    });
     return html`
-      <div class="dropdown-content show" ${ref(this.dropdownContentRef)} style=${styleMap(this.customStyles || {})}>
-        ${html`${this.template}`}
-        ${this.options?.length
-          ? html` <ul>
-              ${this.options?.map((option) => this.renderOption(option))}
-            </ul>`
-          : html`${NotFoundTemplate}`}
+      <div class="dropdown-content show" ${ref(this.dropdownContentRef)}>
+        <ul>
+          ${this.options?.map((option) => this.renderOption(option))}
+        </ul>
       </div>
     `;
   }
@@ -151,121 +122,107 @@ export class HyDropdownComponent extends LitElement {
     const childMenuRef: Ref<HTMLInputElement> = createRef();
     const parentRef: Ref<HTMLInputElement> = createRef();
     const showChildren = this.showChildrenMap.get(option) || false;
+    // delegate the showing to the css until shifted to js
+    //const showChildren = true;
     const parentId = this.getRandomId();
-
-    return option.type === OPTION_TYPES.DIVIDER
-      ? this.renderDividerOption()
-      : this.renderRegularOption(option, childMenuRef, parentRef, showChildren, parentId);
-  }
-
-  renderDividerOption() {
-    return html`<li class="divider"></li>`;
-  }
-
-  renderRegularOption(
-    option: any,
-    childMenuRef: Ref<HTMLInputElement>,
-    parentRef: Ref<HTMLInputElement>,
-    showChildren: boolean,
-    parentId: string
-  ) {
-    const isSelected = Boolean(option === this.selected || this.selectedElementMap.get(option));
-    const isGroupElement = option.type === OPTION_TYPES.GROUP;
-    const hasChildren = option.children && option.children.length > 0;
-    const showArrow = option.type !== OPTION_TYPES.GROUP;
-
     return html`
-      <li
-        id="${parentId}"
-        ${ref(parentRef)}
-        @click="${(e: Event) => this.handleOptionClick(option, e)}"
-        class=${classMap({
-          selected: isSelected,
-          'group-element': isGroupElement,
-        })}
-        @mouseover="${() => {
-          this.showChildrenMap.set(option, true);
-          this.requestUpdate();
-        }}"
-        @mouseleave="${() => {
-          this.showChildrenMap.set(option, false);
-          this.requestUpdate();
-        }}"
-      >
-        <span class=${classMap({'group-label': isGroupElement})}
-          >${html`${option.template
-            ? option.template(option)
-            : html`${this.shallowOptions.get(option)
-                ? unsafeHTML(this.shallowOptions.get(option).label)
-                : option.label}`}`}
-          ${this.searchedELement?.label === option.label
-            ? html`<span class="arrow arrow-container">
-                <hy-icon name="arrow-left"></hy-icon>
-              </span>`
-            : NOTHING_STRING}
-        </span>
-
-        ${hasChildren
-          ? html`
-              ${showArrow ? childrensArrow(this.boundery) : ''}
-              <ul
-                ${ref(childMenuRef)}
-                class=${classMap({
-                  'nested-search': showChildren,
-                  nested: option.type !== OPTION_TYPES.GROUP,
-                  'nested-group': isGroupElement,
-                })}
-                style="${this.positioningStyle}; "
-              >
-                <div class="block">${option.children.map((child: any) => this.renderOption(child))}</div>
-              </ul>
-            `
-          : NOTHING_STRING}
-      </li>
+      ${option.type === 'divider'
+        ? html`<li class="divider"></li>`
+        : html`
+            <li
+              id="${parentId}"
+              ${ref(parentRef)}
+              @click="${(e: any) => {
+                if (!option.template) {
+                  this.handleSelect(option, e);
+                } else {
+                  if (e) e.stopPropagation();
+                }
+              }}"
+              class=${classMap({
+                selected: Boolean(option === this.selected || this.selectedElementMap.get(option)),
+                'group-element': option.type === 'group',
+              })}
+              @mouseover="${() => {
+                this.showChildrenMap.set(option, true);
+                this.requestUpdate();
+              }}"
+              @mouseleave="${() => {
+                this.showChildrenMap.set(option, false);
+                this.requestUpdate();
+              }}"
+            >
+              <span class=${classMap({'group-label': option.type === 'group'})}
+                >${html`${option.template ? option.template(option) : option.label}`}
+                ${this.searchedELement?.label === option.label
+                  ? html`<span class="arrow arrow-ccontainer">
+                      <hy-icon name="arrow-left"></hy-icon>
+                    </span>`
+                  : NOTHING_STRING}
+              </span>
+              ${option.children
+                ? html`
+                    ${option.type != 'group'
+                      ? html`<hy-icon
+                          style="z-index:0"
+                          name="caret-right"
+                          class="has-childrens ${(this.boundery.right && 'carret-boundery-right') || NOTHING_STRING}"
+                        ></hy-icon>`
+                      : ''}
+                    <ul
+                      ${ref(childMenuRef)}
+                      class="  ${classMap({
+                        'nested-search': showChildren,
+                        nested: option.type != 'group',
+                        'nested-group': option.type === 'group',
+                      })}"
+                      style="${this.positioningStyle}; ${this.calculateOffsetTop(parentId)}"
+                    >
+                      <div class="block">${option.children.map((child: any) => this.renderOption(child))}</div>
+                    </ul>
+                  `
+                : NOTHING_STRING}
+            </li>
+          `}
     `;
   }
 
-  handleOptionClick(option: any, e: Event) {
-    if (!option.template) {
-      this.handleSelect(option, e);
-    } else {
-      e.stopPropagation();
-    }
-  }
-
-  updateNestedMenuPosition(parentId: string) {
+  calculateOffsetTop(parentId: string) {
     requestAnimationFrame(() => {
       const listItems = this.shadowRoot!.getElementById(`${parentId}`);
       const nested: HTMLElement | null | undefined = listItems?.querySelector('ul.nested');
       if (nested) {
         nested.style!.marginTop = `${listItems?.offsetTop}px`;
       }
-      this.adjustDropdownPosition();
+      this.positionDropDown();
     });
     this.requestUpdate();
+
+    return 0;
   }
+  onItemMouseOver = (parentRef: Ref<HTMLInputElement>, childMenuRef: Ref<HTMLInputElement>): void => {
+    if (childMenuRef.value) {
+      childMenuRef.value!.style.marginTop = parentRef.value?.offsetTop + 'px';
+    }
+  };
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
 
     if (changedProperties.has('search')) {
-      this.shallowOptions = new Map<any, any>();
       if (this.search) {
         this.searching();
         if (!this.open) {
           this.open = true;
         }
       }
-    } else if (changedProperties.has('options')) {
-      console.log(changedProperties);
-      this.requestUpdate();
     }
   }
 
   searching() {
     this.options;
     const stacks: any[] = [];
-    this.recursivesearch(stacks, this.options, this.search.toLocaleLowerCase());
+    this.recursivesearch(stacks, this.options, this.search);
     this.showChildrenMap = new Map<any, boolean>();
     this.selectedElementMap = new Map<any, boolean>();
     this.searchedELement = undefined;
@@ -277,21 +234,9 @@ export class HyDropdownComponent extends LitElement {
   }
   recursivesearch(stack: any[], options: any[], searching: string) {
     for (const option of options) {
-      const {label} = option;
-      if (label && label.toLowerCase().includes(searching)) {
-        const startIndex = label.toLowerCase().indexOf(searching);
-        const endIndex = startIndex + searching.length;
-        const highlightedLabel =
-          label.substring(0, startIndex) +
-          `<strong>${label.substring(startIndex, endIndex)}</strong>` +
-          label.substring(endIndex);
-        const shallowOption = structuredClone(option);
-
-        shallowOption.label = highlightedLabel;
-        this.shallowOptions = new Map<any, any>();
-        this.shallowOptions.set(option, shallowOption);
-        stack.push({...option, label: highlightedLabel});
-        return;
+      if (option.label.toLowerCase().includes(searching)) {
+        stack.push(option);
+        return; // Break the loop
       }
 
       if (option.children) {
@@ -325,24 +270,30 @@ export class HyDropdownComponent extends LitElement {
   showDropdown() {
     this.open = true;
   }
-  adjustDropdownPosition() {
-    this.getDistanceFromRight(this.dropdownContentRef.value);
-    const distanceFromRight = this.getDistanceFromRight(this.dropdownContentRef.value);
+  positionDropDown() {
+    this.getDistanceFromBRight(this.dropdownContentRef.value);
+    const distanceFromRight = this.getDistanceFromBRight(this.dropdownContentRef.value);
     if (distanceFromRight < this.dropdownContentRef.value!.offsetWidth) {
       this.dropdownContentRef.value!.style.marginLeft =
         '-' + (this.dropdownContentRef.value!.offsetWidth - this.dropdownInitiatorRef.value!.offsetWidth) + 'px';
-      this.positioningStyle = `margin-left: -${this.dropdownContentRef.value!.offsetWidth * 2}px`;
+      this.positioningStyle = `margin-left : -${this.dropdownContentRef.value!.offsetWidth * 2}px`;
       this.boundery.right = true;
     }
   }
 
-  private onClickOutside(e: MouseEvent) {
+  _onClickOutside(e: MouseEvent) {
     if (!e.composedPath().includes(this)) {
       this.open = false;
     }
   }
 
-  getDistanceFromRight(element: any) {
+  getDistanceFromBottom(element: HTMLElement) {
+    const rect = element.getBoundingClientRect();
+    const distanceToBottom = Math.max(0, window.innerHeight - rect.bottom);
+    return distanceToBottom;
+  }
+
+  getDistanceFromBRight(element: any) {
     const rect = element.getBoundingClientRect();
     const distanceToBottom = Math.max(0, window.innerWidth - rect.right);
     return distanceToBottom;
@@ -350,12 +301,12 @@ export class HyDropdownComponent extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    document.addEventListener('click', this.onClickOutside.bind(this));
+    document.addEventListener('click', this._onClickOutside.bind(this));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('click', this.onClickOutside.bind(this));
+    document.removeEventListener('click', this._onClickOutside.bind(this));
   }
 }
 
