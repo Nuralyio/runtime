@@ -52,5 +52,9 @@ jobs:
           cd ../input && publish-if-not-published
           cd ../dropdown && publish-if-not-published
           cd ../tabs && publish-if-not-published
+          cd ../menu && publish-if-not-published
+          cd ../radio && publish-if-not-published
+          cd ../select && publish-if-not-published
+          cd ../tooltips && publish-if-not-published
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
