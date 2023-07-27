@@ -1,8 +1,9 @@
 {
   "name": "@hybridui/tabs",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "dependencies": {
     "dayjs": "^1.11.7"
   },

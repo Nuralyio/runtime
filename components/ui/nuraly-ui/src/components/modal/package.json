@@ -1,9 +1,12 @@
 {
-  "name": "@hybridui/icon",
-  "version": "0.0.3",
+  "name": "@hybridui/modal",
+  "version": "0.0.2s",
   "description": "",
   "main": "index.js",
   "type": "module",
+  "dependencies": {
+    "dayjs": "^1.11.7"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,8 +1,9 @@
 {
   "name": "@hybridui/dropdown",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "dependencies": {
     "dayjs": "^1.11.7"
   },

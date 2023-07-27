@@ -1,8 +1,9 @@
 {
   "name": "@hybridui/button",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
