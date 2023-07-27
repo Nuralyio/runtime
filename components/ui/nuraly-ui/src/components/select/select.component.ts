@@ -2,10 +2,8 @@
 import {LitElement, html} from 'lit';
 import {property, state} from 'lit/decorators.js';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
-import {styles} from './select.style';
-import {EMPTY_STRING} from './select.constant';
-import '../dropdown/hy-dropdown.component';
-import '../input/input.component';
+import {styles} from './select.style.js';
+import {EMPTY_STRING} from './select.constant.js';
 
 export class HySelectComponent extends LitElement {
   static override styles = styles;

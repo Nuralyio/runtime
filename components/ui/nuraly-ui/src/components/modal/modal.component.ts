@@ -3,8 +3,6 @@ import {css, html, LitElement} from 'lit';
 import {property, state} from 'lit/decorators.js';
 import {styleMap} from 'lit/directives/style-map.js';
 
-import '../icon/icon.component';
-
 export class ModalComponent extends LitElement {
   static override styles = css`
     .modal {

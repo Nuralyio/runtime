@@ -7,7 +7,7 @@
 
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, queryAssignedElements, state} from 'lit/decorators.js';
-import {styles} from './input.style';
+import {styles} from './input.style.js';
 import {classMap} from 'lit/directives/class-map.js';
 
 export enum INPUT_TYPE {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {html, TemplateResult} from 'lit';
-import {EMPTY_STRING, INVALID_DAY_CLASS_NAME} from '../constants';
-import {todayIsTheDay} from '../core/day.helper';
-import {capitalizeFirstLetter} from '../core/string.helper';
+import {EMPTY_STRING, INVALID_DAY_CLASS_NAME} from '../constants.js';
+import {todayIsTheDay} from '../core/day.helper.js';
+import {capitalizeFirstLetter} from '../core/string.helper.js';
 
 interface DateRawObject {
   curentYear: number;

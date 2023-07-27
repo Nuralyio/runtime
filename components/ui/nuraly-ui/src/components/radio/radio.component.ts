@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {LitElement, TemplateResult, html} from 'lit';
 import {property, state} from 'lit/decorators.js';
-import {styles} from './radio.style';
-import '../button/hy-button.component';
-import {RadioButtonType, RadioOption} from './radio.type';
+import {styles} from './radio.style.js';
+import '../button/hy-button.component.js';
+import {RadioButtonType, RadioOption} from './radio.type.js';
 
 export class HySelectComponent extends LitElement {
   static override styles = styles;

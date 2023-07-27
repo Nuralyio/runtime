@@ -1,1 +1,1 @@
-export * from './tooltips.component';
+export * from './tooltips.component.js';

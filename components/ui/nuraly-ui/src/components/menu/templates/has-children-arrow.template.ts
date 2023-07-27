@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {NOTHING_STRING} from '../menu.constants';
+import {NOTHING_STRING} from '../menu.constants.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const childrensArrow = (boundery: any, isSelected: boolean) => {

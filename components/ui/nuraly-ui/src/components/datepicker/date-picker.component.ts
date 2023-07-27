@@ -9,19 +9,19 @@
 import {LitElement, html, nothing, PropertyValues, TemplateResult} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import dayjs from 'dayjs/esm';
-import '../input/input.component';
-import '../icon/icon.component';
-import '../button/hy-button.component';
-import {getMonthDetails} from './core/month.helper';
-import {styles} from './date-picker.style';
+import '../input/input.component.js';
+import '../icon/icon.component.js';
+import '../button/hy-button.component.js';
+import {getMonthDetails} from './core/month.helper.js';
+import {styles} from './date-picker.style.js';
 import {styleMap} from 'lit/directives/style-map.js';
-import {EMPTY_STRING, Mode} from './constants';
-import {renderMonthsTemplate} from './templates/months.template';
-import {renderYearsTemplate} from './templates/years.template';
-import {renderDays} from './templates/days.template';
-import {oneToTwoDigit} from './core/formatter';
-import {capitalizeFirstLetter} from './core/string.helper';
-import './core/locale.helper';
+import {EMPTY_STRING, Mode} from './constants.js';
+import {renderMonthsTemplate} from './templates/months.template.js';
+import {renderYearsTemplate} from './templates/years.template.js';
+import {renderDays} from './templates/days.template.js';
+import {oneToTwoDigit} from './core/formatter.js';
+import {capitalizeFirstLetter} from './core/string.helper.js';
+import './core/locale.helper.js';
 interface NavigationDates {
   start: {
     year: number;

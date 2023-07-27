@@ -6,8 +6,8 @@
 
 import {LitElement, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {ButtonType, EMPTY_STRING} from './hy-button.constats';
-import {hostBlockStyle, styles} from './hy-button.style';
+import {ButtonType, EMPTY_STRING} from './hy-button.constats.js';
+import {hostBlockStyle, styles} from './hy-button.style.js';
 /**
  * `hy-button` is a LitElement that provides a customizable button.
  * @customElement 'hy-button'

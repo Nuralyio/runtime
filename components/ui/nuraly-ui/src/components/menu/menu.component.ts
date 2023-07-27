@@ -2,10 +2,10 @@
 import {LitElement, html, nothing, PropertyValueMap} from 'lit';
 import {property, queryAssignedElements, state} from 'lit/decorators.js';
 import {ref, createRef, Ref} from 'lit/directives/ref.js';
-import {EMPTY_STRING, NOTHING_STRING, OPTION_TYPES, TRIGGERS} from './menu.constants';
-import {styles} from './menu.style';
+import {EMPTY_STRING, NOTHING_STRING, OPTION_TYPES, TRIGGERS} from './menu.constants.js';
+import {styles} from './menu.style.js';
 import {classMap} from 'lit/directives/class-map.js';
-import {childrensArrow} from './templates/has-children-arrow.template';
+import {childrensArrow} from './templates/has-children-arrow.template.js';
 
 export class HyMenuComponent extends LitElement {
   static override styles = styles;

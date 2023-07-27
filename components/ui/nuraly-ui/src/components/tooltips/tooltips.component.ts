@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {html, LitElement} from 'lit';
 import {property, state} from 'lit/decorators.js';
-import {styles} from './tooltips.style';
+import {styles} from './tooltips.style.js';
 
 class TooltipElement extends LitElement {
   static override styles = styles;

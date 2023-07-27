@@ -1,1 +1,1 @@
-export * from './hy-dropdown.component';
+export * from './hy-dropdown.component.js';

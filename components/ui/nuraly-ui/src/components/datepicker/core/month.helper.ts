@@ -1,4 +1,4 @@
-import {getDayDetails, getNumberOfDays} from './day.helper';
+import {getDayDetails, getNumberOfDays} from './day.helper.js';
 
 export const months = [
   'January',
@@ -30,11 +30,7 @@ export const getMonthDetails = (
 
   for (const idx in reminders) {
     const tempDate = new Date(reminders[idx].timestamp);
-    const startOfTheDay = new Date(
-      tempDate.getFullYear(),
-      tempDate.getMonth(),
-      tempDate.getDate()
-    ).getTime();
+    const startOfTheDay = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate()).getTime();
     reminderMap[startOfTheDay] = reminders[idx];
   }
 

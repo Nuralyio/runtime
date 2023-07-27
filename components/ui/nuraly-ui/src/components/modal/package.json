@@ -1,6 +1,6 @@
 {
   "name": "@hybridui/modal",
-  "version": "0.0.2s",
+  "version": "0.0.4",
   "description": "",
   "main": "index.js",
   "type": "module",
