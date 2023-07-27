@@ -1,6 +1,9 @@
 import {css} from 'lit';
 
 const dropdwonStyle = css`
+  * {
+    font-family: var(--hybrid-dropdown-fonts, Arial, sans-serif);
+  }
   .dropdown {
     position: relative;
     display: inline-block;

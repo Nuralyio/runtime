@@ -1,6 +1,6 @@
 import {createComponent} from '@lit-labs/react';
 import * as React from 'react';
-import {TabsComponent} from './tabs.component';
+import {TabsComponent} from './tabs.component.js';
 export const HyTabsComponent = createComponent({
   tagName: 'hy-tabs',
   elementClass: TabsComponent,

@@ -1,6 +1,9 @@
-import { css } from 'lit';
+import {css} from 'lit';
 
 const defaultInputStyle = css`
+  * {
+    font-family: var(--hybrid-dropdown-fonts, Arial, sans-serif);
+  }
   span {
     box-sizing: var(--hybrid-input-container-box-sizing, border-box);
     padding-top: var(--hybrid-input-container-padding-top, 6px);
@@ -24,18 +27,12 @@ const defaultInputStyle = css`
   span.inputfocuced,
   span:hover {
     border-color: var(--hybrid-input-hover-container-border-color, #1277e1);
-    background-color: var(
-      --hybrid-input-hover-container-background-color,
-      #fff
-    );
+    background-color: var(--hybrid-input-hover-container-background-color, #fff);
   }
 
   span.inputfocuced input {
     color: var(--hybrid-input-container-border-color, rgba(0, 0, 0, 0.88));
-    background-color: var(
-      --hybrid-input-hover-container-background-color,
-      #fff
-    );
+    background-color: var(--hybrid-input-hover-container-background-color, #fff);
   }
 
   span.inputfocuced input::placeholder {

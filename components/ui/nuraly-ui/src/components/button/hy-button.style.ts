@@ -9,7 +9,15 @@ const baseButtonStyle = css`
     padding-right: var(--hybrid-button-padding-r, 0.8rem);
     padding-left: var(--hybrid-button-padding-l, 0.8rem);
     border-radius: var(--hybrid-button-border-radius, 0.25rem);
+    border-top-left-radius: var(--hybrid-button-border-top-left-radius, 0.25rem);
+    border-top-right-radius: var(--hybrid-button-border-top-right-radius, 0.25rem);
+    border-bottom-left-radius: var(--hybrid-button-border-bottom-left-radius, 0.25rem);
+    border-bottom-right-radius: var(--hybrid-button-border-bottom-right-radius, 0.25rem);
+
     border-width: var(--hybrid-button-border-width, 1px);
+    border-right-width: var(--hybrid-button-border-right-width, var(--hybrid-button-border-width, 1px));
+    border-left-width: var(--hybrid-button-border-left-width, var(--hybrid-button-border-width, 1px));
+
     border-color: var(--hybrid-button-border-color, #d0d0d0);
     background-color: var(--hybrid-button-background-color, #f9f9f9);
     border-style: solid;
@@ -85,36 +93,21 @@ const dangerButtonStyle = css`
 
   button[data-danger][data-type='primary']:not(:disabled) {
     color: var(--hybrid-button-danger-text-color, #ffffff);
-    background-color: var(
-      --hybrid-primary-button-danger-background-color,
-      #ff4a00
-    );
+    background-color: var(--hybrid-primary-button-danger-background-color, #ff4a00);
     border-color: var(--hybrid-primary-button-danger-border-color, #ff4a00);
   }
 
   button[data-danger][data-type='primary']:hover:not(:disabled) {
     color: var(--hybrid-button-danger-text-color, #ffffff);
-    background-color: var(
-      --hybrid-primary-button-danger-hover-background-color,
-      #ff4a00
-    );
-    border-color: var(
-      --hybrid-primary-button-danger-hover-border-color,
-      #ff4a00
-    );
+    background-color: var(--hybrid-primary-button-danger-hover-background-color, #ff4a00);
+    border-color: var(--hybrid-primary-button-danger-hover-border-color, #ff4a00);
     opacity: 0.9;
   }
 
   button[data-danger][data-type='primary']:active:not(:disabled) {
     color: var(--hybrid-button-danger-text-color, #ffffff);
-    background-color: var(
-      --hybrid-primary-button-danger-hover-background-color,
-      #ff4a00
-    );
-    border-color: var(
-      --hybrid-primary-button-danger-hover-border-color,
-      #ff4a00
-    );
+    background-color: var(--hybrid-primary-button-danger-hover-background-color, #ff4a00);
+    border-color: var(--hybrid-primary-button-danger-hover-border-color, #ff4a00);
     opacity: 1;
   }
 `;
@@ -150,19 +143,13 @@ const primaryButtonStyle = css`
 
   button[data-type='primary']:hover:not(:disabled) {
     cursor: pointer;
-    background-color: var(
-      --hybrid-button-primary-hover-background-color,
-      #0a70ff
-    );
+    background-color: var(--hybrid-button-primary-hover-background-color, #0a70ff);
     border-color: var(--hybrid-button-primary-hover-border-color, #1677ff);
     color: var(--hybrid-button-primary-text-color, #ffffff);
   }
   button[data-type='primary']:active:not(:disabled) {
     cursor: pointer;
-    background-color: var(
-      --hybrid-button-primary-active-background-color,
-      #0559cf
-    );
+    background-color: var(--hybrid-button-primary-active-background-color, #0559cf);
     border-color: var(--hybrid-button-primary-active-border-color, #1677ff);
   }
 `;
@@ -195,10 +182,7 @@ const textButtonStyle = css`
   }
   button[data-type='text']:active:not(:disabled) {
     cursor: pointer;
-    background-color: var(
-      --hybrid-button-text-active-background-color,
-      #c1c1c1
-    );
+    background-color: var(--hybrid-button-text-active-background-color, #c1c1c1);
   }
   button[data-type='text'] {
     border-style: text;
@@ -242,17 +226,11 @@ const iconButtonStyle = css`
 
 const usedAsStyle = css`
   button[data-usedas='post'] {
-    border-radius: var(
-      --hybrid-button-usedas-post-border-radius,
-      0 0.3rem 0.3rem 0
-    );
+    border-radius: var(--hybrid-button-usedas-post-border-radius, 0 0.3rem 0.3rem 0);
     height: 100%;
   }
   button[data-usedas='pre'] {
-    border-radius: var(
-      --hybrid-button-usedas-post-border-radius,
-      0.3rem 0 0 0.3rem
-    );
+    border-radius: var(--hybrid-button-usedas-post-border-radius, 0.3rem 0 0 0.3rem);
     height: 100%;
   }
 `;

@@ -37,6 +37,9 @@ export class ElMeenuElement extends LitElement {
   editableActiveTab = 0;
 
   @state()
+  orientation = 'horizontal';
+
+  @state()
   editableConfig = {
     canDeleteTab: false,
     canEditTabTitle: false,
@@ -77,9 +80,16 @@ export class ElMeenuElement extends LitElement {
       >
         ${this.editableConfig?.canEditTabTitle ? 'Disable edition' : 'Enable edition'} mode
       </button>
+      <button
+        @click=${() => {
+          this.orientation = this.orientation === 'vertical' ? 'horizontal' : 'vertical';
+        }}
+      >
+        ${this.orientation == 'vertical' ? 'vertical' : 'horizontal'} mode
+      </button>
       <br />
       <hy-tabs
-        orientation="vertical"
+        .orientation=${this.orientation}
         @tabOrderChange=${(e: any) => {
           this.editableTabs = this.swapElements(this.editableTabs, e.detail.sourceIndex, e.detail.targetIndex);
           this.editableTabs = [...this.editableTabs];

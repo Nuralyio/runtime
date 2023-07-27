@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {NOTHING_STRING} from '../hy-dropdown.constants';
+import {NOTHING_STRING} from '../hy-dropdown.constants.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const childrensArrow = (boundery: any) => {

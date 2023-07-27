@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {property} from 'lit/decorators.js';
-import {styles} from './tabs.style';
+import {styles} from './tabs.style.js';
 import {classMap} from 'lit/directives/class-map.js';
-import {LABEL_ATTRIBUTES, NOTHING_STRING, TabEditable, TabEvent, TabOrientation} from './tabs.constant';
+import {LABEL_ATTRIBUTES, NOTHING_STRING, TabEditable, TabEvent, TabOrientation} from './tabs.constant.js';
 
 /**
  * `hy-tabs` is a LitElement that provides a customizable tabs.
- * @customElement 'hy-button'
+ * @customElement 'hy-tabs'
  *
  * Attributes
  * @attr activeTab
@@ -113,7 +113,7 @@ export class TabsComponent extends LitElement {
     const sourceIndex = event.dataTransfer.getData('text/plain');
     const targetIndex = event.currentTarget.dataset.index;
     if (sourceIndex !== targetIndex) {
-      const tabs = Array.from(this.children);
+      const tabs = Array.from(this.children || []);
       const sourceTab = tabs[sourceIndex];
       const targetTab = tabs[targetIndex];
       this.dispatchEvent(
@@ -129,7 +129,7 @@ export class TabsComponent extends LitElement {
 
   private renderTabs() {
     const tabs = [];
-    const children = [...this.children];
+    const children = this.children ? [...this.children] : [];
     for (let tabIndex = 0; tabIndex < children.length; tabIndex++) {
       const tab = html`
         <div
@@ -203,11 +203,11 @@ export class TabsComponent extends LitElement {
   }
 
   private renderActiveTab() {
-    const children = [...this.children];
+    const children = this.children ? [...this.children] : [];
     if (children.length > 0 && this.activeTab >= 0 && this.activeTab < children.length) {
       return children[this.activeTab].cloneNode(true);
     }
-    return html``;
+    return html`${NOTHING_STRING}`;
   }
 
   private setActiveTab(index: number, element: Element, event: Event) {
