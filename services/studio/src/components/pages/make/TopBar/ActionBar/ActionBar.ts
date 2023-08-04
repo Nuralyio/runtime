@@ -1,19 +1,19 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import styles from "./ActionBar.style";
+import "./AppActions/AppActions";
+import "./ScreenActions/ScreenActions";
 
 @customElement("topbar-action-bar")
 export class TopbarActionBar extends LitElement {
-  static styles = [
-    css`
-      :host {
-        display: block;
-        background-color: green;
-        height: 60px;
-      }
-    `,
-  ];
+  static styles = styles;
 
   render() {
-    return html``;
+    return html`
+      <div class="action-bar">
+        <topbar-screen-actions></topbar-screen-actions
+        ><topbar-app-actions class="app-action-info"></topbar-app-actions>
+      </div>
+    `;
   }
 }

@@ -11,13 +11,6 @@ export class EditorPanelWrapper extends LitElement {
   private componentController = new StoreController(this, $component);
 
   render() {
-    return html` <button
-        @click=${() => {
-          addComponent({ hello: 44 });
-        }}
-      >
-        butoon
-      </button>
-      ${JSON.stringify(this.componentController.value)}<slot></slot>`;
+    return html` <slot></slot>`;
   }
 }

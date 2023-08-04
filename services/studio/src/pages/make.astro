@@ -3,22 +3,25 @@ import MakeLayout from "../layouts/MakeLayout.astro";
 import { EditorPanelWrapper } from "../components/pages/make/EditorPanel/EditorPanelWrapper";
 import { EditorInteractivePanel } from "../components/pages/make/EditorPanel/EditorInteractivePanel";
 import { ScreenStructureEditor } from "../components/pages/make/EditorPanel/ScreenPanel/ScreenStructure";
-import { StyleWrapperPanel } from "../components/pages/make/EditorPanel/SytlePanel/StylePanelWrapper";
 import "@hybridui/button";
 import { TopbarPanelWrapper } from "../components/pages/make/TopBar/TopbarWrapper/TopbarWrapper";
+import { PageContent } from "components/pages/make/Page/Page";
+import { StyleWrapperPanel } from "components/pages/make/EditorPanel/Parameters/StylePanelWrapper";
 ---
 
 <MakeLayout title="Make Apps">
   <TopbarPanelWrapper slot="top" client:load>Wrapper</TopbarPanelWrapper>
   <div slot="left">
     <EditorPanelWrapper>
-      <ScreenStructureEditor client:load />
+      <ScreenStructureEditor client:only="lit" />
     </EditorPanelWrapper>
   </div>
   <div slot="main">
-    <EditorInteractivePanel>Content</EditorInteractivePanel>
+    <EditorInteractivePanel client:load>
+      <PageContent client:only="lit" />
+    </EditorInteractivePanel>
   </div>
   <div slot="right">
-    <StyleWrapperPanel client:load />
+    <StyleWrapperPanel client:only="lit" />
   </div>
 </MakeLayout>
