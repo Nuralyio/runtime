@@ -29,6 +29,7 @@
     "@lit-labs/ssr-dom-shim": "^1.1.1",
     "@nanostores/lit": "^0.1.5",
     "@nanostores/logger": "^0.2.3",
+    "@nanostores/persistent": "^0.9.1",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@webcomponents/template-shadowroot": "^0.2.1",

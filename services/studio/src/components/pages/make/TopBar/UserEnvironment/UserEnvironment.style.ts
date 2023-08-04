@@ -3,7 +3,6 @@ import { css } from "lit";
 const userInfoStyle = css`
   :host {
     background-color: var(--topbar-bg-color, #00334e);
-    display: block;
     height: var(--topbar-height, 60px);
   }
   .user-environment-bar {

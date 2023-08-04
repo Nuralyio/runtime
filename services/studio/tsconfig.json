@@ -4,6 +4,8 @@
     "jsx": "react-jsx",
     "experimentalDecorators": true,
     "jsxImportSource": "preact",
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "baseUrl": "./src",
+    "paths": {"$store/*" : ["store/*"]}
   }
 }

@@ -4,7 +4,7 @@ import "@hybridui/button";
 import "@hybridui/tabs";
 import "@hybridui/input";
 import "@hybridui/dropdown";
-import "./BoxStylePanel";
+import "./ParametersPanel";
 @customElement("style-panel-wrapper-editor")
 export class StyleWrapperPanel extends LitElement {
   render() {
