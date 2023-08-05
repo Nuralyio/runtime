@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "../../components/Attributes/TextValueLabel/TextValueLabel";
+import "../../components/Attributes/Text/TextValueLabel/TextValueLabel";
 import "../../components/Attributes/Text/TextValue/TextValue";
 import { ComponentElement } from "$store/component/interface";
 import { updateComponentParameters } from "$store/component/action";
