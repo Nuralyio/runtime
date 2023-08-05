@@ -37,6 +37,16 @@ const ComponentWrapperStyle = css`
   .resizer-point-left-top {
     cursor: nw-resize;
   }
+
+  .resizer-point-right-bottom {
+    cursor: se-resize;
+  }
+  .resizer-point-left-bottom {
+    cursor: sw-resize;
+  }
+  .resizer-point-middle-bottom {
+    cursor: s-resize;
+  }
   .element.selected .resizer-line-top,
   .element.selected .resizer-line-bottom {
     border-top: 1px solid var(--editor-selection-color, #79ade6);

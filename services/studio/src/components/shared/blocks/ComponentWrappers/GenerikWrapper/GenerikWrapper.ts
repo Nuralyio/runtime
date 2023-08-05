@@ -1,4 +1,7 @@
-import { setCurrentComponentIdAction } from "$store/component/action";
+import {
+  setCurrentComponentIdAction,
+  updateComponentAttributes,
+} from "$store/component/action";
 import { ComponentElement } from "$store/component/interface";
 import {
   $currentComponentId,
@@ -16,12 +19,16 @@ import styles from "./GenerikWrapper.style";
 @useStores($currentComponentId)
 export class GenerikComponentWrapper extends LitElement {
   inputRef: Ref<HTMLInputElement> = createRef();
+  wrapperRef: Ref<HTMLInputElement> = createRef();
   @property({ type: Object })
   component: ComponentElement;
   static styles = styles;
 
   @state()
   selectedComponent: ComponentElement;
+
+  @state()
+  currentResizer;
   constructor() {
     super();
     $currentComponentId.subscribe(() => {});
@@ -29,6 +36,20 @@ export class GenerikComponentWrapper extends LitElement {
       this.selectedComponent = selectedComponent;
     });
   }
+
+  minimum_size = 20;
+  @state()
+  original_width = 0;
+  @state()
+  original_height = 0;
+  @state()
+  original_x = 0;
+  @state()
+  original_y = 0;
+  @state()
+  original_mouse_x = 0;
+  @state()
+  original_mouse_y = 0;
 
   @state()
   slotDOMRect: DOMRect;
@@ -110,8 +131,110 @@ export class GenerikComponentWrapper extends LitElement {
     });
   }
 
+  resize = (e) => {
+    if (this.currentResizer.classList.contains("resizer-point-right-bottom")) {
+      this.inputRef.value.style.width =
+        e.pageX - this.inputRef.value.getBoundingClientRect().left + "px";
+      console.log(this.inputRef.value.style.width);
+
+      const width = this.original_width + (e.pageX - this.original_mouse_x);
+      const height = this.original_height + (e.pageY - this.original_mouse_y);
+      if (width > this.minimum_size) {
+        this.inputRef.value.style.width = width + "px";
+      }
+      if (height > this.minimum_size) {
+        this.inputRef.value.style.height = height + "px";
+      }
+    } else if (
+      this.currentResizer.classList.contains("resizer-point-left-bottom")
+    ) {
+      const height = this.original_height + (e.pageY - this.original_mouse_y);
+      const width = this.original_width - (e.pageX - this.original_mouse_x);
+      if (height > this.minimum_size) {
+        this.inputRef.value.style.height = height + "px";
+      }
+      if (width > this.minimum_size) {
+        this.inputRef.value.style.width = width + "px";
+        this.inputRef.value.style.left =
+          this.original_x + (e.pageX - this.original_mouse_x) + "px";
+      }
+    } else if (
+      this.currentResizer.classList.contains("resizer-line-bottom") ||
+      this.currentResizer.classList.contains("resizer-point-middle-top") ||
+      this.currentResizer.classList.contains("resizer-point-middle-bottom")
+    ) {
+      const height = this.original_height + (e.pageY - this.original_mouse_y);
+      const width = this.original_width - (e.pageX - this.original_mouse_x);
+      if (height > this.minimum_size) {
+        this.inputRef.value.style.height = height + "px";
+      }
+    } else if (
+      this.currentResizer.classList.contains("resizer-point-left-top")
+    ) {
+      const width = this.original_width - (e.pageX - this.original_mouse_x);
+      const height = this.original_height - (e.pageY - this.original_mouse_y);
+      if (width > this.minimum_size) {
+        this.inputRef.value.style.width = width + "px";
+        this.inputRef.value.style.left =
+          this.original_x + (e.pageX - this.original_mouse_x) + "px";
+      }
+      if (height > this.minimum_size) {
+        this.inputRef.value.style.height = height + "px";
+        this.inputRef.value.style.top =
+          this.original_y + (e.pageY - this.original_mouse_y) + "px";
+      }
+    } else if (
+      this.currentResizer.classList.contains("resizer-point-right-top")
+    ) {
+      const width = this.original_width + (e.pageX - this.original_mouse_x);
+      const height = this.original_height - (e.pageY - this.original_mouse_y);
+      if (width > this.minimum_size) {
+        this.inputRef.value.style.width = width + "px";
+      }
+      if (height > this.minimum_size) {
+        this.inputRef.value.style.height = height + "px";
+        this.inputRef.value.style.top =
+          this.original_y + (e.pageY - this.original_mouse_y) + "px";
+      }
+    }
+    updateComponentAttributes(this.component.id, {
+      width: this.inputRef.value.style.width,
+      height: this.inputRef.value.style.height,
+    });
+    setTimeout(() => {
+      this.firstUpdated();
+    });
+  };
+  stopResize = () => {
+    console.log("stopResize", this.currentResizer.classList);
+    window.removeEventListener("mousemove", this.resize);
+  };
+
+  mouseDown = (e: MouseEvent) => {
+    this.currentResizer = e.target;
+    this.original_width = parseFloat(
+      getComputedStyle(this.wrapperRef.value, null)
+        .getPropertyValue("width")
+        .replace("px", "")
+    );
+    this.original_height = parseFloat(
+      getComputedStyle(this.wrapperRef.value, null)
+        .getPropertyValue("height")
+        .replace("px", "")
+    );
+    this.original_x = this.wrapperRef.value.getBoundingClientRect().left;
+    this.original_y = this.wrapperRef.value.getBoundingClientRect().top;
+    this.original_mouse_x = e.pageX;
+    this.original_mouse_y = e.pageY;
+
+    e.preventDefault();
+    window.addEventListener("mousemove", this.resize);
+    window.addEventListener("mouseup", this.stopResize);
+  };
+
   render() {
     return html` <span
+      ${ref(this.wrapperRef)}
       class=${classMap({
         element: true,
         selected: this.selectedComponent?.id === this.component.id,
@@ -128,28 +251,34 @@ export class GenerikComponentWrapper extends LitElement {
       >
       <!-- Points -->
       <div
+        @mousedown=${this.mouseDown}
         class="resizer-point-left-top"
         style=${styleMap(this.styles.points?.leftTop)}
       ></div>
       <div
+        @mousedown=${this.mouseDown}
         class="resizer-point-right-top"
         style=${styleMap(this.styles.points?.rightTop)}
       ></div>
       <div
+        @mousedown=${this.mouseDown}
         class="resizer-point-middle-top"
         style=${styleMap(this.styles.points?.middleTop)}
       ></div>
 
       <div
+        @mousedown=${this.mouseDown}
         class="resizer-point-left-bottom"
         style=${styleMap(this.styles.points?.leftBottom)}
       ></div>
       <div
+        @mousedown=${this.mouseDown}
         class="resizer-point-right-bottom"
         style=${styleMap(this.styles.points?.rightBottom)}
       ></div>
       <div
         class="resizer-point-middle-bottom"
+        @mousedown=${this.mouseDown}
         style=${styleMap(this.styles.points?.middleBottom)}
       ></div>
       <!-- End Points -->
