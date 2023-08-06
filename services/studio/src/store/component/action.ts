@@ -1,5 +1,6 @@
-import { $currentPage } from "../page/store";
+import { $currentPage, $currentPageId, $pages } from "../page/store";
 import { v4 as uuidv4 } from "uuid";
+import { DraggingComponentInfo } from "./interface";
 
 import {
   ComponentElement,
@@ -9,9 +10,14 @@ import {
   TextLabelAttributes,
   TextLabelParameters,
 } from "./interface";
-import { $components, $currentComponentId } from "./sotre";
+import {
+  $components,
+  $currentComponentId,
+  $draggingComponentInfo,
+} from "./sotre";
 import { addComponentToCurrentPageAction } from "$store/page/action";
 import { action } from "nanostores";
+import { PageElement } from "$store/page/interface";
 
 export interface AddComponentRequest {
   id?: string;
@@ -36,6 +42,47 @@ export function addComponentAction(component: AddComponentRequest) {
     } as ComponentElement,
   ]);
   addComponentToCurrentPageAction(componentId);
+}
+
+export function setDraggingComponentInfo(
+  draggingComponentInfo: DraggingComponentInfo | null
+) {
+  if (draggingComponentInfo) {
+    $draggingComponentInfo.set({
+      ...draggingComponentInfo,
+    });
+  } else {
+    $draggingComponentInfo.set(null);
+  }
+}
+
+export function moveDraggedComponent(
+  dropInComponentId: string,
+  draggedComponentId
+) {
+  $currentPageId.get();
+  $pages.set(
+    $pages.get().map((page: PageElement) => {
+      if (page.id === $currentPageId.get()) {
+        const droppedInComponentIndex = page.componentIds.findIndex(
+          (componentId: string) => componentId === dropInComponentId
+        );
+
+        page.componentIds = [
+          ...page.componentIds.filter(
+            (componentId: string) => componentId !== draggedComponentId
+          ),
+        ];
+        page.componentIds.splice(
+          droppedInComponentIndex,
+          0,
+          draggedComponentId
+        ),
+          console.log(page.componentIds);
+      }
+      return page;
+    })
+  );
 }
 
 export function updateComponentParameters(

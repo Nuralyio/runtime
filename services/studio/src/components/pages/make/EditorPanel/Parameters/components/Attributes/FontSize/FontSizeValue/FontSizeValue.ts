@@ -54,7 +54,7 @@ export class AttributeFontSizeValue extends LitElement {
 
   initValues() {
     this.currentUnity =
-      (this.component.attributes as TextLabelAttributes).fontSize.match(
+      (this.component.attributes as TextLabelAttributes).fontSize?.match(
         /[a-zA-Z]+/g
       )[0] || "px";
   }
@@ -74,7 +74,7 @@ export class AttributeFontSizeValue extends LitElement {
         palceholder="value"
         @valueChange=${this.handleValueChange}
         value=${Number(
-          (this.component?.attributes as TextLabelAttributes)?.fontSize.match(
+          (this.component?.attributes as TextLabelAttributes)?.fontSize?.match(
             /\d+/g
           )
         )}
