@@ -3,6 +3,7 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
 import "@hybridui/dropdown";
+import "@hybridui/button";
 
 @customElement("attribute-font-weight-value-handler")
 export class AttributeFontWeightValueHandler extends LitElement {
@@ -58,8 +59,12 @@ export class AttributeFontWeightValueHandler extends LitElement {
       .options=${this.options}
       @change="${this.handleChange}"
       ><div slot="label" class="label">
-        ${this.options.find((option) => option.value === this.currentWeight)
-          .label || "normal"}
+        <hy-button icon="angle-down">
+          <span style="margin-left : 5px;font-weight : ${this.currentWeight}">
+            ${this.options.find((option) => option.value === this.currentWeight)
+              .label || "normal"}</span
+          >
+        </hy-button>
       </div></hy-dropdown
     >`;
   }

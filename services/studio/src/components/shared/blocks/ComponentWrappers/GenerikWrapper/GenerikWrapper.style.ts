@@ -78,6 +78,23 @@ const ComponentWrapperStyle = css`
   :host {
     display: flex;
   }
+
+  @keyframes change-height {
+    0% {
+      height: 500px;
+    }
+    50% {
+      height: 50px;
+    }
+    100% {
+      height: 500px;
+    }
+  }
+
+  .drop-zone {
+    display: none;
+    border: 2px dashed rgb(110 110 110);
+  }
 `;
 
 export default [ComponentWrapperStyle];

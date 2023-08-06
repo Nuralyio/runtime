@@ -1,5 +1,5 @@
 import { persistentAtom } from "@nanostores/persistent";
-import { ComponentElement } from "./interface";
+import { ComponentElement, DraggingComponentInfo } from "./interface";
 import { computed, keepMount } from "nanostores";
 import { $currentPage, $pages } from "$store/page/store";
 import { logger } from "@nanostores/logger";
@@ -15,6 +15,15 @@ export const $components = persistentAtom<ComponentElement[]>(
 
 export const $currentComponentId = persistentAtom<string>(
   "currentComponentId",
+  null,
+  {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+  }
+);
+
+export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
+  "draggingComponentInfo",
   null,
   {
     encode: JSON.stringify,
@@ -42,7 +51,7 @@ export const $selectedComponent = computed(
   }
 );
 export const $currentPageComponents = computed(
-  [$componentWithChildrens, $currentPage],
+  [$componentWithChildrens, $currentPage, $pages],
   (components: ComponentElement[], currentPage) => {
     return currentPage?.componentIds
       ?.map((componentId) =>

@@ -1,14 +1,20 @@
 import {
+  moveDraggedComponent,
   setCurrentComponentIdAction,
+  setDraggingComponentInfo,
   updateComponentAttributes,
 } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import {
+  ComponentElement,
+  DraggingComponentInfo,
+} from "$store/component/interface";
 import {
   $currentComponentId,
+  $draggingComponentInfo,
   $selectedComponent,
 } from "$store/component/sotre";
 import { useStores } from "@nanostores/lit";
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -28,10 +34,38 @@ export class GenerikComponentWrapper extends LitElement {
   selectedComponent: ComponentElement;
 
   @state()
+  isDraggbale = false;
+
+  @state()
+  isDragintiator = false;
+
+  @state()
+  draggingSituation = false;
+
+  @state()
+  dragOver = false;
+
+  @state()
   currentResizer;
+
+  @state()
+  draggingComponentInfo: DraggingComponentInfo;
   constructor() {
     super();
     $currentComponentId.subscribe(() => {});
+    $draggingComponentInfo.subscribe(
+      (draggingComponentInfo: DraggingComponentInfo) => {
+        if (draggingComponentInfo) {
+          this.draggingSituation = true;
+          this.draggingComponentInfo = draggingComponentInfo;
+        } else {
+          this.draggingSituation = false;
+        }
+        setTimeout(() => {
+          this.updateDragginStyle();
+        }, 100);
+      }
+    );
     $selectedComponent.subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
     });
@@ -53,6 +87,9 @@ export class GenerikComponentWrapper extends LitElement {
 
   @state()
   slotDOMRect: DOMRect;
+
+  @state()
+  dropDragPalceHolderStyle: any = {};
   @state()
   styles: any = {
     lines: {
@@ -71,6 +108,7 @@ export class GenerikComponentWrapper extends LitElement {
     },
   };
   firstUpdated() {
+    document.addEventListener("dragend", this.handleMouseUp);
     requestAnimationFrame(() => {
       this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
       const { width, height } = this.slotDOMRect;
@@ -200,12 +238,14 @@ export class GenerikComponentWrapper extends LitElement {
     updateComponentAttributes(this.component.id, {
       width: this.inputRef.value.style.width,
       height: this.inputRef.value.style.height,
+      display: "block",
     });
     setTimeout(() => {
       this.firstUpdated();
     });
   };
-  stopResize = () => {
+  stopResize = (e: Event) => {
+    e.preventDefault();
     console.log("stopResize", this.currentResizer.classList);
     window.removeEventListener("mousemove", this.resize);
   };
@@ -232,8 +272,53 @@ export class GenerikComponentWrapper extends LitElement {
     window.addEventListener("mouseup", this.stopResize);
   };
 
+  handleMouseUp = (e: Event) => {
+    e.preventDefault();
+    this.isDraggbale = false;
+    this.isDragintiator = false;
+    setDraggingComponentInfo(null);
+  };
+
+  updateDragginStyle() {
+    if (this.isDragintiator) {
+      return;
+    }
+    if (this.draggingSituation) {
+      this.dropDragPalceHolderStyle = {
+        display: "block",
+        width: this.draggingComponentInfo?.blockInfo?.width,
+        height: "20px",
+        backgroundColor: "rgb(202 235 255)",
+        zIndex: "7",
+        borderRadius: " 2px",
+      };
+      if (this.dragOver) {
+        this.dropDragPalceHolderStyle = {
+          display: "block",
+          width: this.draggingComponentInfo?.blockInfo?.width,
+          height: this.draggingComponentInfo?.blockInfo?.height,
+          backgroundColor: "rgb(202 235 255)",
+          zIndex: "7",
+          borderRadius: " 2px",
+        };
+      }
+    } else {
+      this.dropDragPalceHolderStyle = {
+        width: this.styles.lines.top.width,
+        height: "0px",
+        display: "none",
+        backgroundColor: "rgb(202 235 255)",
+        zIndex: "7",
+        borderRadius: " 2px",
+      };
+    }
+  }
   render() {
     return html` <span
+      draggable=${this.isDraggbale ? "true" : "false"}
+      @dragend=${() => {
+        this.requestUpdate();
+      }}
       ${ref(this.wrapperRef)}
       class=${classMap({
         element: true,
@@ -244,11 +329,58 @@ export class GenerikComponentWrapper extends LitElement {
       }}"
     >
       <span
+        @mousedown=${(e: Event) => {
+          this.isDraggbale = true;
+          this.isDragintiator = true;
+          setDraggingComponentInfo({
+            componentId: this.component?.id,
+            blockInfo: {
+              height: this.inputRef.value.getBoundingClientRect().height + "px",
+              width: this.inputRef.value.getBoundingClientRect().width + "px",
+            },
+          });
+        }}
+        @mouseup=${(e: Event) => {
+          e.preventDefault();
+          this.isDraggbale = false;
+          setDraggingComponentInfo(null);
+        }}
         class="component-name"
         style="left: ${this.inputRef.value?.getBoundingClientRect()?.left}px;
-        top :  ${this.inputRef.value?.getBoundingClientRect()?.top - 20}px;"
+           margin-top: -22px;"
         >${this.component.name}</span
       >
+      ${!this.isDragintiator
+        ? html`<div
+            class="drop-zone "
+            @dragenter=${(e: Event) => {
+              e.preventDefault();
+              this.dragOver = true;
+              this.updateDragginStyle();
+            }}
+            @dragleave=${(e: Event) => {
+              e.preventDefault();
+
+              this.dragOver = false;
+              this.updateDragginStyle();
+            }}
+            @dragover=${(e: Event) => {
+              e.preventDefault();
+            }}
+            @drop=${() => {
+              moveDraggedComponent(
+                this.component?.id,
+                this.draggingComponentInfo.componentId
+              );
+              setDraggingComponentInfo(null);
+              setTimeout(() => {
+                this.firstUpdated();
+              });
+            }}
+            style=${styleMap(this.dropDragPalceHolderStyle)}
+          ></div> `
+        : nothing}
+
       <!-- Points -->
       <div
         @mousedown=${this.mouseDown}

@@ -12,6 +12,7 @@ import { ComponentElement, ComponentType } from "$store/component/interface";
 import "./AttributesParameters/TextAttributes/TextAttributes";
 import "./AttributesParameters/FontSizeAttribute/FontSizeAttribute";
 import "./AttributesParameters/FontWeightAttribute/FontWeightAttribute";
+import "./AttributesParameters/BackgroundColorAttribute/BackgroundColorAttribute";
 @customElement("box-style-panel-editor")
 @useStores($selectedComponent)
 export class BoxStylePanel extends LitElement {
@@ -47,6 +48,9 @@ export class BoxStylePanel extends LitElement {
           html`<attribute-text-font-weight
             .component=${component}
           ></attribute-text-font-weight>`,
+          html`<attribute-background-color
+            .component=${component}
+          ></attribute-background-color>`,
         ]);
     }
     return templates;
