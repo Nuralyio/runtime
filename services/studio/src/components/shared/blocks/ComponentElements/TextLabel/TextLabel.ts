@@ -8,9 +8,15 @@ import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends LitElement {
-  @property({ type: Object })
-  component: ComponentElement;
-  static styles = [css``];
+    @property({ type: Object })
+    component: ComponentElement;
+  static styles = [
+    css`
+      :host {
+        display: block;
+      }
+    `,
+  ];
 
   render() {
     return html`<label style=${styleMap({ ...this.component.attributes })}

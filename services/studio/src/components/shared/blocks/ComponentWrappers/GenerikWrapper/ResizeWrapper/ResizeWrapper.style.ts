@@ -1,6 +1,6 @@
 import { css } from "lit";
 
-const ComponentWrapperStyle = css`
+export default css`
   .resizer-line-top,
   .resizer-line-bottom,
   .resizer-line-right,
@@ -58,43 +58,4 @@ const ComponentWrapperStyle = css`
   .element.selected .resizer-line-left {
     border-left: 1px solid var(--editor-selection-color, #79ade6);
   }
-
-  .component-name {
-    position: absolute;
-    display: none;
-    z-index: 7;
-    padding: 1px;
-    background: #2395ff;
-    color: white;
-    font-weight: 300;
-    font-size: 14px;
-    cursor: pointer;
-    user-select: none;
-    margin-top: -22px;
-  }
-  .element.selected .component-name {
-    display: block;
-  }
-  :host {
-    display: flex;
-  }
-
-  @keyframes change-height {
-    0% {
-      height: 500px;
-    }
-    50% {
-      height: 50px;
-    }
-    100% {
-      height: 500px;
-    }
-  }
-
-  .drop-zone {
-    display: none;
-    border: 2px dashed rgb(110 110 110);
-  }
 `;
-
-export default [ComponentWrapperStyle];

@@ -39,7 +39,9 @@ export class PageContent extends LitElement {
             return html`<generik-component-wrapper
               .component=${{ ...component }}
             >
-              <text-input-block></text-input-block>
+              <text-input-block
+                .component=${{ ...component }}
+              ></text-input-block>
             </generik-component-wrapper>`;
           case ComponentType.TextLabel:
             return html`<generik-component-wrapper
@@ -53,7 +55,7 @@ export class PageContent extends LitElement {
             return html`<generik-component-wrapper
               .component=${{ ...component }}
             >
-              <button-block></button-block>
+              <button-block .component=${{ ...component }}></button-block>
             </generik-component-wrapper>`;
           default:
             return html``;
