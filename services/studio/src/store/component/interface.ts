@@ -11,6 +11,8 @@ type FontSize = {
 export interface TextLabelAttributes {
   fontSize: string;
   backgroundColor: string;
+  height: string;
+  width: string;
 }
 
 export interface TextInputAttributes {}
@@ -26,7 +28,7 @@ export interface TextInputParameters {
 
 export interface DraggingComponentInfo {
   componentId: string;
-  blockInfo: {
+  blockInfo?: {
     height: string;
     width: string;
   };

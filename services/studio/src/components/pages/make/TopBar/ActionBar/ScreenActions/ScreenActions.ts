@@ -21,6 +21,10 @@ export class TopbarScreenActions extends LitElement {
         addComponentAction({
           name: componentName,
           type: ComponentType.TextLabel,
+          attributes: {
+            display: "block",
+            fontSize: "16px",
+          },
           parameters: {
             value: "Text Label",
           },
