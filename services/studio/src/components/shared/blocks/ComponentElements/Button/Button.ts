@@ -10,7 +10,7 @@ export class ButtonBlock extends LitElement {
   static styles = [];
 
   render() {
-    return html`<hy-button style=${styleMap({ ...this.component.attributes })}
+    return html`<hy-button style=${styleMap({ ...this.component.style })}
       >Button</hy-button
     >`;
   }

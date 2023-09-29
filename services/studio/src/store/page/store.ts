@@ -3,8 +3,6 @@ import { persistentAtom } from "@nanostores/persistent";
 
 import { logger } from "@nanostores/logger";
 import { PageElement } from "./interface";
-import { $componentWithChildrens } from "$store/component/sotre";
-import { ComponentElement } from "$store/component/interface";
 
 /**
  * Pages stores
@@ -15,6 +13,12 @@ export const $pages = persistentAtom<PageElement[]>("pages", [], {
 });
 
 export const $currentPageId = persistentAtom<string>("page_id", null, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
+
+
+export const $pageZoom = persistentAtom<string>("page_zoom", "100", {
   encode: JSON.stringify,
   decode: JSON.parse,
 });
@@ -36,4 +40,8 @@ $pages.subscribe((pages) => {
   if (!$currentPageId.get() && pages[0]) {
     $currentPageId.set(pages[0].id);
   }
+});
+
+logger({
+  pages: $pages,
 });

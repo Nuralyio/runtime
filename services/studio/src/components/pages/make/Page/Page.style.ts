@@ -1,11 +1,16 @@
 import { css } from "lit";
 
 const pageStyle = css`
+  :host {
+    height: 100vh;
+    display: block;
+  }
   .page-empty-message-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 200px;
+    
   }
   .page-empty-message {
     position: absolute;

@@ -13,9 +13,8 @@ export class TextInputBlock extends LitElement {
       }
     `,
   ];
-
   render() {
-    return html`<span style=${styleMap({ ...this.component.attributes })}
+    return html`<span style=${styleMap({ ...this.component.style })}
       ><hy-input></hy-input
     ></span>`;
   }

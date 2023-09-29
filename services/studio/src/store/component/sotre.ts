@@ -1,6 +1,6 @@
 import { persistentAtom } from "@nanostores/persistent";
 import { ComponentElement, DraggingComponentInfo } from "./interface";
-import { computed, keepMount } from "nanostores";
+import { atom, computed, keepMount } from "nanostores";
 import { $currentPage, $pages } from "$store/page/store";
 import { logger } from "@nanostores/logger";
 
@@ -21,6 +21,8 @@ export const $currentComponentId = persistentAtom<string>(
     decode: JSON.parse,
   }
 );
+
+export const $hoveredComponentId = atom<string>(null);
 
 export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
   "draggingComponentInfo",
@@ -46,6 +48,17 @@ export const $selectedComponent = computed(
     return (
       components.find(
         (component: ComponentElement) => component.id === currentComponentId
+      ) || null
+    );
+  }
+);
+
+export const $hoveredComponent = computed(
+  [$components, $hoveredComponentId],
+  (components: ComponentElement[], hoveredComponentId) => {
+    return (
+      components.find(
+        (component: ComponentElement) => component.id === hoveredComponentId
       ) || null
     );
   }
@@ -102,4 +115,5 @@ keepMount($currentComponentId);
 
 logger({
   currentComponentId: $currentComponentId,
+  componentWithChildrens: $componentWithChildrens,
 });

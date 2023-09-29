@@ -1,5 +1,6 @@
+import { $resizing } from "$store/apps";
 import { PageElement } from "./interface";
-import { $currentPage, $currentPageId, $pages } from "./store";
+import { $currentPage, $currentPageId, $pageZoom, $pages } from "./store";
 
 /** Actions*/
 export function addPageAction(com: PageElement) {
@@ -21,4 +22,32 @@ export function addComponentToCurrentPageAction(componentId: string) {
       return page;
     }),
   ]);
+}
+export function removeComponentToCurrentPageAction(removedComponentId: string) {
+  $pages.set([
+    ...$pages.get().map((page: PageElement) => {
+      if (page.id === $currentPage.get().id) {
+        let { componentIds = [] } = page;
+        componentIds = componentIds.filter(
+          (componentId: string) => componentId !== removedComponentId
+        );
+        page = { ...page, componentIds };
+      }
+      return page;
+    }),
+  ]);
+}
+
+
+
+export function updatePageZoom(pageZoom: number) {
+  $pageZoom.set(String(pageZoom));
+}
+
+
+
+
+
+export function setResizing(isResizing: boolean) {
+  $resizing.set(isResizing);
 }

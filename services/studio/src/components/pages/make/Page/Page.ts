@@ -4,18 +4,24 @@ import { useStores } from "@nanostores/lit";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import styles from "./Page.style";
-import { $currentPageComponents } from "$store/component/sotre";
-import { ComponentElement, ComponentType } from "$store/component/interface";
+import { $currentPageComponents, $draggingComponentInfo } from "$store/component/sotre";
+import { ComponentElement, ComponentType, DraggingComponentInfo } from "$store/component/interface";
 
+import "../../../../core/engine";
 import "../../../shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
 import "../../../shared/blocks/ComponentElements/TextInput/TextInput";
 import "../../../shared/blocks/ComponentElements/TextLabel/TextLabel";
 import "../../../shared/blocks/ComponentElements/Button/Button";
-
+import "../../../shared/blocks/ComponentElements/Containers/Container";
+import "../../../shared/blocks/CodeEditor/CodeEditor";
+import { renderComponent } from "utils/render-util";
+import { moveDraggedComponentIntoCurrentPageRoot, setCurrentComponentIdAction } from "$store/component/action";
+import { $resizing } from "$store/apps";
 @customElement("content-page")
 @useStores($currentPage, $currentPageComponents)
 export class PageContent extends LitElement {
   static styles = styles;
+  draggingComponentInfo: DraggingComponentInfo;
 
   @state()
   currentPage: PageElement;
@@ -29,47 +35,57 @@ export class PageContent extends LitElement {
     $currentPageComponents.subscribe((components = []) => {
       this.components = [...components];
     });
+    $draggingComponentInfo.subscribe(
+      (draggingComponentInfo: DraggingComponentInfo) => {
+        if (draggingComponentInfo) {
+          this.draggingComponentInfo = draggingComponentInfo;
+          
+        } else {
+          this.draggingComponentInfo = null;
+        }
+      }
+    );
+    
   }
 
-  renderComponent(components: ComponentElement[]) {
-    return html`
-      ${components.map((component: ComponentElement) => {
-        switch (component.type) {
-          case ComponentType.TextInput:
-            return html`<generik-component-wrapper
-              .component=${{ ...component }}
-            >
-              <text-input-block
-                .component=${{ ...component }}
-              ></text-input-block>
-            </generik-component-wrapper>`;
-          case ComponentType.TextLabel:
-            return html`<generik-component-wrapper
-              .component=${{ ...component }}
-            >
-              <text-label-block
-                .component=${{ ...component }}
-              ></text-label-block>
-            </generik-component-wrapper>`;
-          case ComponentType.Button:
-            return html`<generik-component-wrapper
-              .component=${{ ...component }}
-            >
-              <button-block .component=${{ ...component }}></button-block>
-            </generik-component-wrapper>`;
-          default:
-            return html``;
-        }
-      })}
-    `;
-  }
   render() {
-    return html`<div>
+    return html`<div
+    style="height: 100%; width: 100%;"
+    @click=${(e) => {
+     
+      if (!$resizing.get()) {
+        e.preventDefault()
+      setCurrentComponentIdAction(null);
+       }
+       
+    }}
+    @dragend=${(e) => {
+        e.preventDefault();
+    }}
+     @dragenter=${(e) => {
+        e.preventDefault();
+    }}
+     @dragleave=${(e) => {
+        e.preventDefault();
+    }}
+    @dragover=${(e) => {
+        e.preventDefault();
+    }}
+    @drop=${(e) => {
+        e.preventDefault();
+        moveDraggedComponentIntoCurrentPageRoot(this.draggingComponentInfo.componentId)
+       
+       
+       
+      }}
+    >
+   <div>
       ${this.components?.length
-        ? this.renderComponent(this.components)
+        ? renderComponent(this.components)
         : html`<div class="page-empty-message-container">
             <p class="page-empty-message">Add an item from the insert panel</p>
           </div>`}
+          </div>
     </div>`;
   }
 }

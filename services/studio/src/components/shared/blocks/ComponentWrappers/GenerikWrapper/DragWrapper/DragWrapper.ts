@@ -5,10 +5,12 @@ import styles from "./DragWrapper.style";
 import {
   ComponentElement,
   DraggingComponentInfo,
-  TextLabelAttributes,
 } from "$store/component/interface";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
-import { moveDraggedComponent } from "$store/component/action";
+import {
+  moveDraggedComponent,
+  setDraggingComponentInfo,
+} from "$store/component/action";
 
 @customElement("drag-wrapper")
 export class DragWrapper extends LitElement {
@@ -36,7 +38,7 @@ export class DragWrapper extends LitElement {
   };
   firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {}
+  ): void { }
 
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
@@ -68,7 +70,13 @@ export class DragWrapper extends LitElement {
           height: "20px",
           width: "auto",
         };
+        e.preventDefault();
       }}
+
+      @dragend=${(e: Event) => {
+        e.preventDefault();
+        setDraggingComponentInfo(null);
+      }}  
       @dragleave=${(e: DragEvent) => {
         e.preventDefault();
         if (!(e.relatedTarget as HTMLElement).classList.contains("drop-zone")) {
@@ -83,52 +91,38 @@ export class DragWrapper extends LitElement {
         ? html`<span
             class="drop-zone "
             @dragenter=${(e: Event) => {
-              e.preventDefault();
+            e.preventDefault();
 
-              console.log(this.draggingComponentInfo);
-              this.dropDragPalceHolderStyle = {
-                ...this.dropDragPalceHolderStyle,
-                height:
-                  this.draggingComponentInfo.blockInfo.height ??
-                  this.dropDragPalceHolderStyle.height,
-                // width: this.draggingComponentInfo.blockInfo.width,
-              };
-              //e.preventDefault();
-              //this.dragOver = true;
-              //this.updateDragginStyle();
-            }}
+            this.dropDragPalceHolderStyle = {
+              ...this.dropDragPalceHolderStyle,
+              height:
+                this.draggingComponentInfo.blockInfo.height ??
+                this.dropDragPalceHolderStyle.height,
+            };
+    
+          }}
             @dragleave=${(e: Event) => {
-              e.preventDefault();
-              this.dropDragPalceHolderStyle = {
-                ...this.dropDragPalceHolderStyle,
-                display: "none",
-                height: "20px",
-                width: "auto",
-              };
-
-              console.log(e);
-              //this.dragOver = false;
-              //  this.updateDragginStyle();
-            }}
+            e.preventDefault();
+            this.dropDragPalceHolderStyle = {
+              ...this.dropDragPalceHolderStyle,
+              display: "none",
+              height: "20px",
+              width: "auto",
+            };
+          }}
             @drop=${() => {
-              this.dropDragPalceHolderStyle = {
-                ...this.dropDragPalceHolderStyle,
-                display: "none",
-                height: "20px",
-              };
-              moveDraggedComponent(
-                this.component?.id,
-                this.draggingComponentInfo.componentId
-              );
-              /*moveDraggedComponent(
-                this.component?.id,
-                this.draggingComponentInfo.componentId
-              );
-              setDraggingComponentInfo(null);
-              setTimeout(() => {
-                //  this.firstUpdated();
-              });*/
-            }}
+            this.dropDragPalceHolderStyle = {
+              ...this.dropDragPalceHolderStyle,
+              display: "none",
+              height: "20px",
+            };
+            moveDraggedComponent(
+              this.component?.id,
+              this.draggingComponentInfo.componentId
+            );
+            setDraggingComponentInfo(null);
+           
+          }}
             style=${styleMap(this.dropDragPalceHolderStyle)}
           ></span> `
         : nothing}<slot></slot>
