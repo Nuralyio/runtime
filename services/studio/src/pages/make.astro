@@ -1,27 +1,44 @@
 ---
 import MakeLayout from "../layouts/MakeLayout.astro";
-import { EditorPanelWrapper } from "../components/pages/make/EditorPanel/EditorPanelWrapper";
-import { EditorInteractivePanel } from "../components/pages/make/EditorPanel/EditorInteractivePanel";
-import { ScreenStructureEditor } from "../components/pages/make/EditorPanel/ScreenPanel/ScreenStructure";
+import { EditorInteractivePanel } from "../components/pages/make/MainPanel/EditorInteractivePanel";
+import { ScreenStructureEditor } from "../components/pages/make/ScreenPanel/ScreenStructure";
 import "@hybridui/button";
 import { TopbarPanelWrapper } from "../components/pages/make/TopBar/TopbarWrapper/TopbarWrapper";
 import { PageContent } from "components/pages/make/Page/Page";
-import { StyleWrapperPanel } from "components/pages/make/EditorPanel/Parameters/StylePanelWrapper";
+import { ParametersPanel } from "components/pages/make/ControlPanel/ControlPanelTabs";
+import { LeftPanel } from "../components/pages/make/Layout/LeftPanel";
+import { RightPanel } from "../components/pages/make/Layout/RightPanel";
 ---
 
 <MakeLayout title="Make Apps">
-  <TopbarPanelWrapper slot="top" client:load>Wrapper</TopbarPanelWrapper>
-  <div slot="left">
-    <EditorPanelWrapper>
-      <ScreenStructureEditor client:only="lit" />
-    </EditorPanelWrapper>
+  <div class="H-full flex flex-wrap mx-auto">
+    <TopbarPanelWrapper client:load>Wrapper</TopbarPanelWrapper>
   </div>
-  <div slot="main">
-    <EditorInteractivePanel client:load>
-      <PageContent client:only="lit" />
-    </EditorInteractivePanel>
-  </div>
-  <div slot="right">
-    <StyleWrapperPanel client:only="lit" />
+  <div class="flex flex-row bg-gray-100 text-gray-800">
+    <LeftPanel client:load />
+    <main
+      class="main -ml-48 flex flex-grow flex-col p-4 transition-all duration-150 ease-in md:ml-0"
+    >
+      <div class="flex h-full">
+        <EditorInteractivePanel client:load>
+          <PageContent client:only="lit" />
+        </EditorInteractivePanel>
+      </div>
+    </main>
+    <RightPanel client:only="lit" />
   </div>
 </MakeLayout>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("/custom-sw.js")
+        .then(function (registration) {
+          console.log("SW registered: ", registration);
+        })
+        .catch(function (registrationError) {
+          console.log("SW registration failed: ", registrationError);
+        });
+    });
+  }
+</script>

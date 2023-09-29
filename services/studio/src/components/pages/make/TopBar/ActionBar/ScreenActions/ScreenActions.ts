@@ -28,6 +28,10 @@ export class TopbarScreenActions extends LitElement {
           parameters: {
             value: "Text Label",
           },
+          styleHandlers: {},
+          event: {},
+          input: {},
+          style: {},
         });
       },
     },
@@ -37,19 +41,42 @@ export class TopbarScreenActions extends LitElement {
         addComponentAction({
           name: GenerateName(ComponentType.TextInput),
           type: ComponentType.TextInput,
+          styleHandlers: {},
+          event: {},
+          input: {},
+          style: {},
         });
       },
     },
     {
-      label: "Button",
+      label: "Button", //vertical-container-block
       handler: () => {
         addComponentAction({
           name: GenerateName(ComponentType.Button),
           type: ComponentType.Button,
+          styleHandlers: {},
+          event: {},
+          input: {},
+          style: {},
         });
       },
     },
     { type: "divider" },
+    {
+      label: "Vertical Container", //
+      handler: () => {
+        addComponentAction({
+          name: GenerateName(ComponentType.VerticalContainer),
+          type: ComponentType.VerticalContainer,
+          styleHandlers: {},
+          input: {
+            direction: "horizontal",
+          },
+          event: {},
+          style: {},
+        });
+      },
+    },
 
     {
       label: "Gallery",

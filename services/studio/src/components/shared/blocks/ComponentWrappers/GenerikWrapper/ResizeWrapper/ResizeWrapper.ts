@@ -6,6 +6,8 @@ import { updateComponentAttributes } from "$store/component/action";
 import { ComponentElement } from "$store/component/interface";
 import styles from "./ResizeWrapper.style";
 import { classMap } from "lit/directives/class-map.js";
+import { $pageZoom } from "$store/page/store";
+import { setResizing } from "$store/page/action";
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {
   inputRef: Ref<HTMLInputElement> = createRef();
@@ -17,6 +19,9 @@ export class ResizeWrapper extends LitElement {
 
   @property({ type: Object })
   selectedComponent: ComponentElement;
+
+  @property({ type: Object })
+  hoveredComponent: ComponentElement;
 
   @state()
   styles: any = {
@@ -56,6 +61,9 @@ export class ResizeWrapper extends LitElement {
   @state()
   currentResizer;
 
+  @state()
+  zoomLevel;
+
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
@@ -64,14 +72,27 @@ export class ResizeWrapper extends LitElement {
     });
   }
 
+  emitResizingEvent(isResising) {
+   
+    let customEvent = new CustomEvent("isResising", {
+      detail: {
+        value: isResising,
+      },
+    });
+    this.dispatchEvent(customEvent);
+
+  }
+
   resize = (e) => {
+    
+    e.preventDefault();
+    e.stopPropagation();  
     if (this.currentResizer.classList.contains("resizer-point-right-bottom")) {
       this.inputRef.value.style.width =
         e.pageX - this.inputRef.value.getBoundingClientRect().left + "px";
 
       const width = this.original_width + (e.pageX - this.original_mouse_x);
       const height = this.original_height + (e.pageY - this.original_mouse_y);
-      console.log(height);
 
       if (width > this.minimum_size) {
         this.inputRef.value.style.width = width + "px";
@@ -143,19 +164,31 @@ export class ResizeWrapper extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     window.removeEventListener("resize", this.firstUpdated);
+    $pageZoom.subscribe((pageZoom: string) => {
+      this.zoomLevel = Number(pageZoom);
+      this.firstUpdated();
+    });
   }
 
   firstUpdated() {
     setTimeout(() => {
       requestAnimationFrame(() => {
-        this.requestUpdate();
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
-        const { width, height } = this.slotDOMRect;
+        this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
+        const originalWidth = this.inputRef.value.offsetWidth;
+        const originalHeight = this.inputRef.value.offsetHeight;
+
+        // Calculate the scaled dimensions
+        const scaledWidth = originalWidth;
+        const scaledHeight = originalHeight * this.zoomLevel;
+
+        let { width, height }: any = this.slotDOMRect;
+        width = `${(width * 100) / this.zoomLevel}`;
+        height = `${(height * 100) / this.zoomLevel}`;
+        width = originalWidth;
+        height = originalHeight;
         const widthPixel = `${width}px`;
         const heightPixel = `${height}px`;
-        console.log(widthPixel, heightPixel);
-        console.log(heightPixel);
-        console.log(widthPixel);
         this.styles = {
           lines: {
             top: {
@@ -197,7 +230,6 @@ export class ResizeWrapper extends LitElement {
             },
           },
         };
-
         this.requestUpdate();
       });
     });
@@ -205,19 +237,25 @@ export class ResizeWrapper extends LitElement {
 
   stopResize = (e: Event) => {
     e.preventDefault();
+    e.stopPropagation();
     window.removeEventListener("mousemove", this.resize);
+    setTimeout(()=>{ setResizing(false);})
   };
 
-  mouseDown = (e: MouseEvent) => {
+  
+    mouseDown = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizing(true);
     this.currentResizer = e.target;
-    this.original_width = this.inputRef.value.getBoundingClientRect().width;
-    this.original_height = this.inputRef.value.getBoundingClientRect().height;
+    this.original_width = this.inputRef.value.offsetWidth;
+    this.original_height = this.inputRef.value.offsetHeight;
     this.original_x = this.inputRef.value.getBoundingClientRect().left;
     this.original_y = this.inputRef.value.getBoundingClientRect().top;
     this.original_mouse_x = e.pageX;
     this.original_mouse_y = e.pageY;
 
-    e.preventDefault();
+
     window.addEventListener("mousemove", this.resize);
     window.addEventListener("mouseup", this.stopResize);
   };
@@ -228,7 +266,12 @@ export class ResizeWrapper extends LitElement {
       <div
         class=${classMap({
           element: true,
-          selected: this.selectedComponent?.id === this.component.id,
+          selected:
+            this.selectedComponent?.id === this.component.id ||
+            this.hoveredComponent?.id === this.component.id,
+          hovered:
+            this.hoveredComponent?.id === this.component.id &&
+            this.selectedComponent?.id !== this.component.id,
         })}
         ${ref(this.inputRef)}
       >
@@ -283,7 +326,7 @@ export class ResizeWrapper extends LitElement {
         ></div>
         <!-- End Lines -->
 
-        <slot></slot>
+        <slot @slotchange="${(e) => {}}"></slot>
       </div>
     `;
   }

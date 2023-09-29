@@ -2,30 +2,35 @@ import {
   moveDraggedComponent,
   setCurrentComponentIdAction,
   setDraggingComponentInfo,
+  setHoveredComponentIdAction,
   updateComponentAttributes,
 } from "$store/component/action";
 import {
   ComponentElement,
   DraggingComponentInfo,
-  TextLabelAttributes,
 } from "$store/component/interface";
 import {
   $currentComponentId,
   $draggingComponentInfo,
+  $hoveredComponent,
   $selectedComponent,
 } from "$store/component/sotre";
 import { useStores } from "@nanostores/lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import styles from "./GenerikWrapper.style";
+
+import { $environment, Environment, ViewMode } from "$store/environment/store";
+
 import "./DragWrapper/DragWrapper";
 import "./ResizeWrapper/ResizeWrapper";
 
+import "../ComponentTitle/ComponentTitle";
+import { Ref, createRef, ref } from "lit/directives/ref.js";
 @customElement("generik-component-wrapper")
-@useStores($currentComponentId)
+@useStores($currentComponentId, $environment)
 export class GenerikComponentWrapper extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
@@ -33,6 +38,9 @@ export class GenerikComponentWrapper extends LitElement {
 
   @state()
   selectedComponent: ComponentElement;
+
+  @state()
+  hoveredComponent: ComponentElement;
 
   @state()
   displayTitle = true;
@@ -51,69 +59,71 @@ export class GenerikComponentWrapper extends LitElement {
 
   @state()
   draggingComponentInfo: DraggingComponentInfo;
+
+  @state()
+  environmentMode: ViewMode;
+
+  @state()
+  wrapperStyle: any = {};
+
+  inputRef: Ref<HTMLInputElement> = createRef();
   constructor() {
     super();
+    $environment.subscribe((environment: Environment) => {
+      this.environmentMode = environment.mode;
+      if (environment.mode === ViewMode.Edit) {
+        this.wrapperStyle = {
+          "pointer-events": "none",
+        };
+      } else {
+        this.wrapperStyle = {};
+      }
+    });
     $currentComponentId.subscribe(() => {});
     $draggingComponentInfo.subscribe(
       (draggingComponentInfo: DraggingComponentInfo) => {
         if (draggingComponentInfo) {
           this.draggingSituation = true;
+          if(this.draggingComponentInfo?.componentId === this.component?.id){
+            if(this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height){
+              console.log(this.draggingComponentInfo.blockInfo)
+              this.draggingComponentInfo.blockInfo.height = `${this.inputRef.value?.getBoundingClientRect().height}px`;
+              this.draggingComponentInfo.blockInfo.width = `${this.inputRef.value?.getBoundingClientRect().width}px`;
+              console.log(this.draggingComponentInfo.blockInfo)
+
+              setDraggingComponentInfo({
+                componentId: this.draggingComponentInfo?.componentId,
+                blockInfo: {
+                  ...this.draggingComponentInfo.blockInfo
+                },
+              });
+             // this.draggingComponentInfo.blockInfo.height = this.inputRef.value?.getBoundingClientRect().height
+
+            }
+          }
           this.draggingComponentInfo = draggingComponentInfo;
         } else {
           this.draggingSituation = false;
           this.draggingComponentInfo = null;
         }
-        /* setTimeout(() => {
-          this.updateDragginStyle();
-        }, 100);*/
       }
     );
     $selectedComponent.subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
+    });
+    $hoveredComponent.subscribe((hoveredComponent) => {
+      this.hoveredComponent = hoveredComponent;
     });
   }
 
   @state()
   dropDragPalceHolderStyle: any = {};
 
-  /* updateDragginStyle() {
-    if (this.isDragintiator) {
-      return;
-    }
-    if (this.draggingSituation) {
-      this.dropDragPalceHolderStyle = {
-        display: "block",
-        width: this.styles.lines.top.width,
-        height: "20px",
-        backgroundColor: "rgb(202 235 255)",
-        zIndex: "7",
-        borderRadius: " 2px",
-      };
-      if (this.dragOver) {
-        this.dropDragPalceHolderStyle = {
-          display: "block",
-          width: this.draggingComponentInfo?.blockInfo?.width,
-          height: this.draggingComponentInfo?.blockInfo?.height,
-          backgroundColor: "rgb(202 235 255)",
-          zIndex: "7",
-          borderRadius: " 2px",
-        };
-      }
-    } else {
-      this.dropDragPalceHolderStyle = {
-        width: this.styles.lines.top.width,
-        height: "0px",
-        display: "none",
-        backgroundColor: "rgb(202 235 255)",
-        zIndex: "7",
-        borderRadius: " 2px",
-      };
-    }
-  } */
   render() {
     return html` <resize-wrapper
       .component=${{ ...this.component }}
       .selectedComponent=${{ ...this.selectedComponent }}
+      .hoveredComponent=${{ ...this.hoveredComponent }}
     >
       <drag-wrapper
         .component=${{ ...this.component }}
@@ -128,42 +138,54 @@ export class GenerikComponentWrapper extends LitElement {
           @dragend=${() => {
             this.requestUpdate();
           }}
-          @click="${() => {
+          @click="${(e) => {
+            e.stopPropagation();
+            e.preventDefault();
             setCurrentComponentIdAction(this.component?.id);
           }}"
+          @mouseenter="${() => {
+            setHoveredComponentIdAction(this.component?.id);
+          }}"
+          @mouseleave="${() => {
+            setHoveredComponentIdAction(null);
+          }}"
         >
-          <span
+          <component-title
+            @dragInit=${(e) => {
+              this.isDragintiator = e.detail.value;
+            }}
+            .component=${{ ...this.component }}
+            .selectedComponent=${{ ...this.selectedComponent }}
+          ></component-title>
+          <!--span
             style=${styleMap({
-              display:
-                this.selectedComponent?.id === this.component.id &&
-                this.displayTitle
-                  ? "block"
-                  : "none",
-            })}
+            display:
+              this.selectedComponent?.id === this.component.id &&
+              this.displayTitle
+                ? "block"
+                : "none",
+          })}
             @mousedown=${(e: Event) => {
-              this.isDragintiator = true;
-              setTimeout(() => {
-                setDraggingComponentInfo({
-                  componentId: this.component?.id,
-                  blockInfo: {
-                    height: (this.component.attributes as TextLabelAttributes)
-                      .height,
-                    width: (this.component.attributes as TextLabelAttributes)
-                      .width,
-                  },
-                });
-              }, 100);
-            }}
+            this.isDragintiator = true;
+            setTimeout(() => {
+              setDraggingComponentInfo({
+                componentId: this.component?.id,
+                blockInfo: {
+                  height: this.component.style.height,
+                  width: this.component.style.width,
+                },
+              });
+            }, 100);
+          }}
             @mouseup=${(e: Event) => {
-              e.preventDefault();
-              this.isDragintiator = false;
-              setDraggingComponentInfo(null);
-            }}
+            e.preventDefault();
+            this.isDragintiator = false;
+            setDraggingComponentInfo(null);
+          }}
             class="component-name"
             >${this.component.name}</span
-          >
-
-          <div style="pointer-events: none;">
+          -->
+          <div  ${ref(this.inputRef)} style=${styleMap(this.wrapperStyle)}>
             <slot></slot>
           </div>
         </span>

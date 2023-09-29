@@ -14,6 +14,14 @@ export default css`
     position: absolute;
     z-index: 4;
   }
+  .element.hovered .resizer-point-left-top,
+  .element.hovered .resizer-point-right-top,
+  .element.hovered .resizer-point-middle-top,
+  .element.hovered .resizer-point-left-bottom,
+  .element.hovered .resizer-point-right-bottom,
+  .element.hovered .resizer-point-middle-bottom {
+    display: none;
+  }
   .element.selected .resizer-point-left-top,
   .element.selected .resizer-point-right-top,
   .element.selected .resizer-point-middle-top,
@@ -53,9 +61,20 @@ export default css`
   }
   .element.selected .resizer-line-right {
     border-right: 1px solid var(--editor-selection-color, #79ade6);
-    margin-left: 5px;
   }
   .element.selected .resizer-line-left {
     border-left: 1px solid var(--editor-selection-color, #79ade6);
+  }
+
+  .element.hovered .resizer-line-top,
+  .element.hovered .resizer-line-bottom {
+    border-top: 1px dashed var(--editor-selection-color, #79ade6);
+  }
+  .element.hovered .resizer-line-right {
+    border-right: 1px dashed var(--editor-selection-color, #79ade6);
+    margin-left: 5px;
+  }
+  .element.hovered .resizer-line-left {
+    border-left: 1px dashed var(--editor-selection-color, #79ade6);
   }
 `;
