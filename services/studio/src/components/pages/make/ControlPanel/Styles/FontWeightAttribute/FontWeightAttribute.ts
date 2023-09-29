@@ -9,6 +9,10 @@ export class AttributeTextFontWeight extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
 
+  @property({ type: Boolean })
+  slim: boolean = false;
+
+
   static styles = [
     css`
       .container {
@@ -33,6 +37,7 @@ export class AttributeTextFontWeight extends LitElement {
           class="first_column"
         ></attribute-font-size-weight-label>
         <attribute-font-weight-value-handler
+         .slim=${this.slim}
           .component=${{ ...this.component }}
           @attributeUpdate=${this.changeHandler}
         ></attribute-font-weight-value-handler>

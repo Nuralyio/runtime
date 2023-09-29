@@ -106,7 +106,7 @@ export class VerticalContainer extends LitElement {
           if (e.target.classList.contains("container")) {
             setCurrentComponentIdAction(this.component?.id);
             e.preventDefault();
-            e.stopPropagation()
+          e.stopPropagation()
           }
         }
 

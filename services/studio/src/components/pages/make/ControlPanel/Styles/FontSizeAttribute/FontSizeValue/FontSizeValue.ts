@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
 import "@hybridui/dropdown";
@@ -11,6 +11,12 @@ import styles from "./FontSizeValue.style";
 export class AttributeFontSizeValue extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
+
+
+  @property({ type: Boolean })
+  slim: boolean = false;
+
+
   static styles = styles;
 
   @state()
@@ -79,24 +85,26 @@ export class AttributeFontSizeValue extends LitElement {
         ></hy-input>
         <hy-dropdown
           .options=${[
-            {
-              label: "px",
-            },
-            { label: "rem" },
-          ]}
+        {
+          label: "px",
+        },
+        { label: "rem" },
+      ]}
           @change="${this.handleUnityChange}"
           ><div slot="label" class="unit">
             ${this.currentUnity}
           </div></hy-dropdown
         >
       </attribute-input-wrapper>
-
-      <smart-attribute-editor-dropdown
+          ${!this.slim ? html`
+          <smart-attribute-editor-dropdown
         .component=${{ ...this.component }}
         .attributeName=${"fontSize"}
         .attributeScope=${"style"}
         .handlerScope=${"styleHandlers"}
       ></smart-attribute-editor-dropdown>
+      ` : nothing}
+      
     </div>`;
   }
 }

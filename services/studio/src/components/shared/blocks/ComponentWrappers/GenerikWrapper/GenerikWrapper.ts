@@ -26,7 +26,7 @@ import { $environment, Environment, ViewMode } from "$store/environment/store";
 
 import "./DragWrapper/DragWrapper";
 import "./ResizeWrapper/ResizeWrapper";
-
+import "./QuickActionWrapper/QuickActionWrapper";
 import "../ComponentTitle/ComponentTitle";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
 @customElement("generik-component-wrapper")
@@ -66,9 +66,14 @@ export class GenerikComponentWrapper extends LitElement {
   @state()
   wrapperStyle: any = {};
 
+  @state()
+  showQuickAction = false;
+
   inputRef: Ref<HTMLInputElement> = createRef();
   constructor() {
     super();
+    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
       if (environment.mode === ViewMode.Edit) {
@@ -86,10 +91,8 @@ export class GenerikComponentWrapper extends LitElement {
           this.draggingSituation = true;
           if(this.draggingComponentInfo?.componentId === this.component?.id){
             if(this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height){
-              console.log(this.draggingComponentInfo.blockInfo)
               this.draggingComponentInfo.blockInfo.height = `${this.inputRef.value?.getBoundingClientRect().height}px`;
               this.draggingComponentInfo.blockInfo.width = `${this.inputRef.value?.getBoundingClientRect().width}px`;
-              console.log(this.draggingComponentInfo.blockInfo)
 
               setDraggingComponentInfo({
                 componentId: this.draggingComponentInfo?.componentId,
@@ -97,7 +100,6 @@ export class GenerikComponentWrapper extends LitElement {
                   ...this.draggingComponentInfo.blockInfo
                 },
               });
-             // this.draggingComponentInfo.blockInfo.height = this.inputRef.value?.getBoundingClientRect().height
 
             }
           }
@@ -109,6 +111,9 @@ export class GenerikComponentWrapper extends LitElement {
       }
     );
     $selectedComponent.subscribe((selectedComponent) => {
+      if(selectedComponent?.id !== this.component?.id){
+        this.showQuickAction = false;
+      }
       this.selectedComponent = selectedComponent;
     });
     $hoveredComponent.subscribe((hoveredComponent) => {
@@ -116,11 +121,33 @@ export class GenerikComponentWrapper extends LitElement {
     });
   }
 
+
+  onContextMenu(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentComponentIdAction(this.component?.id);
+    this.showQuickAction = true;
+  }
+
   @state()
   dropDragPalceHolderStyle: any = {};
 
   render() {
-    return html` <resize-wrapper
+    return html`
+    ${this.showQuickAction ? html`
+             <quick-action-wrapper
+             @click=${(e: Event) => {
+              e.stopPropagation();
+              e.preventDefault();
+              }}
+             @displayQuickActionChanged=${(e: CustomEvent) => {
+             // this.showQuickAction = e.detail.showQuickAction;
+              }}
+             .component=${{...this.component}}
+             ></quick-action-wrapper>
+              ` : nothing}
+    
+    <resize-wrapper
       .component=${{ ...this.component }}
       .selectedComponent=${{ ...this.selectedComponent }}
       .hoveredComponent=${{ ...this.hoveredComponent }}

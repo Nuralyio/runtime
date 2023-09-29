@@ -1,5 +1,5 @@
 import { ComponentElement } from "$store/component/interface";
-import { LitElement, html, css, PropertyValueMap } from "lit";
+import { LitElement, html, css, PropertyValueMap, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
 import "@hybridui/dropdown";
@@ -10,6 +10,9 @@ export class AttributeFontWeightValueHandler extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
   static defaultWeight = "400";
+
+  @property({ type: Boolean })
+  slim: boolean = false;  
   @state()
   options = [
     {
@@ -91,9 +94,10 @@ export class AttributeFontWeightValueHandler extends LitElement {
           >
         </div>
       </attribute-input-wrapper>
-      <smart-attribute-editor-dropdown
+      ${!this.slim ? html`  <smart-attribute-editor-dropdown
         .component=${{ ...this.component }}
         .attributeName=${"fontWeight"}
-      ></smart-attribute-editor-dropdown>`;
+      ></smart-attribute-editor-dropdown>` : nothing}
+    `;
   }
 }

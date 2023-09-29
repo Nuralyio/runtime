@@ -95,6 +95,7 @@ const ComponentWrapperStyle = css`
     display: none;
     border: 2px dashed rgb(110 110 110);
   }
+
 `;
 
 export default [ComponentWrapperStyle];
