@@ -9,6 +9,11 @@ import { updateComponentAttributes } from "$store/component/action";
 export class AttributeTextFontSize extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
+
+  @property({ type: Boolean })
+  slim: boolean = false;
+
+  
   static styles = [
     css`
       .container {
@@ -33,6 +38,7 @@ export class AttributeTextFontSize extends LitElement {
         class="first_column"
       ></attribute-font-size-value-label>
       <attribute-font-size-value-handler
+        .slim=${this.slim}
         @attributeUpdate=${this.changeHandler}
         .component=${{ ...this.component }}
       ></attribute-font-size-value-handler>

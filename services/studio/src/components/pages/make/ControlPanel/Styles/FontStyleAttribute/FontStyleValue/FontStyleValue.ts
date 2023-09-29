@@ -12,6 +12,10 @@ import {
 export class FOntSTyleVAlue extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
+
+  @property({ type: Boolean })
+  slim: boolean = false;
+  
   @state()
   options: RadioOption[] = [
     {

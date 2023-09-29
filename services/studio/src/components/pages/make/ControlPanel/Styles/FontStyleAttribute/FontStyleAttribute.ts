@@ -8,7 +8,9 @@ import "./FontStyleLabel/FontStyleLabel";
 export class FOntSTyleATtribute extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
-
+  @property({ type: Boolean })
+  slim: boolean = false;
+  
   static styles = [
     css`
       .container {
