@@ -6,6 +6,7 @@ import {EMPTY_STRING, NOTHING_STRING, OPTION_TYPES, TRIGGERS} from './menu.const
 import {styles} from './menu.style.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {childrensArrow} from './templates/has-children-arrow.template.js';
+import {repeat} from 'lit/directives/repeat.js';
 
 export class HyMenuComponent extends LitElement {
   static override styles = styles;
@@ -85,15 +86,20 @@ export class HyMenuComponent extends LitElement {
     return html`
       <div class="menu-content show" ${ref(this.menuContentRef)}>
         <ul>
-          ${this.options?.map((option) => this.renderOption(option))}
+          ${repeat(
+            this.options,
+            (option: any) => option.id,
+            (option) => this.renderOption(option)
+          )}
         </ul>
       </div>
     `;
   }
+  
   renderOption(option: any) {
     const childMenuRef: Ref<HTMLInputElement> = createRef();
     const parentRef: Ref<HTMLInputElement> = createRef();
-    const showChildren = this.showChildrenMap.get(option) || false;
+    const showChildren = this.showChildrenMap.get(option.id) || false;
 
     return option.type === OPTION_TYPES.DIVIDER
       ? this.renderDividerOption()
@@ -110,7 +116,7 @@ export class HyMenuComponent extends LitElement {
     parentRef: Ref<HTMLInputElement>,
     showChildren: boolean
   ) {
-    const isSelected = Boolean(option === this.selected || this.showChildrenMap.get(option));
+    const isSelected = Boolean(option === this.selected || this.showChildrenMap.get(option.id));
     const isGroupElement = option.type === OPTION_TYPES.GROUP;
     const hasChildren = option.children && option.children.length > 0;
 
@@ -130,6 +136,9 @@ export class HyMenuComponent extends LitElement {
           style="user-select : none"
           class=${classMap({'group-label': isGroupElement})}
           @click="${(e: Event) => {
+            if (option.handler) {
+              option.handler();
+            }
             if (hasChildren) {
               this.toggleOption(option);
               this.requestUpdate();
@@ -183,8 +192,7 @@ export class HyMenuComponent extends LitElement {
     }
   }
   toggleOption(option: any) {
-    this.showChildrenMap.set(option, !this.showChildrenMap.get(option));
-    console.log(this.showChildrenMap.get(option));
+    this.showChildrenMap.set(option.id, !this.showChildrenMap.get(option));
   }
   searching() {
     this.options;
@@ -194,7 +202,7 @@ export class HyMenuComponent extends LitElement {
     this.selectedElementMap = new Map<any, boolean>();
     this.searchedELement = undefined;
     for (const stack of stacks) {
-      this.showChildrenMap.set(stack, true);
+      this.showChildrenMap.set(stack.id, true);
       this.selectedElementMap.set(stack, true);
       this.searchedELement = stack;
     }

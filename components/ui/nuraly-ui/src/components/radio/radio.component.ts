@@ -2,7 +2,6 @@
 import {LitElement, TemplateResult, html} from 'lit';
 import {property, state} from 'lit/decorators.js';
 import {styles} from './radio.style.js';
-import '../button/hy-button.component.js';
 import {RadioButtonType, RadioOption} from './radio.type.js';
 
 export class HySelectComponent extends LitElement {
@@ -13,6 +12,9 @@ export class HySelectComponent extends LitElement {
 
   @property({type: String})
   display: RadioButtonType = RadioButtonType.Default;
+
+  @property({type: String})
+  defaultValue!: string;
 
   @state()
   selectedOption!: string;
@@ -26,12 +28,14 @@ export class HySelectComponent extends LitElement {
   }
 
   handleChange(event: RadioOption) {
+    if (event.handler) {
+      event.handler(event.value);
+    }
     this.selectedOption = event.value;
-    console.log(event);
     this.dispatchEvent(
       new CustomEvent('change', {
         detail: {
-          selectedOption: this.selectedOption,
+          value: this.selectedOption,
         },
       })
     );
@@ -56,7 +60,7 @@ export class HySelectComponent extends LitElement {
             name="radioGroup"
             .value="${option.value}"
             @change="${() => this.handleChange(option)}"
-            ?checked="${option.value === this.selectedOption}"
+            ?checked="${option.value === this.selectedOption || option.value === this.defaultValue}"
           />
           ${option.label}
         </label>
@@ -69,8 +73,10 @@ export class HySelectComponent extends LitElement {
       >${options.map(
         (option: RadioOption) => html`
           <hy-button
-            type="${option.value === this.selectedOption ? 'primary' : ''}"
+            .type="${option.value === this.selectedOption || option.value === this.defaultValue ? 'primary' : ''}"
             @click="${() => this.handleChange(option)}"
+            .icon=${option.button?.icon}
+            .type=${option.button?.type}
           >
             ${option.label}</hy-button
           >

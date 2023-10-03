@@ -89,6 +89,7 @@ export class ElMeenuElement extends LitElement {
       </button>
       <br />
       <hy-tabs
+        .tabs=${this.editableTabs}
         .orientation=${this.orientation}
         @tabOrderChange=${(e: any) => {
           this.editableTabs = this.swapElements(this.editableTabs, e.detail.sourceIndex, e.detail.targetIndex);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, html, nothing, PropertyValueMap} from 'lit';
+import {LitElement, html, nothing, PropertyValueMap, TemplateResult} from 'lit';
 import {property, queryAssignedElements, state} from 'lit/decorators.js';
 import {ref, createRef, Ref} from 'lit/directives/ref.js';
 import {EMPTY_STRING, NOTHING_STRING} from './hy-dropdown.constants.js';
@@ -20,6 +20,9 @@ export class HyDropdownComponent extends LitElement {
 
   @property({type: String})
   placeholder = EMPTY_STRING;
+
+  @property({type: String})
+  template!: TemplateResult<1>;
 
   @property({type: String})
   search = EMPTY_STRING;
@@ -52,7 +55,6 @@ export class HyDropdownComponent extends LitElement {
 
   constructor() {
     super();
-    this.addEventListener('contextmenu', this.handleRightClick);
   }
 
   handleRightClick(event: any) {
@@ -111,9 +113,11 @@ export class HyDropdownComponent extends LitElement {
   renderDropdowContent() {
     return html`
       <div class="dropdown-content show" ${ref(this.dropdownContentRef)}>
-        <ul>
-          ${this.options?.map((option) => this.renderOption(option))}
-        </ul>
+        ${this.template
+          ? html` ${this.template} `
+          : html` <ul>
+              ${this.options?.map((option) => this.renderOption(option))}
+            </ul>`}
       </div>
     `;
   }
@@ -133,6 +137,9 @@ export class HyDropdownComponent extends LitElement {
               id="${parentId}"
               ${ref(parentRef)}
               @click="${(e: any) => {
+                if (option.handler) {
+                  option.handler();
+                }
                 if (!option.template) {
                   this.handleSelect(option, e);
                 } else {
@@ -265,6 +272,12 @@ export class HyDropdownComponent extends LitElement {
 
   toggleDropdown() {
     this.open = !this.open;
+    if (!this.open) {
+      this.emitClosedEvent();
+    }
+    requestAnimationFrame(() => {
+      this.positionDropDown();
+    });
   }
 
   showDropdown() {
@@ -281,9 +294,19 @@ export class HyDropdownComponent extends LitElement {
     }
   }
 
+  emitClosedEvent() {
+    const closedEvent = new CustomEvent('closed', {
+      detail: {value: this.selected},
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(closedEvent);
+  }
+
   _onClickOutside(e: MouseEvent) {
     if (!e.composedPath().includes(this)) {
       this.open = false;
+      this.emitClosedEvent();
     }
   }
 
@@ -302,6 +325,7 @@ export class HyDropdownComponent extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     document.addEventListener('click', this._onClickOutside.bind(this));
+    this.addEventListener('contextmenu', this.handleRightClick);
   }
 
   override disconnectedCallback() {

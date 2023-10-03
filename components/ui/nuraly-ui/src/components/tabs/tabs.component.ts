@@ -3,7 +3,7 @@ import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {property} from 'lit/decorators.js';
 import {styles} from './tabs.style.js';
 import {classMap} from 'lit/directives/class-map.js';
-import {LABEL_ATTRIBUTES, NOTHING_STRING, TabEditable, TabEvent, TabOrientation} from './tabs.constant.js';
+import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation} from './tabs.constant.js';
 
 /**
  * `hy-tabs` is a LitElement that provides a customizable tabs.
@@ -31,6 +31,9 @@ export class TabsComponent extends LitElement {
 
   @property({type: Object})
   editable!: TabEditable;
+
+  @property({type: Array})
+  tabs!: any[];
 
   static override styles = styles;
 
@@ -129,7 +132,7 @@ export class TabsComponent extends LitElement {
 
   private renderTabs() {
     const tabs = [];
-    const children = this.children ? [...this.children] : [];
+    const children = this.tabs || [];
     for (let tabIndex = 0; tabIndex < children.length; tabIndex++) {
       const tab = html`
         <div
@@ -156,7 +159,7 @@ export class TabsComponent extends LitElement {
                 })
               );
             }}
-            >${children[tabIndex].getAttribute(LABEL_ATTRIBUTES)}</span
+            >${children[tabIndex].label}</span
           >
           ${this.editable?.canDeleteTab
             ? html`<hy-icon
@@ -193,8 +196,8 @@ export class TabsComponent extends LitElement {
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-    if (!this.children[this.activeTab]) {
-      if (!this.children[this.activeTab - 1]) {
+    if (!this.tabs[this.activeTab]) {
+      if (!this.tabs[this.activeTab - 1]) {
         this.activeTab++;
       } else {
         this.activeTab--;
@@ -203,21 +206,21 @@ export class TabsComponent extends LitElement {
   }
 
   private renderActiveTab() {
-    const children = this.children ? [...this.children] : [];
+    const children = this.tabs ? [...this.tabs] : [];
     if (children.length > 0 && this.activeTab >= 0 && this.activeTab < children.length) {
-      return children[this.activeTab].cloneNode(true);
+      return html`${children[this.activeTab].content}`;
     }
     return html`${NOTHING_STRING}`;
   }
 
-  private setActiveTab(index: number, element: Element, event: Event) {
+  private setActiveTab(index: number, _element: Element, event: Event) {
     event.preventDefault();
     this.activeTab = index;
-    element.dispatchEvent(
+    /*element?.dispatchEvent(
       new CustomEvent(TabEvent.tabTilteClick, {
         detail: event,
       })
-    );
+    );*/
   }
 }
 
