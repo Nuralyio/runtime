@@ -44,7 +44,7 @@ export class AttributeInputWrapper extends LitElement {
   }
 
   render() {
-    return html` ${this.component?.styleHandlers[this.attribute] &&
+    return html` ${this.component?.styleHandlers && this.component?.styleHandlers[this.attribute] &&
       this.wrapperStyle?.width
         ? html`<div
             class="has-smart-attribute"

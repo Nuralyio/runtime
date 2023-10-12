@@ -2,6 +2,9 @@ import { ComponentElement, ComponentType } from "$store/component/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./Inputs/Container/DirectionAttribute/DirectionAttribute";
+import "../Page/PageParameters/PageParameters";
+
+import "../ControlPanel/Display/SizePaddingMarginAttribute/SizePaddingMarginAttribute";
 @customElement("style-panel")
 export class STylePAnel extends LitElement {
   @property({ type: Object })
@@ -10,6 +13,11 @@ export class STylePAnel extends LitElement {
     css`
       :host {
         min-width: 150px;
+      }
+      h4{
+        margin-bottom: 3px;
+        margin-left: 3px;
+        padding-left: 0px;
       }
     `,
   ];
@@ -40,7 +48,8 @@ export class STylePAnel extends LitElement {
             return html` <parameter-event
               .component=${component}
               .eventName=${eventName}
-            ></parameter-event>`;
+            ></parameter-event>
+            `;
           })}
         `);
         templates.push(
@@ -71,8 +80,19 @@ export class STylePAnel extends LitElement {
                   .component=${component}
                 ></attribute-color>
               </div>
+              <h4>Size</h4> 
+              <div style="padding:4px ; ">
+                <size-padding-margin-attribute
+                  .component=${component}
+                ></size-padding-margin-attribute>
+              </div>
             </div>`
         );
+        break;
+        default:
+          templates.push(html`<div style="padding:4px">
+<page-parameters></page-parameters>
+          </div>`);
     }
     return templates;
   }

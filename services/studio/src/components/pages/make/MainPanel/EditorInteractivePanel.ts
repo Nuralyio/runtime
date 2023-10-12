@@ -5,8 +5,12 @@ import "@hybridui/tabs";
 import "@hybridui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import { $environment, Environment, ViewMode } from "$store/environment/store";
-import { $pageZoom } from "$store/page/store";
+import { $contextMenuEvent, $pageZoom } from "$store/page/store";
 import { updatePageZoom } from "$store/page/action";
+import { ComponentElement } from "$store/component/interface";
+import { $selectedComponent } from "$store/component/sotre";
+import { Ref, createRef, ref } from "lit/directives/ref.js";
+
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   @state()
@@ -14,6 +18,11 @@ export class EditorInteractivePanel extends LitElement {
 
   @state()
   zoomLevel = 100;
+
+  @state()
+  selectedComponent: ComponentElement;
+
+  inputRef: Ref<HTMLInputElement> = createRef();
 
   static styles = css`
     :host {
@@ -28,6 +37,7 @@ export class EditorInteractivePanel extends LitElement {
     .zoom-area {
       overflow: visible;
       background-color: white;
+      min-height: 800px;
     }
     .zoom-controll {
       bottom: 0px;
@@ -36,27 +46,68 @@ export class EditorInteractivePanel extends LitElement {
   `;
   constructor() {
     super();
+    $selectedComponent.subscribe((selectedComponent) => {
+      /* if(selectedComponent?.id !== this.component?.id){
+         this.showQuickAction = false;
+       }*/
+      this.selectedComponent = selectedComponent;
+    });
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
     });
   }
+
+  handleScroll(event) {
+    this.inputRef.value!.style!.display = 'none';
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.shadowRoot.querySelector('.page-container').removeEventListener('scroll', this.handleScroll.bind(this));
+
+  }
   connectedCallback(): void {
     super.connectedCallback();
+    this.shadowRoot.querySelector('.page-container').addEventListener('scroll', this.handleScroll.bind(this));
+
     $pageZoom.subscribe((pageZoom: string) => {
       requestAnimationFrame(() => {
         this.zoomLevel = Number(pageZoom);
         this.requestUpdate();
       });
     });
+
+    $contextMenuEvent.subscribe((contextMenuEvent: any) => {
+      if (contextMenuEvent && Object.keys(contextMenuEvent).length  ) {
+        if (this.inputRef && this.inputRef.value) {
+          this.inputRef.value.style.display = 'block'
+          this.inputRef.value.style.top = `${contextMenuEvent.ComponentTop - 5}px`;
+          this.inputRef.value.style.left = `${contextMenuEvent.ComponentLeft - 0}px`;
+          this.inputRef.value!.style!.display = 'block'
+        }
+      } else {
+        this.inputRef.value!.style!.display = 'none'
+      }
+    })
   }
   render() {
     return html`<div>
+<quick-action-wrapper
+${ref(this.inputRef)}
+style="position : absolute ; display : none"
+             @click=${(e: Event) => {
+      }}
+             @displayQuickActionChanged=${(e: CustomEvent) => {
+        // this.showQuickAction = e.detail.showQuickAction;
+      }}
+             .component=${{ ...this.selectedComponent }}
+             ></quick-action-wrapper>
         <div class="page-container">
           <div
             class="zoom-area"
             style=${styleMap({
-              scale: this.zoomLevel / 100,
-            })}
+        scale: this.zoomLevel / 100,
+      })}
           >
             <slot></slot>
           </div>
@@ -67,8 +118,8 @@ export class EditorInteractivePanel extends LitElement {
       <div class="zoom-controll">
         <input
           @input=${(e) => {
-            updatePageZoom(e.target.value);
-          }}
+        updatePageZoom(e.target.value);
+      }}
           type="range"
           id="cowbell"
           name="cowbell"

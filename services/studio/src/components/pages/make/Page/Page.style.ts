@@ -12,6 +12,9 @@ const pageStyle = css`
     height: 200px;
     
   }
+  .page-container{
+    height: 100%;
+  }
   .page-empty-message {
     position: absolute;
     top: 50%;

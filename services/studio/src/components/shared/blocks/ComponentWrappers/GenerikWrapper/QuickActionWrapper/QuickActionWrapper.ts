@@ -2,81 +2,77 @@ import { ComponentElement } from '$store/component/interface';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js'
 import styles from './QuickActionWrapper.style';
+import { copyComponentAction, deleteComponentAction, pasteComponentAction } from '$store/component/action';
 
 @customElement('quick-action-wrapper')
 export class QuickActionWrapper extends LitElement {
-    @property({ type: Object })
-    component: ComponentElement;
+  @property({ type: Object })
+  component: ComponentElement;
 
-    @state()
-    showQuickAction = false;
+  @state()
+  showQuickAction = false;
 
-    private clickOutsideListener: EventListener | null = null;
+  private clickOutsideListener: EventListener | null = null;
 
-    static styles = styles
+  static styles = styles
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.addClickOutsideListener();
-    }
+  connectedCallback() {
+    super.connectedCallback();
+    //this.addClickOutsideListener();
+  }
 
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.removeClickOutsideListener();
-    }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+  }
 
-    private addClickOutsideListener() {
-        this.clickOutsideListener = (event: Event) => {
-            if (!this.contains(event.target as Node)) {
-                // Clicked outside of the QuickActionWrapper
-                // You can add your logic here
-                console.log('Clicked outside');
-               // this.showQuickAction = false;
-                //this.emitQuickActionStatusEvent();
-            }
-        };
+ 
+ 
+  emitQuickActionStatusEvent() {
+    const customEvent = new CustomEvent('displayQuickActionChanged', {
+      detail: {
+        showQuickAction: this.showQuickAction,
+      },
+    });
+    this.dispatchEvent(customEvent);
 
-        window.addEventListener('click', this.clickOutsideListener);
-    }
-
-    private removeClickOutsideListener() {
-        if (this.clickOutsideListener) {
-            window.removeEventListener('click', this.clickOutsideListener);
-            this.clickOutsideListener = null;
-        }
-    }
-    emitQuickActionStatusEvent() {
-      const customEvent = new CustomEvent('displayQuickActionChanged', {
-        detail: {
-          showQuickAction: this.showQuickAction,
-        },
-      });
-      this.dispatchEvent(customEvent);
-
-    }
-    render() {
-        return html`
+  }
+  render() {
+    return html`
         <div class="quick-action">
-          <div>
+          <div style="width: 120px;">
             <attribute-text-font-size
                 .component=${{ ...this.component }}
                 ?slim=${true}
             ></attribute-text-font-size>
             </div>
-          <div style="margin-left: 30px;width: 160px;">
+          <div style="margin-left: 20px;width: 100px;">
             <attribute-text-font-weight
              ?slim=${true}
-                .component=${{...this.component}}
+                .component=${{ ...this.component }}
               ></attribute-text-font-weight>
              
             </div>
-          <div style="margin-left: 30px;width: 200px;">
+            <div style="margin-left: 0px;width: 60px;">
+            <attribute-color
+             ?slim=${true}
+                .component=${{ ...this.component }}
+              ></attribute-color>
+             
+            </div>
+          <div style="margin-left: 0px;width: 110px;">
           <attribute-text-font-style
                 ?slim=${true}
-                .component=${{...this.component}}
+                .component=${{ ...this.component }}
               ></attribute-text-font-style>
             </div>
+            <hy-button  style="margin-left : 10px" danger
+            
+            @click=${() => {
+        deleteComponentAction(this.component.id);
+      }}>Delete</hy-button>
+
+
         </div>
         `;
-    }
+  }
 }

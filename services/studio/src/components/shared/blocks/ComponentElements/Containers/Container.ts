@@ -23,7 +23,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
 import styles from "./Container.style";
-import { setResizing } from "$store/page/action";
+import { setContextMenuEvent, setResizing } from "$store/page/action";
 @customElement("vertical-container-block")
 export class VerticalContainer extends LitElement {
   @property({ type: Object })
@@ -41,6 +41,8 @@ export class VerticalContainer extends LitElement {
   draggingComponentInfo: DraggingComponentInfo;
   constructor() {
     super();
+    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+
     $hoveredComponent.subscribe((hoveredComponent) => {
       this.hoveredComponent = hoveredComponent;
     });
@@ -80,6 +82,17 @@ export class VerticalContainer extends LitElement {
   @state()
   containerRef: Ref<HTMLInputElement> = createRef();
 
+  onContextMenu(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    //setCurrentComponentIdAction(this.component?.id);
+    //this.showQuickAction = true;
+    //console.log(this.inputRef.value?.getBoundingClientRect().top);
+    e.ComponentTop = this.containerRef.value?.getBoundingClientRect().top;
+    e.ComponentLeft = this.containerRef.value?.getBoundingClientRect().left;
+    setContextMenuEvent(e);
+  }
+
   render() {
     return html` <resize-wrapper
       .component=${{ ...this.component }}
@@ -87,6 +100,7 @@ export class VerticalContainer extends LitElement {
       .hoveredComponent=${{ ...this.hoveredComponent }}
     >
       <div
+       draggable="true"
         @mouseenter="${() => {
         this.dragOverSituation = true;
         setHoveredComponentIdAction(this.component?.id);
@@ -96,9 +110,11 @@ export class VerticalContainer extends LitElement {
 
         setHoveredComponentIdAction(null);
       }}"
+      
         ${ref(this.containerRef)}
         class="container"
         @click="${(e: any) => {
+          setContextMenuEvent(null);
         if (!$resizing.get()) {
           setCurrentComponentIdAction(this.component?.id);
           e.preventDefault();
@@ -145,7 +161,6 @@ export class VerticalContainer extends LitElement {
         e.preventDefault();
       }}
         @drop=${(e) => {
-
         e.preventDefault();
         this.dragOverSituation = false;
         moveDraggedComponentInside(
@@ -166,23 +181,7 @@ export class VerticalContainer extends LitElement {
           .component=${{ ...this.component }}
           .selectedComponent=${{ ...this.selectedComponent }}
         ></component-title>
-        <div
-          style=${styleMap({
-        ...this.dropDragPalceHolderStyle,
-        height:
-          this.draggingComponentInfo?.blockInfo.height ??
-          this.dropDragPalceHolderStyle.height,
-        width:
-          this.draggingComponentInfo?.blockInfo.width ??
-          this.dropDragPalceHolderStyle.width,
-      })}
-          @dragend=${(e) => {
-        e.preventDefault();
-      }
-      }
-          class="drop-zone"
-        ></div>
-
+    
         ${this.component.childrenIds?.length
         ? renderComponent(
           this.component.childrenIds?.map(
@@ -192,7 +191,6 @@ export class VerticalContainer extends LitElement {
         )
         : html`<div
     
-              class="empty-message-container"
               class="empty-message"
               @click="${(e: any) => {
             setCurrentComponentIdAction(this.component?.id);
@@ -212,7 +210,25 @@ export class VerticalContainer extends LitElement {
           })}
           class="drop-zone drop-zone-end-of-container-${this.component.input
         ?.direction}"
-        ></div--></div
+        ></div-->
+        <div
+          style=${styleMap({
+        ...this.dropDragPalceHolderStyle,
+        height:
+          this.draggingComponentInfo?.blockInfo.height ??
+          this.dropDragPalceHolderStyle.height,
+        width:
+          this.draggingComponentInfo?.blockInfo.width ??
+          this.dropDragPalceHolderStyle.width,
+      })}
+          @dragend=${(e) => {
+        e.preventDefault();
+      }
+      }
+          class="drop-zone"
+        ></div>
+
+        </div
     ></resize-wrapper>`;
   }
 }

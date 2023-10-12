@@ -6,7 +6,7 @@ import { updateComponentAttributes } from "$store/component/action";
 import { ComponentElement } from "$store/component/interface";
 import styles from "./ResizeWrapper.style";
 import { classMap } from "lit/directives/class-map.js";
-import { $pageZoom } from "$store/page/store";
+import { $pageZoom, $showBorder } from "$store/page/store";
 import { setResizing } from "$store/page/action";
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {
@@ -161,6 +161,16 @@ export class ResizeWrapper extends LitElement {
       this.firstUpdated();
     });
   };
+
+  @state()
+  showBorder = false;
+
+  constructor() {
+    super();
+    $showBorder.subscribe((showBorder) => {
+      this.showBorder = showBorder;
+    })
+  }
   connectedCallback(): void {
     super.connectedCallback();
     window.removeEventListener("resize", this.firstUpdated);
@@ -272,6 +282,7 @@ export class ResizeWrapper extends LitElement {
           hovered:
             this.hoveredComponent?.id === this.component.id &&
             this.selectedComponent?.id !== this.component.id,
+            bordered : this.showBorder
         })}
         ${ref(this.inputRef)}
       >

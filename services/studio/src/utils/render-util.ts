@@ -4,7 +4,7 @@ import { html } from "lit";
 export function renderComponent(components: ComponentElement[]) {
   return html`
     ${components.map((component: ComponentElement) => {
-      switch (component.type) {
+      switch (component?.type) {
         case ComponentType.TextInput:
           return html`<generik-component-wrapper .component=${{ ...component }}>
             <text-input-block .component=${{ ...component }}></text-input-block>

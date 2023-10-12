@@ -55,6 +55,20 @@ export default css`
   .resizer-point-middle-bottom {
     cursor: s-resize;
   }
+
+
+  .element.bordered .resizer-line-top,
+  .element.bordered .resizer-line-bottom {
+    border-top: 1px dashed var(--editor-selection-color, #b5b5b5);
+  }
+  .element.bordered .resizer-line-right {
+    border-right: 1px dashed var(--editor-selection-color, #b5b5b5);
+    margin-left: 5px;
+  }
+  .element.bordered .resizer-line-left {
+    border-left: 1px dashed var(--editor-selection-color, #b5b5b5);
+  }
+
   .element.selected .resizer-line-top,
   .element.selected .resizer-line-bottom {
     border-top: 1px solid var(--editor-selection-color, #79ade6);
@@ -77,4 +91,9 @@ export default css`
   .element.hovered .resizer-line-left {
     border-left: 1px dashed var(--editor-selection-color, #79ade6);
   }
+
+
+
+
+
 `;

@@ -23,6 +23,16 @@ export const $pageZoom = persistentAtom<string>("page_zoom", "100", {
   decode: JSON.parse,
 });
 
+
+export const $showBorder = persistentAtom<boolean>("show_border", false, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
+export const $contextMenuEvent = persistentAtom<object>("context_menu_event", {}, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
+
 /**
  * End
  */

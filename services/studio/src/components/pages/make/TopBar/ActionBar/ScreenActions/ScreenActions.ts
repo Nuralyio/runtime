@@ -7,6 +7,7 @@ import "@hybridui/icon";
 import { addComponentAction } from "$store/component/action";
 import { ComponentType } from "$store/component/interface";
 import { GenerateName } from "utils/naming-generator";
+import { setShowBorder } from "$store/page/action";
 
 @customElement("topbar-screen-actions")
 export class TopbarScreenActions extends LitElement {
@@ -97,6 +98,10 @@ export class TopbarScreenActions extends LitElement {
     },
   ];
 
+  @state()
+  showBorder = false;
+
+
   render() {
     return html` <div class="screen-action-wrapper">
       <hy-button icon="arrow-left"></hy-button>
@@ -110,6 +115,19 @@ export class TopbarScreenActions extends LitElement {
           <hy-button icon="plus">Insert</hy-button>
         </span></hy-dropdown
       >
+      <hy-button icon="border-style" type="${this.showBorder ? "primary" : ""}"
+      @click=${() => {
+        this.showBorder = !this.showBorder;
+        setShowBorder(this.showBorder);
+      }
+      }
+      >
+        ${
+          !this.showBorder ? html`Show` : html`Hide`
+        }
+        
+         Broder</hy-button>
+
     </div>`;
   }
 }

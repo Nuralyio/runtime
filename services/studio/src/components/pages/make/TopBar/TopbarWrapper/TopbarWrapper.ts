@@ -13,7 +13,7 @@ export class TopbarPanelWrapper extends LitElement {
   render() {
     return html`<div class="topbar-wrapper">
       <topbar-user-environment></topbar-user-environment>
-      <topbar-action-bar></topbar-action-bar>
+     
     </div>`;
   }
 }

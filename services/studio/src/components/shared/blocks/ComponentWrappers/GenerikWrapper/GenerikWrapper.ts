@@ -29,6 +29,7 @@ import "./ResizeWrapper/ResizeWrapper";
 import "./QuickActionWrapper/QuickActionWrapper";
 import "../ComponentTitle/ComponentTitle";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { setContextMenuEvent } from "$store/page/action";
 @customElement("generik-component-wrapper")
 @useStores($currentComponentId, $environment)
 export class GenerikComponentWrapper extends LitElement {
@@ -88,12 +89,13 @@ export class GenerikComponentWrapper extends LitElement {
     $draggingComponentInfo.subscribe(
       (draggingComponentInfo: DraggingComponentInfo) => {
         if (draggingComponentInfo) {
+          this.draggingComponentInfo = draggingComponentInfo;
+
           this.draggingSituation = true;
           if(this.draggingComponentInfo?.componentId === this.component?.id){
             if(this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height){
               this.draggingComponentInfo.blockInfo.height = `${this.inputRef.value?.getBoundingClientRect().height}px`;
               this.draggingComponentInfo.blockInfo.width = `${this.inputRef.value?.getBoundingClientRect().width}px`;
-
               setDraggingComponentInfo({
                 componentId: this.draggingComponentInfo?.componentId,
                 blockInfo: {
@@ -103,7 +105,6 @@ export class GenerikComponentWrapper extends LitElement {
 
             }
           }
-          this.draggingComponentInfo = draggingComponentInfo;
         } else {
           this.draggingSituation = false;
           this.draggingComponentInfo = null;
@@ -113,6 +114,7 @@ export class GenerikComponentWrapper extends LitElement {
     $selectedComponent.subscribe((selectedComponent) => {
       if(selectedComponent?.id !== this.component?.id){
         this.showQuickAction = false;
+       // setContextMenuEvent(null);
       }
       this.selectedComponent = selectedComponent;
     });
@@ -126,7 +128,11 @@ export class GenerikComponentWrapper extends LitElement {
     e.preventDefault();
     e.stopPropagation();
     setCurrentComponentIdAction(this.component?.id);
-    this.showQuickAction = true;
+    //this.showQuickAction = true;
+    //console.log(this.inputRef.value?.getBoundingClientRect().top);
+    e.ComponentTop = this.inputRef.value?.getBoundingClientRect().top;
+    e.ComponentLeft = this.inputRef.value?.getBoundingClientRect().left;
+    setContextMenuEvent(e);
   }
 
   @state()
@@ -169,6 +175,8 @@ export class GenerikComponentWrapper extends LitElement {
             e.stopPropagation();
             e.preventDefault();
             setCurrentComponentIdAction(this.component?.id);
+        setContextMenuEvent(null);
+
           }}"
           @mouseenter="${() => {
             setHoveredComponentIdAction(this.component?.id);

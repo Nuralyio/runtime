@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./FontSizeValue/FontSizeValue";
 import "./FontSizeValueLabel/FontSizeValueLabel";
@@ -34,9 +34,7 @@ export class AttributeTextFontSize extends LitElement {
 
   render() {
     return html` <div class="container">
-      <attribute-font-size-value-label
-        class="first_column"
-      ></attribute-font-size-value-label>
+      ${this.slim ? nothing : html`<attribute-font-size-value-label class="first_column"></attribute-font-size-value-label>` }
       <attribute-font-size-value-handler
         .slim=${this.slim}
         @attributeUpdate=${this.changeHandler}

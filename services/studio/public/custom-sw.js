@@ -6,7 +6,8 @@ self.addEventListener('install', function (event) {
 
 });
 
-self['FontSize'] = Symbol("style.fontSize");
+self['FontSize'] = 'fontSize';
+self['Color'] = "color";
 
 self.addEventListener('message', event => {
     const {data:{command,value,components}} =event;
@@ -18,7 +19,7 @@ self.addEventListener('message', event => {
         if(!updatedAttriutes[component.id]){
             updatedAttriutes[component.id] = {}
         }
-        updatedAttriutes[component.id] ={'fontSize' :value};
+        updatedAttriutes[component.id] ={[symbol] :value};
        }
 
             components.forEach(component => {
