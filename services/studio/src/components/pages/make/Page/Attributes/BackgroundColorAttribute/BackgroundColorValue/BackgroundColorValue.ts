@@ -1,12 +1,13 @@
 import { ComponentElement } from "$store/component/interface";
+import { PageElement } from "$store/page/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ChangeEvent } from "react";
 
-@customElement("attribute-color-value-handler")
+@customElement("attribute-backgroundcolor-value-handler")
 export class AttributeColorValue extends LitElement {
   @property({ type: Object })
-  component: ComponentElement;
+  page: PageElement;
   @state()
   color = "#000000";
   static styles = [
@@ -45,7 +46,7 @@ export class AttributeColorValue extends LitElement {
     this.initValues();
   }
   initValues() {
-    this.color = this.component.style?.color ?? "#000000";
+    this.color = this.page.style?.backgroundColor ?? "#ffffff";
     this.requestUpdate();
   }
 

@@ -12,12 +12,13 @@ export class TopbarUserEnvironment extends LitElement {
 
   render() {
     return html`<div class="user-environment-bar">
-      <topbar-drawer></topbar-drawer>
-      <topbar-app-info></topbar-app-info>
-      <top-bar-environment-switcher
+      <!-- <topbar-drawer></topbar-drawer> -->
+      <!-- <topbar-app-info></topbar-app-info> -->
+      <topbar-action-bar></topbar-action-bar>
+      <!-- <top-bar-environment-switcher
         class="user-info "
       ></top-bar-environment-switcher>
-      <topbar-user-info></topbar-user-info>
+      <topbar-user-info></topbar-user-info> -->
     </div>`;
   }
 }

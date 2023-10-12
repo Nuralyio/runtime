@@ -79,7 +79,7 @@ export class DragWrapper extends LitElement {
       }}  
       @dragleave=${(e: DragEvent) => {
         e.preventDefault();
-        if (!(e.relatedTarget as HTMLElement).classList.contains("drop-zone")) {
+        if (!(e.relatedTarget as HTMLElement)?.classList.contains("drop-zone")) {
           this.dropDragPalceHolderStyle = {
             ...this.dropDragPalceHolderStyle,
             display: "none",
@@ -110,7 +110,9 @@ export class DragWrapper extends LitElement {
               width: "auto",
             };
           }}
-            @drop=${() => {
+            @drop=${(e) => {
+          e.preventDefault();
+          e.stopPropagation();
             this.dropDragPalceHolderStyle = {
               ...this.dropDragPalceHolderStyle,
               display: "none",

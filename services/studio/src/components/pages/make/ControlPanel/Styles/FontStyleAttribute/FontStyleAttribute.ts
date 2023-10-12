@@ -1,6 +1,6 @@
 import { updateComponentAttributes } from "$store/component/action";
 import { ComponentElement } from "$store/component/interface";
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./FontStyleValue/FontStyleValue";
 import "./FontStyleLabel/FontStyleLabel";
@@ -37,9 +37,7 @@ export class FOntSTyleATtribute extends LitElement {
 
   render() {
     return html` <div class="container">
-      <attribute-font-style-value-label
-        class="first_column"
-      ></attribute-font-style-value-label>
+      ${this.slim ? nothing : html`<attribute-font-style-value-label class="first_column"></attribute-font-style-value-label>` }
       <attribute-font-style-value-handler
         .component=${{ ...this.component }}
         @attributeUpdate=${this.changeHandler}

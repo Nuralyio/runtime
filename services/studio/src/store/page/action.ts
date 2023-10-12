@@ -1,6 +1,6 @@
 import { $resizing } from "$store/apps";
 import { PageElement } from "./interface";
-import { $currentPage, $currentPageId, $pageZoom, $pages } from "./store";
+import { $contextMenuEvent, $currentPage, $currentPageId, $pageZoom, $pages, $showBorder } from "./store";
 
 /** Actions*/
 export function addPageAction(com: PageElement) {
@@ -23,6 +23,19 @@ export function addComponentToCurrentPageAction(componentId: string) {
     }),
   ]);
 }
+
+
+export function updatePageStyleAttributes(pageId: string, style: any) {
+  $pages.set([
+    ...$pages.get().map((page: PageElement) => {
+      if (page.id === pageId) {
+        page = { ...page, style };
+      }
+      return page;
+    }),
+  ]);
+}
+
 export function removeComponentToCurrentPageAction(removedComponentId: string) {
   $pages.set([
     ...$pages.get().map((page: PageElement) => {
@@ -42,6 +55,18 @@ export function removeComponentToCurrentPageAction(removedComponentId: string) {
 
 export function updatePageZoom(pageZoom: number) {
   $pageZoom.set(String(pageZoom));
+}
+
+
+
+
+
+export function setShowBorder(showBorder: boolean) {
+  $showBorder.set(showBorder);
+}
+
+export function setContextMenuEvent(e: any) {
+  $contextMenuEvent.set(e);
 }
 
 

@@ -11,8 +11,10 @@ export class TopbarActionBar extends LitElement {
   render() {
     return html`
       <div class="action-bar">
-        <topbar-screen-actions></topbar-screen-actions
-        ><topbar-app-actions class="app-action-info"></topbar-app-actions>
+        <topbar-screen-actions></topbar-screen-actions >
+    
+        <span style="color:white;margin-left: auto;margin-top: 6px;" contenteditable="true">Company Poral</span>
+        <topbar-app-actions class="app-action-info"></topbar-app-actions>
       </div>
     `;
   }

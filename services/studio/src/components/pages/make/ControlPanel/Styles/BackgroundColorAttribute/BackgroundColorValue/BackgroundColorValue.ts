@@ -57,8 +57,6 @@ export class AttributeBackgroundColorValue extends LitElement {
       type="color"
       .value=${this.backgroundColor}
       @change=${this.handleColorChange}
-      id="head"
-      name="head"
     />`;
   }
 }

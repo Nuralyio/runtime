@@ -3,7 +3,8 @@ import { css } from "lit";
 export default css`
    .quick-action{
     display: inline-flex;
-    padding: 9px;
+    align-items: center;
+    padding: 3px;
     position: absolute;
     margin-top: -55px;
     z-index: 10;

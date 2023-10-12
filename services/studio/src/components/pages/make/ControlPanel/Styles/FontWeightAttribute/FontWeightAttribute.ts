@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./FontWeightValue/FontWeightValue";
 import "./FontWeightLabel/FontWeightLabel";
@@ -33,9 +33,7 @@ export class AttributeTextFontWeight extends LitElement {
   render() {
     return html`
       <div class="container">
-        <attribute-font-size-weight-label
-          class="first_column"
-        ></attribute-font-size-weight-label>
+      ${this.slim ? nothing : html`<attribute-font-size-weight-label class="first_column"></attribute-font-size-weight-label>` }
         <attribute-font-weight-value-handler
          .slim=${this.slim}
           .component=${{ ...this.component }}

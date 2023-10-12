@@ -8,7 +8,7 @@ import { setCurrentPageAction } from "$store/page/action";
 import { PageElement } from "$store/page/interface";
 import { $pagesWithComponents } from "$store/component/sotre";
 import { ComponentElement } from "$store/component/interface";
-import { setCurrentComponentIdAction } from "$store/component/action";
+import { setCurrentComponentIdAction, setHoveredComponentIdAction } from "$store/component/action";
 @customElement("screen-list-editor")
 @useStores($pages, $pagesWithComponents, $currentPage)
 export class ScreenListEditor extends LitElement {
@@ -20,6 +20,19 @@ export class ScreenListEditor extends LitElement {
     super();
   }
 
+  /*handleChildren(component: ComponentElement){
+    return component?.childrens?.map((child: ComponentElement) => ({
+      handler: () => {
+        if (this.currentPage?.id !== child?.pageId) {
+          setCurrentPageAction(child?.pageId);
+        }
+        setCurrentComponentIdAction(child?.id);
+      },
+      id: child.id,
+      label: child.name,
+    }));
+  }
+*/
   connectedCallback() {
     super.connectedCallback();
     $currentPage.subscribe((currentPage: PageElement) => {
@@ -27,28 +40,43 @@ export class ScreenListEditor extends LitElement {
     });
     $pagesWithComponents.subscribe((pages: PageElement[] = []) => {
       setTimeout(() => {
+        console.log('pages',pages)
         this.options = [...pages].map((page) => ({
           label: page.name,
           id: page.id,
           handler: () => {
             setCurrentPageAction(page.id);
           },
+         
+
           children: [
-            ...page.components?.map((component: ComponentElement) => ({
-              handler: () => {
-                if (this.currentPage?.id !== component?.pageId) {
-                  setCurrentPageAction(component?.pageId);
-                }
-                setCurrentComponentIdAction(component?.id);
-              },
-              id: component.id,
-              label: component.name,
-            })),
+            ...this.generateMenu(page.components),
           ],
         }));
         this.requestUpdate();
+      console.log(this.options)
+
       });
     });
+  }
+  generateMenu(components: ComponentElement[]) {
+    return components.map((component: ComponentElement) => ({
+      label: component.name,
+      id: component.id,
+      handler: () => {
+        if (this.currentPage?.id !== component?.pageId) {
+          setCurrentPageAction(component?.pageId);
+        }
+        setCurrentComponentIdAction(component?.id);
+      },
+      mouseEnterHander : ()=>{
+        setHoveredComponentIdAction(component?.id);
+      },
+      mouseLeaveHander : ()=>{
+        setHoveredComponentIdAction(null);
+      },
+      children: component.childrens ? this.generateMenu(component.childrens) : [],
+    }));
   }
   render() {
     return html`

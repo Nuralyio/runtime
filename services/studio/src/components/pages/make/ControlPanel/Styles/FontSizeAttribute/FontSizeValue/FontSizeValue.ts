@@ -81,7 +81,7 @@ export class AttributeFontSizeValue extends LitElement {
           type="number"
           palceholder="value"
           @valueChange=${this.handleValueChange}
-          value=${Number(this.component?.style?.fontSize?.match(/\d+/g))}
+          value=${Number(this.component?.style?.fontSize?.match(/\d+/g)) ||16}
         ></hy-input>
         <hy-dropdown
           .options=${[

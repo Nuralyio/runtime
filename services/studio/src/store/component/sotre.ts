@@ -79,6 +79,7 @@ export const $currentPageComponents = computed(
 export const $pagesWithComponents = computed(
   [$componentWithChildrens, $pages],
   (componentWithChildrens, pages) => {
+    console.log('componentWithChildrens',componentWithChildrens)
     return (pages || []).map((page) => {
       page.components = page.componentIds.map((componentId) =>
         componentWithChildrens.find(
@@ -98,16 +99,14 @@ const fillComponentChildrens = (
     component.childrens = [];
   }
   if (component.childrenIds) {
-    component.childrenIds.map((componentChildId: string) =>
-      components.find(
-        (component: ComponentElement) => component.id === componentChildId
-      )
-    );
+    component.childrens = component.childrenIds.map((componentChildId: string) => {
+      const foundComponent = components.find((component: ComponentElement) => component.id === componentChildId);
+      if (foundComponent) {
+        return fillComponentChildrens(components, foundComponent);
+      }
+      return null; // Handle the case where a child component is not found
+    }).filter(Boolean); // Remove null values if any
   }
-  component.childrens = component.childrens.map(
-    (componentChild: ComponentElement) =>
-      fillComponentChildrens(components, componentChild)
-  );
   return component;
 };
 

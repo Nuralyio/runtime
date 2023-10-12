@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./ColorLabel/ColorLabel";
 import "./ColorValue/ColorValue";
@@ -10,6 +10,12 @@ import styles from "./ColorAttribute.style";
 export class AttributeColor extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
+
+
+  @property({ type: Boolean })
+  slim: boolean = false;
+
+
   static styles = styles;
   changeHandler(event: CustomEvent) {
     updateComponentAttributes(this.component.id, {
@@ -18,9 +24,7 @@ export class AttributeColor extends LitElement {
   }
   render() {
     return html`<div class="container">
-      <attribute-color-value-label
-        class="first_column"
-      ></attribute-color-value-label>
+      ${this.slim ? nothing : html`<attribute-color-value-label class="first_column"></attribute-color-value-label>` }
       <attribute-color-value-handler
         @attributeUpdate=${this.changeHandler}
         .component=${{ ...this.component }}
