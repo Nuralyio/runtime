@@ -119,7 +119,7 @@ export class HyMenuComponent extends LitElement {
     const isSelected = Boolean(option === this.selected || this.showChildrenMap.get(option.id));
     const isGroupElement = option.type === OPTION_TYPES.GROUP;
     const hasChildren = option.children && option.children.length > 0;
-
+console.log(option)
     return html`
       <li
         ${ref(parentRef)}
@@ -146,6 +146,17 @@ export class HyMenuComponent extends LitElement {
               this.handleOptionClick(option, e);
             }
           }}"
+          @mouseenter="${() => {
+              if (option.mouseEnterHander) {
+                option.mouseEnterHander();
+              }
+            }}"
+
+              @mouseleave="${() => {
+              if (option.mouseLeaveHander) {
+                option.mouseLeaveHander();
+              }
+            }}"
         >
           ${hasChildren ? childrensArrow(this.boundery, isSelected) : ''}
           ${this.searchedELement?.label === option.label

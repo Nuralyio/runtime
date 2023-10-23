@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const defaultInputStyle = css`
   * {
@@ -97,5 +97,31 @@ const sizeInputStyle = css`
   :host {
     display: flex;
   }
+
+   @media (prefers-color-scheme: dark) {
+        span {
+          color: var(--hybrid-input-container-color, rgba(255, 255, 255, 0.88));
+          font-size: var(--hybrid-input-container-font-size, 14px);
+          background-color: var(--hybrid-input-container-background-color-dark, #000);
+          border-color: var(--hybrid-input-container-border-color, #929292);
+        }
+        span.inputfocuced,
+          span:hover {
+            border-color: var(--hybrid-input-hover-container-border-color-dark, #ffffff);
+            background-color: var(--hybrid-input-hover-container-background-color-dark, #000);
+          }
+        span input {
+          background-color: var(--hybrid-input-container-background-color-dark, #000);
+        }
+        span.inputfocuced input {
+          color: var(--hybrid-input-container-border-color, rgba(255, 255, 255, 0.88));
+          background-color: var(--hybrid-input-hover-container-background-color, #000);
+        }
+
+        span.inputfocuced input::placeholder {
+          color: var(--hybrid-input-container-border-color, rgba(255, 255, 255, 0.4));
+        }
+
+    }
 `;
 export const styles = [defaultInputStyle, sizeInputStyle, css``];

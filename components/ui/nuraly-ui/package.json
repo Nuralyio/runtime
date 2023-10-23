@@ -39,7 +39,8 @@
     "@types/react": "^18.0.28",
     "dayjs": "^1.11.7",
     "lit": "^2.2.4",
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "vanilla-colorful": "^0.7.2"
   },
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
