@@ -1,0 +1,579 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "hybrid.sublime-project",
+			"redo_stack":
+			[
+				[
+					37,
+					1,
+					"insert",
+					{
+						"characters": "na"
+					},
+					"AgAAAP4AAAAAAAAA/gAAAAAAAAABAAAAYf0AAAAAAAAA/QAAAAAAAAABAAAAbg",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAD/AAAAAAAAAP8AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					36,
+					1,
+					"insert",
+					{
+						"characters": "addtio"
+					},
+					"BgAAAPwAAAAAAAAA/AAAAAAAAAABAAAAb/sAAAAAAAAA+wAAAAAAAAABAAAAafoAAAAAAAAA+gAAAAAAAAABAAAAdPkAAAAAAAAA+QAAAAAAAAABAAAAZPgAAAAAAAAA+AAAAAAAAAABAAAAZPcAAAAAAAAA9wAAAAAAAAABAAAAYQ",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAD9AAAAAAAAAP0AAAAAAAAAAAAAAAAA8L8"
+				]
+			],
+			"settings":
+			{
+				"buffer_size": 251,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					2,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AwAAAEsAAAAAAAAATAAAAAAAAAAAAAAATAAAAAAAAABNAAAAAAAAAAAAAABNAAAAAAAAAE4AAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAASwAAAAAAAABLAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					3,
+					1,
+					"insert_snippet",
+					{
+						"contents": "{\n\t\"name\": \"${1:Attach}\",\n\t\"port\": 9229,\n\t\"request\": \"attach\",\n\t\"skipFiles\": [\n\t\t\"<node_internals>/**\"\n\t],\n\t\"type\": \"node\"\n},"
+					},
+					"AQAAAE4AAAAAAAAA1gAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAATgAAAAAAAABOAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					11,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AwAAAEsAAAAAAAAATAAAAAAAAAAAAAAATAAAAAAAAABNAAAAAAAAAAAAAABNAAAAAAAAAE4AAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAASwAAAAAAAABLAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					12,
+					1,
+					"insert_snippet",
+					{
+						"contents": "{\n\t\"name\": \"${2:Launch Program}\",\n\t\"program\": \"\\${folder}/${1:app.js}\",\n\t\"request\": \"launch\",\n\t\"skipFiles\": [\n\t\t\"<node_internals>/**\"\n\t],\n\t\"type\": \"node\"\n},"
+					},
+					"AQAAAE4AAAAAAAAA7wAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAATgAAAAAAAABOAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					17,
+					1,
+					"left_delete",
+					null,
+					"AQAAAO8AAAAAAAAA7wAAAAAAAACLAAAACgkJewoJCQkibmFtZSI6ICJBdHRhY2giLAoJCQkicG9ydCI6IDkyMjksCgkJCSJyZXF1ZXN0IjogImF0dGFjaCIsCgkJCSJza2lwRmlsZXMiOiBbCgkJCQkiPG5vZGVfaW50ZXJuYWxzPi8qKiIKCQkJXSwKCQkJInR5cGUiOiAibm9kZSIKCQl9LA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAegEAAAAAAADvAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					22,
+					1,
+					"insert",
+					{
+						"characters": "npm"
+					},
+					"BAAAAHwAAAAAAAAAfQAAAAAAAAAAAAAAfQAAAAAAAAB9AAAAAAAAABAAAAAke2ZvbGRlcn0vYXBwLmpzfQAAAAAAAAB+AAAAAAAAAAAAAAB+AAAAAAAAAH8AAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAfAAAAAAAAACMAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					23,
+					1,
+					"insert",
+					{
+						"characters": " start"
+					},
+					"BgAAAH8AAAAAAAAAgAAAAAAAAAAAAAAAgAAAAAAAAACBAAAAAAAAAAAAAACBAAAAAAAAAIIAAAAAAAAAAAAAAIIAAAAAAAAAgwAAAAAAAAAAAAAAgwAAAAAAAACEAAAAAAAAAAAAAACEAAAAAAAAAIUAAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAfwAAAAAAAAB/AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					40,
+					4,
+					"left_delete",
+					null,
+					"BAAAAC4AAAAAAAAALgAAAAAAAAC+AAAAImRlYnVnZ2VyX2NvbmZpZ3VyYXRpb25zIjoKCVsKCQl7CgkJCSJuYW1lIjogIkxhdW5jaCBQcm9ncmFtIiwKCQkJInByb2dyYW0iOiAibnBtIHN0YXJ0IiwKCQkJInJlcXVlc3QiOiAibGF1bmNoIiwKCQkJInNraXBGaWxlcyI6IFsKCQkJCSI8bm9kZV9pbnRlcm5hbHM+LyoqIgoJCQldLAoJCQkidHlwZSI6ICJub2RlIgoJCX0sCgldLC0AAAAAAAAALQAAAAAAAAABAAAACSwAAAAAAAAALAAAAAAAAAABAAAACisAAAAAAAAAKwAAAAAAAAABAAAALA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAALgAAAAAAAADsAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					42,
+					1,
+					"revert",
+					null,
+					"BAAAAAAAAAAAAAAAAAAAAAAAAAAuAAAAewoJImZvbGRlcnMiOgoJWwoJCXsKCQkJInBhdGgiOiAiLiIsCgkJfQoJXQp9CgAAAAAAAAAAUgAAAAAAAAAAAAAAAAAAAAAAAABSAAAAAAAAAAAAAAAAAAAAAAAAAFIAAAAAAAAAAAAAAA",
+					"BAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAKwAAAAAAAAArAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					14,
+					1,
+					"run_macro_file",
+					{
+						"file": "res://Packages/Default/Add Line.sublime-macro"
+					},
+					"AwAAAEsAAAAAAAAATAAAAAAAAAAAAAAATAAAAAAAAABNAAAAAAAAAAAAAABNAAAAAAAAAE4AAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABLAAAAAAAAAEsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					16,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"BAAAAEsAAAAAAAAATAAAAAAAAAAAAAAATAAAAAAAAABNAAAAAAAAAAAAAABNAAAAAAAAAE4AAAAAAAAAAAAAAE8AAAAAAAAATwAAAAAAAAACAAAACQk",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABLAAAAAAAAAEsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					17,
+					1,
+					"insert_snippet",
+					{
+						"contents": "{\n\t\"name\": \"${2:Launch Program}\",\n\t\"program\": \"\\${folder}/${1:app.js}\",\n\t\"request\": \"launch\",\n\t\"skipFiles\": [\n\t\t\"<node_internals>/**\"\n\t],\n\t\"type\": \"node\"\n},"
+					},
+					"AQAAAE4AAAAAAAAA7wAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABOAAAAAAAAAE4AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					34,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AgAAAPQAAAAAAAAA9QAAAAAAAAAAAAAA9QAAAAAAAAD2AAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAD0AAAAAAAAAPQAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					35,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAAPYAAAAAAAAA+AAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAD2AAAAAAAAAPYAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "web-dev-server.config.js",
+			"settings":
+			{
+				"buffer_size": 564,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"preferences",
+				"Preferences: Settings"
+			],
+			[
+				"",
+				"Debugger"
+			],
+			[
+				"debug",
+				"Debugger: Open"
+			],
+			[
+				"adapter",
+				"Debugger: Install Adapters"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"adap",
+				"Debugger: Install Adapters"
+			],
+			[
+				"copil",
+				"Copilot: Get Panel Completions"
+			],
+			[
+				"cop",
+				"Copilot: Sign In"
+			],
+			[
+				"debugg",
+				"Debugger: Install Adapters"
+			],
+			[
+				"install",
+				"Debugger: Install Adapters"
+			],
+			[
+				"insta",
+				"Install Package Control"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/aymen/Desktop/projects/hybrid-ui-library/hybrid-ui/src/components/button/hy-button.component.ts"
+	],
+	"find":
+	{
+		"height": 26.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "hybrid.sublime-project",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 251,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								251,
+								251
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html, text.xml"
+								},
+								{
+									"rhs_empty": true,
+									"selector": "punctuation.accessor"
+								}
+							],
+							"copilot.completion._is_modified": false,
+							"copilot.completion._is_saving": false,
+							"copilot.completion.completion_index": 0,
+							"copilot.completion.completion_style": "popup",
+							"copilot.completion.completions":
+							[
+								{
+									"displayText": "settings\": {\n\t\t\"files.associations\": {\n\t\t\t\"*.ejs\": \"html\"\n\t\t}\n\t},",
+									"docVersion": 19,
+									"point": 247,
+									"position":
+									{
+										"character": 2,
+										"line": 20
+									},
+									"range":
+									{
+										"end":
+										{
+											"character": 3,
+											"line": 20
+										},
+										"start":
+										{
+											"character": 0,
+											"line": 20
+										}
+									},
+									"region":
+									[
+										245,
+										248
+									],
+									"text": "\t\"settings\": {\n\t\t\"files.associations\": {\n\t\t\t\"*.ejs\": \"html\"\n\t\t}\n\t},",
+									"uuid": "8b573b8d-8f35-437b-a5bc-9763a8a2fb5e"
+								},
+								{
+									"displayText": "settings\": {\n\t\t\"terminal.integrated.shell.windows\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\",\n\t\t\"terminal.integrated.shellArgs.windows\": [\"-l\"],\n\t\t\"terminal.integrated.env.windows\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.shell.linux\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\",\n\t\t\"terminal.integrated.shellArgs.linux\": [\"-l\"],\n\t\t\"terminal.integrated.env.linux\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.shell.osx\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\",\n\t\t\"terminal.integrated.shellArgs.osx\": [\"-l\"],\n\t\t\"terminal.integrated.env.osx\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.linux\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.osx\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.windows\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.linux\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.osx\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\":",
+									"docVersion": 19,
+									"point": 247,
+									"position":
+									{
+										"character": 2,
+										"line": 20
+									},
+									"range":
+									{
+										"end":
+										{
+											"character": 3,
+											"line": 20
+										},
+										"start":
+										{
+											"character": 0,
+											"line": 20
+										}
+									},
+									"region":
+									[
+										245,
+										248
+									],
+									"text": "\t\"settings\": {\n\t\t\"terminal.integrated.shell.windows\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\",\n\t\t\"terminal.integrated.shellArgs.windows\": [\"-l\"],\n\t\t\"terminal.integrated.env.windows\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.shell.linux\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\",\n\t\t\"terminal.integrated.shellArgs.linux\": [\"-l\"],\n\t\t\"terminal.integrated.env.linux\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.shell.osx\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\",\n\t\t\"terminal.integrated.shellArgs.osx\": [\"-l\"],\n\t\t\"terminal.integrated.env.osx\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.linux\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.osx\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.windows\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.linux\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\": \"inherit\"\n\t\t},\n\t\t\"terminal.integrated.env.osx\": {\n\t\t\t\"CHERE_INVOKING\": \"1\",\n\t\t\t\"MSYSTEM\": \"MINGW64\",\n\t\t\t\"MSYS2_PATH_TYPE\":",
+									"uuid": "f2efb9c2-36c8-4fc6-a72a-6cd4168146c2"
+								}
+							],
+							"copilot.completion.is_visible": false,
+							"copilot.completion.is_visible_panel_completions": false,
+							"copilot.completion.is_waiting_completion": false,
+							"copilot.completion.is_waiting_panel_completions": false,
+							"copilot.completion.original_layout": null,
+							"lsp_active": true,
+							"lsp_uri": "file:///Users/aymen/Desktop/projects/hybrid-ui-library/hybrid-ui/hybrid.sublime-project",
+							"syntax": "Packages/JSON/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "web-dev-server.config.js",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 564,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								564,
+								564
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html, text.xml"
+								},
+								{
+									"rhs_empty": true,
+									"selector": "punctuation.accessor"
+								}
+							],
+							"copilot.completion._is_modified": false,
+							"copilot.completion.is_visible": false,
+							"copilot.completion.is_visible_panel_completions": false,
+							"copilot.completion.is_waiting_completion": false,
+							"copilot.completion.is_waiting_panel_completions": false,
+							"copilot.completion.original_layout": null,
+							"lsp_active": true,
+							"lsp_uri": "file:///Users/aymen/Desktop/projects/hybrid-ui-library/hybrid-ui/web-dev-server.config.js",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.Debugger":
+	{
+		"height": 222.0
+	},
+	"output.Debugger Console":
+	{
+		"height": 222.0
+	},
+	"output.LSP Log Panel":
+	{
+		"height": 0.0
+	},
+	"output.diagnostics":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups-dummy":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "hybrid.sublime-project",
+	"replace":
+	{
+		"height": 48.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 478.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
