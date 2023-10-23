@@ -14,7 +14,7 @@ import '../icon/icon.component.js';
 import '../button/hy-button.component.js';
 import {getMonthDetails} from './core/month.helper.js';
 import {styles} from './date-picker.style.js';
-import {styleMap} from 'lit/directives/style-map.js';
+import {styleMap, StyleMapDirective} from 'lit/directives/style-map.js';
 import {EMPTY_STRING, Mode} from './constants.js';
 import {renderMonthsTemplate} from './templates/months.template.js';
 import {renderYearsTemplate} from './templates/years.template.js';
@@ -22,6 +22,7 @@ import {renderDays} from './templates/days.template.js';
 import {oneToTwoDigit} from './core/formatter.js';
 import {capitalizeFirstLetter} from './core/string.helper.js';
 import './core/locale.helper.js';
+import { DirectiveResult } from 'lit/directive.js';
 interface NavigationDates {
   start: {
     year: number;
@@ -114,7 +115,7 @@ export class HyDatePickerElement extends LitElement {
   @query('.calendar-container')
   calendarContainer!: HTMLElement;
 
-  clendarContainerStyle = styleMap({});
+  clendarContainerStyle : DirectiveResult<typeof StyleMapDirective> = styleMap({});
 
   @state()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
