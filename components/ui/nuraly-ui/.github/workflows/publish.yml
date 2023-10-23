@@ -56,5 +56,6 @@ jobs:
           cd ../radio && publish-if-not-published
           cd ../select && publish-if-not-published
           cd ../tooltips && publish-if-not-published
+          cd ../colorpicker && publish-if-not-published
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
