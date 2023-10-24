@@ -3,10 +3,9 @@ import { customElement, property, state } from "lit/decorators.js";
 
 import "@hybridui/radio";
 import "@hybridui/icon";
-import { RadioOption } from "@hybridui/radio/radio.type.js";
+import { type RadioOption } from "@hybridui/radio/radio.type.js";
 import {
-  ComponentElement,
-  TextLabelAttributes,
+  type ComponentElement,
 } from "$store/component/interface";
 @customElement("attribute-font-style-value-handler")
 export class FOntSTyleVAlue extends LitElement {

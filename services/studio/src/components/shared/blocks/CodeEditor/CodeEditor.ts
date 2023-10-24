@@ -1,28 +1,17 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { createRef, Ref, ref } from "lit/directives/ref.js";
+import { createRef, type  Ref, ref } from "lit/directives/ref.js";
 
 // -- Monaco Editor Imports --
 import * as monaco from "monaco-editor";
-import styles from "monaco-editor/min/vs/editor/editor.main.css";
+import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
-import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 
 // @ts-ignore
 self.MonacoEnvironment = {
   getWorker(_: any, label: string) {
-    if (label === "json") {
-      return new jsonWorker();
-    }
-    if (label === "css" || label === "scss" || label === "less") {
-      return new cssWorker();
-    }
-    if (label === "html" || label === "handlebars" || label === "razor") {
-      return new htmlWorker();
-    }
+ 
     if (label === "typescript" || label === "javascript") {
       return new tsWorker();
     }

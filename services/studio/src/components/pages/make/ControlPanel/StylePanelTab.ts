@@ -1,4 +1,4 @@
-import { ComponentElement, ComponentType } from "$store/component/interface";
+import { type  ComponentElement, ComponentType } from "$store/component/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./Inputs/Container/DirectionAttribute/DirectionAttribute";

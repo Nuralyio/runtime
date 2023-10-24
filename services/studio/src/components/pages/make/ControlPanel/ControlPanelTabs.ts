@@ -7,7 +7,7 @@ import "@hybridui/dropdown";
 import "@lit-labs/ssr-dom-shim";
 import { useStores } from "@nanostores/lit";
 import { $selectedComponent } from "$store/component/sotre";
-import { ComponentElement, ComponentType } from "$store/component/interface";
+import { type  ComponentElement, type ComponentType } from "$store/component/interface";
 import "./Inputs/Text/TextAttribute/TextAttribute";
 import "./Styles/FontSizeAttribute/FontSizeAttribute";
 import "./Styles/FontWeightAttribute/FontWeightAttribute";
@@ -26,7 +26,25 @@ export class ParametersPanel extends LitElement {
       :host {
         min-width: 340px;
         display: block;
+          --hybrid-tabs-content-background-color : #1f2937;
+        height:100vh;
+          background-color: #2c2c2c;
+        overflow-y: auto;
+
+
       }
+      hy-tabs {
+        --hybrid-tabs-content-background-color : #f8fafc;
+      }
+      @media (prefers-color-scheme: dark) {
+       
+        hy-tabs {
+          --hybrid-tabs-content-background-color : #2c2c2c;
+          color: #f3f3f3;
+          font-size: 12px;
+          font-weight: 400;
+        }
+      } 
     `,
   ];
 

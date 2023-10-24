@@ -1,7 +1,6 @@
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { ChangeEvent } from "react";
 
 @customElement("attribute-color-value-handler")
 export class AttributeColorValue extends LitElement {
@@ -18,7 +17,7 @@ export class AttributeColorValue extends LitElement {
   ];
 
   handleColorChange(event) {
-    const { value } = event.target;
+    const { value } = event.detail;
     this.color = value;
     this.emitCustomEvent();
   }
@@ -45,17 +44,18 @@ export class AttributeColorValue extends LitElement {
     this.initValues();
   }
   initValues() {
-    this.color = this.component.style?.color ?? "#000000";
+    if (this.component.style?.color && this.component.style?.color != "undefined") {
+      this.color = this.component.style?.color;
+    }
     this.requestUpdate();
   }
 
   render() {
-    return html`<input
-      type="color"
-      .value=${this.color}
-      @change=${this.handleColorChange}
-      id="head"
-      name="head"
-    />`;
+    return html`
+<hy-color-picker
+    .color="${this.color}"
+    @color-changed="${this.handleColorChange}"
+    ></hy-color-picker>
+  `;
   }
 }

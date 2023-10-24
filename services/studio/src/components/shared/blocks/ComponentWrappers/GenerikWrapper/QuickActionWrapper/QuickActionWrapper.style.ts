@@ -12,4 +12,10 @@ export default css`
     background: rgb(252 252 252);
     box-shadow: 0 0 5px 0 rgb(0 0 0 / 20%);
   }
+
+ @media (prefers-color-scheme: dark) {
+  .quick-action{
+      background: rgb(44, 44, 44)
+   }
+ }
 `;

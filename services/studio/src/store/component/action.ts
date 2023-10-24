@@ -1,9 +1,9 @@
 import { $currentPage, $currentPageId, $pages } from "../page/store";
 import { v4 as uuidv4 } from "uuid";
-import { DraggingComponentInfo } from "./interface";
+import { type DraggingComponentInfo } from "./interface";
 
 import {
-  ComponentElement,
+  type ComponentElement,
   ComponentType,
 } from "./interface";
 import {
@@ -14,7 +14,7 @@ import {
 } from "./sotre";
 import { addComponentToCurrentPageAction, removeComponentToCurrentPageAction } from "$store/page/action";
 import { action } from "nanostores";
-import { PageElement } from "$store/page/interface";
+import { type PageElement } from "$store/page/interface";
 import { GenerateName } from "utils/naming-generator";
 
 export interface AddComponentRequest {

@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
-import { ComponentElement, TextLabelStyles } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 @customElement("parameters-text-value-handler")
 export class AttributesTextValueHandler extends LitElement {
   @property({ type: Object })

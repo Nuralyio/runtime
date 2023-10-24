@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./ColorLabel/ColorLabel";
 import "./ColorValue/ColorValue";
 import { updateComponentAttributes } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import styles from "./ColorAttribute.style";
 
 @customElement("attribute-color")

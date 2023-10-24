@@ -1,11 +1,9 @@
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
-import { updateComponentAttributes } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
 import styles from "./BackgroundColorAttribute.style";
-import { PageElement } from "$store/page/interface";
+import { type PageElement } from "$store/page/interface";
 import { updatePageStyleAttributes } from "$store/page/action";
 
 @customElement("attribute-page-background-color")

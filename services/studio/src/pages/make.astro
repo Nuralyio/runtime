@@ -14,16 +14,14 @@ import { RightPanel } from "../components/pages/make/Layout/RightPanel";
   <div class="H-full flex flex-wrap mx-auto">
     <TopbarPanelWrapper client:load>Wrapper</TopbarPanelWrapper>
   </div>
-  <div class="flex flex-row bg-gray-100 text-gray-800">
+  <div class="flex flex-row text-gray-800">
     <LeftPanel client:load />
     <main
-      class="main -ml-48 flex flex-grow flex-col p-4 transition-all duration-150 ease-in md:ml-0"
+      class="main  flex flex-grow flex-col  transition-all duration-150 ease-in md:ml-0"
     >
-      <div class="flex h-full">
         <EditorInteractivePanel client:load>
           <PageContent client:only="lit" />
         </EditorInteractivePanel>
-      </div>
     </main>
     <RightPanel client:only="lit" />
   </div>
@@ -42,3 +40,8 @@ import { RightPanel } from "../components/pages/make/Layout/RightPanel";
     });
   }
 </script>
+<style>
+  html{
+        overflow: hidden;
+  }
+</style>

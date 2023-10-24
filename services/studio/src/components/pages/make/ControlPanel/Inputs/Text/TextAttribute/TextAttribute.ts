@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./TextValueLabel/TextValueLabel";
 import "./TextValue/TextValue";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { updateComponentParameters } from "$store/component/action";
 @customElement("parameter-text-label")
 export class TextLabelAttributes extends LitElement {

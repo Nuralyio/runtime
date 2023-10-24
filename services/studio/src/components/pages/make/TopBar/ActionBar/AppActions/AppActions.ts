@@ -1,8 +1,8 @@
-import { LitElement, html, css } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import styles from "./AppActions.style";
 import { useStores } from "@nanostores/lit";
-import { $environment, Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/store";
 import { setEnvironmentMode } from "$store/environment/action";
 
 @customElement("topbar-app-actions")

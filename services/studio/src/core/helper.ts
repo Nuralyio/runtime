@@ -3,7 +3,7 @@ import {
   updateComponentAttributes,
   updateComponentError,
 } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 
 export function executeInServiceWorker(
   components: ComponentElement[],

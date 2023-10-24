@@ -1,11 +1,11 @@
-import { PageElement } from "$store/page/interface";
-import { $currentPage, $pages } from "$store/page/store";
+import { type PageElement } from "$store/page/interface";
+import { $currentPage } from "$store/page/store";
 import { useStores } from "@nanostores/lit";
-import { LitElement, html, css } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import styles from "./Page.style";
 import { $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
-import { ComponentElement, ComponentType, DraggingComponentInfo } from "$store/component/interface";
+import { type ComponentElement, ComponentType, type DraggingComponentInfo } from "$store/component/interface";
 
 import "../../../../core/engine";
 import "../../../shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
@@ -15,7 +15,7 @@ import "../../../shared/blocks/ComponentElements/Button/Button";
 import "../../../shared/blocks/ComponentElements/Containers/Container";
 import "../../../shared/blocks/CodeEditor/CodeEditor";
 import { renderComponent } from "utils/render-util";
-import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction } from "$store/component/action";
+import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
 import { $resizing } from "$store/apps";
 import { styleMap } from "lit/directives/style-map.js";
 @customElement("content-page")
@@ -35,24 +35,42 @@ export class PageContent extends LitElement {
   components: ComponentElement[] = [];
   constructor() {
     super();
+    //generate code event listener ton keyboard event
+     document.addEventListener('keydown', function(event) {
+      console.log(event.key);
+      // Handle arrow key presses
+      switch(event.key){
+        case 'ArrowDown':
+
+          this.updateStyle( "marginTop", 1);
+
+          break;
+        case 'ArrowUp':
+          this.updateStyle( "marginTop", -1);
+
+          break;
+        case 'ArrowLeft':
+          this.updateStyle( "marginLeft", -1);
+
+          break;
+        case 'ArrowRight':
+          this.updateStyle( "marginLeft", 1);
+      }
+     
+    }.bind(this));
+
     $selectedComponent.subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
     });
     document.addEventListener('keydown', function(event) {
       if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
-        // Ctrl+V (or Command+V on macOS) was pressed
-        // Your paste logic here
         if(this.selectedComponent.type === ComponentType.VerticalContainer){
     pasteComponentAction();        
-        // Prevent the default paste behavior (if desired)
         event.preventDefault();
         }
     
       }else if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-        // Ctrl+V (or Command+V on macOS) was pressed
-        // Your paste logic here
         copyComponentAction( this.selectedComponent.id);        
-        // Prevent the default paste behavior (if desired)
         event.preventDefault();
       }
 
@@ -75,6 +93,18 @@ export class PageContent extends LitElement {
       }
     );
     
+  }
+
+  updateStyle(key, counter){
+
+    if(this.selectedComponent){
+            const  value = this.selectedComponent.style[key] ?? "0px"
+            const numvalue = Number(value.replace("px", ""));
+            updateComponentAttributes(this.selectedComponent.id, {
+              [ key]: numvalue+counter+"px",
+            });
+          }
+
   }
 
   render() {

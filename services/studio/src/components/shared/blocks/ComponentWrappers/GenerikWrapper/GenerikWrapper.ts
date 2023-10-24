@@ -6,8 +6,8 @@ import {
   updateComponentAttributes,
 } from "$store/component/action";
 import {
-  ComponentElement,
-  DraggingComponentInfo,
+  type ComponentElement,
+  type DraggingComponentInfo,
 } from "$store/component/interface";
 import {
   $currentComponentId,
@@ -22,13 +22,13 @@ import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import styles from "./GenerikWrapper.style";
 
-import { $environment, Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/store";
 
 import "./DragWrapper/DragWrapper";
 import "./ResizeWrapper/ResizeWrapper";
 import "./QuickActionWrapper/QuickActionWrapper";
 import "../ComponentTitle/ComponentTitle";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { setContextMenuEvent } from "$store/page/action";
 @customElement("generik-component-wrapper")
 @useStores($currentComponentId, $environment)
@@ -140,18 +140,7 @@ export class GenerikComponentWrapper extends LitElement {
 
   render() {
     return html`
-    ${this.showQuickAction ? html`
-             <quick-action-wrapper
-             @click=${(e: Event) => {
-              e.stopPropagation();
-              e.preventDefault();
-              }}
-             @displayQuickActionChanged=${(e: CustomEvent) => {
-             // this.showQuickAction = e.detail.showQuickAction;
-              }}
-             .component=${{...this.component}}
-             ></quick-action-wrapper>
-              ` : nothing}
+  
     
     <resize-wrapper
       .component=${{ ...this.component }}
@@ -220,7 +209,10 @@ export class GenerikComponentWrapper extends LitElement {
             class="component-name"
             >${this.component.name}</span
           -->
-          <div  ${ref(this.inputRef)} style=${styleMap(this.wrapperStyle)}>
+          <div  ${ref(this.inputRef)}   class=${classMap({
+            selected:
+            this.selectedComponent?.id === this.component.id
+          })} >
             <slot></slot>
           </div>
         </span>

@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import "../SmartAttributeHandler/SmartAttributeHandler";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 @customElement("smart-attribute-editor-dropdown")
 export class SmartAttributeEditorDropDown extends LitElement {
   @property({ type: Object })

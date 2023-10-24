@@ -1,7 +1,7 @@
 import { $componentWithChildrens } from "$store/component/sotre";
 import * as esprima from "esprima";
 import * as escodegen from "escodegen";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import {
   updateComponentAttributes,
   updateComponentError,

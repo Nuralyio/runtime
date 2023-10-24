@@ -1,5 +1,5 @@
 import { persistentAtom } from "@nanostores/persistent";
-import { ComponentElement, DraggingComponentInfo } from "./interface";
+import { type ComponentElement, type DraggingComponentInfo } from "./interface";
 import { atom, computed, keepMount } from "nanostores";
 import { $currentPage, $pages } from "$store/page/store";
 import { logger } from "@nanostores/logger";
