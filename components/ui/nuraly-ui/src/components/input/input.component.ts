@@ -26,6 +26,8 @@ export enum INPUT_TYPE {
  * @attr size
  *
  */
+
+console.log('hy-input', styles);
 @customElement('hy-input')
 export class HyInputElement extends LitElement {
   // W3C standards

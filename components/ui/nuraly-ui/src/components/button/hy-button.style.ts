@@ -245,7 +245,28 @@ export const styles = [
   iconButtonStyle,
   disabledButtonStyle,
   usedAsStyle,
-  css``,
+  css`
+
+ @media (prefers-color-scheme: dark) {
+  
+
+  button {
+    background-color: var(--hybrid-button-background-color, rgb(44, 44, 44));
+    color: var(--hybrid-button-text-color, #ffffff);
+  }
+
+
+  
+  button[data-type='primary'] {
+    border-color: var(--hybrid-button-dark-primary-border-color, #4a96ff);
+    background-color: var(--hybrid-button-dark-primary-background-color, rgb(44, 44, 44));
+    color: var(--hybrid-button-dark-primary-text-color, #ffffff);
+  }
+
+ }
+
+
+  `,
 ];
 
 export const hostBlockStyle = html`<style>

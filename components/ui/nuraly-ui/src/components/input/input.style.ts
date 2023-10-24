@@ -59,6 +59,7 @@ const defaultInputStyle = css`
     border: var(--hybrid-input-border, none);
     outline: var(--hybrid-input-outline, none);
     display: var(--hybrid-input-display, inline-block);
+    text-align: var(--hybrid-input-text-align, left);
   }
   slot[name='suffix'],
   slot[name='prefix'],
@@ -97,29 +98,29 @@ const sizeInputStyle = css`
   :host {
     display: flex;
   }
-
    @media (prefers-color-scheme: dark) {
         span {
           color: var(--hybrid-input-container-color, rgba(255, 255, 255, 0.88));
           font-size: var(--hybrid-input-container-font-size, 14px);
-          background-color: var(--hybrid-input-container-background-color-dark, #000);
+          background-color: var(--hybrid-input-container-background-color-dark, rgb(44, 44, 44));
           border-color: var(--hybrid-input-container-border-color, #929292);
         }
         span.inputfocuced,
           span:hover {
             border-color: var(--hybrid-input-hover-container-border-color-dark, #ffffff);
-            background-color: var(--hybrid-input-hover-container-background-color-dark, #000);
+            background-color: var(--hybrid-input-container-background-color-dark, rgb(44, 44, 44));
           }
         span input {
-          background-color: var(--hybrid-input-container-background-color-dark, #000);
+          color: var(--hybrid-input-container-color-dark, rgba(255, 255, 255, 0.88));
+          background-color: var(--hybrid-input-container-background-color-dark, rgb(44, 44, 44));
         }
         span.inputfocuced input {
-          color: var(--hybrid-input-container-border-color, rgba(255, 255, 255, 0.88));
-          background-color: var(--hybrid-input-hover-container-background-color, #000);
+          color: var(--hybrid-input-container-color-dark, rgba(255, 255, 255, 0.88));
+          background-color: var(--hybrid-input-hover-container-background-color, rgb(44, 44, 44));
         }
 
         span.inputfocuced input::placeholder {
-          color: var(--hybrid-input-container-border-color, rgba(255, 255, 255, 0.4));
+          color: var(--hybrid-input-container-color-dark, rgba(255, 255, 255, 0.4));
         }
 
     }
