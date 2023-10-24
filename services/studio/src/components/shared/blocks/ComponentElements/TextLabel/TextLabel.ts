@@ -1,4 +1,4 @@
-import { ComponentElement, TextLabelStyles } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";

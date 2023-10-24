@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./FontWeightValue/FontWeightValue";
 import "./FontWeightLabel/FontWeightLabel";
 import { updateComponentAttributes } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 @customElement("attribute-text-font-weight")
 export class AttributeTextFontWeight extends LitElement {
   @property({ type: Object })

@@ -1,5 +1,5 @@
 import { updateComponentAttributes } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./FontStyleValue/FontStyleValue";

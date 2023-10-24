@@ -1,4 +1,4 @@
-import { ComponentElement, ComponentType } from "$store/component/interface";
+import { type ComponentElement, ComponentType } from "$store/component/interface";
 import { $components } from "$store/component/sotre";
 
 export const GenerateName = (componentType: ComponentType) => {

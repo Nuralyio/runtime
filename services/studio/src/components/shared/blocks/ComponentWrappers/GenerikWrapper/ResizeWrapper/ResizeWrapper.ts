@@ -1,9 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { updateComponentAttributes } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import styles from "./ResizeWrapper.style";
 import { classMap } from "lit/directives/class-map.js";
 import { $pageZoom, $showBorder } from "$store/page/store";

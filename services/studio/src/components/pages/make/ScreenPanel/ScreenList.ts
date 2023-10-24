@@ -5,9 +5,9 @@ import { $currentPage, $pages } from "$store/page/store";
 import "@hybridui/menu";
 import "@hybridui/icon";
 import { setCurrentPageAction } from "$store/page/action";
-import { PageElement } from "$store/page/interface";
+import { type PageElement } from "$store/page/interface";
 import { $pagesWithComponents } from "$store/component/sotre";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { setCurrentComponentIdAction, setHoveredComponentIdAction } from "$store/component/action";
 @customElement("screen-list-editor")
 @useStores($pages, $pagesWithComponents, $currentPage)

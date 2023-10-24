@@ -1,8 +1,6 @@
-import { ComponentElement } from "$store/component/interface";
-import { PageElement } from "$store/page/interface";
+import { type PageElement } from "$store/page/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { ChangeEvent } from "react";
 
 @customElement("attribute-backgroundcolor-value-handler")
 export class AttributeColorValue extends LitElement {

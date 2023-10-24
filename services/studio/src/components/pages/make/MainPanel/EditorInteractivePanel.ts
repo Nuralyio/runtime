@@ -1,15 +1,16 @@
-import { CSSResultGroup, LitElement, css, html } from "lit";
-import { state, property, customElement } from "lit/decorators.js";
+import { LitElement, css, html } from "lit";
+import { state, customElement } from "lit/decorators.js";
 import "@hybridui/button";
 import "@hybridui/tabs";
 import "@hybridui/dropdown";
+import "@hybridui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
-import { $environment, Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/store";
 import { $contextMenuEvent, $pageZoom } from "$store/page/store";
 import { updatePageZoom } from "$store/page/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/sotre";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { type Ref, createRef, ref } from "lit/directives/ref.js";
 
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
@@ -18,20 +19,20 @@ export class EditorInteractivePanel extends LitElement {
 
   @state()
   zoomLevel = 100;
-
+//
   @state()
   selectedComponent: ComponentElement;
 
   inputRef: Ref<HTMLInputElement> = createRef();
 
   static styles = css`
-    :host {
-      width: 100%;
-      height: 78vh;
+  :host {
+      height: 100vh;
+      display: block;
+      background-color:#949494
     }
     .page-container {
       width: 100%;
-      height: 78vh;
       overflow: auto;
     }
     .zoom-area {
@@ -91,7 +92,7 @@ export class EditorInteractivePanel extends LitElement {
     })
   }
   render() {
-    return html`<div>
+    return html`<div >
 <quick-action-wrapper
 ${ref(this.inputRef)}
 style="position : absolute ; display : none"
@@ -115,7 +116,12 @@ style="position : absolute ; display : none"
       </div>
       <br />
 
-      <div class="zoom-controll">
+    `;
+  }
+}
+
+/*
+  <div class="zoom-controll">
         <input
           @input=${(e) => {
         updatePageZoom(e.target.value);
@@ -128,6 +134,5 @@ style="position : absolute ; display : none"
           .value=${this.zoomLevel}
           step="10"
         />
-      </div>`;
-  }
-}
+      </div>
+      */

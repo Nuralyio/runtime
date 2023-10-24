@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
 import { updateComponentAttributes } from "$store/component/action";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import styles from "./BackgroundColorAttribute.style";
 
 @customElement("attribute-background-color")

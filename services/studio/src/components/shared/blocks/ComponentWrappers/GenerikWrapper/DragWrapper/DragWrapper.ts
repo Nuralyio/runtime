@@ -1,12 +1,12 @@
-import { LitElement, html, css, nothing, PropertyValueMap } from "lit";
+import { LitElement, html, css, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import styles from "./DragWrapper.style";
 import {
-  ComponentElement,
-  DraggingComponentInfo,
+  type ComponentElement,
+  type DraggingComponentInfo,
 } from "$store/component/interface";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import {
   moveDraggedComponent,
   setDraggingComponentInfo,

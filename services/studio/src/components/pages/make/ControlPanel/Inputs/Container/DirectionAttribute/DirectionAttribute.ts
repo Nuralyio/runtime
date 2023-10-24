@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./DirectionValue/DirectionValue";
 import "./DirectionValueLabel/TextValueLabel";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { updateComponentInput } from "$store/component/action";
 
 @customElement("parameter-container-attribute")

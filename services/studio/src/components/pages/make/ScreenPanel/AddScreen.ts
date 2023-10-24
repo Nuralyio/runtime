@@ -6,7 +6,7 @@ import "@hybridui/menu";
 import "@hybridui/button";
 import "@hybridui/icon";
 import { $pages } from "$store/page/store";
-import { PageElement } from "$store/page/interface";
+import { type PageElement } from "$store/page/interface";
 import { addPageAction } from "$store/page/action";
 
 @customElement("add-screen-editor")

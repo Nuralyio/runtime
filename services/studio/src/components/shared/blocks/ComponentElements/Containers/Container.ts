@@ -7,8 +7,8 @@ import {
   setHoveredComponentIdAction,
 } from "$store/component/action";
 import {
-  ComponentElement,
-  DraggingComponentInfo,
+  type ComponentElement,
+  type DraggingComponentInfo,
 } from "$store/component/interface";
 import {
   $components,
@@ -16,12 +16,12 @@ import {
   $hoveredComponent,
   $selectedComponent,
 } from "$store/component/sotre";
-import { LitElement, html, css, nothing, PropertyValueMap } from "lit";
+import { LitElement, html, css, nothing,  } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import styles from "./Container.style";
 import { setContextMenuEvent, setResizing } from "$store/page/action";
 @customElement("vertical-container-block")

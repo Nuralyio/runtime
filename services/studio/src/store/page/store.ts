@@ -2,7 +2,7 @@ import { computed, keepMount, onMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
 
 import { logger } from "@nanostores/logger";
-import { PageElement } from "./interface";
+import { type PageElement } from "./interface";
 
 /**
  * Pages stores
@@ -18,7 +18,7 @@ export const $currentPageId = persistentAtom<string>("page_id", null, {
 });
 
 
-export const $pageZoom = persistentAtom<string>("page_zoom", "100", {
+export const $pageZoom = persistentAtom<string>("page_zoom", "95", {
   encode: JSON.stringify,
   decode: JSON.parse,
 });

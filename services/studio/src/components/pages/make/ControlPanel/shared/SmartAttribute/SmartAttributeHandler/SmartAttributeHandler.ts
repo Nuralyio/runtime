@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "../SmartAttributeCodeEditor/SmartAttributeCodeEditor";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { updateComponentAttributeHandlers } from "$store/component/action";
 
 @customElement("smart-attribute-handler")
@@ -62,10 +62,10 @@ export class SmartAttributeHandler extends LitElement {
   render() {
     return html`${this.component.errors &&
       this.component.errors[this.attributeName]
-        ? html`<div class="error-message-text">
+      ? html`<div class="error-message-text">
             ${this.component.errors[this.attributeName]}
           </div>`
-        : nothing}
+      : nothing}
       <smart-attribute-codeeditor
         .containerStyle=${this.containerStyle ?? nothing}
         .value=${this.getAttributeValue()}

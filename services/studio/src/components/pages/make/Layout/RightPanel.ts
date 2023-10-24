@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { $environment, Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/store";
 
 import "../ControlPanel/ControlPanelTabs";
 @customElement("right-panel")
@@ -16,6 +16,9 @@ export class RightPanel extends LitElement {
       this.mode = environment.mode;
     });
   }
+
+ 
+
   render() {
     return html` ${this.mode === ViewMode.Edit
       ? html`<aside

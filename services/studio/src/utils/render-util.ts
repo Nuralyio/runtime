@@ -1,4 +1,4 @@
-import { ComponentElement, ComponentType } from "$store/component/interface";
+import { type ComponentElement, ComponentType } from "$store/component/interface";
 import { html } from "lit";
 
 export function renderComponent(components: ComponentElement[]) {

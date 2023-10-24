@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
 import "@hybridui/dropdown";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import "../../../shared/SmartAttribute/SmartAttributeDropdown/SmartAttributeDropdown";
 import "../../../shared/AttributeInputWrapper/AttributeInputWrapper";
 import styles from "./FontSizeValue.style";

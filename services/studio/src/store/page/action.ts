@@ -1,5 +1,5 @@
 import { $resizing } from "$store/apps";
-import { PageElement } from "./interface";
+import { type PageElement } from "./interface";
 import { $contextMenuEvent, $currentPage, $currentPageId, $pageZoom, $pages, $showBorder } from "./store";
 
 /** Actions*/

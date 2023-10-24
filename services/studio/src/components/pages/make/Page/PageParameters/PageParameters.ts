@@ -1,7 +1,7 @@
-import { PageElement } from '$store/page/interface';
+import { type PageElement } from '$store/page/interface';
 import { $currentPage } from '$store/page/store';
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js'
+import { customElement } from 'lit/decorators.js'
 import "../Attributes/BackgroundColorAttribute/BackgroundColorAttribute";
 @customElement('page-parameters')
 export class PageParameters extends LitElement {

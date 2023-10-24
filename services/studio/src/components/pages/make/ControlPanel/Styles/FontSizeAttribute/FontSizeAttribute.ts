@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./FontSizeValue/FontSizeValue";
 import "./FontSizeValueLabel/FontSizeValueLabel";
-import { ComponentElement } from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { updateComponentAttributes } from "$store/component/action";
 
 @customElement("attribute-text-font-size")

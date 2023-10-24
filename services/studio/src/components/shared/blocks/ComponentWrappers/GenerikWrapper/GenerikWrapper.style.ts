@@ -96,6 +96,11 @@ const ComponentWrapperStyle = css`
     border: 2px dashed rgb(110 110 110);
   }
 
+  ::host .selected {
+    background-color: var(--editor-selection-color, #79ade6) !important;
+  }
+
+
 `;
 
 export default [ComponentWrapperStyle];
