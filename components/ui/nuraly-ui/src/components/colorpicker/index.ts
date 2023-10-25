@@ -1,2 +1,2 @@
-export * from './color-picker.component';
-export * from './color-holder.component';
+export * from './color-picker.component.js';
+export * from './color-holder.component.js';

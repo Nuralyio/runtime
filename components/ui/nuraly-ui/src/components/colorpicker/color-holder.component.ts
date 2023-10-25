@@ -16,10 +16,11 @@ export class ColerHolderBox extends LitElement {
             .color-holder-container{
             	border: 1px solid gray;
             	border-radius: 5px;
+                cursor: pointer;
             }
             .default-size{
-            	width: 40px;
-            	height: 30px;
+            	width: 30px;
+            	height: 25px;
 			}
 			.large-size{
 				width: 60px;
