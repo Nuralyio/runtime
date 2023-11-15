@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "update": "ncu --color --cacheClear \"/^@hybridui.*$/\" -u"
+    "update": "ncu --color --cacheClear \"/^@hybridui.*$/\" -u",
+    "link": "npm link @hybridui/datepicker @hybridui/button @hybridui/color-picker @hybridui/dropdown @hybridui/icon @hybridui/input @hybridui/menu @hybridui/radio @hybridui/select @hybridui/tabs @hybridui/slider-input @hybridui/checkbox @hybridui/table"
   },
   "dependencies": {
     "@astrojs/lit": "^2.1.0",
@@ -23,6 +24,7 @@
     "@hybridui/menu": "^0.0.20",
     "@hybridui/radio": "^0.0.5",
     "@hybridui/select": "^0.0.5",
+    "@hybridui/slider-input": "^0.0.1",
     "@hybridui/tabs": "^0.0.12",
     "@lit-labs/react": "^1.2.1",
     "@lit-labs/ssr-client": "^1.1.2",

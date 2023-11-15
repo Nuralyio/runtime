@@ -79,7 +79,6 @@ export const $currentPageComponents = computed(
 export const $pagesWithComponents = computed(
   [$componentWithChildrens, $pages],
   (componentWithChildrens, pages) => {
-    console.log('componentWithChildrens',componentWithChildrens)
     return (pages || []).map((page) => {
       page.components = page.componentIds.map((componentId) =>
         componentWithChildrens.find(

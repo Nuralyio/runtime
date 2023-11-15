@@ -6,6 +6,7 @@ import { type ComponentElement } from "$store/component/interface";
 import "../../../shared/SmartAttribute/SmartAttributeDropdown/SmartAttributeDropdown";
 import "../../../shared/AttributeInputWrapper/AttributeInputWrapper";
 import styles from "./FontSizeValue.style";
+import { $currentPageViewPort } from "$store/page/store";
 
 @customElement("attribute-font-size-value-handler")
 export class AttributeFontSizeValue extends LitElement {
@@ -25,6 +26,8 @@ export class AttributeFontSizeValue extends LitElement {
   @state()
   fontSizeValue = "11";
 
+  @state()
+  viewPort = null;
   handleValueChange(event: CustomEvent) {
     const {
       detail: { value },
@@ -54,6 +57,11 @@ export class AttributeFontSizeValue extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.initValues();
+    $currentPageViewPort.subscribe((viewPort) => {
+      if (viewPort) {
+        this.viewPort = viewPort;
+      }
+    });
   }
 
   initValues() {
@@ -70,9 +78,35 @@ export class AttributeFontSizeValue extends LitElement {
     });
   }
 
+  resetStyle(){
+    let customEvent = new CustomEvent("attributeUpdate", {
+      detail: {
+        value: null,
+      },
+    });
+    this.dispatchEvent(customEvent);
+  }
+
+  drivenByResponsive() {
+    if (this.component?.styleBreakPoints?.[this.viewPort]?.fontSize) {
+      return this.viewPort; 
+    }
+    else {
+      return "";
+    }
+  }
+  // check if the values are driven by responsive
+  getValue(){
+    if (this.component?.styleBreakPoints?.[this.viewPort]?.fontSize) {
+      return this.component?.styleBreakPoints?.[this.viewPort]?.fontSize.match(/\d+/g);
+    }
+    else {
+      return this.component?.style?.fontSize?.match(/\d+/g);
+    }
+  }
+
   render() {
     return html` <div class="container">
-      <div></div>
       <attribute-input-wrapper
         .component=${{ ...this.component }}
         .attribute=${"fontSize"}
@@ -81,7 +115,7 @@ export class AttributeFontSizeValue extends LitElement {
           type="number"
           palceholder="value"
           @valueChange=${this.handleValueChange}
-          value=${Number(this.component?.style?.fontSize?.match(/\d+/g)) ||16}
+          value=${this.getValue() || 16}
         ></hy-input>
         <hy-dropdown
           .options=${[
@@ -104,7 +138,9 @@ export class AttributeFontSizeValue extends LitElement {
         .handlerScope=${"styleHandlers"}
       ></smart-attribute-editor-dropdown>
       ` : nothing}
-      
-    </div>`;
+      <br/>
+    </div>
+     ${this.drivenByResponsive() ? html`<div style="font-size : 11px; margin-top : 4px">Driven by : ${this.drivenByResponsive()} break point <hy-icon name="undo" @click="${this.resetStyle}" class="redo" > </hy-icon></div>` :nothing}
+    `;
   }
 }

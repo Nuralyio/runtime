@@ -1,10 +1,10 @@
 ---
 import MakeLayout from "../layouts/MakeLayout.astro";
-import { EditorInteractivePanel } from "../components/pages/make/MainPanel/EditorInteractivePanel";
+import  "../components/pages/make/MainPanel/EditorInteractivePanel";
+import { TabsPanel } from "../components/pages/make/MainPanel/TabsPanel";
 import { ScreenStructureEditor } from "../components/pages/make/ScreenPanel/ScreenStructure";
 import "@hybridui/button";
 import { TopbarPanelWrapper } from "../components/pages/make/TopBar/TopbarWrapper/TopbarWrapper";
-import { PageContent } from "components/pages/make/Page/Page";
 import { ParametersPanel } from "components/pages/make/ControlPanel/ControlPanelTabs";
 import { LeftPanel } from "../components/pages/make/Layout/LeftPanel";
 import { RightPanel } from "../components/pages/make/Layout/RightPanel";
@@ -19,9 +19,9 @@ import { RightPanel } from "../components/pages/make/Layout/RightPanel";
     <main
       class="main  flex flex-grow flex-col  transition-all duration-150 ease-in md:ml-0"
     >
-        <EditorInteractivePanel client:load>
-          <PageContent client:only="lit" />
-        </EditorInteractivePanel>
+
+    <TabsPanel client:only="lit"/>
+       
     </main>
     <RightPanel client:only="lit" />
   </div>

@@ -17,11 +17,26 @@ export const $currentPageId = persistentAtom<string>("page_id", null, {
   decode: JSON.parse,
 });
 
+export const $currentPageViewPort = persistentAtom<string>("current_page_view_port", null, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
+
+
+
 
 export const $pageZoom = persistentAtom<string>("page_zoom", "95", {
   encode: JSON.stringify,
   decode: JSON.parse,
 });
+
+
+
+export const $pageSize = persistentAtom<any>("page_info", {}, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
+
 
 
 export const $showBorder = persistentAtom<boolean>("show_border", false, {
@@ -54,4 +69,5 @@ $pages.subscribe((pages) => {
 
 logger({
   pages: $pages,
+  pageSize : $pageSize
 });

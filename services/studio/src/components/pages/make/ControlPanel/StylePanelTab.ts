@@ -3,8 +3,8 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./Inputs/Container/DirectionAttribute/DirectionAttribute";
 import "../Page/PageParameters/PageParameters";
-
 import "../ControlPanel/Display/SizePaddingMarginAttribute/SizePaddingMarginAttribute";
+import "./ResponsiveParameter/ResponsiveParameter";
 @customElement("style-panel")
 export class STylePAnel extends LitElement {
   @property({ type: Object })
@@ -24,6 +24,8 @@ export class STylePAnel extends LitElement {
 
   renderParameters(component: ComponentElement) {
     let templates = [];
+          templates.push(html`<responsive-selectionl-parameter></responsive-selectionl-parameter>`);
+
     switch (component?.type) {
       case ComponentType.VerticalContainer:
         templates.push(html`
@@ -80,12 +82,28 @@ export class STylePAnel extends LitElement {
                   .component=${component}
                 ></attribute-color>
               </div>
-              <h4>Size</h4> 
               <div style="padding:4px ; ">
                 <size-padding-margin-attribute
                   .component=${component}
                 ></size-padding-margin-attribute>
               </div>
+
+              <h4>Radius</h4> 
+              <div style="padding:4px ; ">
+                <border-attribute
+                  .component=${component}
+                ></border-attribute>
+              </div>
+
+              <h4>Shadow</h4> 
+              <div style="padding:4px ; ">
+                <attribute-box-shadow-attribute
+                  .component=${component}
+                ></attribute-box-shadow-attribute>
+              </div>
+
+
+              
             </div>`
         );
         break;
@@ -93,7 +111,11 @@ export class STylePAnel extends LitElement {
           templates.push(html`<div style="padding:4px">
 <page-parameters></page-parameters>
           </div>`);
+
+        break;
+
     }
+
     return templates;
   }
 

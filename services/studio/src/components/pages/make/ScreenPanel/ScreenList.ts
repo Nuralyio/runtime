@@ -40,7 +40,6 @@ export class ScreenListEditor extends LitElement {
     });
     $pagesWithComponents.subscribe((pages: PageElement[] = []) => {
       setTimeout(() => {
-        console.log('pages',pages)
         this.options = [...pages].map((page) => ({
           label: page.name,
           id: page.id,
@@ -54,7 +53,6 @@ export class ScreenListEditor extends LitElement {
           ],
         }));
         this.requestUpdate();
-      console.log(this.options)
 
       });
     });

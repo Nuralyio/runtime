@@ -1,4 +1,4 @@
-import { $currentPage, $currentPageId, $pages } from "../page/store";
+import { $currentPage, $currentPageId, $currentPageViewPort, $pages } from "../page/store";
 import { v4 as uuidv4 } from "uuid";
 import { type DraggingComponentInfo } from "./interface";
 
@@ -44,24 +44,24 @@ export function addComponentAction(component: AddComponentRequest) {
     } as ComponentElement,
   ]);
   const currentComponentId = $currentComponentId.get();
-  if(currentComponentId){
+  if (currentComponentId) {
     const currentComponent = $components.get().find((component: ComponentElement) => component.id === currentComponentId);
-    if(currentComponent.type === ComponentType.VerticalContainer){
+    if (currentComponent.type === ComponentType.VerticalContainer) {
       addComponentAsChildOf(componentId, currentComponentId);
       
-    }else{
+    } else {
       addComponentToCurrentPageAction(componentId);
     }
-  }else{
+  } else {
     addComponentToCurrentPageAction(componentId);
   }
 }
 
-export function addComponentAsChildOf(componentId : string, parentComponent : string){
+export function addComponentAsChildOf(componentId: string, parentComponent: string) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id ===  parentComponent) {
-        if(!component.childrenIds){
+      if (component.id === parentComponent) {
+        if (!component.childrenIds) {
           component.childrenIds = [];
         }
         component.childrenIds.push(componentId);
@@ -267,7 +267,7 @@ export function moveDraggedComponentIntoCurrentPageRoot(
       draggedComponent = component;
     }
     parentDraggedComponent = components.find((c) => c.childrenIds?.includes(draggedComponentId));
-    if (!draggedComponent ) {
+    if (!draggedComponent) {
       // If both components are not found yet, continue searching in children.
       if (component.childrenIds) {
         for (const childId of component.childrenIds) {
@@ -286,16 +286,16 @@ export function moveDraggedComponentIntoCurrentPageRoot(
   }
 
   // If both components are found, update their relationship.
-  if (draggedComponent ) {
+  if (draggedComponent) {
    
    
     addComponentToCurrentPageAction(draggedComponentId);
    
-      if (parentDraggedComponent && parentDraggedComponent.childrenIds) {
-        parentDraggedComponent.childrenIds = parentDraggedComponent.childrenIds.filter(
-          (childId) => childId !== draggedComponentId
-        );
-      }
+    if (parentDraggedComponent && parentDraggedComponent.childrenIds) {
+      parentDraggedComponent.childrenIds = parentDraggedComponent.childrenIds.filter(
+        (childId) => childId !== draggedComponentId
+      );
+    }
   }
   $components.set([...components])
 }
@@ -339,17 +339,36 @@ export function updateComponentAttributes(
   componentId: string,
   updatedAttributes: any
 ) {
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
-        component.style = {
-          ...component.style,
-          ...updatedAttributes,
-        };
-      }
-      return { ...component };
-    }),
-  ]);
+  if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
+    $components.set([
+      ...$components.get().map((component: ComponentElement) => {
+        if (component.id === componentId) {
+          component.styleBreakPoints = {
+            ...component.styleBreakPoints,
+            [$currentPageViewPort.get()]: {
+              ...component.styleBreakPoints?.[$currentPageViewPort.get()],
+              ...updatedAttributes,
+            },
+          };
+        }
+        return { ...component };
+      }),
+    ]);
+  } else {
+    $components.set([
+      ...$components.get().map((component: ComponentElement) => {
+        if (component.id === componentId) {
+          component.style = {
+            ...component.style,
+            ...updatedAttributes,
+          };
+        }
+        return { ...component };
+      }),
+    ]);
+  }
+
+ 
 }
 
 export function updateComponentstyleHandlers(

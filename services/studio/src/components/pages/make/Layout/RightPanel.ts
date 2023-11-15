@@ -27,7 +27,7 @@ export class RightPanel extends LitElement {
           <div class="my-4 w-full text-center">
             <span class="font-mono text-xl font-bold tracking-widest"> </span>
           </div>
-          <div class="my-4">
+          <div class="my-4" style="width:355px">
             <control-panel></control-panel>
           </div>
         </aside>`
