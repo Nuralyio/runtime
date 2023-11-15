@@ -46,6 +46,8 @@ export class AttributeColorValue extends LitElement {
   initValues() {
     if (this.component.style?.color && this.component.style?.color != "undefined") {
       this.color = this.component.style?.color;
+    }else {
+      this.color = "#000000";
     }
     this.requestUpdate();
   }

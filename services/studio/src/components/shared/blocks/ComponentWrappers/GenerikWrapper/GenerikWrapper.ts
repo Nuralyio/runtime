@@ -68,7 +68,7 @@ export class GenerikComponentWrapper extends LitElement {
   wrapperStyle: any = {};
 
   @state()
-  showQuickAction = false;
+  showQuickAction = true;
 
   inputRef: Ref<HTMLInputElement> = createRef();
   constructor() {
@@ -128,11 +128,13 @@ export class GenerikComponentWrapper extends LitElement {
     e.preventDefault();
     e.stopPropagation();
     setCurrentComponentIdAction(this.component?.id);
+    console.log(e)
     //this.showQuickAction = true;
     //console.log(this.inputRef.value?.getBoundingClientRect().top);
     e.ComponentTop = this.inputRef.value?.getBoundingClientRect().top;
     e.ComponentLeft = this.inputRef.value?.getBoundingClientRect().left;
     setContextMenuEvent(e);
+
   }
 
   @state()

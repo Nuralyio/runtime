@@ -4,9 +4,10 @@ import "@hybridui/button";
 import "@hybridui/tabs";
 import "@hybridui/dropdown";
 import "@hybridui/color-picker";
+import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { $environment, type Environment, ViewMode } from "$store/environment/store";
-import { $contextMenuEvent, $pageZoom } from "$store/page/store";
+import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page/store";
 import { updatePageZoom } from "$store/page/action";
 import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/sotre";
@@ -19,7 +20,7 @@ export class EditorInteractivePanel extends LitElement {
 
   @state()
   zoomLevel = 100;
-//
+  //
   @state()
   selectedComponent: ComponentElement;
 
@@ -45,6 +46,8 @@ export class EditorInteractivePanel extends LitElement {
       text-align: right;
     }
   `;
+  @state()
+  currentPageViewPort: string
   constructor() {
     super();
     $selectedComponent.subscribe((selectedComponent) => {
@@ -55,6 +58,22 @@ export class EditorInteractivePanel extends LitElement {
     });
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
+    });
+
+    $currentPageViewPort.subscribe((currentPageViewPort) => {
+      if (currentPageViewPort) {
+        switch (currentPageViewPort) {
+          case "tablet":
+            this.currentPageViewPort = "720px";
+            break;
+          case "mobile":
+            this.currentPageViewPort = "375px";
+            break;
+            default:
+              this.currentPageViewPort = "100%";
+          }
+        this.requestUpdate();
+      }
     });
   }
 
@@ -69,17 +88,8 @@ export class EditorInteractivePanel extends LitElement {
   }
   connectedCallback(): void {
     super.connectedCallback();
-    this.shadowRoot.querySelector('.page-container').addEventListener('scroll', this.handleScroll.bind(this));
-
-    $pageZoom.subscribe((pageZoom: string) => {
-      requestAnimationFrame(() => {
-        this.zoomLevel = Number(pageZoom);
-        this.requestUpdate();
-      });
-    });
-
-    $contextMenuEvent.subscribe((contextMenuEvent: any) => {
-      if (contextMenuEvent && Object.keys(contextMenuEvent).length  ) {
+     $contextMenuEvent.subscribe((contextMenuEvent: any) => {
+      if (contextMenuEvent && Object.keys(contextMenuEvent).length) {
         if (this.inputRef && this.inputRef.value) {
           this.inputRef.value.style.display = 'block'
           this.inputRef.value.style.top = `${contextMenuEvent.ComponentTop - 5}px`;
@@ -90,14 +100,26 @@ export class EditorInteractivePanel extends LitElement {
         this.inputRef.value!.style!.display = 'none'
       }
     })
+  requestAnimationFrame(() => {
+      this.shadowRoot!.querySelector('.page-container').addEventListener('scroll', this.handleScroll.bind(this));
+    });
+    $pageZoom.subscribe((pageZoom: string) => {
+      requestAnimationFrame(() => {
+        this.zoomLevel = Number(pageZoom);
+        this.requestUpdate();
+      });
+    });
+
+
   }
   render() {
-    return html`<div >
-<quick-action-wrapper
-${ref(this.inputRef)}
-style="position : absolute ; display : none"
-             @click=${(e: Event) => {
-      }}
+     
+    return html`<div style=" padding: 20px;" >
+  <quick-action-wrapper
+  ${ref(this.inputRef)}
+  style="position : absolute ; display : none"
+               @click=${(e: Event) => {
+        }}
              @displayQuickActionChanged=${(e: CustomEvent) => {
         // this.showQuickAction = e.detail.showQuickAction;
       }}
@@ -107,6 +129,8 @@ style="position : absolute ; display : none"
           <div
             class="zoom-area"
             style=${styleMap({
+                  margin: "0px auto",
+              width: `${this.currentPageViewPort}`,
         scale: this.zoomLevel / 100,
       })}
           >
@@ -119,20 +143,3 @@ style="position : absolute ; display : none"
     `;
   }
 }
-
-/*
-  <div class="zoom-controll">
-        <input
-          @input=${(e) => {
-        updatePageZoom(e.target.value);
-      }}
-          type="range"
-          id="cowbell"
-          name="cowbell"
-          min="0"
-          max="200"
-          .value=${this.zoomLevel}
-          step="10"
-        />
-      </div>
-      */

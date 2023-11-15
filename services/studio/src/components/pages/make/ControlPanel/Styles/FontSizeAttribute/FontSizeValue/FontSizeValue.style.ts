@@ -19,4 +19,8 @@ export default css`
     background-color: red;
     z-index: 999;
   }
+
+  .redo{
+    cursor: pointer;
+  }
 `;

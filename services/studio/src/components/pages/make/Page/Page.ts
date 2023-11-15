@@ -1,5 +1,5 @@
 import { type PageElement } from "$store/page/interface";
-import { $currentPage } from "$store/page/store";
+import { $currentPage, $currentPageViewPort } from "$store/page/store";
 import { useStores } from "@nanostores/lit";
 import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
@@ -18,6 +18,7 @@ import { renderComponent } from "utils/render-util";
 import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
 import { $resizing } from "$store/apps";
 import { styleMap } from "lit/directives/style-map.js";
+import { updatePageInfo } from "$store/page/action";
 @customElement("content-page")
 @useStores($currentPage, $currentPageComponents)
 export class PageContent extends LitElement {
@@ -35,26 +36,27 @@ export class PageContent extends LitElement {
   components: ComponentElement[] = [];
   constructor() {
     super();
+
     //generate code event listener ton keyboard event
-     document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
       console.log(event.key);
       // Handle arrow key presses
-      switch(event.key){
+      switch (event.key) {
         case 'ArrowDown':
 
-          this.updateStyle( "marginTop", 1);
+          this.updateStyle("marginTop", 1);
 
           break;
         case 'ArrowUp':
-          this.updateStyle( "marginTop", -1);
+          this.updateStyle("marginTop", -1);
 
           break;
         case 'ArrowLeft':
-          this.updateStyle( "marginLeft", -1);
+          this.updateStyle("marginLeft", -1);
 
           break;
         case 'ArrowRight':
-          this.updateStyle( "marginLeft", 1);
+          this.updateStyle("marginLeft", 1);
       }
      
     }.bind(this));
@@ -62,15 +64,15 @@ export class PageContent extends LitElement {
     $selectedComponent.subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
     });
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
       if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
-        if(this.selectedComponent.type === ComponentType.VerticalContainer){
-    pasteComponentAction();        
-        event.preventDefault();
+        if (this.selectedComponent.type === ComponentType.VerticalContainer) {
+          pasteComponentAction();        
+          event.preventDefault();
         }
     
-      }else if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-        copyComponentAction( this.selectedComponent.id);        
+      } else if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+        copyComponentAction(this.selectedComponent.id);        
         event.preventDefault();
       }
 
@@ -95,17 +97,58 @@ export class PageContent extends LitElement {
     
   }
 
-  updateStyle(key, counter){
+  updateStyle(key, counter) {
 
-    if(this.selectedComponent){
-            const  value = this.selectedComponent.style[key] ?? "0px"
-            const numvalue = Number(value.replace("px", ""));
-            updateComponentAttributes(this.selectedComponent.id, {
-              [ key]: numvalue+counter+"px",
-            });
-          }
+    if (this.selectedComponent) {
+      const value = this.selectedComponent.style[key] ?? "0px"
+      const numvalue = Number(value.replace("px", ""));
+      updateComponentAttributes(this.selectedComponent.id, {
+        [key]: numvalue + counter + "px",
+      });
+    }
 
   }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    $currentPageViewPort.subscribe((currentPageViewPort) => {
+      requestAnimationFrame(() => {
+        this.updatePageInfo();
+      })
+    });
+    const pageContainer = this.shadowRoot!.querySelector('.page-container');
+    updatePageInfo({
+      windowWidth: pageContainer?.clientWidth,
+      windowHeight: window.innerHeight,
+      viewPort: this.determineViewportType(pageContainer?.clientWidth)
+    });
+
+    window.onresize = () => {
+      this.updatePageInfo();
+    };
+  }
+
+  updatePageInfo() {
+    const pageContainer = this.shadowRoot!.querySelector('.page-container');
+    updatePageInfo({
+      windowWidth: pageContainer?.clientWidth,
+      windowHeight: window.innerHeight,
+      viewPort: this.determineViewportType(pageContainer?.clientWidth)
+    });
+  }
+
+  determineViewportType(width: number) {
+    if (width >= 1024) {
+      return "desktop";
+    } else if (width >= 768) {
+      return "tablet";
+    } else if (width >= 375) {
+      return "mobile";
+    } else {
+      return "unknown"; // You may want to return "desktop" or another default value instead of "unknown".
+    }
+  }
+
 
   render() {
     return html`<div
@@ -113,24 +156,24 @@ export class PageContent extends LitElement {
     style=${styleMap(this.currentPage.style || {})}
     @click=${(e) => {
      
-      if (!$resizing.get()) {
-        e.preventDefault()
-      setCurrentComponentIdAction(null);
-       }
+        if (!$resizing.get()) {
+          e.preventDefault()
+          setCurrentComponentIdAction(null);
+        }
        
-    }}
+      }}
     @dragend=${(e) => {
         e.preventDefault();
-    }}
+      }}
      @dragenter=${(e) => {
         e.preventDefault();
-    }}
+      }}
      @dragleave=${(e) => {
         e.preventDefault();
-    }}
+      }}
     @dragover=${(e) => {
         e.preventDefault();
-    }}
+      }}
     @drop=${(e) => {
         e.preventDefault();
         moveDraggedComponentIntoCurrentPageRoot(this.draggingComponentInfo.componentId)

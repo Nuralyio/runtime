@@ -1,6 +1,6 @@
 import { $resizing } from "$store/apps";
 import { type PageElement } from "./interface";
-import { $contextMenuEvent, $currentPage, $currentPageId, $pageZoom, $pages, $showBorder } from "./store";
+import { $contextMenuEvent, $currentPage, $currentPageId, $currentPageViewPort, $pageSize, $pageZoom, $pages, $showBorder } from "./store";
 
 /** Actions*/
 export function addPageAction(com: PageElement) {
@@ -56,6 +56,18 @@ export function removeComponentToCurrentPageAction(removedComponentId: string) {
 export function updatePageZoom(pageZoom: number) {
   $pageZoom.set(String(pageZoom));
 }
+
+
+
+export function setCurrentPageViewPort(viewPort: string) {
+  $currentPageViewPort.set(viewPort);
+}
+
+
+export function updatePageInfo(pageInfo: any) {
+  $pageSize.set(pageInfo);
+}
+
 
 
 

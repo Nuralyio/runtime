@@ -35,8 +35,6 @@ connectedCallback(): void {
             paddingBottom: this.component?.style.paddingBottom ?? 0,
         }
 
-        console.log('this.position', this.position,this.component?.style);
-
 
         this.requestUpdate();
     }

@@ -15,7 +15,7 @@ export class TextInputBlock extends LitElement {
   ];
   render() {
     return html`<span style=${styleMap({ ...this.component.style })}
-      ><hy-input></hy-input
+      ><hy-input placeholder="Text input"></hy-input
     ></span>`;
   }
 }

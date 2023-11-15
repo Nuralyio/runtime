@@ -18,6 +18,11 @@ export interface ComponentElement {
   name: string;
   type: ComponentType;
   style?: { [key: string]: string };
+  styleBreakPoints ? : {
+    laptop : { [key: string]: string },
+    tablet : { [key: string]: string },
+    mobile : { [key: string]: string },
+  }
   styleHandlers: { [key: string]: string };
   parameters?: { [key: string]: string };
   event?: { [key: string]: string };

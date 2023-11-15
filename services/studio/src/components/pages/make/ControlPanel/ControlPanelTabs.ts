@@ -3,6 +3,7 @@ import { state, customElement } from "lit/decorators.js";
 import "@hybridui/button";
 import "@hybridui/tabs";
 import "@hybridui/input";
+import "@hybridui/table";
 import "@hybridui/dropdown";
 import "@lit-labs/ssr-dom-shim";
 import { useStores } from "@nanostores/lit";
@@ -15,6 +16,8 @@ import "./Styles/BackgroundColorAttribute/BackgroundColorAttribute";
 import "./Styles/FontStyleAttribute/FontStyleAttribute";
 import "./Styles/ColorAttribute/ColorAttribute";
 import "./Event/EventAttribute/EventAttribute";
+import "./Styles/BoxShadowAttribute/BoxShadowAttribute";
+import "./Styles/BorderAttribute/BorderAttribute";
 import "./AdvancedPanelTab";
 import "./StylePanelTab";
 
@@ -35,13 +38,14 @@ export class ParametersPanel extends LitElement {
       }
       hy-tabs {
         --hybrid-tabs-content-background-color : #f8fafc;
+        font-size: 12px;
       }
       @media (prefers-color-scheme: dark) {
        
         hy-tabs {
           --hybrid-tabs-content-background-color : #2c2c2c;
           color: #f3f3f3;
-          font-size: 12px;
+          
           font-weight: 400;
         }
       } 

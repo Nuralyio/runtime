@@ -36,7 +36,6 @@ export class ParametersContainerDirectionValueHandler extends LitElement {
     this.dispatchEvent(customEvent);
   }
   updated(changedProperties) {
-    console.log(changedProperties);
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
         this.initValues();
@@ -45,7 +44,6 @@ export class ParametersContainerDirectionValueHandler extends LitElement {
   }
   initValues() {
     this.label = this.component.input.direction ?? "";
-    console.log(this.label);
     this.requestUpdate();
   }
   render() {
