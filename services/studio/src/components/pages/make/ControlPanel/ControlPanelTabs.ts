@@ -4,6 +4,7 @@ import "@hybridui/button";
 import "@hybridui/tabs";
 import "@hybridui/input";
 import "@hybridui/table";
+import "@hybridui/modal";
 import "@hybridui/dropdown";
 import "@lit-labs/ssr-dom-shim";
 import { useStores } from "@nanostores/lit";

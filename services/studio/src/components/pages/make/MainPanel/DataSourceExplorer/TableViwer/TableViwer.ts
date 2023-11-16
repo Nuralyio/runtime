@@ -70,6 +70,10 @@ export class TableViwer extends LitElement {
     }
   }
 
+addEntry(){
+  this.entries = [new Array(this.entries[0].length).fill(''),...this.entries]
+}
+
   override render() {
     return html`
       ${
@@ -79,7 +83,7 @@ export class TableViwer extends LitElement {
               <hy-table
                 .columns="${this.bdTabelsColumns}"
                 .entries="${this.entries}"
-                .paginationEnabled=${false}
+                .paginationEnabled=${true}
                 .editable=${this.editing}
                 .activateSelection=${true}
                 @row-edited=${(e)=>{

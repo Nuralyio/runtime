@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing, type PropertyValueMap } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import "./TableViwer/TableViwer";
+import "./TableCreate/TableCreate";
 import { getActiveTable, setActiveTable } from '$store/providers/store';
 
 export class DatasourceExplorer extends LitElement {
@@ -24,6 +25,9 @@ export class DatasourceExplorer extends LitElement {
 	activeRowIndex: any = null;
 	@state()
 	bdTabels: any[] = [];
+
+	@state()
+	query :any= {};
 	static override styles = [
 		css`
             :host {
@@ -49,12 +53,13 @@ export class DatasourceExplorer extends LitElement {
             	flex-direction: row;
 			}
 			.first_column{
-				width: 200px;
 			}
 			.table-name{
 				font-size: 28px;
     			font-weight: 400;
     			margin-bottom: 11px;
+    			    display: block;
+
 
 			}
 			@media (prefers-color-scheme: dark) {
@@ -114,7 +119,7 @@ export class DatasourceExplorer extends LitElement {
 	@state()
 	displayForm = false;
 	@state()
-	editing = true;
+	editing = false;
 
 @state()
 editedRow : Set<any> = new Set();
@@ -127,10 +132,11 @@ protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyK
 }
 	override render() {
 		return html`
+	
 		<div class="container">
 	        <div class="datasource-explorer first_column">
 				<div class="db-tables">
-				<div class="table-name">Tables</div>
+				<div class="table-name">Tables <pg-create-table></pg-create-table></div>
 					 <hy-table 
 					 .columns="${this.bdTabelsColumns}" 
 					 .paginationEnabled=${false} 
@@ -141,18 +147,38 @@ protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyK
 					 .activeRowIndex=${this.activeRowIndex}
 					 >
 		        	</hy-table>
+
 		        </div>
 	        </div>
 	        <div class="db-tables">
 				<div class="table-name">${this.currentTable}  <hy-button style="" icon="plus" 
-				@click="${() => this.displayForm = true}"
-				 > Add entry</hy-button>
+				@click="${() => {
+					(this.shadowRoot.querySelector('table-viwer') as any).addEntry();
+					this.editing = true
+				}
+				}"
+				 ></hy-button>
  <hy-button style="" type="${this.editing ? "primary" : ""}" icon="pen" 
 				@click="${() => this.editing = !this.editing}"
-				 > Edit</hy-button>
+				 ></hy-button>
 ${this.editedRow.size > 0 ? html` <hy-button  style="" icon="save" 
-				@click="${() => this.displayForm = true}"
-				 > save</hy-button>
+				@click="${() => {
+						fetch(`/api/providers/${this.detail?.id}/table/${this.currentTable}/update`, {
+ 			method: 'POST',
+ 			headers: {
+ 				'Content-Type': 'application/json'
+ 			},
+ 			body: JSON.stringify(this.query)
+ 		}).then((responce)=>{
+ 			if(responce.status == 200){
+ 				(this.shadowRoot.querySelector('table-viwer') as any).queryTables()
+ 			}
+ 		})
+ 		this.editedRow = new Set();
+
+
+				}}"
+				 > ${this.editedRow.size}</hy-button>
 `	: nothing}
 
 ${this.editedRow.size > 0 ? html` <hy-button  style="" icon="cancel" 
@@ -175,23 +201,23 @@ ${this.editedRow.size > 0 ? html` <hy-button  style="" icon="cancel"
  	//this.editedRow is an array of Set
  	for (const row of this.editedRow){
  		let i = 0;
-		const query = {
+		this.query = {
  			wheres : {
  				[this.tableColumns[0].key] : (row as any)[0]
  			},
  			updates : {
  				...this.tableColumns.reduce((acc, column)=>{
- 					if(column.key !== this.tableColumns[0].key){
+ 					if(column.key !== this.tableColumns[0].key && (row as any)[i]){
  						acc[column.key] = (row as any)[i]
  					}
  						i++
- 					
+
  					return acc;
  				}, {})
  			}
  		}
- 		console.log(query ,'query')
-
+ 		// url /api/providers/{id}/table/{table_name}/update
+ 	
  	}
 
  		
