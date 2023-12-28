@@ -1,8 +1,7 @@
-import { LitElement, html, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
-import styles from './table.style.js';
-
+import styles from "./table.style.js";
+import { LitElement, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
 
 const EMPTY = '- - -';
 
@@ -226,7 +225,7 @@ export class ComponentName extends LitElement {
         >
           ${entry.map((cell: any , index: number) => {
 				return html`
-              <td contenteditable=${this.editable}   @input=${(e)=>{
+              <td contenteditable=${this.editable}   @input=${(e:any)=>{
               	console.log(e.target.textContent, index);
               	entry[index] = e.target.textContent;
               	cell = e.target.textContent;
