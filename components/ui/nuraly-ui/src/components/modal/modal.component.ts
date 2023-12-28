@@ -5,6 +5,9 @@ import {styleMap} from 'lit/directives/style-map.js';
 
 export class ModalComponent extends LitElement {
   static override styles = css`
+  :host {
+    font-size: 16px;
+    }
     .modal {
       position: absolute;
       z-index: 9999;
@@ -43,12 +46,22 @@ export class ModalComponent extends LitElement {
       position: absolute;
       text-align: end;
       margin-bottom: 10px;
+      width : 93%;
     }
 
     ::slotted([slot='content']) {
-      /* Styles applied specifically to slotted elements with slot="custom-slot" */
       padding: 0px 24px 20px 24px;
     }
+    @media (prefers-color-scheme: dark) {
+      .modal {
+        background-color: rgb(74, 74, 74);
+        color: #ffffff;
+      } 
+      .backdrop {
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+    }
+
   `;
 
   @property({type: Boolean})
@@ -113,6 +126,7 @@ export class ModalComponent extends LitElement {
   private handleOutsideClick(event: MouseEvent) {
     if (this.isOpen && !this.isChildDialog(event.target as HTMLElement)) {
       this.closeModal();
+
     }
   }
 
@@ -132,6 +146,34 @@ export class ModalComponent extends LitElement {
     this.offsetX = 0;
     this.offsetY = 0;
     this.style.transform = 'none';
+    this.dispatchEvent(new CustomEvent('close'));
+
+  }
+
+  private adjustDialogPosition() {
+    if (this.isOpen) {
+      const dialog = this.shadowRoot?.querySelector('.modal') as HTMLElement;
+      if (dialog) {
+
+          const contentHeight = dialog.clientHeight;
+          const windowHeight = window.innerHeight;
+          const dialogHeight = Math.min(contentHeight + 40, windowHeight - 40);
+
+          const topPosition = Math.max((windowHeight - dialogHeight) / 2, 0);
+          dialog.style.top = `${topPosition}px`;
+      }
+    }
+  }
+  override updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) {
+        // The dialog has been opened
+        this.adjustDialogPosition();
+      }
+
+    }
   }
 
   private stopDrag() {
@@ -154,7 +196,7 @@ export class ModalComponent extends LitElement {
           class="close-icon"
           name="window-close"
           style="float: right;"
-          @click=${() => (this.isOpen = false)}
+          @click=${() => (this.closeModal())}
         ></hy-icon>
         <h2 class="dialog-label" @mousedown=${this.startDrag} @mouseup=${this.stopDrag}>${this.label}</h2>
         <slot></slot>

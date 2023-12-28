@@ -8,6 +8,10 @@ import summary from 'rollup-plugin-summary';
 import {terser} from 'rollup-plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
+import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
+import url from '@rollup/plugin-url';
+import virtual from '@rollup/plugin-virtual';
 
 export default {
   input: 'dist/components/button/hy-button.js',
@@ -34,5 +38,6 @@ export default {
       },
     }),
     summary(),
+    
   ],
 };

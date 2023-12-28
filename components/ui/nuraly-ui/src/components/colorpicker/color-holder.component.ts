@@ -10,6 +10,7 @@ export class ColerHolderBox extends LitElement {
 
 	@property({type:String})
 	size: string = 'default';
+    
 
     static override styles = [
         css`

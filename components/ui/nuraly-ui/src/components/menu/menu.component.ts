@@ -116,10 +116,10 @@ export class HyMenuComponent extends LitElement {
     parentRef: Ref<HTMLInputElement>,
     showChildren: boolean
   ) {
-    const isSelected = Boolean(option === this.selected || this.showChildrenMap.get(option.id));
+    console.log(this.showChildrenMap.get(option.id))
+    const isSelected = Boolean(this.showChildrenMap.get(option.id));
     const isGroupElement = option.type === OPTION_TYPES.GROUP;
     const hasChildren = option.children && option.children.length > 0;
-console.log(option)
     return html`
       <li
         ${ref(parentRef)}
@@ -134,19 +134,23 @@ console.log(option)
         </div>
         <div
           style="user-select : none"
-          class=${classMap({'group-label': isGroupElement})}
+          class=${classMap({'group-label': hasChildren , 'menu-item': !hasChildren , isSelected: Boolean(this.selectedElementMap.get(option))})}
           @click="${(e: Event) => {
             if (option.handler) {
               option.handler();
             }
+            this.selectedElementMap = new Map<any, boolean>();
             if (hasChildren) {
+              console.log(option)
+              this.selectedElementMap.set(option, true);
               this.toggleOption(option);
               this.requestUpdate();
             } else {
+              this.selectedElementMap.set(option, true);
               this.handleOptionClick(option, e);
             }
           }}"
-          @mouseenter="${() => {
+            @mouseenter="${() => {
               if (option.mouseEnterHander) {
                 option.mouseEnterHander();
               }
@@ -159,7 +163,7 @@ console.log(option)
             }}"
         >
           ${hasChildren ? childrensArrow(this.boundery, isSelected) : ''}
-          ${this.searchedELement?.label === option.label
+          ${this.searchedELement?.id === option.id
             ? html`<span class="arrow arrow-container"> </span>`
             : NOTHING_STRING}
           ${html`${option.template ? option.template(option) : option.label}`}
@@ -192,7 +196,6 @@ console.log(option)
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-
     if (changedProperties.has('search')) {
       if (this.search) {
         this.searching();
@@ -203,7 +206,9 @@ console.log(option)
     }
   }
   toggleOption(option: any) {
-    this.showChildrenMap.set(option.id, !this.showChildrenMap.get(option));
+    const toggle = !this.showChildrenMap.get(option.id);
+     this.selectedElementMap.set(option, toggle);
+    this.showChildrenMap.set(option.id, toggle);
   }
   searching() {
     this.options;

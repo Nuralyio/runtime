@@ -3,6 +3,7 @@ import {css, html} from 'lit';
 const baseButtonStyle = css`
   button {
     display: inline-block;
+    height: var(--hybrid-button-height, 34px);
     user-select: none;
     padding-top: var(--hybrid-button-padding-y, 0.5rem);
     padding-bottom: var(--hybrid-button-padding-x, 0.5rem);
@@ -211,7 +212,8 @@ const linkButtonStyle = css`
 
 const iconButtonStyle = css`
   .icon-only {
-    width: 32px;
+    width: 33px;
+    height: 34px;
     padding-left: 0.6rem;
   }
   .icon-only[data-size='large'] {
@@ -264,6 +266,12 @@ export const styles = [
   }
 
  }
+
+#slot{
+  vertical-align: middle;
+    margin-top: -8px;
+    display: inline-block;
+}
 
 
   `,

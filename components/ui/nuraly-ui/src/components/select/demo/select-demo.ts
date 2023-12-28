@@ -43,8 +43,21 @@ export class SlectDemoElement extends LitElement {
       label: 'hey 3',
     },
   ];
+
+  @state()
+  selectedOptions = [];
   override render() {
-    return html` <hy-select .options=${this.options}> </hy-select> `;
+    return html`
+
+
+    <hy-select .options=${this.options}  @changed=${(e: any) => {
+      this.selectedOptions = e.detail.value;
+      console.log(this.selectedOptions);
+    }}> <hy-button icon="filter"
+   
+    >${this.selectedOptions.length ? this.selectedOptions.length : ' '}</hy-button></hy-select>
+
+    `;
   }
 }
 

@@ -101,15 +101,44 @@ export const styles = css`
 
   .close-icon {
     font-size: var(--hybrid-tabs-add-icon-font-size, 13px);
+    vertical-align: -webkit-baseline-middle;
+    margin-left: var(--hybrid-tabs-add-icon-margin-left, 5px);
   }
 
   .add-tab-label {
     font-size: var(--hybrid-tabs-add-label-font-size, 13px);
     text-align: var(--hybrid-tabs-add-label-text-align, center);
-  }
+  }w
   .dragging {
     border: var(--hybrid-tabs-dragging-border, 1px dashed gray) !important;
     opacity: 0.8;
     color: #464646 !important;
   }
+  @media (prefers-color-scheme: dark) {
+      .color-picker-container {
+       background: #2d2d2d;
+      }
+
+       .tab-content {
+        padding: var(--hybrid-tabs-content-padding, 10px);
+        flex-grow: var(--hybrid-tabs-content-padding, 1);
+        background-color: var(--hybrid-tabs-content-background-color, #2d2d2d);
+        border-top: var(--hybrid-tabs-content-background-color, 1px solid #ccc);
+  }
+
+ .tab-label {
+    color: var(--hybrid-tabs-label-hover-color, #aaa);
+    font-size : var(--hybrid-tabs-label-font-size, 13px);
+  }
+
+  .tab-label:hover {
+    color: var(--hybrid-tabs-label-hover-color, white);
+    background: none;
+  }
+
+  .tab-label.active {
+    color: var(--hybrid-tabs-label-active-hover-color, white);
+  }
+
+}
 `;

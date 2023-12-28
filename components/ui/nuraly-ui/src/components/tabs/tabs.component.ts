@@ -130,6 +130,26 @@ export class TabsComponent extends LitElement {
     this.shadowRoot!.querySelector('.dragging-start')?.classList.remove('dragging-start');
   }
 
+  renderDeleteIcon(tab :any){
+    // if the tab does not gave edibale propetry and canDeleteTab is true
+    // then render the delete icon
+    if(!tab.editable && this.editable?.canDeleteTab){
+      return html`<hy-icon
+      @click=${() => {
+        this.dispatchEvent(
+          new CustomEvent(TabEvent.removeTab, {
+            detail: {index: tab.index},
+          })
+        );
+      }}
+      name="window-close"
+      class="close-icon"
+    ></hy-icon>`
+    ;
+  }
+  return nothing;
+
+  }
   private renderTabs() {
     const tabs = [];
     const children = this.tabs || [];
@@ -161,7 +181,7 @@ export class TabsComponent extends LitElement {
             }}
             >${children[tabIndex].label}</span
           >
-          ${this.editable?.canDeleteTab
+          ${children[tabIndex].editable?.canDeleteTab ?? this.editable?.canDeleteTab
             ? html`<hy-icon
                 @click=${() => {
                   this.dispatchEvent(

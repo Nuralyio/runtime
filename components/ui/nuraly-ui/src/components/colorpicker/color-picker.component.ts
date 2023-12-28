@@ -55,7 +55,7 @@ export class ColorPicker extends LitElement {
 	renderDropDownColorPicker() {
 		return html`
   	 <hy-dropdown
-        style="float: right"
+        style="float: right;    position: relative;"
         .customStyles=${{ width: '400px', height: '250px' }}
         placeholder="Select an option"
         .template=${html`

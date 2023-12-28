@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {LitElement, TemplateResult, html} from 'lit';
-import {property, state} from 'lit/decorators.js';
+import {property} from 'lit/decorators.js';
 import {styles} from './radio.style.js';
 import {RadioButtonType, RadioOption} from './radio.type.js';
 
@@ -16,7 +16,7 @@ export class HySelectComponent extends LitElement {
   @property({type: String})
   defaultValue!: string;
 
-  @state()
+  @property({type: String})
   selectedOption!: string;
 
   constructor() {
@@ -41,7 +41,6 @@ export class HySelectComponent extends LitElement {
     );
   }
   private renderRadioOptions(options: RadioOption[]): TemplateResult<1> {
-    console.log(this.display);
     switch (this.display) {
       case RadioButtonType.Button:
         return this.renderOptionsWithButtons(options);

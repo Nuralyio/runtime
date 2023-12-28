@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, html, nothing, PropertyValueMap, TemplateResult} from 'lit';
-import {property, queryAssignedElements, state} from 'lit/decorators.js';
-import {ref, createRef, Ref} from 'lit/directives/ref.js';
-import {EMPTY_STRING, NOTHING_STRING} from './hy-dropdown.constants.js';
-import {styles} from './hy-dropdown.style.js';
-import {classMap} from 'lit/directives/class-map.js';
+import { LitElement, html, nothing, PropertyValueMap, TemplateResult } from 'lit';
+import { property, queryAssignedElements, state } from 'lit/decorators.js';
+import { ref, createRef, Ref } from 'lit/directives/ref.js';
+import { EMPTY_STRING, NOTHING_STRING } from './hy-dropdown.constants.js';
+import { styles } from './hy-dropdown.style.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 export class HyDropdownComponent extends LitElement {
   static override styles = styles;
 
-  @property({type: Array})
+  @property({ type: Array })
   options = [];
 
-  @property({type: Object})
+  @property({ type: Object })
   selected: any;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   open = false;
 
-  @property({type: String})
+  @property({ type: String })
   placeholder = EMPTY_STRING;
 
-  @property({type: String})
+  @property({ type: String })
   template!: TemplateResult<1>;
 
-  @property({type: String})
+  @property({ type: String })
   search = EMPTY_STRING;
 
-  @property({type: String})
+  @property({ type: String })
   trigger = 'click';
 
   @state()
@@ -41,11 +41,17 @@ export class HyDropdownComponent extends LitElement {
   @state()
   searchedELement: any;
 
+  @property({ type: Boolean })
+  keepOpen = false;
+
   @state()
   private showChildrenMap = new Map<any, boolean>(); // Map to store showChildren values
   private selectedElementMap = new Map<any, boolean>(); // Map to store showChildren values
 
-  @queryAssignedElements({slot: 'label', flatten: true})
+  @property({ type: Array })
+  selectedElements: any[] = [];
+
+  @queryAssignedElements({ slot: 'label', flatten: true })
   _prefixItems!: Array<HTMLElement>;
   @state()
   hasSlotLabel = false;
@@ -98,14 +104,14 @@ export class HyDropdownComponent extends LitElement {
           @mouseover="${() => this.trigger === 'hover' && this.showDropdown()}"
         ></slot>
         ${(!this.hasSlotLabel &&
-          html`<button
+        html`<button
             class="dropbtn"
             @click="${() => this.trigger === 'click' && this.toggleDropdown()}"
             @mouseover="${() => this.trigger === 'hover' && this.showDropdown()}"
           >
             ${this.selected ? this.selected.label : this.placeholder}
           </button>`) ||
-        nothing}
+      nothing}
       </span>
     `;
   }
@@ -114,8 +120,8 @@ export class HyDropdownComponent extends LitElement {
     return html`
       <div class="dropdown-content show" ${ref(this.dropdownContentRef)}>
         ${this.template
-          ? html` ${this.template} `
-          : html` <ul>
+        ? html` ${this.template} `
+        : html` <ul>
               ${this.options?.map((option) => this.renderOption(option))}
             </ul>`}
       </div>
@@ -137,58 +143,58 @@ export class HyDropdownComponent extends LitElement {
               id="${parentId}"
               ${ref(parentRef)}
               @click="${(e: any) => {
-                if (option.handler) {
-                  option.handler();
-                }
-                if (!option.template) {
-                  this.handleSelect(option, e);
-                } else {
-                  if (e) e.stopPropagation();
-                }
-              }}"
+            if (option.handler) {
+              option.handler();
+            }
+            if (!option.template) {
+              this.handleSelect(option, e);
+            } else {
+              if (e) e.stopPropagation();
+            }
+          }}"
               class=${classMap({
-                selected: Boolean(option === this.selected || this.selectedElementMap.get(option)),
-                'group-element': option.type === 'group',
-              })}
+            selected: Boolean( this.selectedElementMap.get(JSON.stringify(option))),
+            'group-element': option.type === 'group',
+          })}
               @mouseover="${() => {
-                this.showChildrenMap.set(option, true);
-                this.requestUpdate();
-              }}"
+            this.showChildrenMap.set(option, true);
+            this.requestUpdate();
+          }}"
               @mouseleave="${() => {
-                this.showChildrenMap.set(option, false);
-                this.requestUpdate();
-              }}"
+            this.showChildrenMap.set(option, false);
+            this.requestUpdate();
+          }}"
             >
-              <span class=${classMap({'group-label': option.type === 'group'})}
+              <span class=${classMap({ 'group-label': option.type === 'group' })}
                 >${html`${option.template ? option.template(option) : option.label}`}
                 ${this.searchedELement?.label === option.label
-                  ? html`<span class="arrow arrow-ccontainer">
+            ? html`<span class="arrow arrow-ccontainer">
                       <hy-icon name="arrow-left"></hy-icon>
                     </span>`
-                  : NOTHING_STRING}
+            : NOTHING_STRING}
               </span>
               ${option.children
-                ? html`
+            ? html`
                     ${option.type != 'group'
-                      ? html`<hy-icon
+                ? html`<hy-icon
                           style="z-index:0"
                           name="caret-right"
                           class="has-childrens ${(this.boundery.right && 'carret-boundery-right') || NOTHING_STRING}"
                         ></hy-icon>`
-                      : ''}
+                : ''}
                     <ul
                       ${ref(childMenuRef)}
                       class="  ${classMap({
-                        'nested-search': showChildren,
-                        nested: option.type != 'group',
-                        'nested-group': option.type === 'group',
-                      })}"
+                  'nested-search': showChildren,
+                  nested: option.type != 'group',
+                  'nested-group': option.type === 'group',
+                })}"
                       style="${this.positioningStyle}; ${this.calculateOffsetTop(parentId)}"
                     >
                       <div class="block">${option.children.map((child: any) => this.renderOption(child))}</div>
                     </ul>
                   `
-                : NOTHING_STRING}
+            : NOTHING_STRING}
             </li>
           `}
     `;
@@ -215,13 +221,20 @@ export class HyDropdownComponent extends LitElement {
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-
+    //
     if (changedProperties.has('search')) {
       if (this.search) {
         this.searching();
         if (!this.open) {
           this.open = true;
         }
+      }
+    }
+
+    if (changedProperties.has('selectedElements')) {
+      this.selectedElementMap = new Map<any, boolean>();
+      for (const element of this.selectedElements) {
+        this.selectedElementMap.set(JSON.stringify(element), true);
       }
     }
   }
@@ -260,10 +273,22 @@ export class HyDropdownComponent extends LitElement {
 
   handleSelect(option: any, e: any) {
     if (e) e.stopPropagation();
-    this.selected = option;
+    // this.selected = option;
+    console.log(this.selectedElementMap.has(JSON.stringify(option)))
+      if(this.selectedElementMap.has(JSON.stringify(option))){
+        this.selectedElementMap.delete(JSON.stringify(option));
+      }else{
+        this.selectedElementMap.set(JSON.stringify(option), true);
+      }
+      this.requestUpdate();
+      console.log(this.selectedElementMap)
+
+    if(!this.keepOpen){
     this.open = false;
+
+    }
     const changeEvent = new CustomEvent('change', {
-      detail: {value: this.selected},
+      detail: { value: option},
       bubbles: true,
       composed: true,
     });
@@ -286,17 +311,31 @@ export class HyDropdownComponent extends LitElement {
   positionDropDown() {
     this.getDistanceFromBRight(this.dropdownContentRef.value);
     const distanceFromRight = this.getDistanceFromBRight(this.dropdownContentRef.value);
+    const distanceFromBottom = this.getDistanceFromBottom(this.dropdownContentRef.value!);
+
     if (distanceFromRight < this.dropdownContentRef.value!.offsetWidth) {
       this.dropdownContentRef.value!.style.marginLeft =
         '-' + (this.dropdownContentRef.value!.offsetWidth - this.dropdownInitiatorRef.value!.offsetWidth) + 'px';
       this.positioningStyle = `margin-left : -${this.dropdownContentRef.value!.offsetWidth * 2}px`;
       this.boundery.right = true;
     }
+    //code me: if the height of the window is less than the height of the dropdown content then resize is and active scroll
+    if(window.innerHeight < this.dropdownContentRef.value!.offsetHeight){
+      this.dropdownContentRef.value!.style.height = `${window.innerHeight - 100}px`;
+      this.dropdownContentRef.value!.style.overflowY = `scroll`;
+    }else{
+
+    if (distanceFromBottom < this.dropdownContentRef.value!.offsetHeight) {
+      this.dropdownContentRef.value!.style.marginTop = '-' + (this.dropdownContentRef.value!.offsetHeight + this.dropdownInitiatorRef.value!.offsetHeight + 4) + 'px';
+    } 
+    }
+
+
   }
 
   emitClosedEvent() {
     const closedEvent = new CustomEvent('closed', {
-      detail: {value: this.selected},
+      detail: { value: this.selected },
       bubbles: true,
       composed: true,
     });

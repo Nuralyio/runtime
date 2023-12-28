@@ -124,5 +124,11 @@ const dropdwonStyle = css`
   .nested li {
     //  width: 100%;
   }
+  /* 
+  .menu-item.isSelected,.selected > .group-label {
+    */
+  .menu-item.isSelected {
+    color: var(--hybrid-menu-item-selected-color, #006afe);
+  }
 `;
 export const styles = [dropdwonStyle];
