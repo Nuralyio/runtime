@@ -1,0 +1,205 @@
+---
+import MakeLayout from "../../../layouts/MakeLayout.astro";
+import "../../../components/pages/make/MainPanel/EditorInteractivePanel";
+import { TabsPanel } from "../../../components/pages/make/MainPanel/TabsPanel";
+import "@hybridui/button";
+import { TopbarPanelWrapper } from "../../../components/pages/make/TopBar/TopbarWrapper/TopbarWrapper";
+import { LeftPanel } from "../../../components/pages/make/Layout/LeftPanel";
+import { RightPanel } from "../../../components/pages/make/Layout/RightPanel";
+import { $pages, $currentPageId , $currentPageViewPort} from "../../../store/page/store";
+import { allTasks } from "nanostores";
+import { $componentWithChildrens, $components } from "$store/component/sotre";
+import "../../../components/pages/make/Page/Page";
+import { PageContent } from "../../../components/pages/make/Page/Page";
+const cookie = Astro.request.headers.get("Cookie");
+const headers = {};
+Astro.request.headers.forEach((value, key) => {
+  headers[key] = value;
+});
+const { app } = Astro.props;
+delete headers["connection"];
+console.log(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${app.uuid}`)
+
+const pageResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${app.uuid}`, {
+  cache: "no-store",
+
+  headers: {
+   'X-USER' : Astro.request.headers.get('X-USER') ?? `{"uuid": ""}`
+  },
+});
+
+const pageData = await pageResponse.json();
+$pages.set(pageData);
+console.log(pageData)
+$currentPageId.set(pageData[0].uuid);
+
+const componentResponse = await fetch(
+  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/components/${app.uuid}`,
+  {
+    cache: "no-store",
+    headers: {
+         'X-USER' : Astro.request.headers.get('X-USER') ?? `{"uuid": ""}`
+    },
+  },
+);
+
+async function executeCode(component, code, additionalBody = {}) {
+  if (!component.item) {
+    component.item = {};
+  }
+  let result = await fetch(`http://${process.env.NURALY_ENGINE_HOST || "localhost:3000"}/run-code`, {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      'X-USER' : Astro.request.headers.get('X-USER') ?? `{"uuid": ""}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ...additionalBody,
+      code,
+    }),
+  });
+  let text = await result.json();
+  console.log(component,text)
+  return text.result;
+}
+
+let componentData = await componentResponse.json();
+
+componentData = componentData.map((component) => {
+  return { ...component.component, data: [] };
+});
+/*async function processComponents(components) {
+  const processedComponents = await Promise.all(
+    components.map(async (component) => {
+      if (component.component_type === "Collection") {
+        component.item = await executeCode(component,  component.attributesHandlers?.value);
+        return component;
+      } else {
+        if (!component.parameters) {
+          component.parameters = { value: "" };
+        }
+        component.parameters.value = await executeCode(component, component.attributesHandlers?.value,{
+          component: component,
+          components: components,
+        });
+        return component;
+      }
+    }),
+  );
+
+  return processedComponents;
+}
+*/
+//componentData = await processComponents(componentData);
+
+$components.set(componentData);
+let componentTree = [];
+componentTree = $componentWithChildrens
+  .get()
+  .filter((c) => $pages.get()[0].component_ids.includes(c.uuid));
+const executeAsyncFnctions = async (components) => {
+  for (const component of components) {
+    let item = {};
+    if (component.parent && component.parent.component_type === "Collection") {
+      component.iterations=[];
+      if (component.parent.data) {
+        for (const item of component.parent.data) {
+          component.item = item;
+          try {
+            const result = await executeCode(
+              component,
+              component.attributesHandlers?.value,
+              {
+                component: component,
+                components: components,
+              },
+            );
+            component.iterations.push(result);
+          } catch (e) {}
+        }
+
+      }
+    }
+    if (component.component_type === "Collection") {
+      try {
+        const result = await executeCode(
+          component,
+          component.inputHandlers?.data,
+          {
+            component: component,
+            components: components,
+          },
+        );
+
+        $components.set([
+          ...$components.get().map((c) => {
+            if (c.uuid === component.uuid) {
+              c.data = result;
+            }
+            return c;
+          }),
+        ]);
+      } catch (e) {}
+    } else {
+      if (!component.parameters) {
+        component.parameters = { value: "" };
+      }
+      try {
+       
+        let val = await executeCode(
+          component,
+          component.attributesHandlers?.value,
+          {
+            component: component,
+            components: components,
+          },
+        );
+
+        if (val) {
+          $components.set([
+            ...$components.get().map((c) => {
+              if (c.uuid === component.uuid) {
+                c.parameters.value = val;
+                // Your logic here
+              }
+              return c;
+            }),
+          ]);
+        }
+      } catch (e) {}
+    }
+    if (component.childrens) {
+      await executeAsyncFnctions(component.childrens);
+    }
+  }
+};
+
+await executeAsyncFnctions(componentTree);
+console.log("papa");
+await allTasks();
+---
+
+<PageContent isViewMode="true" client:load />
+<script define:vars={{ pageData, componentData }}>
+  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
+  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("/custom-sw.js")
+        .then(function (registration) {
+          console.log("SW registered: ", registration);
+        })
+        .catch(function (registrationError) {
+          console.log("SW registration failed: ", registrationError);
+        });
+    });
+  }
+</script>
+<style>
+  html {
+    overflow: hidden;
+  }
+</style>

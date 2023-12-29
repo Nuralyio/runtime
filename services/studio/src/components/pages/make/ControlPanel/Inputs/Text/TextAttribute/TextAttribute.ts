@@ -31,7 +31,7 @@ export class TextLabelAttributes extends LitElement {
           const {
             detail: { value },
           } = event;
-          updateComponentParameters(this.component.id, {
+          updateComponentParameters(this.component.uuid, {
             value,
           });
         }}

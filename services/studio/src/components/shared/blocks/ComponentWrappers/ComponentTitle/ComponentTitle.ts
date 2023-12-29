@@ -44,13 +44,13 @@ export class ComponentTitle extends LitElement {
     return html` <span
       style=${styleMap({
         display:
-          this.selectedComponent?.id === this.component.id ? "block" : "none",
+          this.selectedComponent?.uuid === this.component.uuid ? "block" : "none",
       })}
       @mousedown=${(e: Event) => {
         this.isDragintiator = true;
         this.emitEvent(this.isDragintiator);
         setDraggingComponentInfo({
-          componentId: this.component?.id,
+          componentId: this.component?.uuid,
           blockInfo: {
             height: this.component.style.height,
             width: this.component.style.width,

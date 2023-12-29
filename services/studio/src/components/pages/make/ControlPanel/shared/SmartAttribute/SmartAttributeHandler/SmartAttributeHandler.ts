@@ -1,4 +1,4 @@
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html, css, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "../SmartAttributeCodeEditor/SmartAttributeCodeEditor";
 import { type ComponentElement } from "$store/component/interface";
@@ -32,17 +32,43 @@ export class SmartAttributeHandler extends LitElement {
     `,
   ];
 
+  @state()
+  private previousComponentId: string | undefined;
+
+  @state()
+  view = true;
+
   codeChangeHandler(event: CustomEvent) {
     const {
       detail: { value },
     } = event;
 
-    updateComponentAttributeHandlers(this.component.id, this.handlerScope, {
+    updateComponentAttributeHandlers(this.component.uuid, this.handlerScope, {
       [this.attributeName]: value,
     });
   }
   connectedCallback(): void {
     super.connectedCallback();
+    this.smartValue = this.getAttributeValue();
+  }
+  protected updated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    super.updated(_changedProperties);
+
+    if (
+      _changedProperties.has("component") &&
+      this.component.uuid !== this.previousComponentId
+    ) {
+      this.previousComponentId = this.component.uuid;
+    this.view = false;
+    setTimeout(()=>{
+      this.view = true;
+    },0)
+
+    }
+
+    this.smartValue = this.getAttributeValue();
   }
   getAttributeValue() {
     let attributes = this.component[this.attributeScope];
@@ -53,6 +79,9 @@ export class SmartAttributeHandler extends LitElement {
       attributeValue = attributes[this.attributeName] ?? "";
     }
 
+    if (!this.component[this.handlerScope]) {
+      this.component[this.handlerScope] = {}
+    }
     const smartAttributeValue =
       this.component[this.handlerScope]![this.attributeName];
     return smartAttributeValue && smartAttributeValue !== ""
@@ -60,16 +89,18 @@ export class SmartAttributeHandler extends LitElement {
       : attributeValue;
   }
   render() {
-    return html`${this.component.errors &&
-      this.component.errors[this.attributeName]
-      ? html`<div class="error-message-text">
+    return html`
+
+    ${this.component.errors &&
+        this.component.errors[this.attributeName]
+        ? html`<div class="error-message-text">
             ${this.component.errors[this.attributeName]}
           </div>`
-      : nothing}
-      <smart-attribute-codeeditor
-        .containerStyle=${this.containerStyle ?? nothing}
-        .value=${this.getAttributeValue()}
-        @change=${this.codeChangeHandler}
-      ></smart-attribute-codeeditor>`;
+        : nothing}
+      ${this.view ? html`<smart-attribute-codeeditor
+              .containerStyle=${this.containerStyle ?? nothing}
+              .value=${this.smartValue}
+              @change=${this.codeChangeHandler}
+            ></smart-attribute-codeeditor>` : nothing}`;
   }
 }

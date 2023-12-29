@@ -20,7 +20,7 @@ export class BoxShadowAttribute extends LitElement {
         <attribute-box-shadow-label></attribute-box-shadow-label>
         <attribute-box-shadow-value .component=${{...this.component}}
         @box-shadow-changed=${(e: any) => {
-             updateComponentAttributes(this.component.id, {
+             updateComponentAttributes(this.component.uuid, {
               'box-shadow': e.detail.value,
             });
          }}

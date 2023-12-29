@@ -1,23 +1,23 @@
-import { computed, keepMount, onMount } from "nanostores";
+import { atom, computed, keepMount, onMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
 
 import { logger } from "@nanostores/logger";
 import { type PageElement } from "./interface";
 
+
 /**
  * Pages stores
  */
-export const $pages = persistentAtom<PageElement[]>("pages", [], {
-  encode: JSON.stringify,
-  decode: JSON.parse,
-});
+const isServer = typeof window === 'undefined';
+const initialState = isServer ? [] : JSON.parse(window['__INITIAL_PAGE_STATE__'] ?? []);
+export const $pages = atom<any[]>(initialState );
 
 export const $currentPageId = persistentAtom<string>("page_id", null, {
   encode: JSON.stringify,
   decode: JSON.parse,
 });
 
-export const $currentPageViewPort = persistentAtom<string>("current_page_view_port", null, {
+export const $currentPageViewPort = persistentAtom<string>("current_page_view_port", "", {
   encode: JSON.stringify,
   decode: JSON.parse,
 });
@@ -55,9 +55,14 @@ export const $contextMenuEvent = persistentAtom<object>("context_menu_event", {}
 export const $currentPage = computed(
   [$pages, $currentPageId],
   (pages, currentPageId) => {
-    return pages.find((page) => {
-      return page.id === currentPageId;
+    const currentPage =pages.find((page) => {
+      return page.uuid === currentPageId;
     });
+    if(!currentPage && pages.length > 0){
+      return pages[0];
+    }
+    return currentPage;
+   
   }
 );
 
@@ -66,8 +71,9 @@ $pages.subscribe((pages) => {
     $currentPageId.set(pages[0].id);
   }
 });
-
+/*
 logger({
   pages: $pages,
   pageSize : $pageSize
 });
+*/

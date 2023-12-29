@@ -25,12 +25,12 @@ export class FOntSTyleATtribute extends LitElement {
 
   changeHandler(event: CustomEvent) {
     if (event.detail.value === "italic") {
-      updateComponentAttributes(this.component.id, {
+      updateComponentAttributes(this.component.uuid, {
         textDecoration: "",
         fontStyle: "italic",
       });
     }
-    updateComponentAttributes(this.component.id, {
+    updateComponentAttributes(this.component.uuid, {
       textDecoration: event.detail.value,
     });
   }

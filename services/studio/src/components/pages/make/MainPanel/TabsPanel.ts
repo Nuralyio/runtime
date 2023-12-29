@@ -1,6 +1,8 @@
 import { LitElement, html, css } from 'lit';
 import "./EditorInteractivePanel";
 import "./DataSourceExplorer/DataSourceExplorer";
+import "../../../shared/blocks/CodeEditor/CodeEditor";
+
 import "../Page/Page";
 import { state } from 'lit/decorators.js';
 import { $editorState } from '$store/apps';
@@ -80,7 +82,8 @@ export class TabsPanel extends LitElement {
 			if (editorState.currentTab) {
 				const tabindex = editorState.tabs.findIndex((tab: any) => tab.id === editorState.currentTab.id);
 				if(tabindex>0){
-					this.activeTab = tabindex;
+					// @TODO: to be reviewed
+					//this.activeTab = tabindex;
 					this.requestUpdate();
 				}
 				console.log(tabindex, "--");

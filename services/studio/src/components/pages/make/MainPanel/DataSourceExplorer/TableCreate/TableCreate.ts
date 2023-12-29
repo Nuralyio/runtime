@@ -36,8 +36,7 @@ export class TableCreate extends LitElement {
        <modal-component label="Create Table" ?isOpen=${this.dispalyCreateForm}
        @close=${()=>{
        	this.dispalyCreateForm=false
-       }}
-       >
+       }}>
  
 
        

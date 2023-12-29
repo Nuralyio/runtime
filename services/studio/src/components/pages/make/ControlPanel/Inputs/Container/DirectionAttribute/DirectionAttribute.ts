@@ -33,7 +33,7 @@ export class ParameterContainerAttribute extends LitElement {
           const {
             detail: { value },
           } = event;
-          updateComponentInput(this.component.id, {
+          updateComponentInput(this.component.uuid, {
             direction: value,
           });
         }}

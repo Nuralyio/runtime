@@ -5,7 +5,7 @@ export const GenerateName = (componentType: ComponentType) => {
   return `${componentType}_${
     $components
       .get()
-      .filter((component: ComponentElement) => component.type === componentType)
+      .filter((component: ComponentElement) => component.component_type === componentType)
       .length
   }`;
 };

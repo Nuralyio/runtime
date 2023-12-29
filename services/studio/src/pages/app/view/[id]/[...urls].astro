@@ -1,0 +1,86 @@
+---
+import View from "../view.astro";
+import { $pages } from "../../../../store/page/store";
+
+const { title, id, urls = "" } = Astro.params;
+let request = urls?.split("?");
+let search = "";
+let contextParam = "";
+
+if (request.length > 1) {
+	contextParam = urls[0];
+	search = urls[1];
+} else {
+	contextParam = urls;
+}
+
+const searchQuery = new URLSearchParams(search);
+let applicationResponse;
+if (id) {
+	const cookie = Astro.request.headers.get("Cookie");
+	const headers = {};
+	Astro.request.headers.forEach((value, key) => {
+		headers[key] = value;
+	});
+
+	delete headers["connection"];
+	console.log(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications/${id}`)
+	applicationResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications/${id}`, {
+		headers: {
+			...headers,
+			Cookie: cookie,
+		},
+	});
+	applicationResponse = await applicationResponse.json();
+}
+
+import { allTasks } from "nanostores";
+import { $components } from "$store/component/sotre";
+
+const cookie = Astro.request.headers.get("Cookie");
+
+async function executeCode(component) {
+	let result = await fetch(`http://${process.env.NURALY_ENGINE_HOST || "localhost:3000"}/run-code`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			code: 'return new Promise((resolve, reject) => {   setTimeout(() => {     resolve("Promise resolved after 400ms");   }, 400); })',
+		}),
+	});
+	let text = await result.text();
+	return text;
+}
+
+const headers = {};
+Astro.request.headers.forEach((value, key) => {
+	headers[key] = value;
+});
+const { app } = Astro.props;
+delete headers["connection"];
+console.log(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${applicationResponse.uuid}`)
+const pageResponse = await fetch(
+	`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${applicationResponse.uuid}`,
+	{
+		cache: "no-store",
+		headers: {
+			...headers,
+			Cookie: cookie,
+		},
+	},
+);
+
+const pageData = await pageResponse.json();
+$pages.set(pageData);
+
+---
+
+<div>
+	{applicationResponse?.uuid && <View app={applicationResponse} client:load />}
+	{!applicationResponse?.uuid && <div>Not Found</div>}
+</div>
+
+<script define:vars={{ applicationResponse }}>
+	window.applicationResponse = applicationResponse;
+</script>

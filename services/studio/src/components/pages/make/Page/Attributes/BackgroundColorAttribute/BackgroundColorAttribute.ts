@@ -18,7 +18,7 @@ export class AttributeColor extends LitElement {
 
   static styles = styles;
   changeHandler(event: CustomEvent) {
-    updatePageStyleAttributes(this.page.id, {
+    updatePageStyleAttributes(this.page.uuid, {
       backgroundColor: event.detail.value,
     });
   }

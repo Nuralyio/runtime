@@ -16,37 +16,63 @@ import { addComponentToCurrentPageAction, removeComponentToCurrentPageAction } f
 import { action } from "nanostores";
 import { type PageElement } from "$store/page/interface";
 import { GenerateName } from "utils/naming-generator";
+import { addComponentHandler, updateComponentHandler } from "./handler";
+import { isServer } from "lit";
 
 export interface AddComponentRequest {
   id?: string;
+  uuid: string;
   name: string;
-  type: ComponentType;
+  component_type: ComponentType;
   attributes?: any;
   parameters?: any;
   styleHandlers: { [key: string]: string };
+  inputHandlers?: { [key: string]: string };
   event: { [key: string]: string };
   style: { [key: string]: string };
   input: { [key: string]: string };
+  attributesHandlers?: { [key: string]: string };
+  errors?: { [key: string]: string };
+  styleBreakPoints?: {
+    laptop: { [key: string]: string },
+    tablet: { [key: string]: string },
+    mobile: { [key: string]: string },
+  };
   childrens?: ComponentElement[];
   pageId?: string;
+  childrenIds: string[];
+
 }
 
 /** Actions*/
-export function addComponentAction(component: AddComponentRequest) {
-  const { id } = $currentPage.get();
-  const componentId = uuidv4();
+export const addComponentAction = (component: AddComponentRequest) => {
+  const { uuid } = $currentPage.get();
+  let componentId;
+  if (component.uuid) {
+    componentId = component.uuid;
+  } else {
+    componentId = uuidv4();
+  }
+
   $components.set([
     ...$components.get(),
     {
       ...component,
-      id: componentId,
-      pageId: id,
+      uuid: componentId,
+      pageId: uuid,
     } as ComponentElement,
   ]);
+  addComponentHandler({
+    ...component,
+    uuid: componentId,
+    pageId: uuid,
+  } as ComponentElement);
+
   const currentComponentId = $currentComponentId.get();
   if (currentComponentId) {
-    const currentComponent = $components.get().find((component: ComponentElement) => component.id === currentComponentId);
-    if (currentComponent.type === ComponentType.VerticalContainer) {
+    const currentComponent = $components.get().find((component: ComponentElement) => component.uuid === currentComponentId);
+    // or ComponentType.Collection
+    if (currentComponent?.component_type === ComponentType.VerticalContainer || currentComponent?.component_type === ComponentType.Collection) {
       addComponentAsChildOf(componentId, currentComponentId);
       
     } else {
@@ -56,11 +82,14 @@ export function addComponentAction(component: AddComponentRequest) {
     addComponentToCurrentPageAction(componentId);
   }
 }
+if(!isServer){
+window.addComponentAction = addComponentAction
 
+}
 export function addComponentAsChildOf(componentId: string, parentComponent: string) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === parentComponent) {
+      if (component.uuid === parentComponent) {
         if (!component.childrenIds) {
           component.childrenIds = [];
         }
@@ -96,7 +125,7 @@ export function moveDraggedComponent(
 
   // Find the draggedComponent and parentDraggedComponent in the root array and within children.
   function findComponentsRecursively(component: ComponentElement) {
-    if (component.id === draggedComponentId) {
+    if (component.uuid === draggedComponentId) {
       draggedComponent = component;
     }
     if (!draggedComponent || !parentDraggedComponent) {
@@ -118,10 +147,10 @@ export function moveDraggedComponent(
   }
 
   // If both components are found and they are not the same, and draggedComponent is not already in dropInComponent, update their relationship.
-  if (draggedComponent && draggedComponent.id !== dropInComponentId) {
+  if (draggedComponent && draggedComponent.uuid !== dropInComponentId) {
     // Check if draggedComponent is already in the components list.
     const isDraggedComponentInList = components.some(
-      (component) => component.id === draggedComponentId
+      (component) => component.uuid === draggedComponentId
     );
 
     if (!isDraggedComponentInList) {
@@ -131,11 +160,11 @@ export function moveDraggedComponent(
 
     // Find the index of the dropInComponent in the main page.
     const pageIndex = $pages.get().findIndex(
-      (page: PageElement) => page.id === $currentPageId.get()
+      (page: PageElement) => page.uuid === $currentPageId.get()
     );
     if (pageIndex >= 0) {
       const page = $pages.get()[pageIndex];
-      const dropInComponentIndex = page.componentIds.findIndex(
+      const dropInComponentIndex = page.component_ids.findIndex(
         (componentId: string) => componentId === dropInComponentId
       );
 
@@ -149,7 +178,7 @@ export function moveDraggedComponent(
       // If dropInComponent is in the main page, update its position.
       if (dropInComponentIndex >= 0) {
         // Insert draggedComponent at the same level as dropInComponent.
-        page.componentIds.splice(
+        page.component_ids.splice(
           dropInComponentIndex,
           0,
           draggedComponentId
@@ -157,11 +186,11 @@ export function moveDraggedComponent(
       } else {
         // If dropInComponent is not in the main page, it means it's a child component.
         // Add draggedComponent at the same level as dropInComponent.
-        const parentDropInComponentId = parentDraggedComponent?.id;
+        const parentDropInComponentId = parentDraggedComponent?.uuid;
 
         if (parentDropInComponentId) {
           const parentDropInComponent = components.find(
-            (component) => component.id === parentDropInComponentId
+            (component) => component.uuid === parentDropInComponentId
           );
 
           if (parentDropInComponent && parentDropInComponent.childrenIds) {
@@ -198,10 +227,10 @@ export function moveDraggedComponentInside(
   let dropInComponent: ComponentElement | undefined;
   // Find draggedComponent and dropInComponent in the root array and within children.
   function findComponentsRecursively(component: ComponentElement) {
-    if (component.id === draggedComponentId) {
+    if (component.uuid === draggedComponentId) {
       draggedComponent = component;
     }
-    if (component.id === dropInComponentId) {
+    if (component.uuid === dropInComponentId) {
       dropInComponent = component;
     }
     parentDraggedComponent = components.find((c) => c.childrenIds?.includes(draggedComponentId));
@@ -263,7 +292,7 @@ export function moveDraggedComponentIntoCurrentPageRoot(
 
   // Find draggedComponent and dropInComponent in the root array and within children.
   function findComponentsRecursively(component: ComponentElement) {
-    if (component.id === draggedComponentId) {
+    if (component.uuid === draggedComponentId) {
       draggedComponent = component;
     }
     parentDraggedComponent = components.find((c) => c.childrenIds?.includes(draggedComponentId));
@@ -308,9 +337,13 @@ export function updateComponentParameters(
   componentId: string,
   updatedParameters: any
 ) {
+  let componentToUpdate;
+  console.log('----updateComponentInput---- ');
+
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
+      if (component.uuid === componentId) {
+        componentToUpdate = component;
         component.parameters = {
           ...component.parameters,
           ...updatedParameters,
@@ -319,12 +352,13 @@ export function updateComponentParameters(
       return component;
     }),
   ]);
+  updateComponentHandler(componentToUpdate);
 }
 
 export function updateComponentInput(componentId: string, updatedInputs: any) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
+      if (component.uuid === componentId) {
         component.input = {
           ...component.input,
           ...updatedInputs,
@@ -339,10 +373,12 @@ export function updateComponentAttributes(
   componentId: string,
   updatedAttributes: any
 ) {
+  let componentToUpdate;
   if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
     $components.set([
       ...$components.get().map((component: ComponentElement) => {
-        if (component.id === componentId) {
+        if (component.uuid === componentId) {
+          componentToUpdate = component;
           component.styleBreakPoints = {
             ...component.styleBreakPoints,
             [$currentPageViewPort.get()]: {
@@ -357,7 +393,8 @@ export function updateComponentAttributes(
   } else {
     $components.set([
       ...$components.get().map((component: ComponentElement) => {
-        if (component.id === componentId) {
+        if (component.uuid === componentId) {
+          componentToUpdate = component;
           component.style = {
             ...component.style,
             ...updatedAttributes,
@@ -368,7 +405,26 @@ export function updateComponentAttributes(
     ]);
   }
 
- 
+  updateComponentHandler(componentToUpdate);
+  
+}
+
+
+export function updateComponentInputs(
+  componentId: string,
+  updatedAttributes: any
+) {
+  $components.set([
+    ...$components.get().map((component: ComponentElement) => {
+      if (component.uuid === componentId) {
+        component.attributes = {
+          ...component.attributes,
+          ...updatedAttributes,
+        };
+      }
+      return { ...component };
+    }),
+  ]);
 }
 
 export function updateComponentstyleHandlers(
@@ -377,7 +433,7 @@ export function updateComponentstyleHandlers(
 ) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
+      if (component.uuid === componentId) {
         component.styleHandlers = {
           ...component.styleHandlers,
           ...updatedAttributes,
@@ -393,9 +449,13 @@ export function updateComponentAttributeHandlers(
   scope: string,
   updatedAttributes: any
 ) {
+  let componentToUpdate;
+
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
+      if (component.uuid === componentId) {
+          componentToUpdate = component;
+        
         component[scope] = {
           ...component[scope],
           ...updatedAttributes,
@@ -404,6 +464,8 @@ export function updateComponentAttributeHandlers(
       return { ...component };
     }),
   ]);
+  updateComponentHandler(componentToUpdate);
+
 }
 
 /*
@@ -419,7 +481,7 @@ export const setCurrentComponentIdAction = action(
 export function updateComponent(componentId: string, componentAttributes: any) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
+      if (component.uuid === componentId) {
         Object.assign(component, componentAttributes);
       }
       return { ...component };
@@ -433,7 +495,7 @@ export function updateComponentError(
 ) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
-      if (component.id === componentId) {
+      if (component.uuid === componentId) {
         component.errors = {
           ...component.errors,
           ...error,
@@ -469,7 +531,7 @@ export function deleteComponentAction(componentId: string) {
   }
 
   // Find the index of the component to delete
-  const indexToDelete = components.findIndex((component: ComponentElement) => component.id === componentId);
+  const indexToDelete = components.findIndex((component: ComponentElement) => component.uuid === componentId);
 
   if (indexToDelete !== -1) {
     // Remove the component from the components array
@@ -493,7 +555,7 @@ let clipboardComponent: ComponentElement | null = null;
 
 export function copyComponentAction(componentId: string) {
   const components = $components.get();
-  const componentToCopy = components.find((component: ComponentElement) => component.id === componentId);
+  const componentToCopy = components.find((component: ComponentElement) => component.uuid === componentId);
 
   if (componentToCopy) {
     clipboardComponent = { ...componentToCopy, id: uuidv4() }; // Generate a new ID for the copied component
@@ -504,13 +566,13 @@ export function copyComponentAction(componentId: string) {
 export function pasteComponentAction() {
   if (clipboardComponent) {
     const { id } = $currentPage.get();
-    clipboardComponent.id = uuidv4();
-    const componentId = clipboardComponent.id;
+    clipboardComponent.uuid = uuidv4();
+    const componentId = clipboardComponent.uuid;
     $components.set([
       ...$components.get(),
       {
         ...clipboardComponent,
-        name: GenerateName(clipboardComponent.type),
+        name: GenerateName(clipboardComponent.component_type),
         pageId: id,
       } as ComponentElement,
     ]);
@@ -519,10 +581,10 @@ export function pasteComponentAction() {
 
     if (currentComponentId) {
       const currentComponent = $components.get().find(
-        (component: ComponentElement) => component.id === currentComponentId
+        (component: ComponentElement) => component.uuid === currentComponentId
       );
 
-      if (currentComponent?.type === ComponentType.VerticalContainer) {
+      if (currentComponent?.component_type === ComponentType.VerticalContainer) {
         addComponentAsChildOf(componentId, currentComponentId);
       } else {
         addComponentToCurrentPageAction(componentId);

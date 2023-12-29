@@ -68,7 +68,7 @@ export class QuickActionWrapper extends LitElement {
             <hy-button  style="margin-left : 10px" danger
             
             @click=${() => {
-        deleteComponentAction(this.component.id);
+        deleteComponentAction(this.component.uuid);
       }}>Delete</hy-button>
 
 

@@ -18,7 +18,7 @@ export class AttributeColor extends LitElement {
 
   static styles = styles;
   changeHandler(event: CustomEvent) {
-    updateComponentAttributes(this.component.id, {
+    updateComponentAttributes(this.component.uuid, {
       color: event.detail.value,
     });
   }

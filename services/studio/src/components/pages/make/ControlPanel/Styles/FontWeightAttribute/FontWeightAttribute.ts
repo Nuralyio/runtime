@@ -26,7 +26,7 @@ export class AttributeTextFontWeight extends LitElement {
   ];
 
   changeHandler(event: CustomEvent) {
-    updateComponentAttributes(this.component.id, {
+    updateComponentAttributes(this.component.uuid, {
       fontWeight: event.detail.value,
     });
   }

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
 import { type ComponentElement } from "$store/component/interface";
@@ -9,6 +9,9 @@ export class AttributesTextValueHandler extends LitElement {
 
   @state()
   label = "";
+
+  @property({ type: Boolean })
+  slim: boolean = false;
 
   static styles = [css``];
 
@@ -39,6 +42,16 @@ export class AttributesTextValueHandler extends LitElement {
       palceholder="value"
       @valueChange=${this.handleValueChange}
       .value=${this.label}
-    ></hy-input>`;
+    ></hy-input>
+   </attribute-input-wrapper>
+          ${!this.slim ? html`
+          <smart-attribute-editor-dropdown
+        .component=${{ ...this.component }}
+        .attributeName=${"value"}
+        .attributeScope=${"attributes"}
+        .handlerScope=${"attributesHandlers"}
+      ></smart-attribute-editor-dropdown>
+      ` : nothing}
+    `;
   }
 }

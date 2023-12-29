@@ -1,0 +1,47 @@
+---
+import Make from "../../make.astro";
+//import "../../../components/shared/blocks/CodeEditor/CodeEditor";
+
+const { title, id, urls = "" } = Astro.params;
+let request = urls?.split("?") ;
+let search = "";
+let contextParam = "";
+
+if (request.length > 1) {
+	contextParam = urls[0];
+	search = urls[1];
+} else {
+	contextParam = urls;
+}
+
+const searchQuery = new URLSearchParams(search);
+let applicationResponse
+if(id){
+	const cookie = Astro.request.headers.get("Cookie");
+	const headers = {};
+	Astro.request.headers.forEach((value, key) => {
+	  headers[key] = value;
+	});
+
+	delete headers["connection"];
+	 applicationResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications/${id}`
+	 	, {
+	  headers: {
+	   'X-USER' : Astro.request.headers.get('X-USER')
+	  },
+	});
+	 console.log('Astro.request.headers["x-user"]',Astro.request.headers)
+	 applicationResponse = await applicationResponse.json();
+}
+---
+
+<div>
+  {applicationResponse?.uuid && <Make app={applicationResponse}></Make>}
+  {!applicationResponse?.uuid && <div>Not Found</div>}
+</div>
+
+
+<script define:vars={{ applicationResponse}}>
+	window.applicationResponse = applicationResponse;
+
+</script>

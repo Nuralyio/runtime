@@ -7,6 +7,9 @@ import { type ComponentElement } from "$store/component/interface";
 export class TextInputBlock extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
+
+  @property({ type: Object })
+  item:any;
   static styles = [
     css`
       :host {
@@ -14,8 +17,9 @@ export class TextInputBlock extends LitElement {
     `,
   ];
   render() {
-    return html`<span style=${styleMap({ ...this.component.style })}
-      ><hy-input placeholder="Text input"></hy-input
+    return html`
+    <span style=${styleMap({ ...this.component.style })}
+      ><hy-input .value=${this.item.value ?? ""} placeholder="Text input"></hy-input
     ></span>`;
   }
 }
