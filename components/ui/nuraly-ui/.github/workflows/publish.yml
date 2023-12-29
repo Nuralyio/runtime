@@ -57,5 +57,8 @@ jobs:
           cd ../select && publish-if-not-published
           cd ../tooltips && publish-if-not-published
           cd ../colorpicker && publish-if-not-published
+          cd ../modal && publish-if-not-published
+          cd ../checkbox && publish-if-not-published
+          cd ../table && publish-if-not-published
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
