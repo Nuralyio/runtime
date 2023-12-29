@@ -1,4 +1,4 @@
-import { $editorState } from "./apps";
+import { $applications, $editorState, $showCreateApplicationModal } from "./apps";
 
 
 export function openTab(tab: any) {
@@ -29,3 +29,23 @@ export function setCurrentTab(tab: any) {
 		currentTab: tab,
 	});
 }
+
+
+export function setApplication(apps: any) {
+	$applications.set(apps);
+}
+
+
+export function showCreateApplicationModalAction() {
+	$showCreateApplicationModal.set(true);
+}
+
+
+export function closeCreateApplicationModalAction() {
+	$showCreateApplicationModal.set(false);
+}
+
+
+
+
+

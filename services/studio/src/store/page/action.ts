@@ -1,10 +1,13 @@
 import { $resizing } from "$store/apps";
+import { addPageHandler } from "./handler";
 import { type PageElement } from "./interface";
 import { $contextMenuEvent, $currentPage, $currentPageId, $currentPageViewPort, $pageSize, $pageZoom, $pages, $showBorder } from "./store";
+import { updatePageHandler } from "./handler";
 
 /** Actions*/
-export function addPageAction(com: PageElement) {
-  $pages.set([...$pages.get(), com]);
+export function addPageAction(page: PageElement) {
+  $pages.set([...$pages.get(), page]);
+  addPageHandler(page)
 }
 
 export function setCurrentPageAction(pageId: string) {
@@ -14,21 +17,23 @@ export function setCurrentPageAction(pageId: string) {
 export function addComponentToCurrentPageAction(componentId: string) {
   $pages.set([
     ...$pages.get().map((page: PageElement) => {
-      if (page.id === $currentPage.get().id) {
-        const { componentIds = [] } = page;
-        componentIds.push(componentId);
-        page = { ...page, componentIds };
+      if (page.uuid === $currentPage.get().uuid) {
+        const { component_ids = [] } = page;
+        component_ids.push(componentId);
+        page = { ...page, component_ids };
       }
       return page;
     }),
   ]);
+
+  updatePageHandler($currentPage.get());  
 }
 
 
 export function updatePageStyleAttributes(pageId: string, style: any) {
   $pages.set([
     ...$pages.get().map((page: PageElement) => {
-      if (page.id === pageId) {
+      if (page.uuid === pageId) {
         page = { ...page, style };
       }
       return page;
@@ -39,12 +44,12 @@ export function updatePageStyleAttributes(pageId: string, style: any) {
 export function removeComponentToCurrentPageAction(removedComponentId: string) {
   $pages.set([
     ...$pages.get().map((page: PageElement) => {
-      if (page.id === $currentPage.get().id) {
-        let { componentIds = [] } = page;
-        componentIds = componentIds.filter(
+      if (page.uuid === $currentPage.get().uuid) {
+        let { component_ids = [] } = page;
+        component_ids = component_ids.filter(
           (componentId: string) => componentId !== removedComponentId
         );
-        page = { ...page, componentIds };
+        page = { ...page, component_ids };
       }
       return page;
     }),
@@ -88,3 +93,5 @@ export function setContextMenuEvent(e: any) {
 export function setResizing(isResizing: boolean) {
   $resizing.set(isResizing);
 }
+
+

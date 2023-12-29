@@ -1,4 +1,4 @@
-import { $component, $resizing } from "$store/apps";
+import {  $resizing } from "$store/apps";
 import {
   moveDraggedComponent,
   moveDraggedComponentInside,
@@ -16,7 +16,7 @@ import {
   $hoveredComponent,
   $selectedComponent,
 } from "$store/component/sotre";
-import { LitElement, html, css, nothing,  } from "lit";
+import { LitElement, html, css, nothing, } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -29,6 +29,9 @@ export class VerticalContainer extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
 
+  @property({ type: Object })
+  item: any;
+
   @state()
   dragOverSituation = false;
 
@@ -39,9 +42,12 @@ export class VerticalContainer extends LitElement {
   hoveredComponent: ComponentElement;
 
   draggingComponentInfo: DraggingComponentInfo;
+
+  @property({ type: Boolean })
+  isViewMode = false;
   constructor() {
     super();
-    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+    //
 
     $hoveredComponent.subscribe((hoveredComponent) => {
       this.hoveredComponent = hoveredComponent;
@@ -82,10 +88,14 @@ export class VerticalContainer extends LitElement {
   @state()
   containerRef: Ref<HTMLInputElement> = createRef();
 
+  connectedCallback(): void {
+    super.connectedCallback();
+   this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+  }
   onContextMenu(e) {
     e.preventDefault();
     e.stopPropagation();
-    //setCurrentComponentIdAction(this.component?.id);
+    //setCurrentComponentIdAction(this.component?.uuid);
     //this.showQuickAction = true;
     //console.log(this.inputRef.value?.getBoundingClientRect().top);
     e.ComponentTop = this.containerRef.value?.getBoundingClientRect().top;
@@ -93,8 +103,29 @@ export class VerticalContainer extends LitElement {
     setContextMenuEvent(e);
   }
 
+
+  renderView() {
+    return html` 
+    ${this.component?.childrenIds?.length
+      ? renderComponent(
+        this.component.childrenIds?.map(
+          (id) =>
+          ({
+            ...$components.get().find((component) => component.uuid === id), item:
+              this.item
+          } as ComponentElement)
+        )
+        , this.item,
+        this.isViewMode
+      )
+      : html``
+      }`;
+
+  }
+
   render() {
-    return html` <resize-wrapper
+    return html` ${this.isViewMode ? this.renderView() : html`
+    <resize-wrapper
       .component=${{ ...this.component }}
       .selectedComponent=${{ ...this.selectedComponent }}
       .hoveredComponent=${{ ...this.hoveredComponent }}
@@ -103,7 +134,7 @@ export class VerticalContainer extends LitElement {
        draggable="true"
         @mouseenter="${() => {
         this.dragOverSituation = true;
-        setHoveredComponentIdAction(this.component?.id);
+        setHoveredComponentIdAction(this.component?.uuid);
       }}"
         @mouseleave="${() => {
         this.dragOverSituation = false;
@@ -114,23 +145,23 @@ export class VerticalContainer extends LitElement {
         ${ref(this.containerRef)}
         class="container"
         @click="${(e: any) => {
-          setContextMenuEvent(null);
+        setContextMenuEvent(null);
         if (!$resizing.get()) {
-          setCurrentComponentIdAction(this.component?.id);
+          setCurrentComponentIdAction(this.component?.uuid);
           e.preventDefault();
           e.stopPropagation()
           if (e.target.classList.contains("container")) {
-            setCurrentComponentIdAction(this.component?.id);
+            setCurrentComponentIdAction(this.component?.uuid);
             e.preventDefault();
-          e.stopPropagation()
+            e.stopPropagation()
           }
         }
 
       }}"
-      style="min-width: 120px;"
+       style=${styleMap({ "min-width": "120px", ...this.component.style, "min-height": this.component?.childrenIds?.length ? "auto" : "300px" })}
         class=${classMap({
         container: true,
-        vertical: this.component.input?.direction === "vertical",
+        vertical: this.component?.input?.direction === "vertical",
         "drag-over": this.dragOverSituation,
       })}
         @dragenter=${(e) => {
@@ -164,7 +195,7 @@ export class VerticalContainer extends LitElement {
         e.preventDefault();
         this.dragOverSituation = false;
         moveDraggedComponentInside(
-          this.component?.id,
+          this.component?.uuid,
           this.draggingComponentInfo.componentId
         );
         setDraggingComponentInfo(null);
@@ -182,18 +213,23 @@ export class VerticalContainer extends LitElement {
           .selectedComponent=${{ ...this.selectedComponent }}
         ></component-title>
     
-        ${this.component.childrenIds?.length
+        ${this.component?.childrenIds?.length
         ? renderComponent(
           this.component.childrenIds?.map(
             (id) =>
-              $components.get().find((comment) => comment.id === id) as ComponentElement
+            ({
+              ...$components.get().find((component) => component.uuid === id), item:
+                this.item
+            } as ComponentElement)
           )
+          , this.item,
+          this.isViewMode
         )
         : html`<div
     
               class="empty-message"
               @click="${(e: any) => {
-            setCurrentComponentIdAction(this.component?.id);
+            setCurrentComponentIdAction(this.component?.uuid);
           }}"
             >
             Add or Drag an item into this container
@@ -208,19 +244,19 @@ export class VerticalContainer extends LitElement {
               this.draggingComponentInfo?.blockInfo.width ??
               this.dropDragPalceHolderStyle.width,
           })}
-          class="drop-zone drop-zone-end-of-container-${this.component.input
+          class="drop-zone drop-zone-end-of-container-${this.component?.input
         ?.direction}"
         ></div-->
         <div
           style=${styleMap({
-        ...this.dropDragPalceHolderStyle,
-        height:
-          this.draggingComponentInfo?.blockInfo.height ??
-          this.dropDragPalceHolderStyle.height,
-        width:
-          this.draggingComponentInfo?.blockInfo.width ??
-          this.dropDragPalceHolderStyle.width,
-      })}
+          ...this.dropDragPalceHolderStyle,
+          height:
+            this.draggingComponentInfo?.blockInfo.height ??
+            this.dropDragPalceHolderStyle.height,
+          width:
+            this.draggingComponentInfo?.blockInfo.width ??
+            this.dropDragPalceHolderStyle.width,
+        })}
           @dragend=${(e) => {
         e.preventDefault();
       }
@@ -229,6 +265,7 @@ export class VerticalContainer extends LitElement {
         ></div>
 
         </div
-    ></resize-wrapper>`;
+    ></resize-wrapper>
+    `}`;
   }
 }

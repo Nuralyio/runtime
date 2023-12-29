@@ -4,6 +4,7 @@ import styles from "./AppActions.style";
 import { useStores } from "@nanostores/lit";
 import { $environment, type Environment, ViewMode } from "$store/environment/store";
 import { setEnvironmentMode } from "$store/environment/action";
+import { $currentApplication } from "$store/apps";
 
 @customElement("topbar-app-actions")
 @useStores($environment)
@@ -12,11 +13,20 @@ export class TopbarAppActions extends LitElement {
   @state()
   environmentMode: ViewMode;
 
+  @state()
+  viewTab;
+    application: any;
+
   constructor() {
     super();
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
     });
+    $currentApplication.subscribe((application) => {
+      this.application = application;
+      console.log(this.application)
+    }
+    );
   }
   togglePreviewMode() {
     setEnvironmentMode(
@@ -27,7 +37,17 @@ export class TopbarAppActions extends LitElement {
     return html`<div class="app-action-wrapper">
       <hy-button icon="comment"></hy-button>
       <hy-button
-        @click=${this.togglePreviewMode}
+        @click=${()=>{
+          if(this.viewTab){
+            this.viewTab.close();
+          }else{
+            this.viewTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
+
+          }
+          const newTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
+
+        }
+        }
         icon=${this.environmentMode === ViewMode.Edit ? "play" : "edit"}
       ></hy-button>
       <hy-button icon="save"></hy-button>

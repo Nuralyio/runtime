@@ -53,7 +53,7 @@ export class DragWrapper extends LitElement {
   }
   render() {
     const isDragintiator =
-      this.component.id === this.draggingComponentInfo?.componentId;
+      this.component.uuid === this.draggingComponentInfo?.componentId;
     return html`<div
       ${ref(this.slotRef)}
       @dragover=${(e) => {
@@ -119,7 +119,7 @@ export class DragWrapper extends LitElement {
               height: "20px",
             };
             moveDraggedComponent(
-              this.component?.id,
+              this.component?.uuid,
               this.draggingComponentInfo.componentId
             );
             setDraggingComponentInfo(null);

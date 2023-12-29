@@ -51,7 +51,7 @@ export class EditorInteractivePanel extends LitElement {
   constructor() {
     super();
     $selectedComponent.subscribe((selectedComponent) => {
-      /* if(selectedComponent?.id !== this.component?.id){
+      /* if(selectedComponent?.uuid !== this.component?.uuid){
          this.showQuickAction = false;
        }*/
       this.selectedComponent = selectedComponent;
@@ -97,7 +97,7 @@ export class EditorInteractivePanel extends LitElement {
           this.inputRef.value!.style!.display = 'block'
         }
       } else {
-        this.inputRef.value!.style!.display = 'none'
+        this.inputRef.value ? this.inputRef.value!.style!.display = 'none' : 'none'
       }
     })
   requestAnimationFrame(() => {

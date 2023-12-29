@@ -152,7 +152,7 @@ export class ResizeWrapper extends LitElement {
           this.original_y + (e.pageY - this.original_mouse_y) + "px";
       }
     }
-    updateComponentAttributes(this.component.id, {
+    updateComponentAttributes(this.component.uuid, {
       width: this.inputRef.value.style.width,
       height: this.inputRef.value.style.height,
       display: "block",
@@ -277,11 +277,11 @@ export class ResizeWrapper extends LitElement {
         class=${classMap({
           element: true,
           selected:
-            this.selectedComponent?.id === this.component.id ||
-            this.hoveredComponent?.id === this.component.id,
+            this.selectedComponent?.uuid === this.component.uuid ||
+            this.hoveredComponent?.uuid === this.component.uuid,
           hovered:
-            this.hoveredComponent?.id === this.component.id &&
-            this.selectedComponent?.id !== this.component.id,
+            this.hoveredComponent?.uuid === this.component.uuid &&
+            this.selectedComponent?.uuid !== this.component.uuid,
             bordered : this.showBorder
         })}
         ${ref(this.inputRef)}

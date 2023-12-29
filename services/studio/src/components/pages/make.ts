@@ -15,7 +15,7 @@ export class MakePage extends LitElement {
 
   render() {
     return html`
-      <topbar-panel-wrapper z>Wrapper</topbar-panel-wrapper>
+      <topbar-panel-wrapper></topbar-panel-wrapper>
       <div slot="left">
         <screen-structure-editor></screen-structure-editor>
       </div>

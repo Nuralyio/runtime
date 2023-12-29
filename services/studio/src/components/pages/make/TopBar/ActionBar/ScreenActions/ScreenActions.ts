@@ -4,10 +4,12 @@ import styles from "./ScreenActions.style";
 import "@hybridui/button";
 import "@hybridui/dropdown";
 import "@hybridui/icon";
-import { addComponentAction } from "$store/component/action";
+import { addComponentAction, setCurrentComponentIdAction } from "$store/component/action";
 import { ComponentType } from "$store/component/interface";
 import { GenerateName } from "utils/naming-generator";
 import { setShowBorder } from "$store/page/action";
+import { v4 as uuidv4 } from "uuid";
+import { AddCollection } from "./AddCollection";
 
 @customElement("topbar-screen-actions")
 export class TopbarScreenActions extends LitElement {
@@ -21,7 +23,7 @@ export class TopbarScreenActions extends LitElement {
         const componentName = GenerateName(ComponentType.TextLabel);
         addComponentAction({
           name: componentName,
-          type: ComponentType.TextLabel,
+          component_type: ComponentType.TextLabel,
           attributes: {
             display: "block",
             fontSize: "16px",
@@ -33,19 +35,47 @@ export class TopbarScreenActions extends LitElement {
           event: {},
           input: {},
           style: {},
+          styleBreakPoints: {
+            mobile: {},
+            tablet: {},
+            laptop: {},
+          },
+          inputHandlers: {},
+          attributesHandlers: {},
+          errors: {},
+          childrenIds: [],
         });
       },
+    },
+    {
+      label: "Collections",
+      handler: () => {
+        AddCollection();
+        },
     },
     {
       label: "Text Input",
       handler: () => {
         addComponentAction({
           name: GenerateName(ComponentType.TextInput),
-          type: ComponentType.TextInput,
+          component_type: ComponentType.TextInput,
+          styleHandlers: {},
+          parameters: {
+            value: "Text Label",
+          },
           styleHandlers: {},
           event: {},
           input: {},
           style: {},
+          styleBreakPoints: {
+            mobile: {},
+            tablet: {},
+            laptop: {},
+          },
+          inputHandlers: {},
+          attributesHandlers: {},
+          errors: {},
+          childrenIds: [],
         });
       },
     },
@@ -54,7 +84,7 @@ export class TopbarScreenActions extends LitElement {
       handler: () => {
         addComponentAction({
           name: GenerateName(ComponentType.Button),
-          type: ComponentType.Button,
+          component_type: ComponentType.Button,
           styleHandlers: {},
           event: {},
           input: {},
@@ -68,13 +98,26 @@ export class TopbarScreenActions extends LitElement {
       handler: () => {
         addComponentAction({
           name: GenerateName(ComponentType.VerticalContainer),
-          type: ComponentType.VerticalContainer,
+          component_type: ComponentType.VerticalContainer,
           styleHandlers: {},
           input: {
             direction: "horizontal",
           },
+          styleHandlers: {},
           event: {},
           style: {},
+          attributes:{},
+          styleBreakPoints: {
+            mobile: {},
+            tablet: {},
+            laptop: {},
+          },
+          inputHandlers: {},
+          attributesHandlers: {},
+          errors: {},
+          childrenIds: [],
+          parameters: {
+          },
         });
       },
     },
@@ -104,13 +147,13 @@ export class TopbarScreenActions extends LitElement {
 
   render() {
     return html` <div class="screen-action-wrapper">
-      <hy-button icon="arrow-left"></hy-button>
+      <hy-button icon="arrow-left" @click=${()=>window.location.href = '/apps'}></hy-button>
       <hy-button icon="paste"></hy-button>
       <hy-dropdown
         .options=${this.options}
         @change="${(e: any) => {
-          /* */
-        }}"
+        /* */
+      }}"
         ><span slot="label">
           <hy-button icon="plus">Insert</hy-button>
         </span></hy-dropdown
@@ -122,12 +165,13 @@ export class TopbarScreenActions extends LitElement {
       }
       }
       >
-        ${
-          !this.showBorder ? html`Show` : html`Hide`
-        }
+        ${!this.showBorder ? html`Show` : html`Hide`
+      }
         
          Broder</hy-button>
 
     </div>`;
   }
 }
+
+

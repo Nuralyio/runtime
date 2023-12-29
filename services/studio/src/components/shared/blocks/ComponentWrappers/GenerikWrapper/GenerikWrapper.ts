@@ -73,7 +73,7 @@ export class GenerikComponentWrapper extends LitElement {
   inputRef: Ref<HTMLInputElement> = createRef();
   constructor() {
     super();
-    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+    //this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
 
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
@@ -92,7 +92,7 @@ export class GenerikComponentWrapper extends LitElement {
           this.draggingComponentInfo = draggingComponentInfo;
 
           this.draggingSituation = true;
-          if(this.draggingComponentInfo?.componentId === this.component?.id){
+          if(this.draggingComponentInfo?.componentId === this.component?.uuid){
             if(this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height){
               this.draggingComponentInfo.blockInfo.height = `${this.inputRef.value?.getBoundingClientRect().height}px`;
               this.draggingComponentInfo.blockInfo.width = `${this.inputRef.value?.getBoundingClientRect().width}px`;
@@ -112,7 +112,7 @@ export class GenerikComponentWrapper extends LitElement {
       }
     );
     $selectedComponent.subscribe((selectedComponent) => {
-      if(selectedComponent?.id !== this.component?.id){
+      if(selectedComponent?.uuid !== this.component?.uuid){
         this.showQuickAction = false;
        // setContextMenuEvent(null);
       }
@@ -127,7 +127,7 @@ export class GenerikComponentWrapper extends LitElement {
   onContextMenu(e) {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentComponentIdAction(this.component?.id);
+    setCurrentComponentIdAction(this.component?.uuid);
     console.log(e)
     //this.showQuickAction = true;
     //console.log(this.inputRef.value?.getBoundingClientRect().top);
@@ -165,12 +165,12 @@ export class GenerikComponentWrapper extends LitElement {
           @click="${(e) => {
             e.stopPropagation();
             e.preventDefault();
-            setCurrentComponentIdAction(this.component?.id);
+            setCurrentComponentIdAction(this.component?.uuid);
         setContextMenuEvent(null);
 
           }}"
           @mouseenter="${() => {
-            setHoveredComponentIdAction(this.component?.id);
+            setHoveredComponentIdAction(this.component?.uuid);
           }}"
           @mouseleave="${() => {
             setHoveredComponentIdAction(null);
@@ -186,7 +186,7 @@ export class GenerikComponentWrapper extends LitElement {
           <!--span
             style=${styleMap({
             display:
-              this.selectedComponent?.id === this.component.id &&
+              this.selectedComponent?.uuid === this.component.uuid &&
               this.displayTitle
                 ? "block"
                 : "none",
@@ -195,7 +195,7 @@ export class GenerikComponentWrapper extends LitElement {
             this.isDragintiator = true;
             setTimeout(() => {
               setDraggingComponentInfo({
-                componentId: this.component?.id,
+                componentId: this.component?.uuid,
                 blockInfo: {
                   height: this.component.style.height,
                   width: this.component.style.width,
@@ -213,7 +213,7 @@ export class GenerikComponentWrapper extends LitElement {
           -->
           <div  ${ref(this.inputRef)}   class=${classMap({
             selected:
-            this.selectedComponent?.id === this.component.id
+            this.selectedComponent?.uuid === this.component.uuid
           })} >
             <slot></slot>
           </div>

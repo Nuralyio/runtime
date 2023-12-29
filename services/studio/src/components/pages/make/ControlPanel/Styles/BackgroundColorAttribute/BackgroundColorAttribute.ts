@@ -12,7 +12,7 @@ export class AttributeBackgroundColor extends LitElement {
   component: ComponentElement;
   static styles = styles;
   changeHandler(event: CustomEvent) {
-    updateComponentAttributes(this.component.id, {
+    updateComponentAttributes(this.component.uuid, {
       backgroundColor: event.detail.value,
     });
   }

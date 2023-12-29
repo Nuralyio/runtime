@@ -1,9 +1,11 @@
 import { type ComponentElement } from "$store/component/interface";
 
 export type PageElement = {
-  id: string;
+  //id?: string;
+  uuid: string;
   name: string;
-  style: any;
+  url: string;
+  style?: any;
   components?: ComponentElement[];
-  componentIds?: string[];
+  component_ids?: string[];
 };

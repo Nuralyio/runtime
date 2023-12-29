@@ -38,13 +38,16 @@ export class ScreenListEditor extends LitElement {
     $currentPage.subscribe((currentPage: PageElement) => {
       this.currentPage = { ...currentPage };
     });
+
+    $pages.subscribe((pages: PageElement[] = []) => {
+      });
     $pagesWithComponents.subscribe((pages: PageElement[] = []) => {
       setTimeout(() => {
         this.options = [...pages].map((page) => ({
           label: page.name,
-          id: page.id,
+          id: page.uuid,
           handler: () => {
-            setCurrentPageAction(page.id);
+            setCurrentPageAction(page.uuid);
           },
          
 
@@ -57,29 +60,32 @@ export class ScreenListEditor extends LitElement {
       });
     });
   }
+
   generateMenu(components: ComponentElement[]) {
-    return components.map((component: ComponentElement) => ({
-      label: component.name,
-      id: component.id,
-      handler: () => {
-        if (this.currentPage?.id !== component?.pageId) {
-          setCurrentPageAction(component?.pageId);
-        }
-        setCurrentComponentIdAction(component?.id);
-      },
-      mouseEnterHander : ()=>{
-        setHoveredComponentIdAction(component?.id);
-      },
-      mouseLeaveHander : ()=>{
-        setHoveredComponentIdAction(null);
-      },
-      children: component.childrens ? this.generateMenu(component.childrens) : [],
-    }));
+    return components.filter(component => component)
+      .map((component: ComponentElement) => ({
+        label: component.name,
+        id: component.uuid,
+        handler: () => {
+          if (this.currentPage?.uuid !== component?.pageId) {
+            setCurrentPageAction(component?.pageId);
+          }
+          setCurrentComponentIdAction(component?.uuid);
+        },
+        mouseEnterHander: () => {
+          setHoveredComponentIdAction(component?.uuid);
+        },
+        mouseLeaveHander: () => {
+          setHoveredComponentIdAction(null);
+        },
+        children: component.childrens ? this.generateMenu(component.childrens) : [],
+      }));
   }
+
   render() {
     return html`
       ${this.options
-        ? html` <hy-menu
+        ? html`  <hy-menu
             placeholder="Select an option"
             .options=${this.options}
             @change="${(e: any) => {}}"

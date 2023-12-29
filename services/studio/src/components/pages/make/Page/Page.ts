@@ -2,7 +2,7 @@ import { type PageElement } from "$store/page/interface";
 import { $currentPage, $currentPageViewPort } from "$store/page/store";
 import { useStores } from "@nanostores/lit";
 import { LitElement, html } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import styles from "./Page.style";
 import { $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
 import { type ComponentElement, ComponentType, type DraggingComponentInfo } from "$store/component/interface";
@@ -13,7 +13,8 @@ import "../../../shared/blocks/ComponentElements/TextInput/TextInput";
 import "../../../shared/blocks/ComponentElements/TextLabel/TextLabel";
 import "../../../shared/blocks/ComponentElements/Button/Button";
 import "../../../shared/blocks/ComponentElements/Containers/Container";
-import "../../../shared/blocks/CodeEditor/CodeEditor";
+import "../../../shared/blocks/Collections/Collections";
+
 import { renderComponent } from "utils/render-util";
 import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
 import { $resizing } from "$store/apps";
@@ -34,50 +35,18 @@ export class PageContent extends LitElement {
   currentPage: PageElement;
   @state()
   components: ComponentElement[] = [];
+
+  @property({ type: Boolean })
+  isViewMode = false;
   constructor() {
     super();
 
-    //generate code event listener ton keyboard event
-    document.addEventListener('keydown', function (event) {
-      console.log(event.key);
-      // Handle arrow key presses
-      switch (event.key) {
-        case 'ArrowDown':
-
-          this.updateStyle("marginTop", 1);
-
-          break;
-        case 'ArrowUp':
-          this.updateStyle("marginTop", -1);
-
-          break;
-        case 'ArrowLeft':
-          this.updateStyle("marginLeft", -1);
-
-          break;
-        case 'ArrowRight':
-          this.updateStyle("marginLeft", 1);
-      }
-     
-    }.bind(this));
+    
 
     $selectedComponent.subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
     });
-    document.addEventListener('keydown', function (event) {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
-        if (this.selectedComponent.type === ComponentType.VerticalContainer) {
-          pasteComponentAction();        
-          event.preventDefault();
-        }
     
-      } else if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-        copyComponentAction(this.selectedComponent.id);        
-        event.preventDefault();
-      }
-
-      
-    }.bind(this));
     $currentPage.subscribe((currentPage) => {
       this.currentPage = { ...currentPage };
     });
@@ -102,7 +71,7 @@ export class PageContent extends LitElement {
     if (this.selectedComponent) {
       const value = this.selectedComponent.style[key] ?? "0px"
       const numvalue = Number(value.replace("px", ""));
-      updateComponentAttributes(this.selectedComponent.id, {
+      updateComponentAttributes(this.selectedcomponent.uuid, {
         [key]: numvalue + counter + "px",
       });
     }
@@ -116,6 +85,43 @@ export class PageContent extends LitElement {
         this.updatePageInfo();
       })
     });
+    //generate code event listener ton keyboard event
+    document.addEventListener('keydown', function (event) {
+      console.log(event.key);
+      // Handle arrow key presses
+      switch (event.key) {
+        case 'ArrowDown':
+
+          this.updateStyle("marginTop", 1);
+
+          break;
+        case 'ArrowUp':
+          this.updateStyle("marginTop", -1);
+
+          break;
+        case 'ArrowLeft':
+          this.updateStyle("marginLeft", -1);
+
+          break;
+        case 'ArrowRight':
+          this.updateStyle("marginLeft", 1);
+      }
+     
+    }.bind(this));
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
+        if (this.selectedComponent.type === ComponentType.VerticalContainer) {
+          //pasteComponentAction();        
+          //event.preventDefault();
+        }
+    
+      } else if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+      //  copyComponentAction(this.selectedcomponent.uuid);        
+        //event.preventDefault();
+      }
+
+      
+    }.bind(this));
     const pageContainer = this.shadowRoot!.querySelector('.page-container');
     updatePageInfo({
       windowWidth: pageContainer?.clientWidth,
@@ -158,7 +164,9 @@ export class PageContent extends LitElement {
      
         if (!$resizing.get()) {
           e.preventDefault()
+          if(!this.isViewMode){
           setCurrentComponentIdAction(null);
+          }
         }
        
       }}
@@ -182,9 +190,11 @@ export class PageContent extends LitElement {
        
       }}
     >
+   
    <div >
+
       ${this.components?.length
-        ? renderComponent(this.components)
+        ? renderComponent(this.components, null, this.isViewMode)
         : html`<div class="page-empty-message-container">
             <p class="page-empty-message">Add an item from the insert panel</p>
           </div>`}

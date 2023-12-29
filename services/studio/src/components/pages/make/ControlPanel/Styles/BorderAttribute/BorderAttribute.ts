@@ -25,7 +25,7 @@ export class BorderAttribute extends LitElement {
         <attribute-border-value 
 
        @border-radius-changed=${(e: CustomEvent) => {
-       	 updateComponentAttributes(this.component.id, {
+       	 updateComponentAttributes(this.component.uuid, {
               'border-radius': e.detail.value,
             });
        }}

@@ -24,7 +24,7 @@ export class SIzePAddingMArginATtribute extends LitElement {
         <size-padding-margin-label></size-padding-margin-label> 
         <size-padding-margin-value 
         @attributeUpdate=${(event: CustomEvent) => {
-           updateComponentAttributes(this.component.id, {
+           updateComponentAttributes(this.component.uuid, {
               [ event.detail.key]: event.detail.value,
             });
         }} .component=${{...this.component}}></size-padding-margin-value>

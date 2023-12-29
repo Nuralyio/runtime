@@ -21,9 +21,10 @@ export class AddScreen extends LitElement {
   }
   addPage() {
     addPageAction({
-      id: uuidv4(),
+      uuid: uuidv4(),
       name: "Page_" + (this.pageLength + 1),
-      componentIds: [],
+      component_ids: [],
+      url: ("Page_" + (this.pageLength + 1)).toLowerCase()
     });
   }
   render() {

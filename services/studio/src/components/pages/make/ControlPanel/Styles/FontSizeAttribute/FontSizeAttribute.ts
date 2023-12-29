@@ -27,7 +27,7 @@ export class AttributeTextFontSize extends LitElement {
   ];
 
   changeHandler(event: CustomEvent) {
-    updateComponentAttributes(this.component.id, {
+    updateComponentAttributes(this.component.uuid, {
       fontSize: event.detail.value,
     });
   }

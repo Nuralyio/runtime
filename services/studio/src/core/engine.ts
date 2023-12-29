@@ -18,7 +18,7 @@ $componentWithChildrens.subscribe((components: ComponentElement[]) => {
   const generated = escodegen.generate(parsed);
   console.log(generated);*/
   components.forEach((component: ComponentElement) => {
-    const { styleHandlers, style } = component;
+    const { styleHandlers  = {} , style  = {} , attributesHandlers = {} } = component;
     Object.keys(styleHandlers).forEach((smartAttributeKey) => {
       executeInServiceWorker(
         components,
@@ -28,6 +28,19 @@ $componentWithChildrens.subscribe((components: ComponentElement[]) => {
         "style"
       );
     });
+
+    Object.keys(attributesHandlers).forEach((smartAttributeKey) => {
+      
+      executeInServiceWorker(
+        components,
+        component,
+        "attributesHandlers",
+        smartAttributeKey,
+        "attributes"
+      );
+    });
+
+    
   });
 });
 
@@ -38,3 +51,5 @@ export function executeEventHandler(
 ) {
   executeInServiceWorker(_components, component, handlerScope, attributeName);
 }
+
+export default {}

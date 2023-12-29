@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./Inputs/Container/DirectionAttribute/DirectionAttribute";
 import "../Page/PageParameters/PageParameters";
 import "../ControlPanel/Display/SizePaddingMarginAttribute/SizePaddingMarginAttribute";
+import "../ControlPanel/Collections/CollectionInputAttribute/CollectionInputAttribute";
 import "./ResponsiveParameter/ResponsiveParameter";
 @customElement("style-panel")
 export class STylePAnel extends LitElement {
@@ -26,7 +27,7 @@ export class STylePAnel extends LitElement {
     let templates = [];
           templates.push(html`<responsive-selectionl-parameter></responsive-selectionl-parameter>`);
 
-    switch (component?.type) {
+    switch (component?.component_type) {
       case ComponentType.VerticalContainer:
         templates.push(html`
           <h4>Parameters</h4>
@@ -106,6 +107,16 @@ export class STylePAnel extends LitElement {
               
             </div>`
         );
+        break;
+      case ComponentType.Collection:
+        templates.push(html`
+          <div style="padding:4px">
+            <parameter-collection-input-attribute
+              .component=${{ ...component }}
+            ></parameter-collection-input-attribute>
+          </div>
+        `);
+
         break;
         default:
           templates.push(html`<div style="padding:4px">

@@ -41,7 +41,7 @@ export class ScreenStructureEditor extends LitElement {
 <div style="min-width : 300px">
 </div>
   <hy-tabs
-  .activeTab=${1}
+  .activeTab=${0}
         .tabs=${this.editableTabs}
         .editable=${{
           canDeleteTab: false,
