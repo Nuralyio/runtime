@@ -57,8 +57,6 @@ services:
           NURALY_ENGINE_HOST : "nuraly_engine:3000"
   nginx:
     image: nuraly/nginx
-    volumes:
-      - ./Nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
     environment:
       KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-127.0.0.1} 
       KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
