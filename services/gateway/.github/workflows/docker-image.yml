@@ -18,4 +18,10 @@ jobs:
       with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Build the Keycloak Docker image
-      run: docker build ./Keycloack --file ./Keycloack/Dockerfile --tag nuraly/keycloak
+      run: docker build ./Keycloack --file ./Keycloack/Dockerfile --tag nuraly/keycloack
+    - name: Save the docker image
+      run: docker save -o keycloack.tar nuraly/keycloack
+    - name : copy to remote
+      run: scp -o StrictHostKeyChecking=no  keycloack.tar root@${{ secrets.MAIN_HOST }}:/root/images
+    - name : load image into docker
+      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /root/images && docker load -i keycloack.tar"
