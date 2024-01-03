@@ -16,7 +16,7 @@ jobs:
     
     - name : copy to remote
       run:  |
-        scp -o StrictHostKeyChecking=no  docker-compose-common.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose/docker-compose-common.yml
-        scp -o StrictHostKeyChecking=no  docker-compose.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose/docker-compose.yml
+        scp -o StrictHostKeyChecking=no  docker-compose-common.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose
+        scp -o StrictHostKeyChecking=no  docker-compose.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose
     - name : load image into docker
       run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /root/docker-compose && docker compose up -d"
