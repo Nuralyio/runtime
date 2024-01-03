@@ -13,10 +13,6 @@ services:
       file: docker-compose-common.yml
       service: pgadmin
 
-  nginx:
-    extends:
-      file: docker-compose-common.yml
-      service: nginx
 
   keycloak_pg:
       extends:
@@ -33,12 +29,47 @@ services:
       file: docker-compose-common.yml
       service: memcached
 
-    
+  nginx:
+    build:
+      context: Nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./Nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+    environment:
+      KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-127.0.0.1} 
+      KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
+      KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
+      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
+      KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
   keycloak:
-      extends:
-        file: docker-compose-common.yml
-        service: keycloak
+      build: 
+        context: Keycloack
+        dockerfile : Dockerfile
+      
+      environment:
+        KC_DB: keycloakDB
+        KC_DB_URL: 'jdbc:postgresql://keycloak_pg/keycloakDB'
+        KC_DB_USERNAME: keycloak
+        KC_DB_PASSWORD: changeMe
+        KC_DB_SCHEMA: public
+        KC_HOSTNAME_STRICT_HTTPS: ${KC_HOSTNAME_STRICT_HTTPS:-"false"}  
 
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: user
+        KEYCLOAK_ADMIN: admin
+        KEYCLOAK_ADMIN_PASSWORD: admin
+        KC_HTTP_RELATIVE_PATH: "/auth"
+        KC_HOSTNAME: ${KEYCLOAK_HOST:-localhost} 
+      ports:
+        - 8080:8080
+      depends_on:
+        - keycloak_pg
+      volumes: 
+        - ./Keycloack/ktheme/theme/keywind:/opt/keycloak/themes/keywind
 volumes:
   postgres-data:
   pgadmin-data:
