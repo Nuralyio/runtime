@@ -34,7 +34,7 @@ local function toToken(res)
         uuid = res.id_token.sub,
         username = res.id_token.preferred_username,
         email = res.id_token.email,
-        first_name = res.id_token.given_name,
+        ---first_name = res.id_token.given_name,
         last_name = res.id_token.family_name,
         anonymous = false,
         roles = roles
@@ -76,7 +76,9 @@ local function authenticateWithKeycloakPass()
             ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
         end
     else
-        ngx.req.set_header("X-USER", toToken(res))
+        if res then
+            ngx.req.set_header("X-USER", toToken(res))
+        end
     end
 end
 

@@ -39,31 +39,6 @@ services:
         file: docker-compose-common.yml
         service: keycloak
 
-  nuraly_engine:
-      image: nuraly/engine
-      ports:
-        - "${ENGINE_PORT:-3000}:3000"
-      environment:
-          NURALY_SERVICES_HOST : "nginx"
-          NURALY_ENGINE_HOST : "nuraly_engine:3000"
-
-  nuraly_services:
-      image: nuraly/services
-      ports:
-        - "${SERVICES_PORT:-8081}:8081"
-
-      environment:
-        DATABASE_URL :  ${SERVICES_DATABASE_URL:-postgresql://postgres:postgres@postgres/providers} 
-      depends_on:
-        - postgres
-
-  nuraly_frontend:
-      image: nuraly/frontend
-      ports:
-        - "${ENGINE_PORT:-4321}:4321"
-      environment:
-          NURALY_SERVICES_HOST : "nginx"
-          NURALY_ENGINE_HOST : "nuraly_engine:3000"
 volumes:
   postgres-data:
   pgadmin-data:
