@@ -70,7 +70,7 @@ services:
       - 80:80
       - 443:443
   keycloak:
-      image: nuraly/keycloak
+      image: nuraly/keycloack
       environment:
         KC_DB: keycloakDB
         KC_DB_URL: 'jdbc:postgresql://keycloak_pg/keycloakDB'
