@@ -67,6 +67,8 @@ services:
     ports:
       - 80:80
       - 443:443
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   keycloak:
       image: nuraly/keycloack
       environment:
