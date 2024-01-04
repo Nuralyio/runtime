@@ -10,7 +10,6 @@ import { $pagesWithComponents } from "$store/component/sotre";
 import { type ComponentElement } from "$store/component/interface";
 import { setCurrentComponentIdAction, setHoveredComponentIdAction } from "$store/component/action";
 @customElement("screen-list-editor")
-@useStores($pages, $pagesWithComponents, $currentPage)
 export class ScreenListEditor extends LitElement {
   options: any[] = [];
   @state()
@@ -41,7 +40,7 @@ export class ScreenListEditor extends LitElement {
 
     $pages.subscribe((pages: PageElement[] = []) => {
       });
-    $pagesWithComponents.subscribe((pages: PageElement[] = []) => {
+    $pagesWithComponents().subscribe((pages: PageElement[] = []) => {
       setTimeout(() => {
         this.options = [...pages].map((page) => ({
           label: page.name,

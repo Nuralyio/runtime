@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { LitElement, css, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
 
 @customElement('pg-create-table')
 export class TableCreate extends LitElement {
@@ -18,7 +18,6 @@ export class TableCreate extends LitElement {
 	@state()
 	dispalyCreateForm: boolean = false;
 
-	@state()
 
 	renderCreateButton(){
 		return html`

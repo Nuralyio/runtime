@@ -1,30 +1,27 @@
+import "../../../../core/engine";
+import "../../../shared/blocks/Collections/Collections";
+import "../../../shared/blocks/ComponentElements/Button/Button";
+import "../../../shared/blocks/ComponentElements/Containers/Container";
+import "../../../shared/blocks/ComponentElements/TextInput/TextInput";
+import "../../../shared/blocks/ComponentElements/TextLabel/TextLabel";
+import "../../../shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
+import styles from "./Page.style";
+import { $resizing } from "$store/apps";
+import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
+import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
+import { $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
+import { updatePageInfo } from "$store/page/action";
 import { type PageElement } from "$store/page/interface";
 import { $currentPage, $currentPageViewPort } from "$store/page/store";
 import { useStores } from "@nanostores/lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import styles from "./Page.style";
-import { $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
-import { type ComponentElement, ComponentType, type DraggingComponentInfo } from "$store/component/interface";
-
-import "../../../../core/engine";
-import "../../../shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
-import "../../../shared/blocks/ComponentElements/TextInput/TextInput";
-import "../../../shared/blocks/ComponentElements/TextLabel/TextLabel";
-import "../../../shared/blocks/ComponentElements/Button/Button";
-import "../../../shared/blocks/ComponentElements/Containers/Container";
-import "../../../shared/blocks/Collections/Collections";
-
-import { renderComponent } from "utils/render-util";
-import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
-import { $resizing } from "$store/apps";
 import { styleMap } from "lit/directives/style-map.js";
-import { updatePageInfo } from "$store/page/action";
+import { renderComponent } from "utils/render-util";
+
 @customElement("content-page")
-@useStores($currentPage, $currentPageComponents)
 export class PageContent extends LitElement {
   static styles = styles;
-
   @state()
   draggingComponentInfo: DraggingComponentInfo;
 
@@ -50,7 +47,7 @@ export class PageContent extends LitElement {
     $currentPage.subscribe((currentPage) => {
       this.currentPage = { ...currentPage };
     });
-    $currentPageComponents.subscribe((components = []) => {
+    $currentPageComponents().subscribe((components = []) => {
       this.components = [...components];
     });
     $draggingComponentInfo.subscribe(

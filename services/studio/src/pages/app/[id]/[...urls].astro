@@ -1,7 +1,9 @@
 ---
 import Make from "../../make.astro";
-//import "../../../components/shared/blocks/CodeEditor/CodeEditor";
-
+//mport "../../../components/shared/blocks/CodeEditor/CodeEditor";
+import {loadApplication} from "$services/applications.service"
+import NotFount from '../../not-found.astro';
+// here we will handle the routing
 const { title, id, urls = "" } = Astro.params;
 let request = urls?.split("?") ;
 let search = "";
@@ -17,27 +19,16 @@ if (request.length > 1) {
 const searchQuery = new URLSearchParams(search);
 let applicationResponse
 if(id){
-	const cookie = Astro.request.headers.get("Cookie");
-	const headers = {};
-	Astro.request.headers.forEach((value, key) => {
-	  headers[key] = value;
-	});
-
-	delete headers["connection"];
-	 applicationResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications/${id}`
-	 	, {
-	  headers: {
-	   'X-USER' : Astro.request.headers.get('X-USER')
-	  },
-	});
-	 console.log('Astro.request.headers["x-user"]',Astro.request.headers)
-	 applicationResponse = await applicationResponse.json();
+	const result = await loadApplication(Astro.request.headers, id)
+	if(result.data){
+		applicationResponse = result.data
+	}
 }
 ---
 
 <div>
-  {applicationResponse?.uuid && <Make app={applicationResponse}></Make>}
-  {!applicationResponse?.uuid && <div>Not Found</div>}
+  {applicationResponse?.uuid && <Make app={applicationResponse} />}
+  {!applicationResponse?.uuid && <NotFount />}
 </div>
 
 

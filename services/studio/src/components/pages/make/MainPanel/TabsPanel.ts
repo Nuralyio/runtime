@@ -1,12 +1,11 @@
-import { LitElement, html, css } from 'lit';
-import "./EditorInteractivePanel";
-import "./DataSourceExplorer/DataSourceExplorer";
-import "../../../shared/blocks/CodeEditor/CodeEditor";
-
 import "../Page/Page";
-import { state } from 'lit/decorators.js';
-import { $editorState } from '$store/apps';
-import { closeTab } from '$store/app.action';
+import "./DataSourceExplorer/DataSourceExplorer";
+import "./EditorInteractivePanel";
+import { closeTab } from "$store/app.action";
+import { $editorState } from "$store/apps";
+import { LitElement, css, html } from "lit";
+import { state } from "lit/decorators.js";
+
 export class TabsPanel extends LitElement {
 	static override styles = [
 		css`
@@ -49,8 +48,11 @@ export class TabsPanel extends LitElement {
 	];
 
 	constructor() {
-
 		super();
+		
+	}
+	override connectedCallback() {
+		super.connectedCallback();
 		$editorState.subscribe((editorState) => {
 			this.editableTabs = [
 				{

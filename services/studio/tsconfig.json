@@ -6,6 +6,14 @@
     "jsxImportSource": "preact",
     "useDefineForClassFields": false,
     "baseUrl": "./src",
-    "paths": {"$store/*" : ["store/*"]}
+    "paths": {
+      "$store/*": [
+        "store/*"
+      ],
+      "$services/*": [
+        "services/*"
+      ]
+    },
+    "target": "esnext",
   }
 }

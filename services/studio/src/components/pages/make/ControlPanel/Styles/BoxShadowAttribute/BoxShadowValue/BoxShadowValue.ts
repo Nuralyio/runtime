@@ -1,8 +1,8 @@
-import type { ComponentElement } from '$store/component/interface';
-import { LitElement, html, css } from 'lit';
-import { property, state } from 'lit/decorators.js';
-import "@hybridui/slider-input";
-import "@hybridui/checkbox";
+import type { ComponentElement } from "$store/component/interface";
+import { LitElement, css, html } from "lit";
+import { property, state } from "lit/decorators.js";
+
+//import "@hybridui/checkbox";
 export class AttributeBoxShadowValue extends LitElement {
 	@property()
 	component: ComponentElement;

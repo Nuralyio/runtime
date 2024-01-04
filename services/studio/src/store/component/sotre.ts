@@ -61,8 +61,8 @@ export const $hoveredComponent = computed(
     );
   }
 );
-export const $currentPageComponents = computed(
-  [$componentWithChildrens, $currentPage, $pages],
+export const $currentPageComponents = ()=> computed(
+  [$componentWithChildrens, $currentPage],
   (components: ComponentElement[], currentPage) => {
     return currentPage?.component_ids
       ?.map((componentId) =>
@@ -74,7 +74,7 @@ export const $currentPageComponents = computed(
   }
 );
 
-export const $pagesWithComponents = computed(
+export const $pagesWithComponents = ()=>computed(
   [$componentWithChildrens, $pages],
   (componentWithChildrens, pages) => {
     return (pages || []).map((page) => {
