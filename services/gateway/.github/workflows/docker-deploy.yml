@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 jobs:
 
-  build_keyclack:
+  deploy:
 
     runs-on: ubuntu-latest
 
@@ -14,10 +14,10 @@ jobs:
       with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     
-    - name : copy to remote
+    - name : copy to docker compose files to remote host
       run:  |
         scp -o StrictHostKeyChecking=no  docker-compose-common.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose
         scp -o StrictHostKeyChecking=no  docker-compose.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose
         scp -o StrictHostKeyChecking=no  docker-compose-down.sh root@${{ secrets.MAIN_HOST }}:/root/docker-compose
-    - name : load image into docker
+    - name : Run docker compose on the remote host
       run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /root/docker-compose && ./docker-compose-down.sh && docker compose up -d"
