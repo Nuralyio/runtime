@@ -37,8 +37,8 @@ services:
         - keycloak-db-data:/var/lib/postgresql/data
       environment:
         POSTGRES_DB: keycloakDB
-        POSTGRES_USER: keycloak
-        POSTGRES_PASSWORD: changeMe
+        POSTGRES_USER: ${KEYCLOAK_DB_USERNAME:-keycloak} 
+        POSTGRES_PASSWORD:  ${KEYCLOAK_DB_PASSWORD:-changeMe}
   redis:
     image: "redis:alpine"
     volumes:
