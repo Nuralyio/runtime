@@ -22,7 +22,8 @@ local function toToken(res)
   end
   
   local jwt_obj = jwt:load_jwt(res.access_token)
-  ngx.log(ngx.STDERR, toJson(jwt_obj.payload.resource_access.nuraly.roles))
+    
+  ngx.log(ngx.STDERR, toJson(jwt_obj))
   
 
   local roles = {}
