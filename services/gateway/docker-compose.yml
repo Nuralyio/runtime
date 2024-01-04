@@ -80,7 +80,7 @@ services:
         KC_HOSTNAME_STRICT_HTTPS: ${KC_HOSTNAME_STRICT_HTTPS:-false}  
         KC_HTTP_ENABLED: true
         #KC_HOSTNAME_URL: https://nuraly.io
-        #KC_HOSTNAME_ADMIN_URL: https://nuraly.io
+        KC_HOSTNAME_ADMIN_URL: https://nuraly.io
 
         KEYCLOAK_USER: ${KEYCLOAK_USERNAME:-admin} 
         KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD:-user} 
