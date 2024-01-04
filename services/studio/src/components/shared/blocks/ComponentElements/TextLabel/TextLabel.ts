@@ -2,11 +2,11 @@ import { type ComponentElement } from "$store/component/interface";
 import { $componentWithChildrens } from "$store/component/sotre";
 import { $currentPageViewPort } from "$store/page/store";
 import { executeEventHandler } from "core/engine";
-import { LitElement, html, css, isServer } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 
-
+const isServer = typeof window === 'undefined';
 @customElement("text-label-block")
 export class TextLabelBlock extends LitElement {
   @property({ type: Object })

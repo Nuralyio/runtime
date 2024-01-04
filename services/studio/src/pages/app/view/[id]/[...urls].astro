@@ -77,7 +77,7 @@ $pages.set(pageData);
 ---
 
 <div>
-	{applicationResponse?.uuid && <View app={applicationResponse} client:load />}
+	{applicationResponse?.uuid && <View app={applicationResponse} />}
 	{!applicationResponse?.uuid && <div>Not Found</div>}
 </div>
 

@@ -1,7 +1,7 @@
-import { LitElement, html, css, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
 import "../ScreenPanel/ScreenStructure";
-import { $environment, type Environment, ViewMode } from "$store/environment/store";
+import { $environment, ViewMode, type Environment } from "$store/environment/store";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 
 @customElement("left-panel")
 export class LeftPanel extends LitElement {

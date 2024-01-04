@@ -17,8 +17,7 @@ import { action } from "nanostores";
 import { type PageElement } from "$store/page/interface";
 import { GenerateName } from "utils/naming-generator";
 import { addComponentHandler, updateComponentHandler } from "./handler";
-import { isServer } from "lit";
-
+const isServer = typeof window === 'undefined';
 export interface AddComponentRequest {
   id?: string;
   uuid: string;
