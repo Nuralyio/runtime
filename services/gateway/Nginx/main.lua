@@ -22,12 +22,12 @@ local function toToken(res)
   end
   
   local jwt_obj = jwt:load_jwt(res.access_token)
-  ngx.log(ngx.STDERR, toJson(jwt_obj.payload.resource_access.dev.roles))
+  ngx.log(ngx.STDERR, toJson(jwt_obj.payload.resource_access.nuraly.roles))
   
 
   local roles = {}
-  if jwt_obj and jwt_obj.payload.resource_access.dev.roles then
-      roles = map(roleOf, jwt_obj.payload.resource_access.dev.roles)
+  if jwt_obj and jwt_obj.payload.resource_access.nuraly.roles then
+      roles = map(roleOf, jwt_obj.payload.resource_access.nuraly.roles)
   end
  
   local token = {
