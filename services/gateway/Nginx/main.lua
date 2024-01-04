@@ -27,8 +27,8 @@ local function toToken(res)
   
 
   local roles = {}
-  if jwt_obj and jwt_obj.payload.resource_access.nuraly.roles then
-      roles = map(roleOf, jwt_obj.payload.resource_access.nuraly.roles)
+  if jwt_obj and jwt_obj.payload.resource_access.account.roles then
+      roles = map(roleOf, jwt_obj.payload.resource_access.account.roles)
   end
  
   local token = {
