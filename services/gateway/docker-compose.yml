@@ -30,13 +30,13 @@ services:
       file: docker-compose-common.yml
       service: memcached
 
-  #nuraly_engine:
-  #    image: nuraly/engine
-  #    ports:
-  #      - "${ENGINE_PORT:-3000}:3000"
-  #    environment:
-  #        NURALY_SERVICES_HOST : "nginx"
-  #        NURALY_ENGINE_HOST : "nuraly_engine:3000"
+  nuraly_engine:
+      image: nuraly/engine
+      ports:
+        - "${ENGINE_PORT:-3000}:3000"
+      environment:
+          NURALY_SERVICES_HOST : "nginx"
+          NURALY_ENGINE_HOST : "nuraly_engine:3000"
 
   nuraly_services:
       image: nuraly/services
