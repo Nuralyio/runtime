@@ -70,8 +70,11 @@ services:
         - keycloak_pg
       volumes: 
         - ./Keycloack/ktheme/theme/keywind:/opt/keycloak/themes/keywind
+        - infinispan_data:/opt/keycloak/cache
+        - ./Keycloack/cache-ispn.xml:/opt/keycloak/conf/cache-ispn.xml:ro
 volumes:
   postgres-data:
   pgadmin-data:
   keycloak-db-data:
   redis-data:
+  infinispan_data:

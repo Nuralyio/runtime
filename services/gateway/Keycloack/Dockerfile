@@ -14,6 +14,7 @@ RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:latest
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+RUN mkdir /opt/keycloak/cache
+RUN chmod 777 /opt/keycloak/cache
 
-
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh" , "start --import-realm --proxy=edge" ,  "--hostname-strict=false","--auto-build", "--db=postgres"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh" , "start --import-realm --proxy=edge" ,  "--hostname-strict=false","--auto-build", " --cache=ispn --cache-config-file=cache-ispn.xml", "--db=postgres"]
