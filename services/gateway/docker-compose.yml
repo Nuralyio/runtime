@@ -93,10 +93,11 @@ services:
       depends_on:
         - keycloak_pg
       volumes: 
-        - ./Keycloack/ktheme/theme/keywind:/opt/keycloak/themes/keywind
+        - infinispan_data:/opt/keycloak/cache
 
 volumes:
   postgres-data:
   pgadmin-data:
   keycloak-db-data:
   redis-data:
+  infinispan_data:
