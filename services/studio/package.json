@@ -29,7 +29,7 @@
     "@hybridui/modal": "^0.0.6",
     "@hybridui/radio": "^0.0.6",
     "@hybridui/select": "^0.0.6",
-    "@hybridui/slider-input": "^0.0.1",
+    "@hybridui/slider-input": "^0.0.3",
     "@hybridui/table": "^0.0.2",
     "@hybridui/tabs": "^0.0.13",
     "@lit-labs/react": "^2.1.2",
