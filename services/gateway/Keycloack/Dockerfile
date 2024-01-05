@@ -6,7 +6,7 @@ ENV KC_METRICS_ENABLED=true
 
 # Configure a database vendor
 ENV KC_DB=postgres
-COPY ./keywind /opt/keycloak/themes/keywind
+COPY ./ktheme/theme/keywind /opt/keycloak/themes/keywind
 COPY ./cache-ispn.xml /opt/keycloak/conf/
 
 WORKDIR /opt/keycloak
