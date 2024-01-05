@@ -21,7 +21,7 @@ const links = [
     const navlinks = document.querySelector("#navlinks");
     const hamburger = document.querySelector("#hamburger");
     const layer = document.querySelector("#navLayer");
-    const links = [...navlinks.querySelector("ul")?.children];
+    const links = navlinks ? [...navlinks.querySelector("ul")?.children] : [];
 
     function toggleNavlinks() {
         if (isToggled) {
