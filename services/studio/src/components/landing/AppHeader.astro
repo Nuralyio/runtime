@@ -39,7 +39,7 @@ const links = [
         toggleNavlinks();
     });
 
-    links.forEach((link) => {
+    links?.forEach((link) => {
         link.addEventListener("click", () => {
             isToggled = !isToggled;
             toggleNavlinks();
