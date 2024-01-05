@@ -1,8 +1,7 @@
 import { LitElement, html, PropertyValueMap } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import styles from './slider-input.style.js';
 
-@customElement('hy-slider-input')
 export class SliderInput extends LitElement {
 	
 	@property({ type: Boolean, reflect: true })
@@ -119,3 +118,4 @@ export class SliderInput extends LitElement {
 		this.requestUpdate()
 	}
 }
+customElements.define('hy-slider-input', SliderInput);
