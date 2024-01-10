@@ -18,7 +18,6 @@ Astro.request.headers.forEach((value, key) => {
 });
 const { app } = Astro.props;
 delete headers["connection"];
-console.log(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${app.uuid}`)
 
 const pageResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${app.uuid}`, {
   cache: "no-store",
@@ -29,7 +28,6 @@ const pageResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "
 });
 
 const pageData = await pageResponse.json();
-$pages.set(pageData);
 console.log(pageData)
 $currentPageId.set(pageData[0].uuid);
 
@@ -60,7 +58,6 @@ async function executeCode(component, code, additionalBody = {}) {
     }),
   });
   let text = await result.json();
-  console.log(component,text)
   return text.result;
 }
 
@@ -176,7 +173,6 @@ const executeAsyncFnctions = async (components) => {
 };
 
 await executeAsyncFnctions(componentTree);
-console.log("papa");
 await allTasks();
 ---
 
