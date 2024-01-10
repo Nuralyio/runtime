@@ -33,15 +33,17 @@ services:
     build:
       context: Nginx
       dockerfile: Dockerfile
-    volumes:
-      - ./Nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      args:
+        - DOMAIN=${HOST_DOMAIN:-localhost} 
+    # volumes:
+    #   - ./Nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
     environment:
       KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-127.0.0.1} 
       KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
       KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
       KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
-      MY_DOMAIN :  ${MY_DOMAIN:-localhost} 
+      DOMAIN :  ${HOST_DOMAIN:-localhost} 
     restart: unless-stopped
     ports:
       - 80:80

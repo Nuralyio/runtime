@@ -36,7 +36,7 @@ jobs:
       with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Build the Nfinx Docker image
-      run: docker build ./Nginx --file ./Nginx/Dockerfile --tag nuraly/nginx
+      run: docker build --build-arg DOMAIN=$${{ secrets.HOST_DOMAIN }} ./Nginx --file ./Nginx/Dockerfile --tag nuraly/nginx
     - name: Save the docker image
       run: docker save -o nginx.tar nuraly/nginx
     - name : copy to remote
