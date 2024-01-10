@@ -72,6 +72,18 @@ services:
         - ./Keycloack/ktheme/theme/keywind:/opt/keycloak/themes/keywind
         - infinispan_data:/opt/keycloak/cache
         - ./Keycloack/cache-ispn.xml:/opt/keycloak/conf/cache-ispn.xml:ro
+
+  docs:
+    build:
+      context: ../../docs
+      dockerfile: Dockerfile
+      target: development
+
+    volumes:
+      - ../../docs:/home/node/app/
+      - /home/node/app/node_modules
+    ports:
+      - 4000:3000
 volumes:
   postgres-data:
   pgadmin-data:
