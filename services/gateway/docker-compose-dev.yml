@@ -41,6 +41,7 @@ services:
       KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
       KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
+      MY_DOMAIN :  ${MY_DOMAIN:-localhost} 
     restart: unless-stopped
     ports:
       - 80:80
