@@ -1,10 +1,11 @@
 ---
-import Make from "../../make.astro";
+import Make from "../../../make.astro";
 //mport "../../../components/shared/blocks/CodeEditor/CodeEditor";
 import {loadApplication} from "$services/applications.service"
-import NotFount from '../../not-found.astro';
+import NotFount from '../../../not-found.astro';
 // here we will handle the routing
 const { title, id, urls = "" } = Astro.params;
+console.log('id',id)
 let request = urls?.split("?") ;
 let search = "";
 let contextParam = "";

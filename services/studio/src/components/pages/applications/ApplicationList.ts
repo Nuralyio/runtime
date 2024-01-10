@@ -51,7 +51,7 @@ export class ApplicationList extends LitElement {
 			label: "Open",
 			handler: () => {
 				console.log(application);
-				location.href = "/app/" + application.uuid;
+				location.href = "/app/studio/" + application.uuid;
 			}
 		},
 		{
@@ -104,7 +104,7 @@ export class ApplicationList extends LitElement {
     	   <div class="card" slot="label" @click=${()=>{
     	   	location.href = "/app/" + application.uuid;
     	   }}>
-              <h2 style="margin:0"><a  style="color: white; text-decoration: none" href=${"/app/" + application.uuid}>${application.name} </a></h2>
+              <h2 style="margin:0"><a  style="color: white; text-decoration: none" href=${"/app/studio/" + application.uuid}>${application.name} </a></h2>
            <p class="">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
  
         </div>
