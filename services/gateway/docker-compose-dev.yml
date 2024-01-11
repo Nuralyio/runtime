@@ -38,7 +38,7 @@ services:
     # volumes:
     #   - ./Nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
     environment:
-      KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
+      KC_HOSTNAME :  ${KC_HOSTNAME:-localhost} 
       KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
       KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
       KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
