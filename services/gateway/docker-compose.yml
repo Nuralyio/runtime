@@ -71,6 +71,10 @@ services:
       - 443:443
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  learn:
+    image: nuraly/learn
+
   keycloak:
       image: nuraly/keycloack
       environment:
