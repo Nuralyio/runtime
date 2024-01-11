@@ -53,7 +53,7 @@ local redirect_uri = ngx.var.request_uri
 local opts = {
     ssl_verify = "no",
     redirect_uri = "/cb",
-    discovery = scheme .. "://localhost/auth/realms/".. realm .."/.well-known/openid-configuration",
+    discovery = scheme .. "://nuraly.io/auth/realms/".. realm .."/.well-known/openid-configuration",
     client_id = client_id,
     client_secret = client_secret,
     scope = "openid email profile roles",
@@ -67,7 +67,7 @@ local function authenticateWithKeycloakPass(customRedirectUri)
     ngx.log(ngx.INFO, "request_uri: " .. ngx.var.request_uri)
     local redirectUriToUse = ""
     if customRedirectUri then 
-        redirectUriToUse = scheme .. "://localhost/cb"
+        redirectUriToUse = scheme .. "://nuraly.io/cb"
     else
         redirectUriToUse = opts.redirect_uri
     end
@@ -76,7 +76,7 @@ local function authenticateWithKeycloakPass(customRedirectUri)
     local optsWithCustomRedirect = {
         ssl_verify = "no",
         redirect_uri = redirectUriToUse,
-        discovery = scheme .. "://localhost/auth/realms/" .. realm .. "/.well-known/openid-configuration",
+        discovery = scheme .. "://nuraly.io/auth/realms/" .. realm .. "/.well-known/openid-configuration",
         client_id = client_id,
         client_secret = client_secret,
         scope = "openid email profile roles",
@@ -104,7 +104,7 @@ end
 
 
 local function authenticateWithKeycloak()
-    ngx.log(ngx.INFO, scheme .. "://localhost/auth/realms/" .. realm .. "/.well-known/openid-configuration")
+    ngx.log(ngx.INFO, scheme .. "://nuraly.io/auth/realms/" .. realm .. "/.well-known/openid-configuration")
     
 
     local res, err = require("resty.openidc").authenticate(opts)
