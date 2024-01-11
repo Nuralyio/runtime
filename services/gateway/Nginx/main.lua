@@ -67,12 +67,11 @@ local function authenticateWithKeycloakPass(customRedirectUri)
     ngx.log(ngx.INFO, "request_uri: " .. ngx.var.request_uri)
     local redirectUriToUse = ""
     if customRedirectUri then 
-        redirectUriToUse = scheme .. "://" .. host .. "/cd"
+        redirectUriToUse = scheme .. "://" .. host .. "/cb"
     else
         redirectUriToUse = opts.redirect_uri
     end
     -- Check if a custom redirect_uri is provided, otherwise use the default one
-    
     -- Update the opts table with the chosen redirect_uri
     local optsWithCustomRedirect = {
         ssl_verify = "no",
@@ -105,6 +104,7 @@ end
 
 
 local function authenticateWithKeycloak()
+    ngx.log(ngx.INFO, scheme .. "://" .. host .. "/auth/realms/" .. realm .. "/.well-known/openid-configuration")
     
 
     local res, err = require("resty.openidc").authenticate(opts)
