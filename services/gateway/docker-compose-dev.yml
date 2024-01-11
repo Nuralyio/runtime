@@ -76,7 +76,7 @@ services:
         - infinispan_data:/opt/keycloak/cache
         - ./Keycloack/cache-ispn.xml:/opt/keycloak/conf/cache-ispn.xml:ro
 
-  docs:
+  learn:
     build:
       context: ../../docs
       dockerfile: Dockerfile
