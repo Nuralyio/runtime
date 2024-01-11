@@ -44,11 +44,11 @@ local function toToken(res)
   return toJson(token)
 end
 
-local host = os.getenv("KEYCLOAK_HOST")
+local host = os.getenv("KC_HOSTNAME")
 local realm = os.getenv("KEYCLOAK_REALM")
 local client_id = os.getenv("KEYCLOAK_CLIENT_ID")
 local client_secret = os.getenv("KEYCLOAK_CLIENT_SECRET")
-local scheme = os.getenv("KC_HOSTNAME")
+local scheme = os.getenv("KEYCLOAK_SCHEME")
 local redirect_uri = ngx.var.request_uri
 local opts = {
     ssl_verify = "no",
