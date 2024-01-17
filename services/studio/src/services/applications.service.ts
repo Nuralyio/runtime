@@ -8,11 +8,11 @@ import { extractXuserHeader } from './helpers';
  * @param id 
  * @returns 
  */
-export async function loadApplication(headers: Headers, id: string) {
+export async function loadApplication(headers: any, id: string) {
     try {
         const response = await fetch(APIS_URL.getApplication(id), {
             headers: {
-                ...extractXuserHeader(headers),
+               ...headers,
             },
         });
         return {

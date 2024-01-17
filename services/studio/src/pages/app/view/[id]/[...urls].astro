@@ -39,19 +39,7 @@ import { $components } from "$store/component/sotre";
 
 const cookie = Astro.request.headers.get("Cookie");
 
-async function executeCode(component) {
-	let result = await fetch(`http://${process.env.NURALY_ENGINE_HOST || "localhost:3000"}/run-code`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			code: 'return new Promise((resolve, reject) => {   setTimeout(() => {     resolve("Promise resolved after 400ms");   }, 400); })',
-		}),
-	});
-	let text = await result.text();
-	return text;
-}
+
 
 const headers = {};
 Astro.request.headers.forEach((value, key) => {
