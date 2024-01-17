@@ -45,6 +45,7 @@ local function toToken(res)
 end
 
 local host = os.getenv("KC_HOSTNAME")
+ngx.log(ngx.INFO, "HHHHHHOOOSSSTT" ..host)
 local realm = os.getenv("KEYCLOAK_REALM")
 local client_id = os.getenv("KEYCLOAK_CLIENT_ID")
 local client_secret = os.getenv("KEYCLOAK_CLIENT_SECRET")
