@@ -22,9 +22,9 @@ jobs:
     - name: Save the docker image
       run: docker save -o keycloack.tar nuraly/keycloack
     - name : copy to remote
-      run: scp -o StrictHostKeyChecking=no  keycloack.tar root@${{ secrets.MAIN_HOST }}:/root/images
+      run: scp -o StrictHostKeyChecking=no  keycloack.tar root@${{ secrets.MAIN_HOST }}:/home/images
     - name : load image into docker
-      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /root/images && docker load -i keycloack.tar"
+      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /home/images && docker load -i keycloack.tar"
 
   build_nginx:
 
@@ -40,6 +40,6 @@ jobs:
     - name: Save the docker image
       run: docker save -o nginx.tar nuraly/nginx
     - name : copy to remote
-      run: scp -o StrictHostKeyChecking=no  nginx.tar root@${{ secrets.MAIN_HOST }}:/root/images
+      run: scp -o StrictHostKeyChecking=no  nginx.tar root@${{ secrets.MAIN_HOST }}:/home/images
     - name : load image into docker
-      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /root/images && docker load -i nginx.tar"
+      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /home/images && docker load -i nginx.tar"
