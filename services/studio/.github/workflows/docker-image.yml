@@ -24,8 +24,8 @@ jobs:
     - name: list test
       run: ls
     - name : copy to remote
-      run: scp -o StrictHostKeyChecking=no  frontend.tar root@${{ secrets.MAIN_HOST }}:/home/images
+      run: scp -o StrictHostKeyChecking=no  frontend.tar ec2-user@${{ secrets.MAIN_HOST }}:/home/images
     - name : load image into docker
-      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /home/images && docker load -i frontend.tar"
+      run: ssh -o StrictHostKeyChecking=no  ec2-user@${{ secrets.MAIN_HOST }} "cd /home/images && docker load -i frontend.tar"
 
       
