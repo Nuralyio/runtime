@@ -16,8 +16,8 @@ jobs:
     
     - name : copy to docker compose files to remote host
       run:  |
-        scp -o StrictHostKeyChecking=no  docker-compose-common.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose
-        scp -o StrictHostKeyChecking=no  docker-compose.yml root@${{ secrets.MAIN_HOST }}:/root/docker-compose
-        scp -o StrictHostKeyChecking=no  docker-compose-down.sh root@${{ secrets.MAIN_HOST }}:/root/docker-compose
+        scp -o StrictHostKeyChecking=no  docker-compose-common.yml ec2-user@${{ secrets.MAIN_HOST }}:/home/docker-compose
+        scp -o StrictHostKeyChecking=no  docker-compose.yml ec2-user@${{ secrets.MAIN_HOST }}:/home/docker-compose
+        scp -o StrictHostKeyChecking=no  docker-compose-down.sh ec2-user@${{ secrets.MAIN_HOST }}:/home/docker-compose
     - name : Run docker compose on the remote host
-      run: ssh -o StrictHostKeyChecking=no  root@${{ secrets.MAIN_HOST }} "cd /root/docker-compose && ./docker-compose-down.sh && docker compose up -d"
+      run: ssh -o StrictHostKeyChecking=no  ec2-user@${{ secrets.MAIN_HOST }} "cd /home/docker-compose && ./docker-compose-down.sh && docker compose up -d"
