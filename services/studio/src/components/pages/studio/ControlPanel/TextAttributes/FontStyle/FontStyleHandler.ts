@@ -49,6 +49,10 @@ export class FOntSTyleVAlue extends LitElement {
 
   @state()
   textDecoration;
+
+  @state()
+  fontStyle;
+
   handleUnityChange(event: CustomEvent) {
     const {
       detail: { value },
@@ -60,7 +64,10 @@ export class FOntSTyleVAlue extends LitElement {
   emitCustomEvent() {
     let customEvent = new CustomEvent("attributeUpdate", {
       detail: {
-        value: `${this.textDecoration}`,
+        value: {
+          textDecoration: this.textDecoration,
+          fontStyle: this.fontStyle,
+        }
       },
     });
     this.dispatchEvent(customEvent);
@@ -71,7 +78,6 @@ export class FOntSTyleVAlue extends LitElement {
     this.initValues();
   }
 
-  i;
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
@@ -81,20 +87,56 @@ export class FOntSTyleVAlue extends LitElement {
   }
 
   initValues() {
-    if ((this.component.style as TextLabelAttributes)?.textDecoration) {
-      const { textDecoration } = this.component.style as TextLabelAttributes;
+    if ((this.component.style)?.textDecoration) {
+      const { textDecoration, fontStyle} = this.component.style;
       this.textDecoration = textDecoration;
+      this.fontStyle = fontStyle;
     } else {
       this.textDecoration = "none";
+      this.fontStyle = "";
     }
   }
 
   render() {
-    return html` <hy-radio-input
-      display="button"
-      .defaultValue=${this.textDecoration}
-      @change=${this.handleUnityChange}
-      .options=${this.options}
-    ></hy-radio-input>`;
+    return html` 
+    <hy-button
+    .type=${this.fontStyle === "italic" ? "primary" : ""}
+    
+    icon="italic" @click=${() => {
+      if(this.fontStyle === "italic"){
+        this.fontStyle = "";
+        this.emitCustomEvent();
+      }else{
+        this.fontStyle = "italic";
+        this.emitCustomEvent();
+      }
+    }
+    }></hy-button>
+
+    <hy-button 
+    .type=${this.textDecoration === "underline" ? "primary" : ""}
+    icon="underline" @click=${() => {
+     if(this.textDecoration === "underline"){
+        this.textDecoration = "none";
+        this.emitCustomEvent();
+      }else{
+        this.textDecoration = "underline";
+        this.emitCustomEvent();
+      }
+    } 
+    }></hy-button>
+
+    <hy-button
+    .type=${this.textDecoration === "line-through" ? "primary" : ""}
+    icon="minus" @click=${() => {
+      if(this.textDecoration === "line-through"){
+        this.textDecoration = "none";
+        this.emitCustomEvent();
+      }else{
+        this.textDecoration = "line-through";
+        this.emitCustomEvent();
+      }
+    }
+    }></hy-button>`;
   }
 }

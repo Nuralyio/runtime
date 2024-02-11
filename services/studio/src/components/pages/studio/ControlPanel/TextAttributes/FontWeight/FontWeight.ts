@@ -1,9 +1,10 @@
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "./FontWeightValue/FontWeightValue";
-import "./FontWeightLabel/FontWeightLabel";
 import { updateComponentAttributes } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
+import "./FontWeightHanlder";
+
+
 @customElement("attribute-text-font-weight")
 export class AttributeTextFontWeight extends LitElement {
   @property({ type: Object })
@@ -32,14 +33,14 @@ export class AttributeTextFontWeight extends LitElement {
   }
   render() {
     return html`
-      <div class="container">
-      ${this.slim ? nothing : html`<attribute-font-size-weight-label class="first_column"></attribute-font-size-weight-label>` }
-        <attribute-font-weight-value-handler
-         .slim=${this.slim}
-          .component=${{ ...this.component }}
-          @attributeUpdate=${this.changeHandler}
-        ></attribute-font-weight-value-handler>
-      </div>
+    <editpanel-attribute-container>
+      <span slot="firstColumn">Font weight</span>
+      <attribute-font-weight-value-handler
+        slot="secondColumn"
+        .component=${{ ...this.component }}
+        @attributeUpdate=${this.changeHandler}
+      ></attribute-font-weight-value-handler>
+    </editpanel-attribute-container>
     `;
   }
 }
