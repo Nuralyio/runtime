@@ -11,7 +11,7 @@ import { useStores } from "@nanostores/lit";
 import { $selectedComponent } from "$store/component/sotre";
 import { type  ComponentElement, type ComponentType } from "$store/component/interface";
 import "./TextAttributes/TextValue/TextAttribute";
-import "./Styles/FontSizeAttribute/FontSizeAttribute";
+import "./TextAttributes/FontSize/FontSizeAttribute";
 import "./Styles/FontWeightAttribute/FontWeightAttribute";
 import "./Styles/BackgroundColorAttribute/BackgroundColorAttribute";
 import "./Styles/FontStyleAttribute/FontStyleAttribute";

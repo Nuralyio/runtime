@@ -5,7 +5,7 @@ import "@hybridui/dropdown";
 import { type ComponentElement } from "$store/component/interface";
 import "../../../shared/SmartAttribute/SmartAttributeDropdown/SmartAttributeDropdown";
 import "../../../shared/AttributeInputWrapper/AttributeInputWrapper";
-import styles from "./FontSizeValue.style";
+import styles from "./FontSize.style";
 import { $currentPageViewPort } from "$store/page/store";
 
 @customElement("attribute-font-size-value-handler")
