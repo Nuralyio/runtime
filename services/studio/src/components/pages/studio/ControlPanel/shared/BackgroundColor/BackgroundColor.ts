@@ -1,10 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "./BackgroundColorLabel/BackgroundColorLabel";
-import "./BackgroundColorValue/BackgroundColorValue";
+import "./BackgroundColorHandler/BackgroundColorHandler";
 import { updateComponentAttributes } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
-import styles from "./BackgroundColorAttribute.style";
+import styles from "./BackgroundColor.style";
 
 @customElement("attribute-background-color")
 export class AttributeBackgroundColor extends LitElement {
@@ -17,14 +16,15 @@ export class AttributeBackgroundColor extends LitElement {
     });
   }
   render() {
-    return html`<div class="container">
-      <attribute-background-color-value-label
-        class="first_column"
-      ></attribute-background-color-value-label>
+    return html`
+    <editpanel-attribute-container>
+      <span slot="firstColumn">Background color</span>
       <attribute-background-color-value-handler
-        @attributeUpdate=${this.changeHandler}
+        slot="secondColumn"
         .component=${{ ...this.component }}
+        @attributeUpdate=${this.changeHandler}
       ></attribute-background-color-value-handler>
-    </div> `;
+    </editpanel-attribute-container>
+ `;
   }
 }

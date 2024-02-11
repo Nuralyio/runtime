@@ -13,9 +13,9 @@ import { type  ComponentElement, type ComponentType } from "$store/component/int
 import "./TextAttributes/TextValue/TextAttribute";
 import "./TextAttributes/FontSize/FontSizeAttribute";
 import "./Styles/FontWeightAttribute/FontWeightAttribute";
-import "./Styles/BackgroundColorAttribute/BackgroundColorAttribute";
+import "./shared/BackgroundColor/BackgroundColor";
 import "./Styles/FontStyleAttribute/FontStyleAttribute";
-import "./Styles/ColorAttribute/ColorAttribute";
+import "./TextAttributes/TextColor/TextColor";
 import "./Event/EventAttribute/EventAttribute";
 import "./Styles/BoxShadowAttribute/BoxShadowAttribute";
 import "./Styles/BorderAttribute/BorderAttribute";

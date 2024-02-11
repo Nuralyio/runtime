@@ -1,10 +1,9 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "./ColorLabel/ColorLabel";
-import "./ColorValue/ColorValue";
+import "./TextColorHandler/TextColorHandler";
 import { updateComponentAttributes } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
-import styles from "./ColorAttribute.style";
+import styles from "./TextColor.style";
 
 @customElement("attribute-color")
 export class AttributeColor extends LitElement {
@@ -23,12 +22,15 @@ export class AttributeColor extends LitElement {
     });
   }
   render() {
-    return html`<div class="container">
-      ${this.slim ? nothing : html`<attribute-color-value-label class="first_column"></attribute-color-value-label>` }
+    return html`
+    <editpanel-attribute-container>
+      <span slot="firstColumn">Text color</span>
       <attribute-color-value-handler
-        @attributeUpdate=${this.changeHandler}
+        slot="secondColumn"
         .component=${{ ...this.component }}
+        @attributeUpdate=${this.changeHandler}
       ></attribute-color-value-handler>
-    </div> `;
+    </editpanel-attribute-container>
+   `;
   }
 }

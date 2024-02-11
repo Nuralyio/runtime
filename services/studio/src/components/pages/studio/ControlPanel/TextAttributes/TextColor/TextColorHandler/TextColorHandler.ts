@@ -1,15 +1,13 @@
-import {
-  type ComponentElement,
-} from "$store/component/interface";
+import { type ComponentElement } from "$store/component/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
-@customElement("attribute-background-color-value-handler")
-export class AttributeBackgroundColorValue extends LitElement {
+@customElement("attribute-color-value-handler")
+export class AttributeColorValue extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
   @state()
-  backgroundColor = "#ffffff";
+  color = "#000000";
   static styles = [
     css`
       :host {
@@ -19,15 +17,15 @@ export class AttributeBackgroundColorValue extends LitElement {
   ];
 
   handleColorChange(event) {
-    const { value } = event.target;
-    this.backgroundColor = value;
+    const { value } = event.detail;
+    this.color = value;
     this.emitCustomEvent();
   }
 
   emitCustomEvent() {
     let customEvent = new CustomEvent("attributeUpdate", {
       detail: {
-        value: `${this.backgroundColor}`,
+        value: `${this.color}`,
       },
     });
     this.dispatchEvent(customEvent);
@@ -46,15 +44,20 @@ export class AttributeBackgroundColorValue extends LitElement {
     this.initValues();
   }
   initValues() {
-    this.backgroundColor = this.component.style.backgroundColor ?? "#ffffff";
+    if (this.component.style?.color && this.component.style?.color != "undefined") {
+      this.color = this.component.style?.color;
+    } else {
+      this.color = "#000000";
+    }
     this.requestUpdate();
   }
 
   render() {
-    return html`<input
-      type="color"
-      .value=${this.backgroundColor}
-      @change=${this.handleColorChange}
-    />`;
+    return html`
+<hy-color-picker
+    .color="${this.color}"
+    @color-changed="${this.handleColorChange}"
+    ></hy-color-picker>
+  `;
   }
 }
