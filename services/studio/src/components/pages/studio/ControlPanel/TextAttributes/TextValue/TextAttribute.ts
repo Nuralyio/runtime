@@ -1,10 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "./TextValueLabel/TextValueLabel";
-import "./TextValue/TextValue";
+import "./TextValueHandler/TextValue";
 import { type ComponentElement } from "$store/component/interface";
 import { updateComponentParameters } from "$store/component/action";
-import "../../../shared/EditPanelAttributeContainer/EditPanelAttributeContainer"
+import "../../shared/EditPanelAttributeContainer/EditPanelAttributeContainer"
 @customElement("parameter-text-label")
 export class TextLabelAttributes extends LitElement {
   @property({ type: Object })
@@ -18,9 +17,7 @@ export class TextLabelAttributes extends LitElement {
   render() {
     return html` 
       <editpanel-attribute-container>
-      <attributes-text-value-label
-      slot="firstColumn"
-      ></attributes-text-value-label>
+      <span  slot="firstColumn">Value</span>
       <parameters-text-value-handler
       slot="secondColumn"
         .component=${this.component}
