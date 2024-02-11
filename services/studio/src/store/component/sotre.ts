@@ -100,7 +100,6 @@ const fillComponentChildrens = (
     component.childrens = component.childrenIds?.map((componentChildId: string) => {
       const foundComponent = components.find((component: ComponentElement) => component.uuid === componentChildId);
       if (foundComponent) {
-        // Recursively call fillComponentChildrens with the current component as the parent
         return fillComponentChildrens(components, foundComponent, component);
       }
       return null; // Handle the case where a child component is not found

@@ -15,13 +15,23 @@ export class AddScreen extends LitElement {
   pageLength = 0;
   constructor() {
     super();
-    $pages.subscribe(
-      (pages: PageElement[] = []) => (this.pageLength = pages.length)
-    );
+    
+  }
+  pageSubject: any;
+  override connectedCallback() {
+    super.connectedCallback();
+    this.pageSubject= $pages.subscribe((pages: PageElement[] = []) => {
+      this.pageLength = pages.length;
+    });
+  }
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if(this.pageSubject){
+      this.pageSubject.unsubscribe();
+    }
   }
   addPage() {
     addPageAction({
-      uuid: uuidv4(),
       name: "Page_" + (this.pageLength + 1),
       component_ids: [],
       url: ("Page_" + (this.pageLength + 1)).toLowerCase()

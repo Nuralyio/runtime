@@ -1,6 +1,14 @@
 ---
 import View from "../view.astro";
-import { $pages } from "../../../../store/page/store";
+import { $currentPageId, $pages, $resetPageStore } from "../../../../store/page/store";
+import { loadApplication } from "$services/applications.service";
+import { loadApplicationPages } from "$services/page.service";
+
+
+import { allTasks } from "nanostores";
+import { $componentWithChildrens, $components } from "$store/component/sotre";
+import { loadPageComponent } from "$services/component.service";
+// $resetPageStore()
 
 const { title, id, urls = "" } = Astro.params;
 let request = urls?.split("?");
@@ -17,58 +25,40 @@ if (request.length > 1) {
 const searchQuery = new URLSearchParams(search);
 let applicationResponse;
 if (id) {
-	const cookie = Astro.request.headers.get("Cookie");
 	const headers = {};
 	Astro.request.headers.forEach((value, key) => {
 		headers[key] = value;
 	});
-
 	delete headers["connection"];
-	console.log(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications/${id}`)
-	applicationResponse = await fetch(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications/${id}`, {
-		headers: {
-			...headers,
-			Cookie: cookie,
-		},
-	});
-	applicationResponse = await applicationResponse.json();
+
+	if (id) {
+		const result = await loadApplication(headers, id);
+		if (result.data) {
+			applicationResponse = result.data;
+			const pagesResponse = await loadApplicationPages(headers, id);
+			if(pagesResponse.data) {
+				$pages.set(pagesResponse.data);
+				if(applicationResponse.default_page_uuid) {
+					$currentPageId.set(applicationResponse.default_page_uuid);
+					const componentResponce	= await loadPageComponent(headers, id);
+					if(componentResponce.data) {
+						$components.set([...componentResponce.data.map((c)=>c.component)]);
+					}
+				}
+			}
+		}
+	}
 }
-
-import { allTasks } from "nanostores";
-import { $components } from "$store/component/sotre";
-
-const cookie = Astro.request.headers.get("Cookie");
-
-
-
-const headers = {};
-Astro.request.headers.forEach((value, key) => {
-	headers[key] = value;
-});
-const { app } = Astro.props;
-delete headers["connection"];
-console.log(`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${applicationResponse.uuid}`)
-const pageResponse = await fetch(
-	`http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${applicationResponse.uuid}`,
-	{
-		cache: "no-store",
-		headers: {
-			...headers,
-			Cookie: cookie,
-		},
-	},
-);
-
-const pageData = await pageResponse.json();
-$pages.set(pageData);
 
 ---
 
 <div>
-	{applicationResponse?.uuid && <View app={applicationResponse} />}
+	{applicationResponse?.uuid && <View />}
 	{!applicationResponse?.uuid && <div>Not Found</div>}
 </div>
 
-<script define:vars={{ applicationResponse }}>
+<script define:vars={{ applicationResponse, componentData : $components.get() }}>
 	window.applicationResponse = applicationResponse;
+	window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
+	
 </script>

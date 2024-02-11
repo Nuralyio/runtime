@@ -9,7 +9,7 @@ import styles from "./Page.style";
 import { $resizing } from "$store/apps";
 import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
 import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
+import { $componentWithChildrens, $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
 import { updatePageInfo } from "$store/page/action";
 import { type PageElement } from "$store/page/interface";
 import { $currentPage, $currentPageViewPort } from "$store/page/store";

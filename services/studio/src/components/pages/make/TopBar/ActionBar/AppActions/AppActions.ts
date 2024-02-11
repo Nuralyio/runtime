@@ -7,7 +7,6 @@ import { setEnvironmentMode } from "$store/environment/action";
 import { $currentApplication } from "$store/apps";
 
 @customElement("topbar-app-actions")
-@useStores($environment)
 export class TopbarAppActions extends LitElement {
   static styles = styles;
   @state()
@@ -15,7 +14,7 @@ export class TopbarAppActions extends LitElement {
 
   @state()
   viewTab;
-    application: any;
+  application: any;
 
   constructor() {
     super();
@@ -24,7 +23,6 @@ export class TopbarAppActions extends LitElement {
     });
     $currentApplication.subscribe((application) => {
       this.application = application;
-      console.log(this.application)
     }
     );
   }
@@ -35,22 +33,20 @@ export class TopbarAppActions extends LitElement {
   }
   render() {
     return html`<div class="app-action-wrapper">
-      <hy-button icon="comment"></hy-button>
+      <!-- <hy-button icon="comment"></hy-button> -->
       <hy-button
-        @click=${()=>{
-          if(this.viewTab){
-            this.viewTab.close();
-          }else{
-            this.viewTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
-
-          }
-          const newTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
-
+        @click=${() => {
+        if (this.viewTab) {
+          this.viewTab.close();
+        } else {
+          this.viewTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
         }
-        }
+        const newTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
+
+      }
+      }
         icon=${this.environmentMode === ViewMode.Edit ? "play" : "edit"}
       ></hy-button>
-      <hy-button icon="save"></hy-button>
     </div>`;
   }
 }

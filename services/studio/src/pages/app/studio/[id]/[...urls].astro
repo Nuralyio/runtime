@@ -3,6 +3,7 @@ import Make from "../../../make.astro";
 //mport "../../../components/shared/blocks/CodeEditor/CodeEditor";
 import {loadApplication} from "$services/applications.service"
 import NotFount from '../../../not-found.astro';
+import { $resetPageStore } from "$store/page/store";
 // here we will handle the routing
 const { title, id, urls = "" } = Astro.params;
 console.log('id',id)
@@ -30,6 +31,8 @@ if(id){
 		applicationResponse = result.data
 	}
 }
+//$resetPageStore()
+
 ---
 
 <div>

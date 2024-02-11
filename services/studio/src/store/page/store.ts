@@ -11,7 +11,7 @@ import { type PageElement } from "./interface";
 const isServer = typeof window === 'undefined';
 const initialState = isServer ? [] : JSON.parse(window['__INITIAL_PAGE_STATE__'] ?? []);
 export const $pages = atom<any[]>(initialState );
-
+export const $resetPageStore = ()=>{}
 export const $currentPageId = persistentAtom<string>("page_id", null, {
   encode: JSON.stringify,
   decode: JSON.parse,
@@ -66,11 +66,6 @@ export const $currentPage = computed(
   }
 );
 
-$pages.subscribe((pages) => {
-  if (!$currentPageId.get() && pages[0]) {
-    $currentPageId.set(pages[0].id);
-  }
-});
 /*
 logger({
   pages: $pages,

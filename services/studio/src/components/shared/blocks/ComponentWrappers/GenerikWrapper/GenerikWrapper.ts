@@ -31,7 +31,6 @@ import "../ComponentTitle/ComponentTitle";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { setContextMenuEvent } from "$store/page/action";
 @customElement("generik-component-wrapper")
-@useStores($currentComponentId, $environment)
 export class GenerikComponentWrapper extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
@@ -166,7 +165,7 @@ export class GenerikComponentWrapper extends LitElement {
             e.stopPropagation();
             e.preventDefault();
             setCurrentComponentIdAction(this.component?.uuid);
-        setContextMenuEvent(null);
+            setContextMenuEvent(null);
 
           }}"
           @mouseenter="${() => {
