@@ -10,7 +10,7 @@ import "@lit-labs/ssr-dom-shim";
 import { useStores } from "@nanostores/lit";
 import { $selectedComponent } from "$store/component/sotre";
 import { type  ComponentElement, type ComponentType } from "$store/component/interface";
-import "./Inputs/Text/TextAttribute/TextAttribute";
+import "./TextAttributes/TextValue/TextAttribute";
 import "./Styles/FontSizeAttribute/FontSizeAttribute";
 import "./Styles/FontWeightAttribute/FontWeightAttribute";
 import "./Styles/BackgroundColorAttribute/BackgroundColorAttribute";
@@ -22,8 +22,7 @@ import "./Styles/BorderAttribute/BorderAttribute";
 import "./AdvancedPanelTab";
 import "./StylePanelTab";
 
-@customElement("control-panel")
-export class ParametersPanel extends LitElement {
+@customElement("control-panel")export class ParametersPanel extends LitElement {
   static styles = [
     css`
       :host {
