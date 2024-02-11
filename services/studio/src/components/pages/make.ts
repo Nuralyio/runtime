@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "./make/TopBar/TopbarWrapper/TopbarWrapper";
-import "./make/ScreenPanel/ScreenStructure";
+import "./studio/TopBar/TopbarWrapper/TopbarWrapper";
+import "./studio/ScreenPanel/ScreenStructure";
 @customElement("make-page")
 export class MakePage extends LitElement {
   static styles = [

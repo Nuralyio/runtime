@@ -1,16 +1,16 @@
 ---
 import MakeLayout from "../../../layouts/MakeLayout.astro";
-import "../../../components/pages/make/MainPanel/EditorInteractivePanel";
-import { TabsPanel } from "../../../components/pages/make/MainPanel/TabsPanel";
+import "../../../components/pages/studio/MainPanel/EditorInteractivePanel";
+import { TabsPanel } from "../../../components/pages/studio/MainPanel/TabsPanel";
 import "@hybridui/button";
-import { TopbarPanelWrapper } from "../../../components/pages/make/TopBar/TopbarWrapper/TopbarWrapper";
-import { LeftPanel } from "../../../components/pages/make/Layout/LeftPanel";
-import { RightPanel } from "../../../components/pages/make/Layout/RightPanel";
+import { TopbarPanelWrapper } from "../../../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
+import { LeftPanel } from "../../../components/pages/studio/Layout/LeftPanel";
+import { RightPanel } from "../../../components/pages/studio/Layout/RightPanel";
 import { $pages, $currentPageId , $currentPageViewPort} from "../../../store/page/store";
 import { allTasks } from "nanostores";
 import { $componentWithChildrens, $components } from "$store/component/sotre";
-import "../../../components/pages/make/Page/Page";
-import { PageContent } from "../../../components/pages/make/Page/Page";
+import "../../../components/pages/studio/Page/Page";
+import { PageContent } from "../../../components/pages/studio/Page/Page";
 const cookie = Astro.request.headers.get("Cookie");
 const headers = {};
 Astro.request.headers.forEach((value, key) => {
@@ -198,3 +198,4 @@ await allTasks();
     overflow: hidden;
   }
 </style>
+../../../components/pages/studio/MainPanel/EditorInteractivePanel../../../components/pages/studio/MainPanel/TabsPanel../../../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper../../../components/pages/studio/Layout/LeftPanel../../../components/pages/studio/Layout/RightPanel../../../components/pages/studio/Page/Page../../../components/pages/studio/Page/Page

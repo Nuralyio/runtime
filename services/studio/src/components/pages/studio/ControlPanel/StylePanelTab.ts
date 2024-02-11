@@ -3,8 +3,8 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./Inputs/Container/DirectionAttribute/DirectionAttribute";
 import "../Page/PageParameters/PageParameters";
-import "../ControlPanel/Display/SizePaddingMarginAttribute/SizePaddingMarginAttribute";
-import "../ControlPanel/Collections/CollectionInputAttribute/CollectionInputAttribute";
+import "./Display/SizePaddingMarginAttribute/SizePaddingMarginAttribute";
+import "./Collections/CollectionInputAttribute/CollectionInputAttribute";
 import "./ResponsiveParameter/ResponsiveParameter";
 import "./shared/EditPanelAttributeContainer/EditPanelAttributeContainer"
 @customElement("style-panel")
