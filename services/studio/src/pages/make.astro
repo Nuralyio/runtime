@@ -1,11 +1,11 @@
 ---
 import MakeLayout from "../layouts/MakeLayout.astro";
-import "../components/pages/make/MainPanel/EditorInteractivePanel";
-import { TabsPanel } from "../components/pages/make/MainPanel/TabsPanel";
+import "../components/pages/studio/MainPanel/EditorInteractivePanel";
+import { TabsPanel } from "../components/pages/studio/MainPanel/TabsPanel";
 import "@hybridui/button";
-import { TopbarPanelWrapper } from "../components/pages/make/TopBar/TopbarWrapper/TopbarWrapper";
-import { LeftPanel } from "../components/pages/make/Layout/LeftPanel";
-import { RightPanel } from "../components/pages/make/Layout/RightPanel";
+import { TopbarPanelWrapper } from "../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
+import { LeftPanel } from "../components/pages/studio/Layout/LeftPanel";
+import { RightPanel } from "../components/pages/studio/Layout/RightPanel";
 import { $pages, $resetPageStore } from "../store/page/store";
 import { allTasks } from "nanostores";
 import { $components } from "$store/component/sotre";
@@ -192,3 +192,4 @@ const applciationsResponse = await fetch(`http://${process.env.NURALY_SERVICES_H
     overflow: hidden;
   }
 </style>
+../components/pages/studio/MainPanel/EditorInteractivePanel../components/pages/studio/MainPanel/TabsPanel../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper../components/pages/studio/Layout/LeftPanel../components/pages/studio/Layout/RightPanel
