@@ -1,7 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "./FontSizeValue/FontSizeValue";
-import "./FontSizeValueLabel/FontSizeValueLabel";
+import "./FontSizeValueHandler/FontSize";
 import { type ComponentElement } from "$store/component/interface";
 import { updateComponentAttributes } from "$store/component/action";
 
@@ -31,15 +30,18 @@ export class AttributeTextFontSize extends LitElement {
       fontSize: event.detail.value,
     });
   }
-
+ // Font Size
   render() {
-    return html` <div class="container">
-      ${this.slim ? nothing : html`<attribute-font-size-value-label class="first_column"></attribute-font-size-value-label>` }
+    return html` 
+     <editpanel-attribute-container>
+      <span  slot="firstColumn">Font Size</span>
       <attribute-font-size-value-handler
+        slot="secondColumn"
         .slim=${this.slim}
         @attributeUpdate=${this.changeHandler}
         .component=${{ ...this.component }}
       ></attribute-font-size-value-handler>
-    </div>`;
+     </editpanel-attribute-container>
+   `;
   }
 }
