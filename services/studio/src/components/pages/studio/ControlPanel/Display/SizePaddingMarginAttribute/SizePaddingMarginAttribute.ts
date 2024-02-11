@@ -1,7 +1,6 @@
 import { type  ComponentElement } from '$store/component/interface';
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js'
-import "./SizePaddingMarginLabel/SizePaddingMarginLabel";
 import "./SizePaddingMarginValue/SizePaddingMarginValue";
 import { updateComponentAttributes } from '$store/component/action';
 
@@ -21,7 +20,7 @@ export class SIzePAddingMArginATtribute extends LitElement {
     render() {
         return html`
         <div>
-        <size-padding-margin-label></size-padding-margin-label> 
+        <span>Position</span>
         <size-padding-margin-value 
         @attributeUpdate=${(event: CustomEvent) => {
            updateComponentAttributes(this.component.uuid, {
