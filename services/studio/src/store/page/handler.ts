@@ -1,4 +1,7 @@
+import { setDefaultApplicationPageIfNotSet } from "$store/app.action";
+import { updatePageAction } from "./action";
 import { type PageElement } from "./interface"
+import { $pages } from "./store";
 
 export const addPageHandler = (page: PageElement) => {
 
@@ -10,23 +13,18 @@ export const addPageHandler = (page: PageElement) => {
 		body: JSON.stringify(page)
 	}).then(res => res.json())
 		.then(
-
-			(res) => {
-				if (res.ok) {
-					return res.json()
-				} else {
-					console.error(res)
-					throw new Error("Error while adding page")
-				}
+			(responce) => {
+				const { page } = responce;
+				updatePageAction(page)
+				setDefaultApplicationPageIfNotSet(page.uuid)
 			}
-
 		)
 
 }
 
 
 export const updatePageHandler = (page: PageElement) => {
-	fetch("/api/pages/"+page.uuid, {
+	fetch("/api/pages/" + page.application_id + '/'+page.uuid, {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json"
@@ -34,11 +32,6 @@ export const updatePageHandler = (page: PageElement) => {
 		body: JSON.stringify(page)
 	}).then(res => res.json())
 		.then((res) => {
-			if (res.ok) {
-				return res.json()
-			} else {
-				console.error(res)
-				throw new Error("Error while updating page")
-			}
+			updatePageAction(res)
 		});
 }

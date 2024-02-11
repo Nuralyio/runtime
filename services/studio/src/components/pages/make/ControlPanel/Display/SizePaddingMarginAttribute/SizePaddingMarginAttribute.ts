@@ -20,7 +20,7 @@ export class SIzePAddingMArginATtribute extends LitElement {
 
     render() {
         return html`
-        <div style="margin-left : 15px">
+        <div>
         <size-padding-margin-label></size-padding-margin-label> 
         <size-padding-margin-value 
         @attributeUpdate=${(event: CustomEvent) => {

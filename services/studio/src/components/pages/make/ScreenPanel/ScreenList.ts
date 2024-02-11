@@ -19,19 +19,6 @@ export class ScreenListEditor extends LitElement {
     super();
   }
 
-  /*handleChildren(component: ComponentElement){
-    return component?.childrens?.map((child: ComponentElement) => ({
-      handler: () => {
-        if (this.currentPage?.id !== child?.pageId) {
-          setCurrentPageAction(child?.pageId);
-        }
-        setCurrentComponentIdAction(child?.id);
-      },
-      id: child.id,
-      label: child.name,
-    }));
-  }
-*/
   connectedCallback() {
     super.connectedCallback();
     $currentPage.subscribe((currentPage: PageElement) => {
@@ -47,9 +34,9 @@ export class ScreenListEditor extends LitElement {
           id: page.uuid,
           handler: () => {
             setCurrentPageAction(page.uuid);
-          },
-         
+            setCurrentComponentIdAction(null);
 
+          },
           children: [
             ...this.generateMenu(page.components),
           ],

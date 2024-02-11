@@ -1,4 +1,6 @@
-import { $applications, $editorState, $showCreateApplicationModal } from "./apps";
+import { loadPermission } from "$services/applications.service";
+import { $applicationPermission, $applications, $currentApplication, $editorState, $permissionsState, $showCreateApplicationModal, $showShareApplicationModal } from "./apps";
+import { updateApplicationActionHandler } from "./handler";
 
 
 export function openTab(tab: any) {
@@ -47,5 +49,59 @@ export function closeCreateApplicationModalAction() {
 
 
 
+export function showShareApplicationModalAction() {
+	$showShareApplicationModal.set(true);
+}
 
 
+export function closeShareApplicationModalAction() {
+	$showShareApplicationModal.set(false);
+}
+
+
+
+export async function loadApplicationPermissionAction( id: string, resource_id:string){
+	const permission = await loadPermission( id, resource_id)
+	if(permission.data){
+		setApplicationPermissionAction(permission.data);
+	}
+}
+
+
+export function setApplicationPermissionAction( permission: any){
+	console.log(permission)
+	$applicationPermission.set(permission);
+}
+
+export function setDefaultApplicationPageIfNotSet(uuid: string){
+	if(!$currentApplication.get().default_page_uuid){
+		$currentApplication.set({
+			...$currentApplication.get(),
+			default_page_uuid: uuid
+		})
+	}
+	updateApplicationActionHandler($currentApplication.get());
+}
+
+
+export function updateApplication( attribute: any){
+	$currentApplication.set({
+		...$currentApplication.get(),
+		...attribute
+	})
+	updateApplicationActionHandler($currentApplication.get());
+}
+
+export function setPermissionMessage(message: string){
+	$permissionsState.set({
+		...$permissionsState.get(),
+		message
+	})
+}
+
+export function resetPermissionMessage(){
+	$permissionsState.set({
+		...$permissionsState.get(),
+		message: ""
+	})
+}	

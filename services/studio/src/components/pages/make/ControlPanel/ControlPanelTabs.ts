@@ -23,7 +23,6 @@ import "./AdvancedPanelTab";
 import "./StylePanelTab";
 
 @customElement("control-panel")
-@useStores($selectedComponent)
 export class ParametersPanel extends LitElement {
   static styles = [
     css`

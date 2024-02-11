@@ -152,11 +152,7 @@ export class ResizeWrapper extends LitElement {
           this.original_y + (e.pageY - this.original_mouse_y) + "px";
       }
     }
-    updateComponentAttributes(this.component.uuid, {
-      width: this.inputRef.value.style.width,
-      height: this.inputRef.value.style.height,
-      display: "block",
-    });
+   
     setTimeout(() => {
       this.firstUpdated();
     });
@@ -250,6 +246,11 @@ export class ResizeWrapper extends LitElement {
     e.stopPropagation();
     window.removeEventListener("mousemove", this.resize);
     setTimeout(()=>{ setResizing(false);})
+    updateComponentAttributes(this.component.uuid, {
+      width: this.inputRef.value.style.width,
+      height: this.inputRef.value.style.height,
+      display: "block",
+    });
   };
 
   

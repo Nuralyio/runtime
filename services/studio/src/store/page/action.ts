@@ -6,11 +6,21 @@ import { updatePageHandler } from "./handler";
 
 /** Actions*/
 export function addPageAction(page: PageElement) {
-  $pages.set([...$pages.get(), page]);
   addPageHandler(page)
 }
 
+export function updatePageAction(page: PageElement) {
+  const existingPages = $pages.get();
+  const updatedPages = existingPages.map((existingPage) =>
+    existingPage.uuid === page.uuid ? page : existingPage
+  );
+
+  $pages.set(updatedPages);
+}
+
+
 export function setCurrentPageAction(pageId: string) {
+
   $currentPageId.set(pageId);
 }
 

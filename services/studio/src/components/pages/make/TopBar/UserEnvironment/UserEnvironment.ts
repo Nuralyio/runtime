@@ -5,7 +5,7 @@ import "./AppInfo/AppInfo";
 import "./EnvironmentSwitcher/EnvironmentSwitcher";
 import "./UserInfo/UserInfo";
 import "./Drawer/Drawer";
-
+import "./AppPermission/AppPermission"
 @customElement("topbar-user-environment")
 export class TopbarUserEnvironment extends LitElement {
   static styles = styles;
@@ -15,10 +15,9 @@ export class TopbarUserEnvironment extends LitElement {
       <!-- <topbar-drawer></topbar-drawer> -->
       <!-- <topbar-app-info></topbar-app-info> -->
       <topbar-action-bar></topbar-action-bar>
-      <!-- <top-bar-environment-switcher
-        class="user-info "
-      ></top-bar-environment-switcher>
-      <topbar-user-info></topbar-user-info> -->
+    
+      <app-permission></app-permission>
+      <!-- <topbar-user-info></topbar-user-info> -->
     </div>`;
   }
 }

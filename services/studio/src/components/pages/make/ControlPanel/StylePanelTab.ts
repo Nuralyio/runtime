@@ -6,6 +6,7 @@ import "../Page/PageParameters/PageParameters";
 import "../ControlPanel/Display/SizePaddingMarginAttribute/SizePaddingMarginAttribute";
 import "../ControlPanel/Collections/CollectionInputAttribute/CollectionInputAttribute";
 import "./ResponsiveParameter/ResponsiveParameter";
+import "./shared/EditPanelAttributeContainer/EditPanelAttributeContainer"
 @customElement("style-panel")
 export class STylePAnel extends LitElement {
   @property({ type: Object })
@@ -120,7 +121,7 @@ export class STylePAnel extends LitElement {
         break;
         default:
           templates.push(html`<div style="padding:4px">
-<page-parameters></page-parameters>
+          <page-parameters></page-parameters>
           </div>`);
 
         break;

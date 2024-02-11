@@ -1,12 +1,13 @@
 import { type ComponentElement } from "$store/component/interface";
 import { $componentWithChildrens } from "$store/component/sotre";
 import { $currentPageViewPort } from "$store/page/store";
-import { executeEventHandler } from "core/engine";
+import {  } from "core/engine";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 
 const isServer = typeof window === 'undefined';
+
 @customElement("text-label-block")
 export class TextLabelBlock extends LitElement {
   @property({ type: Object })
@@ -17,6 +18,7 @@ export class TextLabelBlock extends LitElement {
 
   @state()
   viewPortStyles: any;
+
   static styles = [
     css`
       :host {
@@ -26,26 +28,29 @@ export class TextLabelBlock extends LitElement {
   ];
 
   @state()
+  isEditable = false;
+
+  @state()
   components: ComponentElement[];
 
   @state()
   thisvalue;
+
+
   constructor() {
     super();
     $componentWithChildrens.subscribe((components: ComponentElement[]) => {
       this.components = components;
-      if(typeof window !== 'undefined' && typeof window.navigator !== 'undefined'){
-
-      }else{
-       this.updateValue();
-
+      if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+      } else {
+        this.updateValue();
       }
     });
-
-  
   }
+
   override connectedCallback() {
     super.connectedCallback();
+    document.body.addEventListener("click", this.handleBodyClick);
     $currentPageViewPort.subscribe((viewPort) => {
       this.currentPageViewPort = viewPort;
       this.updateValue();
@@ -53,11 +58,21 @@ export class TextLabelBlock extends LitElement {
     });
   }
 
+  handleBodyClick = (event) => {
+    const label = this.shadowRoot.querySelector("label");
+    if (label && !label.contains(event.target)) {
+      // Click is outside the label, make it non-editable
+      this.isEditable = false;
+    }
+  };
   @property({ type: Object })
-  item: any
+  item: any;
+
   updateValues() {
     if (this.component.styleBreakPoints) {
-      this.viewPortStyles = this.component.styleBreakPoints[this.currentPageViewPort] ? { ...this.component.styleBreakPoints[this.currentPageViewPort] as any } : {}
+      this.viewPortStyles = this.component.styleBreakPoints[this.currentPageViewPort]
+        ? { ...this.component.styleBreakPoints[this.currentPageViewPort] as any }
+        : {};
       // clean this.viewPortStyles from null values and do not use delete keyword
       const cleanedViewPortStyles = {};
 
@@ -68,12 +83,11 @@ export class TextLabelBlock extends LitElement {
       }
 
       // Assign the cleaned object back to this.viewPortStyles if needed
-      this.viewPortStyles = cleanedViewPortStyles;        
+      this.viewPortStyles = cleanedViewPortStyles;
     }
-
   }
-  updated(changedProperties) {
 
+  updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component" || propName === "item") {
         this.updateValue();
@@ -85,55 +99,55 @@ export class TextLabelBlock extends LitElement {
   updateValue() {
     let messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = function (event) {
-      if(event.data.result){
-      this.thisvalue = event.data.result;
-
+      if (event.data.result) {
+        this.thisvalue = event.data.result;
       }
-    }.bind(this)
+    }.bind(this);
     const command = "executeValue";
-    if(typeof window !== 'undefined' && typeof window.navigator !== 'undefined'){
+    if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
       if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.controller?.postMessage(
-        {
-          command,
-          value: this.component.attributesHandlers?.value,
-          components: this.components,
-          component: this.component,
-        },
-        [messageChannel.port2]
-      );    
+        navigator.serviceWorker.controller?.postMessage(
+          {
+            command,
+            value: this.component.attributesHandlers?.value,
+            components: this.components,
+            component: this.component,
+          },
+          [messageChannel.port2]
+        );
+      }
+    } else {
     }
-    }else{
-      
-    }
-    
-   
   }
 
-getValue(){
-  let value = "";
-  if(isServer){
-      if(this.component.parameters?.value){
-        if(this.component?.parent?.component_type === "Collection"){
-          return this.component.iterations[this.item.index]
+  getValue() {
+    let value = "";
+    if (isServer) {
+      if (this.component.parameters?.value) {
+        if (this.component?.parent?.component_type === "Collection") {
+          return this.component.iterations[this.item.index];
         }
       }
+    }
+
+    return isServer ? this.component.parameters?.value : this.thisvalue ?? this.component.parameters?.value;
   }
-
-  return isServer ? this.component.parameters?.value :  this.thisvalue ?? this.component.parameters?.value 
-}
-
 
   render() {
     return html`
-    <label
-      style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
-      @click=${(e) => {
-        if (this.component.event.onClick) {
-          executeEventHandler(this.component, "event", "onClick");
-        }
-      }}
-      >${  this.getValue()  }</label
-    >`;
+      <label
+        contentEditable="${this.isEditable}"
+        style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
+        
+        @dblclick=${(e) => {
+            e.preventDefault();
+
+           this.isEditable = true;
+           this.requestUpdate();
+        }}
+      >
+        ${this.getValue()}
+      </label>
+    `;
   }
 }

@@ -11,13 +11,13 @@ if(!isServer){
 const initialState = isServer ? [] : JSON.parse(window['__INITIAL_APPLICATION_STATE__'] ?? []);
 const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
 
-console.log(initialState)
 export const $applications = atom<any>(initialState);
 export const $currentApplication = atom<any>(initialAppState);
+export const $applicationPermission = atom<any>([]);
 
 export const $resizing = atom<Boolean>(false);
 
-
+export const $permissionsState = atom<any>({ message : ""});
 
 interface Tab {
   id: string;
@@ -40,6 +40,7 @@ export const $editorState = persistentAtom<{ currentTab: any, tabs: Tab[] }>("$e
 
 
 export const $showCreateApplicationModal = atom<Boolean>(false);
+export const $showShareApplicationModal = atom<boolean>(false);
 
 
 keepMount($resizing)

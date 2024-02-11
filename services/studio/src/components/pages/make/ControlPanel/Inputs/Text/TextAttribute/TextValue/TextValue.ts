@@ -13,7 +13,11 @@ export class AttributesTextValueHandler extends LitElement {
   @property({ type: Boolean })
   slim: boolean = false;
 
-  static styles = [css``];
+  static styles = [css`
+    .container {
+      display: flex;
+      flex-direction: row;
+      }`];
 
   handleValueChange(event: CustomEvent) {
     const {
@@ -38,7 +42,8 @@ export class AttributesTextValueHandler extends LitElement {
     this.requestUpdate();
   }
   render() {
-    return html` <hy-input
+    return html` 
+    <div class="container"><hy-input
       palceholder="value"
       @valueChange=${this.handleValueChange}
       .value=${this.label}
@@ -52,6 +57,8 @@ export class AttributesTextValueHandler extends LitElement {
         .handlerScope=${"attributesHandlers"}
       ></smart-attribute-editor-dropdown>
       ` : nothing}
+      </div>
+
     `;
   }
 }
