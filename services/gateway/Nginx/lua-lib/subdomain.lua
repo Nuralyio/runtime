@@ -71,6 +71,6 @@ local function handleSubdomainStaticFiles()
 end
                 
 return {
-    handleSubdomain = handleSubdomain
+    handleSubdomain = handleSubdomain,
     handleSubdomainStaticFiles = handleSubdomainStaticFiles
 }
