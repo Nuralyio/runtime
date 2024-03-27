@@ -45,8 +45,12 @@ services:
 
       environment:
         DATABASE_URL :  ${SERVICES_DATABASE_URL:-postgresql://postgres:postgres@postgres/providers} 
+        KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
+        KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
+        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
       depends_on:
         - postgres
+        - keycloak
 
   nuraly_frontend:
       image: nuraly/frontend
