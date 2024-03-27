@@ -7,4 +7,5 @@ COPY  ./replace-domain.sh  .
 RUN  ./replace-domain.sh  /usr/local/openresty/nginx/conf/nginx.conf localhost "${DOMAIN}"
 COPY ./lua-lib/main.lua ~/lua/main.lua
 COPY ./lua-lib/subdomain.lua ~/lua/subdomain.lua
+COPY ./lua-lib/userinfo.lua ~/lua/userinfo.lua
 RUN /usr/local/openresty/luajit/bin/luarocks install lua-resty-openidc
