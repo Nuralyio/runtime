@@ -25,7 +25,13 @@ jobs:
 
         
     - uses: actions/checkout@v3
-    
+    - name: Get commit hash
+      id: get-commit-hash
+      run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+    - name: Get timestamp
+      id: get-timestamp
+      run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
+      
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
