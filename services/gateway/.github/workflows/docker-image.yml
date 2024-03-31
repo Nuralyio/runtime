@@ -31,8 +31,8 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker build ./Keycloack --file ./Keycloack/Dockerfile --tag $ECR_REGISTRY/keycloack:latest
-        docker push $ECR_REGISTRY/keycloack:latest
+        docker build ./Keycloack --file ./Keycloack/Dockerfile --tag $ECR_REGISTRY/keycloak:latest
+        docker push $ECR_REGISTRY/keycloak:latest
 
   build_nginx:
 
