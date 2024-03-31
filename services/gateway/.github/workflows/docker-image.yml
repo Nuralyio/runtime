@@ -14,32 +14,46 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: webfactory/ssh-agent@v0.8.0
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-    - name: Build the Keycloak Docker image
-      run: docker build ./Keycloack --file ./Keycloack/Dockerfile --tag nuraly/keycloack
-    - name: Save the docker image
-      run: docker save -o keycloack.tar nuraly/keycloack
-    - name : copy to remote
-      run: scp -o StrictHostKeyChecking=no  keycloack.tar ec2-user@${{ secrets.MAIN_HOST }}:/home/images
-    - name : load image into docker
-      run: ssh -o StrictHostKeyChecking=no  ec2-user@${{ secrets.MAIN_HOST }} "cd /home/images && docker load -i keycloack.tar"
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - uses: actions/checkout@v3
+    - name: Build, tag, and push the image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker build ./Keycloack --file ./Keycloack/Dockerfile --tag $ECR_REGISTRY/keycloack:latest
+        docker push $ECR_REGISTRY/keycloack:latest
 
   build_nginx:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: webfactory/ssh-agent@v0.8.0
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-    - name: Build the Nfinx Docker image
-      run: docker build --build-arg DOMAIN=${{ secrets.HOST_DOMAIN }} ./Nginx --file ./Nginx/Dockerfile --tag nuraly/nginx
-    - name: Save the docker image
-      run: docker save -o nginx.tar nuraly/nginx
-    - name : copy to remote
-      run: scp -o StrictHostKeyChecking=no  nginx.tar ec2-user@${{ secrets.MAIN_HOST }}:/home/images
-    - name : load image into docker
-      run: ssh -o StrictHostKeyChecking=no  ec2-user@${{ secrets.MAIN_HOST }} "cd /home/images && docker load -i nginx.tar"
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - uses: actions/checkout@v3
+    - name: Build, tag, and push the image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker--build-arg DOMAIN=${{ secrets.HOST_DOMAIN }} ./Nginx --file ./Nginx/Dockerfile --tag $ECR_REGISTRY/gateway:latest
+        docker push $ECR_REGISTRY/gateway:latest
