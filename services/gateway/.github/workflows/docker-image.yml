@@ -55,5 +55,5 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker--build-arg DOMAIN=${{ secrets.HOST_DOMAIN }} ./Nginx --file ./Nginx/Dockerfile --tag $ECR_REGISTRY/gateway:latest
+        docker --build-arg DOMAIN=${{ secrets.HOST_DOMAIN }} ./Nginx --file ./Nginx/Dockerfile --tag $ECR_REGISTRY/gateway:latest
         docker push $ECR_REGISTRY/gateway:latest
