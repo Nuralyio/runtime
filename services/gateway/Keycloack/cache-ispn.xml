@@ -5,7 +5,7 @@
         <transport lock-timeout="60000"/>
 
         <global-state>
-            <persistent-location path="/home/keycloak/cache"/>
+            <persistent-location path="/opt/keycloak/cache"/>
         </global-state>
 
         <local-cache name="realms">
@@ -32,13 +32,13 @@
         <local-cache name="clientSessions">
             <expiration lifespan="-1"/>
             <persistence passivation="false">
-                <file-store path="/home/keycloak/cache" shared="false" purge="false"/>
+                <file-store path="/opt/keycloak/cache" shared="false" purge="false"/>
             </persistence>
         </local-cache>
         <local-cache name="authenticationSessions">
             <expiration lifespan="-1"/>
             <persistence passivation="false">
-                <file-store path="/home/keycloak/cache" shared="false" purge="false"/>
+                <file-store path="/opt/keycloak/cache" shared="false" purge="false"/>
             </persistence>
         </local-cache>
         <local-cache name="offlineSessions">
