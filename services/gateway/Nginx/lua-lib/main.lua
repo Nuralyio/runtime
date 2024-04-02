@@ -53,7 +53,7 @@ local redirect_uri = ngx.var.request_uri
 local opts = {
     ssl_verify = "no",
     redirect_uri = "/cb",
-    discovery = scheme .. "://"..host.."/auth/realms/".. realm .."/.well-known/openid-configuration",
+    discovery = "https://nuraly.io/auth/realms/".. realm .."/.well-known/openid-configuration",
     client_id = client_id,
     client_secret = client_secret,
     scope = "openid email profile roles",
@@ -61,6 +61,10 @@ local opts = {
 
 
 }
+
+ngx.log(ngx.INFO, "host: " .. host )
+ngx.log(ngx.INFO, "scheme: " .. scheme )
+
 
 local function authenticateWithKeycloakPass(customRedirectUri)
     
