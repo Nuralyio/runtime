@@ -7,4 +7,4 @@ RUN npm run build
 
 EXPOSE 4321
 
-CMD ["npm", "start"]
+CMD ["npm", "run" , "server"]
