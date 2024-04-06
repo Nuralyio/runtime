@@ -13,6 +13,19 @@ services:
       environment:
           NURALY_SERVICES_HOST : "nginx"
           NURALY_ENGINE_HOST : "nuraly_engine:3000"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+
   nginx:
     image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/gateway
     environment:
@@ -32,6 +45,14 @@ services:
       - 443:443
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+
+volumes:
+#  infinispan_data:
+#  postgres-data:
+  pgadmin-data:
+#  keycloak-db-data:
+#  redis-data:
 
 
   
