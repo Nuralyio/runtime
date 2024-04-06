@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  nuraly_frontend:
+      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/frontend
+      ports:
+        - "${ENGINE_PORT:-4321}:4321"
+      environment:
+          NURALY_SERVICES_HOST : "nginx"
+          NURALY_ENGINE_HOST : "nuraly_engine:3000"
+  nginx:
+    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/gateway
+    environment:
+      KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
+      KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
+      KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
+      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-kXG0kGEFlSeOwB7fGs1IELOoKGbEFty3} 
+      KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
+      DOMAIN :  ${HOST_DOMAIN:-localhost} 
+      KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+    volumes:
+      - ./Nginx/nginx-local.conf:/usr/local/openresty/nginx/conf/nginx.conf
+
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+  
+
