@@ -21,7 +21,7 @@ jobs:
       - name: Get ECS Service ARN
         id: get_service_arn
         run: |
-          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query 'serviceArns[?contains(@, "frontend")]' --output text)" >> $GITHUB_ENV
+          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query "serviceArns[?contains(@, 'frontend')]" --output text)" >> $GITHUB_ENV
 
       - name: Extract Cluster and Account ID
         id: extract_ids
