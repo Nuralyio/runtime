@@ -26,8 +26,9 @@ jobs:
       - name: Extract Cluster and Account ID
         id: extract_ids
         run: |
-          export CLUSTER=$(echo "$ECS_SERVICE_ARN" | cut -d "/" -f 2)
+          export CLUSTER=${{ secrets.CLUSTER }}
           export ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+        
 
       - name: Get branch name
         id: branch_name
