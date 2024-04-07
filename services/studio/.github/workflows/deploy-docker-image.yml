@@ -48,6 +48,7 @@ jobs:
       - name: Register new task definition
         run: |
           # Register the new task definition
+          cat task_definition.json
           register_response=$(aws ecs register-task-definition --cli-input-json file://task_definition.json)
 
           # Extract the new task definition ARN
