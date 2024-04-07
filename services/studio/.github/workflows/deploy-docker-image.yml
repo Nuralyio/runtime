@@ -20,23 +20,20 @@ jobs:
 
       - name: Get ECS service ARN
         run: |
-          ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query "serviceArns[?contains(@, 'frontend')]" --output text)
-          echo "ECS Service ARN: $ECS_SERVICE_ARN" >> $GITHUB_ENV
+          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query 'serviceArns[?contains(@, "frontend")]' --output text)" >> $GITHUB_ENV
+
 
       - name: Get existing task definition ARN
         run: |
-          task_arn=$(aws ecs describe-services --cluster gateway --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)
-          echo "Task ARN: $task_arn" >> $GITHUB_ENV
+          echo "task_arn=$(aws ecs describe-services --cluster gateway --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)"  >> $GITHUB_ENV 
 
       - name: Get task definition details
         run: |
-          task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")
-          echo "Task Details: $task_details" >> $GITHUB_ENV
+          echo "task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")"  >> $GITHUB_ENV
 
       - name: Get execution role ARN
         run: |
-          execution_role_arn=$(echo "$task_details" | jq -r '.taskDefinition.executionRoleArn')
-          echo "Execution Role ARN: $execution_role_arn" >> $GITHUB_ENV
+          echo "execution_role_arn=$(echo "$task_details" | jq -r '.taskDefinition.executionRoleArn')"  >> $GITHUB_ENV
 
       - name: Load JSON content from GitHub Actions secret
         run: |
