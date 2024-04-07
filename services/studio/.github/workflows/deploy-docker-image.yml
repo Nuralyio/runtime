@@ -47,7 +47,7 @@ jobs:
       - name: Deploy to ECS
         run: |
           # Get task definition associated with the service
-          task_arn=$(aws ecs describe-services --cluster $CLUSTER --services "$ECS_SERVICE_ARN" --query "services[0].taskDefinition" --output text)
+          task_arn=$(aws ecs describe-services --cluster gateway --services "$ECS_SERVICE_ARN" --query "services[0].taskDefinition" --output text)
           echo $task_arn 
           
           # Get task definition details
@@ -59,7 +59,7 @@ jobs:
           # Compare current and new image
           if [ "$current_image" = "$NEW_IMAGE" ]; then
               echo "Image is already up to date. Updating service..."
-              aws ecs update-service --cluster $CLUSTER --service "$ECS_SERVICE_ARN" --force-new-deployment
+              aws ecs update-service --cluster gateway --service "$ECS_SERVICE_ARN" --force-new-deployment
           else
               echo "Creating new revision with the new image and deploying..."
               # Update task definition with new image
@@ -67,7 +67,7 @@ jobs:
               # Register new task definition
               new_task_arn=$(aws ecs register-task-definition --cli-input-json "$new_task_definition" --query "taskDefinition.taskDefinitionArn" --output text)
               # Update service with new task definition
-              aws ecs update-service --cluster $CLUSTER --service "$ECS_SERVICE_ARN" --task-definition "$new_task_arn" --force-new-deployment
+              aws ecs update-service --cluster gateway --service "$ECS_SERVICE_ARN" --task-definition "$new_task_arn" --force-new-deployment
           fi
         env:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
