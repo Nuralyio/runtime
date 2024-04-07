@@ -23,7 +23,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-        BRANCH_NAME: ${{ github.ref }}
+        BRANCH_NAME: ${{ github.ref.replace('refs/heads/', '') }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME
