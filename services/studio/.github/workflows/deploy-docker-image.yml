@@ -27,25 +27,19 @@ jobs:
         run: |
           echo "task_arn=$(aws ecs describe-services --cluster gateway --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)"  >> $GITHUB_ENV 
 
-      - name: Get task definition details
+      - name: Get task definition details and  execution role ARN
         run: |
           task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")
           echo "task_details=$task_details" >> $GITHUB_ENV
-      - name: Get execution role ARN
-        run: |
           echo "execution_role_arn=$(echo "$task_details" | jq -r '.taskDefinition.executionRoleArn')"  >> $GITHUB_ENV
-
-      - name: Load JSON content from GitHub Actions secret
-        run: |
           echo "$TASK_JSON" > task_definition.json
-        env:
-          TASK_JSON: ${{ vars.TASK_JSON }}
-      - name: Modify task definition JSON with new image
-        run: |
           branch_name=$(echo "${GITHUB_REF#refs/heads/}")
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
           sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/frontend:main",/g' task_definition.json          
           cat task_definition.json
+        env:
+          TASK_JSON: ${{ vars.TASK_JSON }}
+          
       - name: Register new task definition
         run: |
           # Register the new task definition
