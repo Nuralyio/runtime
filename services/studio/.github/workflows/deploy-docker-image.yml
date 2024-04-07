@@ -37,7 +37,7 @@ jobs:
 
       - name: Load JSON content from GitHub Actions secret
         run: |
-          echo "$TASK_DEFINITION" > task_definition.json
+          echo "$TASK_JSON" > task_definition.json
       - name: Modify task definition JSON with new image
         run: |
           branch_name=$(echo "${GITHUB_REF#refs/heads/}")
