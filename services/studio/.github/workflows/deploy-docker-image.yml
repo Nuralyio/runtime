@@ -21,30 +21,30 @@ jobs:
       - name: Get ECS Service ARN
         id: get_service_arn
         run: |
-          echo "::set-env name=ECS_SERVICE_ARN::$(aws ecs list-services --cluster gateway --query 'serviceArns[?contains(@, "frontend")]' --output text)"
+          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query 'serviceArns[?contains(@, "frontend")]' --output text)" >> $GITHUB_ENV
 
       - name: Extract Cluster and Account ID
         id: extract_ids
         run: |
-          echo "::set-env name=CLUSTER::${{ secrets.CLUSTER }}"
-          echo "::set-env name=ACCOUNT_ID::${{ secrets.AWS_ACCOUNT_ID }}"
+          echo "CLUSTER=${{ secrets.CLUSTER }}" >> $GITHUB_ENV
+          echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
 
       - name: Get branch name
         id: branch_name
         run: |
           BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
-          echo "::set-output name=BRANCH_NAME::$BRANCH_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Create new image name
         id: new_image
         run: |
           BRANCH_NAME=${{ steps.branch_name.outputs.BRANCH_NAME }}
-          echo "::set-env name=NEW_IMAGE::$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION }}/frontend:$BRANCH_NAME"
+          echo "NEW_IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}/frontend:$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Deploy to ECS
         run: |
           # Get task definition associated with the service
-          task_arn=$(aws ecs describe-services --cluster gateway --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)
+          task_arn=$(aws ecs describe-services --cluster $CLUSTER --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)
           echo $task_arn 
           
           # Get task definition details
@@ -56,7 +56,7 @@ jobs:
           # Compare current and new image
           if [ "$current_image" = "$NEW_IMAGE" ]; then
               echo "Image is already up to date. Updating service..."
-              aws ecs update-service --cluster gateway --service "${ECS_SERVICE_ARN}" --force-new-deployment
+              aws ecs update-service --cluster $CLUSTER --service "${ECS_SERVICE_ARN}" --force-new-deployment
           else
               echo "Creating new revision with the new image and deploying..."
               # Update task definition with new image
@@ -64,7 +64,7 @@ jobs:
               # Register new task definition
               new_task_arn=$(aws ecs register-task-definition --cli-input-json "$new_task_definition" --query "taskDefinition.taskDefinitionArn" --output text)
               # Update service with new task definition
-              aws ecs update-service --cluster gateway --service "${ECS_SERVICE_ARN}" --task-definition "$new_task_arn" --force-new-deployment
+              aws ecs update-service --cluster $CLUSTER --service "${ECS_SERVICE_ARN}" --task-definition "$new_task_arn" --force-new-deployment
           fi
         env:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
