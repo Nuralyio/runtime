@@ -44,6 +44,7 @@ jobs:
       - name: Deploy to ECS
         run: |
           # Get task definition associated with the service
+          echo ECS_SERVICE_ARN $ECS_SERVICE_ARN
           task_arn=$(aws ecs describe-services --cluster $CLUSTER --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)
           echo $task_arn 
           
