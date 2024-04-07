@@ -21,7 +21,7 @@ jobs:
       - name: Get ECS service ARN
         run: |
           echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query "serviceArns[?contains(@, 'frontend')]" --output text)" >> $GITHUB_ENV
-
+          echo $ECS_SERVICE_ARN
 
       - name: Get existing task definition ARN
         run: |
