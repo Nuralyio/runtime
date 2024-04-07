@@ -26,6 +26,7 @@ jobs:
         run: |
           BRANCH_NAME=$(basename "${GITHUB_REF}")
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+          echo ${BRANCH_NAME}
 
       - name: Build, tag, and push the image to Amazon ECR
         env:
