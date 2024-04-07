@@ -45,5 +45,5 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_REF .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_REF
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME
