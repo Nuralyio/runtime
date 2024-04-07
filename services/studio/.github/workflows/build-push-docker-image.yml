@@ -35,6 +35,8 @@ jobs:
     - name: Set up branch name
       run: |
         BRANCH_NAME=$(basename "${GITHUB_REF}")
+        # Replace any invalid characters in the branch name with dashes
+        BRANCH_NAME=$(echo "$BRANCH_NAME" | tr -c '[:alnum:]-.' '-')
         echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
