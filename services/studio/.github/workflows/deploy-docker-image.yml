@@ -30,7 +30,6 @@ jobs:
       - name: Get task definition details and  execution role ARN
         run: |
           task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")
-          echo "task_details=$task_details" >> $GITHUB_ENV
           echo "execution_role_arn=$(echo "$task_details" | jq -r '.taskDefinition.executionRoleArn')"  >> $GITHUB_ENV
           echo "$TASK_JSON" > task_definition.json
           branch_name=$(echo "${GITHUB_REF#refs/heads/}")
