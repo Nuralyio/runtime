@@ -43,7 +43,8 @@ jobs:
         run: |
           branch_name=$(echo "${GITHUB_REF#refs/heads/}")
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
-          sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/frontend:main",/g' task_definition.json          cat task_definition.json
+          sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/frontend:main",/g' task_definition.json          
+          cat task_definition.json
       - name: Register new task definition
         run: |
           # Register the new task definition
