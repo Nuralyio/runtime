@@ -34,6 +34,8 @@ jobs:
         run: |
           BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
           echo "::set-output name=BRANCH_NAME::$BRANCH_NAME"
+          echo $CLUSTER
+          echo $ECS_SERVICE_ARN
 
       - name: Create new image name
         id: new_image
@@ -45,7 +47,8 @@ jobs:
         run: |
           # Get task definition associated with the service
           task_arn=$(aws ecs describe-services --cluster $CLUSTER --services "$ECS_SERVICE_ARN" --query "services[0].taskDefinition" --output text)
-
+          echo $task_arn 
+          
           # Get task definition details
           task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")
 
