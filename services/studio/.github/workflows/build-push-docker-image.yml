@@ -32,7 +32,10 @@ jobs:
     - name: Get timestamp
       id: get-timestamp
       run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
-      
+    - name: Set up branch name
+      run: |
+        BRANCH_NAME=$(basename "${GITHUB_REF}")
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
@@ -40,5 +43,5 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_REF .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_REF
