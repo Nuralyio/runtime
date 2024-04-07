@@ -29,8 +29,8 @@ jobs:
 
       - name: Get task definition details
         run: |
-          echo "task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")"  >> $GITHUB_ENV
-
+          task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")
+          echo "task_details=$task_details" >> $GITHUB_ENV
       - name: Get execution role ARN
         run: |
           echo "execution_role_arn=$(echo "$task_details" | jq -r '.taskDefinition.executionRoleArn')"  >> $GITHUB_ENV
