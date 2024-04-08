@@ -20,9 +20,9 @@ jobs:
 
       - name: Get ECS service ARN and  task definition ARN
         run: |
-          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster "$CLUSTER_NAME" --query "serviceArns[?contains(@, 'frontend')]" --output text)" >> $GITHUB_ENV
+          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster gateway --query "serviceArns[?contains(@, 'frontend')]" --output text)" >> $GITHUB_ENV
           echo ECS_SERVICE_ARN $ECS_SERVICE_ARN
-          echo "task_arn=$(aws ecs describe-services --cluster "$CLUSTER_NAME" --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)"  >> $GITHUB_ENV 
+          echo "task_arn=$(aws ecs describe-services --cluster gateway --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)"  >> $GITHUB_ENV 
         env:
             CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
       - name: Get task definition details and execution role ARN
