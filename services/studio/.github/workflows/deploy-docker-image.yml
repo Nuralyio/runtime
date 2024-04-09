@@ -37,11 +37,12 @@ jobs:
           echo "$TASK_JSON" > task_definition.json
           branch_name=$(echo "${{ github.ref }}")
           echo "branch_name=$branch_name" >> $GITHUB_ENV
-          sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/frontend:'"${GITHUB_REF##*/}"'",/g' task_definition.json          
+          sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/"${SERVICE}":'"${GITHUB_REF##*/}"'",/g' task_definition.json          
           cat task_definition.json
         env:
           TASK_JSON: ${{ vars.TASK_JSON }}
           CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
+          SERVICE: ${{ vars.SERVICE }}
           
       - name: Register new task definition
         run: |
