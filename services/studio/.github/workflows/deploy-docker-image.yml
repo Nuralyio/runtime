@@ -54,7 +54,8 @@ jobs:
 
           # Update the ECS service with the new task definition
           echo "Updating service with new task definition..."
-          aws ecs update-service --cluster gateway --service "${ECS_SERVICE_ARN}" --task-definition "$new_task_arn" --force-new-deployment
-
+          aws ecs update-service --cluster "${CLUSTER_NAME}" --service "${ECS_SERVICE_ARN}" --task-definition "$new_task_arn" --force-new-deployment
+        
         env:
           NEW_IMAGE: ${{ github.event.head_commit.id }}
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
