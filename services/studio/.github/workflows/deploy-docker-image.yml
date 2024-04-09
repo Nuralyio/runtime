@@ -24,6 +24,7 @@ jobs:
           echo ECS_SERVICE_ARN $ECS_SERVICE_ARN
         env:
           CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
+          SERVICE: ${{ vars.SERVICE }}
 
       - name: Get existing task definition ARN
         run: |
