@@ -20,7 +20,7 @@ jobs:
 
       - name: Get ECS service ARN
         run: |
-          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster ${CLUSTER_NAME} --query "serviceArns[?contains(@, ''"${SERVICE}"'')]" --output text)" >> $GITHUB_ENV
+          echo "ECS_SERVICE_ARN=$(aws ecs list-services --cluster ${CLUSTER_NAME} --query "serviceArns[?contains(@, '${SERVICE}')]" --output text)" >> $GITHUB_ENV
           echo ECS_SERVICE_ARN $ECS_SERVICE_ARN
         env:
           CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
