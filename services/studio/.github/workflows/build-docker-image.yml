@@ -13,14 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set up branch name
-      run: |
-        BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
-        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME .
+        docker build -t $ECR_REPOSITORY .
