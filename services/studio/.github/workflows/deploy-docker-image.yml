@@ -25,8 +25,9 @@ jobs:
 
       - name: Get existing task definition ARN
         run: |
-          echo "task_arn=$(aws ecs describe-services --cluster gateway --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)"  >> $GITHUB_ENV 
-
+          echo "task_arn=$(aws ecs describe-services --cluster "${CLUSTER_NAME}" --services "${ECS_SERVICE_ARN}" --query "services[0].taskDefinition" --output text)"  >> $GITHUB_ENV 
+        env:
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
       - name: Get task definition details and execution role ARN
         run: |
           task_details=$(aws ecs describe-task-definition --task-definition "$task_arn")
@@ -38,6 +39,7 @@ jobs:
           cat task_definition.json
         env:
           TASK_JSON: ${{ vars.TASK_JSON }}
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
           
       - name: Register new task definition
         run: |
