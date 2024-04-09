@@ -37,7 +37,7 @@ jobs:
           echo "$TASK_JSON" > task_definition.json
           branch_name=$(echo "${{ github.ref }}")
           echo "branch_name=$branch_name" >> $GITHUB_ENV
-          sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/"${SERVICE}":'"${GITHUB_REF##*/}"'",/g' task_definition.json          
+          sed -i 's/"image": "NEW_IMAGE",/"image": "058264075488.dkr.ecr.eu-central-1.amazonaws.com\/'"${SERVICE}"':'"${GITHUB_REF##*/}"'",/g' task_definition.json          
           cat task_definition.json
         env:
           TASK_JSON: ${{ vars.TASK_JSON }}
@@ -55,7 +55,7 @@ jobs:
 
           # Update the ECS service with the new task definition
           echo "Updating service with new task definition..."
-          aws ecs update-service --cluster "${CLUSTER_NAME}" --service '"${ECS_SERVICE_ARN}"' --task-definition "$new_task_arn" --force-new-deployment
+          aws ecs update-service --cluster "${CLUSTER_NAME}" --service "${ECS_SERVICE_ARN}" --task-definition "$new_task_arn" --force-new-deployment
         
         env:
           NEW_IMAGE: ${{ github.event.head_commit.id }}
