@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Set up branch name
+      run: |
+        BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
