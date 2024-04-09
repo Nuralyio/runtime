@@ -44,6 +44,7 @@ jobs:
           TASK_JSON: ${{ vars.TASK_JSON }}
           CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
           SERVICE: ${{ vars.SERVICE }}
+          ACCOUNT_ID : ${{ vars.SERVICE }}
           
       - name: Register new task definition
         run: |
