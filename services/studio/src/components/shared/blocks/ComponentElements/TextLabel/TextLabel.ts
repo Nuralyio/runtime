@@ -1,7 +1,7 @@
 import { type ComponentElement } from "$store/component/interface";
 import { $componentWithChildrens } from "$store/component/sotre";
 import { $currentPageViewPort } from "$store/page/store";
-import {  } from "core/engine";
+import { executeEventHandler } from "core/engine";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -50,6 +50,7 @@ export class TextLabelBlock extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    console.log('componentcomponent',this.component)
     document.body.addEventListener("click", this.handleBodyClick);
     $currentPageViewPort.subscribe((viewPort) => {
       this.currentPageViewPort = viewPort;
@@ -89,6 +90,7 @@ export class TextLabelBlock extends LitElement {
 
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
+
       if (propName === "component" || propName === "item") {
         this.updateValue();
         this.updateValues();
@@ -97,6 +99,7 @@ export class TextLabelBlock extends LitElement {
   }
 
   updateValue() {
+    console.log('--',this.component)
     let messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = function (event) {
       if (event.data.result) {
@@ -138,7 +141,11 @@ export class TextLabelBlock extends LitElement {
       <label
         contentEditable="${this.isEditable}"
         style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
-        
+        @click=${(e) => {
+        if (this.component.event.onClick) {
+          executeEventHandler(this.component, "event", "onClick");
+        }
+      }}
         @dblclick=${(e) => {
             e.preventDefault();
 

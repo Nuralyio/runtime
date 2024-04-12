@@ -14,11 +14,6 @@ const isServer = typeof window === "undefined";
 if (!isServer) {
   $componentWithChildrens.subscribe((components: ComponentElement[]) => {
     _components = components;
-    /*console.log(esprima);
-    const parsed = esprima.parse("eval('const answer = 42')");
-    console.log("aaaaa", parsed);
-    const generated = escodegen.generate(parsed);
-    console.log(generated);*/
     components.forEach((component: ComponentElement) => {
       const { styleHandlers = {}, style = {}, attributesHandlers = {} } = component;
       Object.keys(styleHandlers).forEach((smartAttributeKey) => {

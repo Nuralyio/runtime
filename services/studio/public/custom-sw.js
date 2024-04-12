@@ -45,10 +45,10 @@ self['FetchData'] = (provider, table, mapper) => {
     self["Current"] = component;
 
     self['SetValue'] = function (component, value, valaa) {
-        if (!updatedAttriutes[component.uuid]) {
-            updatedAttriutes[component.uuid] = {}
+        if (!updatedParameters[component.uuid]) {
+            updatedParameters[component.uuid] = {}
         }
-        updatedAttriutes[component.uuid] = { value: value };
+        updatedParameters[component.uuid] = { value: value };
         return valaa;
     }
 
@@ -69,6 +69,7 @@ self['FetchData'] = (provider, table, mapper) => {
         self[component.name] = component;
     });
     const updatedAttriutes = {};
+    const updatedParameters = {};
 
     switch (command) {
         case "executeFunction":
@@ -78,7 +79,8 @@ self['FetchData'] = (provider, table, mapper) => {
 
                 event.ports[0].postMessage({
                     result: executeCode(value),
-                    updatedAttriutes
+                    updatedAttriutes,
+                    updatedParameters
                 });
             } catch (e) {
                 event.ports[0].postMessage({
@@ -90,7 +92,8 @@ self['FetchData'] = (provider, table, mapper) => {
         case "executeValue":
             event.ports[0].postMessage({
                 result: executeCode(value ),
-                updatedAttriutes
+                updatedAttriutes,
+                updatedParameters
             });
             break;
     }
