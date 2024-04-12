@@ -1,6 +1,7 @@
 import { LitElement, html, css, type PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
+import "../../../../../../../components/shared/blocks/CodeEditor/CodeEditor";
 
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {
@@ -17,7 +18,8 @@ export class SmartAttributeCodeeditor extends LitElement {
 
   @property({ type: Object })
   containerStyle: any = {
-    width: "500px",
+    width: "700px",
+    marginLeft : '-400px',
     height: "250px",
     border: "solid 1px gray",
   };
@@ -63,6 +65,7 @@ export class SmartAttributeCodeeditor extends LitElement {
     return html`
       <div style=${styleMap(this.containerStyle)}>
         <code-editor
+        
           theme="vs"
           @change=${(event: CustomEvent) => {
             const {

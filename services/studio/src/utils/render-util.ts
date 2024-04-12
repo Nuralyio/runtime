@@ -37,7 +37,7 @@ export function renderComponent(components: ComponentElement[] , item? : any, is
         case ComponentType.TextInput:
           return html` <text-input-block .item =${{...item}} .component=${{ ...component }}></text-input-block>`;
         case ComponentType.TextLabel:
-          return html` <text-label-block .item =${{...item}}  .component=${{ ...component }}></text-label-block>`;
+          return html` <text-label-block .item =${{...item}}  .component=${component}></text-label-block>`;
         case ComponentType.Button:
           return html`            <button-block  .item =${{...item}}  .component=${{ ...component }}></button-block>
 `;

@@ -45,3 +45,24 @@ export async function loadPermission(id: string, resource_id:string){
         }
     }
 }
+
+
+export async function getApplications(headers: any,){
+    try {
+        const response = await fetch(APIS_URL.getApplications(), {
+            headers: {
+               ...headers,
+            },
+        });
+        return {
+            status: "OK",
+            data: await response.json()
+        }
+
+    } catch (error) {
+        return {
+            status: "ERROR",
+            error
+        }
+    }
+}

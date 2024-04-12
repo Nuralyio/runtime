@@ -17,10 +17,10 @@ export default defineConfig({
   vite: {
    build:{
     assetsInlineLimit:0,
+    
    },
    ssr:{
-    noExternal:[
-    ]
+    noExternal:['monaco-editor']
    }
   },
 });
