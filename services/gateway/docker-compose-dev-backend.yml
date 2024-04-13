@@ -7,7 +7,7 @@ services:
     ports:
       - "6379:6379"
   nuraly_frontend:
-      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/frontend
+      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/frontend:main
       ports:
         - "${ENGINE_PORT:-4321}:4321"
       environment:
@@ -45,7 +45,7 @@ services:
       DOMAIN :  ${HOST_DOMAIN:-localhost} 
       KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
     volumes:
-      - ./Nginx/nginx-local.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./Nginx/nginx-backend.conf:/usr/local/openresty/nginx/conf/nginx.conf
 
     restart: unless-stopped
     ports:

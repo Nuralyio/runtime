@@ -3,6 +3,7 @@ ARG DOMAIN
 RUN echo "$DOMAIN"
 
 COPY ./config /usr/local/openresty/nginx/conf/config
+COPY ./locations /usr/local/openresty/nginx/conf/locations
 COPY ./nginx-local.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY  ./replace-domain.sh  .
 RUN  ./replace-domain.sh  /usr/local/openresty/nginx/conf/nginx.conf localhost "${DOMAIN}"
