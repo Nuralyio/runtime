@@ -1,0 +1,71 @@
+version: '3.4'
+
+services:
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  nuraly_services:
+      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/services
+      ports:
+        - "${SERVICES_PORT:-8081}:8081"
+      environment:
+        DATABASE_URL :  ${SERVICES_DATABASE_URL:-postgresql://postgres:postgres@ec2-35-158-240-11.eu-central-1.compute.amazonaws.com/nuraly-dev-test} 
+        KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
+        KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
+        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-kXG0kGEFlSeOwB7fGs1IELOoKGbEFty3} 
+      depends_on:
+            - keycloak
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+    
+  nuraly_engine:
+      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/engine
+      ports:
+        - "${ENGINE_PORT:-3000}:3000"
+      environment:
+          NURALY_SERVICES_HOST : "nginx"
+          NURALY_ENGINE_HOST : "nuraly_engine:3000"
+
+  nginx:
+    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/gateway
+    environment:
+      KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
+      KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
+      KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
+      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-kXG0kGEFlSeOwB7fGs1IELOoKGbEFty3} 
+      KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
+      DOMAIN :  ${HOST_DOMAIN:-localhost} 
+      KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+    volumes:
+      - ./Nginx/nginx-backend.conf:/usr/local/openresty/nginx/conf/nginx.conf
+
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+volumes:
+#  infinispan_data:
+#  postgres-data:
+  pgadmin-data:
+#  keycloak-db-data:
+#  redis-data:
+
+
+  
+
