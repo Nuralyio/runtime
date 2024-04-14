@@ -2,7 +2,7 @@ import { $applications } from '$store/apps';
 import { deleteApplicationAction, loadOrRefreshApplications } from '$store/handler';
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import "@hybridui/dropdown";	
+import "@hybridui/dropdown";
 import './ApplicationAdd';
 import './ApplicationDelete';
 import { showCreateApplicationModalAction } from '$store/app.action';
@@ -43,14 +43,16 @@ export class ApplicationList extends LitElement {
 
 	options = [{
 		label: "Open",
-		handler(application) { console.log(application) },
+		handler(application) {
+		}
+		,
 	},];
 
 	generateOption(application: any) {
 		return [{
 			label: "Open",
 			handler: () => {
-				console.log(application);
+
 				location.href = "/app/studio/" + application.uuid;
 			}
 		},
@@ -58,7 +60,7 @@ export class ApplicationList extends LitElement {
 			label: "Preview",
 			icon: "plus",
 			handler: () => {
-				console.log(application);
+
 				location.href = "/app/view/" + application.uuid;
 			}
 		},
@@ -101,9 +103,9 @@ export class ApplicationList extends LitElement {
       >
        
 
-    	   <div class="card" slot="label" @click=${()=>{
-    	   	location.href = "/app/studio/" + application.uuid;
-    	   }}>
+    	   <div class="card" slot="label" @click=${() => {
+				location.href = "/app/studio/" + application.uuid;
+			}}>
               <h2 style="margin:0"><a  style="color: white; text-decoration: none" href=${"/app/studio/" + application.uuid}>${application.name} </a></h2>
            <p class="">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
  

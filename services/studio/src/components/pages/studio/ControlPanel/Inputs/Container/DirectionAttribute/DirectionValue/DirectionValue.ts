@@ -43,7 +43,7 @@ export class ParametersContainerDirectionValueHandler extends LitElement {
     });
   }
   initValues() {
-    console.log(this.component)
+    
     this.label = this.component.input.direction ?? "";
     this.requestUpdate();
   }

@@ -29,7 +29,7 @@ export async function loadApplication(headers: any, id: string) {
 }
 
 export async function loadPermission(id: string, resource_id:string){
-    console.log(APIS_URL.getApplicationPermission(id,resource_id))
+    
     try {
         const response = await fetch(APIS_URL.getApplicationPermission(id,resource_id), {
         });

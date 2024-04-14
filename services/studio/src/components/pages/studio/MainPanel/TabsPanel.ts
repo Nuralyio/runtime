@@ -88,7 +88,7 @@ export class TabsPanel extends LitElement {
 					//this.activeTab = tabindex;
 					this.requestUpdate();
 				}
-				console.log(tabindex, "--");
+				
 			}
 			this.editableTabs = [...this.editableTabs];
 
@@ -104,7 +104,7 @@ export class TabsPanel extends LitElement {
          <hy-tabs
   		.activeTab=${this.activeTab}
   		@removeTab=${(e: CustomEvent) => {
-					console.log(e.detail.index);
+					
 					closeTab(this.editableTabs[e.detail.index])
 					//this.editableTabs = this.editableTabs.filter((tab, index) => index !== e.detail.index);
 				}}

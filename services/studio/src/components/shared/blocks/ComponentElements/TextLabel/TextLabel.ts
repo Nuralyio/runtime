@@ -50,7 +50,7 @@ export class TextLabelBlock extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    console.log('componentcomponent',this.component)
+    
     document.body.addEventListener("click", this.handleBodyClick);
     $currentPageViewPort.subscribe((viewPort) => {
       this.currentPageViewPort = viewPort;
@@ -99,7 +99,7 @@ export class TextLabelBlock extends LitElement {
   }
 
   updateValue() {
-    console.log('--',this.component)
+    
     let messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = function (event) {
       if (event.data.result) {

@@ -11,7 +11,7 @@ export function loadProviders(){
 
     .then((response) => response.json())
     .then((data) => {
-      console.log("Success:", data);
+      
       $providers.set(data.rsesult);
     })
 

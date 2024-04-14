@@ -5,7 +5,7 @@ import NotFount from '../../../not-found.astro';
 import { $resetPageStore } from "$store/page/store";
 // here we will handle the routing
 const { title, id, urls = "" } = Astro.params;
-console.log('id',id)
+
 let request = urls?.split("?") ;
 let search = "";
 let contextParam = "";

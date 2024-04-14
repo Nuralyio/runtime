@@ -69,7 +69,7 @@ import "@hybridui/modal";
       $applicationPermission.subscribe((permissions: any) => {
         if (Array.isArray(permissions)) {
           this.permissions = permissions;
-          console.log("permissions", permissions)
+          
           const userIds = new Set(permissions.filter((p: any) => p.user_id).map((p: any) => p.user_id));
           const usersIdsArray = Array.from(userIds);
   
@@ -131,7 +131,7 @@ import "@hybridui/modal";
               user_id: permission.user_id
             })
             }).then((res) => res.json()).then((res) => {
-                console.log(res)
+                
                 this.loadPermissions(this.currentApplication.uuid);
 
             }).catch((err) =>{
@@ -167,7 +167,7 @@ import "@hybridui/modal";
         }).then(res => res.json())
             .then((res) => {
             this.ownerShip = res.im_owner;
-            console.log(this.ownerShip)
+            
             })
         }
     renderAddPermission() {
@@ -259,9 +259,9 @@ import "@hybridui/modal";
             this.userIsNotFound = true;
             this.requestUpdate();   
         }else{
-            console.log(result)
+            
             const {user } = result;
-            console.log(this.currentSharePermission)
+            
 
             addPermission({
                 resource_id: $currentApplication.get().uuid,
