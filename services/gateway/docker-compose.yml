@@ -1,114 +1,35 @@
 version: '3.4'
 
 services:
-
-  postgres:
-    extends:
-      file: docker-compose-common.yml
-      service: postgres
-
   
   pgadmin:
     extends:
       file: docker-compose-common.yml
       service: pgadmin
 
- 
-
-  keycloak_pg:
-      extends:
-        file: docker-compose-common.yml
-        service: keycloak_pg
-
   redis:
     extends:
       file: docker-compose-common.yml
       service: redis
 
-  memcached: 
-    extends:
-      file: docker-compose-common.yml
-      service: memcached
-
-  nuraly_engine:
-      image: nuraly/engine
-      ports:
-        - "${ENGINE_PORT:-3000}:3000"
-      environment:
-          NURALY_SERVICES_HOST : "nginx"
-          NURALY_ENGINE_HOST : "nuraly_engine:3000"
-
-  nuraly_services:
-      image: nuraly/services
-      ports:
-        - "${SERVICES_PORT:-8081}:8081"
-
-      environment:
-        DATABASE_URL :  ${SERVICES_DATABASE_URL:-postgresql://postgres:postgres@postgres/providers} 
-        KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
-        KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
-        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
-      depends_on:
-        - postgres
-        - keycloak
-
-  nuraly_frontend:
-      image: nuraly/frontend
-      ports:
-        - "${ENGINE_PORT:-4321}:4321"
-      environment:
-          NURALY_SERVICES_HOST : "nginx"
-          NURALY_ENGINE_HOST : "nuraly_engine:3000"
   nginx:
-    image: nuraly/nginx
+    build:
+      context:  ./Nginx
+      dockerfile: Dockerfile
     environment:
       KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
-      KEYCLOAK_REALM : ${KEYCLOAK_REALM:-dev} 
-      KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-dev} 
-      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xZnlKXQNK5bb77O4dO5vbzgi2wgNc7Ok} 
+      KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
+      KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
+      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
       DOMAIN :  ${HOST_DOMAIN:-localhost} 
-      KC_HOSTNAME: ${KC_HOSTNAME:-localhost} 
-
-    restart: unless-stopped
+      KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+    volumes:
+      - ./Nginx/nginx-fully.conf:/usr/local/openresty/nginx/conf/nginx.conf
     ports:
       - 80:80
-      - 443:443
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  learn:
-    image: nuraly/learn
-
-  keycloak:
-      image: nuraly/keycloack
-      environment:
-        KC_DB: keycloakDB
-        KC_DB_URL: 'jdbc:postgresql://keycloak_pg/keycloakDB'
-        KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-keycloak} 
-        KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-changeMe}
-        KC_DB_SCHEMA: public
-        KC_HOSTNAME_STRICT_HTTPS: ${KC_HOSTNAME_STRICT_HTTPS:-false}  
-        #KC_HTTP_ENABLED: true
-        #KC_HOSTNAME_URL: https://nuraly.io
-        KC_HOSTNAME_ADMIN_URL: https://nuraly.io/auth
-
-        KEYCLOAK_USER: ${KEYCLOAK_USERNAME:-admin} 
-        KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD:-user} 
-        KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USERNAME:-admin} 
-        KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin} 
-        KC_HTTP_RELATIVE_PATH: "/auth"
-        KC_HOSTNAME: ${KC_HOSTNAME:-localhost} 
-      ports:
-        - 8080:8080
-      depends_on:
-        - keycloak_pg
-      volumes: 
-        - infinispan_data:/opt/keycloak/cache
-
+    depends_on:
+      - redis
+  
 volumes:
-  postgres-data:
-  pgadmin-data:
-  keycloak-db-data:
-  redis-data:
-  infinispan_data:
+ pgadmin-data:

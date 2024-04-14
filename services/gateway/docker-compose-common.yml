@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       PGDATA: /data/postgres
     volumes:
-       - postgres-data:/data/postgres
+      - postgres-data:/data/postgres
    
     restart: unless-stopped
     ports:
@@ -23,38 +23,24 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-       - pgadmin-data:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
     
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    # extra_hosts:
+    # - "host.docker.internal:host-gateway"
 
-  keycloak_pg:
-      image: postgres:13.7
-      volumes:
-        - keycloak-db-data:/var/lib/postgresql/data
-      environment:
-        POSTGRES_DB: keycloakDB
-        POSTGRES_USER: ${KEYCLOAK_DB_USERNAME:-keycloak} 
-        POSTGRES_PASSWORD:  ${KEYCLOAK_DB_PASSWORD:-changeMe}
   redis:
     image: "redis:alpine"
-    volumes:
-        - ./redis/data:/data
-        - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-  memcached:  # Add the Memcached service definition
-    image: memcached:latest
     ports:
-      - "11211:11211"
-    restart: unless-stopped
+      - "6379:6379"
+    #volumes:
+    #    - ./redis/data:/data
+    #    - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server"]
     
   
         
 volumes:
-  postgres-data:
-  pgadmin-data:
-  keycloak-db-data:
-  redis-data:
+ pgadmin-data:
