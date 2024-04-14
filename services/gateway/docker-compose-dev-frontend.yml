@@ -14,9 +14,7 @@ services:
         DATABASE_URL :  ${SERVICES_DATABASE_URL:-postgresql://postgres:postgres@ec2-35-158-240-11.eu-central-1.compute.amazonaws.com/nuraly-dev-test} 
         KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
         KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
-        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-kXG0kGEFlSeOwB7fGs1IELOoKGbEFty3} 
-      depends_on:
-            - keycloak
+        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
 
   pgadmin:
     image: dpage/pgadmin4
@@ -44,12 +42,12 @@ services:
       KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
       KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
       KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
-      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-kXG0kGEFlSeOwB7fGs1IELOoKGbEFty3} 
+      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
       DOMAIN :  ${HOST_DOMAIN:-localhost} 
       KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
     volumes:
-      - ./Nginx/nginx-backend.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./Nginx/nginx-frontend.conf:/usr/local/openresty/nginx/conf/nginx.conf
 
     restart: unless-stopped
     ports:
