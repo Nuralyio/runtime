@@ -95,9 +95,7 @@ export class VerticalContainer extends LitElement {
   onContextMenu(e) {
     e.preventDefault();
     e.stopPropagation();
-    //setCurrentComponentIdAction(this.component?.uuid);
-    //this.showQuickAction = true;
-    //console.log(this.inputRef.value?.getBoundingClientRect().top);
+    //
     e.ComponentTop = this.containerRef.value?.getBoundingClientRect().top;
     e.ComponentLeft = this.containerRef.value?.getBoundingClientRect().left;
     setContextMenuEvent(e);

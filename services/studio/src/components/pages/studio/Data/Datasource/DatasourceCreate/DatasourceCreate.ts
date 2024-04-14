@@ -208,7 +208,7 @@ ${this.providerIsValide ? html`
 				this.providerIsValide = false;
 				alert("Connection failed");
 			}
-			console.log(response);
+			
 		})
 	}
 
@@ -232,7 +232,7 @@ ${this.providerIsValide ? html`
 				loadProviders();
 				this.showCreateForm = false;
 			}
-			console.log(response);
+			
 		})
 
 	}

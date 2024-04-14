@@ -84,7 +84,7 @@ export class PageContent extends LitElement {
     });
     //generate code event listener ton keyboard event
     document.addEventListener('keydown', function (event) {
-      console.log(event.key);
+      
       // Handle arrow key presses
       switch (event.key) {
         case 'ArrowDown':

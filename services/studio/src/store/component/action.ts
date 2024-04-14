@@ -337,7 +337,7 @@ export function updateComponentParameters(
   updatedParameters: any
 ) {
   let componentToUpdate;
-  console.log('----updateComponentInput---- ');
+  
 
   $components.set([
     ...$components.get().map((component: ComponentElement) => {

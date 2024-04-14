@@ -30,7 +30,7 @@ export class TopbarEnvironmentSwitcher extends LitElement {
             label: "Production",
           },
         ]}
-        @change="${(e: any) => console.log(e.detail.value)}"
+        @change="${(e: any) => { }}"
         ><span slot="label">
           <hy-button icon="box" class="enviroenemnt-swithcer-initiator"
             >Environment (development)</hy-button

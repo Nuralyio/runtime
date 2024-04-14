@@ -69,7 +69,7 @@ export async function loadApplicationPermissionAction( id: string, resource_id:s
 
 
 export function setApplicationPermissionAction( permission: any){
-	console.log(permission)
+	
 	$applicationPermission.set(permission);
 }
 

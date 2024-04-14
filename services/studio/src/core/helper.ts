@@ -23,7 +23,7 @@ export function executeInServiceWorker(
     let messageChannel = new MessageChannel();
 
     messageChannel.port1.onmessage = function (event) {
-      console.log(event.data)
+      
       if (event.data.result) {
         if (attributeScope) {
           if (component[attributeScope][attributeName] !== event.data.result) {
@@ -44,8 +44,8 @@ export function executeInServiceWorker(
         Object.keys(event.data.updatedAttriutes).forEach(
           (componentId: string, e) => {
              // if (component.uuid === componentId) {
-              console.log(event.data.updatedAttriutes, componentId, e)
-                console.log(event.data.updatedAttriutes[componentId])
+              
+                
                 //if (component['attributes'][attributeName] !== event.data.updatedAttriutes[componentId][attributeName]) {
                  
                 updateComponentAttributes(componentId, {
@@ -62,7 +62,7 @@ export function executeInServiceWorker(
        if(event.data.updatedParameters){
         Object.keys(event.data.updatedParameters).forEach(
           (componentId: string) => {
-            console.log(componentId, component.uuid)
+            
              // if (component.uuid === componentId) {
                 updateComponentParameters(componentId, {
                   ...event.data.updatedParameters[componentId],

@@ -121,7 +121,7 @@ export class DataEntryAdd extends LitElement {
 	showCreateForm = true;
 
 	 async updated(changedProperties) {
-	 	console.log(this.columns)
+	 	
 	    if (changedProperties.has('columns') ) {
 	      await this.renderForm();
 	    }
@@ -236,7 +236,7 @@ ${this.providerIsValide ? html`
 				this.providerIsValide = false;
 				alert("Connection failed");
 			}
-			console.log(response);
+			
 		})
 	}
 
@@ -260,7 +260,7 @@ ${this.providerIsValide ? html`
 				loadProviders();
 				this.showCreateForm = false;
 			}
-			console.log(response);
+			
 		})
 
 	}

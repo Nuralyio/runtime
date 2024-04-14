@@ -29,7 +29,7 @@ export class TopbarUserInfo extends LitElement {
           label: "Logout",
         },
       ]}
-      @change="${(e: any) => console.log(e.detail.value)}"
+      @change="${(e: any) => { }}"
       ><span slot="label">
         <hy-button icon="user" class="user-info-initiator">Aymen</hy-button>
       </span></hy-dropdown

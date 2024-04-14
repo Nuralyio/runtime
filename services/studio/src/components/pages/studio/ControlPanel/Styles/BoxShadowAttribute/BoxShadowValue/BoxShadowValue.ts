@@ -59,7 +59,7 @@ export class AttributeBoxShadowValue extends LitElement {
 
 	boxShadow() {
 		const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
-		console.log(shadowBox)
+		
 		this.dispatchEvent(new CustomEvent("box-shadow-changed", {
 			detail: {
 				value: shadowBox

@@ -104,7 +104,7 @@ export class DatasourceExplorer extends LitElement {
 	}
 
 	override connectedCallback(): void {
-		console.log(this.detail)
+		
 		super.connectedCallback();
 		this.openProvider({ id: this.detail?.id });
 	}
@@ -221,7 +221,7 @@ ${this.editedRow.size > 0 ? html` <hy-button  style="" icon="cancel"
  	}
 
  		
- 	console.log(this.editedRow, this.tableColumns)
+ 	
                 }}
 	        ></table-viwer>
 

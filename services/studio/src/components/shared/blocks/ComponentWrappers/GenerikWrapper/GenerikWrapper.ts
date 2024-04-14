@@ -127,9 +127,6 @@ export class GenerikComponentWrapper extends LitElement {
     e.preventDefault();
     e.stopPropagation();
     setCurrentComponentIdAction(this.component?.uuid);
-    console.log(e)
-    //this.showQuickAction = true;
-    //console.log(this.inputRef.value?.getBoundingClientRect().top);
     e.ComponentTop = this.inputRef.value?.getBoundingClientRect().top;
     e.ComponentLeft = this.inputRef.value?.getBoundingClientRect().left;
     setContextMenuEvent(e);
