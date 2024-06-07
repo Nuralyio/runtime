@@ -1,47 +1,42 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @license
  * Copyright 2023 HybridUI Laabidi Aymen
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { library, dom } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons'
-library.add(fas);
-dom.watch(); 
+import {LitElement, html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
+import {library, dom} from '@fortawesome/fontawesome-svg-core';
+import {far} from '@fortawesome/free-regular-svg-icons';
+import {fas} from '@fortawesome/free-solid-svg-icons';
+library.add(fas, far);
+dom.watch();
 
-import styles from './icon.style.js';
+import {styles} from './icon.style';
+import {IconTypes, regularIconPack, solidIconPack} from './icon.types';
 
-/**
- * An Icon element.
- *
- * @attr name
- */
 @customElement('hy-icon')
 export class HyIconElement extends LitElement {
-  @property({ type: String })
+  @property({type: String})
   name!: string;
+  @property()
+  type = IconTypes.Solid;
 
-  static override  styles = styles;
+  static override readonly styles = styles;
   override render() {
     return html`
-         <svg class="svg-icon" style="fill: white;width: 14px;
-    height: 15px;"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 550 550"
-          >
-            <path d="${this.getIconPath()}"/>
-          </svg>
+      <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 550">
+        <path d="${this.getIconPath()}" />
+      </svg>
     `;
   }
   getIconPath() {
-    const iconDefinition = (library as any).definitions.fas[this.name]
+    const iconPack = this.type == IconTypes.Solid ? solidIconPack : regularIconPack;
+    const iconDefinition = (library as any).definitions[iconPack][this.name];
     return iconDefinition ? iconDefinition[4] : '';
   }
 }
-
-
 
 declare global {
   interface HTMLElementTagNameMap {

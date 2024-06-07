@@ -1,14 +1,11 @@
-import { css } from "lit";
+import {css} from 'lit';
+import {styleVariables} from './icon.variables';
 
-export default css`
-.svg-icon{
-	fill: white;
-	width: 20px;
-    height: 15px;
-}
- @media (prefers-color-scheme: dark) {
-		.svg-icon{
-			fill: black;
-		}
-	}
+const iconStyles = css`
+  .svg-icon {
+    fill: var(--hybrid-icon-color);
+    width: var(--hybrid-icon-width);
+    height: var(--hybrid-icon-height);
+  }
 `;
+export const styles = [iconStyles, styleVariables];
