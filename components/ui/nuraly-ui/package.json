@@ -34,6 +34,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@lit-labs/motion": "^1.0.3",
     "@lit-labs/react": "^1.1.1",
