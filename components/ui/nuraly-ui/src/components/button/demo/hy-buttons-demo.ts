@@ -11,53 +11,189 @@ import '../hy-button.component';
 export class ElButtonDemoElement extends LitElement {
   override render() {
     return html`
-      <hy-button>Default Button</hy-button>
-      <hy-button autofocus danger>Danger Button</hy-button>
-      <hy-button type="primary" autofocus danger>Danger Button</hy-button>
-      <hy-button type="dashed" danger>Danger Button</hy-button>
-      <hy-button type="link">Link Button</hy-button>
-      <hy-button type="link" disabled> disabled Link Button</hy-button>
-      <hy-button type="link" danger>Link Danger Button</hy-button>
-      <hy-button type="text" danger> Text Danger Button</hy-button>
-      <hy-button type="text" disabled> Text disabled Danger Button</hy-button>
-      <hy-button type="dashed">Dashed Button</hy-button>
-      <hy-button type="dashed" danger>Dashed Button</hy-button>
-      <hy-button type="dashed" disabled danger
-        >danger disabled Dashed Button</hy-button
-      >
-      <hy-button type="primary"><span>Primary Button</span></hy-button>
-      <hy-button type="primary" disabled
-        ><span>Primary Button Disabled</span></hy-button
-      >
-      <hy-button icon="bars" type="text">Text Button</hy-button>
-      <hy-button icon="user" type="link">Link Button</hy-button>
-      <hy-button icon="user" type="primary"></hy-button>
-      <hy-button icon="list" shape="circle" danger></hy-button>
-      <hy-button icon="user" shape="circle"></hy-button>
-      <hy-button type="text">😅</hy-button>
-      <hy-button type="primary" ?loading="${true}" icon="spinner"
-        ><span>loading</span></hy-button
-      >
-      <div style="width : 450px ; margin-top : 15px">
-        <hy-button type="primary" ?block="${true}"
-          ><span>Primary Button block</span></hy-button
-        >
-        <hy-button ?block="${true}"
-          ><span>Default Button block</span></hy-button
-        >
-        <hy-button ?block="${true}" icon="list"
-          ><span>Default Button block width icon</span></hy-button
-        >
+      <h1>Sizes</h1>
+      <br />
+      <hy-button> Default Button</hy-button>
+      <hy-button size="small">Small Button</hy-button>
+      <hy-button size="large">Large Button</hy-button>
+      <br /><br />
+      <hy-button .icon="${['search']}"> Default Button</hy-button>
+      <hy-button .icon="${['search']}" size="small">Small Button</hy-button>
+      <hy-button .icon="${['search']}" size="large">Large Button</hy-button>
 
-        <hy-button ?block="${true}" ?loading="${true}" icon="spinner"
-          ><span>Default Button block loaing</span></hy-button
-        >
-      </div>
+      <br /><br />
+      <hy-button .icon="${['search']}"></hy-button>
+      <hy-button .icon="${['search']}" size="small"></hy-button>
+      <hy-button .icon="${['search']}" size="large"></hy-button>
+      <br /><br />
 
-      <hy-button size="small">Small Default Button</hy-button>
-      <hy-button size="large">Large Default Button</hy-button>
-      <hy-button icon="search" type="dashed" size="large"></hy-button>
-      <hy-button icon="search" type="dashed" size="small"></hy-button>
+      <h1>Types</h1>
+      <br /><br />
+
+      <table>
+        <tbody>
+          <tr>
+            <td></td>
+            <td>Primary</td>
+            <td>Secondary</td>
+            <td>Ghost</td>
+            <td>Danger</td>
+            <td>Default</td>
+          </tr>
+          <tr>
+            <td>Default</td>
+            <td>
+              <hy-button type="primary"><span>Primary Button</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="secondary"><span>Secondary Button </span></hy-button>
+            </td>
+            <td>
+              <hy-button type="ghost"> <span>Ghost button</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="danger"><span>Danger Button </span></hy-button>
+            </td>
+            <td>
+              <hy-button><span>Default Button</span></hy-button>
+            </td>
+          </tr>
+          <tr>
+            <td>Dashed</td>
+            <td>
+              <hy-button type="primary" ?dashed=${true}><span>Primary Button text only</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="secondary" ?dashed=${true}><span>Secondary dashed</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="ghost" ?dashed=${true}><span>Ghost dashed</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="danger" ?dashed=${true}><span>Danger dashed</span></hy-button>
+            </td>
+            <td>
+              <hy-button ?dashed=${true}><span>Default dashed</span></hy-button>
+            </td>
+          </tr>
+          <tr>
+            <td>Loading</td>
+            <td>
+              <hy-button type="primary" loading><span>Primary Button loading</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="secondary" loading><span>Secondary button loading </span></hy-button>
+            </td>
+            <td>
+              <hy-button type="ghost" loading><span>Ghost button loading</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="danger" loading><span>Danger button loading</span></hy-button>
+            </td>
+            <td>
+              <hy-button loading><span>Default button loading</span></hy-button>
+            </td>
+          </tr>
+          <tr>
+            <td>Disabled</td>
+            <td>
+              <hy-button type="primary" disabled><span>Primary Button disabled</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="secondary" disabled><span>Secondary Button disabled</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="ghost" disabled> <span>Ghost button disabled</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="danger" disabled><span>Danger Button disabled</span></hy-button>
+            </td>
+            <td>
+              <hy-button disabled><span>Default Button disabled</span></hy-button>
+            </td>
+          </tr>
+          <tr>
+            <td>Icon with text default: icon left</td>
+            <td>
+              <hy-button type="primary" .icon="${['search']}"><span> Primary button icon+text</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="secondary" .icon="${['search']}"><span> Secondary button icon+text</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="ghost" .icon="${['search']}"><span> Ghost button icon+text</span></hy-button>
+            </td>
+            <td>
+              <hy-button type="danger" .icon="${['search']}"><span> Danger button icon+text</span></hy-button>
+            </td>
+            <td>
+              <hy-button .icon="${['search']}"><span> Default button icon+text</span></hy-button>
+            </td>
+          </tr>
+          <tr>
+            <td>Icon with text: icon right</td>
+            <td>
+              <hy-button type="primary" .icon="${['search']}" iconPosition="right"
+                ><span> Primary button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button type="secondary" .icon="${['search']}" iconPosition="right"
+                ><span> Secondary button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button type="ghost" .icon="${['search']}" iconPosition="right"
+                ><span> Ghost button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button type="danger" .icon="${['search']}" iconPosition="right"
+                ><span> Danger button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button .icon="${['search']}" iconPosition="right"><span> Default button icon+text</span></hy-button>
+            </td>
+          </tr>
+          <tr>
+            <td>Icon with text: icon both side</td>
+            <td>
+              <hy-button type="primary" .icon="${['search', 'bomb']}" iconPosition="right"
+                ><span> Primary button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button type="secondary" .icon="${['search', 'bomb']}" iconPosition="right"
+                ><span> Secondary button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button type="ghost" .icon="${['search', 'bomb']}" iconPosition="right"
+                ><span> Ghost button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button type="danger" .icon="${['search', 'bomb']}" iconPosition="right"
+                ><span> Danger button icon+text</span></hy-button
+              >
+            </td>
+            <td>
+              <hy-button .icon="${['search', 'bomb']}" iconPosition="right"
+                ><span> Default button icon+text</span></hy-button
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>Icon only</td>
+            <td><hy-button type="primary" .icon="${['search']}"></hy-button></td>
+            <td><hy-button type="secondary" .icon="${['search']}"></hy-button></td>
+            <td><hy-button type="ghost" .icon="${['search']}"></hy-button></td>
+            <td><hy-button type="danger" .icon="${['search']}"></hy-button></td>
+            <td><hy-button .icon="${['search']}"></hy-button></td>
+          </tr>
+        </tbody>
+      </table>
     `;
   }
 }
