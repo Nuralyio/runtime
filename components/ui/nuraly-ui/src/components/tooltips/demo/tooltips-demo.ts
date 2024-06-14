@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html} from 'lit';
+import {LitElement, css, html} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 
 import '../tooltips.component';
@@ -18,25 +18,97 @@ export class ElMeenuElement extends LitElement {
 
   protected override render() {
     return html`
-      <tooltip-element>
-        <br />
-        <br />
-        <br />
-        <br />
+      <h3>BOTTOM</h3>
+      <span>hover me</span>
+      <hy-tooltip>
+          <div> This is bottom and center (default) </div>
+      </div>
+      </hy-tooltip>
 
-        <button data-tooltip="This is a tooltip" data-tooltip-position="bottom">bottom</button>
-        <br />
-        <br />
-        <div>
-          <button data-tooltip="Another tooltip" data-tooltip-position="corner-right">corner-right</button>
-        </div>
-        <br />
-        <div>
-          <button data-tooltip="Another tooltip" data-tooltip-position="top">top</button>
-        </div>
-      </tooltip-element>
+      <br /><br /><br />
+      <p>hover me</p>
+      <hy-tooltip alignement=${'start'}>
+        <span>This is bottom and start</span>
+      </hy-tooltip>
+
+      <br /><br /><br />
+      <p>hover me</p>
+      <hy-tooltip alignement=${'end'}>
+        <span>This is bottom and end</span>
+      </hy-tooltip>
+
+      <br /><br /><br />
+      <h3>TOP</h3>
+
+      <p>hover me</p>
+      <hy-tooltip position=${'top'}>
+        <span>This is a description of the p in top and center</span>
+      </hy-tooltip>
+      <br /><br /><br />
+      <div>hover me</div>
+
+      <hy-tooltip position=${'top'} alignement=${'start'}>
+        <span>This is a description of the p in top and start </span>
+      </hy-tooltip>
+      <br /><br /><br />
+
+      <p>hover me</p>
+
+      <hy-tooltip position=${'top'} alignement=${'end'}>
+        <span>This is a description of the p in top and end</span>
+      </hy-tooltip>
+      <br /><br /><br />
+      <h3>RIGHT</h3>
+      <span>hover me</span>
+      <hy-tooltip position=${'right'}>
+        <span>This is a description of the p to the right and center</span>
+      </hy-tooltip>
+
+      <br /><br /><br />
+
+      <div>hover me</div>
+      <hy-tooltip position=${'right'} alignement=${'start'}>
+        <span>This is a description of the p to the right and start</span>
+      </hy-tooltip>
+
+      <br /><br /><br />
+      <span>hover me</span>
+      <hy-tooltip position=${'right'} alignement=${'end'}>
+        <span>This is a description of the p to the right and end</span>
+      </hy-tooltip>
+
+      <br /><br /><br />
+      <h3>LEFT</h3>
+      <span>hover me</span>
+      <hy-tooltip position=${'left'}>
+        <span>This is a description of the p to the left and center</span>
+      </hy-tooltip>
+      <br /><br /><br />
+
+      <span>hover me</span>
+      <hy-tooltip position=${'left'} alignement=${'start'}>
+        <span>This is a description of the p to the left and start</span>
+      </hy-tooltip>
+
+      <br /><br /><br />
+
+      <div>hover me</div>
+      <hy-tooltip position=${'left'} alignement=${'end'}>
+        <span>This is a description of the p to the left and end</span>
+      </hy-tooltip>
     `;
   }
+
+  static override styles = [
+    css`
+      :host {
+        width: 800px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    `,
+  ];
 }
 
 declare global {

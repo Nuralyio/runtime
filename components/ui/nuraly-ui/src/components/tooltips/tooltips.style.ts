@@ -1,77 +1,81 @@
 import {css} from 'lit';
+import {styleVariables} from './tooltips.variables';
 
-export const styles = css`
-  .tooltip {
-    top: 0px;
-    position: absolute;
-    padding: 4px 8px;
-    background-color: #000;
-    color: #fff;
+const tooltipStyles = css`
+  :host([show]) {
+    background-color: var(--hybrid-tooltip-background-color);
+    color: var(--hybrid-tooltip-text-color);
+    position: fixed;
+    padding: 5px;
+    text-align: center;
+    opacity: 0;
     border-radius: 4px;
-    font-size: 14px;
+    animation-name: show-animation;
+    animation-duration: 0.4s;
+    animation-fill-mode: forwards;
   }
 
-  .tooltip.top::after {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 8px 8px 0;
-    border-style: solid;
-    border-color: #000 transparent transparent transparent;
+  @keyframes show-animation {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
-  .tooltip.bottom::before {
+  :host::after {
     content: '';
+    height: 0;
+    width: 0;
     position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 0 8px 8px;
-    border-style: solid;
-    border-color: transparent transparent #000 transparent;
+    border: 5px solid transparent;
+  }
+  :host(.top-position)::after {
+    border-top-color: var(--hybrid-tooltip-background-color);
+    top: 100%;
+  }
+  :host(.left-position)::after {
+    border-left-color: var(--hybrid-tooltip-background-color);
+    left: 100%;
   }
 
-  .tooltip.left::after {
-    content: '';
-    position: absolute;
+  :host(.right-position)::after {
+    border-right-color: var(--hybrid-tooltip-background-color);
+    right: 100%;
+  }
+  :host(.bottom-position)::after {
+    border-bottom-color: var(--hybrid-tooltip-background-color);
+    bottom: 100%;
+  }
+  :host(.alignement-center.top-position)::after,
+  :host(.alignement-center.bottom-position)::after {
+    right: 50%;
+    transform: translate(50%);
+  }
+
+  :host(.alignement-start.top-position)::after,
+  :host(.alignement-start.bottom-position)::after {
+    left: 4%;
+  }
+  :host(.top-position.alignement-end)::after,
+  :host(.alignement-end.bottom-position)::after {
+    right: 4%;
+  }
+
+  :host(.alignement-center.left-position)::after,
+  :host(.alignement-center.right-position)::after {
     top: 50%;
-    left: -8px;
-    transform: translateY(-50%);
-    border-width: 8px 0 8px 8px;
-    border-style: solid;
-    border-color: transparent transparent transparent #000;
+    transform: translate(0%, -50%);
   }
 
-  .tooltip.right::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -8px;
-    transform: translateY(-50%);
-    border-width: 8px 8px 8px 0;
-    border-style: solid;
-    border-color: transparent #000 transparent transparent;
+  :host(.alignement-start.left-position)::after,
+  :host(.alignement-start.right-position)::after {
+    top: 5px;
   }
-
-  .tooltip.corner-left::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -8px;
-    border-width: 8px 0 8px 8px;
-    border-style: solid;
-    border-color: transparent transparent transparent #000;
-  }
-
-  .tooltip.corner-right::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -8px;
-    border-width: 8px 8px 8px 0;
-    border-style: solid;
-    border-color: transparent #000 transparent transparent;
+  :host(.alignement-end.left-position)::after,
+  :host(.alignement-end.right-position)::after {
+    bottom: 5px;
   }
 `;
+export const styles = [tooltipStyles, styleVariables];
