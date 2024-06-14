@@ -1,239 +1,228 @@
-import {css, html} from 'lit';
+import {css} from 'lit';
+import {styleVariables} from './variables.style';
 
 const baseButtonStyle = css`
+  #container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  :host([iconPosition='right']) #container {
+    flex-direction: row-reverse;
+  }
+
+  hy-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+  }
+
   button {
-    display: inline-block;
-    height: var(--hybrid-button-height, 34px);
-    user-select: none;
-    padding-top: var(--hybrid-button-padding-y, 0.5rem);
-    padding-bottom: var(--hybrid-button-padding-x, 0.5rem);
-    padding-right: var(--hybrid-button-padding-r, 0.8rem);
-    padding-left: var(--hybrid-button-padding-l, 0.8rem);
-    border-radius: var(--hybrid-button-border-radius, 0.25rem);
-    border-top-left-radius: var(--hybrid-button-border-top-left-radius, 0.25rem);
-    border-top-right-radius: var(--hybrid-button-border-top-right-radius, 0.25rem);
-    border-bottom-left-radius: var(--hybrid-button-border-bottom-left-radius, 0.25rem);
-    border-bottom-right-radius: var(--hybrid-button-border-bottom-right-radius, 0.25rem);
-
-    border-width: var(--hybrid-button-border-width, 1px);
-    border-right-width: var(--hybrid-button-border-right-width, var(--hybrid-button-border-width, 1px));
-    border-left-width: var(--hybrid-button-border-left-width, var(--hybrid-button-border-width, 1px));
-
-    border-color: var(--hybrid-button-border-color, #d0d0d0);
-    background-color: var(--hybrid-button-background-color, #f9f9f9);
-    border-style: solid;
-    color: var(--hybrid-button-text-color, #393939);
-    font-size: var(--hybrid-button-font-size, 0.8rem);
-    font-weight: var(--hybrid-button-font-weight, normal);
-    text-transform: var(--hybrid-button-text-transform, none);
+    height: var(--hybrid-button-height);
+    width: var(--hybrid-button-width);
+    border: var(--hybrid-button-border);
+    background-color: var(--hybrid-button-background-color);
+    color: var(--hybrid-button-text-color);
+    font-size: var(--hybrid-button-font-size);
+    font-weight: var(--hybrid-button-font-weight);
+    text-transform: var(--hybrid-button-text-transform);
+    padding-top: var(--hybrid-button-padding-y);
+    padding-bottom: var(--hybrid-button-padding-y);
+    padding-right: var(--hybrid-button-padding-x);
+    padding-left: var(--hybrid-button-padding-x);
+    font-size: var(--hybrid-button-font-size);
+  }
+  button hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-text-color);
   }
 
   button:hover:not(:disabled) {
     cursor: pointer;
-    border-color: var(--hybrid-button-hover-border-color, #1677ff);
-    color: var(--hybrid-button-hover-color, #1677ff);
+    border-color: var(--hybrid-button-hover-border-color);
+    color: var(--hybrid-button-hover-color);
+  }
+  button:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-hover-color);
   }
 
   button:active:not(:disabled) {
     outline: none;
-    border-color: var(--hybrid-button-active-border-color, #1661b1);
-    color: var(--hybrid-button-active-color, #184d86);
+    border-color: var(--hybrid-button-active-border-color);
+    color: var(--hybrid-button-active-color);
+  }
+  button:active:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-active-color);
   }
 
-  button[data-display='block'] {
-    width: 100%;
+  button:disabled {
+    cursor: auto;
+    background-color: var(--hybrid-button-disabled-background-color);
+    color: var(--hybrid-button-disabled-text-color);
+    border-color: var(--hybrid-button-disabled-border-color);
   }
 
   button[data-size='small'] {
-    padding-top: var(--hybrid-small-button-padding-y, 0.3rem);
-    padding-bottom: var(--hybrid-small-button-padding-y, 0.3rem);
-    padding-right: var(--hybrid-small-button-padding-x, 0.6rem);
-    padding-left: var(--hybrid-small-button-padding-x, 0.6rem);
+    padding-top: var(--hybrid-small-button-padding-y);
+    padding-bottom: var(--hybrid-small-button-padding-y);
+    padding-right: var(--hybrid-small-button-padding-x);
+    padding-left: var(--hybrid-small-button-padding-x);
+    font-size: var(--hybrid-small-button-font-size);
   }
 
   button[data-size='large'] {
-    padding-top: var(--hybrid-small-button-padding-y, 0.6rem);
-    padding-bottom: var(--hybrid-small-button-padding-y, 0.6rem);
-    padding-right: var(--hybrid-small-button-padding-x, 0.9rem);
-    padding-left: var(--hybrid-small-button-padding-x, 0.9rem);
-    font-size: var(--hybrid-small-button-font-size, 0.9rem);
+    padding-top: var(--hybrid-large-button-padding-y);
+    padding-bottom: var(--hybrid-large-button-padding-y);
+    padding-right: var(--hybrid-large-button-padding-x);
+    padding-left: var(--hybrid-large-button-padding-x);
+    font-size: var(--hybrid-large-button-font-size);
   }
 
   button[data-state='loading'] {
     opacity: 0.5;
   }
-
-  :host {
-    user-select: none;
-    -webkit-user-select: none;
-  }
 `;
 
 const dangerButtonStyle = css`
-  button[data-danger] {
-    border-color: var(--hybrid-button-border-color, #ff4a00);
-    color: var(--hybrid-button-danger-text-color, #ffffff);
+  button[data-type='danger'] hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-danger-text-color);
+  }
+  button[data-type='danger'] {
+    border-color: var(--hybrid-button-danger-border-color);
+    background-color: var(--hybrid-button-danger-background-color);
+    color: var(--hybrid-button-danger-text-color);
+  }
+  button[data-type='danger'].button-dashed {
+    border-color: var(--hybrid-button-danger-dashed-border-color);
+  }
+  button[data-type='danger']:disabled {
+    border-color: var(--hybrid-button-danger-disabled-border-color);
+    background-color: var(--hybrid-button-danger-disabled-background-color);
+    color: var(--hybrid-button-danger-disabled-text-color);
   }
 
-  button[data-danger]:not([data-type='primary']):not(:disabled) {
-    color: var(--hybrid-button-danger-text-color, #ff4a00);
-    border-color: var(--hybrid-button-danger-border-color, #ff4a00);
+  button[data-type='danger']:hover:not(:disabled) {
+    background-color: var(--hybrid-button-danger-hover-background-color);
+    border-color: var(--hybrid-button-danger-hover-border-color);
+    color: var(--hybrid-button-danger-text-color);
+  }
+  button[data-type='danger']:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-danger-text-color);
   }
 
-  button[data-danger]:not([data-type='primary']):hover:not(:disabled) {
-    color: var(--hybrid-button-danger-hover-text-color, #ff4a00);
-    border-color: var(--hybrid-button-danger-hover-border-color, #ff4a00);
-    opacity: 0.9;
-  }
-
-  button[data-danger]:not([data-type='primary']):active:not(:disabled) {
-    color: var(--hybrid-button-danger-active-text-color, #ff4a00);
-    border-color: var(--hybrid-button-danger-active-border-color, #ff4a00);
-    opacity: 1;
-  }
-
-  button[data-danger][data-type='primary']:not(:disabled) {
-    color: var(--hybrid-button-danger-text-color, #ffffff);
-    background-color: var(--hybrid-primary-button-danger-background-color, #ff4a00);
-    border-color: var(--hybrid-primary-button-danger-border-color, #ff4a00);
-  }
-
-  button[data-danger][data-type='primary']:hover:not(:disabled) {
-    color: var(--hybrid-button-danger-text-color, #ffffff);
-    background-color: var(--hybrid-primary-button-danger-hover-background-color, #ff4a00);
-    border-color: var(--hybrid-primary-button-danger-hover-border-color, #ff4a00);
-    opacity: 0.9;
-  }
-
-  button[data-danger][data-type='primary']:active:not(:disabled) {
-    color: var(--hybrid-button-danger-text-color, #ffffff);
-    background-color: var(--hybrid-primary-button-danger-hover-background-color, #ff4a00);
-    border-color: var(--hybrid-primary-button-danger-hover-border-color, #ff4a00);
-    opacity: 1;
-  }
-`;
-
-const disabledButtonStyle = css`
-  button:disabled {
-    cursor: auto;
-    background-color: var(--hybrid-button-disabled-background-color, #ccc);
-    color: var(--hybrid-button-disabled-text-color, #999);
-    border-color: var(--hybrid-button-disabled-border-color, #bbb);
-  }
-  button:focus {
-    outline: none;
-    box-shadow: none;
-  }
-  button:active:not(:disabled) {
-    outline: none;
-    border-color: #aaa;
-    box-shadow: none;
-  }
-
-  button:disabled:hover {
-    cursor: not-allowed;
+  button[data-type='danger']:active:not(:disabled) {
+    background-color: var(--hybrid-button-danger-active-background-color);
+    border-color: var(--hybrid-button-danger-active-border-color);
+    outline: var(--hybrid-button-danger-outline);
+    outline-offset: var(--hybrid-button-danger-outline-offset);
   }
 `;
 
 const primaryButtonStyle = css`
+  button[data-type='primary'] hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-primary-text-color);
+  }
   button[data-type='primary'] {
-    border-color: var(--hybrid-button-primary-border-color, #1277e1);
-    background-color: var(--hybrid-button-primary-background-color, #1277e1);
-    color: var(--hybrid-button-primary-text-color, #ffffff);
+    border-color: var(--hybrid-button-primary-border-color);
+    background-color: var(--hybrid-button-primary-background-color);
+    color: var(--hybrid-button-primary-text-color);
+  }
+  button[data-type='primary'].button-dashed {
+    border-color: var(--hybrid-button-primary-dashed-border-color);
+  }
+
+  button[data-type='primary']:disabled {
+    border-color: var(--hybrid-button-primary-disabled-border-color);
+    background-color: var(--hybrid-button-primary-disabled-background-color);
+    color: var(--hybrid-button-primary-disabled-text-color);
   }
 
   button[data-type='primary']:hover:not(:disabled) {
-    cursor: pointer;
-    background-color: var(--hybrid-button-primary-hover-background-color, #0a70ff);
-    border-color: var(--hybrid-button-primary-hover-border-color, #1677ff);
-    color: var(--hybrid-button-primary-text-color, #ffffff);
+    background-color: var(--hybrid-button-primary-hover-background-color);
+    border-color: var(--hybrid-button-primary-hover-border-color);
+    color: var(--hybrid-button-primary-text-color);
+  }
+  button[data-type='primary']:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-primary-text-color);
   }
   button[data-type='primary']:active:not(:disabled) {
-    cursor: pointer;
-    background-color: var(--hybrid-button-primary-active-background-color, #0559cf);
-    border-color: var(--hybrid-button-primary-active-border-color, #1677ff);
+    border-color: var(--hybrid-button-primary-active-border-color);
+    background-color: var(--hybrid-button-primary-active-background-color);
+    outline: var(--hybrid-button-primary-outline);
+    outline-offset: var(--hybrid-button-primary-outline-offset);
   }
 `;
 
-const dashedButtonStyle = css`
-  button[data-type='dashed'] {
+const ghostButtonStyle = css`
+  button[data-type='ghost'] hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-ghost-text-color);
+  }
+  button[data-type='ghost'] {
+    background-color: var(--hybrid-button-ghost-background-color);
+    color: var(--hybrid-button-ghost-text-color);
+    border-color: var(--hybrid-button-ghost-border-color);
+  }
+  button[data-type='ghost'].button-dashed {
+    border-color: var(--hybrid-button-ghost-dashed-border-color);
+  }
+  button[data-type='ghost']:disabled {
+    background-color: var(--hybrid-button-ghost-disabled-background-color);
+    color: var(--hybrid-button-ghost-disabled-text-color);
+    border-color: var(--hybrid-button-ghost-disabled-border-color);
+  }
+
+  button[data-type='ghost']:hover:not(:disabled) {
+    background-color: var(--hybrid-button-ghost-hover-background-color);
+    color: var(--hybrid-button-ghost-hover-text-color);
+    border-color: var(--hybrid-button-ghost-hover-border-color);
+  }
+  button[data-type='ghost']:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-ghost-hover-text-color);
+  }
+  button[data-type='ghost']:active:not(:disabled) {
+    background-color: var(--hybrid-button-ghost-active-background-color);
+    border-color: var(--hybrid-button-ghost-active-border-color);
+  }
+`;
+
+const secondaryButtonStyle = css`
+  button[data-type='secondary'] hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-secondary-text-color);
+  }
+  button[data-type='secondary'] {
+    background-color: var(--hybrid-button-secondary-background-color);
+    color: var(--hybrid-button-secondary-text-color);
+    border-color: var(--hybrid-button-secondary-border-color);
+  }
+  button[data-type='secondary'].button-dashed {
+    border-color: var(--hybrid-button-secondary-dashed-border-color);
+  }
+  button[data-type='secondary']:disabled {
+    background-color: var(--hybrid-button-secondary-disabled-background-color);
+    color: var(--hybrid-button-secondary-disabled-text-color);
+    border-color: var(--hybrid-button-secondary-disabled-border-color);
+  }
+  button[data-type='secondary']:hover:not(:disabled) {
+    background-color: var(--hybrid-button-secondary-hover-background-color);
+    color: var(--hybrid-button-secondary-text-color);
+    border-color: var(--hybrid-button-secondary-hover-border-color);
+  }
+  button[data-type='secondary']:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-secondary-text-color);
+  }
+
+  button[data-type='secondary']:active:not(:disabled) {
+    background-color: var(--hybrid-button-secondary-active-background-color);
+    border-color: var(--hybrid-button-secondary-active-border-color);
+    outline: var(--hybrid-button-secondary-outline);
+    outline-offset: var(--hybrid-button-secondary-outline-offset);
+  }
+`;
+
+const buttonDashedStyle = css`
+  .button-dashed {
     border-style: dashed;
-  }
-
-  button[data-type='dashed']:hover:not(:disabled) {
-    cursor: pointer;
-
-    border-color: var(--hybrid-button-dashed-hover-border-color, #1677ff);
-    color: var(--hybrid-button-dashed-hover-text-color, #1677ff);
-  }
-  button[data-type='dashed']:active:not(:disabled) {
-    cursor: pointer;
-    border-color: var(--hybrid-button-dashed-active-border-color, #1677ff);
-  }
-`;
-
-const textButtonStyle = css`
-  button[data-type='text'] {
-    border: none;
-  }
-  button[data-type='text']:hover:not(:disabled) {
-    cursor: pointer;
-
-    background-color: var(--hybrid-button-text-hover-background-color, #e1e1e1);
-  }
-  button[data-type='text']:active:not(:disabled) {
-    cursor: pointer;
-    background-color: var(--hybrid-button-text-active-background-color, #c1c1c1);
-  }
-  button[data-type='text'] {
-    border-style: text;
-  }
-
-  button[data-type='text']:hover:not(:disabled) {
-    cursor: pointer;
-  }
-`;
-
-const linkButtonStyle = css`
-  button[data-type='link'] {
-    border: none;
-    color: var(--hybrid-button-link-text-color, #1677ff);
-    background-color: transparent;
-  }
-  button[data-type='link']:hover:not(:disabled) {
-    cursor: pointer;
-    color: var(--hybrid-button-link-hover-text-color, #4a96ff);
-  }
-  button[data-type='link']:active:not(:disabled) {
-    cursor: pointer;
-    color: var(--hybrid-button-link-active-text-color, #0862df);
-  }
-`;
-
-const iconButtonStyle = css`
-  .icon-only {
-    width: 33px;
-    height: 34px;
-    padding-left: 0.6rem;
-  }
-  .icon-only[data-size='large'] {
-    width: 42px;
-    padding-left: 0.9rem;
-  }
-
-  .button-rounded {
-    border-radius: 50%;
-  }
-`;
-
-const usedAsStyle = css`
-  button[data-usedas='post'] {
-    border-radius: var(--hybrid-button-usedas-post-border-radius, 0 0.3rem 0.3rem 0);
-    height: 100%;
-  }
-  button[data-usedas='pre'] {
-    border-radius: var(--hybrid-button-usedas-post-border-radius, 0.3rem 0 0 0.3rem);
-    height: 100%;
   }
 `;
 
@@ -241,44 +230,8 @@ export const styles = [
   baseButtonStyle,
   dangerButtonStyle,
   primaryButtonStyle,
-  dashedButtonStyle,
-  textButtonStyle,
-  linkButtonStyle,
-  iconButtonStyle,
-  disabledButtonStyle,
-  usedAsStyle,
-  css`
-
- @media (prefers-color-scheme: dark) {
-  
-
-  button {
-    background-color: var(--hybrid-button-background-color, rgb(44, 44, 44));
-    color: var(--hybrid-button-text-color, #ffffff);
-  }
-
-
-  
-  button[data-type='primary'] {
-    border-color: var(--hybrid-button-dark-primary-border-color, #4a96ff);
-    background-color: var(--hybrid-button-dark-primary-background-color, rgb(44, 44, 44));
-    color: var(--hybrid-button-dark-primary-text-color, #ffffff);
-  }
-
- }
-
-#slot{
-  vertical-align: middle;
-    margin-top: -8px;
-    display: inline-block;
-}
-
-
-  `,
+  ghostButtonStyle,
+  secondaryButtonStyle,
+  buttonDashedStyle,
+  styleVariables,
 ];
-
-export const hostBlockStyle = html`<style>
-  :host {
-    width: 100%;
-  }
-</style>`;

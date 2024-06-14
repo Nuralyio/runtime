@@ -4,31 +4,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { html, LitElement, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { ButtonType, EMPTY_STRING } from './hy-button.constats.js';
-import { hostBlockStyle, styles } from './hy-button.style.js';
-/**
- * `hy-button` is a LitElement that provides a customizable button.
- * @customElement 'hy-button'
- *
- * Attributes
- * @slot - This element has a slot
- * @csspart button - The button
- * @attr type
- * @attr used-as
- * @attr autofocus
- * @attr icon
- * @attr shape
- * @attr loading
- * @attr disabled
- * @attr block
- * @attr size
- * @attr danger
- * Events
- * @fires onClick - Indicates when the count changes
- */
-
+import {html, LitElement, nothing} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
+import {ButtonType, EMPTY_STRING, IconPosition} from './hy-button.constants.js';
+import {styles} from './hy-button.style.js';
+import {ThemeController} from '../../shared/ThemeController';
 @customElement('hy-button')
 export class HyButtonElement extends LitElement {
   @property({type: Boolean})
@@ -38,69 +18,43 @@ export class HyButtonElement extends LitElement {
   loading = false;
 
   @property({type: String})
-  display = EMPTY_STRING;
-
-  @property({type: Boolean})
-  block = false;
-
-  @property({type: String})
   size = EMPTY_STRING;
-
-  @property({type: Boolean})
-  danger = false;
 
   @property({type: String})
   type = ButtonType.Default as String;
 
-  @property({type: String})
-  shape = EMPTY_STRING;
+  @property({type: Boolean})
+  dashed = false;
 
   @property({type: String})
-  icon = EMPTY_STRING;
+  icon!: string[];
 
   @property({reflect: true})
-  usedas!: string;
+  iconPosition = IconPosition.Left;
 
-  /**
-   * Content
-   */
-  @property({type: String})
-  link = EMPTY_STRING;
-  @property({type: String})
-  target = EMPTY_STRING;
-  @state()
-  hasSlot = false;
+  @property({reflect: true, type: String})
+  theme!: string;
 
-  override firstUpdated() {
-    const slot: HTMLSlotElement = this.shadowRoot?.querySelector('#slot') as HTMLSlotElement;
-    const assignedNodes = slot?.assignedNodes();
-    if (assignedNodes.length !== 0) {
-      requestAnimationFrame(() => {
-        this.hasSlot = true;
-        this.requestUpdate();
-      });
-    }
+  private themeController = new ThemeController(this);
+
+  override willUpdate(): void {
+    if (this.theme != this.themeController.theme) this.theme = this.themeController.theme;
   }
+
   override render() {
     return html`
-      ${this.block ? hostBlockStyle : nothing}
       <button
-        part="container"
         ?disabled="${this.disabled}"
-        ?autofocus=${this.autofocus}
         data-type="${this.type}"
-        data-usedas="${this.usedas}"
-        data-display=${this.block ? 'block' : nothing}
         data-size=${this.size ? this.size : nothing}
         data-state="${this.loading ? 'loading' : nothing}"
-        ?data-danger="${this.danger}"
-        class="
-        ${this.shape === 'circle' ? 'button-rounded' : EMPTY_STRING}
-      ${!this.hasSlot ? 'icon-only' : EMPTY_STRING}
-      "
+        class="${this.dashed ? 'button-dashed' : nothing}"
       >
-        ${this.icon && html` <hy-icon name=${this.icon}></hy-icon>`}
-        <slot id="slot"></slot>
+        <span id="container">
+          ${this.icon?.length ? html` <hy-icon name=${this.icon[0]}></hy-icon>` : nothing}
+          <slot id="slot"></slot>
+          ${this.icon?.length == 2 ? html` <hy-icon name=${this.icon[1]}></hy-icon>` : nothing}
+        </span>
       </button>
     `;
   }
