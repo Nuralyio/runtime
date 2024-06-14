@@ -1,97 +1,207 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {html, LitElement} from 'lit';
-import {property, state} from 'lit/decorators.js';
+import {html, LitElement, nothing, PropertyValueMap} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 import {styles} from './tooltips.style.js';
-
-class TooltipElement extends LitElement {
+import {EMPTY_STRING, TooltipAlignment, TooltipPosition} from './tooltips.constant.js';
+@customElement('hy-tooltip')
+export class TooltipElement extends LitElement {
   static override styles = styles;
 
-  @property({type: String})
-  text!: string;
+  @property({reflect: true})
+  position = TooltipPosition.Bottom;
 
-  @property({type: String})
-  position!: string;
-
-  @property({type: Number})
-  delay!: number;
+  @property({reflect: true})
+  alignement = TooltipAlignment.Center;
 
   @state()
-  tooltip!: any;
+  target!: Element;
+  @property({reflect: true, type: Boolean})
+  show = false;
 
-  @state()
-  hideTimeout!: any;
-
-  @state()
-  isActive!: any;
-
-  constructor() {
-    super();
-    this.position = 'top';
-    this.delay = 200;
-    this.tooltip = null;
-    this.hideTimeout = null;
+  horizontalOffset = 10;
+  verticalOffset = 10;
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.target = this.previousElementSibling!;
+    this.target.addEventListener('mouseover', this.onMouseOver);
+    this.target.addEventListener('mouseleave', this.onMouseLeave);
   }
 
-  override firstUpdated() {
-    const targetElement = this.querySelectorAll('[data-tooltip]');
-    this.tooltip = this.shadowRoot!.querySelector('.tooltip');
+  private onMouseOver = () => {
+    this.show = true;
+  };
+  private onMouseLeave = () => {
+    this.show = false;
+    this.style.top = EMPTY_STRING;
+    this.style.left = EMPTY_STRING;
+    this.style.width = EMPTY_STRING;
+    this.classList.remove(...this.classList.values());
+  };
 
-    for (const element of targetElement) {
-      element.addEventListener('mouseenter', this.showTooltip.bind(this));
-      element.addEventListener('mouseleave', this.hideTooltip.bind(this));
+  override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    if (this.show) this.calculatePosition();
+  }
+
+  private calculatePosition = () => {
+    this.style.width = `${this.clientWidth}px`;
+    if (this.position == TooltipPosition.Bottom || this.position == TooltipPosition.Top) {
+      this.calculateYposition();
+      this.calculateYalignement();
+    } else {
+      this.calculateXposition();
+      this.calculateXalignement();
     }
-  }
+  };
+  private calculateYposition = () => {
+    const targetRect = this.target.getBoundingClientRect();
+    const targetWithTopSpaceHeight = targetRect.bottom;
+    const topAvailableSpace = targetRect.top;
+    const totalViewPortHeight = window.visualViewport!.height;
+    const tooltipHeight = this.clientHeight;
+    const isAvailableBottomSpace = tooltipHeight + this.verticalOffset < totalViewPortHeight - targetWithTopSpaceHeight;
+    const isAvailableTopSpace = tooltipHeight + this.verticalOffset < topAvailableSpace;
 
-  showTooltip(event: any) {
-    const targetElement = event.target.closest('[data-tooltip]');
-    console.log(targetElement.getBoundingClientRect());
-
-    const tooltipText = targetElement.dataset.tooltip;
-    if (tooltipText) {
-      this.text = tooltipText;
-      this.position = targetElement.dataset.tooltipPosition || 'top';
-      console.log(targetElement);
-      if (this.tooltip) {
-        this.tooltip.style.top =
-          targetElement.getBoundingClientRect().top - targetElement.getBoundingClientRect().height - 9 + 'px';
-        this.tooltip.style.marginLeft = '-' + targetElement.getBoundingClientRect().width / 2 + 'px';
-        this.tooltip.style.opacity = '1';
-        this.tooltip.style.visibility = 'visible';
+    if (this.position == TooltipPosition.Bottom) {
+      if (isAvailableBottomSpace || !isAvailableTopSpace) {
+        this.classList.add('bottom-position');
+        this.style.top = `${targetWithTopSpaceHeight + this.verticalOffset}px`;
+      } else {
+        this.classList.add('top-position');
+        this.style.top = `${topAvailableSpace - tooltipHeight - this.verticalOffset}px`;
+      }
+    } else {
+      if (isAvailableTopSpace || !isAvailableBottomSpace) {
+        this.classList.add('top-position');
+        this.style.top = `${topAvailableSpace - tooltipHeight - this.verticalOffset}px`;
+      } else {
+        this.classList.add('bottom-position');
+        this.style.top = `${targetWithTopSpaceHeight + this.verticalOffset}px`;
       }
     }
-  }
+  };
+  private calculateYalignement = () => {
+    const targetRect = this.target.getBoundingClientRect();
+    const leftSpaceAndTargetWidth = targetRect.right;
+    const targetWidth = targetRect.width;
+    const leftSpace = targetRect.left;
+    const tooltipWidth = this.clientWidth;
+    const leftSpaceAndHalfOfTargetWidth = leftSpace + targetWidth / 2;
+    const totalViewPortWidth = window.visualViewport!.width;
+    const rightSpaceAndHalfOfTargetWidth = totalViewPortWidth - leftSpaceAndTargetWidth + targetWidth / 2;
 
-  hideTooltip() {
-    if (this.tooltip) {
-      this.tooltip.style.opacity = '0';
-      this.tooltip.style.visibility = 'hidden';
+    if (this.alignement == TooltipAlignment.Start) {
+      const canBeAtStart = tooltipWidth + leftSpace < totalViewPortWidth;
+      if (canBeAtStart) {
+        this.classList.add('alignement-start');
+        this.style.left = `${leftSpace - this.horizontalOffset}px`;
+      } else {
+        this.classList.add('alignement-end');
+        this.style.left = `${leftSpace - tooltipWidth + this.horizontalOffset}px`;
+      }
+    } else if (this.alignement == TooltipAlignment.End) {
+      const canBeAtEnd = tooltipWidth < leftSpace;
+      if (canBeAtEnd) {
+        this.classList.add('alignement-end');
+        this.style.left = `${leftSpace - tooltipWidth + this.horizontalOffset}px`;
+      } else {
+        this.classList.add('alignement-start');
+        this.style.left = `${leftSpace - this.horizontalOffset}px`;
+      }
+    } else {
+      const canBeCentered =
+        (tooltipWidth / 2 < leftSpaceAndHalfOfTargetWidth && tooltipWidth / 2 < rightSpaceAndHalfOfTargetWidth) ||
+        (tooltipWidth > leftSpaceAndHalfOfTargetWidth && tooltipWidth > rightSpaceAndHalfOfTargetWidth);
+      const canBeAtEnd = tooltipWidth < leftSpaceAndHalfOfTargetWidth;
+      if (canBeCentered) {
+        this.classList.add('alignement-center');
+        this.style.left = `${leftSpace - tooltipWidth / 2 + targetWidth / 2}px`;
+      } else if (canBeAtEnd) {
+        this.classList.add('alignement-end');
+        this.style.left = `${leftSpace - tooltipWidth + this.horizontalOffset}px`;
+      } else {
+        this.classList.add('alignement-start');
+        this.style.left = `${leftSpace - this.horizontalOffset}px`;
+      }
     }
+  };
+  private calculateXposition = () => {
+    const targetRect = this.target.getBoundingClientRect();
+    const leftSpace = targetRect.left;
+    const leftSpaceAndTargetWidth = targetRect.right;
+    const totalViewPortWidth = window.visualViewport!.width;
+    const tooltipWidth = this.clientWidth;
+    const isAvailableRightSpace = tooltipWidth + this.horizontalOffset < totalViewPortWidth - leftSpaceAndTargetWidth;
+    const isAvailableLeftSpace = tooltipWidth + this.horizontalOffset < leftSpace;
+
+    if (this.position == TooltipPosition.Right) {
+      if (isAvailableRightSpace || !isAvailableLeftSpace) {
+        this.classList.add('right-position');
+        this.style.left = `${leftSpaceAndTargetWidth + this.horizontalOffset}px`;
+      } else {
+        this.classList.add('left-position');
+        this.style.left = `${leftSpace - tooltipWidth - this.horizontalOffset}px`;
+      }
+    } else {
+      if (isAvailableLeftSpace || !isAvailableRightSpace) {
+        this.classList.add('left-position');
+        this.style.left = `${leftSpace - tooltipWidth - this.horizontalOffset}px`;
+      } else {
+        this.classList.add('right-position');
+        this.style.left = `${leftSpaceAndTargetWidth + this.horizontalOffset}px`;
+      }
+    }
+  };
+  private calculateXalignement = () => {
+    const targetRect = this.target.getBoundingClientRect();
+    const topSpace = targetRect.top;
+    const targetHeight = targetRect.height;
+    const targetWithTopSpaceHeight = targetRect.bottom;
+    const tooltipHeight = this.clientHeight;
+    const totalViewPortHeight = window.visualViewport!.height;
+    const bottomSpace = totalViewPortHeight - targetWithTopSpaceHeight;
+
+    if (this.alignement == TooltipAlignment.End) {
+      const canBeAtEnd = tooltipHeight < topSpace;
+      if (canBeAtEnd) {
+        this.classList.add('alignement-end');
+        this.style.top = `${targetWithTopSpaceHeight - tooltipHeight}px`;
+      } else {
+        this.classList.add('alignement-start');
+        this.style.top = `${topSpace - targetHeight / 4}px`;
+      }
+    } else if (this.alignement == TooltipAlignment.Start) {
+      const canBeAtStart = tooltipHeight < totalViewPortHeight - targetWithTopSpaceHeight;
+      if (canBeAtStart) {
+        this.classList.add('alignement-start');
+        this.style.top = `${topSpace - targetHeight / 4}px`;
+      } else {
+        this.classList.add('alignement-end');
+        this.style.top = `${targetWithTopSpaceHeight - tooltipHeight}px`;
+      }
+    } else {
+      const canBeCentered =
+        (tooltipHeight / 2 < topSpace && tooltipHeight / 2 < bottomSpace) ||
+        (tooltipHeight > topSpace && tooltipHeight > bottomSpace);
+      const canBeAtEnd = tooltipHeight < topSpace;
+      if (canBeCentered) {
+        this.classList.add('alignement-center');
+        this.style.top = `${topSpace + targetHeight / 2 - tooltipHeight / 2}px`;
+      } else if (canBeAtEnd) {
+        this.classList.add('alignement-end');
+        this.style.top = `${targetWithTopSpaceHeight - tooltipHeight}px`;
+      } else {
+        this.classList.add('alignement-start');
+        this.style.top = `${topSpace - targetHeight / 4}px`;
+      }
+    }
+  };
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.target.removeEventListener('mouseover', this.onMouseOver);
+    this.target.removeEventListener('mouseleave', this.onMouseLeave);
   }
 
   override render() {
-    const tooltipClasses: TooltipClasses = {
-      top: 'tooltip top',
-      bottom: 'tooltip bottom',
-      left: 'tooltip left',
-      right: 'tooltip right',
-      'corner-left': 'tooltip corner-left',
-      'corner-right': 'tooltip corner-right',
-    };
-
-    const tooltipClass = tooltipClasses[this.position] || tooltipClasses.top;
-
-    return html`<slot></slot>
-      <span class="${tooltipClass}">${this.text}</span> `;
+    return this.show ? html`<slot></slot> ` : nothing;
   }
 }
-interface TooltipClasses {
-  top: string;
-  bottom: string;
-  left: string;
-  right: string;
-  'corner-left': string;
-  'corner-right': string;
-  [key: string]: string;
-}
-
-customElements.define('tooltip-element', TooltipElement);
