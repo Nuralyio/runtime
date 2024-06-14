@@ -9,98 +9,307 @@ import {customElement} from 'lit/decorators.js';
 import '../input.component';
 @customElement('hy-inputs-demo')
 export class ElButtonDemoElement extends LitElement {
-  changeHandler(_e: unknown) {
+  _changeHandler(_e: unknown) {
     console.log(_e);
   }
+
+  _focusHandler(_e: unknown) {
+    console.log('e', _e);
+  }
   override render() {
-    return html` <style></style>
-      <div>
-        <hy-input placeholder="text placeholder" @valueChange=${this.changeHandler} size="large">
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-        </hy-input>
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}}>
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-        </hy-input>
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}} size="small">
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-        </hy-input>
+    return html` <div>
+      <h3>Text input</h3>
+      <hy-input
+        placeholder="Enter your FullName"
+        size="large"
+        @input=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Large input</span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        size="medium"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Medium input</span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        size="small"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Small input</span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input size="small" @valueChange=${this._changeHandler} @focused=${this._focusHandler}>
+        <span slot="label">without placeholder</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        state="error"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Error input</span>
+        <span slot="helper-text">Error input helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        state="error"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Error input without helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        state="warning"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Warning input</span>
+        <span slot="helper-text">Warning input helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        state="warning"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Warning input without helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        disabled
+        state="error"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">disabled input error </span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        disabled
+        state="warning"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">disabled input warning </span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
+      <br />
+      <br />
+      <hy-input
+        placeholder="Enter your FullName"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="helper-text">without label</span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        placeholder="Enter your FullName"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+      </hy-input>
+      <br /><br />
 
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}} size="small">
-          <span slot="suffix">
-            <hy-icon name="check"></hy-icon>
-          </span>
-        </hy-input>
+      <hy-input
+        ?disabled=${true}
+        placeholder="Enter your FullName"
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Disabled input</span>
+      </hy-input>
 
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}} size="small">
-          <span slot="suffix">
-            <hy-icon name="times-circle"></hy-icon>
-          </span>
-        </hy-input>
+      <br /><br />
+      <hy-input
+        placeholder="Enter your FullName"
+        ?disabled=${true}
+        size="large"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Disabled input with label and helper</span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
 
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}}>
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-          <span slot="suffix">
-            <hy-icon name="times-circle"></hy-icon>
-          </span>
-        </hy-input>
+      <br /><br />
+      <h3>Password input</h3>
 
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}}>
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-          <span slot="suffix">
-            <hy-icon name="spinner"></hy-icon>
-          </span>
-        </hy-input>
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}}>
-          <span slot="suffix">
-            <hy-icon name="copy"></hy-icon>
-          </span>
-        </hy-input>
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}}>
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-          <span slot="post"></span>
-        </hy-input>
-        <br />
-        <hy-input placeholder="text placeholder" @focus=${() => {}}>
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-          <hy-button slot="pre" icon="search"></hy-button>
-          <hy-button slot="post" icon="search"></hy-button>
+      <hy-input
+        placeholder="your password please"
+        size="large"
+        type="password"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Password input</span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        disabled
+        placeholder="your password please"
+        size="large"
+        type="password"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Password input disabled</span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        placeholder="your password please"
+        size="large"
+        type="password"
+        state="error"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Password input error</span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        placeholder="your password please"
+        disabled
+        size="large"
+        type="password"
+        state="error"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Password input error disabled</span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        placeholder="your password please"
+        size="large"
+        type="password"
+        state="warning"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Password input warning </span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        placeholder="your password please"
+        disabled
+        size="large"
+        type="password"
+        state="warning"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Password input warning disabled</span>
+      </hy-input>
+      <br /><br />
+      <h3>Number input</h3>
 
-          <span slot="pre"></span>
-        </hy-input>
+      <hy-input
+        placeholder="Enter your age"
+        size="large"
+        type="number"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Default number input </span>
+      </hy-input>
 
-        <br />
-        <hy-input placeholder="text placeholder" size="large" @focus=${() => {}}>
-          <span slot="prefix">
-            <hy-icon name="user"></hy-icon>
-          </span>
-          <hy-button slot="pre" icon="search"></hy-button>
-          <hy-button slot="post" icon="search"></hy-button>
-          <hy-icon slot="suffix" name="copy"></hy-icon>
-          <span slot="pre"></span>
-        </hy-input>
-      </div>`;
+      <br /><br />
+      <hy-input
+        state="error"
+        placeholder="Enter your age"
+        size="large"
+        type="number"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Number input error </span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        disabled
+        state="error"
+        placeholder="Enter your age"
+        size="large"
+        type="number"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Number input error disabled</span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        state="warning"
+        placeholder="Enter your age"
+        size="large"
+        type="number"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Number input warning </span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        disabled
+        state="warning"
+        placeholder="Enter your age"
+        size="large"
+        type="number"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Number input warning disabled </span>
+      </hy-input>
+      <br /><br />
+      <hy-input
+        min="15"
+        max="100"
+        step="25"
+        size="large"
+        type="number"
+        @valueChange=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Number input with steps of 25, max 100 and min 15 </span>
+      </hy-input>
+    </div>`;
   }
 }
 

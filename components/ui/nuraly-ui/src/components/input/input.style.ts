@@ -1,128 +1,182 @@
-import { css } from 'lit';
+import {css} from 'lit';
+import {styleVariables} from './variables.style';
 
-const defaultInputStyle = css`
-  * {
-    font-family: var(--hybrid-dropdown-fonts, Arial, sans-serif);
-  }
-  span {
-    box-sizing: var(--hybrid-input-container-box-sizing, border-box);
-    padding-top: var(--hybrid-input-container-padding-top, 6px);
-    padding-bottom: var(--hybrid-input-container-padding-bottom, 6px);
-    padding-left: var(--hybrid-input-container-padding-left, 11px);
-    padding-right: var(--hybrid-input-container-padding-right, 11px);
-    color: var(--hybrid-input-container-color, rgba(0, 0, 0, 0.88));
-    font-size: var(--hybrid-input-container-font-size, 14px);
-    line-height: var(--hybrid-input-container-line-height, 1.6);
-    position: var(--hybrid-input-container-position, relative);
-    display: var(--hybrid-input-container-display, inline-block);
-    width: var(--hybrid-input-container-width, 100%);
-    background-color: var(--hybrid-input-container-background-color, #fff);
-    border-width: var(--hybrid-input-container-border-width, 1px);
-    border-style: var(--hybrid-input-container-border-style, solid);
-    border-color: var(--hybrid-input-container-border-color, #d9d9d9);
-    border-radius: var(--hybrid-input-container-border-radius, 6px 6px 6px 6px);
+const inputStyle = css`
+  :host {
     display: flex;
+    flex-direction: column;
+    font-family: var(--hybrid-input-font-family);
   }
 
-  span.inputfocuced,
-  span:hover {
-    border-color: var(--hybrid-input-hover-container-border-color, #1277e1);
-    background-color: var(--hybrid-input-hover-container-background-color, #fff);
+  :host > #input-container,
+  #input-container > input {
+    background-color: var(--hybrid-input-background-color);
   }
 
-  span.inputfocuced input {
-    color: var(--hybrid-input-container-border-color, rgba(0, 0, 0, 0.88));
-    background-color: var(--hybrid-input-hover-container-background-color, #fff);
+  :host([disabled]) > #input-container,
+  :host([disabled]) > #input-container > input {
+    background-color: var(--hybrid-input-disabled-background-color);
+    cursor: not-allowed;
   }
 
-  span.inputfocuced input::placeholder {
-    color: var(--hybrid-input-container-border-color, rgba(0, 0, 0, 0.4));
+  hy-icon {
+    display: flex;
+    align-items: center;
   }
 
-  span.prefixed input {
-    border-radius: var(--hybrid-input-container-border-radius, 6px 0 0 6px);
-    margin-left: 4px;
+  ::placeholder {
+    color: var(--hybrid-input-placeholder-color);
+    font-size: var(--hybrid-input-placeholder-font-size);
+    font-family: var(--hybrid-input-font-family);
+  }
+  #warning-icon {
+    --hybrid-icon-color: var(--hybrid-input-warning-icon-color);
+  }
+  #error-icon {
+    --hybrid-icon-color: var(--hybrid-input-error-icon-color);
+  }
+  #password-icon {
+    padding-left: var(--hybrid-input-password-icon-padding-left);
+    padding-right: var(--hybrid-input-password-icon-padding-right);
+    cursor: pointer;
+    --hybrid-icon-color: var(--hybrid-input-password-icon-color);
+  }
+  #number-icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: var(--hybrid-input-number-icons-container-width);
+    padding-right: var(--hybrid-input-number-icons-container-padding-right);
+  }
+  #number-icons hy-icon {
+    --hybrid-icon-color: var(--hybrid-input-number-icons-color);
+    padding-left: var(--hybrid-input-number-icons-padding-left);
+    padding-right: var(--hybrid-input-number-icons-padding-right);
+    width: var(--hybrid-input-number-icons-width);
+    height: var(--hybrid-input-number-icons-height);
   }
 
-  span.post {
-    border-radius: var(--hybrid-input-container-border-radius, 6px 0 0 6px);
+  :host([disabled]) #password-icon,
+  :host([disabled]) #error-icon,
+  :host([disabled]) #warning-icon,
+  :host([disabled]) #number-icons {
+    opacity: var(--hybrid-input-disabled-icon-opacity);
   }
 
-  span.pre {
-    border-radius: var(--hybrid-input-container-border-radius, 0 6px 6px 0);
+  :host(:not([disabled])[state='error']) > #input-container {
+    border: var(--hybrid-input-error-border);
   }
-  span.post.pre {
-    border-radius: 0;
+
+  :host([state='error']) input[type='number'] ~ #number-icons,
+  :host([state='warning']) input[type='number'] ~ #number-icons {
+    position: static;
+    padding-left: var(--hybrid-input-number-icons-container-padding-left);
   }
-  span input {
-    width: var(--hybrid-input-width, 100%);
-    border: var(--hybrid-input-border, none);
-    outline: var(--hybrid-input-outline, none);
-    display: var(--hybrid-input-display, inline-block);
-    text-align: var(--hybrid-input-text-align, left);
+
+  :host([state='error']) ::slotted([slot='helper-text']) {
+    color: var(--hybrid-input-error-helper-text-color);
   }
-  slot[name='suffix'],
-  slot[name='prefix'],
-  slot[name='post'],
-  slot[name='pre']s {
-    display: var(--hybrid-input-slots-display, inline-block);
+
+  :host([state='warning']) ::slotted([slot='helper-text']) {
+    color: var(--hybrid-input-warning-helper-text-color);
+  }
+
+  :host(:not([state='error'])) > #input-container:focus-within {
+    border: var(--hybrid-input-focus-border);
+  }
+
+  :host([disabled]) #password-icon,
+  :host([disabled]) #number-icons {
+    cursor: not-allowed;
+  }
+
+  :host([disabled]) ::placeholder {
+    color: var(--hybrid-input-disabled-placeholder-color);
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  #icons-separator {
+    color: var(--hybrid-input-number-icons-sperator-color);
+    padding-bottom: var(--hybrid-input-number-icons-sperator-padding-bottom);
+    padding-left: var(--hybrid-input-number-icons-sperator-padding-left);
+    padding-right: var(--hybrid-input-number-icons-sperator-padding-right);
+  }
+
+  #input-container {
+    border-bottom: var(--hybrid-input-border-bottom);
+    border-top: var(--hybrid-input-border-top);
+    border-left: var(--hybrid-input-border-left);
+    border-right: var(--hybrid-input-border-right);
+    display: flex;
+    position: relative;
+  }
+
+  :host([disabled]) #input-container {
+    border-bottom: none;
+  }
+
+  input {
+    width: 100%;
+    border: none;
+    outline: none;
+    color: var(--hybrid-input-text-color);
+  }
+
+  ::slotted([slot='label']) {
+    color: var(--hybrid-input-label-color);
+    font-size: var(--hybrid-input-label-font-size);
+    padding-bottom: var(--hybrid-input-label-padding-bottom);
+  }
+
+  ::slotted([slot='helper-text']) {
+    color: var(--hybrid-input-helper-text-color);
+    font-size: var(--hybrid-input-helper-text-font-size);
+    padding-top: var(--hybrid-input-helper-text-padding-top);
+  }
+
+  :host([disabled]) ::slotted([slot='helper-text']) {
+    color: var(--hybrid-input-disabled-helper-text-color);
+  }
+
+  :host([disabled]) ::slotted([slot='label']) {
+    color: var(--hybrid-input-disabled-label-color);
   }
 `;
 
 const sizeInputStyle = css`
-  span[data-size='large'] {
-    padding-top: var(--hybrid-input-large-container-padding-top, 8px);
-    padding-bottom: var(--hybrid-input-large-container--padding-bottom, 8px);
+  div[data-size='large'] {
+    padding-top: var(--hybrid-input-large-padding-top);
+    padding-bottom: var(--hybrid-input-large-padding-bottom);
+    padding-left: var(--hybrid-input-large-padding-left);
+    padding-right: var(--hybrid-input-large-padding-right);
   }
 
-  span[data-size='large'] slot[name='suffix'],
-  span[data-size='large'] slot[name='prefix'] {
-    padding-top: var(--hybrid-input-large-slots-padding-top, 8px);
-    padding-bottom: var(--hybrid-input-large-slots-padding-bottom, 8px);
-    padding-left: var(--hybrid-input-large-slots-padding-left, 9px);
-    padding-right: var(--hybrid-input-large-slots-padding-right, 4px);
+  div[data-size='medium'] {
+    padding-top: var(--hybrid-input-medium-padding-top);
+    padding-bottom: var(--hybrid-input-medium-padding-bottom);
+    padding-left: var(--hybrid-input-medium-padding-left);
+    padding-right: var(--hybrid-input-medium-padding-right);
   }
 
-  span[data-size='small'] {
-    padding-top: var(--hybrid-input-small-padding-top, 0px);
-    padding-bottom: var(--hybrid-input-small-padding-bottom, 0px);
+  div[data-size='small'] {
+    padding-top: var(--hybrid-input-small-padding-top);
+    padding-bottom: var(--hybrid-input-small-padding-bottom);
+    padding-left: var(--hybrid-input-small-padding-left);
+    padding-right: var(--hybrid-input-small-padding-right);
   }
-
-  span[data-size='small'],
-  span[data-size='small'] slot[name='prefix'] {
-    padding-top: var(--hybrid-input-small-padding-top, 4px);
-    padding-bottom: var(--hybrid-input-small-padding-bottom, 4px);
-    padding-left: var(--hybrid-input-small-padding-left, 5px);
-    padding-right: var(--hybrid-input-small-padding-right, 2px);
-  }
-  :host {
-    display: flex;
-  }
-   @media (prefers-color-scheme: dark) {
-        span {
-          color: var(--hybrid-input-container-color, rgba(255, 255, 255, 0.88));
-          font-size: var(--hybrid-input-container-font-size, 14px);
-          background-color: var(--hybrid-input-container-background-color-dark, rgb(44, 44, 44));
-          border-color: var(--hybrid-input-container-border-color, #929292);
-        }
-        span.inputfocuced,
-          span:hover {
-            border-color: var(--hybrid-input-hover-container-border-color-dark, #ffffff);
-            background-color: var(--hybrid-input-container-background-color-dark, rgb(44, 44, 44));
-          }
-        span input {
-          color: var(--hybrid-input-container-color-dark, rgba(255, 255, 255, 0.88));
-          background-color: var(--hybrid-input-container-background-color-dark, rgb(44, 44, 44));
-        }
-        span.inputfocuced input {
-          color: var(--hybrid-input-container-color-dark, rgba(255, 255, 255, 0.88));
-          background-color: var(--hybrid-input-hover-container-background-color, rgb(44, 44, 44));
-        }
-
-        span.inputfocuced input::placeholder {
-          color: var(--hybrid-input-container-color-dark, rgba(255, 255, 255, 0.4));
-        }
-
-    }
 `;
-export const styles = [defaultInputStyle, sizeInputStyle, css``];
+export const styles = [inputStyle, sizeInputStyle, styleVariables];
