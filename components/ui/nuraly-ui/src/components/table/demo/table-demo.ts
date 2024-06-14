@@ -1,78 +1,135 @@
-import { LitElement, html, css } from 'lit';
-import { state } from 'lit/decorators.js';
+import {LitElement, css, html} from 'lit';
+import {state} from 'lit/decorators.js';
 
 export class TableDemo extends LitElement {
+  @state()
+  headers = [
+    {
+      name: 'Id',
+      key: 'id',
+    },
+    {
+      name: 'Status',
+      key: 'status',
+    },
+    {
+      name: 'Priority',
+      key: 'priority',
+    },
+    {
+      name: 'Title',
+      key: 'title',
+    },
+    {
+      name: 'Assignee',
+      key: 'assignee',
+    },
+  ];
 
-	@state()
-	columns = [
-		{
-			name : 'Id',
-			sortable : true,
-			filtrable : true,
-			key : 'id',
-		},
-		{
+  @state()
+  rows = [
+    {
+      id: 1,
+      status: 'Open',
+      priority: 'Normal',
+      title: 'Product Details Page - Variant Component (1)',
+      assignee: 'William Jones',
+    },
+    {
+      id: 2,
+      status: 'Open',
+      priority: 'High',
+      title: 'Product Details Page - Variant Component (2)',
+      assignee: 'Natalia Hayward',
+    },
+    {
+      id: 3,
+      status: 'Closed',
+      priority: 'Normal',
+      title: 'Product Details Page - Variant Component (3)',
+      assignee: 'Jess Plant',
+    },
+    {
+      id: 4,
+      status: 'Open',
+      priority: 'Normal',
+      title: 'Product Details Page - Variant Component (4)',
+      assignee: 'William Jones',
+    },
+    {
+      id: 5,
+      status: 'Open',
+      priority: 'Normal',
+      title: 'Product Details Page - Variant Component (5)',
+      assignee: 'Kathleen Knowles',
+    },
+    {
+      id: 6,
+      status: 'Open',
+      priority: 'High',
+      title: 'Product Details Page - Variant Component (6)',
+      assignee: 'Mel Young',
+    },
+    {
+      id: 7,
+      status: 'Closed',
+      priority: 'Normal',
+      title: 'Product Details Page - Variant Component (7)',
+      assignee: 'Zahid Allison',
+    },
+    {
+      id: 8,
+      status: 'Closed',
+      priority: 'High',
+      title: 'Product Details Page - Variant Component (8)',
+      assignee: 'William Jones',
+    },
+  ];
+  static override styles = [
+    css`
+      :host {
+        display: block;
+        width: 90%;
+      }
+    `,
+  ];
+  override render() {
+    return html`
+      <h1>With selection</h1>
+      <h3>Multiple selection</h3>
+      <hy-table .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}></hy-table>
+      <h3>Single selection</h3>
+      <hy-table .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'single'}></hy-table>
+      <h1>With Expandable attribute (title)</h1>
+      <hy-table .headers="${this.headers}" .rows="${this.rows}" .expandable=${'title'}></hy-table>
+      <h1>With filter: search</h1>
+      <hy-table .headers="${this.headers}" .rows="${this.rows}" .withFilter=${true}></hy-table>
+      <h3>filter + expandable attribute (priority)</h3>
+      <hy-table
+        .headers="${this.headers}"
+        .rows="${this.rows}"
+        .withFilter=${true}
+        .expandable=${'priority'}
+      ></hy-table>
 
-			name : 'Status',
-			sortable : true,
-			filtrable : true,
-			key : 'status',
-		},
-		{
-			name : 'Priority',
-			sortable : true,
-			filtrable : true,
-			key : 'priority',
-		},
-		{
-			name : 'Title',
-			sortable : true,
-			key : 'title',
-		},
-		{
-			name : 'Assignee',
-			key : 'assignee',
-		},
-	];
-
-	@state()
-	entries = [
-		[4865, 'Open', 'Normal', 'Product Details Page - Variant Component', 'William Jones'],
-		[4844, 'Closed', 'High', 'Checkout Page - Optional steps', 'Frank Cooper'],
-		[4842, 'Closed', 'Normal', 'Checkout Page - Fix box spacing', 'William Jones'],
-		//generate more entries with random data 
-		...Array.from({ length: 100 }, () => {
-			return [
-				Math.floor(Math.random() * 10000),
-				Math.random() > 0.5 ? 'Open' : 'Closed',
-				Math.random() > 0.5 ? 'High' : 'Normal',
-				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-
-				]}),
-
-
-
-
-	];
-	
-
-	static override styles = [
-		css`
-            :host {
-                display: block;
-                width: 1000px;
-            }
-            hy-table{
-
-            }
-        `
-	];
-
-	override render() {
-		return html`
-        <hy-table .columns="${this.columns}" .entries="${this.entries}" ></hy-table>
-        `;
-	}
+      <h1>Sizes</h1>
+      <h3>Small size with selection</h3>
+      <hy-table
+        .headers="${this.headers}"
+        .rows="${this.rows}"
+        .size=${'small'}
+        .selectionMode=${'multiple'}
+      ></hy-table>
+      <h3>Large size</h3>
+      <hy-table .headers="${this.headers}" .rows="${this.rows}" .size=${'large'}></hy-table>
+      <h3>Large size with multiple selection</h3>
+      <hy-table
+        .headers="${this.headers}"
+        .rows="${this.rows}"
+        .size=${'large'}
+        .selectionMode=${'multiple'}
+      ></hy-table>
+    `;
+  }
 }
 customElements.define('hy-table-demo', TableDemo);
