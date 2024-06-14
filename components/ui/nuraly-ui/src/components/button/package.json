@@ -1,6 +1,6 @@
 {
   "name": "@hybridui/button",
-  "version": "0.0.39",
+  "version": "0.0.4",
   "description": "",
   "main": "index.js",
   "type": "module",
