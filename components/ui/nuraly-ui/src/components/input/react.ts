@@ -7,5 +7,6 @@ export const HyInput = createComponent({
   react: React,
   events: {
     valueChange: 'valueChange',
+    focused:'focused'
   },
 });
