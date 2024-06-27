@@ -44,8 +44,8 @@ export interface AddComponentRequest {
 }
 
 /** Actions*/
-export const addComponentAction = (component: AddComponentRequest) => {
-  const { uuid } = $currentPage.get();
+/** Actions*/
+export const addComponentAction = (component: AddComponentRequest, uuid :string/* page uuid */) => {
   let componentId;
   if (component.uuid) {
     componentId = component.uuid;
@@ -53,14 +53,19 @@ export const addComponentAction = (component: AddComponentRequest) => {
     componentId = uuidv4();
   }
 
-  $components.set([
+  // Add component to the application's components
+  $components.set({
     ...$components.get(),
-    {
-      ...component,
-      uuid: componentId,
-      pageId: uuid,
-    } as ComponentElement,
-  ]);
+    [uuid]: [
+      ...($components.get()[uuid] || []),
+      {
+        ...component,
+        uuid: componentId,
+        pageId: uuid,
+      } as ComponentElement,
+    ],
+  });
+
   addComponentHandler({
     ...component,
     uuid: componentId,
@@ -69,18 +74,17 @@ export const addComponentAction = (component: AddComponentRequest) => {
 
   const currentComponentId = $currentComponentId.get();
   if (currentComponentId) {
-    const currentComponent = $components.get().find((component: ComponentElement) => component.uuid === currentComponentId);
+    const currentComponent = $components.get()[uuid].find((component: ComponentElement) => component.uuid === currentComponentId);
     // or ComponentType.Collection
     if (currentComponent?.component_type === ComponentType.VerticalContainer || currentComponent?.component_type === ComponentType.Collection) {
       addComponentAsChildOf(componentId, currentComponentId);
-      
     } else {
       addComponentToCurrentPageAction(componentId);
     }
   } else {
     addComponentToCurrentPageAction(componentId);
   }
-}
+};
 if(!isServer){
 window.addComponentAction = addComponentAction
 
@@ -404,10 +408,59 @@ export function updateComponentAttributes(
     ]);
   }
 
-  updateComponentHandler(componentToUpdate);
+  //updateComponentHandler(componentToUpdate);
   
 }
 
+
+
+export function updateComponentStyles(
+  applicationId: string,
+  componentId: string,
+  updatedAttributes: any
+) {
+  let componentToUpdate;
+  const componentsStore = $components.get();
+  const applicationComponents = componentsStore[applicationId] || [];
+
+  if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
+    const updatedComponents = applicationComponents.map((component: ComponentElement) => {
+      if (component.uuid === componentId) {
+        componentToUpdate = component;
+        component.styleBreakPoints = {
+          ...component.styleBreakPoints,
+          [$currentPageViewPort.get()]: {
+            ...component.styleBreakPoints?.[$currentPageViewPort.get()],
+            ...updatedAttributes,
+          },
+        };
+      }
+      return { ...component };
+    });
+    $components.set({
+      ...componentsStore,
+      [applicationId]: updatedComponents,
+    });
+  } else {
+
+    const updatedComponents = applicationComponents.map((component: ComponentElement) => {
+      if (component.uuid === componentId) {
+        componentToUpdate = component;
+        componentToUpdate.style = {
+          ...component.style,
+          ...updatedAttributes,
+        };
+      }
+      return { ...component };
+    });
+    $components.set({
+      ...componentsStore,
+      [applicationId]: updatedComponents,
+    });
+  }
+
+  // updateComponentHandler(componentToUpdate); // Uncomment if you have this function defined
+}
 
 export function updateComponentInputs(
   componentId: string,
@@ -592,4 +645,47 @@ export function pasteComponentAction() {
       addComponentToCurrentPageAction(componentId);
     }
   }
+}
+
+
+
+
+export function updateComponentStyle(
+  component: ComponentElement,
+  updatedAttributes: any
+) {
+  let componentToUpdate;
+  if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
+    $components.set([
+      ...$components.get().map((component: ComponentElement) => {
+        if (component.uuid === componentId) {
+          componentToUpdate = component;
+          component.styleBreakPoints = {
+            ...component.styleBreakPoints,
+            [$currentPageViewPort.get()]: {
+              ...component.styleBreakPoints?.[$currentPageViewPort.get()],
+              ...updatedAttributes,
+            },
+          };
+        }
+        return { ...component };
+      }),
+    ]);
+  } else {
+    $components.set([
+      ...$components.get().map((component: ComponentElement) => {
+        if (component.uuid === componentId) {
+          componentToUpdate = component;
+          component.style = {
+            ...component.style,
+            ...updatedAttributes,
+          };
+        }
+        return { ...component };
+      }),
+    ]);
+  }
+
+  updateComponentHandler(componentToUpdate);
+  
 }

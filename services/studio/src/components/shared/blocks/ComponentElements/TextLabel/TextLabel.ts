@@ -1,7 +1,9 @@
 import { type ComponentElement } from "$store/component/interface";
-import { $componentWithChildrens } from "$store/component/sotre";
+import { $applicationComponents, $componentWithChildrens } from "$store/component/sotre";
 import { $currentPageViewPort } from "$store/page/store";
+import { log } from "@nanostores/logger";
 import { executeEventHandler } from "core/engine";
+import { executeValueHandler } from "core/helper";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -39,18 +41,12 @@ export class TextLabelBlock extends LitElement {
 
   constructor() {
     super();
-    $componentWithChildrens.subscribe((components: ComponentElement[]) => {
-      this.components = components;
-      if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      } else {
-        this.updateValue();
-      }
-    });
+
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    
+    this.updateValue();
     document.body.addEventListener("click", this.handleBodyClick);
     $currentPageViewPort.subscribe((viewPort) => {
       this.currentPageViewPort = viewPort;
@@ -90,48 +86,34 @@ export class TextLabelBlock extends LitElement {
 
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
-
       if (propName === "component" || propName === "item") {
-        this.updateValue();
+        console.log("component updated", this.component); 
         this.updateValues();
+        this.updateValue();
+        this.requestUpdate()
       }
     });
   }
 
   updateValue() {
-    
-    let messageChannel = new MessageChannel();
-    messageChannel.port1.onmessage = function (event) {
-      if (event.data.result) {
-        this.thisvalue = event.data.result;
+    executeValueHandler(this.component)
+      .onmessage = (event) => {
+        if (event.data.result) {
+          this.thisvalue = event.data.result;
+        }
       }
-    }.bind(this);
-    const command = "executeValue";
-    if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.controller?.postMessage(
-          {
-            command,
-            value: this.component.attributesHandlers?.value,
-            components: this.components,
-            component: this.component,
-          },
-          [messageChannel.port2]
-        );
-      }
-    } else {
-    }
+
   }
 
   getValue() {
     let value = "";
-    if (isServer) {
+   /* if (isServer) {
       if (this.component.parameters?.value) {
         if (this.component?.parent?.component_type === "Collection") {
           return this.component.iterations[this.item.index];
         }
       }
-    }
+    }*/
 
     return isServer ? this.component.parameters?.value : this.thisvalue ?? this.component.parameters?.value;
   }
@@ -143,15 +125,17 @@ export class TextLabelBlock extends LitElement {
         style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
         @click=${(e) => {
         if (this.component.event.onClick) {
-          executeEventHandler(this.component, "event", "onClick");
+          executeEventHandler(this.component, "event", "onClick", {
+            EventData: e.data,
+          });
         }
       }}
         @dblclick=${(e) => {
-            e.preventDefault();
+        e.preventDefault();
 
-           this.isEditable = true;
-           this.requestUpdate();
-        }}
+        this.isEditable = true;
+        this.requestUpdate();
+      }}
       >
         ${this.getValue()}
       </label>

@@ -3,6 +3,7 @@ import { addPageHandler } from "./handler";
 import { type PageElement } from "./interface";
 import { $contextMenuEvent, $currentPage, $currentPageId, $currentPageViewPort, $pageSize, $pageZoom, $pages, $showBorder } from "./store";
 import { updatePageHandler } from "./handler";
+import { setVar } from "$store/context/store";
 
 /** Actions*/
 export function addPageAction(page: PageElement) {
@@ -18,6 +19,42 @@ export function updatePageAction(page: PageElement) {
   $pages.set(updatedPages);
 }
 
+/**
+ * 
+ * using this 
+ * interface PageStore {
+  [key: string]: PageElement[];
+}
+
+export const $pages = atom<PageStore>(initialState);
+export const $resetPageStore = () => { };
+
+ */ 
+
+export function addPageToApplicationAction(page: PageElement,applicationId: string) {
+console.log('addPageToApplicationAction',page,applicationId)
+/**
+ * 
+ * using this 
+ * interface PageStore {
+  [key: string]: PageElement[];
+}
+ */
+  // add page to application object use this 
+  // interface PageStore {
+//   [key: string]: PageElement[];
+// }
+  
+    $pages.set({
+      ...$pages.get(),
+      [applicationId]: [...($pages.get()[applicationId] || []), page],
+    });
+
+    const pages = $pages.get()[window.applicationResponse.uuid];
+    console.log('pages: ', pages,  `${window.applicationResponse.uuid}.appPages`);
+    setVar(window.applicationResponse.uuid, `${window.applicationResponse.uuid}.appPages`, pages);
+
+}
 
 export function setCurrentPageAction(pageId: string) {
 

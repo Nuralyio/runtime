@@ -26,9 +26,9 @@ export class PageParameters extends LitElement {
 
     constructor() {
         super();
-        $currentPage.subscribe((currentPage) => {
+        /*$currentPage.subscribe((currentPage) => {
             this.currentPage = currentPage;
-        })
+        })*/
     }
 
     render() {

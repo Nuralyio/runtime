@@ -1,6 +1,7 @@
 import { atom, keepMount } from "nanostores";
 import { logger } from "@nanostores/logger";
 import { persistentAtom } from "@nanostores/persistent";
+import { setVar } from "./context/store";
 const isServer = typeof window === 'undefined';
 
 if(!isServer){
@@ -8,10 +9,19 @@ if(!isServer){
     window['__INITIAL_APPLICATION_STATE__'] = JSON.stringify([]);
   }
 }
-const initialState = isServer ? [] : JSON.parse(window['__INITIAL_APPLICATION_STATE__'] ?? []);
-const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
 
-export const $applications = atom<any>(initialState);
+const coreApplications = [{
+  uuid: "1",
+  name: "app1",
+},
+{
+  uuid: "2",
+  name: "app2",
+}]
+const initialState = isServer ? [] : JSON.parse(window['__INITIAL_APPLICATION_STATE__'] ?? []);
+
+const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
+export const $applications = atom<any>([...initialState, ...coreApplications]);
 export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
 
@@ -45,3 +55,11 @@ export const $showShareApplicationModal = atom<boolean>(false);
 
 keepMount($resizing)
 
+
+if (!isServer) {
+  setTimeout (() => {
+    const currentApplication = $currentApplication.get();
+    setVar('global', `currentEditingApplication`, currentApplication);
+   }
+  , 0);
+}

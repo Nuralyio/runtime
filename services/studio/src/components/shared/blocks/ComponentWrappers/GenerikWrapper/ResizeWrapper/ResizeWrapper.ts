@@ -20,6 +20,8 @@ export class ResizeWrapper extends LitElement {
   @property({ type: Object })
   selectedComponent: ComponentElement;
 
+  @property({ type: Boolean })
+  isSelected = false;
   @property({ type: Object })
   hoveredComponent: ComponentElement;
 
@@ -278,7 +280,7 @@ export class ResizeWrapper extends LitElement {
         class=${classMap({
           element: true,
           selected:
-            this.selectedComponent?.uuid === this.component.uuid ||
+            this.isSelected ||
             this.hoveredComponent?.uuid === this.component.uuid,
           hovered:
             this.hoveredComponent?.uuid === this.component.uuid &&

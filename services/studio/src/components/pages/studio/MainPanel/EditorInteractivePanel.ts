@@ -12,6 +12,7 @@ import { updatePageZoom } from "$store/page/action";
 import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/sotre";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
+import { $currentApplication } from "$store/apps";
 
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
@@ -50,7 +51,7 @@ export class EditorInteractivePanel extends LitElement {
   currentPageViewPort: string
   constructor() {
     super();
-    $selectedComponent.subscribe((selectedComponent) => {
+    $selectedComponent( $currentApplication.get().uuid).subscribe((selectedComponent) => {
       /* if(selectedComponent?.uuid !== this.component?.uuid){
          this.showQuickAction = false;
        }*/
