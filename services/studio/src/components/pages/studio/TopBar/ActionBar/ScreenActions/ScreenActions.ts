@@ -10,6 +10,7 @@ import { GenerateName } from "utils/naming-generator";
 import { setShowBorder } from "$store/page/action";
 import { v4 as uuidv4 } from "uuid";
 import { AddCollection } from "./AddCollection";
+import { getVar } from "$store/context/store";
 
 @customElement("topbar-screen-actions")
 export class TopbarScreenActions extends LitElement {
@@ -20,9 +21,9 @@ export class TopbarScreenActions extends LitElement {
     {
       label: "Text Label",
       handler: () => {
-        const componentName = GenerateName(ComponentType.TextLabel);
+      //  const componentName = GenerateName(ComponentType.TextLabel);
         addComponentAction({
-          name: componentName,
+          name: "componentName",
           component_type: ComponentType.TextLabel,
           attributes: {
             display: "block",
@@ -44,7 +45,7 @@ export class TopbarScreenActions extends LitElement {
           attributesHandlers: {},
           errors: {},
           childrenIds: [],
-        });
+        } , getVar("global", "currentPage").value);
       },
     },
     {
@@ -57,7 +58,7 @@ export class TopbarScreenActions extends LitElement {
       label: "Text Input",
       handler: () => {
         addComponentAction({
-          name: GenerateName(ComponentType.TextInput),
+          name: "text_input654",
           component_type: ComponentType.TextInput,
           styleHandlers: {},
           parameters: {
@@ -76,7 +77,7 @@ export class TopbarScreenActions extends LitElement {
           attributesHandlers: {},
           errors: {},
           childrenIds: [],
-        });
+        }  ,getVar("global", "currentPage").value);
       },
     },
     {

@@ -5,6 +5,7 @@ import "@hybridui/menu";
 import "@hybridui/icon";
 import "./ScreenList";
 import "./AddScreen";
+import "../../../../core/components/micro-app";
 import "@hybridui/button";
 import  "../Data/Datasource/Datasource";
 
@@ -40,16 +41,8 @@ export class ScreenStructureEditor extends LitElement {
     return html`
 <div style="min-width : 300px">
 </div>
-  <hy-tabs
-  .activeTab=${0}
-        .tabs=${this.editableTabs}
-        .editable=${{
-          canDeleteTab: false,
-          canEditTabTitle: false,
-          canAddTab: false,
-          canMove: false,
-        }}
-      ></hy-tabs>
+
+<micro-app uuid="1" componentToRenderUUID="331"></micro-app>
 
      
     `;

@@ -8,7 +8,7 @@ import "@hybridui/modal";
 import "@hybridui/dropdown";
 import "@lit-labs/ssr-dom-shim";
 import { useStores } from "@nanostores/lit";
-import { $selectedComponent } from "$store/component/sotre";
+import { $applicationComponents, $selectedComponent } from "$store/component/sotre";
 import { type  ComponentElement, type ComponentType } from "$store/component/interface";
 import "./TextAttributes/TextValue/TextAttribute";
 import "./TextAttributes/FontSize/FontSizeAttribute";
@@ -21,6 +21,8 @@ import "./Styles/BoxShadowAttribute/BoxShadowAttribute";
 import "./Styles/BorderAttribute/BorderAttribute";
 import "./AdvancedPanelTab";
 import "./StylePanelTab";
+import { $currentApplication } from "$store/apps";
+import { $context, getVar } from "$store/context/store";
 
 @customElement("control-panel")export class ParametersPanel extends LitElement {
   static styles = [
@@ -57,10 +59,21 @@ import "./StylePanelTab";
   @state()
   editableTabs = [];
 
+
+  @state()
+  selectedComponentIds = [];
+  
   constructor() {
     super();
-    $selectedComponent.subscribe((component: ComponentElement) => {
-      this.selectedComponent = { ...component };
+    $context.subscribe(() => {
+     this.selectedComponentIds =  (getVar("global", "selectedComponents")?.value||[]);
+     $applicationComponents($currentApplication.get().uuid).subscribe((components: ComponentElement[]) => { 
+      components = components.filter((component: ComponentElement) => this.selectedComponentIds.includes(component.uuid));
+      if(components.length) {
+        this.selectedComponent = { ...components[0] };
+      }else{
+        this.selectedComponent = null;
+      }
       this.editableTabs = [
         {
           label: "Parameters",
@@ -76,11 +89,17 @@ import "./StylePanelTab";
           ></advanced-panel>`,
         },
       ];
-    });
+     })
+    })
   }
 
   render() {
     return html`
+    <div style="color:white">
+      ${this.selectedComponent ? html`
+        <micro-app uuid="1" componentToRenderUUID="right_panel_tabs"></micro-app>
+        ` : html`<div> Select a component to edit </div>`
+      }
       <hy-tabs
         .tabs=${this.editableTabs}
         .editable=${{
@@ -90,6 +109,9 @@ import "./StylePanelTab";
           canMove: false,
         }}
       ></hy-tabs>
+
+    </div>
+      
     `;
   }
 }

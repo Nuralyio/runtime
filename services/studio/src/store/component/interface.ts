@@ -1,6 +1,8 @@
 export const enum ComponentType {
   TextLabel = "text_label",
+  Tabs = "tabs",
   TextInput = "text_input",
+  Menu = "menu",
   Button = "button_input",
   Collection = "Collection",
   VerticalContainer = "vertical-container-block",
@@ -15,7 +17,7 @@ export interface DraggingComponentInfo {
 }
 
 export interface ComponentElement {
-  id?: string;
+  parent: ComponentElement;
   uuid: string;
   name: string;
   component_type: ComponentType;
@@ -27,14 +29,13 @@ export interface ComponentElement {
   }
   styleHandlers: { [key: string]: string };
   inputHandlers: { [key: string]: string };
-  attributesHandlers: { [key: string]: string };
   parameters?: { [key: string]: string };
   event?: { [key: string]: string };
-  input?: { [key: string]: string };
-  attributes?: { [key: string]: string };
+  input?: { [key: string]: any };
   errors?: { [key: string]: string };
   childrens?: ComponentElement[];
   childrenIds?: string[];
   pageId?: string;
+  applicationId?: string;
 }
 export default {}

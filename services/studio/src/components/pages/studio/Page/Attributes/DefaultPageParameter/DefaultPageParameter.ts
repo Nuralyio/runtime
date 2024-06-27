@@ -30,11 +30,10 @@ export class AttributePageDefault extends LitElement {
         super();
         $currentApplication.subscribe((currentApplication) => {
             this.currentApplicaton = currentApplication;
-            console.log("this.currentApplicaton", this.currentApplicaton)
         })
-        $currentPage.subscribe((currentPage) => {
+        /**$currentPage.subscribe((currentPage) => {
             this.currentPage = currentPage;
-        })
+        })**/
         
 
     }

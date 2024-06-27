@@ -21,7 +21,7 @@ export class ScreenListEditor extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    $currentPage.subscribe((currentPage: PageElement) => {
+    /*$currentPage.subscribe((currentPage: PageElement) => {
       this.currentPage = { ...currentPage };
     });
 
@@ -45,8 +45,9 @@ export class ScreenListEditor extends LitElement {
 
       });
     });
-  }
+*/
 
+  }
   generateMenu(components: ComponentElement[]) {
     return components.filter(component => component)
       .map((component: ComponentElement) => ({

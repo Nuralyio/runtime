@@ -6,10 +6,10 @@ import "../../../shared/blocks/ComponentElements/TextInput/TextInput";
 import "../../../shared/blocks/ComponentElements/TextLabel/TextLabel";
 import "../../../shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
 import styles from "./Page.style";
-import { $resizing } from "$store/apps";
+import { $currentApplication, $resizing } from "$store/apps";
 import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
 import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $componentWithChildrens, $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
+import { $applicationComponents, $componentWithChildrens, $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
 import { updatePageInfo } from "$store/page/action";
 import { type PageElement } from "$store/page/interface";
 import { $currentPage, $currentPageViewPort } from "$store/page/store";
@@ -18,6 +18,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
+import { $context, getVar } from "$store/context/store";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -38,31 +39,43 @@ export class PageContent extends LitElement {
   constructor() {
     super();
 
-    
-
-    $selectedComponent.subscribe((selectedComponent) => {
+    $selectedComponent($currentApplication.get().uuid).subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
     });
-    
-    $currentPage.subscribe((currentPage) => {
-      this.currentPage = { ...currentPage };
-    });
-    $currentPageComponents().subscribe((components = []) => {
+    $applicationComponents($currentApplication.get().uuid).subscribe((components = []) => {
       this.components = [...components];
+      this.refreshComponent();
+  });
+    $context.subscribe((context) => {
+      this.refreshComponent();
     });
+
     $draggingComponentInfo.subscribe(
       (draggingComponentInfo: DraggingComponentInfo) => {
         if (draggingComponentInfo) {
           this.draggingComponentInfo = draggingComponentInfo;
-          
         } else {
           this.draggingComponentInfo = null;
         }
       }
     );
-    
-  }
 
+  }
+  refreshComponent(){
+    const currentPage = getVar("global", "currentPage")
+    const currentEditingApplication = getVar("global", "currentEditingApplication")
+    if (currentEditingApplication && currentPage) {
+      $currentPage(currentEditingApplication.value.uuid, currentPage.value).subscribe((currentPage) => {
+        if (currentPage) {
+          this.currentPage = currentPage;
+        }
+      })
+      const components = $applicationComponents(currentEditingApplication.value.uuid).get();
+      this.components = components.filter((component) => {
+        return component.pageId === currentPage.value;
+      });
+    }
+  }
   updateStyle(key, counter) {
 
     if (this.selectedComponent) {
@@ -84,7 +97,7 @@ export class PageContent extends LitElement {
     });
     //generate code event listener ton keyboard event
     document.addEventListener('keydown', function (event) {
-      
+
       // Handle arrow key presses
       switch (event.key) {
         case 'ArrowDown':
@@ -103,7 +116,7 @@ export class PageContent extends LitElement {
         case 'ArrowRight':
           this.updateStyle("marginLeft", 1);
       }
-     
+
     }.bind(this));
     document.addEventListener('keydown', function (event) {
       if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
@@ -111,13 +124,13 @@ export class PageContent extends LitElement {
           //pasteComponentAction();        
           //event.preventDefault();
         }
-    
+
       } else if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-      //  copyComponentAction(this.selectedcomponent.uuid);        
+        //  copyComponentAction(this.selectedcomponent.uuid);        
         //event.preventDefault();
       }
 
-      
+
     }.bind(this));
     const pageContainer = this.shadowRoot!.querySelector('.page-container');
     updatePageInfo({
@@ -156,16 +169,15 @@ export class PageContent extends LitElement {
   render() {
     return html`<div
     class="page-container"
-    style=${styleMap(this.currentPage.style || {})}
+    style=${styleMap(this.currentPage?.style || {})}
     @click=${(e) => {
-     
         if (!$resizing.get()) {
           e.preventDefault()
-          if(!this.isViewMode){
-          setCurrentComponentIdAction(null);
+          if (!this.isViewMode) {
+            setCurrentComponentIdAction(null);
           }
         }
-       
+
       }}
     @dragend=${(e) => {
         e.preventDefault();
@@ -182,16 +194,12 @@ export class PageContent extends LitElement {
     @drop=${(e) => {
         e.preventDefault();
         moveDraggedComponentIntoCurrentPageRoot(this.draggingComponentInfo.componentId)
-       
-       
-       
       }}
     >
    
    <div >
-
       ${this.components?.length
-        ? renderComponent(this.components, null, this.isViewMode)
+        ? renderComponent(this.components, null, false)
         : html`<div class="page-empty-message-container">
             <p class="page-empty-message">Add an item from the insert panel</p>
           </div>`}

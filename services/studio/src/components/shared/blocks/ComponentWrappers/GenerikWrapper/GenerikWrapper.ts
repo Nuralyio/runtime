@@ -30,6 +30,7 @@ import "./QuickActionWrapper/QuickActionWrapper";
 import "../ComponentTitle/ComponentTitle";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { setContextMenuEvent } from "$store/page/action";
+import { $context, getVar, setVar } from "$store/context/store";
 @customElement("generik-component-wrapper")
 export class GenerikComponentWrapper extends LitElement {
   @property({ type: Object })
@@ -69,6 +70,9 @@ export class GenerikComponentWrapper extends LitElement {
   @state()
   showQuickAction = true;
 
+  @state()
+  currentSelection = []
+
   inputRef: Ref<HTMLInputElement> = createRef();
   constructor() {
     super();
@@ -84,15 +88,18 @@ export class GenerikComponentWrapper extends LitElement {
         this.wrapperStyle = {};
       }
     });
-    $currentComponentId.subscribe(() => {});
+    $context.subscribe(() => { 
+      this.currentSelection = (getVar("global", "selectedComponents")?.value || [])
+
+    });
     $draggingComponentInfo.subscribe(
       (draggingComponentInfo: DraggingComponentInfo) => {
         if (draggingComponentInfo) {
           this.draggingComponentInfo = draggingComponentInfo;
 
           this.draggingSituation = true;
-          if(this.draggingComponentInfo?.componentId === this.component?.uuid){
-            if(this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height){
+          if (this.draggingComponentInfo?.componentId === this.component?.uuid) {
+            if (this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height) {
               this.draggingComponentInfo.blockInfo.height = `${this.inputRef.value?.getBoundingClientRect().height}px`;
               this.draggingComponentInfo.blockInfo.width = `${this.inputRef.value?.getBoundingClientRect().width}px`;
               setDraggingComponentInfo({
@@ -110,16 +117,25 @@ export class GenerikComponentWrapper extends LitElement {
         }
       }
     );
-    $selectedComponent.subscribe((selectedComponent) => {
-      if(selectedComponent?.uuid !== this.component?.uuid){
-        this.showQuickAction = false;
-       // setContextMenuEvent(null);
-      }
-      this.selectedComponent = selectedComponent;
-    });
-    $hoveredComponent.subscribe((hoveredComponent) => {
-      this.hoveredComponent = hoveredComponent;
-    });
+
+  
+    /* $selectedComponent.subscribe((selectedComponent) => {
+       if(selectedComponent?.uuid !== this.component?.uuid){
+         this.showQuickAction = false;
+        // setContextMenuEvent(null);
+       }
+       this.selectedComponent = selectedComponent;
+     });
+     $hoveredComponent.subscribe((hoveredComponent) => {
+       this.hoveredComponent = hoveredComponent;
+     });*/
+  }
+
+  override updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has("component")) {
+     this.requestUpdate();
+    }
   }
 
 
@@ -141,6 +157,7 @@ export class GenerikComponentWrapper extends LitElement {
   
     
     <resize-wrapper
+    .isSelected=${this.currentSelection.includes( this.component.uuid)}
       .component=${{ ...this.component }}
       .selectedComponent=${{ ...this.selectedComponent }}
       .hoveredComponent=${{ ...this.hoveredComponent }}
@@ -153,64 +170,77 @@ export class GenerikComponentWrapper extends LitElement {
         <span
           draggable=${this.isDragintiator}
           class=${classMap({
-            isDraggable: this.isDragintiator,
-          })}
+      isDraggable: this.isDragintiator,
+    })}
           @dragend=${() => {
-            this.requestUpdate();
-          }}
+        this.requestUpdate();
+      }}
+      @mousedown=${(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
           @click="${(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            setCurrentComponentIdAction(this.component?.uuid);
-            setContextMenuEvent(null);
+        e.stopPropagation();
+        e.preventDefault();
+        let currentSelection = (getVar("global", "selectedComponents")?.value || []);
+        if (e.metaKey) {
+          currentSelection.push(this.component.uuid);
+        }else if (e.shiftKey) {
+          currentSelection.splice(currentSelection.indexOf(this.component.uuid), 1);
+        }else{
+          currentSelection = [this.component.uuid];
+        }
+        setVar("global", "selectedComponents", [...currentSelection]);
+        setCurrentComponentIdAction(this.component?.uuid);
+        setContextMenuEvent(null);
 
-          }}"
+      }}"
           @mouseenter="${() => {
-            setHoveredComponentIdAction(this.component?.uuid);
-          }}"
+        setHoveredComponentIdAction(this.component?.uuid);
+      }}"
           @mouseleave="${() => {
-            setHoveredComponentIdAction(null);
-          }}"
+        setHoveredComponentIdAction(null);
+      }}"
         >
           <component-title
             @dragInit=${(e) => {
-              this.isDragintiator = e.detail.value;
-            }}
+        this.isDragintiator = e.detail.value;
+      }}
             .component=${{ ...this.component }}
             .selectedComponent=${{ ...this.selectedComponent }}
           ></component-title>
           <!--span
             style=${styleMap({
-            display:
-              this.selectedComponent?.uuid === this.component.uuid &&
-              this.displayTitle
-                ? "block"
-                : "none",
-          })}
+        display:
+          this.selectedComponent?.uuid === this.component.uuid &&
+            this.displayTitle
+            ? "block"
+            : "none",
+      })}
             @mousedown=${(e: Event) => {
-            this.isDragintiator = true;
-            setTimeout(() => {
-              setDraggingComponentInfo({
-                componentId: this.component?.uuid,
-                blockInfo: {
-                  height: this.component.style.height,
-                  width: this.component.style.width,
-                },
-              });
-            }, 100);
-          }}
+        this.isDragintiator = true;
+        setTimeout(() => {
+          setDraggingComponentInfo({
+            componentId: this.component?.uuid,
+            blockInfo: {
+              height: this.component.style.height,
+              width: this.component.style.width,
+            },
+          });
+        }, 100);
+      }}
             @mouseup=${(e: Event) => {
-            e.preventDefault();
-            this.isDragintiator = false;
-            setDraggingComponentInfo(null);
-          }}
+        e.preventDefault();
+        this.isDragintiator = false;
+        setDraggingComponentInfo(null);
+      }}
             class="component-name"
             >${this.component.name}</span
           -->
           <div  ${ref(this.inputRef)}   class=${classMap({
-            selected:
-            this.selectedComponent?.uuid === this.component.uuid
-          })} >
+        selected:
+          this.selectedComponent?.uuid === this.component.uuid
+      })} >
             <slot></slot>
           </div>
         </span>

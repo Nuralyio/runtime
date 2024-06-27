@@ -1,9 +1,9 @@
 import { setDefaultApplicationPageIfNotSet } from "$store/app.action";
-import { updatePageAction } from "./action";
+import { addPageToApplicationAction, updatePageAction } from "./action";
 import { type PageElement } from "./interface"
 import { $pages } from "./store";
 
-export const addPageHandler = (page: PageElement) => {
+export const addPageHandler = (page: PageElement, resolve?,reject ?) => {
 
 	fetch(`/api/pages/${window.applicationResponse.uuid}`, {
 		method: "POST",
@@ -15,10 +15,17 @@ export const addPageHandler = (page: PageElement) => {
 		.then(
 			(responce) => {
 				const { page } = responce;
-				updatePageAction(page)
-				setDefaultApplicationPageIfNotSet(page.uuid)
+				if(resolve){
+					resolve(page)
+				}
+				addPageToApplicationAction(page, window.applicationResponse.uuid)
+				//setDefaultApplicationPageIfNotSet(page.uuid)
 			}
-		)
+		).catch((error) => {
+			if(reject){
+				reject(error)
+			}
+		})
 
 }
 

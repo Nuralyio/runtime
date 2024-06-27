@@ -1,4 +1,4 @@
-import {  $resizing } from "$store/apps";
+import { $resizing } from "$store/apps";
 import {
   moveDraggedComponent,
   moveDraggedComponentInside,
@@ -49,7 +49,7 @@ export class VerticalContainer extends LitElement {
     super();
     //
 
-    $hoveredComponent.subscribe((hoveredComponent) => {
+    /*$hoveredComponent.subscribe((hoveredComponent) => {
       this.hoveredComponent = hoveredComponent;
     });
     $draggingComponentInfo.subscribe(
@@ -70,7 +70,7 @@ export class VerticalContainer extends LitElement {
     );
     $selectedComponent.subscribe((selectedComponent) => {
       this.selectedComponent = selectedComponent;
-    });
+    });*/
   }
   @state()
   dropDragPalceHolderStyle = {
@@ -90,7 +90,7 @@ export class VerticalContainer extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-   this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
   }
   onContextMenu(e) {
     e.preventDefault();
@@ -104,20 +104,19 @@ export class VerticalContainer extends LitElement {
 
   renderView() {
     return html` 
-    ${this.component?.childrenIds?.length
-      ? renderComponent(
-        this.component.childrenIds?.map(
-          (id) =>
-          ({
-            ...$components.get().find((component) => component.uuid === id), item:
-              this.item
-          } as ComponentElement)
-        )
-        , this.item,
-        this.isViewMode
-      )
-      : html``
-      }`;
+    <div  
+      style=${styleMap({  ...this.component.style, "min-height": this.component?.childrenIds?.length ? "auto" : "300px" })}
+      class=${classMap({
+      container: true,
+      vertical: this.component?.input?.direction === "vertical",
+      "drag-over": this.dragOverSituation,
+    })}> 
+    ${this.component?.childrens?.length
+        ? renderComponent(this.component.childrens, this.item, this.isViewMode)
+        : html``
+      }
+      
+      </div>`;
 
   }
 

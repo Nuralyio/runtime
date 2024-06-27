@@ -1,13 +1,24 @@
 import { persistentAtom } from "@nanostores/persistent";
-import { type ComponentElement, type DraggingComponentInfo } from "./interface";
+import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "./interface";
 import { atom, computed, keepMount } from "nanostores";
 import { $currentPage, $pages } from "$store/page/store";
 import { logger } from "@nanostores/logger";
-
+import studioComponents from "./studio-components";
 const isServer = typeof window === 'undefined';
-const initialState = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STATE__'] ?? []);
+const initialStates = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STATE__'] ?? []);
 
-export const $components = atom<ComponentElement[]>(
+
+const initialState = isServer ? {} : null ?? {
+  "1": studioComponents as ComponentElement[], // Default components for the first application,
+  "f6b4be5c-a879-4b80-8d3d-ab7034ae2f7e"  : initialStates
+};
+
+// Define the ComponentStore interface
+interface ComponentStore {
+  [key: string]: ComponentElement[];
+}
+
+export const $components = atom<ComponentStore>(
   initialState
 );
 
@@ -30,9 +41,35 @@ export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
     decode: JSON.parse,
   }
 );
+// Selector for components of a specific application
+export const $applicationComponents = ($applicationId: string) => computed(
+  [$components],
+  (componentsStore: ComponentStore) => {
+    const applicationComponents = (componentsStore[$applicationId] || []).map(component => ({
+      ...component,
+      applicationId: $applicationId
+    }))
+    return applicationComponents.map((component: ComponentElement) =>
+      fillComponentChildrens(applicationComponents, component)
+    );
+  }
+);
 
-export const $componentWithChildrens = computed(
-  $components,
+
+export const $flattenedComponents = computed(
+  [$components],
+  (componentsStore: ComponentStore) => {
+    // Flattening the main components without considering their children
+    const allComponents: ComponentElement[] = Object.values(componentsStore).flat();
+    return allComponents.filter(component => !component.parent); // Only main components
+  }
+);
+
+
+
+// Computes components with their children for a specific application
+export const $componentWithChildrens = ($applicationId: string) => computed(
+  [$applicationComponents($applicationId)],
   (components: ComponentElement[]) => {
     return components.map((component: ComponentElement) =>
       fillComponentChildrens(components, component)
@@ -40,8 +77,21 @@ export const $componentWithChildrens = computed(
   }
 );
 
-export const $selectedComponent = computed(
-  [$components, $currentComponentId],
+
+
+// Computes components with their children for a specific application
+export const $AllcomponentWithChildrens = () => computed(
+  [$flattenedComponents],
+  (components: ComponentElement[]) => {
+    return components.map((component: ComponentElement) =>
+      fillComponentChildrens(components, component)
+    );
+  }
+);
+
+// Selected component within a specific application
+export const $selectedComponent = ($applicationId: string) => computed(
+  [$applicationComponents($applicationId), $currentComponentId],
   (components: ComponentElement[], currentComponentId) => {
     return (
       components.find(
@@ -51,8 +101,9 @@ export const $selectedComponent = computed(
   }
 );
 
-export const $hoveredComponent = computed(
-  [$components, $hoveredComponentId],
+// Hovered component within a specific application
+export const $hoveredComponent = ($applicationId: string) => computed(
+  [$applicationComponents($applicationId), $hoveredComponentId],
   (components: ComponentElement[], hoveredComponentId) => {
     return (
       components.find(
@@ -61,8 +112,10 @@ export const $hoveredComponent = computed(
     );
   }
 );
-export const $currentPageComponents = ()=> computed(
-  [$componentWithChildrens, $currentPage],
+
+// Components of the current page within a specific application
+export const $currentPageComponents = ($applicationId: string) => computed(
+  [$componentWithChildrens($applicationId), $currentPage],
   (components: ComponentElement[], currentPage) => {
     return currentPage?.component_ids
       ?.map((componentId) =>
@@ -74,8 +127,9 @@ export const $currentPageComponents = ()=> computed(
   }
 );
 
-export const $pagesWithComponents = ()=>computed(
-  [$componentWithChildrens, $pages],
+// Pages with their components within a specific application
+export const $pagesWithComponents = ($applicationId: string) => computed(
+  [$componentWithChildrens($applicationId), $pages],
   (componentWithChildrens, pages) => {
     return (pages || []).map((page) => {
       page.components = page.component_ids.map((componentId) =>
@@ -87,31 +141,35 @@ export const $pagesWithComponents = ()=>computed(
     });
   }
 );
-
 const fillComponentChildrens = (
   components: ComponentElement[],
   component: ComponentElement,
   parent: ComponentElement | null = null // Add parent parameter with default value
-) => {
-  if (!component.childrens) {
-    component.childrens = [];
-  }
-  if (component.childrenIds) {
-    component.childrens = component.childrenIds?.map((componentChildId: string) => {
-      const foundComponent = components.find((component: ComponentElement) => component.uuid === componentChildId);
-      if (foundComponent) {
-        return fillComponentChildrens(components, foundComponent, component);
-      }
-      return null; // Handle the case where a child component is not found
-    }).filter(Boolean); // Remove null values if any
-  }
+): ComponentElement => {
+  const componentMap = new Map(components.map(comp => [comp.uuid, comp]));
 
-  // Add the parent attribute to the current component
-  component.parent = structuredClone(parent);
+  const recursiveFill = (component: ComponentElement, parent: ComponentElement | null): ComponentElement => {
+    if (!component.childrens) {
+      component.childrens = [];
+    }
+    if (component.childrenIds) {
+      component.childrens = component.childrenIds.map((componentChildId: string) => {
+        const foundComponent = componentMap.get(componentChildId);
+        if (foundComponent) {
+          return recursiveFill(foundComponent, component);
+        }
+        return null; // Handle the case where a child component is not found
+      }).filter(Boolean); // Remove null values if any
+    }
 
-  return component;
+    // Add the parent attribute to the current component
+    component.parent = structuredClone(parent);
+
+    return component;
+  };
+
+  return recursiveFill(component, parent);
 };
-
 
 keepMount($currentComponentId);
 
