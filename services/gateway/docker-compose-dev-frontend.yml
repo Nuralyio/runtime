@@ -11,11 +11,12 @@ services:
       ports:
         - "${SERVICES_PORT:-8081}:8081"
       environment:
-        DATABASE_URL :  ${SERVICES_DATABASE_URL:-postgresql://postgres:postgres@ec2-35-158-240-11.eu-central-1.compute.amazonaws.com/nuraly-dev-test} 
         KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
         KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
         KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
-
+      env_file:
+      - .env.default
+      - .env
   pgadmin:
     image: dpage/pgadmin4
     environment:
@@ -42,10 +43,15 @@ services:
       KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
       KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
       KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
-      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
+      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-empty} 
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
       DOMAIN :  ${HOST_DOMAIN:-localhost} 
       KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+    depends_on:
+      - nuraly_services
+    env_file:
+      - .env.default
+      - .env
     volumes:
       - ./Nginx/nginx-frontend.conf:/usr/local/openresty/nginx/conf/nginx.conf
 

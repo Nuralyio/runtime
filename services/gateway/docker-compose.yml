@@ -12,6 +12,11 @@ services:
       file: docker-compose-common.yml
       service: redis
 
+  postgres:
+    extends:
+      file: docker-compose-common.yml
+      service: postgres
+      
   nginx:
     build:
       context:  ./Nginx
@@ -33,3 +38,4 @@ services:
   
 volumes:
  pgadmin-data:
+ postgres-data:
