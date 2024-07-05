@@ -1,37 +1,51 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, TemplateResult, html} from 'lit';
-import {property} from 'lit/decorators.js';
+import {LitElement, PropertyValueMap, html, nothing} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 import {styles} from './radio.style.js';
-import {RadioButtonType, RadioOption} from './radio.type.js';
-
-export class HySelectComponent extends LitElement {
+import {RadioButtonType, RadioButtonOption, RadioButtonPosition, RadioButtonDirection} from './radio.type.js';
+import {choose} from 'lit/directives/choose.js';
+import '../button/hy-button.component';
+import {classMap} from 'lit/directives/class-map.js';
+@customElement('hy-radio-input')
+export class HyRadioComponent extends LitElement {
   static override styles = styles;
 
   @property({type: Array})
-  options: RadioOption[] = [];
+  options!: RadioButtonOption[];
 
   @property({type: String})
-  display: RadioButtonType = RadioButtonType.Default;
+  type = RadioButtonType.Default;
+
+  @property({reflect: true})
+  position = RadioButtonPosition.Left;
+
+  @property({reflect: true})
+  direction = RadioButtonDirection.Vertical;
 
   @property({type: String})
   defaultValue!: string;
 
-  @property({type: String})
+  @state()
   selectedOption!: string;
 
-  constructor() {
-    super();
+  isAllDisabled = false;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.selectedOption = this.defaultValue;
   }
 
-  protected override render(): unknown {
-    return html` ${this.renderRadioOptions(this.options)} `;
-  }
-
-  handleChange(event: RadioOption) {
-    if (event.handler) {
-      event.handler(event.value);
+  override willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    if (_changedProperties.has('options')) {
+      const option = this.options.find((option) => option.value == this.defaultValue && option.disabled);
+      if (option) {
+        this.isAllDisabled = true;
+      }
     }
-    this.selectedOption = event.value;
+  }
+
+  handleChange(option: RadioButtonOption) {
+    this.selectedOption = option.value;
     this.dispatchEvent(
       new CustomEvent('change', {
         detail: {
@@ -40,49 +54,61 @@ export class HySelectComponent extends LitElement {
       })
     );
   }
-  private renderRadioOptions(options: RadioOption[]): TemplateResult<1> {
-    switch (this.display) {
-      case RadioButtonType.Button:
-        return this.renderOptionsWithButtons(options);
-      default:
-        return this.renderOptionDefault(options);
-    }
-  }
 
-  renderOptionDefault(options: RadioOption[]) {
-    return html` ${options.map(
-      (option: RadioOption) => html`
-        <label class="radio-label">
-          <input
-            class="radio-input"
-            type="radio"
-            name="radioGroup"
-            .value="${option.value}"
-            @change="${() => this.handleChange(option)}"
-            ?checked="${option.value === this.selectedOption || option.value === this.defaultValue}"
-          />
-          ${option.label}
-        </label>
+  renderOptionDefault() {
+    return html` ${this.options.map(
+      (option: RadioButtonOption) => html`
+        <div
+          class="radio-container ${classMap({
+            error: option.state == 'error',
+            warning: option.state == 'warning',
+          })}"
+        >
+          <label class="radio">
+            <div class="input-container">
+              <input
+                class="radio-input"
+                type="radio"
+                name="radioGroup"
+                .value="${option.value}"
+                @change="${() => this.handleChange(option)}"
+                ?checked="${option.value === this.selectedOption}"
+                ?disabled=${option.disabled || this.isAllDisabled}
+              />
+            </div>
+            <span>${option.label}</span>
+          </label>
+          ${option.state && option.message
+            ? html`<div class="message-container">
+                <hy-icon name="${option.state == 'error' ? 'exclamation-circle' : 'warning'}"></hy-icon>
+                <span>${option.message}</span>
+              </div>`
+            : nothing}
+        </div>
       `
     )}`;
   }
 
-  renderOptionsWithButtons(options: RadioOption[]) {
-    return html`<span class="buttons-display"
-      >${options.map(
-        (option: RadioOption) => html`
+  renderOptionsWithButtons() {
+    return html`<div class="type-button">
+      ${this.options.map(
+        (option: RadioButtonOption) => html`
           <hy-button
-            .type="${option.value === this.selectedOption || option.value === this.defaultValue ? 'primary' : ''}"
-            @click="${() => this.handleChange(option)}"
-            .icon=${option.button?.icon}
-            .type=${option.button?.type}
+            .icon=${option.icon ? [option.icon] : []}
+            .disabled=${option.disabled || this.isAllDisabled}
+            .type="${option.value == this.selectedOption || this.isAllDisabled ? 'primary' : ''}"
+            @click="${() => option.value != this.selectedOption && this.handleChange(option)}"
           >
             ${option.label}</hy-button
           >
         `
-      )}</span
-    >`;
+      )}
+    </div>`;
+  }
+  protected override render() {
+    return html`${choose(this.type, [
+      [RadioButtonType.Default, () => this.renderOptionDefault()],
+      [RadioButtonType.Button, () => this.renderOptionsWithButtons()],
+    ])} `;
   }
 }
-
-customElements.define('hy-radio-input', HySelectComponent);

@@ -22,7 +22,14 @@ const baseButtonStyle = css`
   button {
     height: var(--hybrid-button-height);
     width: var(--hybrid-button-width);
-    border: var(--hybrid-button-border);
+    border-left: var(--hybrid-button-border-left);
+    border-right: var(--hybrid-button-border-right);
+    border-top: var(--hybrid-button-border-top);
+    border-bottom: var(--hybrid-button-border-bottom);
+    border-top-left-radius: var(--hybrid-button-border-top-left-radius);
+    border-top-right-radius: var(--hybrid-button-border-top-right-radius);
+    border-bottom-left-radius: var(--hybrid-button-border-bottom-left-radius);
+    border-bottom-right-radius: var(--hybrid-button-border-bottom-right-radius);
     background-color: var(--hybrid-button-background-color);
     color: var(--hybrid-button-text-color);
     font-size: var(--hybrid-button-font-size);
