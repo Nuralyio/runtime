@@ -1,133 +1,188 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LitElement, html } from 'lit';
-import { property, state, customElement } from 'lit/decorators.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { styles } from './select.style.js';
-import { EMPTY_STRING } from './select.constant.js';
+import {LitElement, PropertyValueMap, html, nothing} from 'lit';
+import {property, state, customElement, query} from 'lit/decorators.js';
+import {styles} from './select.style.js';
+import {map} from 'lit/directives/map.js';
+import '../icon/icon.component.js';
+import {IOption, OptionSelectionMode, OptionSize, OptionStatus, OptionType} from './select.types.js';
+import {choose} from 'lit/directives/choose.js';
+import {EMPTY_STRING, MULTIPLE_OPTIONS_SEPARATOR} from './select.constant.js';
 
 @customElement('hy-select')
 export class HySelectComponent extends LitElement {
   static override styles = styles;
 
-  @property({ type: Boolean })
-  editable = false;
-  @property({ type: Array })
-  options = [];
-
-  @property({ type: Object })
-  selected: any;
-
-  @property({ type: String })
+  @property()
+  options!: IOption[];
+  @property()
+  defaultSelected: string[] = [];
+  @property()
   placeholder = 'Select an option';
-
-  @property({ type: String })
-  search = EMPTY_STRING;
+  @property({type: Boolean, reflect: true})
+  disabled = false;
+  @property({reflect: true})
+  type = OptionType.Default;
+  @property()
+  selectionMode = OptionSelectionMode.Single;
+  @property({type: Boolean, reflect: true})
+  show = false;
+  @property({reflect: true})
+  status = OptionStatus.Default;
+  @property({reflect: true})
+  size = OptionSize.Medium;
 
   @state()
-  searchedElement: any;
+  selected: IOption[] = [];
 
-  @state()
-  filteredOptions = {};
+  @query('.options')
+  optionsElement!: HTMLElement;
+  @query('.wrapper')
+  wrapper!: HTMLElement;
 
-  @property({ type: Boolean })
-  hasInner = false;
-
-  @property({ type: Array })
-  selectedElements: any[] = []; // For multiple select
-
-  @property({ type: String }) // Add a property to specify selection mode
-  selectionMode: 'single' | 'multiple' = 'single';
-
-  constructor() {
-    super();
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.initSelectedOptions();
   }
-
-  valueChangeHandler(_e: any) {
-    this.searchedElement = _e.detail.value;
-    this.filteredOption();
-  }
-
-  filteredOption() {
-    if (!this.searchedElement) {
-      return this.options;
+  override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    if (_changedProperties.has('selected')) {
+      this.dispatchChangeEvent();
     }
-
-    const lowercaseSearchedElement = this.searchedElement.toLowerCase();
-
-    return this.options
-      ?.map((option: any) => {
-        const { label } = option;
-        if (label && label.toLowerCase().includes(lowercaseSearchedElement)) {
-          const startIndex = label.toLowerCase().indexOf(lowercaseSearchedElement);
-          const endIndex = startIndex + lowercaseSearchedElement.length;
-          const highlightedLabel =
-            label.substring(0, startIndex) +
-            `<strong>${label.substring(startIndex, endIndex)}</strong>` +
-            label.substring(endIndex);
-          return { ...option, label: html`${unsafeHTML(highlightedLabel)}` };
+  }
+  private initSelectedOptions() {
+    if (this.defaultSelected.length) {
+      if (this.selectionMode == OptionSelectionMode.Multiple) {
+        this.defaultSelected.forEach((defaultOption) => {
+          const option = this.options.find((option) => defaultOption == option.label);
+          if (option) {
+            this.selected.push(option);
+          }
+        });
+      } else {
+        const option = this.options.find((option) => this.defaultSelected[0] == option.label);
+        if (option) {
+          this.selected = [option];
         }
-        return undefined;
-      })
-      .filter((option) => option);
+      }
+    }
   }
 
-  elementSelected(e: any) {
-    const selectedValue = e.detail.value;
+  private async toggleOptions() {
+    this.show = !this.show;
+    await this.updateComplete;
+    if (this.show) this.calculateOptionsPosition();
+    else this.initOptionsPosition();
+  }
+  private calculateOptionsPosition() {
+    const wrapperBorderBottomWidth = +getComputedStyle(this.wrapper).borderBottomWidth.split('px')[0];
+    const wrapperBorderTopWidth = +getComputedStyle(this.wrapper).borderTopWidth.split('px')[0];
+    const clientRect = this.optionsElement.getBoundingClientRect();
+    const availableBottomSpace =
+      window.visualViewport!.height -
+      clientRect.bottom +
+      clientRect.height -
+      this.wrapper.getBoundingClientRect().height;
+    const availableTopSpace = clientRect.top;
+    if (clientRect.height > availableBottomSpace && availableTopSpace > clientRect.height) {
+      this.optionsElement.style.top = `${-clientRect.height - wrapperBorderTopWidth}px`;
+    } else {
+      this.optionsElement.style.top = `calc(100% + ${wrapperBorderBottomWidth}px)`;
+    }
+  }
+  private initOptionsPosition() {
+    this.optionsElement.style.removeProperty('top');
+  }
 
-    if (this.selectionMode === 'single') {
-      this.selectedElements = [];
-      this.selected = selectedValue;
-      this.dispatchEvent(new CustomEvent('changed', { detail: { value: this.selected } }));
-
-    } else if (this.selectionMode === 'multiple') {
-      const isValueInArray = this.selectedElements.some((item) =>
-        this.isEqual(item, selectedValue)
-      );
-
-      if (isValueInArray) {
-        this.selectedElements = this.selectedElements.filter(
-          (item) => !this.isEqual(item, selectedValue)
+  private selectOption(selectOptionEvent: Event, selectedOption: IOption) {
+    selectOptionEvent.stopPropagation();
+    if (this.selectionMode == OptionSelectionMode.Single) {
+      this.selected = this.selected.length && this.selected[0].label == selectedOption.label ? [] : [selectedOption];
+      this.toggleOptions();
+    } else {
+      if (this.selected.includes(selectedOption)) {
+        this.selected = this.selected.filter(
+          (previousSelectedOption) => previousSelectedOption.label != selectedOption.label
         );
       } else {
-        this.selectedElements.push(selectedValue);
+        this.selected = [...this.selected, selectedOption];
       }
-    this.dispatchEvent(new CustomEvent('changed', { detail: { value: this.selectedElements } }));
-
     }
-
+  }
+  private unselectAll(unselectAllEvent: Event) {
+    unselectAllEvent.stopPropagation();
+    this.selected = [];
+  }
+  private unselectOne(unselectOneEvent: Event, selectedIndex: number) {
+    unselectOneEvent.stopPropagation();
+    this.selected = this.selected.filter((_, index) => index != selectedIndex);
+  }
+  private dispatchChangeEvent() {
+    this.dispatchEvent(new CustomEvent('changed', {detail: {value: this.selected}, bubbles: true, composed: true}));
   }
 
-  isEqual(obj1: any, obj2: any): boolean {
-    return JSON.stringify(obj1) === JSON.stringify(obj2);
-  }
-
-  override firstUpdated() {
-    this.hasInner = this.innerHTML.trim().length > 0;
+  private onBlur() {
+    this.show = false;
+    this.initOptionsPosition();
   }
 
   protected override render(): unknown {
     return html`
-      <hy-dropdown
-        .search=${this.searchedElement}
-        .selectedElements=${this.selectedElements}
-        .options=${this.options}
-        .keepOpen=${this.selectionMode === 'multiple'}
-        @change="${this.elementSelected}"
-      >
-        ${this.hasInner
-          ? html`<span slot="label"><slot></slot> </span>`
-          : this.editable
-          ? html`
-              <hy-input
-                @valueChange=${this.valueChangeHandler}
-                readonly="readonly"
-                slot="label"
-                placeholder=${this.placeholder}
-                value=${this.selected?.label}
-              ></hy-input>
-            `
-          : html`<hy-button slot="label" type="primary">${this.selected?.label ?? this.placeholder}</hy-button>`}
-      </hy-dropdown>
+      <slot name="label"></slot>
+      <div class="wrapper" tabindex="0" @click="${!this.disabled ? this.toggleOptions : nothing}" @blur=${this.onBlur}>
+        <div class="select">
+          <div class="select-trigger">
+            ${choose(this.selectionMode, [
+              [
+                OptionSelectionMode.Single,
+                () => html`${this.selected.length ? this.selected[0].label : this.placeholder}`,
+              ],
+              [
+                OptionSelectionMode.Multiple,
+                () =>
+                  html`${this.selected.length
+                    ? map(
+                        this.selected,
+                        (option, index) =>
+                          html`<span class="label">
+                              <hy-icon
+                                name="remove"
+                                id="unselect-one"
+                                @click=${(e: Event) => this.unselectOne(e, index)}
+                              ></hy-icon
+                              >${option.label}</span
+                            >${this.selected.length - 1 != index ? MULTIPLE_OPTIONS_SEPARATOR : EMPTY_STRING}`
+                      )
+                    : this.placeholder}`,
+              ],
+            ])}
+          </div>
+          <div class="icons-container">
+            ${choose(this.status, [
+              [OptionStatus.Default, () => undefined],
+              [OptionStatus.Warning, () => html`<hy-icon name="warning" id="warning-icon"></hy-icon>`],
+              [OptionStatus.Error, () => html`<hy-icon name="exclamation-circle" id="error-icon"></hy-icon>`],
+            ])}
+            ${this.selected.length
+              ? html`<hy-icon
+                  name="remove"
+                  id="unselect-multiple"
+                  @click=${(e: Event) => this.unselectAll(e)}
+                ></hy-icon>`
+              : nothing}
+            <hy-icon name="angle-down" id="arrow-icon"></hy-icon>
+          </div>
+          <div class="options">
+            ${map(
+              this.options,
+              (option) =>
+                html`<div class="option" @click="${(e: Event) => this.selectOption(e, option)}">
+                  ${this.selected.includes(option) ? html`<hy-icon name="check" id="check-icon"></hy-icon>` : nothing}
+                  <span class="option-text">${option.label}</span>
+                </div>`
+            )}
+          </div>
+        </div>
+      </div>
+      <slot name="helper-text"></slot>
     `;
   }
 }
