@@ -1,0 +1,97 @@
+import {html, fixture, expect} from '@open-wc/testing';
+import '../checkbox.component';
+import {HyCheckBox} from '../checkbox.component';
+
+suite('hy-checkbox', () => {
+  test('init checkbox', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`)!;
+    const input = el.shadowRoot!.querySelector('input[type="checkbox"]')!;
+    const inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
+    expect(el.disabled).to.be.false;
+    expect(el.indeterminate).to.be.false;
+    expect(el.disabled).to.be.false;
+    expect(input).to.exist;
+    expect(inputContent).to.equal('""');
+  });
+
+  test('should reflect the checked attribute', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox checked></hy-checkbox>`);
+    const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
+    const inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
+    expect(el.checked).to.be.true;
+    expect(input.checked).to.be.true;
+    expect(inputContent).to.not.be.empty;
+    expect(inputContent).to.contain('✔');
+    expect(inputContent).to.not.contain('-');
+  });
+
+  test('should reflect the disabled attribute', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox disabled></hy-checkbox>`)!;
+    const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
+    expect(el.disabled).to.be.true;
+    expect(input.disabled).to.be.true;
+  });
+
+  test('should reflect indeterminate attribubute', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox indeterminate></hy-checkbox>`);
+    const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
+    const inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
+
+    expect(el.indeterminate).to.be.true;
+    expect(inputContent).to.not.be.empty;
+    expect(inputContent).to.contain('-');
+    expect(inputContent).to.not.contain('✔');
+  });
+
+  test('should toggle checked state on change', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`);
+    let input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
+    let inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
+
+    expect(el.checked).to.be.false;
+    expect(inputContent).to.equal('""');
+
+    input.click();
+    await el.updateComplete;
+    input = el.shadowRoot!.querySelector('input')!;
+    inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
+
+    expect(el.checked).to.be.true;
+    expect(inputContent).to.contain('✔');
+
+    input.click();
+    await el.updateComplete;
+    input = el.shadowRoot!.querySelector('input')!;
+    inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
+    expect(el.checked).to.be.false;
+    expect(inputContent).to.equal('""');
+  });
+
+  test('should dispatch "checkbox-changed" event on change', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`)!;
+    const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
+    let checkboxChangedDispatched = false;
+
+    el.addEventListener('checkbox-changed', () => {
+      checkboxChangedDispatched = true;
+    });
+
+    input.click();
+
+    expect(checkboxChangedDispatched).to.be.true;
+  });
+
+  test('should not dispatch "checkbox-changed" event on change when checkbox is disabled', async () => {
+    const el: HyCheckBox = await fixture(html`<hy-checkbox disabled></hy-checkbox>`)!;
+    const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
+    let checkboxChangedDispatched = false;
+
+    el.addEventListener('checkbox-changed', () => {
+      checkboxChangedDispatched = true;
+    });
+
+    input.click();
+
+    expect(checkboxChangedDispatched).to.be.false;
+  });
+});
