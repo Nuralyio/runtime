@@ -3,7 +3,14 @@ import {css} from 'lit';
 export const styleVariables = css`
   :host {
     /* Default Button Style */
-    --hybrid-button-border: 2px solid #d0d0d0;
+    --hybrid-button-border-top: 2px solid #d0d0d0;
+    --hybrid-button-border-bottom: 2px solid #d0d0d0;
+    --hybrid-button-border-left: 2px solid #d0d0d0;
+    --hybrid-button-border-right: 2px solid #d0d0d0;
+    --hybrid-button-border-top-left-radius: 0px;
+    --hybrid-button-border-top-right-radius: 0px;
+    --hybrid-button-border-bottom-left-radius: 0px;
+    --hybrid-button-border-bottom-right-radius: 0px;
     --hybrid-button-background-color: #f9f9f9;
     --hybrid-button-text-color: #393939;
     --hybrid-button-hover-border-color: #1677ff;

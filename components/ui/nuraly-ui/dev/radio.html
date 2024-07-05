@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>&lt;hy-radio> Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=IBM Plex Sans" rel="stylesheet" />
     <script src="../node_modules/lit/polyfill-support.js"></script>
     <script type="module" src="../dist/components/icon/index.js"></script>
     <script type="module" src="../dist/components/radio/index.js"></script>
     <script type="module" src="../dist/components/radio/demo/radio-demo.js"></script>
     <style>
-        /*:root{
-        --hybrid-button-primary-background-color : red
-      }*/
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: black;
+          color: #ffffff;
+        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <hy-radios-demo></hy-radios-demo>
-</body>
-
+  </body>
 </html>
