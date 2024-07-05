@@ -1,258 +1,89 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, html, nothing, PropertyValueMap} from 'lit';
-import {property, queryAssignedElements, state} from 'lit/decorators.js';
-import {ref, createRef, Ref} from 'lit/directives/ref.js';
-import {EMPTY_STRING, NOTHING_STRING, OPTION_TYPES, TRIGGERS} from './menu.constants.js';
-import {styles} from './menu.style.js';
-import {classMap} from 'lit/directives/class-map.js';
-import {childrensArrow} from './templates/has-children-arrow.template.js';
-import {repeat} from 'lit/directives/repeat.js';
+import {LitElement, html} from 'lit';
+import {customElement, property, queryAll} from 'lit/decorators.js';
+import {styles} from './menu.style';
+import {IMenu} from './menu.types';
 
+@customElement('hy-menu')
 export class HyMenuComponent extends LitElement {
-  static override styles = styles;
+  private _currentSelectedLink!: number;
+  @queryAll('hy-menu-link')
+  _menuLinks!: NodeListOf<HTMLElement>;
 
-  @property({type: Array})
-  options = [];
+  @queryAll('hy-sub-menu')
+  _subMenues!: NodeListOf<HTMLElement>;
 
-  @property({type: Object})
-  selected: any;
+  @property()
+  items!: IMenu[];
 
-  @property({type: Boolean})
-  open = true;
+  override firstUpdated(): void {
+    this._getPreSelectedIndex();
+  }
 
-  @property({type: String})
-  placeholder = EMPTY_STRING;
+  _getPreSelectedIndex() {
+    const listOfLinks = [...this._menuLinks.values()];
+    this._currentSelectedLink = listOfLinks.findIndex((element) => element.hasAttribute('selected'));
+  }
 
-  @property({type: String})
-  search = EMPTY_STRING;
+  _updateSelectedLink(updateSelectedLinkEvent: CustomEvent) {
+    this._handleInitHighlighted();
+    const newSelectedIndex = updateSelectedLinkEvent.detail.index;
+    const value = updateSelectedLinkEvent.detail.value;
+    if (this._currentSelectedLink >= 0) this._menuLinks[this._currentSelectedLink].removeAttribute('selected');
+    this._menuLinks[newSelectedIndex].setAttribute('selected', 'true');
+    this._currentSelectedLink = newSelectedIndex;
+    const pathToOption = this._menuLinks[newSelectedIndex]
+      .getAttribute('data-path')
+      ?.split('-')
+      .map((valueString) => +valueString);
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        bubbles: true,
+        composed: true,
+        detail: {path: pathToOption, value},
+      })
+    );
+  }
 
-  @property({type: String})
-  trigger = 'click';
+  _handleInitHighlighted() {
+    this._subMenues.forEach((element) => {
+      if (element.hasAttribute('highlighted')) {
+        element.removeAttribute('highlighted');
+      }
+    });
+  }
 
-  @state()
-  positioningStyle = EMPTY_STRING;
-
-  @state()
-  boundery = {
-    right: false,
-  };
-
-  @state()
-  searchedELement: any;
-
-  @state()
-  private showChildrenMap = new Map<any, boolean>(); // Map to store showChildren values
-  private selectedElementMap = new Map<any, boolean>(); // Map to store showChildren values
-
-  @queryAssignedElements({slot: 'label', flatten: true})
-  _prefixItems!: Array<HTMLElement>;
-  @state()
-  hasSlotLabel = false;
-
-  menuContentRef: Ref<HTMLInputElement> = createRef();
-  menuInitiatorRef: Ref<HTMLInputElement> = createRef();
-
-  override firstUpdated() {
-    this.hasSlotLabel = !!this._prefixItems.length;
-    this.performUpdate();
+  _display(items: IMenu[], path: number[] = []): any {
+    return items.map((menu, index) => {
+      const currentPath = [...path, index].join('-');
+      if (menu.children) {
+        return html`
+          <hy-sub-menu .text=${menu.text} .icon=${menu.icon} .disabled=${menu.disabled}>
+            ${this._display(menu.children, [...path, index])}
+          </hy-sub-menu>
+        `;
+      } else {
+        return html` <hy-menu-link
+          data-path=${currentPath}
+          icon=${menu.icon}
+          text=${menu.text}
+          link=${menu.link}
+          iconposition=${menu.iconPosition}
+          ?selected=${menu.selected}
+          ?disabled=${menu.disabled}
+          @selected-link=${this._updateSelectedLink}
+        ></hy-menu-link>`;
+      }
+    });
   }
 
   override render() {
     return html`
-      <div class="menu">${this.renderDropDownIntiator()} ${(this.open && this.renderDropdowContent()) || nothing}</div>
+      <ul>
+        ${this._display(this.items)}
+      </ul>
     `;
   }
 
-  renderDropDownIntiator() {
-    const shouldToggleDropdownOnClick = this.trigger === TRIGGERS.Click;
-    const shouldShowDropdownOnHover = this.trigger === TRIGGERS.Hover;
-
-    return html`
-      <span ${ref(this.menuInitiatorRef)} class="initiator">
-        <slot
-          name="label"
-          @click="${() => {
-            shouldToggleDropdownOnClick;
-          }}"
-          @mouseover="${() => {
-            shouldShowDropdownOnHover;
-          }}"
-        ></slot>
-      </span>
-    `;
-  }
-
-  renderDropdowContent() {
-    return html`
-      <div class="menu-content show" ${ref(this.menuContentRef)}>
-        <ul>
-          ${repeat(
-            this.options,
-            (option: any) => option.id,
-            (option) => this.renderOption(option)
-          )}
-        </ul>
-      </div>
-    `;
-  }
-  
-  renderOption(option: any) {
-    const childMenuRef: Ref<HTMLInputElement> = createRef();
-    const parentRef: Ref<HTMLInputElement> = createRef();
-    const showChildren = this.showChildrenMap.get(option.id) || false;
-
-    return option.type === OPTION_TYPES.DIVIDER
-      ? this.renderDividerOption()
-      : this.renderRegularOption(option, childMenuRef, parentRef, showChildren);
-  }
-
-  renderDividerOption() {
-    return html`<li class="divider"></li>`;
-  }
-
-  renderRegularOption(
-    option: any,
-    childMenuRef: Ref<HTMLInputElement>,
-    parentRef: Ref<HTMLInputElement>,
-    showChildren: boolean
-  ) {
-    console.log(this.showChildrenMap.get(option.id))
-    const isSelected = Boolean(this.showChildrenMap.get(option.id));
-    const isGroupElement = option.type === OPTION_TYPES.GROUP;
-    const hasChildren = option.children && option.children.length > 0;
-    return html`
-      <li
-        ${ref(parentRef)}
-        class=${classMap({
-          selected: isSelected,
-          'group-element': isGroupElement,
-        })}
-        @mouseleave="${() => {}}"
-      >
-        <div style="float:right;    margin-top: -10px;">
-          ${html`${option.moreTemplate ? option.moreTemplate(option) : ''}`}
-        </div>
-        <div
-          style="user-select : none"
-          class=${classMap({'group-label': hasChildren , 'menu-item': !hasChildren , isSelected: Boolean(this.selectedElementMap.get(option))})}
-          @click="${(e: Event) => {
-            if (option.handler) {
-              option.handler();
-            }
-            this.selectedElementMap = new Map<any, boolean>();
-            if (hasChildren) {
-              console.log(option)
-              this.selectedElementMap.set(option, true);
-              this.toggleOption(option);
-              this.requestUpdate();
-            } else {
-              this.selectedElementMap.set(option, true);
-              this.handleOptionClick(option, e);
-            }
-          }}"
-            @mouseenter="${() => {
-              if (option.mouseEnterHander) {
-                option.mouseEnterHander();
-              }
-            }}"
-
-              @mouseleave="${() => {
-              if (option.mouseLeaveHander) {
-                option.mouseLeaveHander();
-              }
-            }}"
-        >
-          ${hasChildren ? childrensArrow(this.boundery, isSelected) : ''}
-          ${this.searchedELement?.id === option.id
-            ? html`<span class="arrow arrow-container"> </span>`
-            : NOTHING_STRING}
-          ${html`${option.template ? option.template(option) : option.label}`}
-        </div>
-        ${isSelected && hasChildren
-          ? html`
-              <ul
-                ${ref(childMenuRef)}
-                class=${classMap({
-                  'nested-search': showChildren,
-                  nested: option.type !== OPTION_TYPES.GROUP,
-                  'nested-group': isGroupElement,
-                })}
-              >
-                <span>${option.children.map((child: any) => this.renderOption(child))}</span>
-              </ul>
-            `
-          : NOTHING_STRING}
-      </li>
-    `;
-  }
-
-  handleOptionClick(option: any, e: Event) {
-    if (!option.template) {
-      this.handleSelect(option, e);
-    } else {
-      e.stopPropagation();
-    }
-  }
-
-  override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('search')) {
-      if (this.search) {
-        this.searching();
-        if (!this.open) {
-          this.open = true;
-        }
-      }
-    }
-  }
-  toggleOption(option: any) {
-    const toggle = !this.showChildrenMap.get(option.id);
-     this.selectedElementMap.set(option, toggle);
-    this.showChildrenMap.set(option.id, toggle);
-  }
-  searching() {
-    this.options;
-    const stacks: any[] = [];
-    this.recursivesearch(stacks, this.options, this.search);
-    this.showChildrenMap = new Map<any, boolean>();
-    this.selectedElementMap = new Map<any, boolean>();
-    this.searchedELement = undefined;
-    for (const stack of stacks) {
-      this.showChildrenMap.set(stack.id, true);
-      this.selectedElementMap.set(stack, true);
-      this.searchedELement = stack;
-    }
-  }
-  recursivesearch(stack: any[], options: any[], searching: string) {
-    for (const option of options) {
-      if (option.label.toLowerCase().includes(searching)) {
-        stack.push(option);
-        return; // Break the loop
-      }
-
-      if (option.children) {
-        stack.push(option);
-        this.recursivesearch(stack, option.children, searching);
-        if (stack.length && stack[stack.length - 1] === option) {
-          stack.pop();
-        } else {
-          return;
-        }
-      }
-    }
-  }
-
-  handleSelect(option: any, e: any) {
-    if (e) e.stopPropagation();
-    this.selected = option;
-    this.open = true;
-    const changeEvent = new CustomEvent('change', {
-      detail: {value: this.selected},
-      bubbles: true,
-      composed: true,
-    });
-    this.dispatchEvent(changeEvent);
-  }
+  static override styles = [styles];
 }
-
-customElements.define('hy-menu', HyMenuComponent);

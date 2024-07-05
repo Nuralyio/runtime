@@ -1,41 +1,79 @@
-import {html, fixture, expect, oneEvent} from '@open-wc/testing';
+import {expect, fixture, html} from '@open-wc/testing';
+import '../menu.component';
 import {HyMenuComponent} from '../menu.component';
+import {IMenu} from '../menu.types';
 
 suite('HyMenuComponent', () => {
-  test.skip('should render the component with correct options', async () => {
-    const options = [
-      {
-        label: 'Move up',
-      },
-      {label: 'Duplicate screen'},
-      {label: 'Delete'},
-      {label: 'Rename'},
-    ];
-    const component = await fixture<HyMenuComponent>(html`<hy-menu .options=${options}></hy-menu>`);
-    await component.updateComplete;
-    const renderedOptions = component.shadowRoot!.querySelectorAll('li');
-    expect(renderedOptions).to.have.lengthOf(options.length);
+  const mockMenuItems: IMenu[] = [
+    {text: ' link', link: 'menu.html', icon: 'user'},
+    {
+      text: 'first menu',
+      children: [
+        {text: 'under the first menu', link: '', icon: 'user', iconPosition: 'right'},
+        {text: 'selected menu', link: '', icon: 'user', selected: true},
+        {
+          text: 'under the first menu',
+          link: '',
+          icon: 'bomb',
+          children: [{text: 'child of under the link', link: '', icon: 'user'}],
+        },
+      ],
+      disabled: false,
+      link: '',
+    },
+    {
+      text: 'second menu',
+      children: [
+        {text: 'under second menu', link: '', icon: 'warning'},
+        {text: 'under second menu', link: '', icon: 'pencil'},
+        {
+          text: 'menu under second menu',
+          link: '',
+          icon: 'bomb',
+          children: [
+            {
+              text: 'children of menu under second menu',
+              link: '',
+              icon: 'book',
+              children: [
+                {text: 'children of children of menu unser second menu', link: '', icon: 'book', iconPosition: 'right'},
+              ],
+            },
+          ],
+        },
+      ],
+      disabled: false,
+      link: '',
+    },
+  ];
+
+  test('select the correct number of menu links and sub menus', async () => {
+    const el: HyMenuComponent = await fixture(html`<hy-menu .items=${mockMenuItems}></hy-menu>`);
+
+    expect(el._menuLinks).to.have.length(7);
+    expect(el._subMenues).to.have.length(5);
   });
 
-  test.skip('should select an option when clicked', async () => {
-    const options = [
-      {
-        label: 'Move up',
-      },
-      {label: 'Duplicate screen'},
-      {label: 'Delete'},
-      {label: 'Rename'},
-    ];
-    const component = await fixture<HyMenuComponent>(html`<hy-menu .options=${options}></hy-menu>`);
-    console.log(component);
-    const optionToSelect = 'Option 2';
-    const optionElement: HTMLElement | null = component.shadowRoot!.querySelector(`li:contains(${optionToSelect})`);
+  test('update the selected link', async () => {
+    const el: HyMenuComponent = await fixture(html`<hy-menu .items=${mockMenuItems}></hy-menu>`);
+    const previousSelectedIndex = 2;
+    const newSelectedIndex = 1;
+    const event = new CustomEvent('selected-link', {
+      detail: {index: newSelectedIndex},
+    });
+    el._updateSelectedLink(event);
 
-    setTimeout(() => optionElement!.click()); // Simulate a click event
-
-    const {detail} = await oneEvent(component, 'change');
-    expect(detail.value).to.equal(optionToSelect);
+    const selectedLink = el.shadowRoot!.querySelectorAll('hy-menu-link')[newSelectedIndex];
+    expect(selectedLink).to.have.attribute('selected');
+    const previouslySelectedLink = el.shadowRoot!.querySelectorAll('hy-menu-link')[previousSelectedIndex];
+    expect(previouslySelectedLink).to.not.have.attribute('selected');
   });
 
-  // Add more unit tests for other properties and methods of the component
+  test('init highlighted', async () => {
+    const el: HyMenuComponent = await fixture(html`<hy-menu .items=${mockMenuItems}></hy-menu>`);
+    const subMenu = el.shadowRoot!.querySelector('hy-sub-menu')!;
+    subMenu.setAttribute('highlighted', 'true');
+    el._handleInitHighlighted();
+    expect(subMenu).to.not.have.attribute('highlighted');
+  });
 });

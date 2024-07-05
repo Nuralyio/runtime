@@ -10,99 +10,76 @@ import {LitElement, html} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 
 import '../menu.component';
-import '../../dropdown/hy-dropdown.component';
-import '../../button/hy-button.component';
-import '../../input/input.component';
+import '../templates/hy-menu-link';
+import '../templates/hy-sub-menu';
+import {IMenu} from '../menu.types';
 
 @customElement('hy-menu-demo')
 export class ElMeenuElement extends LitElement {
   @state()
-  float = 'left';
-  moreTemplate = () => {
-    return html`<hy-dropdown
-      placeholder="Menu"
-      .options=${[
+  path!: number[];
+  @state()
+  value!: string;
+  @state()
+  items: IMenu[] = [
+    {text: 'Link', link: 'link', icon: 'fish', iconPosition: 'right'},
+    {text: 'Second link', link: 'link', icon: 'fish', iconPosition: 'left'},
+    {text: 'Third link', link: 'link'},
+    {
+      text: 'First Menu',
+      children: [
+        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right'},
+        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree', selected: true},
         {
-          label: 'Move up',
-          //children: [{label: 'Folder'}, {label: 'File', children: [{label: 'From disk'}, {label: 'From Onedrine'}]}],
+          text: 'Submenu 1-3',
+          link: 'Submenu 1-3 link',
+          icon: 'phone',
+          children: [{text: 'Child of Submenu 1-3', link: '', icon: 'info'}],
         },
-        {label: 'Duplicate screen'},
-        {label: 'Delete'},
-        {label: 'Rename'},
-
-        // {label: 'Open'},
+      ],
+      disabled: false,
+    },
+    {
+      text: 'Second Menu',
+      children: [
+        {text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud'},
+        {text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi'},
         {
-          label: 'Open',
+          text: 'Submenu 2-3',
+          link: 'Submenu 2-3 link',
+          icon: 'user',
           children: [
             {
-              label: 'Recent',
+              text: 'Child of Submenu 2-3',
+              link: 'Child of Submenu 2-3 link',
+              icon: 'house',
               children: [
-                ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
-                  return {
-                    label: 'Option' + i,
-                  };
-                }),
+                {
+                  text: 'Subchild of Submenu 2-3',
+                  link: 'Subchild of Submenu 2-3 link',
+                  icon: 'bell',
+                  iconPosition: 'right',
+                },
               ],
             },
           ],
         },
-        {label: 'Close project'},
-      ]}
-    >
-      <hy-button slot="label" icon="ellipsis-h"  type="link" style="--hybrid-button-link-text-color: #373737" type="dashed"></hy-button slot="label">
-    </hy-dropdown> `;
-  };
+      ],
+      link: '',
+    },
+  ];
+
   protected override render() {
     return html`
-      <div style="height : 50px">
-        <hy-button
-          @click=${() => {
-            if (this.float === 'right') {
-              this.float = 'left';
-            } else {
-              this.float = 'right';
-            }
-          }}
-          >Toggle Float</hy-button
-        >
-      </div>
-
+      <h3>Treeview</h3>
       <hy-menu
-        style="float:${this.float}"
-        placeholder="Select an option"
-        .options=${[
-          {
-            label: 'Option 1',
-            moreTemplate: this.moreTemplate,
-          },
-          {type: 'divider'},
-
-          {label: 'Option 2', moreTemplate: this.moreTemplate},
-          {
-            label: 'Option 3',
-            children: [
-              {
-                label: 'Sub-option 3',
-                children: [
-                  ...[1, 2, 3, 4, 5, 6, 7].map((i) => {
-                    if (i % 2) {
-                      return {
-                        moreTemplate: this.moreTemplate,
-                        label: 'Option' + i,
-                      };
-                    }
-                    return {
-                      label: 'Sub Option' + i,
-                    };
-                  }),
-                ],
-              },
-            ],
-          },
-          {label: 'Option 4', moreTemplate: this.moreTemplate},
-        ]}
-        @change="${(e: any) => console.log(e.detail.value)}"
+        .items=${this.items}
+        @change=${(e: CustomEvent) => {
+          this.path = e.detail.path;
+          this.value = e.detail.value;
+        }}
       ></hy-menu>
+      path: ${this.path?.join('-')} value: ${this.value}
     `;
   }
 }
