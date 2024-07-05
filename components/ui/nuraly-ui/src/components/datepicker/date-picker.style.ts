@@ -15,7 +15,10 @@ const calendarStyles = css`
     background-color: var(--hybrid-datepicker-background-color);
   }
   hy-button {
-    --hybrid-button-border: 1px solid transparent;
+    --hybrid-button-border-top: 1px solid transparent;
+    --hybrid-button-border-bottom: 1px solid transparent;
+    --hybrid-button-border-left: 1px solid transparent;
+    --hybrid-button-border-right: 1px solid transparent;
     --hybrid-button-background-color: var(--hybrid-datepicker-button-background-color);
     --hybrid-button-text-color: var(--hybrid-datepicker-button-text-color);
   }
