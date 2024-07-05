@@ -9,42 +9,21 @@
 import {LitElement, html, nothing, PropertyValues, TemplateResult} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import dayjs from 'dayjs/esm';
-import '../input/input.component.js';
-import '../icon/icon.component.js';
-import '../button/hy-button.component.js';
-import {getMonthDetails} from './core/month.helper.js';
-import {styles} from './date-picker.style.js';
-import {styleMap, StyleMapDirective} from 'lit/directives/style-map.js';
-import {EMPTY_STRING, Mode} from './constants.js';
-import {renderMonthsTemplate} from './templates/months.template.js';
-import {renderYearsTemplate} from './templates/years.template.js';
-import {renderDays} from './templates/days.template.js';
-import {oneToTwoDigit} from './core/formatter.js';
-import {capitalizeFirstLetter} from './core/string.helper.js';
-import './core/locale.helper.js';
-import { DirectiveResult } from 'lit/directive.js';
-interface NavigationDates {
-  start: {
-    year: number;
-    month: number;
-    day?: number;
-  };
-  end?: {
-    year: number;
-    month: number;
-    day?: number;
-  };
-}
-/**
- * A Datepicker element.
- *
- * @attr name
- * @attr fieldFormat
- * @attr dateValue
- * @attr dateplaceholder
- * @attr openedCalender
- * @attr range
- */
+import '../input/input.component';
+import '../icon/icon.component';
+import '../button/hy-button.component';
+import {getMonthDetails} from './core/month.helper';
+import {styles} from './date-picker.style';
+import {IDayPresentation, INavigationDate, Mode} from './datepicker.types';
+import {renderMonthsTemplate} from './templates/months.template';
+import {renderYearsTemplate} from './templates/years.template';
+import {renderDays} from './templates/days.template';
+import {oneToTwoDigit} from './core/formatter';
+import {capitalizeFirstLetter} from './core/string.helper';
+import './core/locale.helper';
+import {INPUT_SIZE, INPUT_STATE} from '../input/input.constant';
+import {EMPTY_STRING} from './constants';
+
 @customElement('hy-datepicker')
 export class HyDatePickerElement extends LitElement {
   today = dayjs();
@@ -54,20 +33,17 @@ export class HyDatePickerElement extends LitElement {
   @property({type: String})
   locale = 'en';
 
-  @property({type: String})
-  dateplaceholder!: string;
-
   @property({reflect: true})
   mode = Mode.Day;
 
-  @property({type: String})
+  @property({type: Boolean})
   range = false;
 
   @state()
-  prevMode!: Mode;
+  prevMode = this.mode;
 
-  @property({reflect: true})
-  openedCalender: boolean | undefined = false;
+  @property({reflect: true, type: Boolean})
+  openedCalendar = false;
 
   @state()
   monthsShort = dayjs.monthsShort();
@@ -76,10 +52,13 @@ export class HyDatePickerElement extends LitElement {
   months = dayjs.months();
 
   @state()
+  days = dayjs.weekdays();
+
+  @state()
   weekdaysShort = dayjs.weekdaysShort();
 
   @state()
-  curentYear = this.today.year();
+  currentYear = this.today.year();
 
   @state()
   currentDay = this.today.date();
@@ -88,22 +67,27 @@ export class HyDatePickerElement extends LitElement {
   currentMonth = this.today.month() + 1;
 
   @state()
+  endYear!: number;
+
+  @state()
+  endDay!: number;
+
+  @state()
+  endMonth!: number;
+
+  @state()
   inputFieldValue = '';
 
   @property({type: String})
   fieldFormat = 'DD/MM/YYYY';
 
   @property({type: String})
-  fieldDisplayFormat = 'DD/MM/YYYY';
-
-  @property({type: String})
   dateValue = '';
 
   @state()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  navigationDates: any = {
+  navigationDates: INavigationDate = {
     start: {
-      year: this.curentYear,
+      year: this.currentYear,
       month: this.currentMonth,
       day: this.currentDay,
     },
@@ -115,26 +99,62 @@ export class HyDatePickerElement extends LitElement {
   @query('.calendar-container')
   calendarContainer!: HTMLElement;
 
-  clendarContainerStyle : DirectiveResult<typeof StyleMapDirective> = styleMap({});
-
   @state()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  daysPresentation!: any[];
+  daysPresentation!: IDayPresentation[];
+
+  @property()
+  size = INPUT_SIZE.Medium;
+
+  @property()
+  state = INPUT_STATE.Default;
+
+  @property()
+  label!: string;
+
+  @property()
+  helper!: string;
+
+  @property({reflect: true, type: Boolean})
+  disabled = false;
+
+  INPUT_TYPE = 'calendar';
 
   static override styles = styles;
-  override updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('dateValue') && this.dateValue && this.fieldFormat) {
+
+  override connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('click', this._onClickOutside.bind(this));
+    document.addEventListener('scroll', this.positionCalendar);
+  }
+  override firstUpdated() {
+    if (this.range) {
+      this.endYear = this.currentYear;
+      this.endMonth = this.currentMonth;
+      this.endDay = this.currentDay;
+    }
+  }
+  override willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has('openedCalendar') && this.openedCalendar) {
+      this.daysPresentation = getMonthDetails(this.currentYear, this.currentMonth - 1, this.days);
+      this.positionCalendar();
+    }
+    if (changedProperties.has('dateValue') && this.dateValue) {
       const dateObj = dayjs(this.dateValue, this.fieldFormat, true);
       if (dateObj.isValid()) {
         const {years, months, date} = dateObj.toObject();
-        this.curentYear = years;
+        this.currentYear = years;
         this.currentMonth = months + 1;
         this.currentDay = date;
-        this.navigationDates = {start: {year: years, month: months + 1, day: date}};
-        this.onDateChanged();
+        this.navigationDates = {...this.navigationDates, start: {year: years, month: months + 1, day: date}};
       }
     }
-
+    if (
+      changedProperties.has('currentDay') ||
+      changedProperties.has('currentMonth') ||
+      changedProperties.has('currentYear')
+    ) {
+      this.onDateChanged();
+    }
     if (changedProperties.has('locale')) {
       this.updateLocale(this.locale);
     }
@@ -142,169 +162,213 @@ export class HyDatePickerElement extends LitElement {
 
   _onClickOutside(e: MouseEvent) {
     if (!e.composedPath().includes(this)) {
-      this.openedCalender = false;
+      this.openedCalendar = false;
     }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    document.addEventListener('click', this._onClickOutside.bind(this));
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    document.removeEventListener('click', this._onClickOutside.bind(this));
   }
 
   toggleCaldendar() {
-    this.openedCalender = !this.openedCalender;
-    if (this.openedCalender) {
-      requestAnimationFrame(() => {
-        this.positionCalnder();
-      });
-    }
+    this.openedCalendar = !this.openedCalendar;
   }
 
   onDateChanged() {
-    this.inputFieldValue = dayjs(`${this.curentYear}-${this.currentMonth}-${this.currentDay}`).format(
-      this.fieldDisplayFormat
+    this.inputFieldValue = this.range
+      ? dayjs(`${this.currentYear}-${this.currentMonth}-${this.currentDay}`).format(this.fieldFormat) +
+        '-' +
+        dayjs(`${this.endYear}-${this.endMonth}-${this.endDay}`).format(this.fieldFormat)
+      : dayjs(`${this.currentYear}-${this.currentMonth}-${this.currentDay}`).format(this.fieldFormat);
+    this.dispatchEvent(
+      new CustomEvent('date-change', {bubbles: true, composed: true, detail: {value: this.inputFieldValue}})
     );
   }
-  getDistanceFromBottom(element: HTMLElement) {
-    const rect = element.getBoundingClientRect();
-    const distanceToBottom = Math.max(0, window.innerHeight - rect.bottom);
-    return distanceToBottom;
-  }
-  positionCalnder() {
-    const distanceFromBottom = this.getDistanceFromBottom(this.dateInput);
-    if (distanceFromBottom < this.calendarContainer?.offsetHeight + 10) {
-      this.clendarContainerStyle = styleMap({
-        marginTop: -this.calendarContainer?.offsetHeight - this.dateInput.offsetHeight + 'px',
-      });
+
+  positionCalendar = async () => {
+    if (this.openedCalendar) {
+      await this.updateComplete;
+      const dateInput = this.shadowRoot!.querySelector('#date-input')!;
+      const calendarHeight = this.calendarContainer.getBoundingClientRect().height;
+      const dateInputRect = dateInput.getBoundingClientRect();
+      const availableBottomSpace = window.visualViewport!.height - dateInputRect.bottom;
+      const availableTopSpace = dateInputRect.top;
+      this.calendarContainer.style.removeProperty('top');
+      this.calendarContainer.style.removeProperty('position');
+      if (calendarHeight > availableBottomSpace && availableTopSpace > calendarHeight) {
+        const inputElement = dateInput.shadowRoot!.querySelector('#input-container')!;
+        const inputBorderTop = +getComputedStyle(inputElement).borderTopWidth.split('px')[0];
+        this.calendarContainer.style.top = `${availableTopSpace - calendarHeight - inputBorderTop}px`;
+        this.calendarContainer.style.position = 'fixed';
+      }
     }
-  }
+  };
 
   updateLocale(locale: string): void {
     dayjs.locale(locale);
     this.monthsShort = dayjs.monthsShort();
     this.months = dayjs.months();
     this.weekdaysShort = dayjs.weekdaysShort();
-  }
-  override firstUpdated() {
-    if (!this.prevMode) {
-      this.prevMode = this.mode;
-    }
-    this.updateLocale(this.locale);
-    if (this.openedCalender) {
-      requestAnimationFrame(() => {
-        this.daysPresentation = getMonthDetails(this.curentYear, this.currentMonth - 1, []);
-        this.positionCalnder();
-        this.requestUpdate();
-      });
-    }
+    this.days = dayjs.weekdays();
   }
 
-  nextYear(): void {
+  nextYear() {
+    let startYear = this.navigationDates.start.year;
     this.navigationDates = {
       ...this.navigationDates,
-      ...{
-        start: {
-          ...this.navigationDates.start,
-          year: ++this.navigationDates.start.year,
-        },
+      start: {
+        ...this.navigationDates.start,
+        year: ++startYear,
       },
     };
   }
 
-  prevYear(navigationDates: NavigationDates): NavigationDates {
-    const {start} = navigationDates;
-    const updatedStart = {...start, year: start.year - 1};
-    const updatedNavigationDates = {...navigationDates, start: updatedStart};
-    return updatedNavigationDates;
-  }
-
-  nextMonth(): void {
-    let currentMonth = this.navigationDates.start.month;
-    if (currentMonth == 12) {
-      currentMonth = 1;
-      this.nextYear();
-    } else {
-      currentMonth++;
-    }
+  prevYear() {
+    let startYear = this.navigationDates.start.year;
     this.navigationDates = {
       ...this.navigationDates,
-      ...{
-        start: {
-          ...this.navigationDates.start,
-          month: currentMonth,
-        },
+      start: {
+        ...this.navigationDates.start,
+        year: --startYear,
       },
     };
   }
 
-  prevMonth(): void {
+  nextMonth() {
     const {start} = this.navigationDates;
-    const {year, month} = start;
+    let startMonth = start.month;
+    let startYear = start.year;
+    if ((startMonth == 11 && this.range) || startMonth == 12) {
+      startMonth = 1;
+      startYear++;
+    } else {
+      startMonth++;
+    }
+    this.navigationDates = {
+      ...this.navigationDates,
+      start: {
+        day: this.navigationDates.start.day,
+        month: startMonth,
+        year: startYear,
+      },
+    };
+  }
 
-    const newMonth = ((month - 2) % 12) + 1;
-    const newYear = year - Math.floor((month - 2) / 12);
+  prevMonth() {
+    const {start} = this.navigationDates;
+    let startMonth = start.month;
+    let startYear = start.year;
+    if (startMonth >= 2) {
+      startMonth = --startMonth;
+    } else {
+      if (this.range) startMonth = 11;
+      else startMonth = 12;
+      startYear = --startYear;
+    }
 
     this.navigationDates = {
       ...this.navigationDates,
       start: {
-        ...start,
-        year: newYear,
-        month: newMonth,
+        day: this.navigationDates.start.day,
+        year: startYear,
+        month: startMonth,
       },
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  todayIsTheDay(navigationDates: any, day: number): boolean {
-    const isTheDate =
-      navigationDates.start.year === this.curentYear &&
-      navigationDates.start.month === this.currentMonth &&
-      day === this.currentDay;
-    return isTheDate;
-  }
-
-  selectMonth = (number: number): void => {
-    this.currentMonth = number + 1;
-    this.navigationDates.start.month = this.currentMonth;
+  selectMonth = (selectedMonth: number): void => {
+    const _month = selectedMonth + 1 > 11 && this.range ? 11 : selectedMonth + 1;
+    this.navigationDates.start.month = _month;
     this.navigationDates = {...this.navigationDates};
     //TODO: handle mainMode
     if (this.mode == Mode.Month) {
       this.currentDay = 1;
-      this.openedCalender = false;
+      this.openedCalendar = false;
     } else {
       this.prevMode = Mode.Day;
     }
-
-    this.onDateChanged();
   };
 
   selectYear = (selectedYear: number): void => {
-    this.curentYear = selectedYear;
+    this.navigationDates = {
+      ...this.navigationDates,
+      start: {...this.navigationDates.start, year: selectedYear},
+    };
 
     //TODO: handle mainMode
     if (this.mode == Mode.Year) {
       this.currentDay = 1;
       this.currentMonth = 1;
-      this.openedCalender = false;
+      this.openedCalendar = false;
     } else {
       this.prevMode = Mode.Month;
     }
-    this.onDateChanged();
   };
 
-  selectDay = (selectedDay: any): void => {
-    this.currentDay = Number(oneToTwoDigit(selectedDay));
+  selectDay = (selectedDay: IDayPresentation): void => {
+    if (!this.range) {
+      this.currentDay = Number(oneToTwoDigit(selectedDay.date));
+      this.currentMonth = selectedDay.month + 1;
+      this.currentYear = selectedDay.year;
+      const _month = this.currentMonth > 11 && this.range ? 11 : this.currentMonth;
+      this.navigationDates = {
+        ...this.navigationDates,
+        start: {
+          month: _month,
+          day: this.currentDay,
+          year: selectedDay.year,
+        },
+      };
+    } else {
+      this.selectDateRange(selectedDay);
+    }
+
     //TODO: handle mainMode
     this.prevMode = Mode.Day;
-    this.openedCalender = false;
-    this.onDateChanged();
+    if (!this.range) this.openedCalendar = false;
   };
+  selectDateRange(selectedDay: IDayPresentation) {
+    const selectedDateDay = selectedDay.date;
+    const selectedDateMonth = selectedDay.month;
+    const selectedDateYear = selectedDay.year;
+    const selectedDate = new Date(selectedDateYear, selectedDateMonth, selectedDateDay);
 
+    const endDateDay = this.endDay;
+    const endDateMonth = this.endMonth - 1;
+    const endDateYear = this.endYear;
+    const endDate = new Date(endDateYear, endDateMonth, endDateDay);
+
+    const startDateDay = this.currentDay;
+    const startDateMonth = this.currentMonth - 1;
+    const startDateYear = this.currentYear;
+    const startDate = new Date(startDateYear, startDateMonth, startDateDay);
+
+    if (
+      !startDate ||
+      (endDate &&
+        startDate &&
+        (selectedDate.getTime() < startDate.getTime() || selectedDate.getTime() < endDate.getTime())) ||
+      (startDate && !endDate && selectedDate.getTime() < startDate.getTime())
+    ) {
+      this.currentDay = Number(oneToTwoDigit(selectedDay.date));
+      this.currentMonth = selectedDay.month + 1;
+      this.currentYear = selectedDay.year;
+      const _month = this.currentMonth > 11 && this.range ? 11 : this.currentMonth;
+      this.navigationDates = {
+        ...this.navigationDates,
+        start: {
+          month: _month,
+          day: this.currentDay,
+          year: selectedDay.year,
+        },
+      };
+    } else if (
+      (startDate && !endDate && selectedDate.getTime() > startDate.getTime()) ||
+      (startDate && selectedDate.getTime() > startDate.getTime()) ||
+      (endDate && startDate && selectedDate.getTime() > endDate.getTime())
+    ) {
+      const _month = selectedDay.month + 1 > 12 ? 11 : selectedDay.month + 1;
+      this.endDay = Number(oneToTwoDigit(selectedDay.date));
+      this.endMonth = _month;
+      this.endYear = selectedDay.year;
+    }
+  }
   toggleMonthView(): void {
     if (this.prevMode != Mode.Month) {
       this.prevMode = Mode.Month;
@@ -316,20 +380,31 @@ export class HyDatePickerElement extends LitElement {
       this.prevMode = Mode.Year;
     }
   }
+  inputChanged(inputChangedEvent: CustomEvent): void {
+    this.dateValue = inputChangedEvent.detail.value;
+  }
+  onFocus() {
+    this.openedCalendar = true;
+  }
 
-  renderContainer(number = 0): TemplateResult | typeof nothing {
+  renderContainer(isRange = false): TemplateResult | typeof nothing {
     switch (this.prevMode) {
       case Mode.Day:
-        const daysPresentation: any = getMonthDetails(
-          this.navigationDates.start.year,
-          this.navigationDates.start.month - 1 + number,
-          []
+        return renderDays(
+          this.weekdaysShort,
+          this.navigationDates,
+          this.selectDay,
+          {
+            curentYear: this.currentYear,
+            currentMonth: this.currentMonth,
+            currentDay: this.currentDay,
+            endYear: this.endYear,
+            endMonth: this.endMonth,
+            endDay: this.endDay,
+          },
+          isRange,
+          this.days
         );
-        return renderDays(this.weekdaysShort, daysPresentation, this.navigationDates, this.selectDay, {
-          curentYear: this.curentYear,
-          currentMonth: this.currentMonth,
-          currentDay: this.currentMonth,
-        });
       case Mode.Month:
         return renderMonthsTemplate(this.monthsShort, this.currentMonth, this.selectMonth);
       case Mode.Year:
@@ -338,26 +413,31 @@ export class HyDatePickerElement extends LitElement {
         return nothing;
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  inputChanged(_e: any): void {
-    this.dateValue = _e.detail.value;
-  }
 
   renderCalendarHeader() {
     return html`
       <div class="year-month-header">
-        ${this.mode !== Mode.Year
-          ? html`<hy-button type="text" @click=${this.toggleMonthView} class="toggle-month-view">
+        ${
+          this.mode !== Mode.Year
+            ? html`<hy-button @click=${this.toggleMonthView} class="toggle-month-view">
                 ${capitalizeFirstLetter(this.months[this.navigationDates.start.month - 1])}
                 ${this.range && this.prevMode === Mode.Day
                   ? ' - ' + capitalizeFirstLetter(this.months[this.navigationDates.start.month])
                   : nothing}
-              </hy-button>
-              <hy-icon name="minus" class="header-month-year-sepration"></hy-icon> `
-          : nothing}
-        <hy-button type="text" class="toggle-year-view" @click=${this.toggleYearView}
-          >${this.navigationDates.start.year}</hy-button
-        >
+              </hy-button> `
+            : nothing
+        }  
+        
+        <div class="current-year-container">
+          <hy-button class="toggle-year-view" @click=${this.toggleYearView}>${
+      this.navigationDates.start.year
+    }</hy-button>
+          <div class="year-icons-toggler">
+            <hy-button class="next-year" .icon=${['caret-up']} @click=${() => this.nextYear()}></hy-button>
+            <hy-button class="previous-year" .icon=${['caret-down']}  @click=${() => this.prevYear()}></hy-button>
+          </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -365,74 +445,51 @@ export class HyDatePickerElement extends LitElement {
   renderCalendar() {
     return html` <div
       class="calendar-container ${this.range && this.prevMode === Mode.Day ? 'calendar-container-range' : EMPTY_STRING}"
-      style=${this.clendarContainerStyle}
     >
       <div class="calendar-header">
         <hy-button
           type="text"
-          class="header-prev-button prev-year"
-          icon="angle-double-left"
-          @click=${() => {
-            this.navigationDates = this.prevYear(this.navigationDates);
-            this.firstUpdated();
-          }}
-        ></hy-button>
-        <hy-button
-          type="text"
           class="header-prev-button prev-month"
-          icon="angle-left"
-          @click=${() => {
-            this.prevMonth();
-            this.firstUpdated();
-          }}
+          .icon="${['angle-left']}"
+          @click=${() => this.prevMonth()}
         ></hy-button>
         ${this.renderCalendarHeader()}
-        <hy-button
-          type="text"
-          class="header-next-button next-year"
-          @click=${() => {
-            this.nextYear();
-            this.firstUpdated();
-          }}
-          icon="angle-double-right"
-        ></hy-button>
+
         <hy-button
           type="text"
           class="header-next-button next-month"
-          icon="angle-right"
-          @click=${() => {
-            this.nextMonth();
-            this.firstUpdated();
-          }}
+          .icon="${['angle-right']}"
+          @click=${() => this.nextMonth()}
         ></hy-button>
       </div>
-      <span class="day-containers"
-        >${this.renderContainer()} ${this.range && this.prevMode === Mode.Day ? this.renderContainer(1) : nothing}</span
-      >
+      <span class="day-containers">
+        ${this.renderContainer()}
+        ${this.range && this.prevMode === Mode.Day ? this.renderContainer(this.range) : nothing}
+      </span>
     </div>`;
+  }
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('click', this._onClickOutside.bind(this));
+    document.removeEventListener('scroll', this.positionCalendar);
   }
 
   override render(): TemplateResult {
     return html`
       <hy-input
         id="date-input"
+        .type=${this.INPUT_TYPE}
         .value=${this.inputFieldValue}
+        .size=${this.size}
+        .state=${this.state}
+        .disabled=${this.disabled}
         @valueChange=${this.inputChanged}
-        @focus=${() => {
-          this.openedCalender = true;
-          this.requestUpdate();
-        }}
+        @focus=${this.onFocus}
       >
-        <hy-icon
-          style="cursor: pointer"
-          name="calendar"
-          slot="suffix"
-          @click=${() => {
-            this.toggleCaldendar();
-          }}
-        ></hy-icon>
+        ${this.label ? html` <span slot="label">${this.label}</span> ` : nothing}
+        ${this.helper ? html` <span slot="helper-text">${this.helper}</span> ` : nothing}
       </hy-input>
-      ${this.openedCalender ? this.renderCalendar() : nothing}
+      ${this.openedCalendar ? this.renderCalendar() : nothing}
     `;
   }
 }

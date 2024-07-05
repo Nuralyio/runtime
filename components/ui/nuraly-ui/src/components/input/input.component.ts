@@ -103,6 +103,9 @@ export class HyInputElement extends LitElement {
           [INPUT_STATE.Warning, () => html`<hy-icon name="warning" id="warning-icon"></hy-icon>`],
           [INPUT_STATE.Error, () => html`<hy-icon name="exclamation-circle" id="error-icon"></hy-icon>`],
         ])}
+        ${this.state == INPUT_STATE.Default && this.type == INPUT_TYPE.CALENDAR
+          ? html`<hy-icon name="calendar" type="regular" id="calendar-icon"></hy-icon>`
+          : nothing}
         ${this.type == INPUT_TYPE.PASSWORD
           ? choose(this.inputType, [
               [

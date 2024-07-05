@@ -28,6 +28,7 @@ export const styleVariables = css`
     --hybrid-input-warning-icon-color: #f0c300;
     --hybrid-input-error-icon-color: #da1e28;
     --hybrid-input-password-icon-color: #000000;
+    --hybrid-input-calendar-icon-color: #000000;
     --hybrid-input-disabled-icon-opacity: 0.4;
     --hybrid-input-number-icons-color: #000000;
     --hybrid-input-password-icon-padding-left: 8px;
@@ -80,6 +81,7 @@ export const styleVariables = css`
       --hybrid-input-label-color: #c6c6c6;
       --hybrid-input-helper-text-color: #c6c6c6;
       --hybrid-input-number-icon-sperator-color: #525252;
+      --hybrid-input-calendar-icon-color: #ffffff;
     }
   }
 `;

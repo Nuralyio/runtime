@@ -1,29 +1,41 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import {DateRawObject, IDayInfo, IDayPresentation} from '../datepicker.types';
 
-const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getDayDetails = (args: any) => {
-  const date = args.index - args.firstDay;
-  const day = args.index % 7;
-  let prevMonth = args.month - 1;
-  let prevYear = args.year;
+export const getDayDetails = ({dayIndex, month, year, numberOfDays, firstDay, days}: IDayInfo): IDayPresentation => {
+  const date = dayIndex - firstDay;
+  const day = dayIndex % 7;
+  let prevMonth = month - 1;
+  let prevYear = year;
   if (prevMonth < 0) {
     prevMonth = 11;
     prevYear--;
   }
   const prevMonthNumberOfDays = getNumberOfDays(prevYear, prevMonth);
-  const _date = (date < 0 ? prevMonthNumberOfDays + date : date % args.numberOfDays) + 1;
-  const valid = date >= 0 && date < args.numberOfDays ? 1 : 0;
-  const timestamp = new Date(args.year, args.month, _date).getTime();
+  const _date = (date < 0 ? prevMonthNumberOfDays + date : date % numberOfDays) + 1;
+  const valid = date >= 0 && date < numberOfDays ? 1 : 0;
+  const timestamp = new Date(year, month, _date).getTime();
+  let _month = month;
+  let _year = year;
+  if (date > 0 && date >= numberOfDays) {
+    _month += 1;
+    if (_month > 11) {
+      _month = 0;
+      _year++;
+    }
+  } else if (date < 0) {
+    _month -= 1;
+    if (_month < 0) {
+      _month = 11;
+      _year--;
+    }
+  }
   return {
     date: _date,
     day,
     valid,
     timestamp,
-    dayString: daysMap[day],
-    month: args.month,
-    reminder: args.reminders[timestamp] || null,
+    dayString: days[day],
+    month: _month,
+    year: _year,
   };
 };
 
@@ -31,14 +43,14 @@ export const getNumberOfDays = (year: number, month: number) => {
   return 32 - new Date(year, month, 32).getDate();
 };
 
-export const todayIsTheDay = (
-  navigationDates: any,
-  day: number,
-  dateRawObject: {curentYear: number; currentMonth: number; currentDay: number}
-): boolean => {
-  const isTheDate =
-    navigationDates.start.year === dateRawObject.curentYear &&
-    navigationDates.start.month === dateRawObject.currentMonth &&
-    day === dateRawObject.currentDay;
+export const todayIsTheDay = (day: IDayPresentation, dateRawObject: DateRawObject, isRange: boolean): boolean => {
+  let isTheDate = false;
+  if (!isRange) {
+    isTheDate =
+      day.year === dateRawObject.curentYear &&
+      dateRawObject.currentMonth === day.month + 1 &&
+      day.date === dateRawObject.currentDay;
+  }
+
   return isTheDate;
 };
