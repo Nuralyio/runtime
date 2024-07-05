@@ -1,75 +1,31 @@
 <!DOCTYPE html>
 
 <html>
-
-<head>
-  <meta charset="utf-8" />
-  <title>&lt;hy-button> Demo</title>
-  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
-  <script src="../node_modules/lit/polyfill-support.js"></script>
-  <script type="module" src="../dist/components/icon/index.js"></script>
-  <script type="module" src="../dist/components/button/index.js"></script>
-  <script type="module" src="../dist/components/button/demo/hy-buttons-demo.js"></script>
-  <style>
-
+  <head>
+    <meta charset="utf-8" />
+    <title>&lt;hy-button> Demo</title>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    <script type="module" src="../dist/components/icon/index.js"></script>
+    <script type="module" src="../dist/components/button/index.js"></script>
+    <script type="module" src="../dist/components/button/demo/hy-buttons-demo.js"></script>
+    <style>
       html {
-        --background-color: white;
-        --text-color: black;
+        --theme-bg: white;
+        --theme-color: black;
       }
-
-      [data-theme='dark'] {
-        --background-color: black;
-        --text-color: white;
+      body[theme='dark'] {
+        --theme-color: white;
+        --theme-bg: black;
       }
-
       body {
-        background-color: var(--background-color);
-        color: var(--text-color);
-      }
-
-      #theme-toggle {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        padding: 10px;
-        background: var(--text-color);
-        color: var(--background-color);
-        border: none;
-        cursor: pointer;
+        background-color: var(--theme-bg);
+        color: var(--theme-color);
       }
     </style>
   </head>
-
   <body>
     <hy-buttons-demo></hy-buttons-demo>
-    <button id="theme-toggle">Toggle Theme</button>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const themeToggle = document.getElementById('theme-toggle');
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-          document.body.setAttribute('data-theme', savedTheme);
-        } else {
-          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.body.setAttribute('data-theme', 'dark');
-          } else {
-            document.body.setAttribute('data-theme', 'light');
-          }
-        }
-
-        themeToggle.addEventListener('click', function () {
-          const currentTheme = document.body.getAttribute('data-theme');
-          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-          document.body.setAttribute('data-theme', newTheme);
-          localStorage.setItem('theme', newTheme);
-        });
-      });
-    </script>
-</body>
-</body>
-
   </body>
-
 </html>

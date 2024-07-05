@@ -6,9 +6,9 @@
 
 import {html, LitElement, nothing} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {ButtonType, EMPTY_STRING, IconPosition} from './hy-button.constants.js';
-import {styles} from './hy-button.style.js';
-import {ThemeController} from '../../shared/ThemeController';
+import {ButtonType, EMPTY_STRING, IconPosition} from './hy-button.constants';
+import {styles} from './hy-button.style';
+
 @customElement('hy-button')
 export class HyButtonElement extends LitElement {
   @property({type: Boolean})
@@ -32,15 +32,6 @@ export class HyButtonElement extends LitElement {
   @property({reflect: true})
   iconPosition = IconPosition.Left;
 
-  @property({reflect: true, type: String})
-  theme!: string;
-
-  private themeController = new ThemeController(this);
-
-  override willUpdate(): void {
-    if (this.theme != this.themeController.theme) this.theme = this.themeController.theme;
-  }
-
   override render() {
     return html`
       <button
@@ -59,18 +50,4 @@ export class HyButtonElement extends LitElement {
     `;
   }
   static override styles = styles;
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'hy-button': HyButtonElement;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'hy-button':
-        | React.DetailedHTMLProps<React.HTMLAttributes<HyButtonElement>, HyButtonElement>
-        | Partial<HyButtonElement>;
-    }
-  }
 }
