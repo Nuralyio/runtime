@@ -28,36 +28,56 @@ export class HyDatePickerDemoElement extends LitElement {
         <option value="zh" ?selected=${this.selectedLanguage === 'zh'}>中文</option>
         <option value="ar" ?selected=${this.selectedLanguage === 'ar'}>العربية</option>
       </select>
+      <h3>datepicker Default</h3>
+
       <hy-datepicker
         locale=${this.selectedLanguage}
-        openedcalender=${true}
-        range="true"
         fieldFormat="DD/MM/YYYY"
-        dateValue="20/11/2024"
-        dateplaceholder="20.11.2024"
+        @date-change=${(e: CustomEvent) => {
+          console.log('event ', e);
+        }}
       ></hy-datepicker>
-      <div style="top : 130px; margin-top : 350px; margin-bottom : 44px">
-        <hy-datepicker
-          dateValue="20/11/2024"
-          mode="month"
-          fieldFormat="DD/MM/YYYY"
-          fieldDisplayFormat="MM/YYYY"
-          dateplaceholder="20/11/2024"
-        ></hy-datepicker>
-        <hy-datepicker
-          dateValue="20/11/2024"
-          mode="year"
-          fieldFormat="DD/MM/YYYY"
-          fieldDisplayFormat="YYYY"
-          dateplaceholder="20/11/2024"
-        ></hy-datepicker>
-      </div>
-      <div style="top : 130px; margin-top : 1050px; margin-bottom : 44px">
-        <hy-datepicker></hy-datepicker>
-      </div>
-      <div style="top : 130px; margin-top : 450px; margin-bottom : 44px">
-        <hy-datepicker></hy-datepicker>
-      </div>
+      <br />
+      <h3>datepicker with init date</h3>
+
+      <hy-datepicker locale=${this.selectedLanguage} fieldFormat="DD/MM/YYYY" dateValue="20/11/2024"></hy-datepicker>
+      <br />
+      <h3>datepicker mm/dd/yy</h3>
+
+      <hy-datepicker locale=${this.selectedLanguage} fieldFormat="MM/DD/YYYY"></hy-datepicker>
+      <br />
+      <h3>datepicker small</h3>
+
+      <hy-datepicker locale=${this.selectedLanguage} fieldFormat="DD/MM/YYYY" size="small"></hy-datepicker>
+      <br />
+      <h3>datepicker large</h3>
+
+      <hy-datepicker locale=${this.selectedLanguage} fieldFormat="DD/MM/YYYY" size="large"></hy-datepicker>
+      <br />
+      <h3>datepicker with error</h3>
+
+      <hy-datepicker
+        locale=${this.selectedLanguage}
+        fieldFormat="DD/MM/YYYY"
+        state="error"
+        label="date label"
+        helper="date error"
+      ></hy-datepicker>
+      <br />
+      <h3>datepicker with warning</h3>
+
+      <hy-datepicker
+        locale=${this.selectedLanguage}
+        fieldFormat="DD/MM/YYYY"
+        state="warning"
+        label="labeled date"
+        helper="date helper"
+      ></hy-datepicker>
+      <br />
+      <h3>datepicker disabled</h3>
+
+      <hy-datepicker locale=${this.selectedLanguage} fieldFormat="DD/MM/YYYY" disabled=${true}></hy-datepicker>
+      <br />
     `;
   }
 }

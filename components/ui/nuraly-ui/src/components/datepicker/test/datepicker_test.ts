@@ -1,122 +1,122 @@
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
+import {expect, fixture, html} from '@open-wc/testing';
+import '../date-picker.component';
 import {HyDatePickerElement} from '../date-picker.component';
-import {fixture, html, expect, oneEvent} from '@open-wc/testing';
-import {Mode} from '../constants';
+import {Mode} from '../datepicker.types';
 
-/*const button = el.shadowRoot!.querySelector('button')!;
-    assert.equal(getComputedStyle(button).borderColor, '16px');*/
-
-// TODO: all colors assertion are disabled until they get validated.
 suite('HyDatePickerElement', () => {
-  test('should instantiate the component', async () => {
+  test('should be defined', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
     expect(el).to.be.instanceOf(HyDatePickerElement);
   });
 
-  test('should toggle the calendar on click', async () => {
+  test('should open the calendar when input is focused', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
-    const icon = el.shadowRoot!.querySelector<HTMLElement>('hy-icon[slot="suffix"]')!;
-    icon.click();
-    expect(el.openedCalender).to.be.true;
+    const input = el.shadowRoot!.querySelector('hy-input');
+    input!.dispatchEvent(new Event('focus'));
+    expect(el.openedCalendar).to.be.true;
   });
-  test('should update dateValue on input change', async () => {
+
+  test('should close the calendar when clicking outside', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
-    const input = el.shadowRoot!.querySelector<HTMLElement>('hy-input')!;
-    const newDate = '2023-03-20';
-    setTimeout(() => {
-      input.dispatchEvent(
-        new CustomEvent('valueChange', {
-          detail: {value: newDate},
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
-    const {detail} = await oneEvent(input, 'valueChange');
-    el.dateValue = detail.value;
-    expect(el.dateValue).to.equal(newDate);
+    el.openedCalendar = true;
+    document.body.click();
+    expect(el.openedCalendar).to.be.false;
   });
-  test('should update locale and change month and weekdays', async () => {
+
+  test('should move to next month', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
-    const initialMonths = el.months;
-    const initialWeekdays = el.weekdaysShort;
-    el.locale = 'fr';
+    const currentMonth = 1;
+    el.navigationDates = {start: {month: currentMonth, day: 1, year: 2023}};
+    el.openedCalendar = true;
     await el.updateComplete;
-    expect(el.months).to.not.deep.equal(initialMonths);
-    expect(el.weekdaysShort).to.not.deep.equal(initialWeekdays);
+    const nextMonthButton = el.shadowRoot?.querySelector('.next-month') as HTMLButtonElement;
+    nextMonthButton!.click();
+    expect(el.navigationDates.start.month).to.equal(currentMonth + 1);
   });
-
-  test('should render calendar when openedCalender is true', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker .openedCalender=${true}></hy-datepicker>`);
-    const calendarContainer = el.shadowRoot!.querySelector('.calendar-container');
-    expect(calendarContainer).to.exist;
-  });
-  test('should not render calendar when openedCalender is false', async () => {
+  test('should move to previous month', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
-    const calendarContainer = el.shadowRoot!.querySelector('.calendar-container');
-    expect(calendarContainer).to.not.exist;
+    const currentMonth = 2;
+    el.navigationDates = {start: {month: currentMonth, day: 1, year: 2023}};
+    el.openedCalendar = true;
+    await el.updateComplete;
+    const previousMonthButton = el.shadowRoot?.querySelector('.prev-month') as HTMLButtonElement;
+    previousMonthButton!.click();
+    expect(el.navigationDates.start.month).to.equal(currentMonth - 1);
   });
-  test('should change the month on next and prev buttons click', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker .openedCalender=${true}></hy-datepicker>`);
-    const prevMonth = el.navigationDates.start.month;
-    const prevButton = el.shadowRoot!.querySelector('.prev-month') as HTMLElement;
-    const nextButton = el.shadowRoot!.querySelector('.next-month') as HTMLElement;
-
-    prevButton.click();
+  test('should move to next year when displaying last month and click next month', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const currentYear = 2023;
+    el.navigationDates = {start: {month: 12, day: 1, year: currentYear}};
+    el.openedCalendar = true;
     await el.updateComplete;
-    expect(el.navigationDates.start.month).to.not.equal(prevMonth);
-
-    nextButton.click();
-    await el.updateComplete;
-    expect(el.navigationDates.start.month).to.equal(prevMonth);
-  });
-  test('should change the year on next and prev year buttons click', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker .openedCalender=${true}></hy-datepicker>`);
-    const prevYear = el.navigationDates.start.year;
-    const prevYearButton = el.shadowRoot!.querySelector('.prev-year') as HTMLElement;
-    const nextYearButton = el.shadowRoot!.querySelector('.next-year') as HTMLElement;
-
-    await el.updateComplete;
-    prevYearButton.click();
-    await el.updateComplete;
-    expect(el.navigationDates.start.year).to.not.equal(prevYear);
-    nextYearButton.click();
-    await el.updateComplete;
-    expect(el.navigationDates.start.year).to.equal(prevYear);
-  });
-  test('should toggle year view on year header button click', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker .openedCalender=${true}></hy-datepicker>`);
-    const yearHeaderButton = el.shadowRoot!.querySelector('.toggle-year-view') as HTMLElement;
-
-    yearHeaderButton.click();
-    await el.updateComplete;
-    expect(el.prevMode).to.equal(Mode.Year);
+    const nextMonthButton = el.shadowRoot?.querySelector('.next-month') as HTMLButtonElement;
+    nextMonthButton!.click();
+    expect(el.navigationDates.start.month).to.equal(1);
+    expect(el.navigationDates.start.year).to.equal(currentYear + 1);
   });
 
-  test('should select a month when a month is clicked', async () => {
-    const el = await fixture<HyDatePickerElement>(
-      html`<hy-datepicker .mode=${Mode.Month} .openedCalender=${true}></hy-datepicker>`
-    );
+  test('should move to previous year when displaying first month and click next month', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const currentYear = 2023;
+    el.navigationDates = {start: {month: 1, day: 1, year: currentYear}};
+    el.openedCalendar = true;
     await el.updateComplete;
-
-    const monthButton = el.shadowRoot!.querySelector('.month-container') as HTMLElement;
-    monthButton.click();
-    await el.updateComplete;
-    expect(el.currentMonth).to.equal(1);
+    const previousMonthButton = el.shadowRoot?.querySelector('.prev-month') as HTMLButtonElement;
+    previousMonthButton!.click();
+    expect(el.navigationDates.start.month).to.equal(12);
+    expect(el.navigationDates.start.year).to.equal(currentYear - 1);
   });
-  test('should select a year when a year is clicked', async () => {
-    const el = await fixture<HyDatePickerElement>(
-      html`<hy-datepicker .mode=${Mode.Year} .openedCalender=${true}></hy-datepicker>`
-    );
+
+  test('should move to previous year', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const currentYear = 2023;
+    el.navigationDates = {start: {month: 2, day: 1, year: currentYear}};
+    el.openedCalendar = true;
     await el.updateComplete;
-    const yearButton = el.shadowRoot!.querySelector('.year-container') as HTMLElement;
-    yearButton.click();
+    const previousYearButton = el.shadowRoot?.querySelector('.previous-year') as HTMLButtonElement;
+    previousYearButton!.click();
+    expect(el.navigationDates.start.year).to.equal(currentYear - 1);
+  });
+  test('should move to next year', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const currentyear = 2023;
+    el.navigationDates = {start: {month: 2, day: 1, year: currentyear}};
+    el.openedCalendar = true;
     await el.updateComplete;
-    expect(el.curentYear).to.equal(Number(yearButton.textContent));
+    const nextYearButton = el.shadowRoot?.querySelector('.next-year') as HTMLButtonElement;
+    nextYearButton!.click();
+    expect(el.navigationDates.start.year).to.equal(currentyear + 1);
+  });
+  test('should select a date correctly', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    el.navigationDates = {start: {month: 2, day: 20, year: 2023}};
+    el.openedCalendar = true;
+    await el.updateComplete;
+    const days = el.shadowRoot!.querySelectorAll('.day-container:not(.day-invalid)')!;
+    const dayInTheMonth = 2;
+    (days[dayInTheMonth] as HTMLElement).click();
+    await el.updateComplete;
+    expect(el.inputFieldValue).to.equal(`03/02/2023`);
+  });
+  test('should select a month correctly', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    el.openedCalendar = true;
+    el.prevMode = Mode.Month;
+    await el.updateComplete;
+    const months = el.shadowRoot!.querySelectorAll('.month-container')!;
+    const monthIndex = 1;
+    (months[monthIndex] as HTMLElement).click();
+    expect(el.navigationDates.start.month).to.equal(monthIndex + 1);
+  });
+  test('should select a year correctly', async () => {
+    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    el.openedCalendar = true;
+    el.prevMode = Mode.Year;
+    await el.updateComplete;
+    const years = el.shadowRoot!.querySelectorAll('.year-container')!;
+    const yearIndex = 1;
+    (years[yearIndex] as HTMLElement).click();
+    const yearValue = years[yearIndex].textContent!;
+    expect(el.navigationDates.start.year).to.equal(+yearValue);
   });
 });

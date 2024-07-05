@@ -35,6 +35,9 @@ const inputStyle = css`
   #error-icon {
     --hybrid-icon-color: var(--hybrid-input-error-icon-color);
   }
+  #calendar-icon {
+    --hybrid-icon-color: var(--hybrid-input-calendar-icon-color);
+  }
   #password-icon {
     padding-left: var(--hybrid-input-password-icon-padding-left);
     padding-right: var(--hybrid-input-password-icon-padding-right);
@@ -64,7 +67,8 @@ const inputStyle = css`
   :host([disabled]) #password-icon,
   :host([disabled]) #error-icon,
   :host([disabled]) #warning-icon,
-  :host([disabled]) #number-icons {
+  :host([disabled]) #number-icons,
+  :host([disabled]) #calendar-icon {
     opacity: var(--hybrid-input-disabled-icon-opacity);
   }
 

@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>&lt;hy-datepicker> Demo</title>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=IBM Plex Sans" rel="stylesheet" />
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    <script type="module" src="../dist/components/icon/index.js"></script>
+    <script type="module" src="../dist/components/button/index.js"></script>
+    <script type="module" src="../dist/components/datepicker/index.js"></script>
+    <script type="module" src="../dist/components/datepicker/demo/date-picker-demo.js"></script>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: black;
+          color: #ffffff;
+        }
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <title>&lt;hy-datepicker> Demo</title>
-  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
-  <script src="../node_modules/lit/polyfill-support.js"></script>
-  <script type="module" src="../dist/components/icon/index.js"></script>
-  <script type="module" src="../dist/components/button/index.js"></script>
-  <script type="module" src="../dist/components/datepicker/index.js"></script>
-  <script type="module" src="../dist/components/datepicker/demo/date-picker-demo.js"></script>
-</head>
-
-<body>
-  <hy-date-picker-demo></hy-date-picker-demo>
-</body>
-
+  <body>
+    <hy-date-picker-demo></hy-date-picker-demo>
+  </body>
 </html>
