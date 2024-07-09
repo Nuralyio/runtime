@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {LitElement, html} from 'lit';
 import {customElement, property, queryAll} from 'lit/decorators.js';
-import {styles} from './menu.style';
-import {IMenu} from './menu.types';
+import {styles} from './menu.style.js';
+import {IMenu} from './menu.types.js';
 
 @customElement('hy-menu')
 export class HyMenuComponent extends LitElement {
