@@ -1,43 +1,19 @@
-import { LitElement, html, css } from 'lit';
-import { property } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
+import {LitElement, html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
+import {styles} from './color-holder.style';
+import {ColorPickerSize} from './color-picker.types';
 
+@customElement('hy-colorholder-box')
 export class ColerHolderBox extends LitElement {
+  @property({type: String})
+  color = '#FFFFFF';
 
-	@property({type:String})
-	color: string = '#FFFFFF';
+  @property({type: String, reflect: true})
+  size!: ColorPickerSize;
 
+  static override styles = styles;
 
-	@property({type:String})
-	size: string = 'default';
-    
-
-    static override styles = [
-        css`
-            .color-holder-container{
-            	border: 1px solid gray;
-            	border-radius: 5px;
-                cursor: pointer;
-            }
-            .default-size{
-            	width: 30px;
-            	height: 25px;
-			}
-			.large-size{
-				width: 60px;
-            	height: 30px;
-			}
-        `
-    ];
-
-    override render() {
-        return html`
-        	<div class="${classMap({
-        		"color-holder-container": true,
-        		"large-size": this.size === 'large',
-        		"default-size": this.size === 'default'
-        	})}" style="background-color: ${this.color}"></div>
-        `;
-    }
+  override render() {
+    return html` <div class="color-holder-container" style="background-color: ${this.color}"></div> `;
+  }
 }
-customElements.define('hy-colorholder-box', ColerHolderBox);

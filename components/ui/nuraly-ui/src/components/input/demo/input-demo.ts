@@ -30,6 +30,19 @@ export class ElButtonDemoElement extends LitElement {
       </hy-input>
       <br />
       <br />
+
+      <hy-input
+        placeholder="Enter your FullName"
+        withCopy=${true}
+        size="large"
+        @input=${this._changeHandler}
+        @focused=${this._focusHandler}
+      >
+        <span slot="label">Text input with copy</span>
+        <span slot="helper-text">helper</span>
+      </hy-input>
+      <br />
+      <br />
       <hy-input
         placeholder="Enter your FullName"
         size="medium"
