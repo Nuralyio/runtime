@@ -42,6 +42,9 @@ export class HyInputElement extends LitElement {
   @property({type: String})
   placeholder = EMPTY_STRING;
 
+  @property()
+  withCopy = false;
+
   @state()
   inputType = EMPTY_STRING;
 
@@ -67,6 +70,11 @@ export class HyInputElement extends LitElement {
         detail: e.target,
       })
     );
+  }
+  private onCopy() {
+    const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
+    input.select();
+    navigator.clipboard.writeText(input.value);
   }
 
   private _focusEvent(e: Event) {
@@ -98,6 +106,14 @@ export class HyInputElement extends LitElement {
           @input=${this._valueChange}
           @focus=${this._focusEvent}
         />
+        ${this.withCopy
+          ? html`<hy-icon
+              name="copy"
+              type="regular"
+              id="copy-icon"
+              @click=${!this.disabled ? this.onCopy : nothing}
+            ></hy-icon>`
+          : nothing}
         ${choose(this.state, [
           [INPUT_STATE.Default, () => undefined],
           [INPUT_STATE.Warning, () => html`<hy-icon name="warning" id="warning-icon"></hy-icon>`],

@@ -44,6 +44,11 @@ const inputStyle = css`
     cursor: pointer;
     --hybrid-icon-color: var(--hybrid-input-password-icon-color);
   }
+  #copy-icon {
+    padding-right: var(--hybrid-input-copy-icon-padding-right);
+    --hybrid-icon-color: var(--hybrid-input-copy-icon-color);
+    cursor: pointer;
+  }
   #number-icons {
     display: flex;
     justify-content: space-between;
@@ -68,7 +73,8 @@ const inputStyle = css`
   :host([disabled]) #error-icon,
   :host([disabled]) #warning-icon,
   :host([disabled]) #number-icons,
-  :host([disabled]) #calendar-icon {
+  :host([disabled]) #calendar-icon,
+  :host([disabled]) #copy-icon {
     opacity: var(--hybrid-input-disabled-icon-opacity);
   }
 
@@ -95,7 +101,8 @@ const inputStyle = css`
   }
 
   :host([disabled]) #password-icon,
-  :host([disabled]) #number-icons {
+  :host([disabled]) #number-icons,
+  :host([disabled]) #copy-icon {
     cursor: not-allowed;
   }
 

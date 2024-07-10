@@ -29,6 +29,7 @@ export const styleVariables = css`
     --hybrid-input-error-icon-color: #da1e28;
     --hybrid-input-password-icon-color: #000000;
     --hybrid-input-calendar-icon-color: #000000;
+    --hybrid-input-copy-icon-color: #000000;
     --hybrid-input-disabled-icon-opacity: 0.4;
     --hybrid-input-number-icons-color: #000000;
     --hybrid-input-password-icon-padding-left: 8px;
@@ -37,6 +38,7 @@ export const styleVariables = css`
     --hybrid-input-number-icons-sperator-padding-bottom: 4px;
     --hybrid-input-number-icons-sperator-padding-left: 5px;
     --hybrid-input-number-icons-sperator-padding-right: 5px;
+    --hybrid-input-copy-icon-padding-right:5px;
 
     --hybrid-input-number-icons-container-width: 70px;
     --hybrid-input-number-icons-container-padding-left: 5px;
@@ -82,6 +84,7 @@ export const styleVariables = css`
       --hybrid-input-helper-text-color: #c6c6c6;
       --hybrid-input-number-icon-sperator-color: #525252;
       --hybrid-input-calendar-icon-color: #ffffff;
+      --hybrid-input-copy-icon-color: #ffffff;
     }
   }
 `;
