@@ -1,56 +1,53 @@
-import { ProductService } from "../services/application.service";
-import { Body, Controller, Delete, Get, Hidden, Path, Post, Put, Route, Security, Tags } from "tsoa";
-import { ProductRepositoryPrismaPgSQL } from "../repositories/application.repository";
-import { Product } from "../models/application";
+import { ApplicationService } from "../services/application.service";
+import { Body, Controller, Delete, Get, Hidden, Path, Post, Put, Query, Route, Security, Tags } from "tsoa";
+import { ApplicationRepositoryPrismaPgSQL } from "../repositories/application.repository";
+import { Application } from "../models/application";
 
-@Route('/api/products')
-@Tags('Products')
-export class ProductController extends Controller {
-  private readonly productService: ProductService;
+@Route('/api/applications')
+@Tags('Applications')
+export class ApplicationController extends Controller {
+  private readonly applicationService: ApplicationService;
 
   constructor() {
     super();
-    const productRepository = new ProductRepositoryPrismaPgSQL();
-    this.productService = new ProductService(productRepository);
+    const applicationRepository = new ApplicationRepositoryPrismaPgSQL();
+    this.applicationService = new ApplicationService(applicationRepository);
   }
 
   @Post()
-  // @Security('bearerAuth')
   public async create(
-    @Body() requestBody: { name: string; price: number }): Promise<Product> {
-    const { name, price } = requestBody;
-    return await this.productService.create(name, price);
+    @Body() requestBody: { published: boolean; name: string; uuid:string; user_id:string }): Promise<Application> {
+    const { published, name, uuid,user_id } = requestBody;
+    return await this.applicationService.create(published,name,uuid,user_id);
   }
 
   @Get()
-  // @Security('bearerAuth')
-  public async findAll(): Promise<Product[]> {
-    return await this.productService.findAll();
+  public async findAll(): Promise<Application[]> {
+    return await this.applicationService.findAll();
   }
 
-  @Get("{id}")
-  // @Security('bearerAuth')
-  public async findProductById(
-    @Path() id: string
-  ): Promise<Product> {
-    return await this.productService.findProductById(id);
+  @Get("{uuid}")
+  public async findApplicationById(
+    @Path() uuid: string
+  ): Promise<Application> {
+    return await this.applicationService.findApplicationById(uuid);
   }
 
-  @Put("{id}")
-  // @Security('bearerAuth')
+  @Put("{uuid}")
   public async update(
-    @Path() id: string,
-    @Body() requestBody: { name: string, price: number }
-  ): Promise<Product> {
-    const { name, price } = requestBody;
-    return await this.productService.update(id, name, price);
+    @Path() uuid: string,
+    @Body() requestBody: {published:boolean,name: string,user_id:string}
+  ): Promise<Application> {
+    const { published,name, user_id } = requestBody;
+    return await this.applicationService.update(published,uuid,name, user_id);
   }
 
-  @Delete("{id}")
-  // @Security('bearerAuth')
+  @Delete("{uuid}")
   public async delete(
-    @Path() id: string
-  ): Promise<Product> {
-    return await this.productService.delete(id);
+    @Path() uuid: string
+  ): Promise<Application> {
+    return await this.applicationService.delete(uuid);
   }
+
+
 }

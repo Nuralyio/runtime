@@ -24,7 +24,6 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     try {
         const user: User = JSON.parse(headerValue);
-        console.log('User retrieved:', user);
         (req as any).user = user;
         next();
     } catch (error) {

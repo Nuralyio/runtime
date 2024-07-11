@@ -1,32 +1,33 @@
-import { IProductRepository } from '../interfaces/application.interface';
-import { Product } from '../models/application';
+import { IApplicationRepository } from '../interfaces/application.interface';
+import { Application } from '../models/application';
 
-export class ProductService {
-  private productRepository: IProductRepository;
+export class ApplicationService {
+  private ApplicationRepository: IApplicationRepository;
 
-  constructor(productRepository: IProductRepository){
-    this.productRepository = productRepository;
+  constructor(productRepository: IApplicationRepository){
+    this.ApplicationRepository = productRepository;
   }
 
-  public async create(name: string, price: number): Promise<Product> {
-    const product: Product = new Product(name, price);
-    return await this.productRepository.create(product)
+  public async create(published:boolean,name: string, uuid: string, user_id:string): Promise<Application> {
+    const application: Application = new Application(published,name, uuid, user_id);
+    return await this.ApplicationRepository.create(application)
   }
 
-  public async findAll(): Promise<Product[]> {
-    return await this.productRepository.findAll();
+  public async findAll(): Promise<Application[]> {
+    return await this.ApplicationRepository.findAll();
   }
 
-  public async findProductById(id: string): Promise<Product> {
-    return await this.productRepository.findProductById(id);
+  public async findApplicationById(uuid: string): Promise<Application> {
+    return await this.ApplicationRepository.findApplicationById(uuid);
   }
 
-  public async update(id: string, name: string, price: number): Promise<Product> {
-    const product: Product = new Product(name, price, id);
-    return await this.productRepository.update(id, product);
+  public async update(published:boolean,uuid: string, name: string,user_id:string): Promise<Application> {
+    const application: Application = new Application(published,name,uuid,user_id);
+    return await this.ApplicationRepository.update(uuid, application);
   }
 
-  public async delete(id: string): Promise<Product> {
-    return await this.productRepository.delete(id);
+  public async delete(uuid: string): Promise<Application> {
+    return await this.ApplicationRepository.delete(uuid);
   }
+
 }

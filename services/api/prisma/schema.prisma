@@ -22,11 +22,17 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  //applications  applications[]
 }
 
 model applications {
-  uuid        String   @id @default(uuid())
-  name      String
+  id          Int    @id  @default(autoincrement())
+  name      String   @default("")
+  published   Boolean? @default(false)
+  uuid        String  @default("")   @unique
+  user_id     String  
+  //user        User @relation(fields: [user_id], references: [id])
+  default_page_uuid String?
 }
 
 model Permission {
@@ -44,4 +50,12 @@ model Ownership {
   ownerId      String
   resourceId   String
   resourceType String
+}
+
+model Component {
+  id             Int      @id @default(autoincrement())
+  component      Json
+  user_id        String
+  uuid           String
+  application_Id String   @default("")
 }
