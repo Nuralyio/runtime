@@ -1,16 +1,16 @@
-export class Product {
-    id?: string;
+export class Application {
+   
+    published?: boolean | null;
+    uuid: string;
+    user_id: string;
     name: string;
-    price: number;
   
-    constructor(name: string, price: number, id: string = '') {
-      if (price < 0) {
-        throw new Error("El precio no puede ser negativo");
-      }
-  
-      this.id = id;
+    constructor(published: boolean,name: string, uuid: string, user_id: string) {
+      
+      this.published=published;
       this.name = name;
-      this.price = price;
+      this.uuid = uuid;
+      this.user_id = user_id;
     }
   }
   
