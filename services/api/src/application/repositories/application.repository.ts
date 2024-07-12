@@ -17,8 +17,12 @@ export class ApplicationRepository implements IApplicationRepository {
     })
   }
 
-  public async findAll(): Promise<Application[]> {
-    const applications = await prisma.applications.findMany();
+  public async findAll(applicationIds : string[]): Promise<Application[]> {
+    const applications = await prisma.applications.findMany(
+      { where: { uuid :{
+        in: applicationIds
+      } } }
+    );
     return applications.map((application) => new Application(application.published ?? false, application.name, application.uuid, application.user_id));
   }
   
