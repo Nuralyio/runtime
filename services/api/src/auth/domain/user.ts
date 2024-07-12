@@ -13,3 +13,19 @@ export class User {
     this.password = password;
   }
 }
+
+
+/**
+ *  The NUser object contains the user’s information received from the gateway, which is authenticated by Keycloak.
+ */
+export class NUser {
+  uuid: string;
+  roles : any[];
+
+  constructor(uuid: string, roles: string[]) {
+    this.uuid = uuid;
+    this.roles = roles;
+  }
+}
+
+

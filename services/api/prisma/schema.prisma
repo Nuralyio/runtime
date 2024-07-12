@@ -37,19 +37,19 @@ model applications {
 
 model Permission {
   id             Int     @id @default(autoincrement())
-  userId         String
-  resourceId     String
-  resourceType   String
+  userId         String @map("user_id")
+  resourceId     String @map("resource_id")
+  resourceType   String @map("resource_type")
   public         Boolean
-  permissionType String
-  ownerId        Int
+  permissionType String @map("permission_type")
+  ownerId        String   @map("owner_id")
 }
 
 model Ownership {
   id           Int    @id @default(autoincrement())
-  ownerId      String
-  resourceId   String
-  resourceType String
+  ownerId      String @map("owner_id")
+  resourceId   String @map("resource_id")
+  resourceType String @map("resource_type")
 }
 
 model Component {
