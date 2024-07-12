@@ -17,6 +17,7 @@
   },
   "routes": {
     "routesDir": "build",
-    "authenticationModule": "./src/auth/middleware/express.authentication"
+    "authenticationModule": "./src/auth/middleware/express.authentication",
+    "iocModule": "./src/shared/lib/tsyringeTsoaIocContainer"
   }
 }

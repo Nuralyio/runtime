@@ -1,9 +1,10 @@
-import { application } from 'express';
 import prisma from '../../../prisma/prisma'
 import { IApplicationRepository } from '../interfaces/application.interface';
 import { Application } from '../models/application';
+import { singleton } from 'tsyringe';
 
-export class ApplicationRepositoryPrismaPgSQL implements IApplicationRepository {
+@singleton()
+export class ApplicationRepository implements IApplicationRepository {
 
   public async create(application: Application): Promise<Application> {
     return await prisma.applications.create({

@@ -26,6 +26,5 @@ export const handleError = (error: any, logger: Logger<any>): void => {
 
   if (error.status === 404) throw new NotFoundException(error.response);
   if (error.status === 400) throw new BadRequestException(error.response);
-
   throw new InternalServerErrorException('Internal Server Error');
 };
