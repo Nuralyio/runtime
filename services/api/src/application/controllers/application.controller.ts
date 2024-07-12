@@ -1,17 +1,16 @@
 import { ApplicationService } from "../services/application.service";
 import { Body, Controller, Delete, Get, Hidden, Path, Post, Put, Query, Route, Security, Tags } from "tsoa";
-import { ApplicationRepositoryPrismaPgSQL } from "../repositories/application.repository";
 import { Application } from "../models/application";
+import { injectable } from "tsyringe";
 
 @Route('/api/applications')
 @Tags('Applications')
+@injectable()
 export class ApplicationController extends Controller {
   private readonly applicationService: ApplicationService;
-
-  constructor() {
+  constructor( applicationService: ApplicationService) {
     super();
-    const applicationRepository = new ApplicationRepositoryPrismaPgSQL();
-    this.applicationService = new ApplicationService(applicationRepository);
+    this.applicationService = applicationService;
   }
 
   @Post()

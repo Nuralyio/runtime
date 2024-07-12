@@ -1,10 +1,11 @@
-import { IApplicationRepository } from '../interfaces/application.interface';
+import {  singleton } from 'tsyringe';
 import { Application } from '../models/application';
-
+import { ApplicationRepository } from '../repositories/application.repository';
+@singleton()
 export class ApplicationService {
-  private ApplicationRepository: IApplicationRepository;
+  private ApplicationRepository: ApplicationRepository;
 
-  constructor(productRepository: IApplicationRepository){
+  constructor(productRepository: ApplicationRepository){
     this.ApplicationRepository = productRepository;
   }
 
