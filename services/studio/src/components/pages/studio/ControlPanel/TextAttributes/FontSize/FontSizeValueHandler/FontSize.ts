@@ -57,6 +57,7 @@ export class AttributeFontSizeValue extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.initValues();
+    
     $currentPageViewPort.subscribe((viewPort) => {
       if (viewPort) {
         this.viewPort = viewPort;
