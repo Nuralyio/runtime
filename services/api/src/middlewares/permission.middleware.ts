@@ -38,7 +38,8 @@ export async function createPermission(
   resourceId: string,
   resourceType: string,
   publicPermission: boolean,
-  permissionType: string
+  permissionType: string,
+  ownerId: string
 ): Promise<string> {
   const existingPermission = await prisma.permission.findFirst({
     where: {
@@ -60,7 +61,7 @@ export async function createPermission(
       resourceType,
       public: publicPermission,
       permissionType,
-      ownerId: parseInt(userId, 10),
+      ownerId,
     },
   });
 

@@ -1,16 +1,24 @@
 import { ApplicationService } from "../services/application.service";
-import { Body, Controller, Delete, Get, Hidden, Path, Post, Put, Query, Route, Security, Tags } from "tsoa";
+import { NUser } from "../../auth/domain/user";
+import { Body, Controller, Delete, Get, Path, Post, Put, Route, Tags, Request } from "tsoa";
 import { Application } from "../models/application";
 import { injectable } from "tsyringe";
+import { OwnershipService } from "../../ownership/services/owernship.service";
+import { ResourcePermissionRequest } from "../../ownership/interfaces/resource-permission.request";
+import { NRequest } from "../../shared/interfaces/NRequest.interface";
+import { ApplicationPermission } from "../interfaces/enum/application-permission.enum";
+import { ResourceType } from "../../shared/interfaces/enum/resources-type.enum";
 
 @Route('/api/applications')
 @Tags('Applications')
 @injectable()
 export class ApplicationController extends Controller {
   private readonly applicationService: ApplicationService;
-  constructor( applicationService: ApplicationService) {
+  private readonly ownershipService: OwnershipService;
+  constructor( applicationService: ApplicationService , ownershipService: OwnershipService) {
     super();
     this.applicationService = applicationService;
+    this.ownershipService = ownershipService
   }
 
   @Post()
@@ -21,8 +29,16 @@ export class ApplicationController extends Controller {
   }
 
   @Get()
-  public async findAll(): Promise<Application[]> {
-    return await this.applicationService.findAll();
+  public async findAll(@Request() request: NRequest): Promise<Application[]> {
+
+    const resourcePermissionRequest : ResourcePermissionRequest = {
+      user: request.user,
+      resourceType: ResourceType.application,
+      permissionType: ApplicationPermission.read
+    }
+    const applicationsIds = await this.ownershipService.getResourceIDWithPermissionOrOwner(resourcePermissionRequest)
+
+    return await this.applicationService.findAll(applicationsIds);
   }
 
   @Get("{uuid}")
@@ -47,6 +63,5 @@ export class ApplicationController extends Controller {
   ): Promise<Application> {
     return await this.applicationService.delete(uuid);
   }
-
 
 }
