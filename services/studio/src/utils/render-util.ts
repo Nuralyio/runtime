@@ -63,7 +63,7 @@ export function renderComponent(components: ComponentElement[], item?: any, isVi
           ` : html``;
           case ComponentType.Menu:
           return isViewMode ? html`
-            <menu-block .item=${commonProps.item} .component=${commonProps.component}></menu-block>
+            <menu-block style="width:100%;" .item=${commonProps.item} .component=${commonProps.component}></menu-block>
           ` : html``;
 
         default:

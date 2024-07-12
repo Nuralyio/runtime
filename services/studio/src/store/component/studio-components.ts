@@ -1,4 +1,6 @@
+import { log } from '@nanostores/logger';
 import { ComponentType } from "./interface";
+import { $componentWithChildrens } from '$store/component/sotre';
 
 
 const COMMON_ATTRIBUTES = {
@@ -263,27 +265,50 @@ export default [
                 value: /* js */ `
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                console.log(appPages)
                 if(!appPages) {
                      [];
                 }else{
-                    appPages.map((page, index) => {
+                    function findChildren(appId,children,childrenIds){
+                        childrenIds.map((componentId)  => {
+                            const component= GetComponent(componentId,appId);
+                            const componentChildrenIds = component.childrenIds;
+                            children.push({
+                                text: component.name,
+                                id: component.uuid,
+                                handlerKey: "onSelect",
+                            })
+                            if(componentChildrenIds.length){
+                                children[children.length-1]={...children[children.length-1],children:[]}
+                                findChildren(appId,children[children.length-1].children,componentChildrenIds);
+                            }
+                            
+                        })
+
+                    }
+                    appPages.map((page, index) => {                        
+                        const componentIds= page.component_ids;
+                        const appId = page.application_id;
+                        var children=[];
+                        if(componentIds.length){
+                            componentIds.map((componentId) => {
+                                const component= GetComponent(componentId,appId);
+                                children.push({
+                                    text: component.name,
+                                    id: component.uuid,
+                                    handlerKey : "onSelect",
+                                    })
+                                const childrenIds = component.childrenIds;
+                                if(childrenIds.length){
+                                    children[0]={...children[0],children:[]};
+                                    findChildren(appId,children[0].children,childrenIds)
+                                }     
+                            })
+                        }
                         return {
-                            label: page.name,
+                            text: page.name,
                             id: page.uuid,
                             handlerKey : "onSelect",
-                            children: [
-                                {
-                                    label: "Edit",
-                                    id: "edit",
-                                    handlerKey : "onSelect"
-                                },
-                                {
-                                    label: "Delete",
-                                    id: "delete",
-                                    handlerKey: "onSelect"
-                                }
-                            ]
+                            children: children
                         }
                     });
                 }
@@ -341,6 +366,15 @@ export default [
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
+        /* 
+        input: {
+            direction: {
+                value: "vertical",
+                type : "enum",
+                options: ["vertical", "horizontal"],
+            },
+        },
+        */
         input: {
             direction: "vertical",
         },
@@ -377,9 +411,9 @@ export default [
         },
 
         event: {
-            onClick: `
-        console.log("Clicked 22" , Current.uuid);
-      `
+            onClick:  /* js */ `
+                console.log("Clicked 44" , Current);
+            `
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -404,7 +438,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "fontSize", EventData.value);
+                    updateStyle(currentComponent, "back", EventData.value);
                 
                 }
             }catch(error){

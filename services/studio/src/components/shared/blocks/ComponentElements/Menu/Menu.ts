@@ -5,6 +5,8 @@ import { executeHandler, executeValueHandler } from 'core/helper';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';
+import '@hybridui/menu/templates/hy-menu-link.js'
+import '@hybridui/menu/templates/hy-sub-menu.js'
 
 @customElement('menu-block')
 export class MenuBlock extends LitElement {
@@ -17,18 +19,18 @@ export class MenuBlock extends LitElement {
     @state()
     options = [
         {
-            label: "Pages",
+            text: "Pages",
             id: "pages",
             children: [
                 {
-                    label: "Page 1",
+                    text: "Page 1",
                     id: "page1",
                     handler: () => {
                         console.log("Page 1");
                     }
                 },
                 {
-                    label: "Page 2",
+                    text: "Page 2",
                     id: "page2",
                     handler: () => {
                         console.log("Page 2");
@@ -47,6 +49,10 @@ export class MenuBlock extends LitElement {
     }
     static override styles = [
         css`
+        hy-menu{
+            --hybrid-menu-width: 100%;
+
+        }
             :host {
                 display: block;
             }
@@ -70,12 +76,12 @@ export class MenuBlock extends LitElement {
                     return options.map((option) => {
                         option.handler = ({
                             id,
-                            label
+                            text
                         }) => {
                             executeHandler(this.component, option.handlerKey, {
                                 EventData: {
                                     id,
-                                    label
+                                    text
                                 }
                             });
                         }
@@ -105,7 +111,6 @@ export class MenuBlock extends LitElement {
             }
         })
     }
-
     override updated(changedProperties: Map<string | number | symbol, unknown>) {
         super.updated(changedProperties);
         if (changedProperties.has('component')) {
@@ -118,8 +123,8 @@ export class MenuBlock extends LitElement {
                 ${this.error ? html`<pre class="error">${this.error}</pre>` : nothing}
                 <hy-menu
                     placeholder="Select an option"
-                    .options=${this.options}
-                        @change="${(intem: any, position) => { }}" >
+                    .items=${this.options}
+                    @change="${(e:CustomEvent) => {console.log('event',e) }}" >
                 </hy-menu>
             </div>
                 `;
