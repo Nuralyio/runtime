@@ -64,13 +64,16 @@ export class PageContent extends LitElement {
   refreshComponent(){
     const currentPage = getVar("global", "currentPage")
     const currentEditingApplication = getVar("global", "currentEditingApplication")
+    console.log("currentPage", currentPage , "currentEditingApplication", currentEditingApplication)
     if (currentEditingApplication && currentPage) {
       $currentPage(currentEditingApplication.value.uuid, currentPage.value).subscribe((currentPage) => {
         if (currentPage) {
           this.currentPage = currentPage;
         }
       })
+      console.log(currentEditingApplication.value.uuid)
       const components = $applicationComponents(currentEditingApplication.value.uuid).get();
+      console.warn("components", components)
       this.components = components.filter((component) => {
         return component.pageId === currentPage.value;
       });

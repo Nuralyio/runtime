@@ -104,6 +104,7 @@ if (!isServer) {
     $applications.subscribe((applications) => {
       registerApplicationsInServiceWorker(applications);
       $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
+        console.log(components)
         registerComponentsInServiceWorker(components);
       });
     });

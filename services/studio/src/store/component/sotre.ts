@@ -10,7 +10,7 @@ const initialStates = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STA
 
 const initialState = isServer ? {} : null ?? {
   "1": studioComponents as ComponentElement[], // Default components for the first application,
-  "f6b4be5c-a879-4b80-8d3d-ab7034ae2f7e"  : initialStates
+  "fcd5b7f8-b7b6-4fd7-97a7-740ad68c351b"  : initialStates
 };
 
 // Define the ComponentStore interface

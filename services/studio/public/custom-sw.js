@@ -252,6 +252,16 @@ self["AddPage"] = AddPage;
         return components.filter(c => componentIds.includes(c.uuid));
     }
 
+    self["SelectPage"] = function (page) {
+        console.log('SelectPage in serivce', page)
+        event.ports[0].postMessage({
+            funtionNameToExecute: "SelectPage",
+            component,
+            eventData: { page }
+        });
+    }
+
+
     switch (command) {
         case "registerApplications":
             console.log("registerApplications")
