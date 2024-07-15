@@ -8,13 +8,14 @@ import {
 } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
 import { setVar, type ContextVarStore } from "$store/context/store";
+import { setCurrentPageAction } from "$store/page/action";
 import { addPageHandler } from "$store/page/handler";
 import type { Application, Extrats, ServiceWorkerMessage } from "core/interfaces/core.interfaces";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 export function executeInServiceWorker(
   components: ComponentElement[],
-  component: ComponentElement,
+  component: ComponentElement,  
   handlerScope: string,
   attributeName: string,
   extras?: Extrats
@@ -54,6 +55,11 @@ export function executeInServiceWorker(
         const key = Object.keys(eventData)[0];
         const value = Object.values(eventData)[0];
         setVar(component.applicationId, key, value);
+      }
+
+      if (funtionNameToExecute === 'SelectPage') {
+        const {page} = eventData;
+        setCurrentPageAction(page.uuid);
       }
 
 
@@ -191,7 +197,7 @@ export function executeHandler(
   let messageChannel = new MessageChannel();
   messageChannel.port1.onmessage = function (event: MessageEvent) {
     const { funtionNameToExecute, eventData, component } = event.data as ServiceWorkerMessage;
-    if (false) {
+    if (true) {
       console.info('event', event)
       console.info('eventData', eventData)
       console.info('funtionNameToExecute', funtionNameToExecute)
@@ -201,7 +207,15 @@ export function executeHandler(
     if (funtionNameToExecute === 'updateStyle') {
       updateComponentStyles(component.applicationId, component.uuid, eventData);
     }
+    
+    if (funtionNameToExecute === 'SelectPage') {
+      console.log('SelectPage in helper', eventData)
 
+      const {page} = eventData;
+      setCurrentPageAction(page.id);
+    }
+
+    
     if(funtionNameToExecute === 'addPage'){
 
       const {requestId} = event.data ;
@@ -232,9 +246,10 @@ export function executeHandler(
   const command = "executeValue";
   
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator) {      
       const valueToExecute = component.input?.[type]?.value;
       if (valueToExecute) {
+        console.log('navigator.serviceworker ',navigator.serviceWorker.controller)
         navigator.serviceWorker.controller?.postMessage(
           {
             command,

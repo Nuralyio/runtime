@@ -255,8 +255,11 @@ export default [
             onSelect: {
                 type: "handler",
                 value: /* js */ `
-                console.log("onSesslect", EventData)
-                SetVar("currentPage", EventData.id);
+                console.log(EventData)
+                if(EventData.page.type === "page"){
+                    SetVar("currentPage" , EventData.page.id)
+                    //SelectPage({id : EventData.page.id}) 
+                }
                 `
             },
 
@@ -307,6 +310,7 @@ export default [
                         return {
                             text: page.name,
                             id: page.uuid,
+                            type: "page",
                             handlerKey : "onSelect",
                             children: children
                         }
@@ -438,7 +442,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "back", EventData.value);
+                    updateStyle(currentComponent, "font-size", EventData.value);
                 
                 }
             }catch(error){

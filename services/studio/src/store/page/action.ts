@@ -58,7 +58,7 @@ console.log('addPageToApplicationAction',page,applicationId)
 
 export function setCurrentPageAction(pageId: string) {
 
-  $currentPageId.set(pageId);
+  $currentPageId("1").set(pageId);
 }
 
 export function addComponentToCurrentPageAction(componentId: string) {

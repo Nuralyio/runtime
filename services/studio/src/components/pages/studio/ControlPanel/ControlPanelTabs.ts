@@ -24,7 +24,8 @@ import "./StylePanelTab";
 import { $currentApplication } from "$store/apps";
 import { $context, getVar } from "$store/context/store";
 
-@customElement("control-panel")export class ParametersPanel extends LitElement {
+@customElement("control-panel")
+export class ParametersPanel extends LitElement {
   static styles = [
     css`
       :host {
@@ -67,6 +68,7 @@ import { $context, getVar } from "$store/context/store";
     super();
     $context.subscribe(() => {
      this.selectedComponentIds =  (getVar("global", "selectedComponents")?.value||[]);
+     console.log('selectedomponents ',this.selectedComponentIds)
      $applicationComponents($currentApplication.get().uuid).subscribe((components: ComponentElement[]) => { 
       components = components.filter((component: ComponentElement) => this.selectedComponentIds.includes(component.uuid));
       if(components.length) {

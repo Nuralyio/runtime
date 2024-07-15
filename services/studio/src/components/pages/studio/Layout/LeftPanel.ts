@@ -15,9 +15,9 @@ export class LeftPanel extends LitElement {
     screen-structure-editor{
       --hybrid-menu-background-color: #2c2c2c;
       color : white;
-        font-size: 12px;
-          font-weight: 400;
-          --hybrid-button-border-color: transparent;
+      font-size: 12px;
+      font-weight: 400;
+      --hybrid-button-border-color: transparent;
     }
     `,
   ];
