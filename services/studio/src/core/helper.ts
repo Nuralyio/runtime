@@ -35,7 +35,6 @@ export function executeInServiceWorker(
         console.info('funtionNameToExecute', funtionNameToExecute)
         console.info('component', component)
       }
-      console.log(funtionNameToExecute)
       if (funtionNameToExecute === 'updateStyle') {
         updateComponentStyles(component.applicationId, component.uuid, eventData);
       }
@@ -66,7 +65,6 @@ export function executeInServiceWorker(
       if (funtionNameToExecute === 'SetVar') {
         const key = Object.keys(eventData)[0];
         const value = Object.values(eventData)[0];
-        console.log("global", key, value)
         setVar("global", key, value);
       }
 
@@ -203,13 +201,11 @@ export function executeHandler(
       console.info('funtionNameToExecute', funtionNameToExecute)
       console.info('component', component)
     }
-    console.log(funtionNameToExecute)
     if (funtionNameToExecute === 'updateStyle') {
       updateComponentStyles(component.applicationId, component.uuid, eventData);
     }
     
     if (funtionNameToExecute === 'SelectPage') {
-      console.log('SelectPage in helper', eventData)
 
       const {page} = eventData;
       setCurrentPageAction(page.id);
@@ -237,7 +233,6 @@ export function executeHandler(
     if (funtionNameToExecute === 'SetVar') {
       const key = Object.keys(eventData)[0];
       const value = Object.values(eventData)[0];
-      console.log("global", key, value)
       setVar("global", key, value);
     }
 
@@ -249,7 +244,6 @@ export function executeHandler(
     if ("serviceWorker" in navigator) {      
       const valueToExecute = component.input?.[type]?.value;
       if (valueToExecute) {
-        console.log('navigator.serviceworker ',navigator.serviceWorker.controller)
         navigator.serviceWorker.controller?.postMessage(
           {
             command,

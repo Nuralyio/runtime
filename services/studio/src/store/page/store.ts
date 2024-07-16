@@ -83,7 +83,6 @@ export const $currentPage = ($applicationId: string, currentPageId :string) => c
 if (!isServer) {
   setTimeout (() => {
     const pages = $applicationPages(window.applicationResponse.uuid).get();
-  console.log('pages: ', pages,  `${window.applicationResponse.uuid}.appPages`);
   setVar(window.applicationResponse.uuid, `${window.applicationResponse.uuid}.appPages`, pages);
    }
   , 100);

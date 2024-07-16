@@ -32,7 +32,6 @@ export const $resetPageStore = () => { };
  */ 
 
 export function addPageToApplicationAction(page: PageElement,applicationId: string) {
-console.log('addPageToApplicationAction',page,applicationId)
 /**
  * 
  * using this 
@@ -51,7 +50,6 @@ console.log('addPageToApplicationAction',page,applicationId)
     });
 
     const pages = $pages.get()[window.applicationResponse.uuid];
-    console.log('pages: ', pages,  `${window.applicationResponse.uuid}.appPages`);
     setVar(window.applicationResponse.uuid, `${window.applicationResponse.uuid}.appPages`, pages);
 
 }

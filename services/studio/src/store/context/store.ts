@@ -41,7 +41,6 @@ function getType(value: any): string {
 
 // Action to set a variable inside a specific application or globally
 export function setVar(contextId: string, varName: string, varValue: any) {
-    console.log(contextId, varName, varValue)
   const varType = getType(varValue);
   const currentContext = $context.get();
   const updatedContext = {
@@ -55,7 +54,6 @@ export function setVar(contextId: string, varName: string, varValue: any) {
     }
   };
   registerContextInServiceWorker(updatedContext);
-  console.log(updatedContext)
   $context.set(updatedContext);
 }
 

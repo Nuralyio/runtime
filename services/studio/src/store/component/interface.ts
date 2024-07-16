@@ -6,6 +6,8 @@ export const enum ComponentType {
   Button = "button_input",
   Collection = "Collection",
   VerticalContainer = "vertical-container-block",
+  ColorPicker ='color_picker',
+  NumberInput = "number_input",
 }
 
 export interface DraggingComponentInfo {

@@ -120,7 +120,6 @@ export class MenuBlock extends LitElement {
         }
     }
     override render() {
-        console.log('options ',this.options)
         return html`
             <div>
                 ${this.error ? html`<pre class="error">${this.error}</pre>` : nothing}
@@ -130,7 +129,6 @@ export class MenuBlock extends LitElement {
                     @change="${(e:CustomEvent) => {
                         const selectedOptionPath = e.detail.path;
                         const option = selectedOptionPath.reduce((acc,curr)=>acc && acc.children && acc.children[curr],{children:this.options});
-                        console.log('option',option)
                         const messageChannel = executeHandler(this.component, "onSelect",{EventData:{page:{id: option.id, type : option.type}}});
                         messageChannel.onmessage = (event)=>{
                         const { funtionNameToExecute, eventData, component } = event.data as ServiceWorkerMessage;
@@ -138,7 +136,6 @@ export class MenuBlock extends LitElement {
                         if (funtionNameToExecute === 'SetVar') {
                             const key = Object.keys(eventData)[0];
                             const value = Object.values(eventData)[0];
-                            console.log("global", key, value)
                             setVar("global", key, value);
                         }
                     
