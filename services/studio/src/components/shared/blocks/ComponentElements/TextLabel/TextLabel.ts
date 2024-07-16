@@ -87,7 +87,6 @@ export class TextLabelBlock extends LitElement {
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component" || propName === "item") {
-        console.log("component updated", this.component); 
         this.updateValues();
         this.updateValue();
         this.requestUpdate()

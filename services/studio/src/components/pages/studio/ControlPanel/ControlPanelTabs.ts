@@ -68,7 +68,6 @@ export class ParametersPanel extends LitElement {
     super();
     $context.subscribe(() => {
      this.selectedComponentIds =  (getVar("global", "selectedComponents")?.value||[]);
-     console.log('selectedomponents ',this.selectedComponentIds)
      $applicationComponents($currentApplication.get().uuid).subscribe((components: ComponentElement[]) => { 
       components = components.filter((component: ComponentElement) => this.selectedComponentIds.includes(component.uuid));
       if(components.length) {

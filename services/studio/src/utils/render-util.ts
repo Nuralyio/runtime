@@ -1,7 +1,9 @@
 import { type ComponentElement, ComponentType } from "$store/component/interface";
-import { html, type TemplateResult } from "lit";
+import { html, nothing, type TemplateResult } from "lit";
 import '../components/shared/blocks/ComponentElements/Tabs/Tabs';
 import '../components/shared/blocks/ComponentElements/Menu/Menu';
+import '../components/shared/blocks/ComponentElements/ColorPicker/colorpicker'
+import'../components/shared/blocks/ComponentElements/NumberInput/NumberInput'
 import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper';
 // Simple memoization cache
 const renderCache = new Map<string, TemplateResult>();
@@ -11,7 +13,6 @@ function getCacheKey(components: ComponentElement[], item: any, isViewMode: bool
 }
 
 export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean): TemplateResult {
-  console.log("renderComponent", components, item, isViewMode)
   if (!components || !components.length) return html``;
 
   const cacheKey = getCacheKey(components, item, isViewMode);
@@ -22,8 +23,16 @@ export function renderComponent(components: ComponentElement[], item?: any, isVi
   const renderedTemplate = html`
     ${components.map((component: ComponentElement) => {
       const commonProps = { item: { ...item }, component: { ...component } };
-      
       switch (component?.component_type) {
+        case ComponentType.ColorPicker:
+          return html`
+            ${html`<color-picker-block  .item=${commonProps.item}  .component=${commonProps.component}></color-picker-block>`}
+          `;
+          
+        case ComponentType.NumberInput:
+          return html`
+             ${ html`<number-input-block  .item=${commonProps.item}  .component=${commonProps.component}></number-input-block>`}`;
+                
         case ComponentType.TextInput:
           return html`
            ${isViewMode

@@ -167,9 +167,7 @@ export default [
             onClick: `
             try {
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                console.log(currentEditingApplication, currentEditingApplication.uuid + ".appPages");
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                console.log(appPages);
                 const newPage = {
                     name: "Page_" + (appPages.length + 1),
                     url: ("Page_" + (appPages.length + 1)).toLowerCase(),
@@ -221,9 +219,7 @@ export default [
             onClick: `
             try {
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                console.log(currentEditingApplication, currentEditingApplication.uuid + ".appPages");
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                console.log(appPages);
                 const newPage = {
                     name: "Page_" + (appPages.length + 1),
                     url: ("Page_" + (appPages.length + 1)).toLowerCase(),
@@ -255,7 +251,6 @@ export default [
             onSelect: {
                 type: "handler",
                 value: /* js */ `
-                console.log(EventData)
                 if(EventData.page.type === "page"){
                     SetVar("currentPage" , EventData.page.id)
                     //SelectPage({id : EventData.page.id}) 
@@ -430,7 +425,7 @@ export default [
         uuid: "font_size_input_2",
         name: "name",
         applicationId: "1",
-        component_type: ComponentType.TextInput,
+        component_type: ComponentType.NumberInput,
         parameters: {
             value: "22px",
         },
@@ -438,6 +433,7 @@ export default [
             valueChange: /* js */ `
            
            try{
+            console.log('eventdata.value',EventData.value)
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
@@ -459,7 +455,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                console.log('currentComponentrrr', currentComponent);
+                console.log('current component', currentComponent);
                 currentComponent.style?.fontSize || "22px";
             }
 
@@ -509,10 +505,7 @@ export default [
         uuid: "font_color_input_2",
         name: "name",
         applicationId: "1",
-        component_type: ComponentType.TextInput,
-        parameters: {
-            value: "22px",
-        },
+        component_type: ComponentType.ColorPicker,
         event: {
             valueChange: /* js */ `
            
