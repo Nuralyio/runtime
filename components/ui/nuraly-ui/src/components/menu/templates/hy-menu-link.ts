@@ -1,8 +1,8 @@
 import {LitElement, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './menu-link.style';
-import {EMPTY_STRING} from '../menu.constants';
-import {ICON_POSITION} from './menu-link.contants';
+import {styles} from './menu-link.style.js';
+import {EMPTY_STRING} from '../menu.constants.js';
+import {ICON_POSITION} from './menu-link.contants.js';
 
 @customElement('hy-menu-link')
 export class HyMenuLink extends LitElement {
@@ -31,7 +31,8 @@ export class HyMenuLink extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.previousElementSibling && this.parentElement?.tagName != 'HY-SUB-MENU') {
+    const isTheFirstOption=this.getAttribute('data-path')?.split('-').filter((path)=>path!="0").length==0
+    if (isTheFirstOption) {
       HyMenuLink.index = 0;
     }
     this.linkPosition = HyMenuLink.index;

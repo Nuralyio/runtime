@@ -1,7 +1,7 @@
 import {LitElement, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './sub-menu.style';
-import {EMPTY_STRING} from '../menu.constants';
+import {styles} from './sub-menu.style.js';
+import {EMPTY_STRING} from '../menu.constants.js';
 
 @customElement('hy-sub-menu')
 export class HySubMenu extends LitElement {
@@ -22,6 +22,11 @@ export class HySubMenu extends LitElement {
 
   _toggleMenu() {
     this.isOpen = !this.isOpen;
+    this.dispatchEvent(new CustomEvent('select-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {value:this.text,path:this.getAttribute('data-path')?.split('-').map((stringValue)=>+stringValue)},
+    }));
   }
 
   _handleSelectedChild() {
@@ -30,7 +35,7 @@ export class HySubMenu extends LitElement {
 
   override render() {
     return html`
-      <ul tabindex="0">
+    <ul tabindex="0">
         <div @click=${!this.disabled ? this._toggleMenu : nothing}>
           ${this.icon ? html`<hy-icon id="text-icon" name="${this.icon}"></hy-icon>` : nothing}
           <span>${this.text}</span>
