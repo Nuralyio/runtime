@@ -3,6 +3,8 @@ import {LitElement, html} from 'lit';
 import {customElement, property, queryAll} from 'lit/decorators.js';
 import {styles} from './menu.style.js';
 import {IMenu} from './menu.types.js';
+import './templates/hy-menu-link.js';
+import './templates/hy-sub-menu.js';
 
 @customElement('hy-menu')
 export class HyMenuComponent extends LitElement {
@@ -52,13 +54,16 @@ export class HyMenuComponent extends LitElement {
       }
     });
   }
+  _selectMenu(selectMenuEvent:CustomEvent){
+    this.dispatchEvent(new CustomEvent('change',{bubbles:true,composed:true,detail:{path:selectMenuEvent.detail.path,value:selectMenuEvent.detail.value}}));
+  }
 
   _display(items: IMenu[], path: number[] = []): any {
     return items.map((menu, index) => {
       const currentPath = [...path, index].join('-');
       if (menu.children) {
         return html`
-          <hy-sub-menu .text=${menu.text} .icon=${menu.icon} .disabled=${menu.disabled}>
+          <hy-sub-menu .text=${menu.text} .icon=${menu.icon} .disabled=${menu.disabled} data-path=${currentPath} @select-menu=${this._selectMenu}>
             ${this._display(menu.children, [...path, index])}
           </hy-sub-menu>
         `;
