@@ -147,16 +147,12 @@ console.log($components.get());
     window.addEventListener('load', function () {
         navigator.serviceWorker.register('/custom-sw.js')
             .then(function (registration) {
-                // Service worker registered successfully
                 navigator.serviceWorker.ready.then(function (registration) {
                     registration.active.postMessage({ type: 'CHECK_SERVICE_WORKER' });
-
-                    // Add message event listener
                     navigator.serviceWorker.addEventListener('message', function(event) {
                         if (event.data && event.data.type === 'SERVICE_WORKER_READY') {
                             console.log('Service Worker is ready');
                             document.dispatchEvent(new CustomEvent("serviceWorkerReady"));
-
                         }
                     });
                 });
