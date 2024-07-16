@@ -59,9 +59,20 @@ export class HyInputElement extends LitElement {
 
   private _increment() {
     this.input.stepUp();
+    this.dispatchEvent(
+      new CustomEvent('valueChange', {
+        detail: this.input,
+      })
+    );
   }
   private _decrement() {
     this.input.stepDown();
+    this.dispatchEvent(
+      new CustomEvent('valueChange', {
+        detail: this.input,
+      })
+    );
+
   }
 
   private _valueChange(e: Event) {
