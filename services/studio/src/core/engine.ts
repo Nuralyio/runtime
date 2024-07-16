@@ -1,6 +1,4 @@
 import { $AllcomponentWithChildrens, $componentWithChildrens } from "$store/component/sotre";
-import * as esprima from "esprima";
-import * as escodegen from "escodegen";
 import { type ComponentElement } from "$store/component/interface";
 import {
   updateComponentAttributes,
@@ -9,6 +7,7 @@ import {
 import { executeInServiceWorker, registerApplicationsInServiceWorker, registerComponentsInServiceWorker } from "./helper";
 import type { Extrats } from "./interfaces/core.interfaces";
 import { $applications } from "$store/apps";
+import { isServer } from "utils/envirement";
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 interface ExecuteStack {
@@ -23,35 +22,9 @@ let executeStack: ExecuteStack[] = [];
 
 let _isServiceWorkerReady = true;
 
-const styleHandlersCache = {};
 let _components: ComponentElement[];
-const isServer = typeof window === "undefined";
 if (!isServer) {
-  $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
-    _components = components;
-    components.forEach((component: ComponentElement) => {
-      const { styleHandlers = {}, style = {}, /*attributesHandlers = {} */ } = component;
-      Object.keys(styleHandlers).forEach((smartAttributeKey) => {
-        executeInServiceWorker(
-          components,
-          component,
-          "styleHandlers",
-          smartAttributeKey,
-          "style"
-        );
-      });
-
-      /*Object.keys(attributesHandlers).forEach((smartAttributeKey) => {
-         executeInServiceWorker(
-           components,
-           component,
-           "attributesHandlers",
-           smartAttributeKey,
-           "attributes"
-         );
-       });*/
-    });
-  });
+  //handle default values executions.
 }
 
 
@@ -92,22 +65,17 @@ export function serviceWorkerReadyCallback() {
 }
 
 if (!isServer) {
-  document.addEventListener('serviceWorkerReady',  function (){
-
-
-  });
-  navigator.serviceWorker.controller.postMessage({ type: 'CHECK_SERVICE_WORKER' });
-  setTimeout(() => {
-    _isServiceWorkerReady = true;
-    serviceWorkerReadyCallback();
-
-    $applications.subscribe((applications) => {
-      registerApplicationsInServiceWorker(applications);
-      $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
-        registerComponentsInServiceWorker(components);
+  document.addEventListener('serviceWorkerReady', function () {
+    navigator.serviceWorker.controller.postMessage({ type: 'CHECK_SERVICE_WORKER' });
+      _isServiceWorkerReady = true;
+      serviceWorkerReadyCallback();
+      $applications.subscribe((applications) => {
+        registerApplicationsInServiceWorker(applications);
+        $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
+          registerComponentsInServiceWorker(components);
+        });
       });
-    });
-  },200)
+  });
 }
 
 export default {}

@@ -1,21 +1,17 @@
 import {
-  updateComponent,
-  updateComponentAttributes,
-  updateComponentError,
-  updateComponentInputs,
-  updateComponentParameters,
   updateComponentStyles,
 } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
 import { setVar, type ContextVarStore } from "$store/context/store";
 import { setCurrentPageAction } from "$store/page/action";
 import { addPageHandler } from "$store/page/handler";
-import type { Application, Extrats, ServiceWorkerMessage } from "core/interfaces/core.interfaces";
+import type { Application, Execute, Extrats, ServiceWorkerMessage } from "core/interfaces/core.interfaces";
+import { NO_EVENT_LISTENER } from "utils/constants";
+import { isVerbose } from "utils/envirement";
 
-const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 export function executeInServiceWorker(
   components: ComponentElement[],
-  component: ComponentElement,  
+  component: ComponentElement,
   handlerScope: string,
   attributeName: string,
   extras?: Extrats
@@ -27,49 +23,7 @@ export function executeInServiceWorker(
 
   if (handlers[attributeName]) {
     let messageChannel = new MessageChannel();
-    messageChannel.port1.onmessage = function (event: MessageEvent) {
-      const { funtionNameToExecute, eventData, component } = event.data as ServiceWorkerMessage;
-      if (false) {
-        console.info('event', event)
-        console.info('eventData', eventData)
-        console.info('funtionNameToExecute', funtionNameToExecute)
-        console.info('component', component)
-      }
-      if (funtionNameToExecute === 'updateStyle') {
-        updateComponentStyles(component.applicationId, component.uuid, eventData);
-      }
-
-      if(funtionNameToExecute === 'addPage'){
-
-        const {requestId} = event.data ;
-        addPageHandler(eventData.page , (page)=>{
-          navigator.serviceWorker.controller.postMessage({ requestId, success: true, result: page });
-        }, (error)=>{
-          navigator.serviceWorker.controller.postMessage({ requestId, success: false, result: error });
-        }) 
-      }
-
-
-      if (funtionNameToExecute === 'SetContextVar') {
-        const key = Object.keys(eventData)[0];
-        const value = Object.values(eventData)[0];
-        setVar(component.applicationId, key, value);
-      }
-
-      if (funtionNameToExecute === 'SelectPage') {
-        const {page} = eventData;
-        setCurrentPageAction(page.uuid);
-      }
-
-
-      if (funtionNameToExecute === 'SetVar') {
-        const key = Object.keys(eventData)[0];
-        const value = Object.values(eventData)[0];
-        setVar("global", key, value);
-      }
-
-
-    }
+    messageChannel.port1.onmessage =  handleServiceWorkerMessageWrapper(NO_EVENT_LISTENER);
     const command = "executeFunction";
     if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
       navigator.serviceWorker.controller.postMessage(
@@ -144,22 +98,22 @@ export function executeValueHandler(
 ) {
   let messageChannel = new MessageChannel();
   const command = "executeValue";
-    if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      if ("serviceWorker" in navigator) {
-        if (component.inputHandlers?.value) {
-          navigator.serviceWorker.controller?.postMessage(
-            {
-              command,
-              codeToExecuteAsString: component.inputHandlers?.value,
-              component: component,
-            },
-            [messageChannel.port2]
-          );
-        }
+  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+    if ("serviceWorker" in navigator) {
+      if (component.inputHandlers?.value) {
+        navigator.serviceWorker.controller?.postMessage(
+          {
+            command,
+            codeToExecuteAsString: component.inputHandlers?.value,
+            component: component,
+          },
+          [messageChannel.port2]
+        );
       }
-    } 
+    }
+  }
 
-    return messageChannel.port1;
+  return messageChannel.port1;
 }
 
 
@@ -168,80 +122,37 @@ export function executeDispalyHandler(
 ) {
   let messageChannel = new MessageChannel();
   const command = "executeValue";
-    if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      if ("serviceWorker" in navigator) {
-        if (component.input?.show?.value) {
-          navigator.serviceWorker.controller?.postMessage(
-            {
-              command,
-              codeToExecuteAsString: component.input?.show?.value,
-              component: component,
-            },
-            [messageChannel.port2]
-          );
-        }
+  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+    if ("serviceWorker" in navigator) {
+      if (component.input?.show?.value) {
+        navigator.serviceWorker.controller?.postMessage(
+          {
+            command,
+            codeToExecuteAsString: component.input?.show?.value,
+            component: component,
+          },
+          [messageChannel.port2]
+        );
       }
-    } 
+    }
+  }
 
-    return messageChannel.port1;
+  return messageChannel.port1;
 }
 
 
 export function executeHandler(
-  component: ComponentElement,
-  type: string,
-  extras?: Extrats
+  { eventId,
+    component,
+    type,
+    extras
+  }: Execute
 ) {
   let messageChannel = new MessageChannel();
-  messageChannel.port1.onmessage = function (event: MessageEvent) {
-    const { funtionNameToExecute, eventData, component } = event.data as ServiceWorkerMessage;
-    if (true) {
-      console.info('event', event)
-      console.info('eventData', eventData)
-      console.info('funtionNameToExecute', funtionNameToExecute)
-      console.info('component', component)
-    }
-    if (funtionNameToExecute === 'updateStyle') {
-      updateComponentStyles(component.applicationId, component.uuid, eventData);
-    }
-    
-    if (funtionNameToExecute === 'SelectPage') {
-
-      const {page} = eventData;
-      setCurrentPageAction(page.id);
-    }
-
-    
-    if(funtionNameToExecute === 'addPage'){
-
-      const {requestId} = event.data ;
-      addPageHandler(eventData.page , (page)=>{
-        navigator.serviceWorker.controller.postMessage({ requestId, success: true, result: page });
-      }, (error)=>{
-        navigator.serviceWorker.controller.postMessage({ requestId, success: false, result: error });
-      }) 
-    }
-
-
-    if (funtionNameToExecute === 'SetContextVar') {
-      const key = Object.keys(eventData)[0];
-      const value = Object.values(eventData)[0];
-      setVar(component.applicationId, key, value);
-    }
-
-
-    if (funtionNameToExecute === 'SetVar') {
-      const key = Object.keys(eventData)[0];
-      const value = Object.values(eventData)[0];
-      setVar("global", key, value);
-    }
-
-
-  }
+  messageChannel.port1.onmessage = handleServiceWorkerMessageWrapper(eventId);
   const command = "executeValue";
-  
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    if ("serviceWorker" in navigator) {      
+    if ("serviceWorker" in navigator) {
       const valueToExecute = component.input?.[type]?.value;
       if (valueToExecute) {
         navigator.serviceWorker.controller?.postMessage(
@@ -255,7 +166,52 @@ export function executeHandler(
         );
       }
     }
-  } 
+  }
 
   return messageChannel.port1;
 }
+
+function handleServiceWorkerMessageWrapper(eventId: string) {
+  return function handleServiceWorkerMessage(event: MessageEvent) {
+    const { funtionNameToExecute, eventData, component } = event.data as ServiceWorkerMessage;
+    if (isVerbose) {
+      console.info('event', event);
+      console.info('eventData', eventData);
+      console.info('funtionNameToExecute', funtionNameToExecute);
+      console.info('component', component);
+    }
+    switch (funtionNameToExecute) {
+      case 'updateStyle':
+        updateComponentStyles(component.applicationId, component.uuid, eventData);
+        break;
+      case 'addPage':
+        const { requestId } = event.data;
+        addPageHandler(eventData.page, (page) => {
+          navigator.serviceWorker.controller.postMessage({ requestId, success: true, result: page });
+        }, (error) => {
+          navigator.serviceWorker.controller.postMessage({ requestId, success: false, result: error });
+        });
+        break;
+      case 'SetContextVar':
+        const contextKey = Object.keys(eventData)[0];
+        const contextValue = Object.values(eventData)[0];
+        setVar(component.applicationId, contextKey, contextValue);
+        break;
+      case 'SelectPage':
+        const { page } = eventData;
+        setCurrentPageAction(page.uuid);
+        break;
+      case 'SetVar':
+        const varKey = Object.keys(eventData)[0];
+        const varValue = Object.values(eventData)[0];
+        setVar("global", varKey, varValue);
+        break;
+      default:
+        console.warn('Unknown function to execute:', funtionNameToExecute);
+    }
+    if (eventId) {
+      document.dispatchEvent(new CustomEvent(eventId, { detail: { data: event.data } }));
+    }
+  }
+}
+
