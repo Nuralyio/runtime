@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './variables.style';
+import {styleVariables} from './variables.style.js';
 
 const inputStyle = css`
   :host {
