@@ -26,7 +26,7 @@
     "@hybridui/dropdown": "^0.0.23",
     "@hybridui/icon": "^0.0.7",
     "@hybridui/input": "^0.0.31",
-    "@hybridui/menu":"^0.0.23",
+    "@hybridui/menu":"^0.0.24",
     "@hybridui/modal": "^0.0.6",
     "@hybridui/radio": "^0.0.6",
     "@hybridui/select": "^0.0.6",
