@@ -251,8 +251,8 @@ export default [
             onSelect: {
                 type: "handler",
                 value: /* js */ `
-                if(EventData.page.type === "page"){
-                    SetVar("currentPage" , EventData.page.id)
+                if(EventData.type === "page"){
+                    SetVar("currentPage" , EventData.id)
                     //SelectPage({id : EventData.page.id}) 
                 }
                 `
