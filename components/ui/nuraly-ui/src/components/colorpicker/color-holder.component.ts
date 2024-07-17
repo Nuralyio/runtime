@@ -1,6 +1,6 @@
 import {LitElement, html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {styles} from './color-holder.style';
+import {styles} from './color-holder.style.js';
 import {ColorPickerSize} from './color-picker.types';
 
 @customElement('hy-colorholder-box')

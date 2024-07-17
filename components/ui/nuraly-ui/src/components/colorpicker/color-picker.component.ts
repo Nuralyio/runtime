@@ -4,6 +4,7 @@ import './color-holder.component.js';
 import './default-color-sets.component.js';
 import styles from './color-picker.style.js';
 import {ColorPickerSize} from './color-picker.types.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('hy-color-picker')
 export class ColorPicker extends LitElement {
@@ -48,14 +49,17 @@ export class ColorPicker extends LitElement {
       );
     }
   }
-  private async toggleColorHolder() {
+  private async toggleColorHolder(toggleEvent:Event) {
+    toggleEvent.stopPropagation()
     this.show = !this.show;
     await this.updateComplete;
     this.calculateDropDownPosition();
   }
   private onClickOutside = (onClickEvent: Event) => {
-    const hyColorPicker = (onClickEvent.target as HTMLElement).shadowRoot?.querySelector('hy-color-picker');
-    if (this.show && !hyColorPicker) {
+    const isInsideColorPicker = onClickEvent.composedPath().find((eventTarget)=>{
+      return (eventTarget as HTMLElement)?.localName ===  'hy-color-picker';
+    })
+    if (this.show && !isInsideColorPicker) {
       this.show = false;
     }
   };
@@ -96,7 +100,7 @@ export class ColorPicker extends LitElement {
         .size=${this.size}
         @click=${!this.disabled ? this.toggleColorHolder : nothing}
       ></hy-colorholder-box>
-      <div class="dropdown-container">
+      <div class='dropdown-container'>
         <hy-default-color-sets .defaultColorSets=${this.defaultColorSets} @color-click="${this.handleColorChanged}">
         </hy-default-color-sets>
         <hex-color-picker
