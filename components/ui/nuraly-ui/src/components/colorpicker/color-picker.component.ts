@@ -4,7 +4,6 @@ import './color-holder.component.js';
 import './default-color-sets.component.js';
 import styles from './color-picker.style.js';
 import {ColorPickerSize} from './color-picker.types.js';
-import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('hy-color-picker')
 export class ColorPicker extends LitElement {
