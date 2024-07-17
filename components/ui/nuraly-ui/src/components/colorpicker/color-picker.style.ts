@@ -29,7 +29,7 @@ export default css`
     cursor: not-allowed;
   }
 
-  :host([show]) .dropdown-container {
+  :host([show]) .dropdown-container{
     display: block;
     position: fixed;
     max-width: 250px;
