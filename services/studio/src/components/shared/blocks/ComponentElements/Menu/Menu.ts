@@ -1,18 +1,14 @@
 import type { ComponentElement } from '$store/component/interface';
-import { $AllcomponentWithChildrens, $applicationComponents, $componentWithChildrens } from '$store/component/sotre';
-import { $context, setVar } from '$store/context/store';
-import { executeHandler, executeValueHandler } from 'core/helper';
+import { $context } from '$store/context/store';
+import { executeHandler  } from 'core/helper';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { renderComponent } from 'utils/render-util';
-import '@hybridui/menu/templates/hy-menu-link.js'
+import { generateRandomId } from 'utils/randomness';
 import '@hybridui/menu/templates/hy-sub-menu.js'
-import type { ServiceWorkerMessage } from 'core/interfaces/core.interfaces';
-import { setCurrentPageAction } from '$store/page/action';
+import '@hybridui/menu/templates/hy-menu-link.js'
 
 @customElement('menu-block')
 export class MenuBlock extends LitElement {
-
 
     @property({ type: Object, reflect: false })
     component: ComponentElement;
@@ -23,22 +19,7 @@ export class MenuBlock extends LitElement {
         {
             text: "Pages",
             id: "pages",
-            children: [
-                {
-                    text: "Page 1",
-                    id: "page1",
-                    handler: () => {
-                        console.log("Page 1");
-                    }
-                },
-                {
-                    text: "Page 2",
-                    id: "page2",
-                    handler: () => {
-                        console.log("Page 2");
-                    }
-                }
-            ]
+            children: []
         }
     ];
 
@@ -68,24 +49,41 @@ export class MenuBlock extends LitElement {
 
     generateOptions() {
         this.error = "";
-        const messageChannel = executeHandler(this.component, "options");
-        messageChannel.onmessage = (event) => {
-            if (event.data.error) {
-                this.error = event.data.error;
-                console.error(event.data.error)
+        const eventId = generateRandomId();
+        executeHandler(
+            {
+                eventId,
+                component: this.component,
+                type: "options",
+                extras: {}
+            }
+        );
+
+        const handler = ({ detail: { data } }) => {
+            document.removeEventListener(eventId, handler as any);
+            if (data.error) {
+                this.error = data.error;
+                console.error(data.error)
             } else {
-                const  processOptions = (options) =>{
+                const processOptions = (options) => {
                     return options.map((option) => {
                         option.handler = ({
                             id,
                             text
                         }) => {
-                            executeHandler(this.component, option.handlerKey, {
-                                EventData: {
-                                    id,
-                                    text
+                            executeHandler(
+                                {
+                                    eventId: generateRandomId(),
+                                    component: this.component,
+                                    type: "onSelect",
+                                    extras: {
+                                        EventData: {
+                                            id,
+                                            text
+                                        }
+                                    }
                                 }
-                            });
+                            );
                         }
                         if (option.children) {
                             option.children = processOptions(option.children);
@@ -94,20 +92,20 @@ export class MenuBlock extends LitElement {
                     });
                 }
 
-                if (Array.isArray(event.data.result)) {
-                    this.options = processOptions(event.data.result);
+                if (Array.isArray(data.result)) {
+                    this.options = processOptions(data.result);
                 } else {
                     console.log("Options should be an array")
                 }
             }
 
         };
-
+        document.addEventListener(eventId, handler as any);
     }
     override connectedCallback() {
         super.connectedCallback();
         this.generateOptions();
-        $context.subscribe((context) => {
+        $context.subscribe(() => {
             if (this.component) {
                 this.generateOptions();
             }
@@ -126,22 +124,22 @@ export class MenuBlock extends LitElement {
                 <hy-menu
                     placeholder="Select an option"
                     .items=${this.options}
-                    @change="${(e:CustomEvent) => {
-                        const selectedOptionPath = e.detail.path;
-                        const option = selectedOptionPath.reduce((acc,curr)=>acc && acc.children && acc.children[curr],{children:this.options});
-                        const messageChannel = executeHandler(this.component, "onSelect",{EventData:{page:{id: option.id, type : option.type}}});
-                        messageChannel.onmessage = (event)=>{
-                        const { funtionNameToExecute, eventData, component } = event.data as ServiceWorkerMessage;
-                    
-                        if (funtionNameToExecute === 'SetVar') {
-                            const key = Object.keys(eventData)[0];
-                            const value = Object.values(eventData)[0];
-                            setVar("global", key, value);
+                    @change="${(e: CustomEvent) => {
+                const selectedOptionPath = e.detail.path;
+                const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.options });
+                executeHandler(
+                    {
+                        eventId: generateRandomId(),
+                        component: this.component,
+                        type: "onSelect",
+                        extras: {
+                            EventData: {
+                                id: option.id,
+                                text: option.text
+                            }
                         }
-                    
-                                            
-                    }
-                    }}" >
+                    })
+            }}" >
                 </hy-menu>
             </div>
                 `;
