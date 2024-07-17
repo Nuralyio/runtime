@@ -123,7 +123,6 @@ function AddPage(page, applicationId) {
 
         // Store the resolve and reject functions in the map
         requestMap.set(requestId, { resolve, reject });
-        console.log( requestMap, "requestMap"   )
         // Send the message to the service worker
         event.ports[0].postMessage({
             funtionNameToExecute: "addPage",
@@ -238,14 +237,12 @@ self["AddPage"] = AddPage;
 
     // generate function to get compondnt by IDs or Id
     self["GetComponent"] = function (componentUuid, applicationId) {
-        console.log(self.applications, "self.applications", componentUuid)
         let _component = null;
         Object.keys(self.applications[applicationId]).forEach(key => {
             if (self.applications[applicationId][key].uuid === componentUuid) {
                 _component = { ...self.applications[applicationId][key] };
             }
         })
-        console.log("component", _component)
         return _component;
     }
     self["GetComponents"] = function (componentIds) {
@@ -253,7 +250,6 @@ self["AddPage"] = AddPage;
     }
 
     self["SelectPage"] = function (page) {
-        console.log('SelectPage in serivce', page)
         event.ports[0].postMessage({
             funtionNameToExecute: "SelectPage",
             component,
@@ -264,7 +260,6 @@ self["AddPage"] = AddPage;
 
     switch (command) {
         case "registerApplications":
-            console.log("registerApplications")
             const { applications } = payload;
             if (applications) {
                 applications.forEach(application => {
@@ -289,7 +284,6 @@ self["AddPage"] = AddPage;
             break;
 
             case "registerComponents":
-                console.log("registerComponents");
                 const { components } = payload;
                 if (components) {
                     components.forEach(component => {
