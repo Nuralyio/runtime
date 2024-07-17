@@ -8,6 +8,7 @@ import { executeInServiceWorker, registerApplicationsInServiceWorker, registerCo
 import type { Extrats } from "./interfaces/core.interfaces";
 import { $applications } from "$store/apps";
 import { isServer } from "utils/envirement";
+import { getWorkerInstance } from "utils/worker-init";
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 interface ExecuteStack {
@@ -65,8 +66,7 @@ export function serviceWorkerReadyCallback() {
 }
 
 if (!isServer) {
-  document.addEventListener('serviceWorkerReady', function () {
-    navigator.serviceWorker.controller.postMessage({ type: 'CHECK_SERVICE_WORKER' });
+    getWorkerInstance().postMessage({ type: 'CHECK_SERVICE_WORKER' });
       _isServiceWorkerReady = true;
       serviceWorkerReadyCallback();
       $applications.subscribe((applications) => {
@@ -75,7 +75,6 @@ if (!isServer) {
           registerComponentsInServiceWorker(components);
         });
       });
-  });
 }
 
 export default {}
