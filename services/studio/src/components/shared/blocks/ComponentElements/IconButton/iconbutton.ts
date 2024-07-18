@@ -40,9 +40,7 @@ export class IconButtonBlock extends BaseElementBlock {
     }
   }
 
-  render() {
-    console.log('icon button component ',this.component)
-  
+  render() {  
     return html` 
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-button 
