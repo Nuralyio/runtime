@@ -1,17 +1,15 @@
 import { type ComponentElement } from "$store/component/interface";
-import { $applicationComponents, $componentWithChildrens } from "$store/component/sotre";
 import { $currentPageViewPort } from "$store/page/store";
-import { log } from "@nanostores/logger";
 import { executeEventHandler } from "core/engine";
-import { executeValueHandler } from "core/helper";
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
+import { BaseElementBlock } from "../BaseElement";
 
 const isServer = typeof window === 'undefined';
 
 @customElement("text-label-block")
-export class TextLabelBlock extends LitElement {
+export class TextLabelBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -94,15 +92,6 @@ export class TextLabelBlock extends LitElement {
     });
   }
 
-  updateValue() {
-    executeValueHandler(this.component)
-      .onmessage = (event) => {
-        if (event.data.result) {
-          this.thisvalue = event.data.result;
-        }
-      }
-
-  }
 
   getValue() {
     let value = "";

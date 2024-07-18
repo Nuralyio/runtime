@@ -524,20 +524,23 @@ export default [
       `
         },
         ...COMMON_ATTRIBUTES,
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style?.color || "black";
-            }
+        input: {
+            value: {
+                type: "handler",
+                value: /* js */`
+                    try{
+                        const selectedComponens =  GetVar( "selectedComponents")||[];
+                        if( selectedComponens.length) {
+                            const selectedComponent = selectedComponens[0];
+                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                            currentComponent.style?.color || "black";
+                        }
 
-        }catch(e){
-            console.log(e);
-        }
-            `
+                    }catch(e){
+                        console.log(e);
+                    }
+                `
+            }
         }
     },
     //

@@ -71,7 +71,6 @@ export class PageContent extends LitElement {
         }
       })
       const components = $applicationComponents(currentEditingApplication.value.uuid).get();
-      console.warn("components", components)
       this.components = components.filter((component) => {
         return component.pageId === currentPage.value;
       });
