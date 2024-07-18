@@ -197,7 +197,6 @@ export default [
         ...COMMON_ATTRIBUTES,
         input: {
             value: {
-                type: "text",
                 value: "Add Page"
             },
 
@@ -426,19 +425,23 @@ export default [
         name: "name",
         applicationId: "1",
         component_type: ComponentType.NumberInput,
+        styleHandlers: {},
         parameters: {
             value: "22px",
+        },
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "20px",
         },
         event: {
             valueChange: /* js */ `
            
            try{
-            console.log('eventdata.value',EventData.value)
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "font-size", EventData.value);
+                    updateStyle(currentComponent, "font-size", EventData.value+'px');
                 
                 }
             }catch(error){
@@ -455,8 +458,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                console.log('current component', currentComponent);
-                currentComponent.style?.fontSize || "22px";
+                currentComponent.style['font-size']|| "22";
             }
 
         }catch(e){

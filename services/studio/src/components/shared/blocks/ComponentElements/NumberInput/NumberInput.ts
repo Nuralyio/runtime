@@ -55,6 +55,7 @@ export class TextInputBlock extends LitElement {
   }; 
 
   render() {
+    console.log('COMPONENT ', this.component)
       return html`
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-input 
