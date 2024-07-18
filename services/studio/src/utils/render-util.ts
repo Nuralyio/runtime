@@ -5,6 +5,7 @@ import '../components/shared/blocks/ComponentElements/Menu/Menu';
 import '../components/shared/blocks/ComponentElements/ColorPicker/colorpicker'
 import'../components/shared/blocks/ComponentElements/NumberInput/NumberInput'
 import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper';
+import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
 // Simple memoization cache
 const renderCache = new Map<string, TemplateResult>();
 
@@ -24,6 +25,10 @@ export function renderComponent(components: ComponentElement[], item?: any, isVi
     ${components.map((component: ComponentElement) => {
       const commonProps = { item: { ...item }, component: { ...component } };
       switch (component?.component_type) {
+        case ComponentType.IconButton:
+          return html`
+            ${html`<icon-button-block  .item=${commonProps.item}  .component=${commonProps.component}></icon-button-block>`}
+          `;
         case ComponentType.ColorPicker:
           return html`
             ${html`<color-picker-block  .item=${commonProps.item}  .component=${commonProps.component}></color-picker-block>`}

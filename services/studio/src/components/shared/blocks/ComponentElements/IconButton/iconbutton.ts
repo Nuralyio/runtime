@@ -1,14 +1,15 @@
 import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@hybridui/input";
+import "@hybridui/button";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { $context } from "$store/context/store";
 import { BaseElementBlock } from "../BaseElement";
 
-@customElement("number-input-block")
-export class TextInputBlock extends BaseElementBlock {
+
+@customElement("icon-button-block")
+export class ColorPickerBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -22,37 +23,33 @@ export class TextInputBlock extends BaseElementBlock {
   @state()
   thisvalue: any;
 
-
+ 
   override connectedCallback() {
     super.connectedCallback();
     this.updateValue();
-    $context.subscribe(() => {
+    $context.subscribe((context) => {
       if (this.component) {
         this.updateValue();
       }
     }
     )
   }
-
-  handleValueChange = (e) => {
-    if (this.component.event.valueChange) {
-      executeEventHandler(this.component, "event", "valueChange", {
-        EventData: {
-          value: e.detail.value,
-        },
-      });
+  handleClick = (e) => {
+    if (this.component.event.click) {
+      executeEventHandler(this.component, "event", "click");
     }
-  }; 
+  }
 
   render() {
-      return html`
+    console.log('icon button component ',this.component)
+  
+    return html` 
       <span style=${styleMap({ ...this.component.style })}> 
-        <hy-input 
-          @valueChange=${this.handleValueChange}
-          .value=${this.thisvalue ?? this.item.value ?? ""}
-          min='0'
-          type='number'
-        ></hy-input>
+        <hy-button 
+          @click=${this.handleClick}
+          .color=${this.thisvalue ?? this.item.value ?? ""}
+          .icon=${[this.component.parameters?.icon]}
+        ></hy-button>
       </span>
     `;
   }
