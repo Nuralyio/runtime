@@ -1,15 +1,15 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
-import { executeValueHandler } from "core/helper";
 import { $context } from "$store/context/store";
+import { BaseElementBlock } from "../BaseElement";
 
 
 @customElement("color-picker-block")
-export class ColorPickerBlock extends LitElement {
+export class ColorPickerBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -17,24 +17,13 @@ export class ColorPickerBlock extends LitElement {
   item: any;
 
   static styles = [
-    css`
-      :host {
-      }
-    `,
+    css``,
   ];
 
   @state()
   thisvalue: any;
 
-  updateValue() {
-    executeValueHandler(this.component)
-      .onmessage = (event) => {
-        if (event.data.result) {
-          this.thisvalue = event.data.result;
-        }
-      }
-
-  }
+ 
   override connectedCallback() {
     super.connectedCallback();
     this.updateValue();

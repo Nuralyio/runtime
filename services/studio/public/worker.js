@@ -1,41 +1,21 @@
 let activated = false;
-self.addEventListener('install', function (event) {
-    // Activate service worker immediately
-    self.skipWaiting();
-});
 const requestMap = new Map();
 
-self.addEventListener('activate', function (event) {
-    // Claim any clients immediately
-    event.waitUntil(clients.claim());
-    // Notify that the service worker is ready
-    event.waitUntil(
-        self.clients.matchAll().then(allClients => {
-            allClients.forEach(client => {
-                client.postMessage({ type: 'SERVICE_WORKER_READY' });
-            });
-        })
-    );
-});
 function appllicationArrayToObject(applications) {
     return applications.reduce((application, item) => {
         application[item.uuid] = item;
         return application;
     }, {});
 }
+
 self['FontSize'] = 'fontSize';
 self['Color'] = "color";
 self['Value'] = "value";
 
-
+// Listen for messages from the main thread
 self.addEventListener('message', event => {
-
     if (!activated) {
-        self.clients.matchAll().then(allClients => {
-            allClients.forEach(client => {
-                client.postMessage({ type: 'SERVICE_WORKER_READY' });
-            });
-        })
+        event.ports[0].postMessage({ type: 'WORKER_READY' });
         activated = true;
     }
     const {
@@ -49,10 +29,7 @@ self.addEventListener('message', event => {
         }
     } = event;
 
-    // define the methods that can be called from the client
-
-    self['EventData'] = extras.EventData
-    // todo the fetch data will be moved into the core.
+    self['EventData'] = extras.EventData;
     self['FetchData'] = (provider, table, mapper) => {
         if (!provider || !table) {
             return;
@@ -74,27 +51,23 @@ self.addEventListener('message', event => {
                 });
             });
         });
-    }
+    };
 
     self['SetStyle'] = function (component, symbol, value) {
         if (!updatedAttriutes[component.uuid]) {
-            updatedAttriutes[component.uuid] = {}
+            updatedAttriutes[component.uuid] = {};
         }
         updatedAttriutes[component.uuid] = { [symbol]: value };
-    }
+    };
     self["Current"] = component;
 
     self['SetValue'] = function (component, value, valaa) {
         if (!updatedParameters[component.uuid]) {
-            updatedParameters[component.uuid] = {}
+            updatedParameters[component.uuid] = {};
         }
         updatedParameters[component.uuid] = { value: value };
         return valaa;
-    }
-
-
-
-
+    };
 
     const updatedAttriutes = {};
     const updatedParameters = {};
@@ -108,8 +81,7 @@ self.addEventListener('message', event => {
             component,
             eventData: { [symbol]: value }
         });
-    }
-
+    };
 
     let requestIdCounter = 0;
 
@@ -123,7 +95,7 @@ self.addEventListener('message', event => {
 
             // Store the resolve and reject functions in the map
             requestMap.set(requestId, { resolve, reject });
-            console.log(requestMap, "requestMap")
+            console.log(requestMap, "requestMap");
             // Send the message to the service worker
             event.ports[0].postMessage({
                 funtionNameToExecute: "addPage",
@@ -136,7 +108,6 @@ self.addEventListener('message', event => {
 
     const { requestId, success, result } = event.data;
     if (requestId) {
-
         // Retrieve the resolve and reject functions from the map
         const { resolve, reject } = requestMap.get(requestId);
 
@@ -192,7 +163,7 @@ self.addEventListener('message', event => {
             component,
             eventData: { [symbol]: value }
         });
-    }
+    };
 
     self["SetContextVar"] = function (symbol, value) {
         event.ports[0].postMessage({
@@ -200,7 +171,7 @@ self.addEventListener('message', event => {
             component,
             eventData: { [symbol]: value }
         });
-    }
+    };
 
     self["GetComponent"] = function (componentUuid, applicationId) {
         let _component = null;
@@ -208,12 +179,12 @@ self.addEventListener('message', event => {
             if (self.applications[applicationId][key].uuid === componentUuid) {
                 _component = { ...self.applications[applicationId][key] };
             }
-        })
+        });
         return _component;
-    }
+    };
     self["GetComponents"] = function (componentIds) {
         return components.filter(c => componentIds.includes(c.uuid));
-    }
+    };
 
     switch (command) {
         case "registerApplications":
@@ -272,11 +243,9 @@ self.addEventListener('message', event => {
                     error: e.message
                 });
             }
-
             break;
         case "executeValue":
             try {
-
                 event.ports[0].postMessage({
                     result: eval(codeToExecuteAsString),
                     updatedAttriutes,
@@ -289,9 +258,7 @@ self.addEventListener('message', event => {
             }
             break;
     }
-
 });
-
 
 function executeCode(code) {
     const result = eval(code + ' ;if(typeof main !=="undefined")  main()');

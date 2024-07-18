@@ -1,16 +1,17 @@
-import { LitElement, html, css, type PropertyValues, nothing } from "lit";
+import {  html, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/button";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
-import { executeDispalyHandler, executeValueHandler } from "core/helper";
+import { executeHandler } from "core/helper";
 import { $context } from "$store/context/store";
+import { BaseElementBlock } from "../BaseElement";
 const isServer = typeof window === 'undefined';
 
 
 @customElement("button-block")
-export class ButtonBlock extends LitElement {
+export class ButtonBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
   static styles = [];
@@ -30,16 +31,6 @@ export class ButtonBlock extends LitElement {
        }
      }*/
     return isServer ? this.component.input?.value?.value : this.thisvalue ?? this.component.input?.value?.value;
-  }
-
-  updateValue() {
-    executeValueHandler(this.component)
-      .onmessage = (event) => {
-        if (event.data.result) {
-          this.thisvalue = event.data.result;
-        }
-      }
-
   }
 
 
@@ -66,7 +57,11 @@ export class ButtonBlock extends LitElement {
 
   // display handler
   updateDisplay() {
-    const messageChannel = executeDispalyHandler(this.component);
+    const messageChannel = executeHandler({
+      component: this.component,
+      type: "input.show",
+      extras: {},
+    });
     messageChannel.onmessage = (event) => {
       if (event.data.result || typeof event.data.result === "boolean") {
         this.display = event.data.result;

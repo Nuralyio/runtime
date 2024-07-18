@@ -54,7 +54,7 @@ export class MenuBlock extends LitElement {
             {
                 eventId,
                 component: this.component,
-                type: "options",
+                type: "input.options",
                 extras: {}
             }
         );
@@ -75,7 +75,7 @@ export class MenuBlock extends LitElement {
                                 {
                                     eventId: generateRandomId(),
                                     component: this.component,
-                                    type: "onSelect",
+                                    type: "input.onSelect",
                                     extras: {
                                         EventData: {
                                             id,
@@ -131,11 +131,12 @@ export class MenuBlock extends LitElement {
                     {
                         eventId: generateRandomId(),
                         component: this.component,
-                        type: "onSelect",
+                        type: "input.onSelect",
                         extras: {
                             EventData: {
                                 id: option.id,
-                                text: option.text
+                                text: option.text,
+                                type: option.type
                             }
                         }
                     })

@@ -1,11 +1,11 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/input";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
-import { executeValueHandler } from "core/helper";
 import { $context } from "$store/context/store";
+import { BaseElementBlock } from "../BaseElement";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
@@ -19,7 +19,7 @@ function debounce(func, wait) {
 }
 
 @customElement("text-input-block")
-export class TextInputBlock extends LitElement {
+export class TextInputBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -27,24 +27,12 @@ export class TextInputBlock extends LitElement {
   item: any;
 
   static styles = [
-    css`
-      :host {
-      }
-    `,
+    css``,
   ];
 
   @state()
   thisvalue: any;
 
-  updateValue() {
-    executeValueHandler(this.component)
-      .onmessage = (event) => {
-        if (event.data.result) {
-          this.thisvalue = event.data.result;
-        }
-      }
-
-  }
   override connectedCallback() {
     super.connectedCallback();
     this.updateValue();
