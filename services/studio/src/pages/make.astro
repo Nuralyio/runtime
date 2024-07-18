@@ -11,7 +11,7 @@ import { allTasks } from "nanostores";
 import { $components } from "$store/component/sotre";
 import { $applications } from "$store/apps";
 import { serviceWorkerReadyCallback } from "core/engine";
-const _serviceWorkerReadyCallback = serviceWorkerReadyCallback;
+import { registerContextInWebWorker } from '../utils/context-registration';
 const cookie = Astro.request.headers.get("Cookie");
 const headers = {};
 Astro.request.headers.forEach((value, key) => {
@@ -67,7 +67,7 @@ const application = applications.find(
 $components.set({
   [application.uuid]: componentData,
 });
-console.log($components.get());
+registerContextInWebWorker({});
 // $resetPageStore()
 ---
 
@@ -142,26 +142,6 @@ console.log($components.get());
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
   window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/custom-sw.js')
-            .then(function (registration) {
-                navigator.serviceWorker.ready.then(function (registration) {
-                    registration.active.postMessage({ type: 'CHECK_SERVICE_WORKER' });
-                    navigator.serviceWorker.addEventListener('message', function(event) {
-                        if (event.data && event.data.type === 'SERVICE_WORKER_READY') {
-                            console.log('Service Worker is ready');
-                            document.dispatchEvent(new CustomEvent("serviceWorkerReady"));
-                        }
-                    });
-                });
-            })
-            .catch(function (registrationError) {
-                console.log('Service Worker registration failed:', registrationError);
-            });
-    });
-}
 </script>
 <style>
   html {

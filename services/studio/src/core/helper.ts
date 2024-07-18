@@ -8,7 +8,10 @@ import { addPageHandler } from "$store/page/handler";
 import type { Application, Execute, Extrats, ServiceWorkerMessage } from "core/interfaces/core.interfaces";
 import { NO_EVENT_LISTENER } from "utils/constants";
 import { isVerbose } from "utils/envirement";
+import { getNestedAttribute } from "utils/object.utils";
+import { getWorkerInstance } from "utils/worker-init";
 
+// todo: do we still need this function?
 export function executeInServiceWorker(
   components: ComponentElement[],
   component: ComponentElement,
@@ -26,7 +29,7 @@ export function executeInServiceWorker(
     messageChannel.port1.onmessage =  handleServiceWorkerMessageWrapper(NO_EVENT_LISTENER);
     const command = "executeFunction";
     if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      navigator.serviceWorker.controller.postMessage(
+      getWorkerInstance().postMessage(
         {
           command,
           codeToExecuteAsString: handlers[attributeName],
@@ -45,7 +48,7 @@ export function registerApplicationsInServiceWorker(applications: Application[])
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerApplications";
-    navigator.serviceWorker.controller.postMessage(
+    getWorkerInstance().postMessage(
       {
         command,
         payload: {
@@ -62,7 +65,7 @@ export function registerContextInServiceWorker(context: ContextVarStore) {
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerContext";
-    navigator.serviceWorker.controller.postMessage(
+    getWorkerInstance().postMessage(
       {
         command,
         payload: {
@@ -80,7 +83,7 @@ export function registerComponentsInServiceWorker(components: ComponentElement[]
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerComponents";
-    navigator.serviceWorker.controller.postMessage(
+    getWorkerInstance().postMessage(
       {
         command,
         payload: {
@@ -91,55 +94,6 @@ export function registerComponentsInServiceWorker(components: ComponentElement[]
     );
   }
 }
-
-
-export function executeValueHandler(
-  component: ComponentElement,
-) {
-  let messageChannel = new MessageChannel();
-  const command = "executeValue";
-  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    if ("serviceWorker" in navigator) {
-      if (component.inputHandlers?.value) {
-        navigator.serviceWorker.controller?.postMessage(
-          {
-            command,
-            codeToExecuteAsString: component.inputHandlers?.value,
-            component: component,
-          },
-          [messageChannel.port2]
-        );
-      }
-    }
-  }
-
-  return messageChannel.port1;
-}
-
-
-export function executeDispalyHandler(
-  component: ComponentElement,
-) {
-  let messageChannel = new MessageChannel();
-  const command = "executeValue";
-  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    if ("serviceWorker" in navigator) {
-      if (component.input?.show?.value) {
-        navigator.serviceWorker.controller?.postMessage(
-          {
-            command,
-            codeToExecuteAsString: component.input?.show?.value,
-            component: component,
-          },
-          [messageChannel.port2]
-        );
-      }
-    }
-  }
-
-  return messageChannel.port1;
-}
-
 
 export function executeHandler(
   { eventId,
@@ -152,10 +106,10 @@ export function executeHandler(
   messageChannel.port1.onmessage = handleServiceWorkerMessageWrapper(eventId);
   const command = "executeValue";
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    if ("serviceWorker" in navigator) {
-      const valueToExecute = component.input?.[type]?.value;
+    const handler = getNestedAttribute(component, type);
+    const valueToExecute = (handler as any)?.value;
       if (valueToExecute) {
-        navigator.serviceWorker.controller?.postMessage(
+        getWorkerInstance()?.postMessage(
           {
             command,
             codeToExecuteAsString: valueToExecute,
@@ -165,7 +119,6 @@ export function executeHandler(
           [messageChannel.port2]
         );
       }
-    }
   }
 
   return messageChannel.port1;
@@ -187,9 +140,9 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
       case 'addPage':
         const { requestId } = event.data;
         addPageHandler(eventData.page, (page) => {
-          navigator.serviceWorker.controller.postMessage({ requestId, success: true, result: page });
+          getWorkerInstance().postMessage({ requestId, success: true, result: page });
         }, (error) => {
-          navigator.serviceWorker.controller.postMessage({ requestId, success: false, result: error });
+          getWorkerInstance().postMessage({ requestId, success: false, result: error });
         });
         break;
       case 'SetContextVar':
