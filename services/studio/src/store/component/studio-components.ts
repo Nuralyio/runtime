@@ -450,7 +450,6 @@ export default [
             
       `
         },
-        ...COMMON_ATTRIBUTES,
         inputHandlers: {
             value: /* js */`
             try{
