@@ -11,6 +11,7 @@ import { isVerbose } from "utils/envirement";
 import { getNestedAttribute } from "utils/object.utils";
 import { getWorkerInstance } from "utils/worker-init";
 
+// todo: do we still need this function?
 export function executeInServiceWorker(
   components: ComponentElement[],
   component: ComponentElement,
@@ -92,30 +93,6 @@ export function registerComponentsInServiceWorker(components: ComponentElement[]
       [messageChannel.port2]
     );
   }
-}
-
-// todo: need to replace this function
-export function executeValueHandler(
-  component: ComponentElement,
-) {
-  let messageChannel = new MessageChannel();
-  const command = "executeValue";
-  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    if ("serviceWorker" in navigator) {
-      if (component.inputHandlers?.value) {
-        getWorkerInstance()?.postMessage(
-          {
-            command,
-            codeToExecuteAsString: component.inputHandlers?.value,
-            component: component,
-          },
-          [messageChannel.port2]
-        );
-      }
-    }
-  }
-
-  return messageChannel.port1;
 }
 
 export function executeHandler(
