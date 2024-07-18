@@ -9,7 +9,7 @@ import { BaseElementBlock } from "../BaseElement";
 
 
 @customElement("icon-button-block")
-export class ColorPickerBlock extends BaseElementBlock {
+export class IconButtonBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
