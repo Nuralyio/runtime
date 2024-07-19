@@ -340,7 +340,7 @@ export default [
                     },
                     childrends: {
                         type: "componentIdArray",
-                        value: ["input_text_vertical_container", "font_color_block","text_alignement_block"]
+                        value: ["input_text_vertical_container", "font_color_block","text_alignement_block","font_family_block"]
 
                     }
                 },
@@ -441,7 +441,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "font-size", EventData.value+'px');
+                    updateStyle(currentComponent, "fontSize", EventData.value+EventData.unity);
                 
                 }
             }catch(error){
@@ -450,20 +450,39 @@ export default [
             
       `
         },
-        inputHandlers: {
-            value: /* js */`
+        input: {
+            value:{
+                type:'handler',
+                value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['font-size']|| "22";
+                const fontSize =currentComponent.style['fontSize']?.split('')
+                if(fontSize) 
+                    {
+                        let unity='';
+                        let value='';
+                        fontSize.forEach((char)=>
+                            {
+                            if(char>='0' && char<='9')
+                                value+=char 
+                            else 
+                            unity+=char
+                           }
+                        );
+                        [+value,unity]
+                    }
+                    else 
+                       [0,'px']
             }
 
         }catch(e){
             console.log(e);
         }
-            `
+            `  
+            }
         }
     },
     {
@@ -563,6 +582,125 @@ export default [
         childrenIds: ["alignement_label_container","alignement_content_container"],
     },
     {
+        uuid: "font_family_block",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+        ...COMMON_ATTRIBUTES,
+        style:{
+
+        },
+
+        childrenIds: ["font_family_label_container","font_family_content_container"],
+    },
+    {
+        uuid: "font_family_label_container",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "250px",
+        },
+        childrenIds: ["font_family_label"],
+    },
+    {
+        uuid: "font_family_label",
+        name: "text_label",
+        component_type: ComponentType.TextLabel,
+        parameters: {
+            value: "Font family",
+        },
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+        style:{
+        
+        }
+    },
+    {
+        uuid: "font_family_content_container",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "250px",
+        },
+        childrenIds: ["font_family_select"],
+    },
+    {
+        uuid: "font_family_select",
+        applicationId: "1",
+        component_type: ComponentType.Select,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "Left panel",
+        input: {
+            value: { 
+                type: "handler",
+                value: /* js */ `                    
+                [{
+                    label: "Arial",
+                    value: "arial"
+                }, 
+                {
+                    label: "Tahoma",
+                    value: "tahoma"
+                },
+                {
+                     label: "Verdana",
+                     value: "verdana"
+                },
+                {
+                    label:'Georgia',
+                    value:'georgia'
+                },
+                {
+                    label:'Courier New',
+                    value:'courier new'
+                }
+            
+            ]
+                
+                `
+            }
+        },
+        style: {
+            width: "250px",
+        },
+        event: {
+            changed: /* js */ `
+
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "font-family", EventData.value);
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+    {
         uuid: "text-align-left",
         name: "name",
         applicationId: "1",
@@ -580,7 +718,6 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
-                    console.log('currentcomponent ',)
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     updateStyle(currentComponent, "text-align", "left");
         
@@ -625,7 +762,6 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
-                    console.log('currentcomponent ',)
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     updateStyle(currentComponent, "text-align", "right");
         
@@ -670,7 +806,6 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
-                    console.log('currentcomponent ',)
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     updateStyle(currentComponent, "text-align", "center");
         
@@ -715,7 +850,6 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
-                    console.log('currentcomponent ',)
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     updateStyle(currentComponent, "text-align", "justify");
         
@@ -742,6 +876,98 @@ export default [
             `
         }
     },
+     
+    {
+        uuid: "text-align-top",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "arrow-up",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "display", "inline-block");
+                    updateStyle(currentComponent, "vertical-align", "top");
+
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+        inputHandlers: {
+            value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if( selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                currentComponent.style['vertical-align']|| "top";
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `
+        }
+    },
+    {
+        uuid: "text-align-bottom",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "arrow-down",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "display", "inline-block");
+                    updateStyle(currentComponent, "vertical-align", "bottom");
+
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+        inputHandlers: {
+            value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if( selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                currentComponent.style['vertical-align']|| "top";
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `
+        }
+    },
+
     {
         uuid: "text_label_alignement",
         name: "text_label",
@@ -784,11 +1010,11 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "200px",
+            width: "280px",
             display:'flex',
             'justify-content':'space-between'
         },
-        childrenIds: ["text-align-left","text-align-center","text-align-right","text-align-justify"],
+        childrenIds: ["text-align-left","text-align-center","text-align-right","text-align-justify","text-align-top","text-align-bottom"],
     },
     //
 ]

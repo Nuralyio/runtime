@@ -4,11 +4,10 @@ import "@hybridui/input";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
-import { $context } from "$store/context/store";
 import { BaseElementBlock } from "../BaseElement";
 
 @customElement("number-input-block")
-export class TextInputBlock extends BaseElementBlock {
+export class NumberInputBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -23,22 +22,12 @@ export class TextInputBlock extends BaseElementBlock {
   thisvalue: any;
 
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.updateValue();
-    $context.subscribe(() => {
-      if (this.component) {
-        this.updateValue();
-      }
-    }
-    )
-  }
-
   handleValueChange = (e) => {
     if (this.component.event.valueChange) {
       executeEventHandler(this.component, "event", "valueChange", {
         EventData: {
           value: e.detail.value,
+          unity:this.thisvalue[1]
         },
       });
     }
@@ -49,7 +38,7 @@ export class TextInputBlock extends BaseElementBlock {
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-input 
           @valueChange=${this.handleValueChange}
-          .value=${this.thisvalue ?? this.item.value ?? ""}
+          .value=${this.thisvalue?this.thisvalue[0]:0}
           min='0'
           type='number'
         ></hy-input>
