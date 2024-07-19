@@ -340,7 +340,7 @@ export default [
                     },
                     childrends: {
                         type: "componentIdArray",
-                        value: ["input_text_vertical_container", "font_color_block","text_alignement_block","font_family_block"]
+                        value: ["input_text_vertical_container", "font_color_block","text_alignement_block","font_family_block","font_weight_block","font_style_block","text_decoration_block"]
 
                     }
                 },
@@ -1016,5 +1016,402 @@ export default [
         },
         childrenIds: ["text-align-left","text-align-center","text-align-right","text-align-justify","text-align-top","text-align-bottom"],
     },
-    //
+    {
+        uuid: "font_weight_block",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "250px",
+            display:'flex',
+            'flex-direction':'column',
+            'margin-top': '10px',
+        },
+        childrenIds: ["text_label_font_weight", "font_weight_select"],
+    },
+    {
+        uuid: "text_label_font_weight",
+        name: "text_label",
+        component_type: ComponentType.TextLabel,
+        parameters: {
+            value: "Font weight",
+        },
+
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+    },
+    {
+        uuid: "font_weight_select",
+        applicationId: "1",
+        component_type: ComponentType.Select,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "Left panel",
+        input: {
+            value: { 
+                type: "handler",
+                value: /* js */ `                    
+                [{label: "Normal",value: "normal"},{label:'Bold',value:'bold'},{label:'Extra bold',value:'800'}]
+                
+                `
+            }
+        },
+        style: {
+            width: "250px",
+        },
+        event: {
+            changed: /* js */ `
+
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "font-weight", EventData.value);
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+    {
+        uuid: "font_style_block",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "250px",
+            display:'flex',
+            'flex-direction':'column',
+            "margin-top":"10px"
+        },
+        childrenIds: ["text_label_font_style","font_style_values_block"],
+    },
+    {
+        uuid: "text_label_font_style",
+        name: "text_label",
+        component_type: ComponentType.TextLabel,
+        parameters: {
+            value: "Font Style",
+        },
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+    },
+    {
+        uuid: "font_style_values_block",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "150px",
+            display:'flex',
+            gap:"10px"
+        },
+        childrenIds: ["font_style_normal","font_style_italic","font_style_oblique"],
+    },
+    {
+        uuid: "font_style_normal",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "font-awesome",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "font-style", "normal");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+        
+    },
+    {
+        uuid: "font_style_italic",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "italic",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "font-style", "italic");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+
+    {
+        uuid: "font_style_oblique",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "font-awesome",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "font-style", "oblique");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+    
+    {
+        uuid: "text_decoration_block",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "250px",
+            display:'flex',
+            'flex-direction':'column',
+            "margin-top":"10px"
+        },
+        childrenIds: ["text_label_text_decoration","text_decoration_values_block"],
+    },
+    {
+        uuid: "text_label_text_decoration",
+        name: "text_label",
+        component_type: ComponentType.TextLabel,
+        parameters: {
+            value: "Text decoration",
+        },
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+    },
+    {
+        uuid: "text_decoration_values_block",
+        applicationId: "1",
+        name: "Left panel",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
+
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "250px",
+            display:'flex',
+            gap:"10px"
+        },
+        childrenIds: ["text_decoration_overline","text_decoration_line_through","text_decoration_underline","text_decoration_underline_overline","text_decoration_none"],
+    },
+    {
+        uuid: "text_decoration_overline",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "font-awesome",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "text-decoration", "overline");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+        
+    },
+    {
+        uuid: "text_decoration_line_through",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "strikethrough",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "text-decoration", "line-through");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+
+    {
+        uuid: "text_decoration_underline",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "underline",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "text-decoration", "underline");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+    {
+        uuid: "text_decoration_underline_overline",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "grip-lines",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "text-decoration", "underline overline");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    },
+    {
+        uuid: "text_decoration_none",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.IconButton,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        parameters: {
+            icon: "xmark",
+        },
+
+        event: {
+            click: /* js */ `
+           
+           try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "text-decoration", "none");
+        
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    }
 ]
