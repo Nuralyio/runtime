@@ -1,11 +1,25 @@
 import { singleton } from 'tsyringe';
 import prisma from '../../../prisma/prisma'
 import { Ownership } from '../models/ownership';
-import { IOwnershipRepository } from '../interfaces/owernship.interface';
+import { IOwnershipRepository } from '../interfaces/ownership.interface';
 import { ResourcePermissionRequest } from '../interfaces/resource-permission.request';
 
 @singleton()
 export class OwnershipRepository implements IOwnershipRepository {
+
+  public async getOwnershipByResource(resourceId: string, resourceType: string): Promise<Ownership> {
+    const ownership = await prisma.ownership.findFirst({
+      where: { resourceId, resourceType }
+    });
+    return new Ownership(ownership!.resourceType, ownership!.resourceId, ownership!.ownerId);
+  }
+
+  public async getOwnershipByUser(user_uuid: string, resourceId: string, resourceType: string): Promise<Ownership> {
+    const ownership = await prisma.ownership.findFirst({
+      where: { /*user_uuid,*/ resourceId, resourceType }
+    });
+    return new Ownership(ownership!.resourceType, ownership!.resourceId, ownership!.ownerId);
+  }
 
   public async create(ownership: Ownership): Promise<Ownership> {
     return await prisma.ownership.create({
@@ -17,7 +31,7 @@ export class OwnershipRepository implements IOwnershipRepository {
     })
   }
 
-  public async getResourceIDWithPermissionOrOwner(resourcePermissionRequest : ResourcePermissionRequest): Promise<string[]> {
+  public async getResourceIDWithPermissionOrOwner(resourcePermissionRequest: ResourcePermissionRequest): Promise<string[]> {
     const { user, resourceType, permissionType } = resourcePermissionRequest;
 
     const resources = await prisma.$queryRaw`
@@ -36,6 +50,12 @@ export class OwnershipRepository implements IOwnershipRepository {
     `;
     return (resources as any).map((resource: { resource_id: string }) => resource.resource_id);
 
+  }
+  public async delete(id: number): Promise<Ownership> {
+    const deleteOwnership = await prisma.ownership.delete({
+      where: { id }
+    });
+    return new Ownership(deleteOwnership.resourceType, deleteOwnership.resourceId, deleteOwnership.ownerId);
   }
 
 }
