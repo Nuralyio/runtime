@@ -9,6 +9,9 @@ const defaultColorSetsStyle = css`
   .default-color-sets-container * {
     margin: 3px;
   }
+  .color-set-container{
+    border: var(--hybrid-colorpicker-border-color);
+  }
 `;
 
 export const styles = defaultColorSetsStyle;

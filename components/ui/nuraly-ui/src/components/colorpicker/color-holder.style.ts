@@ -4,9 +4,6 @@ const colorHolderStyles = css`
   :host {
     cursor: pointer;
   }
-  .color-holder-container {
-    border: var(--hybrid-colorpicker-border-color);
-  }
 
   .color-holder-container {
     width: var(--hybrid-colorpicker-default-width);
