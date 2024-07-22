@@ -28,6 +28,16 @@ export default css`
     opacity: var(--hybrid-colorpicker-disabled-opacity);
     cursor: not-allowed;
   }
+  :host(:not([disabled])) .color-holder {
+    border: var(--hybrid-colorpicker-border-color);
+  }
+  :host(:not([disabled])) .color-holder:hover {
+    opacity: var(--hybrid-colorpicker-hover-opacity);
+  }
+  :host(:not([disabled])) .color-holder:active {
+    border:var(--hybrid-colorpicker-active-border)
+  }
+  
 
   :host([show]) .dropdown-container{
     display: block;
@@ -44,7 +54,9 @@ export default css`
   :host {
     --hybrid-colorpicker-background-color: #f4f4f4;
     --hybrid-colorpicker-border-color: 1px solid gray;
+    --hybrid-colorpicker-active-border: 1px solid #0f62fe;
     --hybrid-colorpicker-disabled-opacity: 0.5;
+    --hybrid-colorpicker-hover-opacity: 0.8;
     --hybrid-colorpicker-default-width: 30px;
     --hybrid-colorpicker-default-height: 25px;
     --hybrid-colorpicker-small-width: 20px;
