@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@hybridui/input";
 import { type ComponentElement } from "$store/component/interface";
 @customElement("parameters-container-direction-value-handler")
 export class ParametersContainerDirectionValueHandler extends LitElement {

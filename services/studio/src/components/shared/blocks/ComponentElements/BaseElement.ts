@@ -1,4 +1,4 @@
-import { LitElement} from "lit";
+import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
 import { executeHandler } from "core/helper";
 import { $context } from "$store/context/store";
@@ -14,36 +14,56 @@ export class BaseElementBlock extends LitElement {
   item: any;
 
   @state()
+  inputHandlersValue: any = {};
+
+  @state()
   thisvalue: any;
 
-  updateValue() :void {
-    const eventId = generateRandomId();
-    const handlerType: any = getNestedAttribute(this.component, "input.value");
-    if (handlerType?.type === "handler") {
-      executeHandler({
-        eventId,
-        component: this.component,
-        type: "input.value",
-        extras: {},
+  @state()
+  callbacks: any = {};
+
+  registerCallback(inputName: string, callback: any) {
+    this.callbacks[inputName] = callback;
+  }
+
+  async traitInputHandler(input: any, inputName: string): Promise<void> {
+    if (input?.type === "handler") {
+      const eventId = generateRandomId();
+      return new Promise((resolve) => {
+        const handler = ({ detail: { data } }) => {
+          document.removeEventListener(eventId, handler as any);
+          this.thisvalue = data.result;
+          this.inputHandlersValue[inputName] = data.result;
+          if (this?.callbacks[inputName]) {
+            this.callbacks[inputName](data.result);
+          }
+          resolve();
+        };
+        document.addEventListener(eventId, handler as any);
+        executeHandler({
+          eventId,
+          component: this.component,
+          type: `input.${inputName}`,
+          extras: {},
+        });
       });
-      const handler = ({ detail: { data } }) => {
-        document.removeEventListener(eventId, handler as any);
-        this.thisvalue = data.result;
-      }
-      document.addEventListener(eventId, handler as any);
-    }else{
-        this.thisvalue = handlerType?.value;
     }
   }
 
-  override connectedCallback() {
+  async traitInputsHandlers() {
+    const handlerPromises = [];
+    for (const [inputName, input] of Object.entries(this.component.input)) {
+      handlerPromises.push(this.traitInputHandler(input, inputName));
+    }
+    await Promise.all(handlerPromises);
+  }
+
+  override async connectedCallback() {
     super.connectedCallback();
-    this.updateValue();
-    $context.subscribe((context) => {
+    $context.subscribe(async (context) => {
       if (this.component) {
-        this.updateValue();
+        await this.traitInputsHandlers();
       }
     });
   }
-
 }

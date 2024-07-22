@@ -1,93 +1,84 @@
 import type { ComponentElement } from '$store/component/interface';
-import { $AllcomponentWithChildrens, $applicationComponents, $componentWithChildrens } from '$store/component/sotre';
+import { $applicationComponents } from '$store/component/sotre';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';
+import { memoize } from 'utils/memoize';
+import { BaseElementBlock } from '../BaseElement';
 
 @customElement('tabs-block')
-export class TabsBlock extends LitElement {
-
-
+export class TabsBlock extends BaseElementBlock {
     @property({ type: Object, reflect: false })
     component: ComponentElement;
-    @state()
-    editableTabs = [];
 
     @state()
-    components: ComponentElement[] = [];
+    private editableTabs = [];
 
+    @state()
+    componentsWithChildrens: ComponentElement[] = [];
+
+    static override styles = css`
+    :host {
+      display: block;
+    }
+  `;
+    tabsValueRecived(tabs: any) {
+        this.updateComponents();
+    }
 
     constructor() {
         super();
-
-        // this.editableTabs = [
-        //     {
-        //       label: "Pages",
-        //       content: html` <div>
-        //     <add-screen-editor></add-screen-editor>
-        //   </div>
-        //   <screen-list-editor></screen-list-editor>`,
-        //     },
-
-        //     {
-        //       label: "Data source",
-        //       content: html`<data-soucres></data-soucres>`,
-        //     },
-        //   ];
-
-    }
-    static override styles = [
-        css`
-            :host {
-                display: block;
-            }
-        `
-    ];
-
-    generateComponent(childrensIds: string[]) {
-        const childrens = $applicationComponents(this.component.applicationId).get().filter((component: any) => childrensIds.includes(component.uuid));
-        return html`${renderComponent(childrens, null, true)} `
+        this.registerCallback('tabs', this.tabsValueRecived.bind(this));
     }
 
-
-    generateTabs() {
-        this.editableTabs = [];
-
-        this.component.input.tabs.forEach((tab) => {
-            this.editableTabs.push(
-                {
-                    label: tab.label.value,
-                    content: html`<div>${this.generateComponent(tab.childrends.value)}</div> 
-                    `
-                })
-        }
-        );
+    private generateComponent(childrensIds: string[]) {
+        const childrens = this.componentsWithChildrens.filter(component => childrensIds.includes(component.uuid));
+        return html`${renderComponent(childrens, null, true)}`;
     }
+
+    private generateTabs() {
+        return (this.inputHandlersValue.tabs)?.map(tab => ({
+            label: tab.label.value,
+            content: html`<div>${this.generateComponent(tab.childrends.value)}</div>`
+        }));
+    }
+
     override connectedCallback() {
         super.connectedCallback();
-        this.generateTabs();
+        this.traitInputsHandlers();
+    }
+
+    private updateComponents() {
+        $applicationComponents(this.component.applicationId).subscribe((components = []) => {
+            this.componentsWithChildrens = components;
+            this.editableTabs = this.generateTabs();
+        });
     }
 
     override updated(changedProperties: Map<string | number | symbol, unknown>) {
         super.updated(changedProperties);
         if (changedProperties.has('component')) {
-            this.generateTabs();
+            this.traitInputsHandlers();
+            //this.editableTabs = this.memoizedGenerateTabs();
         }
     }
+
     override render() {
         return html`
-            <div>
-            <hy-tabs
-  .activeTab=${0}
-        .tabs=${this.editableTabs}
-        .editable=${{
-                canDeleteTab: false,
-                canEditTabTitle: false,
-                canAddTab: false,
-                canMove: false,
-            }}
-      ></hy-tabs>
-                </div>
-                `;
+      <div>
+        ${this.editableTabs?.length > 0 ? html`
+          <hy-tabs
+            .activeTab=${0}
+            .tabs=${this.editableTabs}
+            .editable=${{
+                    canDeleteTab: false,
+                    canEditTabTitle: false,
+                    canAddTab: false,
+                    canMove: false,
+                }}
+          ></hy-tabs>
+        ` : ''}
+      </div>
+    `;
     }
 }

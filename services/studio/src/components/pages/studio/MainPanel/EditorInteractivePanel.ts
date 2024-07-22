@@ -1,6 +1,5 @@
 import { LitElement, css, html } from "lit";
 import { state, customElement } from "lit/decorators.js";
-import "@hybridui/button";
 import "@hybridui/tabs";
 import "@hybridui/dropdown";
 import "@hybridui/color-picker";
@@ -8,7 +7,6 @@ import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { $environment, type Environment, ViewMode } from "$store/environment/store";
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page/store";
-import { updatePageZoom } from "$store/page/action";
 import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/sotre";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
@@ -51,7 +49,7 @@ export class EditorInteractivePanel extends LitElement {
   currentPageViewPort: string
   constructor() {
     super();
-    $selectedComponent( $currentApplication.get().uuid).subscribe((selectedComponent) => {
+    $selectedComponent($currentApplication.get().uuid).subscribe((selectedComponent) => {
       /* if(selectedComponent?.uuid !== this.component?.uuid){
          this.showQuickAction = false;
        }*/
@@ -70,9 +68,9 @@ export class EditorInteractivePanel extends LitElement {
           case "mobile":
             this.currentPageViewPort = "375px";
             break;
-            default:
-              this.currentPageViewPort = "100%";
-          }
+          default:
+            this.currentPageViewPort = "100%";
+        }
         this.requestUpdate();
       }
     });
@@ -89,7 +87,7 @@ export class EditorInteractivePanel extends LitElement {
   }
   connectedCallback(): void {
     super.connectedCallback();
-     $contextMenuEvent.subscribe((contextMenuEvent: any) => {
+    $contextMenuEvent.subscribe((contextMenuEvent: any) => {
       if (contextMenuEvent && Object.keys(contextMenuEvent).length) {
         if (this.inputRef && this.inputRef.value) {
           this.inputRef.value.style.display = 'block'
@@ -101,7 +99,7 @@ export class EditorInteractivePanel extends LitElement {
         this.inputRef.value ? this.inputRef.value!.style!.display = 'none' : 'none'
       }
     })
-  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
       this.shadowRoot!.querySelector('.page-container').addEventListener('scroll', this.handleScroll.bind(this));
     });
     $pageZoom.subscribe((pageZoom: string) => {
@@ -114,13 +112,13 @@ export class EditorInteractivePanel extends LitElement {
 
   }
   render() {
-     
+
     return html`<div style=" padding: 20px;" >
   <quick-action-wrapper
   ${ref(this.inputRef)}
   style="position : absolute ; display : none"
                @click=${(e: Event) => {
-        }}
+      }}
              @displayQuickActionChanged=${(e: CustomEvent) => {
         // this.showQuickAction = e.detail.showQuickAction;
       }}
@@ -130,8 +128,8 @@ export class EditorInteractivePanel extends LitElement {
           <div
             class="zoom-area"
             style=${styleMap({
-                  margin: "0px auto",
-              width: `${this.currentPageViewPort}`,
+        margin: "0px auto",
+        width: `${this.currentPageViewPort}`,
         scale: this.zoomLevel / 100,
       })}
           >

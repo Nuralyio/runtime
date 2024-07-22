@@ -1,9 +1,6 @@
 import { LitElement, html } from "lit";
 import { state, property, customElement } from "lit/decorators.js";
 import styles from "./TopbarWrapper.style";
-import "@hybridui/button";
-import "@hybridui/tabs";
-import "@hybridui/dropdown";
 import "../UserEnvironment/UserEnvironment";
 import "../ActionBar/ActionBar";
 

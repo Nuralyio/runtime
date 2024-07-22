@@ -43,19 +43,18 @@ export class MicroApp extends LitElement {
             });
         }, 0);
     }
-//renderComponent(this.components, null, true)
+    //renderComponent(this.components, null, true)
     override render() {
         return html`
 
         ${this.uuid && this.components.length ? html`
-            ${
-                this.componentToRenderUUID ?
-                renderComponent([...this.components.filter((component: any) => component.uuid === this.componentToRenderUUID)], null, true)
-                :
-                renderComponent(this.components, null, true)
+            ${this.componentToRenderUUID ?
+                    renderComponent([...this.components.filter((component: any) => component.uuid === this.componentToRenderUUID)], null, true)
+                    :
+                    renderComponent(this.components, null, true)
 
-                
-            }
+
+                }
         
         
         `: ""

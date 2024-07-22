@@ -175,11 +175,8 @@ export class GenerikComponentWrapper extends LitElement {
           @dragend=${() => {
         this.requestUpdate();
       }}
-      @mousedown=${(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-      }}
-          @click="${(e) => {
+     
+          @mousedown="${(e) => {
         e.stopPropagation();
         e.preventDefault();
         let currentSelection = (getVar("global", "selectedComponents")?.value || []);

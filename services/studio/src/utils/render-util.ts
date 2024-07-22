@@ -1,96 +1,76 @@
 import { type ComponentElement, ComponentType } from "$store/component/interface";
-import { html, nothing, type TemplateResult } from "lit";
+import { html, type TemplateResult } from "lit";
 import '../components/shared/blocks/ComponentElements/Tabs/Tabs';
 import '../components/shared/blocks/ComponentElements/Menu/Menu';
-import '../components/shared/blocks/ComponentElements/ColorPicker/colorpicker'
-import'../components/shared/blocks/ComponentElements/NumberInput/NumberInput'
+import '../components/shared/blocks/ComponentElements/ColorPicker/colorpicker';
+import '../components/shared/blocks/ComponentElements/NumberInput/NumberInput';
 import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper';
-import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
-import '../components/shared/blocks/ComponentElements/Select/Select'
-// Simple memoization cache
-const renderCache = new Map<string, TemplateResult>();
+import '../components/shared/blocks/ComponentElements/IconButton/iconbutton';
+import '../components/shared/blocks/ComponentElements/Select/Select';
 
-function getCacheKey(components: ComponentElement[], item: any, isViewMode: boolean): string {
-  return JSON.stringify({ components, item, isViewMode });
+// Memoization cache using WeakMap for better memory management
+const renderCache = new WeakMap<ComponentElement[], Map<string, TemplateResult>>();
+
+// Reusable templates for common components
+const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
+const iconButtonTemplate = (props: any) => html`<icon-button-block .item=${props.item} .component=${props.component}></icon-button-block>`;
+const colorPickerTemplate = (props: any) => html`<color-picker-block .item=${props.item} .component=${props.component}></color-picker-block>`;
+const numberInputTemplate = (props: any) => html`<number-input-block .item=${props.item} .component=${props.component}></number-input-block>`;
+
+function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
+  switch (component?.component_type) {
+    case ComponentType.Select:
+      return selectTemplate(commonProps);
+    case ComponentType.IconButton:
+      return iconButtonTemplate(commonProps);
+    case ComponentType.ColorPicker:
+      return colorPickerTemplate(commonProps);
+    case ComponentType.NumberInput:
+      return numberInputTemplate(commonProps);
+    case ComponentType.TextInput:
+      return isViewMode
+        ? html`<text-input-block .item=${commonProps.item} .component=${commonProps.component}></text-input-block>`
+        : html`<generik-component-wrapper .component=${commonProps.component}><text-input-block .item=${commonProps.item} .component=${commonProps.component}></text-input-block></generik-component-wrapper>`;
+    case ComponentType.TextLabel:
+      return html`<generik-component-wrapper .component=${commonProps.component}><text-label-block .item=${commonProps.item} .component=${commonProps.component}></text-label-block></generik-component-wrapper>`;
+    case ComponentType.Button:
+      return isViewMode
+        ? html`<button-block .item=${commonProps.item} .component=${commonProps.component}></button-block>`
+        : html`<generik-component-wrapper .component=${commonProps.component}></generik-component-wrapper>`;
+    case ComponentType.VerticalContainer:
+      return html`<vertical-container-block .isViewMode=${isViewMode} .item=${commonProps.item} .component=${commonProps.component}></vertical-container-block>`;
+    case ComponentType.Collection:
+      return html`<collection-viewer .isViewMode=${isViewMode} .component=${commonProps.component}></collection-viewer>`;
+    case ComponentType.Tabs:
+      return isViewMode ? html`<tabs-block .item=${commonProps.item} .component=${commonProps.component}></tabs-block>` : html``;
+    case ComponentType.Menu:
+      return isViewMode ? html`<menu-block style="width:100%;" .item=${commonProps.item} .component=${commonProps.component}></menu-block>` : html``;
+    default:
+      return html``;
+  }
 }
 
 export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean): TemplateResult {
   if (!components || !components.length) return html``;
 
-  const cacheKey = getCacheKey(components, item, isViewMode);
-  // if (renderCache.has(cacheKey)) {
-  //   return renderCache.get(cacheKey)!;
-  // }
+  let componentCache = renderCache.get(components);
+  if (!componentCache) {
+    componentCache = new Map();
+    renderCache.set(components, componentCache);
+  }
 
-  const renderedTemplate = html`
-    ${components.map((component: ComponentElement) => {
-      const commonProps = { item: { ...item }, component: { ...component } };
-      switch (component?.component_type) {
-        case ComponentType.Select:
-          return html`
-            ${html`<select-block  .item=${commonProps.item}  .component=${commonProps.component}></select-block>`}
-          `;
-        case ComponentType.IconButton:
-          return html`
-            ${html`<icon-button-block  .item=${commonProps.item}  .component=${commonProps.component}></icon-button-block>`}
-          `;
-        case ComponentType.ColorPicker:
-          return html`
-            ${html`<color-picker-block  .item=${commonProps.item}  .component=${commonProps.component}></color-picker-block>`}
-          `;
-          
-        case ComponentType.NumberInput:
-          return html`
-             ${ html`<number-input-block  .item=${commonProps.item}  .component=${commonProps.component}></number-input-block>`}`;
-                
-        case ComponentType.TextInput:
-          return html`
-           ${isViewMode
-              ? html`<text-input-block .item=${commonProps.item} .component=${{...commonProps.component}}></text-input-block>`
-              : html`<generik-component-wrapper .component=${commonProps.component}><text-input-block .item=${commonProps.item} .component=${{...commonProps.component}}></text-input-block></generik-component-wrapper>`
-            }
-          `;
+  const cacheKey = JSON.stringify({ item, isViewMode });
+  let renderedTemplate = componentCache.get(cacheKey);
 
-        case ComponentType.TextLabel:
-          return html`
-            <generik-component-wrapper .component=${{...commonProps.component}}>
-              <text-label-block .item=${commonProps.item} .component=${{...commonProps.component}}></text-label-block>
-            </generik-component-wrapper>
-          `;
-
-        case ComponentType.Button:
-          return html`
-            ${isViewMode
-              ? html`<button-block .item=${commonProps.item} .component=${commonProps.component}></button-block>`
-              : html`<generik-component-wrapper .component=${commonProps.component}></generik-component-wrapper>`
-            }
-          `;
-
-        case ComponentType.VerticalContainer:
-          return html`
-            <vertical-container-block .isViewMode=${isViewMode} .item=${commonProps.item} .component=${commonProps.component}></vertical-container-block>
-          `;
-
-        case ComponentType.Collection:
-          return html`
-            <colletion-viwer .isViewMode=${isViewMode} .component=${commonProps.component}></colletion-viwer>
-          `;
-
-        case ComponentType.Tabs:
-          return isViewMode ? html`
-            <tabs-block .item=${commonProps.item} .component=${commonProps.component}></tabs-block>
-          ` : html``;
-          case ComponentType.Menu:
-          return isViewMode ? html`
-            <menu-block style="width:100%;" .item=${commonProps.item} .component=${commonProps.component}></menu-block>
-          ` : html``;
-
-        default:
-          return html``;
-      }
+  if (!renderedTemplate) {
+    renderedTemplate = html`
+      ${components.map((component: ComponentElement) => {
+      const commonProps = { item: { ...item }, component };
+      return renderComponentElement(component, commonProps, isViewMode);
     })}
-  `;
+    `;
+    componentCache.set(cacheKey, renderedTemplate);
+  }
 
-  renderCache.set(cacheKey, renderedTemplate);
   return renderedTemplate;
 }
