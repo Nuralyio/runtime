@@ -10,7 +10,7 @@ import { NO_EVENT_LISTENER } from "utils/constants";
 import { isVerbose } from "utils/envirement";
 import { getNestedAttribute } from "utils/object.utils";
 import { getWorkerInstance } from "utils/worker-init";
-
+let workerInstance = typeof window !== 'undefined' && typeof window.navigator !== 'undefined' ? getWorkerInstance() : null;
 // todo: do we still need this function?
 export function executeInServiceWorker(
   components: ComponentElement[],
@@ -26,10 +26,13 @@ export function executeInServiceWorker(
 
   if (handlers[attributeName]) {
     let messageChannel = new MessageChannel();
-    messageChannel.port1.onmessage =  handleServiceWorkerMessageWrapper(NO_EVENT_LISTENER);
+    messageChannel.port1.onmessage = handleServiceWorkerMessageWrapper(NO_EVENT_LISTENER);
     const command = "executeFunction";
     if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      getWorkerInstance().postMessage(
+      if (!workerInstance)
+        workerInstance = getWorkerInstance();
+
+      workerInstance.postMessage(
         {
           command,
           codeToExecuteAsString: handlers[attributeName],
@@ -48,7 +51,10 @@ export function registerApplicationsInServiceWorker(applications: Application[])
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerApplications";
-    getWorkerInstance().postMessage(
+    if (!workerInstance)
+      workerInstance = getWorkerInstance();
+
+    workerInstance.postMessage(
       {
         command,
         payload: {
@@ -65,7 +71,10 @@ export function registerContextInServiceWorker(context: ContextVarStore) {
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerContext";
-    getWorkerInstance().postMessage(
+    if (!workerInstance)
+      workerInstance = getWorkerInstance();
+
+    workerInstance.postMessage(
       {
         command,
         payload: {
@@ -83,7 +92,10 @@ export function registerComponentsInServiceWorker(components: ComponentElement[]
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerComponents";
-    getWorkerInstance().postMessage(
+    if (!workerInstance)
+      workerInstance = getWorkerInstance();
+
+    workerInstance.postMessage(
       {
         command,
         payload: {
@@ -105,20 +117,22 @@ export function executeHandler(
   let messageChannel = new MessageChannel();
   messageChannel.port1.onmessage = handleServiceWorkerMessageWrapper(eventId);
   const command = "executeValue";
-  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-    const handler = getNestedAttribute(component, type);
-    const valueToExecute = (handler as any)?.value;
-      if (valueToExecute) {
-        getWorkerInstance()?.postMessage(
-          {
-            command,
-            codeToExecuteAsString: valueToExecute,
-            component: component,
-            extras
-          },
-          [messageChannel.port2]
-        );
-      }
+  const handler = getNestedAttribute(component, type);
+  const valueToExecute = (handler as any)?.value;
+
+  if (valueToExecute) {
+    if (!workerInstance)
+      workerInstance = getWorkerInstance();
+
+    workerInstance.postMessage(
+      {
+        command,
+        codeToExecuteAsString: valueToExecute,
+        component: component,
+        extras
+      },
+      [messageChannel.port2]
+    );
   }
 
   return messageChannel.port1;
@@ -133,35 +147,43 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
       console.info('funtionNameToExecute', funtionNameToExecute);
       console.info('component', component);
     }
-    switch (funtionNameToExecute) {
-      case 'updateStyle':
-        updateComponentStyles(component.applicationId, component.uuid, eventData);
-        break;
-      case 'addPage':
-        const { requestId } = event.data;
-        addPageHandler(eventData.page, (page) => {
-          getWorkerInstance().postMessage({ requestId, success: true, result: page });
-        }, (error) => {
-          getWorkerInstance().postMessage({ requestId, success: false, result: error });
-        });
-        break;
-      case 'SetContextVar':
-        const contextKey = Object.keys(eventData)[0];
-        const contextValue = Object.values(eventData)[0];
-        setVar(component.applicationId, contextKey, contextValue);
-        break;
-      case 'SelectPage':
-        const { page } = eventData;
-        setCurrentPageAction(page.uuid);
-        break;
-      case 'SetVar':
-        const varKey = Object.keys(eventData)[0];
-        const varValue = Object.values(eventData)[0];
-        setVar("global", varKey, varValue);
-        break;
-      default:
-        console.warn('Unknown function to execute:', funtionNameToExecute);
-    }
+    if (funtionNameToExecute)
+      switch (funtionNameToExecute) {
+        case 'updateStyle':
+          setTimeout(() => {
+            updateComponentStyles(component.applicationId, component.uuid, eventData);
+          }, 0);
+          break;
+        case 'addPage':
+          const { requestId } = event.data;
+          addPageHandler(eventData.page, (page) => {
+            if (!workerInstance)
+              workerInstance = getWorkerInstance();
+
+            workerInstance.postMessage({ requestId, success: true, result: page });
+          }, (error) => {
+            if (!workerInstance)
+              workerInstance = getWorkerInstance();
+
+            workerInstance.postMessage({ requestId, success: false, result: error });
+          });
+          break;
+        case 'SetContextVar':
+          const contextKey = Object.keys(eventData)[0];
+          const contextValue = Object.values(eventData)[0];
+          setVar(component.applicationId, contextKey, contextValue);
+          break;
+        case 'SelectPage':
+          const { page } = eventData;
+          setCurrentPageAction(page.uuid);
+          break;
+        case 'SetVar':
+          const varKey = Object.keys(eventData)[0];
+          const varValue = Object.values(eventData)[0];
+          setVar("global", varKey, varValue);
+          break;
+
+      }
     if (eventId) {
       document.dispatchEvent(new CustomEvent(eventId, { detail: { data: event.data } }));
     }

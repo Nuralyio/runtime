@@ -12,7 +12,7 @@ export class SelectBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
-  
+
   handleValueChange = (e) => {
     if (this.component.event.changed) {
       executeEventHandler(this.component, "event", "changed", {
@@ -21,14 +21,14 @@ export class SelectBlock extends BaseElementBlock {
         },
       });
     }
-  }; 
+  };
 
   render() {
-      return html`
+    return html`
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-select 
           @changed=${this.handleValueChange}
-          .options=${this.thisvalue}
+          .options=${this.inputHandlersValue.value}
         ></hy-input>
       </span>
     `;

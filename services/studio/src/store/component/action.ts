@@ -45,7 +45,7 @@ export interface AddComponentRequest {
 
 /** Actions*/
 /** Actions*/
-export const addComponentAction = (component: AddComponentRequest, uuid :string/* page uuid */) => {
+export const addComponentAction = (component: AddComponentRequest, uuid: string/* page uuid */) => {
   let componentId;
   if (component.uuid) {
     componentId = component.uuid;
@@ -85,8 +85,8 @@ export const addComponentAction = (component: AddComponentRequest, uuid :string/
     addComponentToCurrentPageAction(componentId);
   }
 };
-if(!isServer){
-window.addComponentAction = addComponentAction
+if (!isServer) {
+  window.addComponentAction = addComponentAction
 
 }
 export function addComponentAsChildOf(componentId: string, parentComponent: string) {
@@ -260,7 +260,7 @@ export function moveDraggedComponentInside(
     if (!dropInComponent.childrenIds) {
       dropInComponent.childrenIds = [];
     }
-    
+
     // Check if draggedComponent is not already in dropInComponent.
     if (!dropInComponent.childrenIds.includes(draggedComponentId)) {
       dropInComponent.childrenIds.push(draggedComponentId);
@@ -319,10 +319,10 @@ export function moveDraggedComponentIntoCurrentPageRoot(
 
   // If both components are found, update their relationship.
   if (draggedComponent) {
-   
-   
+
+
     addComponentToCurrentPageAction(draggedComponentId);
-   
+
     if (parentDraggedComponent && parentDraggedComponent.childrenIds) {
       parentDraggedComponent.childrenIds = parentDraggedComponent.childrenIds.filter(
         (childId) => childId !== draggedComponentId
@@ -341,7 +341,7 @@ export function updateComponentParameters(
   updatedParameters: any
 ) {
   let componentToUpdate;
-  
+
 
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
@@ -377,41 +377,40 @@ export function updateComponentAttributes(
   updatedAttributes: any
 ) {
   let componentToUpdate;
-  if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
-    $components.set([
-      ...$components.get().map((component: ComponentElement) => {
-        if (component.uuid === componentId) {
-          componentToUpdate = component;
-          component.styleBreakPoints = {
-            ...component.styleBreakPoints,
-            [$currentPageViewPort.get()]: {
-              ...component.styleBreakPoints?.[$currentPageViewPort.get()],
-              ...updatedAttributes,
-            },
-          };
-        }
-        return { ...component };
-      }),
-    ]);
-  } else {
-    $components.set([
-      ...$components.get().map((component: ComponentElement) => {
-        if (component.uuid === componentId) {
-          componentToUpdate = component;
-          component.style = {
-            ...component.style,
-            ...updatedAttributes,
-          };
-        }
-        return { ...component };
-      }),
-    ]);
-  }
+  // if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
+  //   $components.set([
+  //     ...$components.get().map((component: ComponentElement) => {
+  //       if (component.uuid === componentId) {
+  //         componentToUpdate = component;
+  //         component.styleBreakPoints = {
+  //           ...component.styleBreakPoints,
+  //           [$currentPageViewPort.get()]: {
+  //             ...component.styleBreakPoints?.[$currentPageViewPort.get()],
+  //             ...updatedAttributes,
+  //           },
+  //         };
+  //       }
+  //       return { ...component };
+  //     }),
+  //   ]);
+  // } else {
+  //   $components.set([
+  //     ...$components.get().map((component: ComponentElement) => {
+  //       if (component.uuid === componentId) {
+  //         componentToUpdate = component;
+  //         component.style = {
+  //           ...component.style,
+  //           ...updatedAttributes,
+  //         };
+  //       }
+  //       return { ...component };
+  //     }),
+  //   ]);
+  // }
 
   //updateComponentHandler(componentToUpdate);
-  
-}
 
+}
 
 
 export function updateComponentStyles(
@@ -419,47 +418,29 @@ export function updateComponentStyles(
   componentId: string,
   updatedAttributes: any
 ) {
-  let componentToUpdate;
+  console.time('updateComponentStylesExecutionTime'); // Start the timer
+
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
 
-  if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
-    const updatedComponents = applicationComponents.map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        componentToUpdate = component;
-        component.styleBreakPoints = {
-          ...component.styleBreakPoints,
-          [$currentPageViewPort.get()]: {
-            ...component.styleBreakPoints?.[$currentPageViewPort.get()],
-            ...updatedAttributes,
-          },
-        };
-      }
-      return { ...component };
-    });
-    $components.set({
-      ...componentsStore,
-      [applicationId]: updatedComponents,
-    });
-  } else {
+  const updatedComponents = applicationComponents.map((component: ComponentElement) => {
+    if (component.uuid === componentId) {
+      component.style = {
+        ...component.style,
+        ...updatedAttributes,
+      };
+    }
+    return component;
+  });
+  componentsStore[applicationId] = updatedComponents;
+  console.time('setTime'); // Start the timer
 
-    const updatedComponents = applicationComponents.map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        componentToUpdate = component;
-        componentToUpdate.style = {
-          ...component.style,
-          ...updatedAttributes,
-        };
-      }
-      return { ...component };
-    });
-    $components.set({
-      ...componentsStore,
-      [applicationId]: updatedComponents,
-    });
-  }
+  $components.set({ ...componentsStore });
+  console.timeEnd('setTime'); // End the timer and log the execution time
 
   // updateComponentHandler(componentToUpdate); // Uncomment if you have this function defined
+
+  console.timeEnd('updateComponentStylesExecutionTime'); // End the timer and log the execution time
 }
 
 export function updateComponentInputs(
@@ -506,8 +487,8 @@ export function updateComponentAttributeHandlers(
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
       if (component.uuid === componentId) {
-          componentToUpdate = component;
-        
+        componentToUpdate = component;
+
         component[scope] = {
           ...component[scope],
           ...updatedAttributes,
@@ -600,7 +581,7 @@ export function deleteComponentAction(componentId: string) {
     // Remove the component from the current page if it was on the page
     removeComponentToCurrentPageAction(componentId);
   }
-  
+
 }
 
 let clipboardComponent: ComponentElement | null = null;
@@ -687,5 +668,5 @@ export function updateComponentStyle(
   }
 
   updateComponentHandler(componentToUpdate);
-  
+
 }

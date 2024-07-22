@@ -1,9 +1,6 @@
 import { type ComponentElement } from "$store/component/interface";
 import { LitElement, html, css, type PropertyValueMap, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@hybridui/input";
-import "@hybridui/dropdown";
-import "@hybridui/button";
 
 @customElement("attribute-font-weight-value-handler")
 export class AttributeFontWeightValueHandler extends LitElement {

@@ -9,6 +9,7 @@ import type { Extrats } from "./interfaces/core.interfaces";
 import { $applications } from "$store/apps";
 import { isServer } from "utils/envirement";
 import { getWorkerInstance } from "utils/worker-init";
+
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 interface ExecuteStack {
@@ -20,16 +21,17 @@ interface ExecuteStack {
 }
 
 let executeStack: ExecuteStack[] = [];
-
 let _isServiceWorkerReady = true;
+let _components: ComponentElement[] = [];
 
-let _components: ComponentElement[];
 if (!isServer) {
-  //handle default values executions.
+  // Handle default values executions here if needed.
 }
 
-
-
+/**
+ * Executes an event handler for a component.
+ * If the service worker is not ready, it pushes the execution details to a stack.
+ */
 export function executeEventHandler(
   component: ComponentElement,
   handlerScope: string = "event",
@@ -38,9 +40,8 @@ export function executeEventHandler(
 ) {
   if (!_isServiceWorkerReady) {
     if (isVerbose) {
-      console.warn('Service worker not ready yet pushing to stack')
+      console.warn('Service worker not ready yet, pushing to stack');
     }
-
     executeStack.push({
       components: _components,
       component,
@@ -53,28 +54,37 @@ export function executeEventHandler(
   executeInServiceWorker(_components, component, handlerScope, attributeName, extras);
 }
 
+/**
+ * Callback function to be called when the service worker is ready.
+ * Executes all pending executions in the stack.
+ */
 export function serviceWorkerReadyCallback() {
   console.warn('Service worker ready');
   while (executeStack.length) {
     const executeStackItem = executeStack.shift();
     const { components, component, handlerScope, attributeName, extras } = executeStackItem;
     if (isVerbose) {
-      console.warn('Service worker ready executing stack')
+      console.warn('Service worker ready, executing stack');
     }
     executeInServiceWorker(components, component, handlerScope, attributeName, extras);
   }
 }
-
+let _isregistred = false;
 if (!isServer) {
-    getWorkerInstance().postMessage({ type: 'CHECK_SERVICE_WORKER' });
-      _isServiceWorkerReady = true;
-      serviceWorkerReadyCallback();
-      $applications.subscribe((applications) => {
-        registerApplicationsInServiceWorker(applications);
-        $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
-          registerComponentsInServiceWorker(components);
-        });
-      });
+  getWorkerInstance().postMessage({ type: 'CHECK_SERVICE_WORKER' });
+  _isServiceWorkerReady = true;
+  // serviceWorkerReadyCallback();
+
+  $applications.subscribe((applications) => {
+    registerApplicationsInServiceWorker(applications);
+    $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
+      if (!_isregistred) {
+        console.log('registering components in service worker');
+        registerComponentsInServiceWorker(components);
+        _isregistred = true;
+      }
+    });
+  });
 }
 
-export default {}
+export default {};

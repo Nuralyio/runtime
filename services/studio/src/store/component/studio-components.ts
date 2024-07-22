@@ -316,7 +316,7 @@ export default [
         applicationId: "1",
     },
     {
-        uuid: "right_panel_tabs",
+        uuid: "right_panel_tabs_empty",
         applicationId: "1",
         name: "name",
         component_type: ComponentType.Tabs,
@@ -340,7 +340,7 @@ export default [
                     },
                     childrends: {
                         type: "componentIdArray",
-                        value: ["input_text_vertical_container", "font_color_block","text_alignement_block","font_family_block","font_weight_block","font_style_block","text_decoration_block","background_color_block"]
+                        value: ["input_text_vertical_container", "font_color_block", "text_alignement_block", "font_family_block", "font_weight_block", "font_style_block", "text_decoration_block", "background_color_block"]
 
                     }
                 },
@@ -356,6 +356,62 @@ export default [
                     }
                 },
             ]
+        },
+    },
+
+    {
+        uuid: "right_panel_tabs",
+        applicationId: "1",
+        name: "name",
+        component_type: ComponentType.Tabs,
+        parameters: {
+            value: "22px",
+        },
+
+        event: {
+            valueChange: `
+        updateStyle(app1.text_label, "color", EventData.value);
+        console.log("app1",app1);
+      `
+        },
+        ...COMMON_ATTRIBUTES,
+        input: {
+            tabs: {
+                type: "handler",
+                value: /* js */ `
+                const selectedComponents = GetVar("selectedComponents") || [];
+                [
+                    {
+                        label: {
+                            type: "text",
+                            value: "Design"
+                        },
+                        childrends: {
+                            type: "componentIdArray",
+                            value: selectedComponents.length
+                                ? ["input_text_vertical_container",
+                                    "font_color_block",
+                                    "text_alignement_block",
+                                    "font_family_block",
+                                    "font_weight_block",
+                                    "font_style_block",
+                                    "text_decoration_block"]
+                                : []
+                        }
+                    },
+                    {
+                        label: {
+                            type: "text",
+                            value: "Advanced"
+                        },
+                        childrends: {
+                            type: "componentIdArray",
+                            value: []
+                        }
+                    }
+                ];
+                `
+            }
         },
     },
     {
@@ -434,25 +490,27 @@ export default [
             width: "20px",
         },
         event: {
-            valueChange: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "fontSize", EventData.value+EventData.unity);
-                
-                }
-            }catch(error){
-                console.log(error);
+            valueChange: {
+                type: "handler",
+                value: /* js */ `
+                    try{
+                        const selectedComponens =  GetVar( "selectedComponents")||[];
+                        if( selectedComponens.length) {
+                            const selectedComponent = selectedComponens[0];
+                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                            updateStyle(currentComponent, "fontSize", EventData.value+EventData.unity);
+                        
+                        }
+                    }catch(error){
+                        console.log(error);
+                    }
+                    
+  `
             }
-            
-      `
         },
         input: {
-            value:{
-                type:'handler',
+            value: {
+                type: 'handler',
                 value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -481,7 +539,7 @@ export default [
         }catch(e){
             console.log(e);
         }
-            `  
+            `
             }
         }
     },
@@ -498,7 +556,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
-            display:'flex',
+            display: 'flex',
             "flex-direction": "column",
         },
         childrenIds: ["text_label_color", "font_color_input_2"],
@@ -575,11 +633,11 @@ export default [
             direction: "vertical",
         },
         ...COMMON_ATTRIBUTES,
-        style:{
+        style: {
 
         },
 
-        childrenIds: ["alignement_label_container","alignement_content_container"],
+        childrenIds: ["alignement_label_container", "alignement_content_container"],
     },
     {
         uuid: "font_family_block",
@@ -591,11 +649,11 @@ export default [
             direction: "vertical",
         },
         ...COMMON_ATTRIBUTES,
-        style:{
+        style: {
 
         },
 
-        childrenIds: ["font_family_label_container","font_family_content_container"],
+        childrenIds: ["font_family_label_container", "font_family_content_container"],
     },
     {
         uuid: "font_family_label_container",
@@ -622,8 +680,8 @@ export default [
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-        
+        style: {
+
         }
     },
     {
@@ -650,7 +708,7 @@ export default [
         styleHandlers: {},
         name: "Left panel",
         input: {
-            value: { 
+            value: {
                 type: "handler",
                 value: /* js */ `                    
                 [{
@@ -876,7 +934,7 @@ export default [
             `
         }
     },
-     
+
     {
         uuid: "text-align-top",
         name: "name",
@@ -977,10 +1035,10 @@ export default [
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-        
+        style: {
+
         }
-    
+
     },
     {
         uuid: "alignement_label_container",
@@ -1011,10 +1069,10 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "280px",
-            display:'flex',
-            'justify-content':'space-between'
+            display: 'flex',
+            'justify-content': 'space-between'
         },
-        childrenIds: ["text-align-left","text-align-center","text-align-right","text-align-justify","text-align-top","text-align-bottom"],
+        childrenIds: ["text-align-left", "text-align-center", "text-align-right", "text-align-justify", "text-align-top", "text-align-bottom"],
     },
     {
         uuid: "font_weight_block",
@@ -1029,8 +1087,8 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
-            display:'flex',
-            'flex-direction':'column',
+            display: 'flex',
+            'flex-direction': 'column',
             'margin-top': '10px',
         },
         childrenIds: ["text_label_font_weight", "font_weight_select"],
@@ -1054,7 +1112,7 @@ export default [
         styleHandlers: {},
         name: "Left panel",
         input: {
-            value: { 
+            value: {
                 type: "handler",
                 value: /* js */ `                    
                 [{label: "Normal",value: "normal"},{label:'Bold',value:'bold'},{label:'Extra bold',value:'800'}]
@@ -1096,11 +1154,11 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
-            display:'flex',
-            'flex-direction':'column',
-            "margin-top":"10px"
+            display: 'flex',
+            'flex-direction': 'column',
+            "margin-top": "10px"
         },
-        childrenIds: ["text_label_font_style","font_style_values_block"],
+        childrenIds: ["text_label_font_style", "font_style_values_block"],
     },
     {
         uuid: "text_label_font_style",
@@ -1125,10 +1183,10 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "150px",
-            display:'flex',
-            gap:"10px"
+            display: 'flex',
+            gap: "10px"
         },
-        childrenIds: ["font_style_normal","font_style_italic","font_style_oblique"],
+        childrenIds: ["font_style_normal", "font_style_italic", "font_style_oblique"],
     },
     {
         uuid: "font_style_normal",
@@ -1158,7 +1216,7 @@ export default [
             
       `
         },
-        
+
     },
     {
         uuid: "font_style_italic",
@@ -1219,7 +1277,7 @@ export default [
       `
         },
     },
-    
+
     {
         uuid: "text_decoration_block",
         applicationId: "1",
@@ -1233,11 +1291,11 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
-            display:'flex',
-            'flex-direction':'column',
-            "margin-top":"10px"
+            display: 'flex',
+            'flex-direction': 'column',
+            "margin-top": "10px"
         },
-        childrenIds: ["text_label_text_decoration","text_decoration_values_block"],
+        childrenIds: ["text_label_text_decoration", "text_decoration_values_block"],
     },
     {
         uuid: "text_label_text_decoration",
@@ -1262,10 +1320,10 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
-            display:'flex',
-            gap:"10px"
+            display: 'flex',
+            gap: "10px"
         },
-        childrenIds: ["text_decoration_overline","text_decoration_line_through","text_decoration_underline","text_decoration_underline_overline","text_decoration_none"],
+        childrenIds: ["text_decoration_overline", "text_decoration_line_through", "text_decoration_underline", "text_decoration_underline_overline", "text_decoration_none"],
     },
     {
         uuid: "text_decoration_overline",
@@ -1295,7 +1353,7 @@ export default [
             
       `
         },
-        
+
     },
     {
         uuid: "text_decoration_line_through",
@@ -1427,11 +1485,11 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
-            display:'flex',
-            'flex-direction':'column',
-            "margin-top":"10px"
+            display: 'flex',
+            'flex-direction': 'column',
+            "margin-top": "10px"
         },
-        childrenIds: ["text_label_background_color","background_color_value"],
+        childrenIds: ["text_label_background_color", "background_color_value"],
     },
     {
         uuid: "text_label_background_color",

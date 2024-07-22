@@ -1,5 +1,13 @@
 let activated = false;
+let port = null;
 const requestMap = new Map();
+let requestIdCounter = 0;
+const updatedAttriutes = {}; // Assuming you have this object somewhere in your actual code
+const updatedParameters = {}; // Assuming you have this object somewhere in your actual code
+
+function generateRequestId() {
+    return ++requestIdCounter;
+}
 
 function appllicationArrayToObject(applications) {
     return applications.reduce((application, item) => {
@@ -12,99 +20,128 @@ self['FontSize'] = 'fontSize';
 self['Color'] = "color";
 self['Value'] = "value";
 
-// Listen for messages from the main thread
-self.addEventListener('message', event => {
-    if (!activated) {
-        event.ports[0].postMessage({ type: 'WORKER_READY' });
-        activated = true;
+self['SetStyle'] = function (component, symbol, value) {
+    if (!updatedAttriutes[component.uuid]) {
+        updatedAttriutes[component.uuid] = {};
     }
+    updatedAttriutes[component.uuid][symbol] = value;
+};
+
+self["updateStyle"] = function (component, symbol, value) {
+    if (!component.applicationId) {
+        component.applicationId = component.application_id;
+    }
+    port.postMessage({
+        funtionNameToExecute: "updateStyle",
+        component,
+        eventData: { [symbol]: value }
+    });
+};
+
+self["AddPage"] = function (page, applicationId) {
+    return new Promise((resolve, reject) => {
+        const requestId = generateRequestId();
+
+        // Store the resolve and reject functions in the map
+        requestMap.set(requestId, { resolve, reject });
+
+        // Send the message to the service worker
+        port.postMessage({
+            funtionNameToExecute: "addPage",
+            applicationId,
+            eventData: { page },
+            requestId
+        });
+    });
+};
+
+self["GetContextVar"] = function (symbol, customContentId, component) {
+    var contentId = customContentId || component.applicationId; // Use customContentId if provided, otherwise use component.applicationId
+    try {
+        if (
+            self.context &&
+            self.context[contentId] &&
+            self.context[contentId][symbol] &&
+            'value' in self.context[contentId][symbol]
+        ) {
+            return self.context[contentId][symbol].value;
+        } else {
+            throw new Error("Variable not found or invalid structure.");
+        }
+    } catch (error) {
+        return null;
+    }
+};
+
+self["GetVar"] = function (symbol) {
+    try {
+        if (
+            self.context &&
+            self.context["global"] &&
+            self.context["global"][symbol] &&
+            'value' in self.context["global"][symbol]
+        ) {
+            return self.context["global"][symbol].value;
+        } else {
+            throw new Error("Variable not found or invalid structure.");
+        }
+    } catch (error) {
+        return null;
+    }
+};
+
+self["SetVar"] = function (symbol, value, component) {
+    port.postMessage({
+        funtionNameToExecute: "SetVar",
+        component,
+        eventData: { [symbol]: value }
+    });
+};
+
+self["SetContextVar"] = function (symbol, value, component) {
+    port.postMessage({
+        funtionNameToExecute: "SetContextVar",
+        component,
+        eventData: { [symbol]: value }
+    });
+};
+
+self["GetComponent"] = function (componentUuid, applicationId) {
+    let _component = null;
+    Object.keys(self.applications[applicationId]).forEach(key => {
+        if (self.applications[applicationId][key].uuid === componentUuid) {
+            _component = { ...self.applications[applicationId][key] };
+        }
+    });
+    return _component;
+};
+
+self["GetComponents"] = function (componentIds) {
+    return self.components.filter(c => componentIds.includes(c.uuid));
+};
+
+self.addEventListener('message', event => {
+    port = event.ports[0];
+
+    if (!activated) {
+        port.postMessage({ type: 'WORKER_READY' });
+        activated = true;
+        return
+    }
+
     const {
         data: {
-            command /** executeFunction|executeFunction|registerApplications */,
-            codeToExecuteAsString /* code to execute */,
-            components /* all currentapplication components */,
-            component /* component that running command*/,
-            extras = {}/* extra data like eventData object */,
-            payload = {} /* command payload */,
+            command, // executeFunction|executeValue|registerApplications
+            codeToExecuteAsString, // code to execute
+            components, // all current application components
+            component, // component that running command
+            extras = {}, // extra data like eventData object
+            payload = {} // command payload
         }
     } = event;
 
     self['EventData'] = extras.EventData;
-    self['FetchData'] = (provider, table, mapper) => {
-        if (!provider || !table) {
-            return;
-        }
-        fetch(`/api/providers/${provider}/table/${table}/columns`, {
-            method: 'GET',
-        }).then(response => response.json()).then(columns => {
-            fetch(`/api/providers/${provider}/table/${table}/data`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    columns: ["username", "email"],
-                }),
-            }).then(response => response.json()).then(data => {
-                event.ports[0].postMessage({
-                    result: mapper ? mapper(data) : data,
-                });
-            });
-        });
-    };
-
-    self['SetStyle'] = function (component, symbol, value) {
-        if (!updatedAttriutes[component.uuid]) {
-            updatedAttriutes[component.uuid] = {};
-        }
-        updatedAttriutes[component.uuid] = { [symbol]: value };
-    };
     self["Current"] = component;
-
-    self['SetValue'] = function (component, value, valaa) {
-        if (!updatedParameters[component.uuid]) {
-            updatedParameters[component.uuid] = {};
-        }
-        updatedParameters[component.uuid] = { value: value };
-        return valaa;
-    };
-
-    const updatedAttriutes = {};
-    const updatedParameters = {};
-
-    self["updateStyle"] = function (component, symbol, value) {
-        if (!component.applicationId) {
-            component.applicationId = component.application_id;
-        }
-        event.ports[0].postMessage({
-            funtionNameToExecute: "updateStyle",
-            component,
-            eventData: { [symbol]: value }
-        });
-    };
-
-    let requestIdCounter = 0;
-
-    function generateRequestId() {
-        return ++requestIdCounter;
-    }
-
-    function AddPage(page, applicationId) {
-        return new Promise((resolve, reject) => {
-            const requestId = generateRequestId();
-
-            // Store the resolve and reject functions in the map
-            requestMap.set(requestId, { resolve, reject });
-            console.log(requestMap, "requestMap");
-            // Send the message to the service worker
-            event.ports[0].postMessage({
-                funtionNameToExecute: "addPage",
-                applicationId,
-                eventData: { page },
-                requestId
-            });
-        });
-    }
 
     const { requestId, success, result } = event.data;
     if (requestId) {
@@ -120,71 +157,6 @@ self.addEventListener('message', event => {
         // Remove the entry from the map
         requestMap.delete(requestId);
     }
-
-    self["AddPage"] = AddPage;
-
-    self["GetContextVar"] = function (symbol, customContentId) {
-        var contentId = customContentId || component.applicationId; // Use customContentId if provided, otherwise use component.applicationId
-        try {
-            if (
-                self.context &&
-                self.context[contentId] &&
-                self.context[contentId][symbol] &&
-                'value' in self.context[contentId][symbol]
-            ) {
-                return self.context[contentId][symbol].value;
-            } else {
-                throw new Error("Variable not found or invalid structure.");
-            }
-        } catch (error) {
-            return null;
-        }
-    };
-
-    self["GetVar"] = function (symbol) {
-        try {
-            if (
-                self.context &&
-                self.context["global"] &&
-                self.context["global"][symbol] &&
-                'value' in self.context["global"][symbol]
-            ) {
-                return self.context["global"][symbol].value;
-            } else {
-                throw new Error("Variable not found or invalid structure.");
-            }
-        } catch (error) {
-            return null;
-        }
-    };
-    self["SetVar"] = function (symbol, value) {
-        event.ports[0].postMessage({
-            funtionNameToExecute: "SetVar",
-            component,
-            eventData: { [symbol]: value }
-        });
-    };
-
-    self["SetContextVar"] = function (symbol, value) {
-        event.ports[0].postMessage({
-            funtionNameToExecute: "SetContextVar",
-            component,
-            eventData: { [symbol]: value }
-        });
-    };
-
-    self["GetComponent"] = function (componentUuid, applicationId) {
-        let _component = null;
-        Object.keys(self.applications[applicationId]).forEach(key => {
-            if (self.applications[applicationId][key].uuid === componentUuid) {
-                _component = { ...self.applications[applicationId][key] };
-            }
-        });
-        return _component;
-    };
-    self["GetComponents"] = function (componentIds) {
-        return components.filter(c => componentIds.includes(c.uuid));
-    };
 
     switch (command) {
         case "registerApplications":
@@ -234,25 +206,31 @@ self.addEventListener('message', event => {
             }
             try {
                 const syncResponse = executeCode(codeToExecuteAsString);
-                event.ports[0].postMessage({
+                port.postMessage({
                     syncResponse,
                     funtionNameToExecute: "syncResponse",
                 });
             } catch (e) {
-                event.ports[0].postMessage({
+                port.postMessage({
                     error: e.message
                 });
             }
             break;
         case "executeValue":
             try {
-                event.ports[0].postMessage({
-                    result: eval(codeToExecuteAsString),
+                const result = eval(codeToExecuteAsString);
+                port.postMessage({
+                    result,
                     updatedAttriutes,
                     updatedParameters
                 });
+
+                // Clean up to prevent memory leaks
+                Object.keys(updatedAttriutes).forEach(key => delete updatedAttriutes[key]);
+                Object.keys(updatedParameters).forEach(key => delete updatedParameters[key]);
+
             } catch (e) {
-                event.ports[0].postMessage({
+                port.postMessage({
                     error: e.message
                 });
             }

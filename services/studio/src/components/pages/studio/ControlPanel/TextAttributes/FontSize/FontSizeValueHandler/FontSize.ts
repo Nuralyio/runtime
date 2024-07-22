@@ -57,7 +57,7 @@ export class AttributeFontSizeValue extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.initValues();
-    
+
     $currentPageViewPort.subscribe((viewPort) => {
       if (viewPort) {
         this.viewPort = viewPort;
@@ -79,7 +79,7 @@ export class AttributeFontSizeValue extends LitElement {
     });
   }
 
-  resetStyle(){
+  resetStyle() {
     let customEvent = new CustomEvent("attributeUpdate", {
       detail: {
         value: null,
@@ -90,14 +90,14 @@ export class AttributeFontSizeValue extends LitElement {
 
   drivenByResponsive() {
     if (this.component?.styleBreakPoints?.[this.viewPort]?.fontSize) {
-      return this.viewPort; 
+      return this.viewPort;
     }
     else {
       return "";
     }
   }
   // check if the values are driven by responsive
-  getValue(){
+  getValue() {
     if (this.component?.styleBreakPoints?.[this.viewPort]?.fontSize) {
       return this.component?.styleBreakPoints?.[this.viewPort]?.fontSize.match(/\d+/g);
     }
@@ -141,7 +141,7 @@ export class AttributeFontSizeValue extends LitElement {
       ` : nothing}
       <br/>
     </div>
-     ${this.drivenByResponsive() ? html`<div style="font-size : 11px; margin-top : 4px">Driven by : ${this.drivenByResponsive()} break point <hy-icon name="undo" @click="${this.resetStyle}" class="redo" > </hy-icon></div>` :nothing}
+     ${this.drivenByResponsive() ? html`<div style="font-size : 11px; margin-top : 4px">Driven by : ${this.drivenByResponsive()} break point <hy-icon name="undo" @click="${this.resetStyle}" class="redo" > </hy-icon></div>` : nothing}
     `;
   }
 }
