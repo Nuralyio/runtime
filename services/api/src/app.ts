@@ -30,6 +30,6 @@ app.get("/api/graphql-ide", (_req, res) => {
 })
 app.use(errorHandler);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running at http://localhost:${process.env.PORT}`);
+app.listen(process.env.BACKEND_PORT, () => {
+  console.log(`Server is running at http://localhost:${process.env.BACKEND_PORT}`);
 });

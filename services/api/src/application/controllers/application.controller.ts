@@ -3,7 +3,7 @@ import { NUser } from "../../auth/domain/user";
 import { Body, Controller, Delete, Get, Path, Post, Put, Route, Tags, Request } from "tsoa";
 import { Application } from "../models/application";
 import { injectable } from "tsyringe";
-import { OwnershipService } from "../../ownership/services/owernship.service";
+import { OwnershipService } from "../../ownership/services/ownership.service";
 import { ResourcePermissionRequest } from "../../ownership/interfaces/resource-permission.request";
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
 import { ApplicationPermission } from "../interfaces/enum/application-permission.enum";
@@ -15,7 +15,7 @@ import { ResourceType } from "../../shared/interfaces/enum/resources-type.enum";
 export class ApplicationController extends Controller {
   private readonly applicationService: ApplicationService;
   private readonly ownershipService: OwnershipService;
-  constructor( applicationService: ApplicationService , ownershipService: OwnershipService) {
+  constructor(applicationService: ApplicationService, ownershipService: OwnershipService) {
     super();
     this.applicationService = applicationService;
     this.ownershipService = ownershipService
@@ -23,15 +23,15 @@ export class ApplicationController extends Controller {
 
   @Post()
   public async create(
-    @Body() requestBody: { published: boolean; name: string; uuid:string; user_id:string }): Promise<Application> {
-    const { published, name, uuid,user_id } = requestBody;
-    return await this.applicationService.create(published,name,uuid,user_id);
+    @Body() requestBody: { published: boolean; name: string; uuid: string; user_id: string }): Promise<Application> {
+    const { published, name, uuid, user_id } = requestBody;
+    return await this.applicationService.create(published, name, uuid, user_id);
   }
 
   @Get()
   public async findAll(@Request() request: NRequest): Promise<Application[]> {
 
-    const resourcePermissionRequest : ResourcePermissionRequest = {
+    const resourcePermissionRequest: ResourcePermissionRequest = {
       user: request.user,
       resourceType: ResourceType.application,
       permissionType: ApplicationPermission.read
@@ -51,10 +51,10 @@ export class ApplicationController extends Controller {
   @Put("{uuid}")
   public async update(
     @Path() uuid: string,
-    @Body() requestBody: {published:boolean,name: string,user_id:string}
+    @Body() requestBody: { published: boolean, name: string, user_id: string }
   ): Promise<Application> {
-    const { published,name, user_id } = requestBody;
-    return await this.applicationService.update(published,uuid,name, user_id);
+    const { published, name, user_id } = requestBody;
+    return await this.applicationService.update(published, uuid, name, user_id);
   }
 
   @Delete("{uuid}")
