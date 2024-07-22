@@ -1,0 +1,21 @@
+name: Docker Build Image CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build, tag, and push the image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+      run: |
+        docker build -t $ECR_REPOSITORY .

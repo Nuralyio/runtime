@@ -39,14 +39,15 @@ export async function createPermission(
   resourceType: string,
   publicPermission: boolean,
   permissionType: string,
-  ownerId: string
+  ownerId: string,
+  allowed: any
 ): Promise<string> {
   const existingPermission = await prisma.permission.findFirst({
     where: {
       userId,
       resourceId,
       resourceType,
-      permissionType,
+      permissionType
     },
   });
 
@@ -59,9 +60,10 @@ export async function createPermission(
       userId,
       resourceId,
       resourceType,
-      public: publicPermission,
+      publicState: publicPermission,
       permissionType,
       ownerId,
+      allowed
     },
   });
 
@@ -122,7 +124,7 @@ export async function getResourceWithPermissionOrOwner(
   resourceType: string
 ): Promise<string[]> {
   const { uuid, roles } = user;
-  const resources :  any= await prisma.$queryRaw<PrismaPromise<unknown>>`
+  const resources: any = await prisma.$queryRaw<PrismaPromise<unknown>>`
       SELECT resourceId
       FROM Ownership
       WHERE resourceType = ${resourceType}
@@ -163,7 +165,7 @@ export async function addOwner(
   resourceId: string,
   resourceType: string
 ): Promise<void> {
-  const _isOwner : Boolean = await isOwner(prisma, ownerId, resourceId, resourceType);
+  const _isOwner: Boolean = await isOwner(prisma, ownerId, resourceId, resourceType);
 
   if (_isOwner) {
     return;
