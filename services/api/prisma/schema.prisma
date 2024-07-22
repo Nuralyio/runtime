@@ -26,23 +26,26 @@ model User {
 }
 
 model applications {
-  id          Int    @id  @default(autoincrement())
-  name      String   @default("")
-  published   Boolean? @default(false)
-  uuid        String  @default("")   @unique
-  user_id     String  
+  id                Int      @id @default(autoincrement())
+  name              String   @default("")
+  published         Boolean? @default(false)
+  uuid              String   @unique @default("")
+  user_id           String
   //user        User @relation(fields: [user_id], references: [id])
   default_page_uuid String?
 }
 
 model Permission {
   id             Int     @id @default(autoincrement())
-  userId         String @map("user_id")
-  resourceId     String @map("resource_id")
-  resourceType   String @map("resource_type")
-  public         Boolean
-  permissionType String @map("permission_type")
-  ownerId        String   @map("owner_id")
+  userId         String  @map("user_id")
+  resourceId     String  @map("resource_id")
+  resourceType   String  @map("resource_type")
+  publicState    Boolean @map("public")
+  permissionType String  @map("permission_type")
+  ownerId        String  @map("owner_id")
+  allowed        Json
+
+  @@map("permissions")
 }
 
 model Ownership {
@@ -50,12 +53,42 @@ model Ownership {
   ownerId      String @map("owner_id")
   resourceId   String @map("resource_id")
   resourceType String @map("resource_type")
+
+  @@map("ownership")
 }
 
-model Component {
-  id             Int      @id @default(autoincrement())
+model components {
+  id             Int    @id @default(autoincrement())
   component      Json
-  user_id        String
-  uuid           String
-  application_Id String   @default("")
+  user_id        String @default("")
+  uuid           String @unique
+  application_id String @default("")
+}
+
+model pages {
+  id                    Int      @id @default(autoincrement())
+  component_ids         String[] @default([])
+  name                  String
+  url                   String
+  application_id        String
+  user_id               String
+  uuid                  String
+  need_authentification Boolean  @default(false) @map("need_authentication")
+
+  @@map("pages")
+}
+
+model databaseproviders {
+  provider_id   Int    @id @default(autoincrement())
+  username      String @default("")
+  host          String @default("")
+  password      String @default("")
+  port          Int    @default(0)
+  databasename  String @default("")
+  provider_type String @default("")
+  component_ids Json  @default("[]")
+  user_id       String
+  label         String
+
+  @@map("databaseproviders")
 }
