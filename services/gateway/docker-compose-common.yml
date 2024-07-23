@@ -1,7 +1,6 @@
-version: '3.4'
+version: "3.4"
 
 services:
-
   postgres:
     image: postgres
     environment:
@@ -10,24 +9,23 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres-data:/data/postgres
-   
+
     restart: unless-stopped
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
 
-  
   pgadmin:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
-    
+
     # extra_hosts:
     # - "host.docker.internal:host-gateway"
 
@@ -39,8 +37,6 @@ services:
     #    - ./redis/data:/data
     #    - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server"]
-    
-  
-        
+
 volumes:
- pgadmin-data:
+  pgadmin-data:

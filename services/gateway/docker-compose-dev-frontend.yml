@@ -1,20 +1,19 @@
-version: '3.4'
+version: "3.4"
 
 services:
-
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
   nuraly_services:
-      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/services
-      ports:
-        - "${SERVICES_PORT:-8081}:8081"
-      environment:
-        KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
-        KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
-        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
-      env_file:
+    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/backend:main
+    ports:
+      - "${SERVICES_PORT:-8081}:8081"
+    environment:
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-nuraly}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-nuraly-stage}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2}
+    env_file:
       - .env.default
       - .env
   pgadmin:
@@ -22,31 +21,31 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
-    
+
   nuraly_engine:
-      image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/engine
-      ports:
-        - "${ENGINE_PORT:-3000}:3000"
-      environment:
-          NURALY_SERVICES_HOST : "nginx"
-          NURALY_ENGINE_HOST : "nuraly_engine:3000"
+    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/engine
+    ports:
+      - "${ENGINE_PORT:-3000}:3000"
+    environment:
+      NURALY_SERVICES_HOST: "nginx"
+      NURALY_ENGINE_HOST: "nuraly_engine:3000"
 
   nginx:
     image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/gateway
     environment:
-      KEYCLOAK_HOST :  ${KEYCLOAK_HOST:-localhost} 
-      KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
-      KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
-      KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-empty} 
-      KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
-      DOMAIN :  ${HOST_DOMAIN:-localhost} 
-      KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+      KEYCLOAK_HOST: ${KEYCLOAK_HOST:-localhost}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-nuraly}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-nuraly-stage}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-empty}
+      KEYCLOAK_SCHEME: ${KEYCLOAK_SCHEME:-http}
+      DOMAIN: ${HOST_DOMAIN:-localhost}
+      KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io}
     depends_on:
       - nuraly_services
     env_file:
@@ -62,14 +61,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-
 volumes:
-#  infinispan_data:
-#  postgres-data:
+  #  infinispan_data:
+  #  postgres-data:
   pgadmin-data:
 #  keycloak-db-data:
 #  redis-data:
-
-
-  
 
