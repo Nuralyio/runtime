@@ -230,6 +230,7 @@ self.addEventListener('message', event => {
                 Object.keys(updatedParameters).forEach(key => delete updatedParameters[key]);
 
             } catch (e) {
+                console.error(e)
                 port.postMessage({
                     error: e.message
                 });

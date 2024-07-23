@@ -78,11 +78,8 @@ if (!isServer) {
   $applications.subscribe((applications) => {
     registerApplicationsInServiceWorker(applications);
     $AllcomponentWithChildrens().subscribe((components: ComponentElement[]) => {
-      if (!_isregistred) {
-        console.log('registering components in service worker');
-        registerComponentsInServiceWorker(components);
-        _isregistred = true;
-      }
+      registerComponentsInServiceWorker(components);
+      _isregistred = true;
     });
   });
 }

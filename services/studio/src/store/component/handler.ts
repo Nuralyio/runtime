@@ -8,7 +8,7 @@ export const addComponentHandler = (component: ComponentElement) => {
 		headers: {
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify({ ...component , application_id : window.applicationResponse.uuid })
+		body: JSON.stringify({ ...component, application_id: window.applicationResponse.uuid })
 	}).then(res => res.json())
 		.catch((err) => {
 			console.error(err)
@@ -19,18 +19,20 @@ export const addComponentHandler = (component: ComponentElement) => {
 
 
 export const updateComponentHandler = (component: ComponentElement) => {
-	fetch("/api/components/"+component.uuid, {
+	fetch("/api/components/" + component.uuid, {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify({ ...component , application_id : window.applicationResponse.uuid})
+		body: JSON.stringify({
+			component: { ...component, application_id: window.applicationResponse.uuid }
+		})
 	}).then(res => res.json())
 		.catch((err) => {
 			console.error(err)
 		})
 }
 
-if(!isServer){
+if (!isServer) {
 
-	}
+}

@@ -23,17 +23,11 @@ export class ColorPickerBlock extends BaseElementBlock {
   @state()
   thisvalue: any;
 
- 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.updateValue();
-    $context.subscribe((context) => {
-      if (this.component) {
-        this.updateValue();
-      }
-    }
-    )
+  constructor() {
+    super();
+    this.registerCallback("value", this.handleValueChange);
   }
+
   handleValueChange = (e) => {
     if (this.component.event.valueChange) {
       executeEventHandler(this.component, "event", "valueChange", {

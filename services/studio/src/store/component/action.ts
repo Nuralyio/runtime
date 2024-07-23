@@ -90,17 +90,17 @@ if (!isServer) {
 
 }
 export function addComponentAsChildOf(componentId: string, parentComponent: string) {
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.uuid === parentComponent) {
-        if (!component.childrenIds) {
-          component.childrenIds = [];
-        }
-        component.childrenIds.push(componentId);
-      }
-      return component;
-    }),
-  ]);
+  // $components.set([
+  //   ...$components.get().map((component: ComponentElement) => {
+  //     if (component.uuid === parentComponent) {
+  //       if (!component.childrenIds) {
+  //         component.childrenIds = [];
+  //       }
+  //       component.childrenIds.push(componentId);
+  //     }
+  //     return component;
+  //   }),
+  // ]);
 }
 
 export function setDraggingComponentInfo(
@@ -377,39 +377,6 @@ export function updateComponentAttributes(
   updatedAttributes: any
 ) {
   let componentToUpdate;
-  // if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
-  //   $components.set([
-  //     ...$components.get().map((component: ComponentElement) => {
-  //       if (component.uuid === componentId) {
-  //         componentToUpdate = component;
-  //         component.styleBreakPoints = {
-  //           ...component.styleBreakPoints,
-  //           [$currentPageViewPort.get()]: {
-  //             ...component.styleBreakPoints?.[$currentPageViewPort.get()],
-  //             ...updatedAttributes,
-  //           },
-  //         };
-  //       }
-  //       return { ...component };
-  //     }),
-  //   ]);
-  // } else {
-  //   $components.set([
-  //     ...$components.get().map((component: ComponentElement) => {
-  //       if (component.uuid === componentId) {
-  //         componentToUpdate = component;
-  //         component.style = {
-  //           ...component.style,
-  //           ...updatedAttributes,
-  //         };
-  //       }
-  //       return { ...component };
-  //     }),
-  //   ]);
-  // }
-
-  //updateComponentHandler(componentToUpdate);
-
 }
 
 
@@ -422,13 +389,14 @@ export function updateComponentStyles(
 
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
-
+  let componentToUpdate
   const updatedComponents = applicationComponents.map((component: ComponentElement) => {
     if (component.uuid === componentId) {
       component.style = {
         ...component.style,
         ...updatedAttributes,
       };
+      componentToUpdate = component;
     }
     return component;
   });
@@ -438,66 +406,33 @@ export function updateComponentStyles(
   $components.set({ ...componentsStore });
   console.timeEnd('setTime'); // End the timer and log the execution time
 
-  // updateComponentHandler(componentToUpdate); // Uncomment if you have this function defined
+  updateComponentHandler(componentToUpdate); // Uncomment if you have this function defined
 
   console.timeEnd('updateComponentStylesExecutionTime'); // End the timer and log the execution time
 }
 
-export function updateComponentInputs(
-  componentId: string,
-  updatedAttributes: any
-) {
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        component.attributes = {
-          ...component.attributes,
-          ...updatedAttributes,
-        };
-      }
-      return { ...component };
-    }),
-  ]);
-}
-
-export function updateComponentstyleHandlers(
-  componentId: string,
-  updatedAttributes: any
-) {
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        component.styleHandlers = {
-          ...component.styleHandlers,
-          ...updatedAttributes,
-        };
-      }
-      return { ...component };
-    }),
-  ]);
-}
 
 export function updateComponentAttributeHandlers(
   componentId: string,
   scope: string,
   updatedAttributes: any
 ) {
-  let componentToUpdate;
+  // let componentToUpdate;
 
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        componentToUpdate = component;
+  // $components.set([
+  //   ...$components.get().map((component: ComponentElement) => {
+  //     if (component.uuid === componentId) {
+  //       componentToUpdate = component;
 
-        component[scope] = {
-          ...component[scope],
-          ...updatedAttributes,
-        };
-      }
-      return { ...component };
-    }),
-  ]);
-  updateComponentHandler(componentToUpdate);
+  //       component[scope] = {
+  //         ...component[scope],
+  //         ...updatedAttributes,
+  //       };
+  //     }
+  //     return { ...component };
+  //   }),
+  // ]);
+  // updateComponentHandler(componentToUpdate);
 
 }
 
@@ -511,16 +446,7 @@ export const setCurrentComponentIdAction = action(
   }
 );*/
 
-export function updateComponent(componentId: string, componentAttributes: any) {
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        Object.assign(component, componentAttributes);
-      }
-      return { ...component };
-    }),
-  ]);
-}
+
 
 export function updateComponentError(
   componentId: string,
@@ -597,76 +523,33 @@ export function copyComponentAction(componentId: string) {
 
 
 export function pasteComponentAction() {
-  if (clipboardComponent) {
-    const { id } = $currentPage.get();
-    clipboardComponent.uuid = uuidv4();
-    const componentId = clipboardComponent.uuid;
-    $components.set([
-      ...$components.get(),
-      {
-        ...clipboardComponent,
-        name: GenerateName(clipboardComponent.component_type),
-        pageId: id,
-      } as ComponentElement,
-    ]);
+  // if (clipboardComponent) {
+  //   const { id } = $currentPage.get();
+  //   clipboardComponent.uuid = uuidv4();
+  //   const componentId = clipboardComponent.uuid;
+  //   $components.set([
+  //     ...$components.get(),
+  //     {
+  //       ...clipboardComponent,
+  //       name: GenerateName(clipboardComponent.component_type),
+  //       pageId: id,
+  //     } as ComponentElement,
+  //   ]);
 
-    const currentComponentId = $currentComponentId.get();
+  //   const currentComponentId = $currentComponentId.get();
 
-    if (currentComponentId) {
-      const currentComponent = $components.get().find(
-        (component: ComponentElement) => component.uuid === currentComponentId
-      );
+  //   if (currentComponentId) {
+  //     const currentComponent = $components.get().find(
+  //       (component: ComponentElement) => component.uuid === currentComponentId
+  //     );
 
-      if (currentComponent?.component_type === ComponentType.VerticalContainer) {
-        addComponentAsChildOf(componentId, currentComponentId);
-      } else {
-        addComponentToCurrentPageAction(componentId);
-      }
-    } else {
-      addComponentToCurrentPageAction(componentId);
-    }
-  }
-}
-
-
-
-
-export function updateComponentStyle(
-  component: ComponentElement,
-  updatedAttributes: any
-) {
-  let componentToUpdate;
-  if ($currentPageViewPort.get() && $currentPageViewPort.get() !== 'laptop') {
-    $components.set([
-      ...$components.get().map((component: ComponentElement) => {
-        if (component.uuid === componentId) {
-          componentToUpdate = component;
-          component.styleBreakPoints = {
-            ...component.styleBreakPoints,
-            [$currentPageViewPort.get()]: {
-              ...component.styleBreakPoints?.[$currentPageViewPort.get()],
-              ...updatedAttributes,
-            },
-          };
-        }
-        return { ...component };
-      }),
-    ]);
-  } else {
-    $components.set([
-      ...$components.get().map((component: ComponentElement) => {
-        if (component.uuid === componentId) {
-          componentToUpdate = component;
-          component.style = {
-            ...component.style,
-            ...updatedAttributes,
-          };
-        }
-        return { ...component };
-      }),
-    ]);
-  }
-
-  updateComponentHandler(componentToUpdate);
-
+  //     if (currentComponent?.component_type === ComponentType.VerticalContainer) {
+  //       addComponentAsChildOf(componentId, currentComponentId);
+  //     } else {
+  //       addComponentToCurrentPageAction(componentId);
+  //     }
+  //   } else {
+  //     addComponentToCurrentPageAction(componentId);
+  //   }
+  // }
 }
