@@ -5,8 +5,10 @@ import '../components/shared/blocks/ComponentElements/Menu/Menu';
 import '../components/shared/blocks/ComponentElements/ColorPicker/colorpicker';
 import '../components/shared/blocks/ComponentElements/NumberInput/NumberInput';
 import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper';
-import '../components/shared/blocks/ComponentElements/IconButton/iconbutton';
-import '../components/shared/blocks/ComponentElements/Select/Select';
+import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
+import '../components/shared/blocks/ComponentElements/Select/Select'
+import '../components/pages/studio/ControlPanel/Styles/BoxShadowAttribute/BoxShadowValue/BoxShadowValue'
+// Simple memoization cache
 
 // Memoization cache using WeakMap for better memory management
 const renderCache = new WeakMap<ComponentElement[], Map<string, TemplateResult>>();
