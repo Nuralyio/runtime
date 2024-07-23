@@ -1,6 +1,5 @@
 import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@hybridui/input";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
@@ -9,8 +8,8 @@ import { BaseElementBlock } from "../BaseElement";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
-// Debounce function
-function debounce(func, wait) {
+// Debounce function with default wait time
+function debounce(func, wait = 300) {
   let timeout;
   return function (...args) {
     clearTimeout(timeout);
@@ -32,36 +31,35 @@ export class TextInputBlock extends BaseElementBlock {
 
   @state()
   thisvalue: any;
+  unsubscribe: () => void;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.updateValue();
-    $context.subscribe((context) => {
-      if (this.component) {
-        this.updateValue();
-      }
-    }
-    )
+
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.unsubscribe) this.unsubscribe();
   }
-  // Debounced event handler
+
+  // Debounced event handler with default debounce wait time
   handleValueChange = debounce((e) => {
-    if (this.component.event.valueChange) {
-      // Pass data into the function.
-      // Use custom JS to update data.
+    if (this.component?.event?.valueChange) {
       executeEventHandler(this.component, "event", "valueChange", {
         EventData: {
           value: e.detail.value,
         },
       });
     }
-  }, 0); // Adjust the debounce wait time as needed.
+  }, 300); // Adjust the debounce wait time as needed.
 
   render() {
+    const inputStyles = this.component?.style || {};
+    const inputValue = this.thisvalue ?? this.item?.value ?? "";
+
     return html`
-      <span style=${styleMap({ ...this.component.style })}> 
+      <span style=${styleMap(inputStyles)}> 
         <hy-input 
           @valueChange=${this.handleValueChange}
-          .value=${this.thisvalue ?? this.item.value ?? ""}
+          .value=${inputValue}
           placeholder="Text input"
         ></hy-input>
       </span>

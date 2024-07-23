@@ -1,6 +1,14 @@
 ---
 import MakeLayout from "../layouts/MakeLayout.astro";
+
 import "../components/pages/studio/MainPanel/EditorInteractivePanel";
+import "../components/shared/blocks/ComponentElements/Tabs/Tabs";
+import "../components/shared/blocks/ComponentElements/Menu/Menu";
+import "../components/shared/blocks/ComponentElements/ColorPicker/colorpicker";
+import "../components/shared/blocks/ComponentElements/NumberInput/NumberInput";
+import "../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
+import "../components/shared/blocks/ComponentElements/IconButton/iconbutton";
+import "../components/shared/blocks/ComponentElements/Select/Select";
 import { TabsPanel } from "../components/pages/studio/MainPanel/TabsPanel";
 import "@hybridui/button";
 import { TopbarPanelWrapper } from "../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
@@ -11,7 +19,7 @@ import { allTasks } from "nanostores";
 import { $components } from "$store/component/sotre";
 import { $applications } from "$store/apps";
 import { serviceWorkerReadyCallback } from "core/engine";
-import { registerContextInWebWorker } from '../utils/context-registration';
+import { registerContextInWebWorker } from "../utils/context-registration";
 const cookie = Astro.request.headers.get("Cookie");
 const headers = {};
 Astro.request.headers.forEach((value, key) => {
@@ -21,30 +29,29 @@ const { app } = Astro.props;
 
 delete headers["connection"];
 const pageResponse = await fetch(
-  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/${app.uuid}`,
+  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/application/${app.uuid}`,
   {
     headers: {
       ...headers,
       Cookie: cookie,
     },
-  },
+  }
 );
 
 const pageData = await pageResponse.json();
+console.log("pageData", pageData);
 $pages.set(pageData);
-
 const componentResponse = await fetch(
-  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/components/${app.uuid}`,
+  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/components/application/${app.uuid}`,
   {
     headers: {
       ...headers,
       Cookie: cookie,
     },
-  },
+  }
 );
 
 let componentData = await componentResponse.json();
-
 componentData = componentData.map((component) => {
   return component.component;
 });
@@ -55,13 +62,13 @@ const applciationsResponse = await fetch(
       ...headers,
       Cookie: cookie,
     },
-  },
+  }
 );
 
 const applications = await applciationsResponse.json();
 $applications.set(applications);
 const application = applications.find(
-  (application) => application.uuid === app.uuid,
+  (application) => application.uuid === app.uuid
 );
 
 $components.set({

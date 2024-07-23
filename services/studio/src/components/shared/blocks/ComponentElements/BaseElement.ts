@@ -47,6 +47,11 @@ export class BaseElementBlock extends LitElement {
           extras: {},
         });
       });
+    } else {
+      this.inputHandlersValue[inputName] = input.value;
+      if (this?.callbacks[inputName]) {
+        this.callbacks[inputName](input.value);
+      }
     }
   }
 

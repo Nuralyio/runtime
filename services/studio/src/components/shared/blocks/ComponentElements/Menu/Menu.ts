@@ -1,14 +1,15 @@
 import type { ComponentElement } from '$store/component/interface';
 import { $context } from '$store/context/store';
-import { executeHandler  } from 'core/helper';
+import { executeHandler } from 'core/helper';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { generateRandomId } from 'utils/randomness';
 import '@hybridui/menu/templates/hy-sub-menu.js'
 import '@hybridui/menu/templates/hy-menu-link.js'
+import { BaseElementBlock } from '../BaseElement';
 
 @customElement('menu-block')
-export class MenuBlock extends LitElement {
+export class MenuBlock extends BaseElementBlock {
 
     @property({ type: Object, reflect: false })
     component: ComponentElement;
@@ -102,28 +103,15 @@ export class MenuBlock extends LitElement {
         };
         document.addEventListener(eventId, handler as any);
     }
-    override connectedCallback() {
-        super.connectedCallback();
-        this.generateOptions();
-        $context.subscribe(() => {
-            if (this.component) {
-                this.generateOptions();
-            }
-        })
-    }
-    override updated(changedProperties: Map<string | number | symbol, unknown>) {
-        super.updated(changedProperties);
-        if (changedProperties.has('component')) {
-            this.generateOptions();
-        }
-    }
+
+
     override render() {
         return html`
             <div>
                 ${this.error ? html`<pre class="error">${this.error}</pre>` : nothing}
                 <hy-menu
                     placeholder="Select an option"
-                    .items=${this.options}
+                    .items=${this.inputHandlersValue?.options ?? []}
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.options });

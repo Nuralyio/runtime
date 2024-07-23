@@ -15,7 +15,7 @@ export class TabsBlock extends BaseElementBlock {
     private editableTabs = [];
 
     @state()
-    componentsWithChildrens: ComponentElement[] = [];
+    private componentsWithChildrens: ComponentElement[] = [];
 
     static override styles = css`
     :host {

@@ -77,30 +77,34 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         input: {
-            tabs: [
-                {
-                    label: {
-                        type: "text",
-                        value: "Pages"
-                    },
-                    childrends: {
-                        type: "componentIdArray",
-                        value: ["pages_panel"]
+            tabs: {
+                type: "json",
+                value:
+                    [
+                        {
+                            label: {
+                                type: "text",
+                                value: "Pages"
+                            },
+                            childrends: {
+                                type: "componentIdArray",
+                                value: ["pages_panel"]
 
-                    }
-                },
-                {
-                    label: {
-                        type: "text",
-                        value: "Data Source"
-                    },
-                    childrends: {
-                        type: "componentIdArray",
-                        value: ["2"]
+                            }
+                        },
+                        {
+                            label: {
+                                type: "text",
+                                value: "Data Source"
+                            },
+                            childrends: {
+                                type: "componentIdArray",
+                                value: ["2"]
 
-                    }
-                },
-            ]
+                            }
+                        },
+                    ]
+            }
         },
     },
     {
@@ -289,16 +293,18 @@ export default [
                         if(componentIds.length){
                             componentIds.map((componentId) => {
                                 const component= GetComponent(componentId,appId);
-                                children.push({
-                                    text: component.name,
-                                    id: component.uuid,
-                                    handlerKey : "onSelect",
+                                if(component){
+                                    children.push({
+                                        text: component.name,
+                                        id: component.uuid,
+                                        handlerKey : "onSelect",
                                     })
-                                const childrenIds = component.childrenIds;
-                                if(childrenIds.length){
-                                    children[0]={...children[0],children:[]};
-                                    findChildren(appId,children[0].children,childrenIds)
-                                }     
+                                    const childrenIds = component.childrenIds;
+                                    if(childrenIds.length){
+                                        children[children.length-1]={...children[children.length-1],children:[]};
+                                        findChildren(appId,children[children.length-1].children,childrenIds)
+                                    }     
+                                }
                             })
                         }
                         return {
@@ -396,7 +402,7 @@ export default [
                                     "font_weight_block",
                                     "font_style_block",
                                     "text_decoration_block"]
-                                : []
+                                : ["select_component_text"]
                         }
                     },
                     {
@@ -474,6 +480,21 @@ export default [
         inputHandlers: {
             value: `GetContextVar("text_label_value");`
         },
+
+    },
+    {
+        uuid: "select_component_text",
+        name: "text_label",
+        component_type: ComponentType.TextLabel,
+        parameters: {
+            value: "Select Component to start",
+        },
+        event: {
+            onClick:  /* js */ `
+            `
+        },
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
 
     },
     {
