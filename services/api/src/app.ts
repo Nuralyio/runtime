@@ -9,7 +9,7 @@ import { schema } from '../prisma/prisma';
 import { createHandler } from 'graphql-http/lib/use/express';
 var { ruruHTML } = require("ruru/server")
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 
@@ -21,7 +21,7 @@ RegisterRoutes(app);
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use('/api/graphql',   createHandler({
+app.use('/api/graphql', createHandler({
   schema: schema,
 }));
 app.get("/api/graphql-ide", (_req, res) => {
