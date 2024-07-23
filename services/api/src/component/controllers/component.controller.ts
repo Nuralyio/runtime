@@ -36,10 +36,10 @@ export class ComponentController extends Controller {
   @Put("{uuid}")
   public async update(
     @Path() uuid: string,
-    @Body() requestBody: { component: object, user_id: string, application_id: string }
+    @Body() requestBody: { component: any }
   ): Promise<Component> {
-    const { component, user_id, application_id } = requestBody;
-    return await this.componentService.update(component, user_id, uuid, application_id);
+    const { component } = requestBody;
+    return await this.componentService.update(component, uuid);
   }
 
   @Delete("{uuid}")

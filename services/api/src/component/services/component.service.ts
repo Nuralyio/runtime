@@ -6,12 +6,12 @@ import { Component } from '../models/component';
 export class ComponentService {
   private ComponentRepository: IComponentRepository;
 
-  constructor(commponentRepository: IComponentRepository){
+  constructor(commponentRepository: IComponentRepository) {
     this.ComponentRepository = commponentRepository;
   }
 
   public async create(component: object, user_id: string, uuid: string, application_id: string): Promise<Component> {
-    const ucomponent: Component = new Component(component,user_id,uuid,application_id);
+    const ucomponent: Component = new Component(component, user_id, uuid, application_id);
     return await this.ComponentRepository.create(ucomponent)
   }
 
@@ -19,13 +19,13 @@ export class ComponentService {
     return await this.ComponentRepository.findAll();
   }
 
-  public async findComponentByApplication(application_id:string): Promise<Component[]> {
+  public async findComponentByApplication(application_id: string): Promise<Component[]> {
     return await this.ComponentRepository.findComponentByApplication(application_id);
   }
 
-  public async update(component: object, user_id: string, uuid: string, application_id: string): Promise<Component> {
-    const ucomponent: Component = new Component(component,user_id,uuid,application_id);
-    return await this.ComponentRepository.update(uuid,ucomponent);
+  public async update(component: any, uuid: string): Promise<Component> {
+    const ucomponent: Component = new Component(component, component.user_id, uuid, component.application_id);
+    return await this.ComponentRepository.update(uuid, ucomponent);
   }
 
   public async delete(uuid: string): Promise<Component> {
