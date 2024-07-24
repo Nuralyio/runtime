@@ -29,7 +29,7 @@ export class SelectBlock extends BaseElementBlock {
         <hy-select 
           @changed=${this.handleValueChange}
           .options=${this.inputHandlersValue.value}
-        ></hy-input>
+        ></hy-select>
       </span>
     `;
   }
