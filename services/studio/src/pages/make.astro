@@ -14,11 +14,9 @@ import "@hybridui/button";
 import { TopbarPanelWrapper } from "../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
 import { LeftPanel } from "../components/pages/studio/Layout/LeftPanel";
 import { RightPanel } from "../components/pages/studio/Layout/RightPanel";
-import { $pages, $resetPageStore } from "../store/page/store";
-import { allTasks } from "nanostores";
+import { $pages,  } from "../store/page/store";
 import { $components } from "$store/component/sotre";
 import { $applications } from "$store/apps";
-import { serviceWorkerReadyCallback } from "core/engine";
 import { registerContextInWebWorker } from "../utils/context-registration";
 const cookie = Astro.request.headers.get("Cookie");
 const headers = {};
@@ -75,7 +73,6 @@ $components.set({
   [application.uuid]: componentData,
 });
 registerContextInWebWorker({});
-// $resetPageStore()
 ---
 
 <head> <title>Nuraly - Editing {app.name}</title> </head>
