@@ -7,17 +7,16 @@ import { customElement, property, state } from "lit/decorators.js";
 export class LeftPanel extends LitElement {
   static styles = [
     css`
-      .left-panel {
-        background-color: #2c2c2c;
-        overflow-y: auto;
-        height: 100vh;
-      }
-    screen-structure-editor{
-      --hybrid-menu-background-color: #2c2c2c;
-      color : white;
+      hy-tabs {
+      --hybrid-tabs-content-background-color: #f8fafc;
       font-size: 12px;
-      font-weight: 400;
-      --hybrid-button-border-color: transparent;
+    }
+    @media (prefers-color-scheme: dark) {
+      hy-tabs {
+        --hybrid-tabs-content-background-color: #2c2c2c;
+        color: #f3f3f3;
+        font-weight: 400;
+      }
     }
     `,
   ];
@@ -36,7 +35,7 @@ export class LeftPanel extends LitElement {
     return html`${this.mode === ViewMode.Edit
       ? html`
           <aside
-            class="left-panel sidebar w-80 -translate-x-full transform bg-gray-100 p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md"
+            class=""
           >
             <div class="my-4 w-full text-center">
               <span class="font-mono text-xl font-bold tracking-widest"> </span>
