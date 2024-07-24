@@ -114,7 +114,7 @@ export class MenuBlock extends BaseElementBlock {
                     .items=${this.inputHandlersValue?.options ?? []}
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
-                const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.options });
+                const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
                 executeHandler(
                     {
                         eventId: generateRandomId(),
