@@ -8,6 +8,7 @@ import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrap
 import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
 import '../components/shared/blocks/ComponentElements/Select/Select'
 import '../components/pages/studio/ControlPanel/Styles/BoxShadowAttribute/BoxShadowValue/BoxShadowValue'
+import '../components/pages/studio/ControlPanel/Styles/BorderAttribute/BorderValue/BorderValue'
 // Simple memoization cache
 
 // Memoization cache using WeakMap for better memory management
@@ -18,9 +19,15 @@ const selectTemplate = (props: any) => html`<select-block .item=${props.item} .c
 const iconButtonTemplate = (props: any) => html`<icon-button-block .item=${props.item} .component=${props.component}></icon-button-block>`;
 const colorPickerTemplate = (props: any) => html`<color-picker-block .item=${props.item} .component=${props.component}></color-picker-block>`;
 const numberInputTemplate = (props: any) => html`<number-input-block .item=${props.item} .component=${props.component}></number-input-block>`;
+const shadowBoxTemplate = (props:any)=>html`<attribute-box-shadow-value .item=${props.item}  .component=${props.component}></box-shadow-value-block >`
+const borderRadiusTemplate = (props:any)=>html`<attribute-border-value .item=${props.item}  .component=${props.component}></attribute-border-value >`
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   switch (component?.component_type) {
+    case ComponentType.BorderRadius:
+      return borderRadiusTemplate(commonProps);
+    case ComponentType.ShadowBox:
+      return shadowBoxTemplate(commonProps);
     case ComponentType.Select:
       return selectTemplate(commonProps);
     case ComponentType.IconButton:

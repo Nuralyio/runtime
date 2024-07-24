@@ -322,50 +322,6 @@ export default [
         applicationId: "1",
     },
     {
-        uuid: "right_panel_tabs_empty",
-        applicationId: "1",
-        name: "name",
-        component_type: ComponentType.Tabs,
-        parameters: {
-            value: "22px",
-        },
-
-        event: {
-            valueChange: `
-        updateStyle(app1.text_label, "color", EventData.value);
-        console.log("app1",app1);
-      `
-        },
-        ...COMMON_ATTRIBUTES,
-        input: {
-            tabs: [
-                {
-                    label: {
-                        type: "text",
-                        value: "Design"
-                    },
-                    childrends: {
-                        type: "componentIdArray",
-                        value: ["input_text_vertical_container", "font_color_block", "text_alignement_block", "font_family_block", "font_weight_block", "font_style_block", "text_decoration_block", "background_color_block"]
-
-                    }
-                },
-                {
-                    label: {
-                        type: "text",
-                        value: "Advanced"
-                    },
-                    childrends: {
-                        type: "componentIdArray",
-                        value: []
-
-                    }
-                },
-            ]
-        },
-    },
-
-    {
         uuid: "right_panel_tabs",
         applicationId: "1",
         name: "name",
@@ -401,7 +357,9 @@ export default [
                                     "font_family_block",
                                     "font_weight_block",
                                     "font_style_block",
-                                    "text_decoration_block"]
+                                    "text_decoration_block",
+                                    "box_shadow_block",
+                                    "border_radius_block"]
                                 : ["select_component_text"]
                         }
                     },
@@ -1561,6 +1519,133 @@ export default [
                         console.log(e);
                     }
                 `
+            }
+        }
+    },
+    {
+        uuid: "box_shadow_block",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.ShadowBox,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        event: {
+            boxShadowChanged: {
+                type: "handler",
+                value: /* js */ `
+                    try{
+                        const selectedComponens =  GetVar( "selectedComponents")||[];
+                        if( selectedComponens.length) {
+                            const selectedComponent = selectedComponens[0];
+                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                            updateStyle(currentComponent, "box-shadow",EventData.value);
+                        
+                        }
+                    }catch(error){
+                        console.log(error);
+                    }      
+  `
+            }
+        },
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if( selectedComponens.length) {
+
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                if (currentComponent.style["box-shadow"]) {
+
+                    const values = currentComponent.style["box-shadow"].match(/-?\d+px/g);                    
+                    const horizontalValue = parseInt(values[0], 10);
+                    const verticalValue = parseInt(values[1], 10);
+                    const blurValue = parseInt(values[2], 10);
+                    const spreadValue = parseInt(values[3], 10);
+                    const colorMatch = currentComponent.style["box-shadow"].match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/);
+                    const insetMatch = currentComponent.style["box-shadow"].match(/\binset\b/);
+                    const insetValue = insetMatch[0] ? true : false;
+                    const colorValue = colorMatch ? colorMatch[0] : "#000000";
+                    [horizontalValue,verticalValue,blurValue,spreadValue,insetValue,colorValue]
+
+                }
+                else {
+                    const horizontalValue = 0;
+                    const verticalValue = 0;
+                    const blurValue = 0;
+                    const spreadValue = 0;
+                    const colorValue = "#000000";
+                    const insetValue = false;
+                    [horizontalValue,verticalValue,blurValue,spreadValue,insetValue,colorValue]
+                }
+                
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `
+            }
+        }
+    },
+    {
+        uuid: "border_radius_block",
+        name: "name",
+        applicationId: "1",
+        component_type: ComponentType.BorderRadius,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        event: {
+            borderRadiusChanged: {
+                type: "handler",
+                value: /* js */ `
+                    try{
+                        const selectedComponens =  GetVar( "selectedComponents")||[];
+                        if( selectedComponens.length) {
+                            const selectedComponent = selectedComponens[0];
+                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                            updateStyle(currentComponent, "border-radius",EventData.value+EventData.unity);
+                        }
+                    }catch(error){
+                        console.log(error);
+                    }      
+  `
+            }
+        },
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if( selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                if (currentComponent.style["border-radius"]) {
+                            let unity='';
+                            let value='';
+                            currentComponent.style["border-radius"].split('').forEach((char)=>
+                                {  
+                                if(char>='0' && char<='9')
+                                    value+=char 
+                                else 
+                                unity+=char
+                               }
+                            );
+                            [value,unity]
+                          }
+                         else 
+                            [0,'px']    
+                              
+                
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `
             }
         }
     },

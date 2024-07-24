@@ -1,14 +1,19 @@
 import type { ComponentElement } from '$store/component/interface';
-import { LitElement, html, css } from 'lit';
+import { BaseElementBlock } from 'components/shared/blocks/ComponentElements/BaseElement';
+import { executeHandler } from 'core/helper';
+import { html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 @customElement('attribute-border-value')
-export class AttributeBorderValue extends LitElement {
+export class AttributeBorderValue extends BaseElementBlock {
 	@property()
 	component : ComponentElement;
 
 	@state()
 	borderRadius = 0;
+
+	@state()
+	unity=''
 
     static override styles = [
         css`
@@ -39,34 +44,23 @@ export class AttributeBorderValue extends LitElement {
         `
     ];
 
-    dispatchBorderRadius(){
-
-    	this.dispatchEvent(new CustomEvent("border-radius-changed", {
-			detail: {
-				value: this.borderRadius + "px"
-
-				}
-			})
-    	)
-
-    }
-
-   	updated(changedProperties) {
-        changedProperties.forEach((_oldValue, propName) => {
-          if (propName === "component") {
-            this.initValues();
-          }
-        });
-      }
-
-    initValues() {
-    	if(this.component.style["border-radius"]){
-    		const values = this.component.style["border-radius"].split("px");
-			this.borderRadius = parseInt(values[0]);
-    	}else{
-    		this.borderRadius = 0;
-    	}
-    }
+	firstUpdated(_changedProperties: PropertyValues): void {
+		this.borderRadius = this.inputHandlersValue.value[0]
+		this.unity = this.inputHandlersValue.value[1]
+	}
+    
+	 override updated(_changedProperties: PropertyValues): void {
+		if(_changedProperties.has('borderRadius')){
+			if(this.component.event.borderRadiusChanged){
+				executeHandler({
+					component:this.component,
+					type:'event.borderRadiusChanged',
+					extras:{EventData:{value:this.borderRadius,unity:this.unity}}
+				})
+			}
+		}
+		
+	}
 
     override render() {
         return html`
@@ -80,12 +74,12 @@ export class AttributeBorderValue extends LitElement {
 			          .min=${0}
 			          .max=${200}
 			          .value=${this.borderRadius}
-			           @changed="${(e) => (this.borderRadius = e.detail.value) && this.dispatchBorderRadius()}"
+			           @changed="${(e) => (this.borderRadius = e.detail.value)}"
 
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input  .value=${this.borderRadius+"px"}></hy-input>
+		        	 <hy-input  .value=${this.borderRadius}></hy-input>
 		        </div>
 			</div>
 
