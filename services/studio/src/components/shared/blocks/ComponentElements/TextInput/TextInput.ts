@@ -2,7 +2,7 @@ import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeEventHandler } from "core/engine";
+import { executeHandler } from "core/helper";
 import { $context } from "$store/context/store";
 import { BaseElementBlock } from "../BaseElement";
 
@@ -43,11 +43,17 @@ export class TextInputBlock extends BaseElementBlock {
   // Debounced event handler with default debounce wait time
   handleValueChange = debounce((e) => {
     if (this.component?.event?.valueChange) {
-      executeEventHandler(this.component, "event", "valueChange", {
-        EventData: {
-          value: e.detail.value,
-        },
-      });
+      executeHandler(
+        {
+          component: this.component,
+          type: `event.valueChange`,
+          extras: {
+            EventData: {
+              value: e.detail.value,
+            },
+          },
+        }
+      );
     }
   }, 300); // Adjust the debounce wait time as needed.
 
