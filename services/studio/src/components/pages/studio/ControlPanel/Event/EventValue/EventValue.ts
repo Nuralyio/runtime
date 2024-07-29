@@ -1,13 +1,12 @@
 import { type ComponentElement } from "$store/component/interface";
+import { BaseElementBlock } from "components/shared/blocks/ComponentElements/BaseElement";
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 @customElement("parameter-event-handler")
-export class ParameterEventLabel extends LitElement {
+export class ParameterEventLabel extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
-  @property()
-  eventName: string;
   static styles = [
     css`
       :host {
@@ -19,7 +18,7 @@ export class ParameterEventLabel extends LitElement {
   render() {
     return html`<smart-attribute-editor-dropdown
       .component=${{ ...this.component }}
-      .attributeName=${this.eventName}
+      .attributeName=${this.inputHandlersValue.value}
       .attributeScope=${"event"}
       .handlerScope=${"event"}
     >

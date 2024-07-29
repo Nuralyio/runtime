@@ -9,6 +9,7 @@ import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
 import '../components/shared/blocks/ComponentElements/Select/Select'
 import '../components/pages/studio/ControlPanel/Styles/BoxShadowAttribute/BoxShadowValue/BoxShadowValue'
 import '../components/pages/studio/ControlPanel/Styles/BorderAttribute/BorderValue/BorderValue'
+import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue'
 // Simple memoization cache
 
 // Memoization cache using WeakMap for better memory management
@@ -21,9 +22,11 @@ const colorPickerTemplate = (props: any) => html`<color-picker-block .item=${pro
 const numberInputTemplate = (props: any) => html`<number-input-block .item=${props.item} .component=${props.component}></number-input-block>`;
 const shadowBoxTemplate = (props:any)=>html`<attribute-box-shadow-value .item=${props.item}  .component=${props.component}></box-shadow-value-block >`
 const borderRadiusTemplate = (props:any)=>html`<attribute-border-value .item=${props.item}  .component=${props.component}></attribute-border-value >`
-
+const eventTemplate =(props:any)=>html`<parameter-event-handler .item=${props.item}  .component=${props.component}></parameter-event-handler>`
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   switch (component?.component_type) {
+    case ComponentType.Event:
+      return eventTemplate(commonProps);
     case ComponentType.BorderRadius:
       return borderRadiusTemplate(commonProps);
     case ComponentType.ShadowBox:
@@ -41,7 +44,12 @@ function renderComponentElement(component: ComponentElement, commonProps: any, i
         ? html`<text-input-block .item=${commonProps.item} .component=${commonProps.component}></text-input-block>`
         : html`<generik-component-wrapper .component=${commonProps.component}><text-input-block .item=${commonProps.item} .component=${commonProps.component}></text-input-block></generik-component-wrapper>`;
     case ComponentType.TextLabel:
-      return html`<generik-component-wrapper .component=${commonProps.component}><text-label-block .item=${commonProps.item} .component=${commonProps.component}></text-label-block></generik-component-wrapper>`;
+      return isViewMode? html`
+      <text-label-block .item=${commonProps.item} .component=${commonProps.component}></text-label-block>
+      `:html`<generik-component-wrapper .component=${commonProps.component}>
+            <text-label-block .item=${commonProps.item} .component=${commonProps.component}></text-label-block>
+
+      </generik-component-wrapper>`
     case ComponentType.Button:
       return isViewMode
         ? html`<button-block .item=${commonProps.item} .component=${commonProps.component}></button-block>`

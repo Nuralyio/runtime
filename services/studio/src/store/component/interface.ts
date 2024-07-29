@@ -11,7 +11,8 @@ export const enum ComponentType {
   IconButton = "icon_button",
   Select ="select",
   ShadowBox= 'shadow_box',
-  BorderRadius ='border_radius'
+  BorderRadius ='border_radius',
+  Event ="event"
 }
 
 export interface DraggingComponentInfo {

@@ -45,8 +45,8 @@ export class AttributeBorderValue extends BaseElementBlock {
     ];
 
 	firstUpdated(_changedProperties: PropertyValues): void {
-		this.borderRadius = this.inputHandlersValue.value[0]
-		this.unity = this.inputHandlersValue.value[1]
+		    this.borderRadius = this.inputHandlersValue.value[0]
+			this.unity = this.inputHandlersValue.value[1]					
 	}
     
 	 override updated(_changedProperties: PropertyValues): void {
@@ -73,7 +73,7 @@ export class AttributeBorderValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${0}
 			          .max=${200}
-			          .value=${this.borderRadius}
+			          .value=${this.inputHandlersValue.value[0]}
 			           @changed="${(e) => (this.borderRadius = e.detail.value)}"
 
 			        ></hy-slider-input>
