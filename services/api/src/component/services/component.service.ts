@@ -10,8 +10,8 @@ export class ComponentService {
     this.ComponentRepository = commponentRepository;
   }
 
-  public async create(component: object, user_id: string, uuid: string, application_id: string): Promise<Component> {
-    const ucomponent: Component = new Component(component, user_id, uuid, application_id);
+  public async create(component: Component, user_id: string): Promise<Component> {
+    const ucomponent: Component = new Component(component, user_id, component.uuid, component.application_id);
     return await this.ComponentRepository.create(ucomponent)
   }
 
