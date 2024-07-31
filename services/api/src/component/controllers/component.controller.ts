@@ -1,7 +1,9 @@
 import { ComponentService } from "../services/component.service";
-import { Body, Controller, Delete, Get, Hidden, Path, Post, Put, Query, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Request, Path, Post, Put, Query, Route, Security, Tags, Middlewares } from "tsoa";
 import { Component } from "../models/component";
 import { ComponentRepositoryPrismaPgSQL } from "../repositories/component.repository";
+import authMiddleware from "../../middlewares/user.middleware";
+import { CreateComponentRequest } from "../interfaces/CreateComponentRequest";
 
 @Route('/api/components')
 @Tags('Components')
@@ -15,10 +17,12 @@ export class ComponentController extends Controller {
   }
 
   @Post()
+  @Middlewares([authMiddleware])
   public async create(
-    @Body() requestBody: { component: object, user_id: string, uuid: string, application_id: string }): Promise<Component> {
-    const { component, user_id, application_id, uuid } = requestBody;
-    return await this.componentService.create(component, user_id, uuid, application_id);
+    @Body() requestBody : CreateComponentRequest ,
+    @Request() request: any,  
+  ): Promise<Component> {
+    return await this.componentService.create( requestBody.component,request.user.uuid);
   }
 
   @Get()
