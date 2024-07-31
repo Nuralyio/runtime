@@ -59,13 +59,11 @@ export class TextInputBlock extends BaseElementBlock {
 
   render() {
     const inputStyles = this.component?.style || {};
-    const inputValue = this.thisvalue ?? this.item?.value ?? "";
-
     return html`
       <span style=${styleMap(inputStyles)}> 
         <hy-input 
           @valueChange=${this.handleValueChange}
-          .value=${inputValue}
+          .value=${this.inputHandlersValue.value}
           placeholder="Text input"
         ></hy-input>
       </span>

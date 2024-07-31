@@ -2,6 +2,39 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../common_attributes";
 export default [
     {
+    
+            uuid: "border_radius_vertical_container",
+            applicationId: "1",
+            name: "Left panel",
+            component_type: ComponentType.VerticalContainer,
+            styleHandlers: {},
+            input: {
+                direction: "vertical",
+            },
+    
+            ...COMMON_ATTRIBUTES,
+            style: {
+                width: "250px",
+                display:'flex',
+                'flex-direction':'column',
+            },
+            childrenIds: ["border_radius_label","border_radius_block"],
+        
+    },
+    {
+        uuid: "border_radius_label",
+        name: "text_label",
+        component_type: ComponentType.TextLabel,
+        parameters: {
+            value: "Border radius",
+        },
+
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+       
+
+    },
+    {
         uuid: "border_radius_block",
         name: "name",
         applicationId: "1",

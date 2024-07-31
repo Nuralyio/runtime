@@ -1,5 +1,5 @@
 import { type ComponentElement } from "$store/component/interface";
-import { html, css } from "lit";
+import { html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement";
@@ -77,8 +77,8 @@ export class TextLabelBlock extends BaseElementBlock {
   }
 
   render() {
-    return html`
-      <label
+    return html` 
+         <label
         id=${this.component.uuid}
         contentEditable="${this.isEditable}"
         style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
@@ -102,6 +102,6 @@ export class TextLabelBlock extends BaseElementBlock {
       >
         ${this.getValue()}
       </label>
-    `;
-  }
+      `}
+    
 }

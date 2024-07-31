@@ -13,7 +13,10 @@ import studioFontSizeBlock from './text-labels-blocks/studio-font-size-block';
 import studioLetterSpacingBlock from "./text-labels-blocks/studio-letter-spacing-block";
 import studioLineHeightBlock from "./text-labels-blocks/studio-line-height-block";
 import studioClickEvent from "./text-labels-blocks/studio-click-event";
+import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event";
+import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event";
 import studioTextValueBlock from "./text-labels-blocks/studio-text-value-block";
+import studioDisplayBlock from "./text-labels-blocks/studio-display-block";
 
 export default [
 
@@ -358,10 +361,13 @@ export default [
                                     "font_style_block",
                                     "text_decoration_block",
                                     "box_shadow_block",
-                                    "border_radius_block",
+                                    "border_radius_vertical_container",
                                     "letter_spacing_block", 
                                     "line_height_block",
-                                    "click_event_block"
+                                    "display_block",
+                                    "click_event_block",
+                                    "mouse_enter_event_block",
+                                    "mouse_leave_event_block"
                                 ]
                                 : ["select_component_text"]
                         }
@@ -410,6 +416,8 @@ export default [
     ...studioBorderRadiusBlock,
     ...studioLetterSpacingBlock,
     ...studioLineHeightBlock,
-    ...studioClickEvent
-    
+    ...studioDisplayBlock,
+    ...studioClickEvent,
+    ...studioMouseEnterEvent,
+    ...studioMouseLeaveEvent
 ]
