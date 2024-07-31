@@ -41,8 +41,24 @@ export default [
         input: {
             value: {
                 type: "handler",
-                value: /* js */ `                    
-                [{label: "Normal",value: "normal"},{label:'Bold',value:'bold'},{label:'Extra bold',value:'800'}]
+                value: /* js */ `
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    let fontWeight = currentComponent.style['font-weight'];
+                    let selectedFontWeight;
+                    const options = [{label: "Normal",value: "normal"},{label:'Bold',value:'bold'},{label:'Extra bold',value:'800'}]
+                    if(fontWeight){
+                        selectedFontWeight = options.find((option)=> option.value == fontWeight);   
+                    }
+                    const result = [options,[selectedFontWeight?selectedFontWeight.label:'Normal']]
+                    result;
+                }
+                catch(e){
+                    console.log(e)
+                }
+
                 
                 `
             }

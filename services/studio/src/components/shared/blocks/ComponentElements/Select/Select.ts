@@ -1,5 +1,5 @@
-import { html, css } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { html } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";

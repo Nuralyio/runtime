@@ -75,9 +75,10 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent.style['font-family']
+                let fontFamily = currentComponent.style['font-family'];
+                let selectedFontFamily;
                 const options = 
-                    [[
+                    [
                     {
                     label: "Arial",
                     value: "arial",
@@ -99,8 +100,12 @@ export default [
                     value:'courier new'
                  }
             
-            ],[fontFamily]]
-            options
+            ]
+            if(fontFamily){
+                selectedFontFamily = options.find((option)=> option.value == fontFamily);   
+            }
+            const result =[options,[selectedFontFamily? selectedFontFamily.label : "initial"]]
+            result;
                 
                 `
             }

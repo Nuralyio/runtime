@@ -81,10 +81,10 @@ export default [
                 value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
+            if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const value = currentComponent.parameters.value
+                const value = currentComponent.parameters.value || ''
                 value;  
             }
 
