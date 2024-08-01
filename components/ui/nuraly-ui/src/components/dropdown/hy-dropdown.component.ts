@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, html} from 'lit';
+import {LitElement, TemplateResult, html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {styles} from './hy-dropdown.style';
 import {DropDownDirection, IOption, TriggerMode} from './dropdown.types';
@@ -18,7 +18,10 @@ export class HyDropdownComponent extends LitElement {
   @property({type: Boolean, reflect: true})
   show = false;
   @property()
-  trigger = TriggerMode.Hover;
+  trigger = TriggerMode.Click;
+  @property()
+  template!:TemplateResult<1>;
+
 
   @state()
   isDropDownVisited = false;
@@ -38,8 +41,7 @@ export class HyDropdownComponent extends LitElement {
       window.addEventListener('click', this.onClickOutside);
     }
   }
-  onTriggerClick = async (clickTargetEvent: Event) => {
-    clickTargetEvent.stopPropagation();
+  onTriggerClick = async () => {
     this.show = !this.show;
     await this.updateComplete;
     this.calculatePosition();
@@ -71,9 +73,12 @@ export class HyDropdownComponent extends LitElement {
     this.dropDownContainer.style.removeProperty('position');
     this.dropDownContainer.style.removeProperty('right');
   }
-  onClickOutside = () => {
-    if (this.show) this.show = false;
-    this.initPosition();
+  onClickOutside = (onClickEvent:Event) => {
+    const outsideClick = !onClickEvent.composedPath().includes(this)
+    if (outsideClick && this.show){
+      this.show = false;
+      this.initPosition();
+    }
   };
   onMouseEnterTriggerElement = async () => {
     this.show = true;
@@ -137,7 +142,9 @@ export class HyDropdownComponent extends LitElement {
   override render() {
     return html`
       <slot></slot>
-      <div class="dropdown-container" @click-item=${this.onOptionClick}>${this.display(this.options)}</div>
+      <div class="dropdown-container" @click-item=${this.onOptionClick}>
+      ${this.template?html`${this.template}`: this.display(this.options)}
+      </div>
     `;
   }
 }

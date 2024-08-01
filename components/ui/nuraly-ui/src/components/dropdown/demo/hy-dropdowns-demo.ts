@@ -81,7 +81,11 @@ export class ElButtonDemoElement extends LitElement {
     {label: 'option12', value: 'value12', disabled: true},
   ];
   override render() {
-    return html`
+    return html` 
+    <h3>With template</h3>
+    <hy-dropdown .template=${html`<div style='color:red;'>hello</div>`}>
+    <span>click me</span>
+    </hy-dropdown>
       <div id="centered">
         <h3>Centered trigger</h3>
 
