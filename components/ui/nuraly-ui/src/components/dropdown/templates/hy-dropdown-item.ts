@@ -1,6 +1,6 @@
 import {LitElement, html, nothing} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {styles} from './hy-dropdown-item.style';
+import {styles} from './hy-dropdown-item.style.js';
 
 @customElement('hy-dropdown-item')
 export class HyDropdownItem extends LitElement {

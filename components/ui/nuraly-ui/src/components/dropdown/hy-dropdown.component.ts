@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {LitElement, TemplateResult, html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {styles} from './hy-dropdown.style';
+import {styles} from './hy-dropdown.style.js';
 import {DropDownDirection, IOption, TriggerMode} from './dropdown.types';
 import './templates/hy-dropdown-item';
 import './templates/hy-dropdown-menu';
