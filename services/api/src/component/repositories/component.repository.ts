@@ -24,6 +24,15 @@ export class ComponentRepositoryPrismaPgSQL implements IComponentRepository {
         });
         return components.map((pcomponent: any) => new Component(pcomponent.component, pcomponent.user_id, pcomponent.uuid, pcomponent.application_id));
     }
+    public async findComponentByUuid(uuid: string): Promise<Component | null> {
+        const component = await prisma.components.findFirst({
+            where: { uuid }
+        });
+        if (component === null) {
+            return null;
+        }
+        return new Component(component!.component, component!.user_id, component!.uuid, component!.application_id);
+    }
     public async update(uuid: string, component: Component): Promise<Component> {
         const updatedComponent = await prisma.components.update({
             where: { uuid },

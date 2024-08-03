@@ -23,8 +23,12 @@ export class ComponentService {
     return await this.ComponentRepository.findComponentByApplication(application_id);
   }
 
-  public async update(component: any, uuid: string): Promise<Component> {
-    const ucomponent: Component = new Component(component, component.user_id, uuid, component.application_id);
+  public async findComponentByUuid(uuid: string): Promise<Component | null> {
+    return await this.ComponentRepository.findComponentByUuid(uuid);
+  }
+
+  public async update(component: Component, uuid: string): Promise<Component> {
+    const ucomponent: Component = new Component(component.component, component.user_id, uuid, component.application_id);
     return await this.ComponentRepository.update(uuid, ucomponent);
   }
 
