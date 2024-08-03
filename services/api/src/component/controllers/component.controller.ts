@@ -4,6 +4,8 @@ import { Component } from "../models/component";
 import { ComponentRepositoryPrismaPgSQL } from "../repositories/component.repository";
 import authMiddleware from "../../middlewares/user.middleware";
 import { CreateComponentRequest } from "../interfaces/CreateComponentRequest";
+import { removeNullProperties } from "../../shared/utils/remove-null-properties";
+import { NotFoundException } from "../../common/exceptions";
 
 @Route('/api/components')
 @Tags('Components')
@@ -19,10 +21,10 @@ export class ComponentController extends Controller {
   @Post()
   @Middlewares([authMiddleware])
   public async create(
-    @Body() requestBody : CreateComponentRequest ,
-    @Request() request: any,  
+    @Body() requestBody: CreateComponentRequest,
+    @Request() request: any,
   ): Promise<Component> {
-    return await this.componentService.create( requestBody.component,request.user.uuid);
+    return await this.componentService.create(requestBody.component, request.user.uuid);
   }
 
   @Get()
@@ -37,13 +39,26 @@ export class ComponentController extends Controller {
     return await this.componentService.findComponentByApplication(application_id);
   }
 
+  @Get("{uuid}")
+  public async findComponentByUuid(
+    @Path() uuid: string
+  ): Promise<Component | null> {
+    return await this.componentService.findComponentByUuid(uuid);
+  }
+
   @Put("{uuid}")
   public async update(
     @Path() uuid: string,
-    @Body() requestBody: { component: any }
+    @Body() requestBody: { component: { [key: string]: any } }
   ): Promise<Component> {
     const { component } = requestBody;
-    return await this.componentService.update(component, uuid);
+    let componentToUpdate = await this.componentService.findComponentByUuid(uuid);
+    if (componentToUpdate! == null) {
+      throw new NotFoundException(`Component with uuid ${uuid} not found`);
+    }
+    componentToUpdate = { ...componentToUpdate.component, ...component }
+    componentToUpdate = removeNullProperties(componentToUpdate);
+    return await this.componentService.update(componentToUpdate as Component, uuid);
   }
 
   @Delete("{uuid}")
