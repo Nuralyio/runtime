@@ -1,5 +1,5 @@
 ---
-import MakeLayout from "../layouts/MakeLayout.astro";
+import MakeLayout from "./layouts/MakeLayout.astro";
 
 import "../components/pages/studio/MainPanel/EditorInteractivePanel";
 import "../components/shared/blocks/ComponentElements/Tabs/Tabs";
@@ -26,31 +26,35 @@ import { loadApplicationComponent } from "$services/component.service";
 const { app } = Astro.props;
 const processedHeaders = processHeaders(Astro.request.headers);
 
-// load application pages
-const pageRequest = await loadApplicationPages(processedHeaders, app.uuid);
-const pageData = await pageRequest.data;
-$pages.set(pageData);
+let pageData, componentData, applications, application;
 
-// load application components
-const componentResponse = await loadApplicationComponent(processedHeaders, app.uuid);
-let componentData = componentResponse.data;
-componentData = componentData.map((component) => {
-  return component.component;
-});
+try {
+  // Load application pages, components, and applications in parallel
+  const [pageRequest, componentResponse, applicationsRequest] = await Promise.all([
+    loadApplicationPages(processedHeaders, app.uuid),
+    loadApplicationComponent(processedHeaders, app.uuid),
+    getApplications(processedHeaders)
+  ]);
 
-// load applications
-const applciationsRequest = await getApplications(processedHeaders);
-const applications = applciationsRequest.data;
-$applications.set(applications);
-const application = applications.find(
-  (application) => application.uuid === app.uuid
-);
+  // Handle page data
+  pageData = pageRequest.data;
+  $pages.set(pageData);
 
-$components.set({
-  [application.uuid]: componentData,
-});
+  // Handle component data
+  componentData = componentResponse.data.map((component) => component.component);
+  $components.set({ [app.uuid]: componentData });
 
-registerContextInWebWorker({});
+  // Handle applications data
+  applications = applicationsRequest.data;
+  $applications.set(applications);
+  application = applications.find((application) => application.uuid === app.uuid);
+
+  // Further processing if needed
+  registerContextInWebWorker({});
+} catch (error) {
+  // Handle errors here
+  console.error("An error occurred while loading data:", error);
+}
 ---
 
 <head> <title>Nuraly - Editing {app.name}</title> </head>
