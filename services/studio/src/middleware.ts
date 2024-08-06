@@ -1,6 +1,6 @@
 import { $applications } from "$store/apps";
-import { $components } from "$store/component/sotre";
-import { $pages } from "$store/page/store";
+import { $components } from "$store/component/component-sotre";
+import { $pages } from "$store/page/page-store";
 import { $providers } from "$store/providers/store";
 import { defineMiddleware } from "astro:middleware";
 
@@ -12,5 +12,4 @@ export const onRequest = defineMiddleware((context, next) => {
     $pages.set([]);
     $components.set([]);
     next()
-
 });

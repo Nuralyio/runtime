@@ -6,7 +6,7 @@ import { updateComponentAttributes } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
 import styles from "./ResizeWrapper.style";
 import { classMap } from "lit/directives/class-map.js";
-import { $pageZoom, $showBorder } from "$store/page/store";
+import { $pageZoom, $showBorder } from "$store/page/page-store";
 import { setResizing } from "$store/page/action";
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {

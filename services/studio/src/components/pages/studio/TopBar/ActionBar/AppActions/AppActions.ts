@@ -2,7 +2,7 @@ import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import styles from "./AppActions.style";
 import { useStores } from "@nanostores/lit";
-import { $environment, type Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/environment-store";
 import { setEnvironmentMode } from "$store/environment/action";
 import { $currentApplication } from "$store/apps";
 

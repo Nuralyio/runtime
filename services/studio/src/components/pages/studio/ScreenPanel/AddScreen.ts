@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import "@hybridui/menu";
 import "@hybridui/button";
 import "@hybridui/icon";
-import { $pages } from "$store/page/store";
+import { $pages } from "$store/page/page-store";
 import { type PageElement } from "$store/page/interface";
 import { addPageAction } from "$store/page/action";
 

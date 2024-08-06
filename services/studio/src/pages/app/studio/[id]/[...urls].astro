@@ -2,7 +2,7 @@
 import Make from "../../../make.astro";
 import {loadApplication} from "$services/applications.service"
 import NotFount from '../../../not-found.astro';
-import { $resetPageStore } from "$store/page/store";
+import { $resetPageStore } from "$store/page/page-store";
 // here we will handle the routing
 const { title, id, urls = "" } = Astro.params;
 

@@ -1,5 +1,5 @@
 import type { ComponentElement } from '$store/component/interface';
-import { $applicationComponents } from '$store/component/sotre';
+import { $applicationComponents } from '$store/component/component-sotre';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';

@@ -1,5 +1,5 @@
 import type { ComponentElement } from '$store/component/interface';
-import { $context } from '$store/context/store';
+import { $context } from '$store/context/context-store';
 import { executeHandler } from 'core/helper';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
@@ -115,6 +115,7 @@ export class MenuBlock extends BaseElementBlock {
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
+                console.log('option',   option);
                 executeHandler(
                     {
                         eventId: generateRandomId(),

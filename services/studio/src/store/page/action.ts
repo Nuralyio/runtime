@@ -1,23 +1,23 @@
-import { $resizing } from "$store/apps";
+import { $currentApplication, $resizing } from "$store/apps";
 import { addPageHandler } from "./handler";
 import { type PageElement } from "./interface";
-import { $contextMenuEvent, $currentPage, $currentPageId, $currentPageViewPort, $pageSize, $pageZoom, $pages, $showBorder } from "./store";
+import { $contextMenuEvent, $currentPage, $currentPageId, $currentPageViewPort, $pageSize, $pageZoom, $pages, $showBorder } from "./page-store";
 import { updatePageHandler } from "./handler";
-import { setVar } from "$store/context/store";
+import { getVar, setVar } from "$store/context/context-store";
 
 /** Actions*/
 export function addPageAction(page: PageElement) {
   addPageHandler(page)
 }
 
-export function updatePageAction(page: PageElement) {
-  const existingPages = $pages.get();
-  const updatedPages = existingPages.map((existingPage) =>
-    existingPage.uuid === page.uuid ? page : existingPage
-  );
+// export function updatePageAction(page: PageElement) {
+//   const existingPages = $pages.get();
+//   const updatedPages = existingPages.map((existingPage) =>
+//     existingPage.uuid === page.uuid ? page : existingPage
+//   );
 
-  $pages.set(updatedPages);
-}
+//   $pages.set(updatedPages);
+// }
 
 /**
  * 
@@ -32,25 +32,13 @@ export const $resetPageStore = () => { };
  */ 
 
 export function addPageToApplicationAction(page: PageElement,applicationId: string) {
-/**
- * 
- * using this 
- * interface PageStore {
-  [key: string]: PageElement[];
-}
- */
-  // add page to application object use this 
-  // interface PageStore {
-//   [key: string]: PageElement[];
-// }
-  
     $pages.set({
       ...$pages.get(),
       [applicationId]: [...($pages.get()[applicationId] || []), page],
     });
 
-    const pages = $pages.get()[window.applicationResponse.uuid];
-    setVar(window.applicationResponse.uuid, `${window.applicationResponse.uuid}.appPages`, pages);
+    const pages = $pages.get()[applicationId];
+    setVar(applicationId, `${applicationId}.appPages`, pages);
 
 }
 
@@ -60,18 +48,31 @@ export function setCurrentPageAction(pageId: string) {
 }
 
 export function addComponentToCurrentPageAction(componentId: string) {
-  $pages.set([
-    ...$pages.get().map((page: PageElement) => {
-      if (page.uuid === $currentPage.get().uuid) {
-        const { component_ids = [] } = page;
-        component_ids.push(componentId);
-        page = { ...page, component_ids };
-      }
-      return page;
-    }),
-  ]);
+  const currentApp = $currentApplication.get();
+  const currentAppId = currentApp.uuid;
+  const currentPageId = getVar("global", "currentPage").value;
 
-  updatePageHandler($currentPage.get());  
+  const currentPages = $pages.get();
+
+  const currentPage = currentPages[currentAppId].find((page: PageElement) => page.uuid === currentPageId);
+  if (currentPage) {
+    const { component_ids = [] } = currentPage;
+    component_ids.push(componentId);
+    const updatedPage : PageElement= { ...currentPage, component_ids };
+    const updatedPages = {
+      ...currentPages,
+      [currentAppId]: currentPages[currentAppId].map((page: PageElement) =>
+        page.uuid === currentPageId ? updatedPage : page
+      ),
+    };
+
+    // Set the updated pages to the store
+    console.log(updatedPages);
+    $pages.set(updatedPages);
+    updatePageHandler(updatedPage)
+    // Update the page in the handler
+    //updatePageHandler(update  dPage);
+  }
 }
 
 

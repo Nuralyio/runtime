@@ -7,8 +7,6 @@ import '../components/shared/blocks/ComponentElements/NumberInput/NumberInput';
 import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper';
 import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
 import '../components/shared/blocks/ComponentElements/Select/Select'
-import '../components/pages/studio/ControlPanel/Styles/BoxShadowAttribute/BoxShadowValue/BoxShadowValue'
-import '../components/pages/studio/ControlPanel/Styles/BorderAttribute/BorderValue/BorderValue'
 import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue'
 // Simple memoization cache
 

@@ -1,6 +1,5 @@
 import { ComponentType } from "./interface";
 import studioFontColorBlock from './text-labels-blocks/studio-font-color-block';
-import { COMMON_ATTRIBUTES } from './common_attributes';
 import studioAlignementBlock from './text-labels-blocks/studio-alignement-block';
 import studioFontWeightBlock from './text-labels-blocks/studio-font-weight-block';
 import studioFontStyleBlock from './text-labels-blocks/studio-font-style-block';
@@ -17,6 +16,7 @@ import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event
 import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event";
 import studioTextValueBlock from "./text-labels-blocks/studio-text-value-block";
 import studioDisplayBlock from "./text-labels-blocks/studio-display-block";
+import { COMMON_ATTRIBUTES } from "./helper/common_attributes";
 
 export default [
 
@@ -258,6 +258,8 @@ export default [
                 if(EventData.type === "page"){
                     SetVar("currentPage" , EventData.id)
                     //SelectPage({id : EventData.page.id}) 
+                }else{
+                    SetVar("selectedComponents",[ EventData.id])
                 }
                 `
             },
@@ -266,7 +268,9 @@ export default [
                 type: "handler",
                 value: /* js */ `
                 const currentEditingApplication = GetVar("currentEditingApplication");
+                console.log('currentEditingApplication', currentEditingApplication);
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
+                console.log(appPages)
                 if(!appPages) {
                      [];
                 }else{
@@ -291,7 +295,7 @@ export default [
                         const componentIds= page.component_ids;
                         const appId = page.application_id;
                         var children=[];
-                        if(componentIds.length){
+                        if(componentIds?.length){
                             componentIds.map((componentId) => {
                                 const component= GetComponent(componentId,appId);
                                 if(component){
@@ -301,7 +305,7 @@ export default [
                                         handlerKey : "onSelect",
                                     })
                                     const childrenIds = component.childrenIds;
-                                    if(childrenIds.length){
+                                    if(childrenIds?.length){
                                         children[children.length-1]={...children[children.length-1],children:[]};
                                         findChildren(appId,children[children.length-1].children,childrenIds)
                                     }     

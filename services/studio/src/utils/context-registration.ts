@@ -1,4 +1,4 @@
-import { getWorkerInstance } from './worker-init';
+import { getWorkerInstance } from './worker/worker-init';
 
 export function registerContextInWebWorker(context) {
   if (typeof window !== 'undefined' && window.Worker) {
@@ -14,7 +14,6 @@ export function registerContextInWebWorker(context) {
     });
 
     worker.addEventListener('message', function(event) {
-        alert('ppp')
       if (event.data && event.data.type === 'WORKER_READY') {
         console.log('Worker is ready');
         document.dispatchEvent(new CustomEvent("workerReady"));

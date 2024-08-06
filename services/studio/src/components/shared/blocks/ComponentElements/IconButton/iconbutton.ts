@@ -2,7 +2,7 @@ import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { executeEventHandler } from "core/engine";
-import { $context } from "$store/context/store";
+import { $context } from "$store/context/context-store";
 import { BaseElementBlock } from "../BaseElement";
 import type { ComponentElement } from "$store/component/interface";
 

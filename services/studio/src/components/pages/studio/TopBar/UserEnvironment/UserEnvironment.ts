@@ -4,7 +4,6 @@ import styles from "./UserEnvironment.style";
 import "./AppInfo/AppInfo";
 import "./EnvironmentSwitcher/EnvironmentSwitcher";
 import "./UserInfo/UserInfo";
-import "./Drawer/Drawer";
 import "./AppPermission/AppPermission"
 @customElement("topbar-user-environment")
 export class TopbarUserEnvironment extends LitElement {
@@ -16,7 +15,7 @@ export class TopbarUserEnvironment extends LitElement {
       <!-- <topbar-app-info></topbar-app-info> -->
       <topbar-action-bar></topbar-action-bar>
     
-      <app-permission></app-permission>
+      <!-- <app-permission></app-permission> -->
       <!-- <topbar-user-info></topbar-user-info> -->
     </div>`;
   }

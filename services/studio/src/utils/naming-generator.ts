@@ -1,11 +1,6 @@
-import { type ComponentElement, ComponentType } from "$store/component/interface";
-import { $components } from "$store/component/sotre";
+import { type ComponentType } from "$store/component/interface";
 
 export const GenerateName = (componentType: ComponentType) => {
-  return `${componentType}_${
-    $components
-      .get()
-      .filter((component: ComponentElement) => component.component_type === componentType)
-      .length
-  }`;
+  const randomNumber = Math.floor(Math.random() * 10000); 
+  return `${componentType}_${randomNumber}`;
 };

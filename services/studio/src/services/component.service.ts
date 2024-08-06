@@ -19,3 +19,22 @@ export async function loadPageComponent(headers: any, id: string) {
         }
     }
 }
+export async function loadApplicationComponent(headers: any, id: string) {
+    try {
+        const response = await fetch(APIS_URL.getApplicationComponents(id), {
+            headers: {
+               ...headers,
+            },
+        });
+        return {
+            status: "OK",
+            data: await response.json()
+        }
+
+    } catch (error) {
+        return {
+            status: "ERROR",
+            error
+        }
+    }
+}
