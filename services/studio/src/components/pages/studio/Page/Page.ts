@@ -1,4 +1,4 @@
-import "../../../shared/blocks/Collections/Collections";
+import "../../../shared/blocks/ComponentElements/Collections/Collections";
 import "../../../shared/blocks/ComponentElements/Button/Button";
 import "../../../shared/blocks/ComponentElements/Containers/Container";
 import "../../../shared/blocks/ComponentElements/TextInput/TextInput";

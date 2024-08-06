@@ -1,20 +1,16 @@
 ---
-import Stats from '../components/landing/Stats.astro';
-import Features from '../components/landing/Features.astro';
-import HeroSection from '../components/landing/HeroSection.astro';
 import Layout from '../layouts/LandingLayout.astro';
-import Testimonials from '../components/landing/Testimonials.astro';
-import CallToAction from '../components/landing/CallToAction.astro';
-import Blog from '../components/landing/Blog.astro';
 ---
 
 <Layout title="Welcome to Astrolus.">
   <main class="space-y-10 mb-40">
-    <HeroSection/>
-    <Features/>
-    <!-- <Stats/> -->
-    <!-- <Testimonials/> -->
-    <CallToAction/>
-    <Blog/>
+    <a
+    href="/apps"
+    class="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
+  >
+    <span class="relative text-base font-semibold text-white"
+      >Get started</span
+    >
+  </a>
   </main>
 </Layout>
