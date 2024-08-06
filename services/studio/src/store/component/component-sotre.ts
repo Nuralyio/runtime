@@ -85,4 +85,4 @@ export const $hoveredComponent = ($applicationId: string) => computed(
 );
 
 
-logger({ $components, $currentComponentId, $draggingComponentInfo, $applicationComponents, $flattenedComponents, $componentWithChildrens, $selectedComponent, $hoveredComponent });
+// logger({ $components, $currentComponentId, $draggingComponentInfo, $applicationComponents, $flattenedComponents, $componentWithChildrens, $selectedComponent, $hoveredComponent });
