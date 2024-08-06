@@ -2,16 +2,19 @@ import {
   updateComponentStyles,
 } from "$store/component/action";
 import { type ComponentElement } from "$store/component/interface";
-import { setVar, type ContextVarStore } from "$store/context/store";
+import type { ComponentStore } from "$store/component/component-sotre";
+import { setVar, type ContextVarStore } from "$store/context/context-store";
 import { setCurrentPageAction } from "$store/page/action";
 import { addPageHandler } from "$store/page/handler";
 import type { Application, Execute, Extrats, ServiceWorkerMessage } from "core/interfaces/core.interfaces";
 import { NO_EVENT_LISTENER } from "utils/constants";
 import { isVerbose } from "utils/envirement";
+import { log } from "utils/logger";
 import { getNestedAttribute } from "utils/object.utils";
-import { getWorkerInstance } from "utils/worker-init";
+import { getWorkerInstance } from "utils/worker/worker-init";
+
 let workerInstance = typeof window !== 'undefined' && typeof window.navigator !== 'undefined' ? getWorkerInstance() : null;
-// todo: do we still need this function?
+
 export function executeInServiceWorker(
   components: ComponentElement[],
   component: ComponentElement,
@@ -29,82 +32,86 @@ export function executeInServiceWorker(
     messageChannel.port1.onmessage = handleServiceWorkerMessageWrapper(NO_EVENT_LISTENER);
     const command = "executeFunction";
     if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
-      if (!workerInstance)
-        workerInstance = getWorkerInstance();
-
-      workerInstance.postMessage(
-        {
-          command,
-          codeToExecuteAsString: handlers[attributeName],
-          components,
-          component,
-          extras
-        },
-        [messageChannel.port2]
-      );
+      try {
+        if (!workerInstance) workerInstance = getWorkerInstance();
+        workerInstance.postMessage(
+          {
+            command,
+            codeToExecuteAsString: handlers[attributeName],
+            components,
+            component,
+            extras
+          },
+          [messageChannel.port2]
+        );
+      } catch (error) {
+        console.error("Error in executeInServiceWorker:", error);
+      }
     }
   }
 }
 
-
 export function registerApplicationsInServiceWorker(applications: Application[]) {
+  log.prefix("Core Helper:").info('register application', applications);
+
   if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
     let messageChannel = new MessageChannel();
     const command = "registerApplications";
-    if (!workerInstance)
-      workerInstance = getWorkerInstance();
-
-    workerInstance.postMessage(
-      {
-        command,
-        payload: {
-          applications
-        }
-      },
-      [messageChannel.port2]
-    );
+    try {
+      if (!workerInstance) workerInstance = getWorkerInstance();
+      workerInstance.postMessage(
+        {
+          command,
+          payload: {
+            applications
+          }
+        },
+        [messageChannel.port2]
+      );
+    } catch (error) {
+      console.error("Error in registerApplicationsInServiceWorker:", error);
+    }
   }
 }
-
 
 export function registerContextInServiceWorker(context: ContextVarStore) {
-  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+  log.prefix("Core Helper:").info('register context', context);
     let messageChannel = new MessageChannel();
     const command = "registerContext";
-    if (!workerInstance)
-      workerInstance = getWorkerInstance();
-
-    workerInstance.postMessage(
-      {
-        command,
-        payload: {
-          context
-        }
-      },
-      [messageChannel.port2]
-    );
-  }
+    try {
+      if (!workerInstance) workerInstance = getWorkerInstance();
+      workerInstance.postMessage(
+        {
+          command,
+          payload: {
+            context
+          }
+        },
+        [messageChannel.port2]
+      );
+    } catch (error) {
+      console.error("Error in registerContextInServiceWorker:", error);
+    }
 }
 
-
-
-export function registerComponentsInServiceWorker(components: ComponentElement[]) {
-  if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+export function registerApplicationComponentsInServiceWorker(componentStore: ComponentStore) {
+  log.prefix("Core Helper:").info('register application components', componentStore);
     let messageChannel = new MessageChannel();
-    const command = "registerComponents";
-    if (!workerInstance)
-      workerInstance = getWorkerInstance();
-
-    workerInstance.postMessage(
-      {
-        command,
-        payload: {
-          components
-        }
-      },
-      [messageChannel.port2]
-    );
-  }
+    const command = "registerApplicationComponents";
+    try {
+      if (!workerInstance) workerInstance = getWorkerInstance();
+      workerInstance.postMessage(
+        {
+          command,
+          payload: {
+            componentStore
+          }
+        },
+        [messageChannel.port2]
+      );
+    } catch (error) {
+      console.error("Error in registerApplicationComponentsInServiceWorker:", error);
+    }
 }
 
 export function executeHandler(
@@ -121,18 +128,20 @@ export function executeHandler(
   const valueToExecute = (handler as any)?.value;
 
   if (valueToExecute) {
-    if (!workerInstance)
-      workerInstance = getWorkerInstance();
-
-    workerInstance.postMessage(
-      {
-        command,
-        codeToExecuteAsString: valueToExecute,
-        component: component,
-        extras
-      },
-      [messageChannel.port2]
-    );
+    try {
+      if (!workerInstance) workerInstance = getWorkerInstance();
+      workerInstance.postMessage(
+        {
+          command,
+          codeToExecuteAsString: valueToExecute,
+          component: component,
+          extras
+        },
+        [messageChannel.port2]
+      );
+    } catch (error) {
+      console.error("Error in executeHandler:", error);
+    }
   }
 
   return messageChannel.port1;
@@ -157,15 +166,14 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
         case 'addPage':
           const { requestId } = event.data;
           addPageHandler(eventData.page, (page) => {
-            if (!workerInstance)
-              workerInstance = getWorkerInstance();
-
-            workerInstance.postMessage({ requestId, success: true, result: page });
-          }, (error) => {
-            if (!workerInstance)
-              workerInstance = getWorkerInstance();
-
-            workerInstance.postMessage({ requestId, success: false, result: error });
+            try {
+              if (!workerInstance) workerInstance = getWorkerInstance();
+              workerInstance.postMessage({ requestId, success: true, result: page });
+            } catch (error) {
+              console.error("Error in addPage:", error);
+              if (!workerInstance) workerInstance = getWorkerInstance();
+              workerInstance.postMessage({ requestId, success: false, result: error });
+            }
           });
           break;
         case 'SetContextVar':
@@ -182,11 +190,9 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
           const varValue = Object.values(eventData)[0];
           setVar("global", varKey, varValue);
           break;
-
       }
     if (eventId) {
       document.dispatchEvent(new CustomEvent(eventId, { detail: { data: event.data } }));
     }
   }
 }
-

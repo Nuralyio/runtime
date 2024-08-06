@@ -3,7 +3,6 @@ import { customElement, property } from "lit/decorators.js";
 import "./CollectionInputLabel/CollectionInputLabel"
 import "./CollectionInputValue/CollectionInputValue"
 import { type ComponentElement } from "$store/component/interface";
-import { updateComponentParameters } from "$store/component/action";
 @customElement("parameter-collection-input-attribute")
 export class CollectionInputAttributes extends LitElement {
   @property({ type: Object })
@@ -31,9 +30,9 @@ export class CollectionInputAttributes extends LitElement {
           const {
             detail: { value },
           } = event;
-          updateComponentParameters(this.component.uuid, {
+          /*updateComponentParameters(this.component.uuid, {
             value,
-          });
+          });*/
         }}
         class="column"
       ></collection-input-value-handler>

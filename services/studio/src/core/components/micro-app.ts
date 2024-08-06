@@ -1,25 +1,23 @@
-import { $applicationComponents, $currentPageComponents } from '$store/component/sotre';
-import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
+import { $applicationComponents, $components, } from '$store/component/component-sotre';
+import { LitElement, html, css, } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';
 import "../../components/shared/blocks/ComponentElements/TextLabel/TextLabel"
 import "../../components/shared/blocks/ComponentElements/Containers/Container"
+import { $context } from '$store/context/context-store';
+import { $pages } from '$store/page/page-store';
+import { eventDispatcher } from 'utils/change-detection';
 
 @customElement('micro-app')
 export class MicroApp extends LitElement {
 
     @property({ type: String, reflect: true })
     uuid: string;
-    // add page to render 
     @property({ type: String, reflect: false })
     componentToRenderUUID: string;
 
     static override styles = [
-        css`
-            :host {
-                display: block;
-            }
-        `
+        css``
     ];
 
 
@@ -27,23 +25,30 @@ export class MicroApp extends LitElement {
     components: any[] = [];
     constructor() {
         super();
-        $applicationComponents(this.uuid).subscribe((components = []) => {
-            this.components = [...components];
-            this.requestUpdate();
 
-        });
+     
+    }
+    refreshComponent(): void {
+        const components = $applicationComponents(this.uuid).get()
+        this.components = [...components];
     }
 
     override connectedCallback() {
         super.connectedCallback();
+
+        $pages.listen(() => this.refreshComponent());
+        $components.listen(() => this.refreshComponent());
+        $context.listen(() => this.refreshComponent());
+        $applicationComponents(this.uuid).listen(() => this.refreshComponent());
+
+        eventDispatcher.on("component:refresh", () => {
+            this.refreshComponent()
+        });
+        
         setTimeout(() => {
-            $applicationComponents(this.uuid).subscribe((components = []) => {
-                this.components = [...components];
-                this.requestUpdate();
-            });
+            this.refreshComponent();
         }, 0);
     }
-    //renderComponent(this.components, null, true)
     override render() {
         return html`
 

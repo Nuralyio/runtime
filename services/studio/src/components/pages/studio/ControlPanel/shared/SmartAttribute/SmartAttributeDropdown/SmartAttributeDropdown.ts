@@ -1,7 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/dropdown";
-import { styleMap } from "lit/directives/style-map.js";
 import "../SmartAttributeHandler/SmartAttributeHandler";
 import { type ComponentElement } from "$store/component/interface";
 @customElement("smart-attribute-editor-dropdown")
@@ -22,7 +21,7 @@ export class SmartAttributeEditorDropDown extends LitElement {
   static styles = [css``];
 
   renderCodeEditorTemplate() {
-    return html`<smart-attribute-handler
+    return html`ss<smart-attribute-handler
       .component=${{ ...this.component }}
       .attributeName=${this.attributeName}
       .attributeScope=${this.attributeScope}
@@ -30,15 +29,13 @@ export class SmartAttributeEditorDropDown extends LitElement {
     ></smart-attribute-handler>`;
   }
   render() {
-    return html` <hy-dropdown
-      .customStyles=${{ width: "400px", height: "250px" }}
+    return html`<hy-dropdown
       placeholder="Select an option"
       @closed=${() => {}}
-      .template=${this.renderCodeEditorTemplate()}
+      .template=${html`lorem text`}
     >
-      <slot slot="label">
         <hy-button icon="code" type="text" class="unit"></hy-button
-      ></slot>
+      >
     </hy-dropdown>`;
   }
 }

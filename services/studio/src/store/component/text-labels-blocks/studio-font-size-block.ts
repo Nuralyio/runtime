@@ -1,5 +1,5 @@
 import { ComponentType } from "../interface";
-import { COMMON_ATTRIBUTES } from "../common_attributes";
+import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
         uuid: "font_size_vertical_container",
@@ -73,6 +73,7 @@ export default [
                 value: /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
+                        console.log(selectedComponens);
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)

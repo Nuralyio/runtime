@@ -1,10 +1,10 @@
 import { LitElement, css, html } from "lit";
 import { state, customElement } from "lit/decorators.js";
 import { $applicationComponents }
-  from "$store/component/sotre";
+  from "$store/component/component-sotre";
 import { type ComponentElement } from "$store/component/interface";
 import { $currentApplication } from "$store/apps";
-import { $context, getVar } from "$store/context/store";
+import { $context, getVar } from "$store/context/context-store";
 
 @customElement("control-panel")
 export class ParametersPanel extends LitElement {

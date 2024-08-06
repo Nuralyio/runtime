@@ -4,7 +4,7 @@ import "@hybridui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
-import { $context } from "$store/context/store";
+import { $context } from "$store/context/context-store";
 import { BaseElementBlock } from "../BaseElement";
 
 
@@ -32,7 +32,7 @@ export class ColorPickerBlock extends BaseElementBlock {
     if (this.component.event.valueChange) {
       executeEventHandler(this.component, "event", "valueChange", {
         EventData: {
-          value: e.detail.value,
+          value: e.detail?.value ?? "",
         },
       });
     }

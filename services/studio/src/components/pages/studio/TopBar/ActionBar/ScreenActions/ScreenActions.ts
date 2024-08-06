@@ -10,7 +10,7 @@ import { GenerateName } from "utils/naming-generator";
 import { setShowBorder } from "$store/page/action";
 import { v4 as uuidv4 } from "uuid";
 import { AddCollection } from "./AddCollection";
-import { getVar } from "$store/context/store";
+import { getVar } from "$store/context/context-store";
 
 @customElement("topbar-screen-actions")
 export class TopbarScreenActions extends LitElement {
@@ -20,64 +20,30 @@ export class TopbarScreenActions extends LitElement {
   options = [
     {
       label: "Text Label",
+      value: ComponentType.TextLabel,
       handler: () => {
-      //  const componentName = GenerateName(ComponentType.TextLabel);
-        addComponentAction({
-          name: "componentName",
-          component_type: ComponentType.TextLabel,
-          attributes: {
-            display: "block",
-            fontSize: "16px",
-          },
-          parameters: {
-            value: "Text Label",
-          },
-          styleHandlers: {},
-          event: {},
-          input: {},
-          style: {},
-          styleBreakPoints: {
-            mobile: {},
-            tablet: {},
-            laptop: {},
-          },
-          inputHandlers: {},
-          attributesHandlers: {},
-          errors: {},
-          childrenIds: [],
-        } , getVar("global", "currentPage").value);
+        
       },
     },
     {
       label: "Collections",
       handler: () => {
         AddCollection();
-        },
+      },
     },
     {
       label: "Text Input",
+      value: ComponentType.TextInput,
       handler: () => {
         addComponentAction({
-          name: "text_input654",
+          name: "text_input888",
           component_type: ComponentType.TextInput,
-          styleHandlers: {},
           parameters: {
             value: "Text Label",
           },
-          styleHandlers: {},
-          event: {},
-          input: {},
-          style: {},
-          styleBreakPoints: {
-            mobile: {},
-            tablet: {},
-            laptop: {},
-          },
-          inputHandlers: {},
-          attributesHandlers: {},
-          errors: {},
-          childrenIds: [],
-        }  ,getVar("global", "currentPage").value);
+        },
+          getVar("global", "currentPage").value,
+          getVar("global", "currentEditingApplication").value.uuid);
       },
     },
     {
@@ -86,59 +52,22 @@ export class TopbarScreenActions extends LitElement {
         addComponentAction({
           name: GenerateName(ComponentType.Button),
           component_type: ComponentType.Button,
-          styleHandlers: {},
-          event: {},
-          input: {},
-          style: {},
-        });
+        }, getVar("global", "currentPage").value,
+          getVar("global", "currentEditingApplication").value.uuid);
       },
     },
     { type: "divider" },
     {
       label: "Vertical Container", //
+      value: ComponentType.VerticalContainer,
       handler: () => {
         addComponentAction({
           name: GenerateName(ComponentType.VerticalContainer),
           component_type: ComponentType.VerticalContainer,
-          styleHandlers: {},
-          input: {
-            direction: "horizontal",
-          },
-          styleHandlers: {},
-          event: {},
-          style: {},
-          attributes:{},
-          styleBreakPoints: {
-            mobile: {},
-            tablet: {},
-            laptop: {},
-          },
-          inputHandlers: {},
-          attributesHandlers: {},
-          errors: {},
-          childrenIds: [],
-          parameters: {
-          },
-        });
+        },
+          getVar("global", "currentPage").value,
+          getVar("global", "currentEditingApplication").value.uuid);
       },
-    },
-
-    {
-      label: "Gallery",
-    },
-    {
-      label: "Form",
-    },
-    {
-      label: "Media",
-      children: [
-        {
-          label: "Image",
-        },
-        {
-          label: "3D Object",
-        },
-      ],
     },
   ];
 
@@ -148,16 +77,25 @@ export class TopbarScreenActions extends LitElement {
 
   render() {
     return html` <div class="screen-action-wrapper">
-      <hy-button icon="arrow-left" @click=${()=>window.location.href = '/apps'}></hy-button>
-      <hy-button icon="paste"></hy-button>
+      <hy-button icon="arrow-left" @click=${() => window.location.href = '/apps'}></hy-button>
       <hy-dropdown
+      trigger="click"
         .options=${this.options}
-        @change="${(e: any) => {
-        /* */
-      }}"
-        ><span slot="label">
+        @click-item="${(e: any) => {
+        addComponentAction({
+          name: GenerateName(e.detail.value),
+          component_type: e.detail.value,
+          parameters: {
+            value: "Text Label",
+          },
+        }, 
+        getVar("global", "currentPage").value,
+        getVar("global", "currentEditingApplication").value.uuid);
+      }
+      }"
+        >
           <hy-button icon="plus">Insert</hy-button>
-        </span></hy-dropdown
+        </hy-dropdown
       >
       <hy-button icon="border-style" type="${this.showBorder ? "primary" : ""}"
       @click=${() => {

@@ -5,7 +5,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { executeHandler } from "core/helper";
-import { $context } from "$store/context/store";
+import { $context } from "$store/context/context-store";
 import { BaseElementBlock } from "../BaseElement";
 const isServer = typeof window === 'undefined';
 
@@ -34,16 +34,6 @@ export class ButtonBlock extends BaseElementBlock {
   }
 
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.updateValue();
-    $context.subscribe((context) => {
-      if (this.component) {
-        this.updateDisplay();
-        this.updateValue();
-      }
-    })
-  }
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (changedProperties.has("component")) {

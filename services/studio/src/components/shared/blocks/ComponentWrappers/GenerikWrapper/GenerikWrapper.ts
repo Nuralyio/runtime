@@ -14,7 +14,7 @@ import {
   $draggingComponentInfo,
   $hoveredComponent,
   $selectedComponent,
-} from "$store/component/sotre";
+} from "$store/component/component-sotre";
 import { useStores } from "@nanostores/lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
@@ -22,7 +22,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import styles from "./GenerikWrapper.style";
 
-import { $environment, type Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/environment-store";
 
 import "./DragWrapper/DragWrapper";
 import "./ResizeWrapper/ResizeWrapper";
@@ -30,7 +30,7 @@ import "./QuickActionWrapper/QuickActionWrapper";
 import "../ComponentTitle/ComponentTitle";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { setContextMenuEvent } from "$store/page/action";
-import { $context, getVar, setVar } from "$store/context/store";
+import { $context, getVar, setVar } from "$store/context/context-store";
 @customElement("generik-component-wrapper")
 export class GenerikComponentWrapper extends LitElement {
   @property({ type: Object })
@@ -188,8 +188,7 @@ export class GenerikComponentWrapper extends LitElement {
           currentSelection = [this.component.uuid];
         }
         setVar("global", "selectedComponents", [...currentSelection]);
-        setCurrentComponentIdAction(this.component?.uuid);
-        setContextMenuEvent(null);
+        this.requestUpdate();
 
       }}"
           @mouseenter="${() => {

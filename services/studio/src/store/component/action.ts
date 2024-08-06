@@ -1,4 +1,4 @@
-import { $currentPage, $currentPageId, $currentPageViewPort, $pages } from "../page/store";
+import { $currentPage, $currentPageId, $currentPageViewPort, $pages } from "../page/page-store";
 import { v4 as uuidv4 } from "uuid";
 import { type DraggingComponentInfo } from "./interface";
 
@@ -11,41 +11,17 @@ import {
   $currentComponentId,
   $draggingComponentInfo,
   $hoveredComponentId,
-} from "./sotre";
+} from "./component-sotre";
 import { addComponentToCurrentPageAction, removeComponentToCurrentPageAction } from "$store/page/action";
-import { action } from "nanostores";
 import { type PageElement } from "$store/page/interface";
-import { GenerateName } from "utils/naming-generator";
-import { addComponentHandler, updateComponentHandler } from "./handler";
+import { addComponentHandler } from "./handlers/add-component.handler";
+import { updateComponentHandler } from "./handlers/update-component.handler";
+import { eventDispatcher } from "utils/change-detection";
 const isServer = typeof window === 'undefined';
-export interface AddComponentRequest {
-  id?: string;
-  uuid: string;
-  name: string;
-  component_type: ComponentType;
-  attributes?: any;
-  parameters?: any;
-  styleHandlers: { [key: string]: string };
-  inputHandlers?: { [key: string]: string };
-  event: { [key: string]: string };
-  style: { [key: string]: string };
-  input: { [key: string]: string };
-  attributesHandlers?: { [key: string]: string };
-  errors?: { [key: string]: string };
-  styleBreakPoints?: {
-    laptop: { [key: string]: string },
-    tablet: { [key: string]: string },
-    mobile: { [key: string]: string },
-  };
-  childrens?: ComponentElement[];
-  pageId?: string;
-  childrenIds: string[];
 
-}
 
 /** Actions*/
-/** Actions*/
-export const addComponentAction = (component: AddComponentRequest, uuid: string/* page uuid */) => {
+export const addComponentAction = (component: ComponentElement, uuid: string/* page uuid */, currentApplicatinId) => {
   let componentId;
   if (component.uuid) {
     componentId = component.uuid;
@@ -53,24 +29,23 @@ export const addComponentAction = (component: AddComponentRequest, uuid: string/
     componentId = uuidv4();
   }
 
-  // Add component to the application's components
-  $components.set({
-    ...$components.get(),
-    [uuid]: [
-      ...($components.get()[uuid] || []),
-      {
-        ...component,
-        uuid: componentId,
-        pageId: uuid,
-      } as ComponentElement,
-    ],
-  });
-
-  addComponentHandler({
+  const newComponent = {
     ...component,
     uuid: componentId,
     pageId: uuid,
-  } as ComponentElement);
+    applicationId: currentApplicatinId
+  } as ComponentElement
+  // Add component to the application's components
+  $components.set({
+    ...$components.get(),
+    [currentApplicatinId]: [
+      ...($components.get()[currentApplicatinId] || []), newComponent
+      ,
+    ],
+  });
+  console.log(newComponent)
+
+  addComponentHandler({ component: newComponent }, currentApplicatinId);
 
   const currentComponentId = $currentComponentId.get();
   if (currentComponentId) {
@@ -85,10 +60,7 @@ export const addComponentAction = (component: AddComponentRequest, uuid: string/
     addComponentToCurrentPageAction(componentId);
   }
 };
-if (!isServer) {
-  window.addComponentAction = addComponentAction
 
-}
 export function addComponentAsChildOf(componentId: string, parentComponent: string) {
   // $components.set([
   //   ...$components.get().map((component: ComponentElement) => {
@@ -336,28 +308,6 @@ export function moveDraggedComponentIntoCurrentPageRoot(
 
 
 
-export function updateComponentParameters(
-  componentId: string,
-  updatedParameters: any
-) {
-  let componentToUpdate;
-
-
-  $components.set([
-    ...$components.get().map((component: ComponentElement) => {
-      if (component.uuid === componentId) {
-        componentToUpdate = component;
-        component.parameters = {
-          ...component.parameters,
-          ...updatedParameters,
-        };
-      }
-      return component;
-    }),
-  ]);
-  updateComponentHandler(componentToUpdate);
-}
-
 export function updateComponentInput(componentId: string, updatedInputs: any) {
   $components.set([
     ...$components.get().map((component: ComponentElement) => {
@@ -389,27 +339,32 @@ export function updateComponentStyles(
 
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
-  let componentToUpdate
-  const updatedComponents = applicationComponents.map((component: ComponentElement) => {
-    if (component.uuid === componentId) {
-      component.style = {
-        ...component.style,
-        ...updatedAttributes,
-      };
-      componentToUpdate = component;
-    }
-    return component;
-  });
-  componentsStore[applicationId] = updatedComponents;
-  console.time('setTime'); // Start the timer
+  const componentIndex = applicationComponents.findIndex(
+    (component: ComponentElement) => component.uuid === componentId
+  );
 
-  $components.set({ ...componentsStore });
-  console.timeEnd('setTime'); // End the timer and log the execution time
+  if (componentIndex !== -1) {
+    const componentToUpdate = applicationComponents[componentIndex];
+    componentToUpdate.style = {
+      ...componentToUpdate.style,
+      ...updatedAttributes,
+    };
 
-  updateComponentHandler(componentToUpdate); // Uncomment if you have this function defined
+    // Directly update the component in the store
+    console.time('setTime'); // Start the timer
+    console.log(`${applicationId}[${componentIndex}]`)
+    console.log($components.get())
+    $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
+    console.timeEnd('setTime'); // End the timer and log the execution time
+    eventDispatcher.emit("component:refresh");
+    setTimeout(() => {
+      updateComponentHandler(componentToUpdate, applicationId);
+    }, 0);
+  }
 
   console.timeEnd('updateComponentStylesExecutionTime'); // End the timer and log the execution time
 }
+
 
 
 export function updateComponentAttributeHandlers(

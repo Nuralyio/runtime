@@ -1,7 +1,8 @@
 import { atom, keepMount } from "nanostores";
 import { logger } from "@nanostores/logger";
 import { persistentAtom } from "@nanostores/persistent";
-import { setVar } from "./context/store";
+import { getVar, setVar } from "./context/context-store";
+import { $pages } from "./page/page-store";
 const isServer = typeof window === 'undefined';
 
 if(!isServer){
@@ -57,9 +58,9 @@ keepMount($resizing)
 
 
 if (!isServer) {
-  setTimeout (() => {
     const currentApplication = $currentApplication.get();
-    setVar('global', `currentEditingApplication`, currentApplication);
-   }
-  , 0);
+    setTimeout(() => {
+      setVar('global', `currentEditingApplication`, currentApplication);
+    },0)
+   
 }

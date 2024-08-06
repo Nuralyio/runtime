@@ -1,7 +1,7 @@
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
 import { executeHandler } from "core/helper";
-import { $context } from "$store/context/store";
+import { $context } from "$store/context/context-store";
 import { generateRandomId } from "utils/randomness";
 import { getNestedAttribute } from "utils/object.utils";
 import { type ComponentElement } from "$store/component/interface";
@@ -27,40 +27,51 @@ export class BaseElementBlock extends LitElement {
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
-    if (input?.type === "handler") {
-      const eventId = generateRandomId();
-      return new Promise((resolve) => {
-        const handler = ({ detail: { data } }) => {
-          document.removeEventListener(eventId, handler as any);
-          this.thisvalue = data.result;
-          this.inputHandlersValue[inputName] = data.result;
-          if (this?.callbacks[inputName]) {
-            this.callbacks[inputName](data.result);
-          }
-          resolve();
-        };
-        document.addEventListener(eventId, handler as any);
-        executeHandler({
-          eventId,
-          component: this.component,
-          type: `input.${inputName}`,
-          extras: {},
+    if (input) {
+      if (input?.type === "handler") {
+        const eventId = generateRandomId();
+        return new Promise((resolve) => {
+          const handler = ({ detail: { data } }) => {
+            document.removeEventListener(eventId, handler as any);
+            this.thisvalue = data.result;
+            this.inputHandlersValue[inputName] = data.result;
+            if (this?.callbacks[inputName]) {
+              this.callbacks[inputName](data.result);
+            }
+            resolve();
+          };
+          document.addEventListener(eventId, handler as any);
+          executeHandler({
+            eventId,
+            component: this.component,
+            type: `input.${inputName}`,
+            extras: {},
+          });
         });
-      });
-    } else {
-      this.inputHandlersValue[inputName] = input.value;
-      if (this?.callbacks[inputName]) {
-        this.callbacks[inputName](input.value);
+      } else {
+        this.inputHandlersValue[inputName] = input.value;
+        if (this?.callbacks[inputName]) {
+          this.callbacks[inputName](input.value);
+        }
       }
     }
   }
 
   async traitInputsHandlers() {
     const handlerPromises = [];
-    for (const [inputName, input] of Object.entries(this.component.input)) {
-      handlerPromises.push(this.traitInputHandler(input, inputName));
+    if (this.component?.input) {
+      for (const [inputName, input] of Object.entries(this.component?.input)) {
+        handlerPromises.push(this.traitInputHandler(input, inputName));
+      }
+      await Promise.all(handlerPromises);
     }
-    await Promise.all(handlerPromises);
+  }
+  override updated(changedProperties) {
+    changedProperties.forEach((_oldValue, propName) => {
+      if (propName === "component") {
+        //   this.traitInputsHandlers();
+      }
+    });
   }
 
   override async connectedCallback() {

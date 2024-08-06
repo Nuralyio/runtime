@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { $environment, type Environment, ViewMode } from "$store/environment/store";
+import { $environment, type Environment, ViewMode } from "$store/environment/environment-store";
 
 import "../ControlPanel/ControlPanelTabs";
 @customElement("right-panel")

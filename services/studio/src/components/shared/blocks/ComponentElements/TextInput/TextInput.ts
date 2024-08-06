@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeHandler } from "core/helper";
-import { $context } from "$store/context/store";
+import { $context } from "$store/context/context-store";
 import { BaseElementBlock } from "../BaseElement";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;

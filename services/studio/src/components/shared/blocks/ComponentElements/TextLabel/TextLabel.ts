@@ -75,6 +75,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
     return isServer ? this.component.parameters?.value : this.thisvalue ?? this.component.parameters?.value;
   }
+  
 
   render() {
     return html` 
@@ -83,7 +84,7 @@ export class TextLabelBlock extends BaseElementBlock {
         contentEditable="${this.isEditable}"
         style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
         @click=${(e) => {
-        if (this.component.event.onClick) {
+        if (this.component.event?.onClick) {
           executeHandler({
             component: this.component,
             type: `event.onClick`,

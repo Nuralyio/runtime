@@ -1,6 +1,5 @@
 import { LitElement, html, css, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "../SmartAttributeCodeEditor/SmartAttributeCodeEditor";
 import { type ComponentElement } from "$store/component/interface";
 import { updateComponentAttributeHandlers } from "$store/component/action";
 
@@ -49,7 +48,7 @@ export class SmartAttributeHandler extends LitElement {
   }
   connectedCallback(): void {
     super.connectedCallback();
-    this.smartValue = this.getAttributeValue();
+   this.smartValue = this.getAttributeValue();
   }
   protected updated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
@@ -90,7 +89,7 @@ export class SmartAttributeHandler extends LitElement {
   }
   render() {
     return html`
-
+qsdqs
     ${this.component.errors &&
         this.component.errors[this.attributeName]
         ? html`<div class="error-message-text">

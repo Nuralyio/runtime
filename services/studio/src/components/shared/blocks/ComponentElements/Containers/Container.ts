@@ -14,7 +14,7 @@ import {
   $draggingComponentInfo,
   $hoveredComponent,
   $selectedComponent,
-} from "$store/component/sotre";
+} from "$store/component/component-sotre";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";

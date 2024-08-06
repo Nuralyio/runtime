@@ -1,4 +1,3 @@
-import "../../../../core/engine";
 import "../../../shared/blocks/Collections/Collections";
 import "../../../shared/blocks/ComponentElements/Button/Button";
 import "../../../shared/blocks/ComponentElements/Containers/Container";
@@ -7,25 +6,26 @@ import "../../../shared/blocks/ComponentElements/TextLabel/TextLabel";
 import "../../../shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
 import styles from "./Page.style";
 import { $currentApplication, $resizing } from "$store/apps";
-import { copyComponentAction, moveDraggedComponentIntoCurrentPageRoot, pasteComponentAction, setCurrentComponentIdAction, updateComponentAttributes } from "$store/component/action";
-import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $applicationComponents, $componentWithChildrens, $currentPageComponents, $draggingComponentInfo, $selectedComponent } from "$store/component/sotre";
+import { moveDraggedComponentIntoCurrentPageRoot, setCurrentComponentIdAction } from "$store/component/action";
+import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
+import { $applicationComponents, $components, $draggingComponentInfo, $selectedComponent } from "$store/component/component-sotre";
 import { updatePageInfo } from "$store/page/action";
 import { type PageElement } from "$store/page/interface";
-import { $currentPage, $currentPageViewPort } from "$store/page/store";
-import { useStores } from "@nanostores/lit";
+import { $currentPage, $currentPageViewPort, $pages } from "$store/page/page-store";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
-import { $context, getVar } from "$store/context/store";
+import { $context, getVar } from "$store/context/context-store";
+import { log } from "utils/logger";
+import { batched, computed } from "nanostores";
+import { eventDispatcher } from "utils/change-detection";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
   static styles = styles;
 
   @state() draggingComponentInfo: DraggingComponentInfo;
-  @state() selectedComponent: ComponentElement;
   @state() currentPage: PageElement;
   @state() components: ComponentElement[] = [];
 
@@ -33,33 +33,27 @@ export class PageContent extends LitElement {
 
   constructor() {
     super();
-
     const currentAppUuid = $currentApplication.get().uuid;
 
-    $selectedComponent(currentAppUuid).subscribe(selectedComponent => {
-      this.selectedComponent = selectedComponent;
-    });
+    
+    $pages.listen(() => this.refreshComponent());
+    $components.listen(() => this.refreshComponent());
+    $context.listen(() => this.refreshComponent());
 
-    $applicationComponents(currentAppUuid).subscribe(components => {
-      this.components = components ? [...components] : [];
+    eventDispatcher.on("component:refresh", () => {
+      this.refreshComponent()
     });
-
-    $context.subscribe(() => {
-      console.log("context changed");
-      requestAnimationFrame(() => {
-        this.refreshComponent();
-      }
-      )
-    });
-
+ 
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
       this.draggingComponentInfo = draggingComponentInfo || null;
     });
   }
 
   refreshComponent() {
-    console.log("refreshComponent");
+    log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
+    const selectedComponents = getVar("global","selectedComponents")
+    console.log('selectedComponents: ', selectedComponents);
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {
@@ -67,8 +61,12 @@ export class PageContent extends LitElement {
 
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
       const components = $applicationComponents(currentAppUuid).get();
-      this.components = components.filter(component => component.pageId === currentPage.value);
+      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value);
+      console.log(this.components ,this.currentPage);
+      log.prefix("PageContent : " + this.currentPage.name).info(this.components);
+
     }
+    this.requestUpdate();
   }
 
 
@@ -78,7 +76,6 @@ export class PageContent extends LitElement {
 
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
-        this.updatePageInfo();
       });
     });
 

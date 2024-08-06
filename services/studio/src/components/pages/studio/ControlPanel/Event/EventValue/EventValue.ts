@@ -2,7 +2,7 @@ import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "components/shared/blocks/ComponentElements/BaseElement";
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-
+import "components/pages/studio/ControlPanel/shared/SmartAttribute/SmartAttributeDropdown/SmartAttributeDropdown"
 @customElement("parameter-event-handler")
 export class ParameterEventLabel extends BaseElementBlock {
   @property({ type: Object })
@@ -16,7 +16,9 @@ export class ParameterEventLabel extends BaseElementBlock {
   ];
 
   render() {
-    return html`<smart-attribute-editor-dropdown
+    return html`
+    
+    <smart-attribute-editor-dropdown
       .component=${{ ...this.component }}
       .attributeName=${this.inputHandlersValue.value}
       .attributeScope=${"event"}

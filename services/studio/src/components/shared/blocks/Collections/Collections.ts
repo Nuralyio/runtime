@@ -4,7 +4,7 @@ import styles from './Collections.style';
 import type { ComponentElement, DraggingComponentInfo } from '$store/component/interface';
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { renderComponent } from 'utils/render-util';
-import { $componentWithChildrens, $components, $draggingComponentInfo, $hoveredComponent, $selectedComponent } from '$store/component/sotre';
+import { $componentWithChildrens, $components, $draggingComponentInfo, $hoveredComponent, $selectedComponent } from '$store/component/component-sotre';
 import { setCurrentComponentIdAction } from '$store/component/action';
 import { setContextMenuEvent } from '$store/page/action';
 import { $resizing } from '$store/apps';

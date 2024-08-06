@@ -10,60 +10,37 @@ import "../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrap
 import "../components/shared/blocks/ComponentElements/IconButton/iconbutton";
 import "../components/shared/blocks/ComponentElements/Select/Select";
 import { TabsPanel } from "../components/pages/studio/MainPanel/TabsPanel";
-import "@hybridui/button";
 import { TopbarPanelWrapper } from "../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
 import { LeftPanel } from "../components/pages/studio/Layout/LeftPanel";
 import { RightPanel } from "../components/pages/studio/Layout/RightPanel";
-import { $pages,  } from "../store/page/store";
-import { $components } from "$store/component/sotre";
+import { $pages } from "../store/page/page-store";
+import { $components } from "$store/component/component-sotre";
 import { $applications } from "$store/apps";
 import { registerContextInWebWorker } from "../utils/context-registration";
-const cookie = Astro.request.headers.get("Cookie");
-const headers = {};
-Astro.request.headers.forEach((value, key) => {
-  headers[key] = value;
-});
+import { processHeaders } from "utils/api-calls-utils";
+import { getApplications } from "$services/applications.service";
+import { loadApplicationPages } from "$services/page.service";
+import { loadApplicationComponent } from "$services/component.service";
+
+// TODO: handle error
 const { app } = Astro.props;
+const processedHeaders = processHeaders(Astro.request.headers);
 
-delete headers["connection"];
-const pageResponse = await fetch(
-  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/pages/application/${app.uuid}`,
-  {
-    headers: {
-      ...headers,
-      Cookie: cookie,
-    },
-  }
-);
-
-const pageData = await pageResponse.json();
-console.log("pageData", pageData);
+// load application pages
+const pageRequest = await loadApplicationPages(processedHeaders, app.uuid);
+const pageData = await pageRequest.data;
 $pages.set(pageData);
-const componentResponse = await fetch(
-  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/components/application/${app.uuid}`,
-  {
-    headers: {
-      ...headers,
-      Cookie: cookie,
-    },
-  }
-);
 
-let componentData = await componentResponse.json();
+// load application components
+const componentResponse = await loadApplicationComponent(processedHeaders, app.uuid);
+let componentData = componentResponse.data;
 componentData = componentData.map((component) => {
   return component.component;
 });
-const applciationsResponse = await fetch(
-  `http://${process.env.NURALY_SERVICES_HOST || "localhost"}/api/applications`,
-  {
-    headers: {
-      ...headers,
-      Cookie: cookie,
-    },
-  }
-);
 
-const applications = await applciationsResponse.json();
+// load applications
+const applciationsRequest = await getApplications(processedHeaders);
+const applications = applciationsRequest.data;
 $applications.set(applications);
 const application = applications.find(
   (application) => application.uuid === app.uuid
@@ -72,6 +49,7 @@ const application = applications.find(
 $components.set({
   [application.uuid]: componentData,
 });
+
 registerContextInWebWorker({});
 ---
 

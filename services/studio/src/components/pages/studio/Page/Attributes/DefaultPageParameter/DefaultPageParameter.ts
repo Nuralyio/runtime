@@ -1,7 +1,7 @@
 import { updateApplication } from '$store/app.action';
 import { $currentApplication } from '$store/apps';
 import type { PageElement } from '$store/page/interface';
-import { $currentPage } from '$store/page/store';
+import { $currentPage } from '$store/page/page-store';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from "lit/decorators.js";
 

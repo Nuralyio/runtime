@@ -1,12 +1,12 @@
 ---
 import View from "../view.astro";
-import { $currentPageId, $pages, $resetPageStore } from "../../../../store/page/store";
+import { $currentPageId, $pages, $resetPageStore } from "../../../../store/page/page-store";
 import { loadApplication } from "$services/applications.service";
 import { loadApplicationPages } from "$services/page.service";
 
 
 import { allTasks } from "nanostores";
-import { $componentWithChildrens, $components } from "$store/component/sotre";
+import { $componentWithChildrens, $components } from "$store/component/component-sotre";
 import { loadPageComponent } from "$services/component.service";
 // $resetPageStore()
 
