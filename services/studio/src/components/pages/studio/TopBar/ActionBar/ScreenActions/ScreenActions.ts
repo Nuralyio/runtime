@@ -77,7 +77,7 @@ export class TopbarScreenActions extends LitElement {
 
   render() {
     return html` <div class="screen-action-wrapper">
-      <hy-button icon="arrow-left" @click=${() => window.location.href = '/apps'}></hy-button>
+      <hy-button icon="arrow-left" @click=${() => window.location.href = '/dashboard'}></hy-button>
       <hy-dropdown
       trigger="click"
         .options=${this.options}

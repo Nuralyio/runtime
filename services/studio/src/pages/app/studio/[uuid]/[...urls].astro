@@ -1,41 +1,39 @@
 ---
-import Make from "../../../make.astro";
+import Editor from "../../../editor.astro";
 import {loadApplication} from "$services/applications.service"
 import NotFount from '../../../not-found.astro';
 import { $resetPageStore } from "$store/page/page-store";
+import { processHeaders } from "utils/api-calls-utils";
 // here we will handle the routing
-const { title, id, urls = "" } = Astro.params;
+const { title, uuid, urls = "" } = Astro.params;
 
 let request = urls?.split("?") ;
 let search = "";
-let contextParam = "";
-const headers = {};
-Astro.request.headers.forEach((value, key) => {
-  headers[key] = value;
-});
-delete headers["connection"];
+const processedHeaders = processHeaders(Astro.request.headers);
 
+/** TODO: move this to utils  */
+let contextParam = "";
 if (request.length > 1) {
 	contextParam = urls[0];
 	search = urls[1];
 } else {
 	contextParam = urls;
 }
+/** END */
 
-const searchQuery = new URLSearchParams(search);
+//const searchQuery = new URLSearchParams(search);
 let applicationResponse
-if(id){
-	const result = await loadApplication(headers, id)
+if(uuid){
+	const result = await loadApplication(processedHeaders, uuid)
 	if(result.data){
 		applicationResponse = result.data
 	}
 }
-//$resetPageStore()
 
 ---
 
 <div>
-  {applicationResponse?.uuid && <Make app={applicationResponse} />}
+  {applicationResponse?.uuid && <Editor app={applicationResponse} />}
   {!applicationResponse?.uuid && <NotFount />}
 </div>
 
