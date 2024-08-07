@@ -21,16 +21,14 @@ export class TopbarScreenActions extends LitElement {
     {
       label: "Text Label",
       value: ComponentType.TextLabel,
-      handler: () => {
-        
-      },
     },
     {
       label: "Table",
       value: ComponentType.Table,
-      handler: () => {
-        
-      },
+    },
+    {
+      label: "Checkbox",
+      value: ComponentType.Checkbox,
     },
     {
       label: "Collections",
