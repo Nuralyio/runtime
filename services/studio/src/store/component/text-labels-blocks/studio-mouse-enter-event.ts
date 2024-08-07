@@ -27,6 +27,7 @@ export default [
 
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{display:true}
     },
     {
         uuid: "mouse_enter_event_value",
@@ -47,6 +48,9 @@ export default [
                 event;
             `
             }
+        },
+        event: {
+            mouseenter: /* js */ ``
         },
     },
 ] 

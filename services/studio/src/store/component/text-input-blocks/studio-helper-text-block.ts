@@ -1,66 +1,43 @@
 import { ComponentType } from "../interface";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
+import { COMMON_ATTRIBUTES } from "../common_attributes";
 export default [
     {
-        uuid: "text_value_vertical_container",
+        uuid: "helper_text_block",
         applicationId: "1",
-        name: "Left panel",
+        name: "helper text block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
             direction: "vertical",
         },
-
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
-        },
-        childrenIds: ["text_value_block"],
-    },
-    {
-        uuid: "text_value_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
+             display:'flex',
+            'flex-direction':'column'
         },
 
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:"flex",
-            'flex-direction':'column',
-            width: "250px",
-        },
-        childrenIds: ["text_label_value", "text_label_input"],
+        childrenIds: ["helper_text_label", "helper_text_input"],
     },
-
     {
-        uuid: "text_label_value",
-        name: "text_label",
+        uuid: "helper_text_label",
+        name: "helper text label",
         component_type: ComponentType.TextLabel,
         parameters: {
-            value: "Value",
+            value: "Helper text",
         },
-
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-            display:true
-        }
+        style: {}
     },
     {
-        uuid: "text_label_input",
-        name: "name",
+        uuid: "helper_text_input",
+        name: "helper text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "20px",
-            display:true,
-            size:"medium"
+            size:'medium'
         },
         event: {
             valueChange: {
@@ -72,6 +49,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         console.log('new value ',EventData.value)
+                        // here I need to pass new helper text value to the component
                     }
                 }catch(error){
                     console.log(error);
@@ -88,8 +66,8 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const value = currentComponent.parameters.value || ''
-                value;  
+                const currentHelperText= currentComponent.parameters.label || '';
+                currentHelperText;
             }
 
         }catch(e){

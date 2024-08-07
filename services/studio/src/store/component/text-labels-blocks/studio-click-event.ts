@@ -27,6 +27,9 @@ export default [
 
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            display:true
+        }
     },
     {
         uuid: "click_event_value",
@@ -34,7 +37,7 @@ export default [
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "Left panel",
+        name: "label click event value",
         style: {
                 display:'block',
                 width: "250px", 
@@ -43,10 +46,38 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const event ='click';
+                const event ='onClick';
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(!currentComponent.event){
+                            currentComponent= {...currentComponent,event:{onClick:{}}}
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
                 event;
             `
             }
+        },
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    currentComponent.event.onClick = EventData.value
+                    console.log('current component ',currentComponent)
+                    // I need to update onclick event attached to current component
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
         },
     },
 ] 

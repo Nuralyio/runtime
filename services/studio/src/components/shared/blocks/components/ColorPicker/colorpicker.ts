@@ -7,7 +7,14 @@ import { executeEventHandler } from "core/engine";
 import { $context } from "$store/context";
 import { BaseElementBlock } from "../BaseElement";
 
-
+// Debounce function with default wait time
+function debounce(func, wait = 300) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
 @customElement("color-picker-block")
 export class ColorPickerBlock extends BaseElementBlock {
   @property({ type: Object })
@@ -28,7 +35,7 @@ export class ColorPickerBlock extends BaseElementBlock {
     this.registerCallback("value", this.handleValueChange);
   }
 
-  handleValueChange = (e) => {
+  handleValueChange = debounce((e) => {
     if (this.component.event.valueChange) {
       executeEventHandler(this.component, "event", "valueChange", {
         EventData: {
@@ -36,7 +43,7 @@ export class ColorPickerBlock extends BaseElementBlock {
         },
       });
     }
-  }
+  })
 
   render() {
     return html`

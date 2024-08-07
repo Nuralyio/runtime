@@ -34,6 +34,9 @@ export default [
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            display:true
+        },
         inputHandlers: {
             value: `GetContextVar("text_label_value");`
         },

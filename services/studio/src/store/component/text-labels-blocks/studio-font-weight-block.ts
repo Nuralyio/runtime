@@ -30,6 +30,7 @@ export default [
 
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{display:true}
     },
     {
         uuid: "font_weight_select",

@@ -30,6 +30,7 @@ export default [
 
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{display:true}
     },
     {
         uuid: "letter_spacing_input",

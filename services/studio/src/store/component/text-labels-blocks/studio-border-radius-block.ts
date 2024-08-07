@@ -31,8 +31,9 @@ export default [
 
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-       
-
+       style:{
+        display:true
+       }
     },
     {
         uuid: "border_radius_block",
