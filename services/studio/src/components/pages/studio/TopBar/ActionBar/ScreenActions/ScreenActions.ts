@@ -39,6 +39,10 @@ export class TopbarScreenActions extends LitElement {
       value: ComponentType.DatePicker,
     },
     {
+      label: "Icon",
+      value: ComponentType.Icon,
+    },
+    {
       label: "Collections",
       handler: () => {
         AddCollection();
