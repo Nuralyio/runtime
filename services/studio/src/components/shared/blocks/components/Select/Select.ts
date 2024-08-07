@@ -25,9 +25,9 @@ export class SelectBlock extends BaseElementBlock {
   };
 
   render() {
-    const options = this.inputHandlersValue?.value?.[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value?.[1];
-  
+    const options = this.inputHandlersValue?.value[0] ?? [];
+    const defaultSelected = this.inputHandlersValue?.value[1];
+    
     return html`
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-select 

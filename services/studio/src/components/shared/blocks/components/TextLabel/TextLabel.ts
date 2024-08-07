@@ -65,7 +65,7 @@ export class TextLabelBlock extends BaseElementBlock {
   render() {
     const labelStyles = this.component?.style || {};
     return html` 
-    ${labelStyles.display ? html` <label
+     <label
       id=${this.component.uuid}
       contentEditable="${this.isEditable}"
       style=${styleMap(labelStyles)}
@@ -74,15 +74,26 @@ export class TextLabelBlock extends BaseElementBlock {
             executeEventHandler(this.component, 'event', 'onClick');
           }
         }}
-      @dblclick=${(e) => {
-          e.preventDefault();
-
-          this.isEditable = true;
-          this.requestUpdate();
+        @mouseenter=${(e)=>{
+          if(this.component?.event?.mouseEnter){
+            executeEventHandler(this.component,'event','mouseEnter');
+          }
         }}
-    >
-      ${this.inputHandlersValue.value ?? "Text label"}
-    </label>`: nothing}
-      `}
+        @mouseleave=${(e)=>{
+          if(this.component?.event?.mouseLeave){
+            executeEventHandler(this.component,'event','mouseLeave')
+          }
+        }}
+          @dblclick=${(e) => {
+              e.preventDefault();
+    
+              this.isEditable = true;
+              this.requestUpdate();
+            }}
+        >
+          ${this.inputHandlersValue.value ?? "Text label"}
+          </label>`
+        }
 
-}
+    }
+

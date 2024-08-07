@@ -47,23 +47,25 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentState = currentComponent.parameters?.state || "Default"
+                let currentState = currentComponent.parameters?.state || "default"
                 const options = 
-                    [
+                [
                     {
-                    label: "Default",
-                    value: "default",
+                        label: "Default",
+                        value: "default",
                     }, 
                     {
-                    label: "Warning",
-                    value: "warning"
-                   },
+                        label: "Warning",
+                        value: "warning"
+                    },
                     {
-                     label: "Error",
-                     value: "error"
-                   }
-            ]   
-            const result =[options,[currentState]];
+                        label: "Error",
+                        value: "error"
+                    }
+                ]   
+            let defaultState = options.find((option)=>option.value == currentState).label
+            console.log('defaultstate ',defaultState)
+            const result =[options,[defaultState]];
             result;
                 `
             }

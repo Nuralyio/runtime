@@ -45,9 +45,35 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const event ='focus';
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(!currentComponent.event){
+                            currentComponent= {...currentComponent,event:{focus:{}}}
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
                 event;
             `
             }
+        },
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateEvent(currentComponent, "focus",EventData.value )
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
         },
     },
 ] 

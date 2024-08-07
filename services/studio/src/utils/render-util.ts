@@ -13,6 +13,8 @@ import '../components/shared/blocks/components/Checkbox/Checkbox';
 import '../components/shared/blocks/components/DatePicker/DatePicker';
 import '../components/shared/blocks/components/Icon/Icon'; // Add this import
 
+import '../components/shared/blocks/components/Border/Border'
+import '../components/shared/blocks/components/BoxShadow/BoxShadow'
 // Simple memoization cache
 
 // Memoization cache using WeakMap for better memory management

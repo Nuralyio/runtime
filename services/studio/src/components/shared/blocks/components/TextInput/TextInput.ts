@@ -2,8 +2,8 @@ import { html, css, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
+import { executeEventHandler } from "core/engine";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
@@ -42,26 +42,22 @@ export class TextInputBlock extends BaseElementBlock {
   // Debounced event handler with default debounce wait time
   handleValueChange = debounce((e) => {
     if (this.component?.event?.valueChange) {
-      executeHandler(
-        {
-          component: this.component,
-          type: `event.valueChange`,
-          extras: {
-            EventData: {
-              value: e.detail.value,
-            },
-          },
-        }
-      );
+      executeEventHandler(this.component,'event','valueChange',{eventData:e.detail.value})
     }
   }, 300); // Adjust the debounce wait time as needed.
+  onFocus=()=>{
+    if(this.component?.event?.focus){
+      executeEventHandler(this.component,'event','focus')
+    }
+  }
 
   render() {
     const inputStyles = this.component?.style || {};
     return html`
-    ${true?html`<span style=${styleMap(inputStyles)}> 
+    <span style=${styleMap(inputStyles)}> 
     <hy-input 
       @valueChange=${this.handleValueChange}
+      @focused=${this.onFocus}
       .value=${this.inputHandlersValue.value} 
       .size=${inputStyles.size}
       .state =${inputStyles.state}
@@ -70,7 +66,7 @@ export class TextInputBlock extends BaseElementBlock {
     <span slot="label"></span>
     <span slot="helper-text"></span>
     </hy-input>
-  </span>`:nothing}
+  </span>
       
     `;
   }
