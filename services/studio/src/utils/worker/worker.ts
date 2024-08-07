@@ -80,6 +80,22 @@ self.updateStyle = function (component: ComponentElement, symbol: string, value:
   });
 };
 
+
+self.updateEvent = function (component: ComponentElement, symbol: string, value: any) {
+  if (verbose) {
+    console.log(`%cupdateEvent`, 'background: #D1D1D1; color: black; padding: 2px; border-radius: 3px;', component, symbol, value);
+  }
+  if (!component.applicationId) {
+    component.applicationId = component.application_id;
+  }
+  port?.postMessage({
+    funtionNameToExecute: "updateEvent",
+    component,
+    eventData: { [symbol]: value }
+  });
+};
+
+
 self.AddPage = function (page: any, applicationId: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const requestId = generateRequestId();
@@ -331,6 +347,7 @@ function executeCode(code: string): any {
 // global.d.ts
 
 interface CustomSelf extends Worker {
+    [x: string]: (component: ComponentElement, symbol: string, value: any) => void;
     context: Record<string, any>;
     applications: Record<string, any>;
     components: ComponentElement[];

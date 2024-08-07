@@ -70,7 +70,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    currentComponent.event.onClick = EventData.value
+                    updateEvent(currentComponent, "onClick", EventData.value)
                     console.log('current component ',currentComponent)
                     // I need to update onclick event attached to current component
                 }

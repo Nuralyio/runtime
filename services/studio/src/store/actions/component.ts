@@ -322,20 +322,18 @@ export function updateComponentInput(componentId: string, updatedInputs: any) {
   ]);
 }
 
+
+
+
+type UpdateType = 'style' | 'event'; // Define the types of updates allowed
+
 export function updateComponentAttributes(
-  componentId: string,
-  updatedAttributes: any
-) {
-  let componentToUpdate;
-}
-
-
-export function updateComponentStyles(
   applicationId: string,
   componentId: string,
+  updateType: UpdateType,
   updatedAttributes: any
 ) {
-  console.time('updateComponentStylesExecutionTime'); // Start the timer
+  console.time('updateComponentAttributesExecutionTime'); // Start the timer
 
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
@@ -345,15 +343,17 @@ export function updateComponentStyles(
 
   if (componentIndex !== -1) {
     const componentToUpdate = applicationComponents[componentIndex];
-    componentToUpdate.style = {
-      ...componentToUpdate.style,
+
+    // Update the specified attribute of the component
+    componentToUpdate[updateType] = {
+      ...componentToUpdate[updateType],
       ...updatedAttributes,
     };
 
     // Directly update the component in the store
     console.time('setTime'); // Start the timer
-    console.log(`${applicationId}[${componentIndex}]`)
-    console.log($components.get())
+    console.log(`${applicationId}[${componentIndex}]`);
+    console.log($components.get());
     $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
     console.timeEnd('setTime'); // End the timer and log the execution time
     eventDispatcher.emit("component:refresh");
@@ -362,8 +362,9 @@ export function updateComponentStyles(
     }, 0);
   }
 
-  console.timeEnd('updateComponentStylesExecutionTime'); // End the timer and log the execution time
+  console.timeEnd('updateComponentAttributesExecutionTime'); // End the timer and log the execution time
 }
+
 
 
 

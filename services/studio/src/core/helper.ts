@@ -1,12 +1,12 @@
 import {
-  updateComponentStyles,
+  updateComponentAttributes,
 } from "$store/actions/component";
 import { type ComponentElement } from "$store/component/interface";
 import type { ComponentStore } from "$store/component/component-sotre";
 import { setVar, type ContextVarStore } from "$store/context";
 import { setCurrentPageAction } from "$store/actions/page";
 import { addPageHandler } from "$store/handlers/pages/handler";
-import type { Application, Execute, Extrats, ServiceWorkerMessage } from "core/interfaces/core.interfaces";
+import type { Application, Execute, Extrats, ServiceWorkerMessage } from "interfaces/core.interfaces";
 import { NO_EVENT_LISTENER } from "utils/constants";
 import { isVerbose } from "utils/envirement";
 import { log } from "utils/logger";
@@ -160,9 +160,14 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
       switch (funtionNameToExecute) {
         case 'updateStyle':
           setTimeout(() => {
-            updateComponentStyles(component.applicationId, component.uuid, eventData);
+            updateComponentAttributes(component.applicationId, component.uuid, "style", eventData);
           }, 0);
           break;
+          case 'updateEvent':
+            setTimeout(() => {
+              updateComponentAttributes(component.applicationId, component.uuid, "event", eventData);
+            }, 0);
+            break
         case 'addPage':
           const { requestId } = event.data;
           addPageHandler(eventData.page, (page) => {

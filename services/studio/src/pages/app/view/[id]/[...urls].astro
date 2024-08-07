@@ -1,16 +1,14 @@
 ---
 import View from "../view.astro";
-import { $currentPageId, $pages, $resetPageStore } from "../../../../store/page"
+import { $currentPageId, $pages } from "../../../../store/page"
 import { fetchApplicationById} from "$services/applications.service";
 import { fetchApplicationPagesById } from "$services/page.service";
 
 
-import { allTasks } from "nanostores";
-import { $componentWithChildrens, $components } from "$store/component/component-sotre";
+import { $components } from "$store/component/component-sotre";
 import { fetchPageComponentById } from "$services/component.service";
-// $resetPageStore()
 
-const { title, id, urls = "" } = Astro.params;
+const { id, urls = "" } = Astro.params;
 let request = urls?.split("?");
 let search = "";
 let contextParam = "";
