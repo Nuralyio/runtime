@@ -1,5 +1,4 @@
 import { APIS_URL } from './constants';
-import { extractXuserHeader } from './helpers';
 
 /**
  * Fetch application by ID

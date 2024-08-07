@@ -1,40 +1,65 @@
 import { APIS_URL } from "./constants";
 
-export async function loadPageComponent(headers: any, id: string) {
+/**
+ * Fetch page component by ID
+ *
+ * @param headers - The headers to include in the request
+ * @param id - The ID of the page component to fetch
+ * @returns A promise that resolves to an object containing the status and data or error
+ */
+export async function fetchPageComponentById(headers: Record<string, string>, id: string): Promise<{ status: string; data?: any; error?: any }> {
     try {
         const response = await fetch(APIS_URL.getPageComponents(id), {
             headers: {
-               ...headers,
+                ...headers,
             },
         });
-        return {
-            status: "OK",
-            data: await response.json()
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch page component: ${response.statusText}`);
         }
 
+        const data = await response.json();
+        return {
+            status: "OK",
+            data,
+        };
     } catch (error) {
         return {
             status: "ERROR",
-            error
-        }
+            error,
+        };
     }
 }
-export async function loadApplicationComponent(headers: any, id: string) {
+
+/**
+ * Fetch application component by ID
+ *
+ * @param headers - The headers to include in the request
+ * @param id - The ID of the application component to fetch
+ * @returns A promise that resolves to an object containing the status and data or error
+ */
+export async function fetchApplicationComponentById(headers: Record<string, string>, id: string): Promise<{ status: string; data?: any; error?: any }> {
     try {
         const response = await fetch(APIS_URL.getApplicationComponents(id), {
             headers: {
-               ...headers,
+                ...headers,
             },
         });
-        return {
-            status: "OK",
-            data: await response.json()
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch application component: ${response.statusText}`);
         }
 
+        const data = await response.json();
+        return {
+            status: "OK",
+            data,
+        };
     } catch (error) {
         return {
             status: "ERROR",
-            error
-        }
+            error,
+        };
     }
 }

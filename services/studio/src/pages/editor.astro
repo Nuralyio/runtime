@@ -19,8 +19,8 @@ import { $applications } from "$store/apps";
 import { registerContextInWebWorker } from "../utils/context-registration";
 import { processHeaders } from "utils/api-calls-utils";
 import { fetchAllApplications } from "$services/applications.service";
-import { loadApplicationPages } from "$services/page.service";
-import { loadApplicationComponent } from "$services/component.service";
+import { fetchApplicationPagesById } from "$services/page.service";
+import { fetchApplicationComponentById } from "$services/component.service";
 
 // TODO: handle error
 const { app } = Astro.props;
@@ -31,8 +31,8 @@ let pageData, componentData, applications, application;
 try {
   // Load application pages, components, and applications in parallel
   const [pageRequest, componentResponse, applicationsRequest] = await Promise.all([
-    loadApplicationPages(processedHeaders, app.uuid),
-    loadApplicationComponent(processedHeaders, app.uuid),
+    fetchApplicationPagesById(processedHeaders, app.uuid),
+    fetchApplicationComponentById(processedHeaders, app.uuid),
     fetchAllApplications(processedHeaders)
   ]);
 
