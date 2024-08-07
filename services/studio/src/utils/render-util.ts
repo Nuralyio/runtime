@@ -8,6 +8,8 @@ import '../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper';
 import '../components/shared/blocks/components/IconButton/iconbutton';
 import '../components/shared/blocks/components/Select/Select';
 import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue';
+import '../components/shared/blocks/components/Border/Border'
+import '../components/shared/blocks/components/BoxShadow/BoxShadow'
 import '../components/shared/blocks/components/Table/Table';
 import '../components/shared/blocks/components/Checkbox/Checkbox';
 import '../components/shared/blocks/components/DatePicker/DatePicker';
