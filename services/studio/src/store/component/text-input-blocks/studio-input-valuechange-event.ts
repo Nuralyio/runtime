@@ -1,5 +1,6 @@
 import { ComponentType } from "../interface";
-import { COMMON_ATTRIBUTES } from "../common_attributes";
+import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
+
 export default [
     {
         uuid: "input_valuechange_event_block",
