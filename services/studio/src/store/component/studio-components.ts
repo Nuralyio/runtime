@@ -142,13 +142,14 @@ export default [
         name: "Pages panel",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+
         input: {
             direction: "vertical",
         },
 
-        ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            width: "225px",
         },
         childrenIds: ["btn_1", "menu_1", "btn_2"],
     },

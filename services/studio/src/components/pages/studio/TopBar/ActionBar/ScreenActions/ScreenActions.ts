@@ -26,6 +26,13 @@ export class TopbarScreenActions extends LitElement {
       },
     },
     {
+      label: "Table",
+      value: ComponentType.Table,
+      handler: () => {
+        
+      },
+    },
+    {
       label: "Collections",
       handler: () => {
         AddCollection();
@@ -85,9 +92,6 @@ export class TopbarScreenActions extends LitElement {
         addComponentAction({
           name: GenerateName(e.detail.value),
           component_type: e.detail.value,
-          parameters: {
-            value: "Text Label",
-          },
         }, 
         getVar("global", "currentPage").value,
         getVar("global", "currentEditingApplication").value.uuid);

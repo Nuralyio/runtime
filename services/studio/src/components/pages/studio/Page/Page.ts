@@ -18,7 +18,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
 import { $context, getVar } from "$store/context";
 import { log } from "utils/logger";
-import { batched, computed } from "nanostores";
 import { eventDispatcher } from "utils/change-detection";
 
 @customElement("content-page")
@@ -33,7 +32,6 @@ export class PageContent extends LitElement {
 
   constructor() {
     super();
-    const currentAppUuid = $currentApplication.get().uuid;
 
     
     $pages.listen(() => this.refreshComponent());
