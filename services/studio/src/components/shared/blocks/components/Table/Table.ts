@@ -141,6 +141,7 @@ export class TextInputBlock extends BaseElementBlock {
     const inputStyles = this.component?.style || {};
     return html`
     <hy-table
+    style=${styleMap(inputStyles)}
     .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}>
 
     </hy-table>

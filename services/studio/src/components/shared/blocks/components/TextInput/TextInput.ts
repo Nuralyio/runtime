@@ -3,7 +3,6 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeHandler } from "core/helper";
-import { $context } from "$store/context";
 import { BaseElementBlock } from "../BaseElement";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
@@ -60,7 +59,7 @@ export class TextInputBlock extends BaseElementBlock {
   render() {
     const inputStyles = this.component?.style || {};
     return html`
-    ${inputStyles.display?html`<span style=${styleMap(inputStyles)}> 
+    ${true?html`<span style=${styleMap(inputStyles)}> 
     <hy-input 
       @valueChange=${this.handleValueChange}
       .value=${this.inputHandlersValue.value} 

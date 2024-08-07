@@ -31,6 +31,14 @@ export class TopbarScreenActions extends LitElement {
       value: ComponentType.Checkbox,
     },
     {
+      label: "Select",
+      value: ComponentType.Select,
+    },
+    {
+      label: "DatePicker",
+      value: ComponentType.DatePicker,
+    },
+    {
       label: "Collections",
       handler: () => {
         AddCollection();
