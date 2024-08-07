@@ -1,8 +1,7 @@
 ---
 import Editor from "../../../editor.astro";
-import {loadApplication} from "$services/applications.service"
+import {fetchApplicationById} from "$services/applications.service"
 import NotFount from '../../../not-found.astro';
-import { $resetPageStore } from "$store/page/page-store";
 import { processHeaders } from "utils/api-calls-utils";
 // here we will handle the routing
 const { title, uuid, urls = "" } = Astro.params;
@@ -24,7 +23,7 @@ if (request.length > 1) {
 //const searchQuery = new URLSearchParams(search);
 let applicationResponse
 if(uuid){
-	const result = await loadApplication(processedHeaders, uuid)
+	const result = await fetchApplicationById(processedHeaders, uuid)
 	if(result.data){
 		applicationResponse = result.data
 	}

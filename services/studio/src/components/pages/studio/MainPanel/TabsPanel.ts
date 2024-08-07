@@ -1,7 +1,7 @@
 import "../Page/Page";
 import "./DataSourceExplorer/DataSourceExplorer";
 import "./EditorInteractivePanel";
-import { closeTab } from "$store/app.action";
+import { closeTab } from "$store/actions/app";
 import { $editorState } from "$store/apps";
 import { LitElement, css, html } from "lit";
 import { state } from "lit/decorators.js";

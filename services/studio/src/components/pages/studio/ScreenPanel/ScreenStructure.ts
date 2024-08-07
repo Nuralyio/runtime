@@ -3,7 +3,7 @@ import { customElement, state } from "lit/decorators.js";
 
 import "@hybridui/menu";
 import "@hybridui/icon";
-import "../../../../core/components/micro-app";
+import "../../../micro-app";
 import "@hybridui/button";
 
 

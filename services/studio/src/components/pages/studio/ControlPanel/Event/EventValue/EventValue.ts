@@ -1,5 +1,5 @@
 import { type ComponentElement } from "$store/component/interface";
-import { BaseElementBlock } from "components/shared/blocks/ComponentElements/BaseElement";
+import { BaseElementBlock } from "components/shared/blocks/components/BaseElement";
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "components/pages/studio/ControlPanel/shared/SmartAttribute/SmartAttributeDropdown/SmartAttributeDropdown"

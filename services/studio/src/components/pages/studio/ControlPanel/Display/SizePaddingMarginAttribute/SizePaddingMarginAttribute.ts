@@ -2,7 +2,7 @@ import { type  ComponentElement } from '$store/component/interface';
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js'
 import "./SizePaddingMarginValue/SizePaddingMarginValue";
-import { updateComponentAttributes } from '$store/component/action';
+import { updateComponentAttributes } from '$store/actions/component';
 
 @customElement('size-padding-margin-attribute')
 export class SIzePAddingMArginATtribute extends LitElement {

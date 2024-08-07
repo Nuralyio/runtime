@@ -1,7 +1,7 @@
-import { updateApplication } from '$store/app.action';
+import { updateApplication } from '$store/actions/app';
 import { $currentApplication } from '$store/apps';
-import type { PageElement } from '$store/page/interface';
-import { $currentPage } from '$store/page/page-store';
+import type { PageElement } from '$store/handlers/pages/interfaces/interface';
+import { $currentPage } from '$store/page';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from "lit/decorators.js";
 

@@ -1,4 +1,4 @@
-import { addComponentAction, type AddComponentRequest } from "$store/component/action";
+import { addComponentAction, type AddComponentRequest } from "$store/actions/component";
 import { ComponentType } from "$store/component/interface";
 import { GenerateName } from "utils/naming-generator";
 import { v4 as uuidv4 } from "uuid";

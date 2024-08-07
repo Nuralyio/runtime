@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from "$store/component/interface";
-import { updateComponentAttributeHandlers } from "$store/component/action";
+import { updateComponentAttributeHandlers } from "$store/actions/component";
 
 @customElement("smart-attribute-handler")
 export class SmartAttributeHandler extends LitElement {

@@ -2,23 +2,23 @@
 import MakeLayout from "./layouts/MakeLayout.astro";
 
 import "../components/pages/studio/MainPanel/EditorInteractivePanel";
-import "../components/shared/blocks/ComponentElements/Tabs/Tabs";
-import "../components/shared/blocks/ComponentElements/Menu/Menu";
-import "../components/shared/blocks/ComponentElements/ColorPicker/colorpicker";
-import "../components/shared/blocks/ComponentElements/NumberInput/NumberInput";
-import "../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper";
-import "../components/shared/blocks/ComponentElements/IconButton/iconbutton";
-import "../components/shared/blocks/ComponentElements/Select/Select";
+import "../components/shared/blocks/components/Tabs/Tabs";
+import "../components/shared/blocks/components/Menu/Menu";
+import "../components/shared/blocks/components/ColorPicker/colorpicker";
+import "../components/shared/blocks/components/NumberInput/NumberInput";
+import "../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper";
+import "../components/shared/blocks/components/IconButton/iconbutton";
+import "../components/shared/blocks/components/Select/Select";
 import { TabsPanel } from "../components/pages/studio/MainPanel/TabsPanel";
 import { TopbarPanelWrapper } from "../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
 import { LeftPanel } from "../components/pages/studio/Layout/LeftPanel";
 import { RightPanel } from "../components/pages/studio/Layout/RightPanel";
-import { $pages } from "../store/page/page-store";
+import { $pages } from "../store/page"
 import { $components } from "$store/component/component-sotre";
 import { $applications } from "$store/apps";
 import { registerContextInWebWorker } from "../utils/context-registration";
 import { processHeaders } from "utils/api-calls-utils";
-import { getApplications } from "$services/applications.service";
+import { fetchAllApplications } from "$services/applications.service";
 import { loadApplicationPages } from "$services/page.service";
 import { loadApplicationComponent } from "$services/component.service";
 
@@ -33,7 +33,7 @@ try {
   const [pageRequest, componentResponse, applicationsRequest] = await Promise.all([
     loadApplicationPages(processedHeaders, app.uuid),
     loadApplicationComponent(processedHeaders, app.uuid),
-    getApplications(processedHeaders)
+    fetchAllApplications(processedHeaders)
   ]);
 
   // Handle page data

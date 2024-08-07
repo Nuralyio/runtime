@@ -4,13 +4,13 @@ import styles from "./ScreenActions.style";
 import "@hybridui/button";
 import "@hybridui/dropdown";
 import "@hybridui/icon";
-import { addComponentAction, setCurrentComponentIdAction } from "$store/component/action";
+import { addComponentAction, setCurrentComponentIdAction } from "$store/actions/component";
 import { ComponentType } from "$store/component/interface";
 import { GenerateName } from "utils/naming-generator";
-import { setShowBorder } from "$store/page/action";
+import { setShowBorder } from "$store/actions/page";
 import { v4 as uuidv4 } from "uuid";
 import { AddCollection } from "./AddCollection";
-import { getVar } from "$store/context/context-store";
+import { getVar } from "$store/context";
 
 @customElement("topbar-screen-actions")
 export class TopbarScreenActions extends LitElement {

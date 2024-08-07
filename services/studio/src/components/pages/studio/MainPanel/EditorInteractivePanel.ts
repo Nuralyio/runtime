@@ -5,8 +5,8 @@ import "@hybridui/dropdown";
 import "@hybridui/color-picker";
 import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
-import { $environment, type Environment, ViewMode } from "$store/environment/environment-store";
-import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page/page-store";
+import { $environment, type Environment, ViewMode } from "$store/environment";
+import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page";
 import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/component-sotre";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
@@ -113,7 +113,7 @@ export class EditorInteractivePanel extends LitElement {
   }
   render() {
 
-    return html`<div style=" padding: 20px;" >
+    return html`<div >
   <quick-action-wrapper
   ${ref(this.inputRef)}
   style="position : absolute ; display : none"

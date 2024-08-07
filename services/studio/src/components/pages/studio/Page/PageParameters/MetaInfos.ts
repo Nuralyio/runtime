@@ -1,6 +1,6 @@
-import { updatePageAction } from '$store/page/action';
-import { updatePageHandler } from '$store/page/handler';
-import type { PageElement } from '$store/page/interface';
+import { updatePageAction } from '$store/actions/page';
+import { updatePageHandler } from '$store/handlers/pages/handler';
+import type { PageElement } from '$store/handlers/pages/interfaces/interface';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { live } from 'lit/directives/live.js';

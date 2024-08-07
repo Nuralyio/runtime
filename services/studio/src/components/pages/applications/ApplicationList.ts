@@ -3,7 +3,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import './ApplicationAdd';
 import './ApplicationDelete';
-import { showCreateApplicationModalAction } from '$store/app.action';
+import { showCreateApplicationModalAction } from '$store/actions/app';
 import { repeat } from 'lit/directives/repeat.js';
 
 @customElement('applications-list')

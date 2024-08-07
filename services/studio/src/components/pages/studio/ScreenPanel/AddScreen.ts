@@ -5,9 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 import "@hybridui/menu";
 import "@hybridui/button";
 import "@hybridui/icon";
-import { $pages } from "$store/page/page-store";
-import { type PageElement } from "$store/page/interface";
-import { addPageAction } from "$store/page/action";
+import { $pages } from "$store/page";
+import { type PageElement } from "$store/handlers/pages/interfaces/interface";
+import { addPageAction } from "$store/actions/page";
 
 @customElement("add-screen-editor")
 export class AddScreen extends LitElement {

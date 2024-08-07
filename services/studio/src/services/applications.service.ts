@@ -1,68 +1,93 @@
-import { APIS_URL } from './constants'
+import { APIS_URL } from './constants';
 import { extractXuserHeader } from './helpers';
 
 /**
- * Load application by id
- * 
- * @param headers 
- * @param id 
- * @returns 
+ * Fetch application by ID
+ *
+ * @param headers - The headers to include in the request
+ * @param id - The ID of the application to fetch
+ * @returns A promise that resolves to an object containing the status and data or error
  */
-export async function loadApplication(headers: any, id: string) {
+export async function fetchApplicationById(headers: Record<string, string>, id: string): Promise<{ status: string; data?: any; error?: any }> {
     try {
         const response = await fetch(APIS_URL.getApplication(id), {
             headers: {
-               ...headers,
+                ...headers,
             },
         });
-        return {
-            status: "OK",
-            data: await response.json()
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch application: ${response.statusText}`);
         }
 
+        const data = await response.json();
+        return {
+            status: "OK",
+            data,
+        };
     } catch (error) {
         return {
             status: "ERROR",
-            error
-        }
+            error,
+        };
     }
 }
 
-export async function loadPermission(id: string, resource_id:string){
-    
+/**
+ * Fetch permission for a specific application and resource
+ *
+ * @param id - The ID of the application
+ * @param resourceId - The ID of the resource
+ * @returns A promise that resolves to an object containing the status and data or error
+ */
+export async function fetchApplicationPermission(id: string, resourceId: string): Promise<{ status: string; data?: any; error?: any }> {
     try {
-        const response = await fetch(APIS_URL.getApplicationPermission(id,resource_id), {
-        });
-        return {
-            status: "OK",
-            data: await response.json()
+        const response = await fetch(APIS_URL.getApplicationPermission(id, resourceId));
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch permission: ${response.statusText}`);
         }
 
+        const data = await response.json();
+        return {
+            status: "OK",
+            data,
+        };
     } catch (error) {
         return {
             status: "ERROR",
-            error
-        }
+            error,
+        };
     }
 }
 
-
-export async function getApplications(headers: any,){
+/**
+ * Fetch all applications
+ *
+ * @param headers - The headers to include in the request
+ * @returns A promise that resolves to an object containing the status and data or error
+ */
+export async function fetchAllApplications(headers: Record<string, string>): Promise<{ status: string; data?: any; error?: any }> {
     try {
-        const response = await fetch(APIS_URL.getApplications(), {
+        const response = await fetch(APIS_URL.fetchAllApplications(), {
             headers: {
-               ...headers,
+                ...headers,
             },
         });
-        return {
-            status: "OK",
-            data: await response.json()
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch applications: ${response.statusText}`);
         }
 
+        const data = await response.json();
+        return {
+            status: "OK",
+            data,
+        };
     } catch (error) {
         return {
             status: "ERROR",
-            error
-        }
+            error,
+        };
     }
 }
