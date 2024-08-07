@@ -45,6 +45,7 @@ export class SmartAttributeHandler extends LitElement {
     updateComponentAttributeHandlers(this.component.uuid, this.handlerScope, {
       [this.attributeName]: value,
     });
+    this.dispatchEvent(new CustomEvent('code-change',{bubbles:true,composed:true,detail:{value}}))
   }
   connectedCallback(): void {
     super.connectedCallback();

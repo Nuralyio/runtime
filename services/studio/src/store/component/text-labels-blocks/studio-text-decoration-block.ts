@@ -29,6 +29,9 @@ export default [
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            display:true
+        }
     },
     {
         uuid: "text_decoration_values_block",

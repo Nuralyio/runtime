@@ -3,7 +3,7 @@ import { html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement";
-import { executeHandler } from "core/helper";
+import { executeEventHandler } from "core/engine";
 
 const isServer = typeof window === 'undefined';
 
@@ -78,31 +78,26 @@ export class TextLabelBlock extends BaseElementBlock {
   
 
   render() {
+    const labelStyles = this.component?.style || {};
     return html` 
-         <label
-        id=${this.component.uuid}
-        contentEditable="${this.isEditable}"
-        style=${styleMap({ ...this.component.style, ...this.viewPortStyles })}
-        @click=${(e) => {
-        if (this.component.event?.onClick) {
-          executeHandler({
-            component: this.component,
-            type: `event.onClick`,
-            extras: {
-              EventData: e.data,
-            },
-          });
-        }
-      }}
-        @dblclick=${(e) => {
-        e.preventDefault();
+    ${labelStyles.display?html` <label
+      id=${this.component.uuid}
+      contentEditable="${this.isEditable}"
+      style=${styleMap(labelStyles)}
+      @click=${(e) => {
+        if (this.component.event.onClick) {
+        executeEventHandler(this.component,'event','onClick');
+      }
+    }}
+      @dblclick=${(e) => {
+      e.preventDefault();
 
-        this.isEditable = true;
-        this.requestUpdate();
-      }}
-      >
-        ${this.getValue()}
-      </label>
+      this.isEditable = true;
+      this.requestUpdate();
+    }}
+    >
+      ${this.getValue()}
+    </label>`:nothing}
       `}
     
 }

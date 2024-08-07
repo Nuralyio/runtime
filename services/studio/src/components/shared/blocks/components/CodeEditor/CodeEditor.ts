@@ -100,38 +100,39 @@ export class CodeEditor extends LitElement {
   }
 
   firstUpdated() {
-    monaco.languages.register({ id: "mylang" });
-
-    monaco.languages.setMonarchTokensProvider("mylang", {
-      tokenizer: {
-        root: [
-          [/#.*$/, "comment"],
-          [/\b(begin|end|if|else|while)\b/, "keyword"],
-          [/[=+\-*/]/, "operator"],
-          [/\d+/, "number"],
-        ],
-      },
-    });
-
-    this.editor = monaco.editor.create(this.container.value!, {
-      value: this.getCode(),
-      language: this.getLang(),
-      theme: this.getTheme(),
-      fontSize: 13,
-      automaticLayout: true,
-      readOnly: this.readOnly ?? false,
-    });
-    this.editor.getModel()!.onDidChangeContent(() => {
-      this.dispatchEvent(
-        new CustomEvent("change", { detail: { value: this.getValue() } })
-      );
-    });
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", () => {
-        monaco.editor.setTheme(this.getTheme());
+      monaco.languages.register({ id: "mylang" });
+  
+      monaco.languages.setMonarchTokensProvider("mylang", {
+        tokenizer: {
+          root: [
+            [/#.*$/, "comment"],
+            [/\b(begin|end|if|else|while)\b/, "keyword"],
+            [/[=+\-*/]/, "operator"],
+            [/\d+/, "number"],
+          ],
+        },
       });
-  }
+  
+      this.editor = monaco.editor.create(this.container.value!, {
+        value: this.getCode(),
+        language: this.getLang(),
+        theme: this.getTheme(),
+        fontSize: 13,
+        automaticLayout: true,
+        readOnly: this.readOnly ?? false,
+      });
+      this.editor.getModel()!.onDidChangeContent(() => {
+        this.dispatchEvent(
+          new CustomEvent("change", { detail: { value: this.getValue() } })
+        );
+      });
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", () => {
+          monaco.editor.setTheme(this.getTheme());
+        });
+    }
+    
 }
 
 declare global {

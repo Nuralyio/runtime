@@ -1,4 +1,4 @@
-import { html, css } from "lit";
+import { html, css, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
@@ -60,13 +60,19 @@ export class TextInputBlock extends BaseElementBlock {
   render() {
     const inputStyles = this.component?.style || {};
     return html`
-      <span style=${styleMap(inputStyles)}> 
-        <hy-input 
-          @valueChange=${this.handleValueChange}
-          .value=${this.inputHandlersValue.value}
-          placeholder="Text input"
-        ></hy-input>
-      </span>
+    ${inputStyles.display?html`<span style=${styleMap(inputStyles)}> 
+    <hy-input 
+      @valueChange=${this.handleValueChange}
+      .value=${this.inputHandlersValue.value} 
+      .size=${inputStyles.size}
+      .state =${inputStyles.state}
+      placeholder="Text input"
+    >
+    <span slot="label"></span>
+    <span slot="helper-text"></span>
+    </hy-input>
+  </span>`:nothing}
+      
     `;
   }
 }

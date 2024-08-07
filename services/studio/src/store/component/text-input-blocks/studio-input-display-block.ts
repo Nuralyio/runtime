@@ -1,10 +1,10 @@
 import { ComponentType } from "../interface";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
+import { COMMON_ATTRIBUTES } from "../common_attributes";
 export default [
     {
-        uuid: "display_block",
+        uuid: "input_display_block",
         applicationId: "1",
-        name: "Left panel",
+        name: "input display block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
@@ -15,10 +15,10 @@ export default [
             'justify-content':'space-between',
         },
         
-        childrenIds: ["text_label_display", "display_content"],
+        childrenIds: ["input_text_label_display", "input_display_content"],
     },
     {
-        uuid: "text_label_display",
+        uuid: "input_text_label_display",
         name: "text_label",
         component_type: ComponentType.TextLabel,
         parameters: {
@@ -27,25 +27,22 @@ export default [
 
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-            display:true
-        }
     },
     {
-        uuid: "display_content",
+        uuid: "input_display_content",
         applicationId: "1",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "display content",
+        name: "input display content",
         style: {
                 display:'block',
                 width: "250px", 
         },
-        childrenIds: ["display_yes", "display_no"]
+        childrenIds: ["input_display_yes", "input_display_no"]
     },
     {
-        uuid: "display_yes",
+        uuid: "input_display_yes",
         name: "name",
         applicationId: "1",
         component_type: ComponentType.IconButton,
@@ -62,16 +59,17 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent,'display',true)
+                    updateStyle(currentComponent,display,true)
+
                 }
             }catch(error){
                 console.log(error);
             }      
       `
-        }, 
+        },
     },
     {
-        uuid: "display_no",
+        uuid: "input_display_no",
         name: "name",
         applicationId: "1",
         component_type: ComponentType.IconButton,
@@ -88,12 +86,13 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent,'display',false)
+                    updateStyle(currentComponent,display,false)
                 }
             }catch(error){
                 console.log(error);
             }`
         },
+        
         
     },
 ] 
