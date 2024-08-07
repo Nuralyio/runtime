@@ -1,5 +1,5 @@
 import { ComponentType } from "../interface";
-import { COMMON_ATTRIBUTES } from "../common_attributes";
+import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
         uuid: "helper_text_block",

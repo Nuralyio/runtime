@@ -90,7 +90,6 @@ export class SmartAttributeHandler extends LitElement {
   }
   render() {
     return html`
-qsdqs
     ${this.component.errors &&
         this.component.errors[this.attributeName]
         ? html`<div class="error-message-text">
