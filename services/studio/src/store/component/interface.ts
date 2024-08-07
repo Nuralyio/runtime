@@ -14,7 +14,8 @@ export const enum ComponentType {
   BorderRadius ='border_radius',
   Event ="event", //TODO: this is an event not a component type
   Table ="Table",
-  Checkbox = "checkbox"
+  Checkbox = "checkbox", 
+  DatePicker = "DatePicker"
 }
 
 export interface DraggingComponentInfo {

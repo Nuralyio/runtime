@@ -62,42 +62,27 @@ export class TextLabelBlock extends BaseElementBlock {
     });
   }
 
-
-  getValue() {
-    let value = "";
-    /* if (isServer) {
-       if (this.component.parameters?.value) {
-         if (this.component?.parent?.component_type === "Collection") {
-           return this.component.iterations[this.item.index];
-         }
-       }
-     }*/
-
-    return isServer ? this.component.parameters?.value : this.thisvalue ?? this.component.parameters?.value;
-  }
-  
-
   render() {
     const labelStyles = this.component?.style || {};
     return html` 
-    ${labelStyles.display?html` <label
+    ${labelStyles.display ? html` <label
       id=${this.component.uuid}
       contentEditable="${this.isEditable}"
       style=${styleMap(labelStyles)}
       @click=${(e) => {
-        if (this.component.event.onClick) {
-        executeEventHandler(this.component,'event','onClick');
-      }
-    }}
+          if (this.component.event.onClick) {
+            executeEventHandler(this.component, 'event', 'onClick');
+          }
+        }}
       @dblclick=${(e) => {
-      e.preventDefault();
+          e.preventDefault();
 
-      this.isEditable = true;
-      this.requestUpdate();
-    }}
+          this.isEditable = true;
+          this.requestUpdate();
+        }}
     >
-      ${this.getValue()}
-    </label>`:nothing}
+      ${this.inputHandlersValue.value ?? "Text label"}
+    </label>`: nothing}
       `}
-    
+
 }

@@ -9,7 +9,8 @@ import '../components/shared/blocks/components/IconButton/iconbutton';
 import '../components/shared/blocks/components/Select/Select';
 import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue';
 import '../components/shared/blocks/components/Table/Table';
-import '../components/shared/blocks/components/Checkbox/Checkbox'; // Add this import
+import '../components/shared/blocks/components/Checkbox/Checkbox';
+import '../components/shared/blocks/components/DatePicker/DatePicker'; // Add this import
 
 // Simple memoization cache
 
@@ -32,7 +33,8 @@ const tabsTemplate = (props: any) => html`<tabs-block .item=${props.item} .compo
 const menuTemplate = (props: any) => html`<menu-block .item=${props.item} .component=${props.component}></menu-block>`;
 const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<vertical-container-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></vertical-container-block>`;
 const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<collection-viewer .isViewMode=${isViewMode} .component=${props.component}></collection-viewer>`;
-const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item} .component=${props.component}></checkbox-block>`; // Add this template
+const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item} .component=${props.component}></checkbox-block>`;
+const datePickerTemplate = (props: any) => html`<date-picker-block .item=${props.item} .component=${props.component}></date-picker-block>`; // Add this template
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -76,8 +78,10 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return verticalContainerTemplate(commonProps, isViewMode);
     case ComponentType.Collection:
       return collectionViewerTemplate(commonProps, isViewMode);
-    case ComponentType.Checkbox: // Add this case
+    case ComponentType.Checkbox:
       return checkboxTemplate(commonProps);
+    case ComponentType.DatePicker: // Add this case
+      return datePickerTemplate(commonProps);
     default:
       return html``;
   }
