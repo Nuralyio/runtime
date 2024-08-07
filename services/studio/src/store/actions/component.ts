@@ -17,18 +17,13 @@ import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { addComponentHandler } from "../handlers/components/add-component.handler";
 import { updateComponentHandler } from "../handlers/components/update-component.handler";
 import { eventDispatcher } from "utils/change-detection";
+import type { AddComponentAction } from "$store/interfaces/component.interfaces";
 const isServer = typeof window === 'undefined';
 
 
 /** Actions*/
-export const addComponentAction = (component: ComponentElement, uuid: string/* page uuid */, currentApplicatinId) => {
-  let componentId;
-  if (component.uuid) {
-    componentId = component.uuid;
-  } else {
-    componentId = uuidv4();
-  }
-
+export const addComponentAction = (component: AddComponentAction, uuid: string/* page uuid */, currentApplicatinId) => {
+  const componentId = uuidv4();
   const newComponent = {
     ...component,
     uuid: componentId,

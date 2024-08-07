@@ -95,6 +95,23 @@ self.updateEvent = function (component: ComponentElement, symbol: string, value:
   });
 };
 
+self.updateInput = function (component: ComponentElement, inputName : string, handlerType, handlerValue: any) {
+  if (verbose) {
+    console.log(`%cupdateInput`, 'background: #D1D1D1; color: black; padding: 2px; border-radius: 3px;', component, symbol, value);
+  }
+  if (!component.applicationId) {
+    component.applicationId = component.application_id;
+  }
+  port?.postMessage({
+    funtionNameToExecute: "updateEvent",
+    component,
+    eventData: { [inputName] : {
+      type: handlerType,
+      value: handlerValue
+    }}
+  });
+};
+
 
 self.AddPage = function (page: any, applicationId: string): Promise<any> {
   return new Promise((resolve, reject) => {

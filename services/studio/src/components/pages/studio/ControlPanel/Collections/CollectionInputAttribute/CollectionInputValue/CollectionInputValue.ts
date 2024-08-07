@@ -1,6 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@hybridui/input";
 import { type ComponentElement } from "$store/component/interface";
 @customElement("collection-input-value-handler")
 export class CollectionInputValueHandler extends LitElement {
