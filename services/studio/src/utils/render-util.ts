@@ -1,12 +1,12 @@
 import { type ComponentElement, ComponentType } from "$store/component/interface";
 import { html, type TemplateResult } from "lit";
-import '../components/shared/blocks/ComponentElements/Tabs/Tabs';
-import '../components/shared/blocks/ComponentElements/Menu/Menu';
-import '../components/shared/blocks/ComponentElements/ColorPicker/colorpicker';
-import '../components/shared/blocks/ComponentElements/NumberInput/NumberInput';
-import '../components/shared/blocks/ComponentWrappers/GenerikWrapper/GenerikWrapper';
-import '../components/shared/blocks/ComponentElements/IconButton/iconbutton'
-import '../components/shared/blocks/ComponentElements/Select/Select'
+import '../components/shared/blocks/components/Tabs/Tabs';
+import '../components/shared/blocks/components/Menu/Menu';
+import '../components/shared/blocks/components/ColorPicker/colorpicker';
+import '../components/shared/blocks/components/NumberInput/NumberInput';
+import '../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper';
+import '../components/shared/blocks/components/IconButton/iconbutton'
+import '../components/shared/blocks/components/Select/Select'
 import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue'
 // Simple memoization cache
 

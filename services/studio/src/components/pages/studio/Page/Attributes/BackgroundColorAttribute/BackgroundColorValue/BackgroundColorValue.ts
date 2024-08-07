@@ -1,4 +1,4 @@
-import { type PageElement } from "$store/page/interface";
+import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 

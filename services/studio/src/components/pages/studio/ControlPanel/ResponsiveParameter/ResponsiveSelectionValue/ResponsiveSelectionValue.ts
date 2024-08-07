@@ -1,5 +1,5 @@
-import { setCurrentPageViewPort } from '$store/page/action';
-import { $currentPageViewPort } from '$store/page/page-store';
+import { setCurrentPageViewPort } from '$store/actions/page';
+import { $currentPageViewPort } from '$store/page';
 import { LitElement, html, css } from 'lit';
 import { state } from 'lit/decorators.js';
 

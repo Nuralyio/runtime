@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorHandler/BackgroundColorHandler";
-import { updateComponentAttributes } from "$store/component/action";
+import { updateComponentAttributes } from "$store/actions/component";
 import { type ComponentElement } from "$store/component/interface";
 import styles from "./BackgroundColor.style";
 

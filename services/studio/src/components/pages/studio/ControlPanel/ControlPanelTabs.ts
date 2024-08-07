@@ -4,7 +4,7 @@ import { $applicationComponents }
   from "$store/component/component-sotre";
 import { type ComponentElement } from "$store/component/interface";
 import { $currentApplication } from "$store/apps";
-import { $context, getVar } from "$store/context/context-store";
+import { $context, getVar } from "$store/context";
 
 @customElement("control-panel")
 export class ParametersPanel extends LitElement {

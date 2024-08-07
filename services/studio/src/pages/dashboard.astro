@@ -1,6 +1,6 @@
 ---
 import { ApplicationList } from "../components/pages/applications/ApplicationList";
-import { getApplications } from "$services/applications.service";
+import { fetchAllApplications } from "$services/applications.service";
 import { processHeaders } from "utils/api-calls-utils";
 import { $applications } from "$store/apps";
 
@@ -8,7 +8,7 @@ const processedHeaders = processHeaders(Astro.request.headers);
 
 let applications = [];
 let error = false;
-const result = await getApplications(processedHeaders);
+const result = await fetchAllApplications(processedHeaders);
 if (result.data) {
   $applications.set(result.data); 
   

@@ -4,8 +4,8 @@ import "@hybridui/modal"
 import "@hybridui/button"
 import { Validations } from '@hybridui/input';
 import { $showCreateApplicationModal } from '$store/apps';
-import { closeCreateApplicationModalAction } from '$store/app.action';
-import { createApplicationAction } from '$store/handler';
+import { closeCreateApplicationModalAction } from '$store/actions/app';
+import { createApplicationAction } from '$store/handlers/applications/handler';
 export class ApplicationAdd extends LitElement {
 	static override styles = [
 		css`

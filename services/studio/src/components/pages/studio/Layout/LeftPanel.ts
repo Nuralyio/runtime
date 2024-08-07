@@ -1,5 +1,5 @@
 import "../ScreenPanel/ScreenStructure";
-import { $environment, ViewMode, type Environment } from "$store/environment/environment-store";
+import { $environment, ViewMode, type Environment } from "$store/environment";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 

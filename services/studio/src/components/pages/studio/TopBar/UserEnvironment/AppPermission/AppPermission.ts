@@ -3,7 +3,7 @@ import {
     loadApplicationPermissionAction,
     resetPermissionMessage,
     showShareApplicationModalAction
-  } from '$store/app.action';
+  } from '$store/actions/app';
   
   import {
     $applicationPermission,
@@ -11,7 +11,7 @@ import {
     $permissionsState,
     $showShareApplicationModal
   } from '$store/apps';
-import { addPermission } from '$store/handler';
+import { addPermission } from '$store/handlers/applications/handler';
 import "@hybridui/modal";
   
   import { LitElement, html, css, nothing } from 'lit';
@@ -46,7 +46,7 @@ import "@hybridui/modal";
     @state() currentApplication: any;
     @state() ownerShip : boolean;
   
-    private loadPermissions(uuid: any) {
+    private fetchApplicationPermissions(uuid: any) {
       loadApplicationPermissionAction(uuid, 'application');
     }
   
@@ -62,7 +62,7 @@ import "@hybridui/modal";
       $currentApplication.subscribe((currentApplication) => {
         this.currentApplication = currentApplication;
         if (this.currentApplication) {
-          this.loadPermissions(currentApplication.uuid);
+          this.fetchApplicationPermissions(currentApplication.uuid);
         }
       });
   
@@ -87,7 +87,7 @@ import "@hybridui/modal";
       $permissionsState.subscribe((permissionsState) => {
         this.permissionsState = permissionsState;
         if (this.currentApplication) {
-            this.loadPermissions(this.currentApplication.uuid);
+            this.fetchApplicationPermissions(this.currentApplication.uuid);
           }
       })
       
@@ -132,7 +132,7 @@ import "@hybridui/modal";
             })
             }).then((res) => res.json()).then((res) => {
                 
-                this.loadPermissions(this.currentApplication.uuid);
+                this.fetchApplicationPermissions(this.currentApplication.uuid);
 
             }).catch((err) =>{
                 console.error(err)}

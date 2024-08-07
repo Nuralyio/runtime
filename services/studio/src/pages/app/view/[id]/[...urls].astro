@@ -1,7 +1,7 @@
 ---
 import View from "../view.astro";
-import { $currentPageId, $pages, $resetPageStore } from "../../../../store/page/page-store";
-import { loadApplication } from "$services/applications.service";
+import { $currentPageId, $pages, $resetPageStore } from "../../../../store/page"
+import { fetchApplicationById} from "$services/applications.service";
 import { loadApplicationPages } from "$services/page.service";
 
 
@@ -32,7 +32,7 @@ if (id) {
 	delete headers["connection"];
 
 	if (id) {
-		const result = await loadApplication(headers, id);
+		const result = await fetchApplicationById(headers, id);
 		if (result.data) {
 			applicationResponse = result.data;
 			const pagesResponse = await loadApplicationPages(headers, id);

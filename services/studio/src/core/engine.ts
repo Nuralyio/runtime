@@ -3,9 +3,9 @@ import { type ComponentElement } from "$store/component/interface";
 import {
   updateComponentAttributes,
   updateComponentError,
-} from "$store/component/action";
+} from "$store/actions/component";
 import { executeInServiceWorker, registerApplicationsInServiceWorker, registerApplicationComponentsInServiceWorker } from "./helper";
-import type { Extrats } from "./interfaces/core.interfaces";
+import type { Extrats } from "../interfaces/core.interfaces";
 import { $applications } from "$store/apps";
 import { isServer } from "utils/envirement";
 import { getWorkerInstance } from "utils/worker/worker-init";

@@ -3,8 +3,8 @@ import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
 import styles from "./BackgroundColorAttribute.style";
-import { type PageElement } from "$store/page/interface";
-import { updatePageStyleAttributes } from "$store/page/action";
+import { type PageElement } from "$store/handlers/pages/interfaces/interface";
+import { updatePageStyleAttributes } from "$store/actions/page";
 
 @customElement("attribute-page-background-color")
 export class AttributeColor extends LitElement {

@@ -1,8 +1,8 @@
 import { atom, keepMount } from "nanostores";
 import { logger } from "@nanostores/logger";
 import { persistentAtom } from "@nanostores/persistent";
-import { getVar, setVar } from "./context/context-store";
-import { $pages } from "./page/page-store";
+import { getVar, setVar } from "./context";
+import { $pages } from "./page";
 const isServer = typeof window === 'undefined';
 
 if(!isServer){

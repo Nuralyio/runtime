@@ -1,7 +1,7 @@
-import { openTab, setCurrentTab } from '$store/app.action';
+import { openTab, setCurrentTab } from '$store/actions/app';
 import { $editorState } from '$store/apps';
-import { loadProviders } from '$store/providers/action';
-import { $providers } from '$store/providers/store';
+import { loadProviders } from '$store/actions/provider';
+import { $providers } from '$store/provider';
 import { LitElement, html, css } from 'lit';
 import { state } from 'lit/decorators.js';
 

@@ -3,7 +3,7 @@ import { property, state } from 'lit/decorators.js';
 
 import "./TableViwer/TableViwer";
 import "./TableCreate/TableCreate";
-import { getActiveTable, setActiveTable } from '$store/providers/store';
+import { getActiveTable, setActiveTable } from '$store/provider';
 
 export class DatasourceExplorer extends LitElement {
 	@property({ type: Object })
