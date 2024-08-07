@@ -47,7 +47,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentSize = currentComponent.parameters?.size || 'Medium';
+                let currentSize = currentComponent.parameters?.size || 'medium';
                 const options = 
                     [
                     {
@@ -63,7 +63,8 @@ export default [
                      value: "small"
                    }
             ]   
-            const result = [options,[currentSize]];
+            const defaultSize = options.find((option)=>option.value == currentSize).label
+            const result = [options,[defaultSize]];
             result;
                 `
             },
