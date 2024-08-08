@@ -5,7 +5,6 @@ import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
 
-const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 // Debounce function with default wait time
 function debounce(func, wait = 300) {

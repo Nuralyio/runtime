@@ -1,10 +1,10 @@
 import type { ComponentElement } from '$store/component/interface';
 import { $applicationComponents } from '$store/component/component-sotre';
-import { LitElement, html, css } from 'lit';
+import { html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';
-import { memoize } from 'utils/memoize';
 import { BaseElementBlock } from '../BaseElement';
+import { eventDispatcher } from 'utils/change-detection';
 
 @customElement('tabs-block')
 export class TabsBlock extends BaseElementBlock {
@@ -29,6 +29,9 @@ export class TabsBlock extends BaseElementBlock {
     constructor() {
         super();
         this.registerCallback('tabs', this.tabsValueRecived.bind(this));
+        eventDispatcher.on('component:refresh', () => {
+             this.updateComponents();
+        })
     }
 
     private generateComponent(childrensIds: string[]) {

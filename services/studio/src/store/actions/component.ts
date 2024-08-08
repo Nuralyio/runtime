@@ -319,8 +319,7 @@ export function updateComponentInput(componentId: string, updatedInputs: any) {
 
 
 
-
-type UpdateType = 'style' | 'event'; // Define the types of updates allowed
+type UpdateType = 'style' | 'event' | 'input'; // Define the types of updates allowed
 
 export function updateComponentAttributes(
   applicationId: string,
@@ -339,28 +338,45 @@ export function updateComponentAttributes(
   if (componentIndex !== -1) {
     const componentToUpdate = applicationComponents[componentIndex];
 
-    // Update the specified attribute of the component
-    componentToUpdate[updateType] = {
-      ...componentToUpdate[updateType],
-      ...updatedAttributes,
-    };
+    // Get the current attributes of the specified type
+    const currentAttributes = componentToUpdate[updateType] || {};
 
-    // Directly update the component in the store
-    console.time('setTime'); // Start the timer
-    console.log(`${applicationId}[${componentIndex}]`);
-    console.log($components.get());
-    $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
-    console.timeEnd('setTime'); // End the timer and log the execution time
-    eventDispatcher.emit("component:refresh");
-    setTimeout(() => {
-      updateComponentHandler(componentToUpdate, applicationId);
-    }, 0);
+    // Flag to track if any attributes need to be updated
+    let needsUpdate = false;
+
+    // Check each attribute in the updatedAttributes object
+    for (const key in updatedAttributes) {
+      if (currentAttributes[key] !== updatedAttributes[key]) {
+        needsUpdate = true;
+        break;
+      }
+    }
+
+    if (needsUpdate) {
+      // Update the specified attribute of the component
+      componentToUpdate[updateType] = {
+        ...currentAttributes,
+        ...updatedAttributes,
+      };
+
+      // Directly update the component in the store
+      console.time('setTime'); // Start the timer
+      console.log(`${applicationId}[${componentIndex}]`);
+      console.log($components.get());
+      $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
+      console.timeEnd('setTime'); // End the timer and log the execution time
+      eventDispatcher.emit("component:register");
+      eventDispatcher.emit("component:refresh");
+      setTimeout(() => {
+        updateComponentHandler(componentToUpdate, applicationId);
+      }, 0);
+    } else {
+      console.log('Attributes are the same, no update needed.');
+    }
   }
 
   console.timeEnd('updateComponentAttributesExecutionTime'); // End the timer and log the execution time
 }
-
-
 
 
 export function updateComponentAttributeHandlers(

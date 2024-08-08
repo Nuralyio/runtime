@@ -16,6 +16,7 @@ export class SelectBlock extends BaseElementBlock {
   handleValueChange = (e) => {
     if (this.component.event.changed) {
       const optionValue = e.detail.value.length? e.detail.value[0].value:undefined;
+      if(optionValue)
       executeEventHandler(this.component, "event", "changed", {
         EventData: {
           value: optionValue,
@@ -25,15 +26,15 @@ export class SelectBlock extends BaseElementBlock {
   };
 
   render() {
-    const options = this.inputHandlersValue?.value[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value[1];
-    
+    const options = this.inputHandlersValue?.value?.[0] ?? [];
+    const defaultSelected = this.inputHandlersValue?.value?.[1];
+    console.log(defaultSelected , "ppp")
     return html`
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-select 
           @changed=${this.handleValueChange}
           .options=${options}
-          .defaultSelected=${defaultSelected}
+          .defaultSelected="${defaultSelected}"
         ></hy-select>
       </span>
     `;
