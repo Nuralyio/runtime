@@ -3,7 +3,7 @@ import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {property} from 'lit/decorators.js';
 import {styles} from './tabs.style.js';
 import {classMap} from 'lit/directives/class-map.js';
-import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation} from './tabs.constant.js';
+import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation, TabsAlign} from './tabs.constant.js';
 
 /**
  * `hy-tabs` is a LitElement that provides a customizable tabs.
@@ -27,7 +27,7 @@ export class TabsComponent extends LitElement {
   orientation!: TabOrientation;
 
   @property({type: String})
-  tabsAlign!: string;
+  tabsAlign!: TabsAlign;
 
   @property({type: Object})
   editable!: TabEditable;
@@ -50,9 +50,9 @@ export class TabsComponent extends LitElement {
           'tabs-container': true,
           'vertical-align': this.orientation === TabOrientation.Vertical,
           'horizontal-align': this.orientation === TabOrientation.Horizontal,
-          'right-align': this.tabsAlign === 'right',
-          'left-align': this.tabsAlign === 'left',
-          'center-align': this.tabsAlign === 'center',
+          'right-align': this.tabsAlign === TabsAlign.Right,
+          'left-align': this.tabsAlign === TabsAlign.Left,
+          'center-align': this.tabsAlign === TabsAlign.Center,
         })}
       >
         <div
@@ -206,7 +206,7 @@ export class TabsComponent extends LitElement {
             this.dispatchEvent(new CustomEvent(TabEvent.addTab));
           }}
         >
-          <hy-icon name="plus"></hy-icon>
+          <hy-icon name="plus" class="add-tab-icon"></hy-icon>
         </div>
       `;
       tabs.push(tab);

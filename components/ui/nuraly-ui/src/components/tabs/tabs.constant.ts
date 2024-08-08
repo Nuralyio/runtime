@@ -9,6 +9,11 @@ export enum TabOrientation {
   Horizontal = 'horizontal',
   Vertical = 'vertical',
 }
+export enum TabsAlign{
+  Right='right',
+  Left ='left',
+  Center ='center'
+}
 
 export enum TabEvent {
   removeTab = 'removeTab',
