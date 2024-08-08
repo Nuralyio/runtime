@@ -26,7 +26,6 @@ export default [
         input: {
             direction: "vertical",
         },
-
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
@@ -38,10 +37,6 @@ export default [
         uuid: "text_label_font_size",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Font Size",
-        },
-
         event: {
             onClick:  /* js */ `
                 console.log("Clicked 44" , Current);
@@ -49,13 +44,16 @@ export default [
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-            display:true
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const label ='Font size';
+                label;
+            `
+            }
         },
-        inputHandlers: {
-            value: `GetContextVar("text_label_value");`
-        },
-
+      
     },
     {
         uuid: "font_size_input_2",

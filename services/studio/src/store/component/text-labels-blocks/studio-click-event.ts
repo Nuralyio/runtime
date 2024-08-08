@@ -21,12 +21,18 @@ export default [
         uuid: "text_label_click_event",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Click",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Click';
+               label;
+            `
+            }
+        },
         style:{
             display:true
         }

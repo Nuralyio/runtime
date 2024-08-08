@@ -21,24 +21,23 @@ export default [
         uuid: "text_label_input_blur_event",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Blur",
-        },
-
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Blur';
+               label;
+            `
+            }
+        }
     },
     {
         uuid: "input_blur_event_value",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "input blur event value",
-        style: {
-                display:'block',
-                width: "250px", 
-        },
         input: { 
             value: {
                 type: 'handler',
@@ -48,5 +47,12 @@ export default [
             `
             }
         },
+        styleHandlers: {},
+        name: "input blur event value",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        
     },
 ] 

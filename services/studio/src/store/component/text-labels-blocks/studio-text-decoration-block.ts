@@ -29,6 +29,15 @@ export default [
         },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Text decoration';
+               label;
+            `
+            }
+        },
         style:{
             display:true
         }

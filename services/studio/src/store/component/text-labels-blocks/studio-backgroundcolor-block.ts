@@ -25,11 +25,17 @@ export default [
         uuid: "text_label_background_color",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Background Color",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Background Color';
+               label;
+            `
+            }
+        },
     },
     {
         uuid: "background_color_value",

@@ -22,12 +22,18 @@ export default [
         uuid: "text_label_input_focus_event",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "focus",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Focus';
+               label;
+            `
+            }
+        },
     },
     {
         uuid: "input_focus_event_value",

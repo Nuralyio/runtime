@@ -48,7 +48,7 @@ function renderComponentElement(component: ComponentElement, commonProps: any, i
   if (isViewMode) {
     return template;
   }
-
+  
   return html`<generik-component-wrapper .component=${commonProps.component}>${template}</generik-component-wrapper>`;
 }
 

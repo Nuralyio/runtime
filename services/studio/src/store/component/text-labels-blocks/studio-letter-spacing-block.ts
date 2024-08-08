@@ -24,12 +24,18 @@ export default [
         uuid: "text_label_letter_spacing",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "letter spacing",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Letter spacing';
+               label;
+            `
+            }
+        },
         style:{display:true}
     },
     {

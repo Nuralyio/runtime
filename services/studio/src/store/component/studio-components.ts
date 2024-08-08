@@ -368,8 +368,8 @@ export default [
                                 "text_value_vertical_container",
                                 "font_size_vertical_container",
                                 "font_color_block",
-                                "text_alignement_block",
                                 "font_family_block",
+                                "text_alignement_block",
                                 "font_weight_block",
                                 "font_style_block",
                                 "text_decoration_block",
@@ -386,10 +386,10 @@ export default [
                         case "text_input":
                             parameters=[
                                 "value_text_block",
-                                "input_state_block",
-                                "input_size_block",
-                                "label_text_block",
                                 "helper_text_block",
+                                "label_text_block",
+                                "input_size_block",
+                                "input_state_block",
                                 "input_blur_event_block",
                                 "input_clear_event_block",
                                 "input_valuechange_event_block",
@@ -472,8 +472,8 @@ export default [
     ...studioStateBlock,
     ...studioInputBlurEvent,
     ...studioInputClearEvent,
-    ...studioInputFocusEvent,
     ...studioInputValuechangeEvent,
+    ...studioInputFocusEvent,
     ...studioButtonSizeBlock 
     
 ]

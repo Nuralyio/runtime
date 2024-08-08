@@ -24,12 +24,18 @@ export default [
         uuid: "text_label_line_height",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Line height",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Line height';
+               label;
+            `
+            }
+        },
         style:{
             display:true
         }

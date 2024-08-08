@@ -22,12 +22,17 @@ export default [
         uuid: "label_text_label",
         name: "label text label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Label",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style: {}
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Label';
+               label;
+            `
+            }
+        },
     },
     {
         uuid: "label_text_input",
