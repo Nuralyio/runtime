@@ -90,8 +90,13 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const value = currentComponent.parameters.value || ''
-                value;  
+                if(currentComponent?.input?.value){
+                    if(currentComponent.input.value.type !== 'handler'){
+                         currentComponent.input.value.value;
+                    }
+                }else{
+                 ""  
+                }
             }
 
         }catch(e){

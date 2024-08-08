@@ -92,6 +92,11 @@ export class PageContent extends LitElement {
   handleEscapeKey(e) {
     if (e.key === 'Escape') {
       setVar("global","selectedComponents", []);
+    }else if(e.key === 'Enter'){
+      eventDispatcher.emit("keydown",{
+        key: e.key,
+        selectedComponents : getVar("global","selectedComponents").value ?? []
+      });
     }
   }
 

@@ -65,7 +65,7 @@ export class ButtonBlock extends BaseElementBlock {
   ${this.display ? html`
     <hy-button 
      @click=${({ x, y, type, }) => {
-          if (this.component.event.onClick) {
+          if (this.component.event?.onClick) {
             executeEventHandler(this.component, "event", "onClick", {
               EventData: { x, y, type, },
             });

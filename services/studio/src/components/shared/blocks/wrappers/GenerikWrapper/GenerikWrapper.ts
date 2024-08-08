@@ -111,18 +111,6 @@ export class GenerikComponentWrapper extends LitElement {
         }
       }
     );
-
-  
-    /* $selectedComponent.subscribe((selectedComponent) => {
-       if(selectedComponent?.uuid !== this.component?.uuid){
-         this.showQuickAction = false;
-        // setContextMenuEvent(null);
-       }
-       this.selectedComponent = selectedComponent;
-     });
-     $hoveredComponent.subscribe((hoveredComponent) => {
-       this.hoveredComponent = hoveredComponent;
-     });*/
   }
 
   override updated(changedProperties) {
@@ -131,7 +119,6 @@ export class GenerikComponentWrapper extends LitElement {
      this.requestUpdate();
     }
   }
-
 
   onContextMenu(e) {
     e.preventDefault();
@@ -172,7 +159,7 @@ export class GenerikComponentWrapper extends LitElement {
      
           @mousedown="${(e) => {
         e.stopPropagation();
-        e.preventDefault();
+   //    e.preventDefault();
         let currentSelection = (getVar("global", "selectedComponents")?.value || []);
         if (e.metaKey) {
           currentSelection.push(this.component.uuid);

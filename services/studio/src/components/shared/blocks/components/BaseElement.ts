@@ -3,8 +3,8 @@ import { property, state } from "lit/decorators.js";
 import { executeHandler } from "core/helper";
 import { $context } from "$store/context";
 import { generateRandomId } from "utils/randomness";
-import { getNestedAttribute } from "utils/object.utils";
 import { type ComponentElement } from "$store/component/interface";
+import { eventDispatcher } from "utils/change-detection";
 
 export class BaseElementBlock extends LitElement {
   @property({ type: Object })
@@ -21,6 +21,10 @@ export class BaseElementBlock extends LitElement {
 
   @state()
   callbacks: any = {};
+
+
+  @state()
+  isEditable = false;
 
   registerCallback(inputName: string, callback: any) {
     this.callbacks[inputName] = callback;
@@ -49,6 +53,7 @@ export class BaseElementBlock extends LitElement {
           });
         });
       } else {
+
         this.inputHandlersValue[inputName] = input.value;
         if (this?.callbacks[inputName]) {
           this.callbacks[inputName](input.value);
@@ -69,17 +74,38 @@ export class BaseElementBlock extends LitElement {
   override updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
-        //   this.traitInputsHandlers();
       }
     });
+  }
+
+  focusLabel() {
+    const label = this.shadowRoot.querySelector("label");
+    console.log(label)
+    if (label) {
+      label.focus();
+    }
   }
 
   override async connectedCallback() {
     super.connectedCallback();
     $context.subscribe(async (context) => {
-      if (this.component) {
         await this.traitInputsHandlers();
-      }
     });
+    
+    eventDispatcher.on('component:refresh', () => {
+      this.traitInputsHandlers();
+    })
+
+    eventDispatcher.on('keydown', ({ key, selectedComponents }) => {
+      if (key === 'Enter') {
+        if (selectedComponents.length == 1 && this.component.uuid === selectedComponents[0]) {
+          this.isEditable = true;
+          this.requestUpdate();
+          requestAnimationFrame(() => {
+            this.focusLabel();
+          })
+        }
+      }
+    })
   }
 }

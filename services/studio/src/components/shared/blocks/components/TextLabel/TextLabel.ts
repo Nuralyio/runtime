@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
+import { updateComponentAttributes } from "$store/actions/component";
 
 const isServer = typeof window === 'undefined';
 
@@ -26,8 +27,6 @@ export class TextLabelBlock extends BaseElementBlock {
     `,
   ];
 
-  @state()
-  isEditable = false;
 
   @state()
   components: ComponentElement[];
@@ -35,25 +34,19 @@ export class TextLabelBlock extends BaseElementBlock {
   @state()
   thisvalue;
 
-
   constructor() {
     super();
-
   }
-
-
 
   handleBodyClick = (event) => {
     const label = this.shadowRoot.querySelector("label");
     if (label && !label.contains(event.target)) {
-      // Click is outside the label, make it non-editable
       this.isEditable = false;
     }
   };
+
   @property({ type: Object })
   item: any;
-
-
 
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
@@ -62,38 +55,55 @@ export class TextLabelBlock extends BaseElementBlock {
     });
   }
 
+  handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      alert('')
+      this.isEditable = true;
+      this.requestUpdate();
+    }
+  };
+
   render() {
     const labelStyles = this.component?.style || {};
-    return html` 
-     <label
-      id=${this.component.uuid}
-      contentEditable="${this.isEditable}"
-      style=${styleMap(labelStyles)}
-      @click=${(e) => {
-          if (this.component.event.onClick) {
+    return html`
+      ${labelStyles.display ? html`
+        <label
+          id=${this.component.uuid}
+          contentEditable="${this.isEditable}"
+          style=${styleMap({ ...labelStyles })}
+          @click=${() => {
+          if (this.component.event?.onClick) {
             executeEventHandler(this.component, 'event', 'onClick');
           }
         }}
-        @mouseenter=${(e)=>{
-          if(this.component?.event?.mouseEnter){
-            executeEventHandler(this.component,'event','mouseEnter');
+              @mouseenter=${(e) => {
+          if (this.component?.event?.mouseEnter) {
+            executeEventHandler(this.component, 'event', 'mouseEnter');
           }
         }}
-        @mouseleave=${(e)=>{
-          if(this.component?.event?.mouseLeave){
-            executeEventHandler(this.component,'event','mouseLeave')
+        @mouseleave=${(e) => {
+          if (this.component?.event?.mouseLeave) {
+            executeEventHandler(this.component, 'event', 'mouseLeave')
           }
+        }}
+          @blur=${(e) => {
+          this.isEditable = false;
+          this.requestUpdate();
+          updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
+            value: {
+              type: "value",
+              value: e.target.textContent,
+            },
+          });
         }}
           @dblclick=${(e) => {
-              e.preventDefault();
-    
-              this.isEditable = true;
-              this.requestUpdate();
-            }}
-        >
-          ${this.inputHandlersValue.value ?? "Text label"}
-          </label>`
-        }
-
-    }
-
+          e.preventDefault();
+          this.isEditable = true;
+          this.requestUpdate();
+        }}
+          
+        >${this.inputHandlersValue.value ?? "Text label"}</label>
+      ` : nothing}
+    `;
+  }
+}
