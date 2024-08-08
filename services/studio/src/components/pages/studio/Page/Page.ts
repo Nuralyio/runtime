@@ -16,7 +16,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
-import { $context, getVar } from "$store/context";
+import { $context, getVar, setVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
 
@@ -33,7 +33,6 @@ export class PageContent extends LitElement {
   constructor() {
     super();
 
-    
     $pages.listen(() => this.refreshComponent());
     $components.listen(() => this.refreshComponent());
     $context.listen(() => this.refreshComponent());
@@ -41,7 +40,7 @@ export class PageContent extends LitElement {
     eventDispatcher.on("component:refresh", () => {
       this.refreshComponent()
     });
- 
+
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
       this.draggingComponentInfo = draggingComponentInfo || null;
     });
@@ -67,8 +66,6 @@ export class PageContent extends LitElement {
     this.requestUpdate();
   }
 
-
-
   connectedCallback() {
     super.connectedCallback();
 
@@ -83,6 +80,19 @@ export class PageContent extends LitElement {
     window.onresize = () => {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
+
+    window.addEventListener('keydown', this.handleEscapeKey);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('keydown', this.handleEscapeKey);
+  }
+
+  handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+      setVar("global","selectedComponents", []);
+    }
   }
 
   updatePageInfo(containerWidth) {
