@@ -1,22 +1,16 @@
 import {
-  moveDraggedComponent,
   setCurrentComponentIdAction,
   setDraggingComponentInfo,
   setHoveredComponentIdAction,
-  updateComponentAttributes,
 } from "$store/actions/component";
 import {
   type ComponentElement,
   type DraggingComponentInfo,
 } from "$store/component/interface";
 import {
-  $currentComponentId,
   $draggingComponentInfo,
-  $hoveredComponent,
-  $selectedComponent,
 } from "$store/component/component-sotre";
-import { useStores } from "@nanostores/lit";
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html} from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
