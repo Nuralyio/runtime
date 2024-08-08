@@ -12,6 +12,8 @@ import {customElement, state} from 'lit/decorators.js';
 import '../tabs.component';
 
 import '../../icon';
+import '../../../helpers/ThemeHandler';
+
 @customElement('hy-tabs-demo')
 export class ElMeenuElement extends LitElement {
   @state()
@@ -56,6 +58,7 @@ export class ElMeenuElement extends LitElement {
 
   protected override render() {
     return html`
+    <theme-handler>
       <hy-tabs>
         <div label="Tab 1">Content for Tab 1</div>
         <div label="Tab 2">Content for Tab 2</div>
@@ -243,6 +246,7 @@ export class ElMeenuElement extends LitElement {
         <div label="Tab 2">Content for Tab 2</div>
         <div label="Tab 3">Content for Tab 3</div>
       </hy-tabs>
+      </theme-handler>
     `;
   }
 }
