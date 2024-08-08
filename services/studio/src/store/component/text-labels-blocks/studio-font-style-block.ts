@@ -24,14 +24,17 @@ export default [
         uuid: "text_label_font_style",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Font Style",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-            display:true
-        }
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Font style';
+               label;
+            `
+            }
+        },
     },
     {
         uuid: "font_style_values_block",

@@ -21,12 +21,17 @@ export default [
         uuid: "text_label_input_clear_event",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "clear",
-        },
-
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const event ='Clear';
+                event;
+            `
+            }
+        },
     },
     {
         uuid: "input_clear_event_value",

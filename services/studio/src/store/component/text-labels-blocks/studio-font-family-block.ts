@@ -37,13 +37,16 @@ export default [
         uuid: "font_family_label",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Font family",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style: {
-            display:true
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Font family';
+               label;
+            `
+            }
         }
     },
     {

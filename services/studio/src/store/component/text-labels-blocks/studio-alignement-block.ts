@@ -55,15 +55,17 @@ export default [
         uuid: "text_label_alignement",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Alignement",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style: {
-            display:true
-        }
-
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Alignement';
+               label;
+            `
+            }
+        },
     },
     {
         uuid: "text-align-left",

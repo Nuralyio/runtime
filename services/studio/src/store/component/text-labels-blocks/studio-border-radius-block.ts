@@ -25,12 +25,18 @@ export default [
         uuid: "border_radius_label",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Border radius",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Border radius';
+               label;
+            `
+            }
+        },
        style:{
         display:true
        }

@@ -23,11 +23,18 @@ export default [
         uuid: "value_text_label",
         name: "value text label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Value",
-        },
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Value';
+               label;
+            `
+            }
+        },
         style: {}
     },
     {

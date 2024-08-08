@@ -22,12 +22,17 @@ export default [
         uuid: "helper_text_label",
         name: "helper text label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Helper text",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style: {}
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const label ='Helper text';
+                label;`
+            }
+        },
+        style: {},
     },
     {
         uuid: "helper_text_input",

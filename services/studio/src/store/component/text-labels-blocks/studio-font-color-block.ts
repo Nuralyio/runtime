@@ -4,7 +4,7 @@ export default [
     {
     uuid: "font_color_block",
     applicationId: "1",
-    name: "Left panel",
+    name: "font color block",
     component_type: ComponentType.VerticalContainer,
     styleHandlers: {},
     input: {
@@ -17,30 +17,24 @@ export default [
         display: 'flex',
         "flex-direction": "column",
     },
-    childrenIds: ["text_label_color", "font_color_input_2"]
+    childrenIds: ["font_color_label", "font_color_input_2"]
     },
     {
-        uuid: "text_label_color",
-        name: "text_label",
+        uuid: "font_color_label",
+        name: "font color label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Color",
-        },
-
-        event: {
-            onClick: `
-        console.log("Clicked 22" , Current.uuid);
-      `
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        style:{
-            display:true
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const label ='Color';
+                label;`
+            }
         },
-        inputHandlers: {
-            value: `GetContextVar("text_label_value");`
-        },
-},
+        style: {},
+    },
 {
     uuid: "font_color_input_2",
     name: "name",

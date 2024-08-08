@@ -22,12 +22,18 @@ export default [
         uuid: "text_label_input_valuechange_event",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "vlauechange",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Value change';
+               label;
+            `
+            }
+        },
     },
     {
         uuid: "input_valuechange_event_value",

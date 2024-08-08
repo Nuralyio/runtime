@@ -24,11 +24,17 @@ export default [
         uuid: "input_size_label",
         name: "input size label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Size",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Size';
+               label;
+            `
+            }
+        },
         style: {
 
         }

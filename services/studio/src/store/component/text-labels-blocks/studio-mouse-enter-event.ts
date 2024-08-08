@@ -21,12 +21,18 @@ export default [
         uuid: "text_label_mouse_enter_event",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Mouseenter",
-        },
-
+        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               const label ='Mouseenter';
+               label;
+            `
+            }
+        },
         style:{display:true}
     },
     {
