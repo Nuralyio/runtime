@@ -27,6 +27,7 @@ export class DefaultColorSets extends LitElement {
             html`<hy-colorholder-box
               @click=${() => this.handleColorClick(color)}
               color="${color}"
+              class='color-set-container'
             ></hy-colorholder-box>`
         )}
       </div>
