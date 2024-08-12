@@ -16,7 +16,8 @@ export const enum ComponentType {
   Table ="Table",
   Checkbox = "checkbox", 
   DatePicker = "DatePicker",
-  Icon = "Icon"
+  Icon = "Icon",
+  Image = "Image"
 }
 
 export interface DraggingComponentInfo {
