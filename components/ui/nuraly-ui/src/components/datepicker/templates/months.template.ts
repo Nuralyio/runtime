@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {EMPTY_STRING} from '../constants';
+import {EMPTY_STRING} from '../constants.js';
 
 interface ClickHandler {
   (index: number): void;
