@@ -1,9 +1,9 @@
 import {html, TemplateResult} from 'lit';
-import {DateRawObject, IDayPresentation, INavigationDate} from '../datepicker.types';
-import {todayIsTheDay} from '../core/day.helper';
-import {capitalizeFirstLetter} from '../core/string.helper';
-import {getMonthDetails} from '../core/month.helper';
-import dayjs from 'dayjs/esm';
+import {DateRawObject, IDayPresentation, INavigationDate} from '../datepicker.types.js';
+import {todayIsTheDay} from '../core/day.helper.js';
+import {capitalizeFirstLetter} from '../core/string.helper.js';
+import {getMonthDetails} from '../core/month.helper.js';
+import dayjs from 'dayjs';
 import {classMap} from 'lit/directives/class-map.js';
 const today = dayjs();
 const currentYear = today.year();
