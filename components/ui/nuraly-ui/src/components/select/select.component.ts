@@ -116,7 +116,8 @@ export class HySelectComponent extends LitElement {
     this.selected = this.selected.filter((_, index) => index != selectedIndex);
   }
   private dispatchChangeEvent() {
-    this.dispatchEvent(new CustomEvent('changed', {detail: {value: this.selected}, bubbles: true, composed: true}));
+    let result = this.selectionMode == OptionSelectionMode.Single?this.selected[0]:this.selected
+    this.dispatchEvent(new CustomEvent('changed', {detail: {value: result}, bubbles: true, composed: true}));
   }
 
   private onBlur() {
