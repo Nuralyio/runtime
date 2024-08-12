@@ -8,21 +8,21 @@
 
 import {LitElement, html, nothing, PropertyValues, TemplateResult} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import dayjs from 'dayjs/esm';
-import '../input/input.component';
-import '../icon/icon.component';
-import '../button/hy-button.component';
-import {getMonthDetails} from './core/month.helper';
-import {styles} from './date-picker.style';
-import {IDayPresentation, INavigationDate, Mode} from './datepicker.types';
-import {renderMonthsTemplate} from './templates/months.template';
-import {renderYearsTemplate} from './templates/years.template';
-import {renderDays} from './templates/days.template';
-import {oneToTwoDigit} from './core/formatter';
-import {capitalizeFirstLetter} from './core/string.helper';
-import './core/locale.helper';
-import {INPUT_SIZE, INPUT_STATE} from '../input/input.constant';
-import {EMPTY_STRING} from './constants';
+import dayjs from 'dayjs';
+import '../input/input.component.js';
+import '../icon/icon.component.js';
+import '../button/hy-button.component.js';
+import {getMonthDetails} from './core/month.helper.js';
+import {styles} from './date-picker.style.js';
+import {IDayPresentation, INavigationDate, Mode} from './datepicker.types.js';
+import {renderMonthsTemplate} from './templates/months.template.js';
+import {renderYearsTemplate} from './templates/years.template.js';
+import {renderDays} from './templates/days.template.js';
+import {oneToTwoDigit} from './core/formatter.js';
+import {capitalizeFirstLetter} from './core/string.helper.js';
+import './core/locale.helper.js';
+import {INPUT_SIZE, INPUT_STATE} from '../input/input.constant.js';
+import {EMPTY_STRING} from './constants.js';
 
 @customElement('hy-datepicker')
 export class HyDatePickerElement extends LitElement {
@@ -46,16 +46,16 @@ export class HyDatePickerElement extends LitElement {
   openedCalendar = false;
 
   @state()
-  monthsShort = dayjs.monthsShort();
+  monthsShort = dayjs().localeData().monthsShort()
+  
+  @state()
+  months = dayjs().localeData().months();
 
   @state()
-  months = dayjs.months();
+  days = dayjs().localeData().weekdays();
 
   @state()
-  days = dayjs.weekdays();
-
-  @state()
-  weekdaysShort = dayjs.weekdaysShort();
+  weekdaysShort = dayjs().localeData().weekdaysShort();
 
   @state()
   currentYear = this.today.year();
@@ -202,10 +202,10 @@ export class HyDatePickerElement extends LitElement {
 
   updateLocale(locale: string): void {
     dayjs.locale(locale);
-    this.monthsShort = dayjs.monthsShort();
-    this.months = dayjs.months();
-    this.weekdaysShort = dayjs.weekdaysShort();
-    this.days = dayjs.weekdays();
+    this.monthsShort = dayjs().localeData().monthsShort();
+    this.months = dayjs().localeData().months();
+    this.weekdaysShort = dayjs().localeData().weekdaysShort();
+    this.days = dayjs().localeData().weekdays();
   }
 
   nextYear() {
