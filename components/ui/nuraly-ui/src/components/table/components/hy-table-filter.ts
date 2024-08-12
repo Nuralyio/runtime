@@ -1,7 +1,7 @@
 import {LitElement, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './table-filter.style';
-import {EMPTY_STRING} from '../table.types';
+import {styles} from './table-filter.style.js';
+import {EMPTY_STRING} from '../table.types.js';
 
 @customElement('hy-table-filter')
 export class HyTableFilter extends LitElement {
