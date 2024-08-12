@@ -1,5 +1,5 @@
 import {LitElement, PropertyValues, html, nothing} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import './color-holder.component.js';
 import './default-color-sets.component.js';
 import styles from './color-picker.style.js';
@@ -22,6 +22,9 @@ export class ColorPicker extends LitElement {
   @property({type: String, reflect: true})
   size = ColorPickerSize.Default;
 
+  @state()
+  isValidColor=true
+
   static override styles = styles;
 
   constructor() {
@@ -39,6 +42,7 @@ export class ColorPicker extends LitElement {
 
   override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('color')) {
+      this.checkIsValidColor()
       this.dispatchEvent(
         new CustomEvent('color-changed', {
           detail: {
@@ -48,19 +52,15 @@ export class ColorPicker extends LitElement {
       );
     }
   }
-  private async toggleColorHolder(toggleEvent:Event) {
-    toggleEvent.stopPropagation()
+  private async toggleColorHolder() {
     this.show = !this.show;
     await this.updateComplete;
     this.calculateDropDownPosition();
   }
   private onClickOutside = (onClickEvent: Event) => {
-    const isInsideColorPicker = onClickEvent.composedPath().find((eventTarget)=>{
-      return (eventTarget as HTMLElement)?.localName ===  'hy-color-picker';
-    })
-    if (this.show && !isInsideColorPicker) {
-      this.show = false;
-    }
+    const outsideClick =  !onClickEvent.composedPath().includes(this)
+      if(outsideClick)
+        this.show =false
   };
   private calculateDropDownPosition = () => {
     if (this.show) {
@@ -86,6 +86,10 @@ export class ColorPicker extends LitElement {
     this.color = inputChangedEvent.detail.value;
   }
 
+  private checkIsValidColor(){
+    this.isValidColor = CSS.supports('color',this.color)
+  }
+
   override disconnectedCallback(): void {
     document.removeEventListener('click', this.onClickOutside);
     document.removeEventListener('scroll', this.calculateDropDownPosition);
@@ -106,7 +110,7 @@ export class ColorPicker extends LitElement {
           color="${this.color}"
           @color-changed="${(colorChangedEvent: CustomEvent) => this.handleColorChanged(colorChangedEvent)}"
         ></hex-color-picker>
-        <hy-input type="text" .value="${this.color}" @valueChange="${this.onInputChange}" withCopy=${true}> </hy-input>
+        <hy-input type="text" .value="${this.color}" @valueChange="${this.onInputChange}" withCopy=${true} .state=${!this.isValidColor?'error':nothing}> </hy-input>
       </div>
     </div> `;
   }
