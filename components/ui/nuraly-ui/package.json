@@ -42,7 +42,7 @@
     "@lit/localize": "^0.11.4",
     "@lit/reactive-element": "^1.6.1",
     "@types/react": "^18.0.28",
-    "dayjs": "^1.11.7",
+    "dayjs": "2.0.0-alpha.4",
     "lit": "^2.2.4",
     "react": "^18.2.0",
     "vanilla-colorful": "^0.7.2"
