@@ -1,14 +1,12 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@hybridui/select";
-import { styleMap } from "lit/directives/style-map.js";
+import "@hybridui/image";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { BaseElementBlock } from "../BaseElement";
- import "@hybridui/icon"; 
 
-@customElement("icon-block")
-export class IconBlock extends BaseElementBlock {
+@customElement("image-block")
+export class ImageBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -25,13 +23,9 @@ export class IconBlock extends BaseElementBlock {
   };
 
   render() {
-    const options = this.inputHandlersValue?.value?.[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value?.[1];
-  
     return html`
     <!-- for the sake of the demo -->
-      <hy-icon name="check"
-      style="  --hybrid-icon-width: 30px; --hybrid-icon-height: 35px;  --hybrid-icon-color: green;"></hy-icon>
+      <hy-image  .src="${'https://picss00'}"></hy-image>
     `;
   }
 }

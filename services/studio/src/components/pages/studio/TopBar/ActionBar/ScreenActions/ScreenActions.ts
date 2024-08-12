@@ -43,6 +43,10 @@ export class TopbarScreenActions extends LitElement {
       value: ComponentType.Icon,
     },
     {
+      label: "Image",
+      value: ComponentType.Image,
+    },
+    {
       label: "Collections",
       handler: () => {
         AddCollection();

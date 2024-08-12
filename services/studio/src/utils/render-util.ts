@@ -8,15 +8,14 @@ import '../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper';
 import '../components/shared/blocks/components/IconButton/iconbutton';
 import '../components/shared/blocks/components/Select/Select';
 import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue';
-import '../components/shared/blocks/components/Border/Border'
-import '../components/shared/blocks/components/BoxShadow/BoxShadow'
+import '../components/shared/blocks/components/Border/Border';
+import '../components/shared/blocks/components/BoxShadow/BoxShadow';
 import '../components/shared/blocks/components/Table/Table';
 import '../components/shared/blocks/components/Checkbox/Checkbox';
 import '../components/shared/blocks/components/DatePicker/DatePicker';
-import '../components/shared/blocks/components/Icon/Icon'; // Add this import
+import '../components/shared/blocks/components/Icon/Icon';
+import '../components/shared/blocks/components/Image/Image'; 
 
-import '../components/shared/blocks/components/Border/Border'
-import '../components/shared/blocks/components/BoxShadow/BoxShadow'
 // Simple memoization cache
 
 // Memoization cache using WeakMap for better memory management
@@ -40,7 +39,8 @@ const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<ver
 const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<collection-viewer .isViewMode=${isViewMode} .component=${props.component}></collection-viewer>`;
 const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item} .component=${props.component}></checkbox-block>`;
 const datePickerTemplate = (props: any) => html`<date-picker-block .item=${props.item} .component=${props.component}></date-picker-block>`;
-const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .component=${props.component}></icon-block>`; // Add this template
+const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .component=${props.component}></icon-block>`;
+const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`; // Add this template
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -48,7 +48,7 @@ function renderComponentElement(component: ComponentElement, commonProps: any, i
   if (isViewMode) {
     return template;
   }
-  
+
   return html`<generik-component-wrapper .component=${commonProps.component}>${template}</generik-component-wrapper>`;
 }
 
@@ -90,6 +90,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return datePickerTemplate(commonProps);
     case ComponentType.Icon:
       return iconTemplate(commonProps);
+    case ComponentType.Image: // Add this case
+      return imageTemplate(commonProps);
     default:
       return html``;
   }
