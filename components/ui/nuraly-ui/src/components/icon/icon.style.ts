@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './icon.variables';
+import {styleVariables} from './icon.variables.js';
 
 const iconStyles = css`
   .svg-icon {
