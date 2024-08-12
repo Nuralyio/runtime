@@ -1,8 +1,8 @@
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './table-pagination.style';
+import {styles} from './table-pagination.style.js';
 import {repeat} from 'lit/directives/repeat.js';
-import {Sizes} from '../table.types';
+import {Sizes} from '../table.types.js';
 
 @customElement('hy-table-pagination')
 export class HyTablePagination extends LitElement {

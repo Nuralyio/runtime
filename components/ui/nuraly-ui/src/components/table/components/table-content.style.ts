@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './table-content.variables';
+import {styleVariables} from './table-content.variables.js';
 
 const tableContentStyle = css`
   :host {
