@@ -1,11 +1,11 @@
 import styles from './table.style.js';
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import './components/hy-table-actions';
-import './components/hy-table-filter';
-import './components/hy-table-pagination';
-import './components/hy-table-content';
-import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, SortValue} from './table.types';
+import './components/hy-table-actions.js';
+import './components/hy-table-filter.js';
+import './components/hy-table-pagination.js';
+import './components/hy-table-content.js';
+import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, SortValue} from './table.types.js';
 
 @customElement('hy-table')
 export class HyTable extends LitElement {

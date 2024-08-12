@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './table-actions.variables';
+import {styleVariables} from './table-actions.variables.js';
 
 const tableActionsStyle = css`
   .actions-container {

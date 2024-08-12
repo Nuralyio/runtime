@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './table-filter.variables';
+import {styleVariables} from './table-filter.variables.js';
 const tableActionsStyle = css`
   :host([showInput]) {
     width: 100%;
