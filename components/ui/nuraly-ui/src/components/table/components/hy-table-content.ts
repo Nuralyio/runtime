@@ -1,10 +1,10 @@
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {styles} from './table-content.style';
+import {styles} from './table-content.style.js';
 import {repeat} from 'lit/directives/repeat.js';
 import {choose} from 'lit/directives/choose.js';
 
-import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder} from '../table.types';
+import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder} from '../table.types.js';
 
 @customElement('hy-table-content')
 export class HyTableContent extends LitElement {

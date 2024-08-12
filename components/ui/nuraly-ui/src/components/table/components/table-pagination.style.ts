@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './table-pagination.variables';
+import {styleVariables} from './table-pagination.variables.js';
 
 const tablePaginationStyle = css`
   .pagination-container {
