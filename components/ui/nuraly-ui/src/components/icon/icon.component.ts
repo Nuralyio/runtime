@@ -13,8 +13,8 @@ import {fas} from '@fortawesome/free-solid-svg-icons';
 library.add(fas, far);
 dom.watch();
 
-import {styles} from './icon.style';
-import {IconTypes, regularIconPack, solidIconPack} from './icon.types';
+import {styles} from './icon.style.js';
+import {IconTypes, regularIconPack, solidIconPack} from './icon.types.js';
 
 @customElement('hy-icon')
 export class HyIconElement extends LitElement {
