@@ -5,7 +5,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { BaseElementBlock } from "../BaseElement";
-// import "@hybridui/datepicker"; //uncomment this line to debgug the datepicker component
+import "@hybridui/datepicker";
 
 @customElement("date-picker-block")
 export class SelectBlock extends BaseElementBlock {
