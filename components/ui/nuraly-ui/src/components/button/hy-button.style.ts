@@ -313,65 +313,69 @@ const buttonStyles = css`
     --hybrid-small-button-padding-x: 0.4rem;
     --hybrid-small-button-font-size: 0.7rem;
   }
-  :host([data-theme='dark']) {
-    /* Default button style */
-    --hybrid-button-background-color: transparent;
-    --hybrid-button-text-color: #ffffff;
-    --hybrid-button-hover-border-color: #6f6f6f;
-    --hybrid-button-hover-color: #6f6f6f;
-    --hybrid-button-active-border-color: #c6c6c6;
-    --hybrid-button-active-color: #c6c6c6;
-    --hybrid-button-disabled-background-color: #c6c6c6;
 
-    /* Primary button style */
-    --hybrid-button-primary-outline: 1px solid black;
-    --hybrid-button-primary-outline-offset: -3px;
-    --hybrid-button-primary-active-border-color: #ffffff;
-    --hybrid-button-primary-disabled-text-color: #c6c6c6;
-    --hybrid-button-primary-disabled-background-color: #8d8d8d;
-    --hybrid-button-primary-disabled-border-color: #8d8d8d;
+  @media (prefers-color-scheme: dark) {
+    :host { 
 
-    /* Secondary button style */
-    --hybrid-button-secondary-background-color: #6f6f6f;
-    --hybrid-button-secondary-border-color: #6f6f6f;
-    --hybrid-button-secondary-text-color: #ffffff;
-    --hybrid-button-secondary-active-border-color: #ffffff;
-    --hybrid-button-secondary-active-background-color: #6f6f6f;
-    --hybrid-button-secondary-outline: 1px solid black;
-    --hybrid-button-secondary-outline-offset: -3px;
-    --hybrid-button-secondary-hover-background-color: #606060;
-    --hybrid-button-secondary-hover-border-color: #606060;
-    --hybrid-button-secondary-disabled-background-color: #6f6f6f;
-    --hybrid-button-secondary-disabled-text-color: #8d8d8d;
-    --hybrid-button-secondary-disabled-border-color: #6f6f6f;
-    --hybrid-button-secondary-dashed-border-color: #ffffff;
-
-    /* Ghost button style */
-    --hybrid-button-ghost-background-color: transparent;
-    --hybrid-button-ghost-text-color: #78a9ff;
-    --hybrid-button-ghost-border-color: transparent;
-    --hybrid-button-ghost-active-background-color: transparent;
-    --hybrid-button-ghost-active-text-color: #a6c8ff;
-    --hybrid-button-ghost-active-border-color: #ffffff;
-    --hybrid-button-ghost-hover-background-color: #4c4c4c;
-    --hybrid-button-ghost-hover-border-color: #4c4c4c;
-    --hybrid-button-ghost-hover-text-color: #a6c8ff;
-    --hybrid-button-ghost-disabled-background-color: transparent;
-    --hybrid-button-ghost-disabled-text-color: #6f6f6f;
-    --hybrid-button-ghost-disabled-border-color: transparent;
-    --hybrid-button-ghost-dashed-border-color: #c6c6c6;
-
-    /* Danger button style */
-    --hybrid-button-danger-outline: 1px solid #000000;
-    --hybrid-button-danger-outline-offset: -3px;
-    --hybrid-button-danger-hover-background-color: #ba1b23;
-    --hybrid-button-danger-hover-border-color: #ba1b23;
-    --hybrid-button-danger-active-background-color: #da1e28;
-    --hybrid-button-danger-active-border-color: #ffffff;
-    --hybrid-button-danger-disabled-background-color: #6f6f6f;
-    --hybrid-button-danger-disabled-text-color: #8d8d8d;
-    --hybrid-button-danger-disabled-border-color: #6f6f6f;
-    --hybrid-button-danger-dashed-border-color: #ffffff;
+      --hybrid-button-background-color: #000000;
+      --hybrid-button-text-color: #ffffff;
+      --hybrid-button-hover-border-color: #6f6f6f;
+      --hybrid-button-hover-color: #6f6f6f;
+      --hybrid-button-active-border-color: #c6c6c6;
+      --hybrid-button-active-color: #c6c6c6;
+      --hybrid-button-disabled-background-color: #c6c6c6;
+  
+      /* Primary button style */
+      --hybrid-button-primary-outline: 1px solid black;
+      --hybrid-button-primary-outline-offset: -3px;
+      --hybrid-button-primary-active-border-color: #ffffff;
+      --hybrid-button-primary-disabled-text-color: #c6c6c6;
+      --hybrid-button-primary-disabled-background-color: #8d8d8d;
+      --hybrid-button-primary-disabled-border-color: #8d8d8d;
+  
+      /* Secondary button style */
+      --hybrid-button-secondary-background-color: #6f6f6f;
+      --hybrid-button-secondary-border-color: #6f6f6f;
+      --hybrid-button-secondary-text-color: #ffffff;
+      --hybrid-button-secondary-active-border-color: #ffffff;
+      --hybrid-button-secondary-active-background-color: #6f6f6f;
+      --hybrid-button-secondary-outline: 1px solid black;
+      --hybrid-button-secondary-outline-offset: -3px;
+      --hybrid-button-secondary-hover-background-color: #606060;
+      --hybrid-button-secondary-hover-border-color: #606060;
+      --hybrid-button-secondary-disabled-background-color: #6f6f6f;
+      --hybrid-button-secondary-disabled-text-color: #8d8d8d;
+      --hybrid-button-secondary-disabled-border-color: #6f6f6f;
+      --hybrid-button-secondary-dashed-border-color: #ffffff;
+  
+      /* Ghost button style */
+      --hybrid-button-ghost-background-color: transparent;
+      --hybrid-button-ghost-text-color: #78a9ff;
+      --hybrid-button-ghost-border-color: transparent;
+      --hybrid-button-ghost-active-background-color: transparent;
+      --hybrid-button-ghost-active-text-color: #a6c8ff;
+      --hybrid-button-ghost-active-border-color: #ffffff;
+      --hybrid-button-ghost-hover-background-color: #4c4c4c;
+      --hybrid-button-ghost-hover-border-color: #4c4c4c;
+      --hybrid-button-ghost-hover-text-color: #a6c8ff;
+      --hybrid-button-ghost-disabled-background-color: transparent;
+      --hybrid-button-ghost-disabled-text-color: #6f6f6f;
+      --hybrid-button-ghost-disabled-border-color: transparent;
+      --hybrid-button-ghost-dashed-border-color: #c6c6c6;
+  
+      /* Danger button style */
+      --hybrid-button-danger-outline: 1px solid #000000;
+      --hybrid-button-danger-outline-offset: -3px;
+      --hybrid-button-danger-hover-background-color: #ba1b23;
+      --hybrid-button-danger-hover-border-color: #ba1b23;
+      --hybrid-button-danger-active-background-color: #da1e28;
+      --hybrid-button-danger-active-border-color: #ffffff;
+      --hybrid-button-danger-disabled-background-color: #6f6f6f;
+      --hybrid-button-danger-disabled-text-color: #8d8d8d;
+      --hybrid-button-danger-disabled-border-color: #6f6f6f;
+      --hybrid-button-danger-dashed-border-color: #ffffff;
+     
+    }
   }
 `;
 

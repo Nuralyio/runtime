@@ -6,8 +6,8 @@
 
 import {html, LitElement, nothing} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {ButtonType, EMPTY_STRING, IconPosition} from './hy-button.constants';
-import {styles} from './hy-button.style';
+import {ButtonType, EMPTY_STRING, IconPosition} from './hy-button.constants.js';
+import {styles} from './hy-button.style.js';
 
 @customElement('hy-button')
 export class HyButtonElement extends LitElement {
