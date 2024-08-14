@@ -45,7 +45,7 @@ export class TopbarAppActions extends LitElement {
 
       }
       }
-        icon=${this.environmentMode === ViewMode.Edit ? "play" : "edit"}
+        .icon=${this.environmentMode === ViewMode.Edit ? ["play"] : ["edit"]}
       ></hy-button>
     </div>`;
   }

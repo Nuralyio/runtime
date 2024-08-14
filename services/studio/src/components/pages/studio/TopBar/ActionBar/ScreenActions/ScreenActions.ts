@@ -98,7 +98,7 @@ export class TopbarScreenActions extends LitElement {
 
   render() {
     return html` <div class="screen-action-wrapper">
-      <hy-button icon="arrow-left" @click=${() => window.location.href = '/dashboard'}></hy-button>
+      <hy-button .icon="${['arrow-left']}" @click=${() => window.location.href = '/dashboard'}></hy-button>
       <hy-dropdown
       trigger="click"
         .options=${this.options}
@@ -112,10 +112,10 @@ export class TopbarScreenActions extends LitElement {
       }
       }"
         >
-          <hy-button icon="plus">Insert</hy-button>
+          <hy-button .icon=${['plus']}>Insert</hy-button>
         </hy-dropdown
       >
-      <hy-button icon="border-style" type="${this.showBorder ? "primary" : ""}"
+      <hy-button .icon=${['border-style']} type="${this.showBorder ? "primary" : ""}"
       @click=${() => {
         this.showBorder = !this.showBorder;
         setShowBorder(this.showBorder);
