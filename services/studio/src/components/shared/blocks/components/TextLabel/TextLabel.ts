@@ -5,6 +5,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
 import { updateComponentAttributes } from "$store/actions/component";
+import { styles } from "./TextLabel.style";
 
 const isServer = typeof window === 'undefined';
 
@@ -19,13 +20,7 @@ export class TextLabelBlock extends BaseElementBlock {
   @state()
   viewPortStyles: any;
 
-  static styles = [
-    css`
-      :host {
-        display: block;
-      }
-    `,
-  ];
+  static styles = styles
 
 
   @state()
