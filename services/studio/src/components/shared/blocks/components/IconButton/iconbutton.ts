@@ -38,7 +38,7 @@ export class IconButtonBlock extends BaseElementBlock {
         <hy-button 
           @mousedown=${this.handleClick}
           .color=${color}
-          .icon=${icon}
+          .icon=${[icon]}
         ></hy-button>
       </span>
     `;
