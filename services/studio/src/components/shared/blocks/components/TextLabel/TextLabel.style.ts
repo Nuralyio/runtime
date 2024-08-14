@@ -1,0 +1,21 @@
+import { css } from "lit";
+
+const textLabelStyles= css`
+label{
+    color:var(--text-label-color);
+    display:block;
+}
+
+:host{
+    --text-label-color:black;
+}
+
+@media (prefers-color-scheme: dark) {
+    :host { 
+        --text-label-color:white;
+      }
+ }
+
+`
+
+export const styles =[textLabelStyles];
