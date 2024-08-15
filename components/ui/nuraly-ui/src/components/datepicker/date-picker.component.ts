@@ -132,6 +132,7 @@ export class HyDatePickerElement extends LitElement {
       this.endMonth = this.currentMonth;
       this.endDay = this.currentDay;
     }
+    this.fillInputField()
   }
   override willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has('openedCalendar') && this.openedCalendar) {
@@ -149,11 +150,12 @@ export class HyDatePickerElement extends LitElement {
       }
     }
     if (
-      changedProperties.has('currentDay') ||
-      changedProperties.has('currentMonth') ||
-      changedProperties.has('currentYear')
-    ) {
-      this.onDateChanged();
+      (changedProperties.has('currentDay') && changedProperties.get('currentDay')) ||
+      (changedProperties.has('currentMonth') && changedProperties.get('currentMonth')) ||
+      (changedProperties.has('currentYear') && changedProperties.get('currentYear'))
+    ) { 
+      this.fillInputField()
+      this.dispatchDateChange();
     }
     if (changedProperties.has('locale')) {
       this.updateLocale(this.locale);
@@ -169,13 +171,15 @@ export class HyDatePickerElement extends LitElement {
   toggleCaldendar() {
     this.openedCalendar = !this.openedCalendar;
   }
-
-  onDateChanged() {
+  fillInputField(){
     this.inputFieldValue = this.range
       ? dayjs(`${this.currentYear}-${this.currentMonth}-${this.currentDay}`).format(this.fieldFormat) +
         '-' +
         dayjs(`${this.endYear}-${this.endMonth}-${this.endDay}`).format(this.fieldFormat)
       : dayjs(`${this.currentYear}-${this.currentMonth}-${this.currentDay}`).format(this.fieldFormat);
+  }
+
+  dispatchDateChange() {
     this.dispatchEvent(
       new CustomEvent('date-change', {bubbles: true, composed: true, detail: {value: this.inputFieldValue}})
     );
