@@ -22,7 +22,7 @@ export class RightPanel extends LitElement {
   render() {
     return html` ${this.mode === ViewMode.Edit
       ? html`<aside
-          class="sidebar w-96 -translate-x-full transform bg-gray-100 p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md"
+          class="sidebar w-96 -translate-x-full transform  p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md"
         >
           <div class="my-4 w-full text-center">
             <span class="font-mono text-xl font-bold tracking-widest"> </span>

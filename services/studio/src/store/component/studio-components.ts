@@ -27,8 +27,10 @@ import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event";
 import studioInputFocusEvent from "./text-input-blocks/studio-input-focus-event";
+import  QuickActions from "../editor-micro-apps/quick-action"
 export default [
 
+    ...QuickActions,
     {
         uuid: "1",
         name: "text_label",
