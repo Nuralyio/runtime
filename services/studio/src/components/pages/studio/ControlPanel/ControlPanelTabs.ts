@@ -8,26 +8,7 @@ import { $context, getVar } from "$store/context";
 
 @customElement("control-panel")
 export class ParametersPanel extends LitElement {
-  static styles = css`
-    :host {
-      min-width: 340px;
-      display: block;
-      height: 100vh;
-      background-color: #2c2c2c;
-      overflow-y: auto;
-    }
-    hy-tabs {
-      --hybrid-tabs-content-background-color: #f8fafc;
-      font-size: 12px;
-    }
-    @media (prefers-color-scheme: dark) {
-      hy-tabs {
-        --hybrid-tabs-content-background-color: #2c2c2c;
-        color: #f3f3f3;
-        font-weight: 400;
-      }
-    }
-  `;
+  static styles = css``;
 
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];
