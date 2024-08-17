@@ -15,7 +15,7 @@ export class SelectBlock extends BaseElementBlock {
 
   handleValueChange = (e) => {
     if (this.component.event.changed) {
-      const optionValue = e.detail.value.length? e.detail.value[0].value:undefined;
+      const optionValue = e.detail.value.value;
       if(optionValue)
       executeEventHandler(this.component, "event", "changed", {
         EventData: {
