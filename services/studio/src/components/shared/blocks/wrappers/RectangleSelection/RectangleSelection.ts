@@ -1,0 +1,133 @@
+import { LitElement, html, css } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+
+@customElement('selectable-element')
+class SelectableElement extends LitElement {
+  @property({ type: Boolean, reflect: true, attribute: 'highlighted' }) highlighted = false;
+
+  static styles = css`
+    :host {
+      position: absolute;
+      padding: 10px;
+      border: 1px solid #000;
+      background: lightgray;
+      transition: background-color 0.3s;
+    }
+    :host([highlighted]) {
+      background: #007bff; 
+    }
+  `;
+
+  render() {
+    return html`<slot></slot>`;
+  }
+}
+
+@customElement('rectangle-selection')
+class RectangleSelection extends LitElement {
+  @property({ type: Object }) selectionStart = null;
+  @property({ type: Object }) selectionRect = null;
+
+  static styles = css`
+    :host {
+      display: block;
+      height: 100vh;
+      border: 1px solid #ccc;
+      position: relative; 
+    }
+    .rectangle {
+      position: absolute;
+      border: 1px dashed #000;
+      background-color: rgba(0, 123, 255, 0.3);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  `;
+
+  selectableElements: NodeListOf<Element>;
+
+  render() {
+    return html`<slot></slot>`;
+  }
+
+  firstUpdated() {
+    this.addEventListener('mousedown', this.startSelection.bind(this));
+    this.addEventListener('mousemove', this.updateSelection.bind(this));
+    this.addEventListener('mouseup', this.endSelection.bind(this));
+
+    const observer = new MutationObserver(() => {
+      this.updateSelectableElements();
+    });
+
+    observer.observe(this, { childList: true, subtree: true });
+    this.updateSelectableElements();
+  }
+
+  updateSelectableElements() {
+    this.selectableElements = this.querySelectorAll('generik-component-wrapper');
+    console.log('Updated selectable elements:', this.selectableElements);
+  }
+
+  startSelection(event) {
+    this.selectionStart = { x: event.offsetX, y: event.offsetY };
+
+    this.selectionRect = document.createElement('div');
+    this.selectionRect.classList.add('rectangle');
+    this.selectionRect.style.left = `${this.selectionStart.x}px`;
+    this.selectionRect.style.top = `${this.selectionStart.y}px`;
+
+    this.shadowRoot.appendChild(this.selectionRect);
+  }
+
+  updateSelection(event) {
+    if (!this.selectionRect) return;
+
+    requestAnimationFrame(() => {
+      const width = event.offsetX - this.selectionStart.x;
+      const height = event.offsetY - this.selectionStart.y;
+
+      this.selectionRect.style.width = `${Math.abs(width)}px`;
+      this.selectionRect.style.height = `${Math.abs(height)}px`;
+
+      if (width < 0) {
+        this.selectionRect.style.left = `${event.offsetX}px`;
+      }
+      if (height < 0) {
+        this.selectionRect.style.top = `${event.offsetY}px`;
+      }
+    });
+  }
+
+  endSelection(event) {
+    event.preventDefault();
+    if (!this.selectionRect) return;
+
+    const rect = this.selectionRect.getBoundingClientRect();
+    console.log('Selection rect:', this.selectableElements);
+
+    // Dynamically query and update highlighted elements
+    this.selectableElements.forEach(element => {
+      const elementRect = element.getBoundingClientRect();
+      const isSelected = (
+        rect.left <= elementRect.right &&
+        rect.right >= elementRect.left &&
+        rect.top <= elementRect.bottom &&
+        rect.bottom >= elementRect.top
+      );
+      console.log('Element:', element, 'isSelected:', isSelected);
+      element.highlighted = isSelected; 
+    });
+
+    this.shadowRoot.removeChild(this.selectionRect);
+    this.selectionRect = null;
+    this.selectionStart = null;
+  }
+}

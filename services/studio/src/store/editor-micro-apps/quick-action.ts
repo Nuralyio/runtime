@@ -16,25 +16,12 @@ export default [
             display: 'flex',
         },
 
-        childrenIds: ["font_color_block", "font_family_block", "ask-ai-button"],
+        childrenIds: ["font_color_block", "font_family_block", "ask-ai"],
     },
     {
-        uuid: "ask-ai-button",
+        uuid: "ask-ai",
         name: "name",
         applicationId: "1",
-        component_type: ComponentType.Button,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
-                const label ='Ask AI';
-                label;
-                `
-            }
-        }
+        component_type: ComponentType.AI,
     }
-
-
 ]

@@ -15,6 +15,7 @@ import '../components/shared/blocks/components/Checkbox/Checkbox';
 import '../components/shared/blocks/components/DatePicker/DatePicker';
 import '../components/shared/blocks/components/Icon/Icon';
 import '../components/shared/blocks/components/Image/Image'; 
+import '../components/shared/blocks/components/AIChat/AIChat'; 
 
 // Simple memoization cache
 
@@ -41,6 +42,7 @@ const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item
 const datePickerTemplate = (props: any) => html`<date-picker-block .item=${props.item} .component=${props.component}></date-picker-block>`;
 const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .component=${props.component}></icon-block>`;
 const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`; // Add this template
+const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`; // Add this template
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -92,6 +94,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return iconTemplate(commonProps);
     case ComponentType.Image: // Add this case
       return imageTemplate(commonProps);
+    case ComponentType.AI: // Add this case
+      return aiTemplate(commonProps);
     default:
       return html``;
   }

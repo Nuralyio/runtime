@@ -1,0 +1,157 @@
+import type { ComponentElement } from '$store/component/interface';
+import { BaseElementBlock } from '../BaseElement';
+import { html, type PropertyValues } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import '@hybridui/slider-input';
+import '@hybridui/button';
+import '@hybridui/input'; 
+import { addComponentAction, addTempApplication } from '$store/actions/component';
+import { getVar } from '$store/context';
+import { $applicationComponents } from '$store/component/component-sotre';
+import { $currentApplication } from '$store/apps';
+import { v4 as uuid } from 'uuid';
+import { eventDispatcher } from 'utils/change-detection';
+import styles from './AIChat.style';
+import { createChat } from '$store/handlers/aichat/create-chat.handler';
+import { replaceUUIDs } from './AIChat.helper';
+import { addGeneratedComponents } from '$store/actions/aitchat';
+
+@customElement('ai-chat-block')
+export class AiChat extends BaseElementBlock {
+    @property({ type: Object })
+    component: ComponentElement;
+
+    @state()
+    private isChatBoxVisible = false;
+
+    @state()
+    private chatUuid = '';
+
+    @state()
+    private messages: { type: 'user' | 'ai', content: string }[] = [];
+
+    @state()
+    private errorMessage = '';
+
+    @state()
+    private inputValue = '';
+
+    @state()
+    private isLoading = false;
+
+    @state()
+    preview = false;
+
+    @state()
+    rootUUID = '';
+
+
+    static override styles = styles;
+    selectedComponent: any;
+    structureComponent: any[];
+
+
+    private async toggleChatBox() {
+        this.isChatBoxVisible = !this.isChatBoxVisible;
+        if (this.isChatBoxVisible) {
+            await this.getChatUuid();
+        } else {
+            this.errorMessage = ''; 
+        }
+    }
+
+    private async getChatUuid() {
+        this.isLoading = true;
+        createChat().then((data) => {
+            this.chatUuid = data.chat_id;
+            this.errorMessage = ''; 
+        }).catch((error) => {
+            console.error('Error getting chat UUID:', error);
+            this.errorMessage = 'Cannot connect to server. Please try again.';
+        }).finally(() => {
+            this.isLoading = false;
+        })
+    }
+    override  async connectedCallback() {
+        super.connectedCallback();
+    }
+
+    private async sendMessage(message: string) {
+        this.isLoading = true;
+        try {
+            const response = await fetch(`/api/chat/${this.chatUuid}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: message }),
+            });
+            const aiResponse = (await response.json()).response;
+            this.messages.push({ type: 'ai', content: aiResponse });
+
+            console.log(this.selectedComponent)
+            this.structureComponent = [];
+            const result = aiResponse.components ?? aiResponse;
+            if (Array.isArray(result)) {
+                this.structureComponent = result.map((component: any) => {
+                    component.applicationId = this.chatUuid;
+                    return component;
+                })
+            }
+
+            this.structureComponent = replaceUUIDs(this.structureComponent);
+            const structureComponentRoot = this.structureComponent.find((component: any) => component.component_type === 'vertical-container-block');
+            this.rootUUID = structureComponentRoot.uuid;
+            addTempApplication(this.chatUuid, [...this.structureComponent]);
+           requestAnimationFrame(() => {
+            this.preview = true;
+           })
+            console.log('Message sent:', this.messages);
+        } catch (error) {
+            console.error('Error sending message:', error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    private handleSendMessage(event: Event) {
+        const message = this.inputValue;
+
+        if (message.trim()) {
+            this.sendMessage(message);
+            this.inputValue = ''; 
+        }
+    }
+
+    private handleInputChange(event: CustomEvent) {
+        this.inputValue = event.detail.value;
+    }
+
+    private handleKeyUp(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            this.handleSendMessage(event);
+        }
+    }
+
+    override render() {
+        return html`
+            <div class="chat-input-container">
+                <hy-button @click=${this.toggleChatBox}>Ask AI</hy-button>
+                ${this.isChatBoxVisible ? html`
+                    <div class="chat-input">
+                        <hy-input value=${this.inputValue} placeholder="Type your message" @valueChange=${this.handleInputChange} @keyup=${this.handleKeyUp} ></hy-input>
+                        <hy-button @click=${this.handleSendMessage}>Send</hy-button>
+                    </div>
+                    ${this.messages.length > 0 ? html`
+                        <div class="chat-messages">
+                            ${this.preview ? html`<micro-app uuid=${this.chatUuid} componentToRenderUUID=${this.rootUUID}></micro-app>` : ''}
+                        <hy-button @click=${()=>addGeneratedComponents(this.structureComponent)}>Insert</hy-button>
+                        </div>
+                    ` : ''}
+                    ${this.errorMessage ? html`<div class="error-message">${this.errorMessage}</div>` : ''}
+                    ${this.isLoading ? html`<div class="loading-indicator">Loading...</div>` : ''}
+                ` : ''}
+            </div>
+        `;
+    }
+}

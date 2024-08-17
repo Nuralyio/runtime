@@ -1,35 +1,31 @@
-import { LitElement, css, html } from "lit";
-import { state, customElement } from "lit/decorators.js";
-import "@hybridui/tabs";
-import "@hybridui/dropdown";
-import "@hybridui/color-picker";
-import "@hybridui/select";
-import { styleMap } from "lit/directives/style-map.js";
-import { $environment, type Environment, ViewMode } from "$store/environment";
-import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page";
-import { type ComponentElement } from "$store/component/interface";
+import { LitElement, css, html } from 'lit';
+import { state, customElement } from 'lit/decorators.js';
+import '@hybridui/tabs';
+import '@hybridui/dropdown';
+import '@hybridui/color-picker';
+import '@hybridui/select';
+import { styleMap } from 'lit/directives/style-map.js';
+import { $environment, type Environment, ViewMode } from '$store/environment';
+import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from '$store/page';
+import { type ComponentElement } from '$store/component/interface';
 import { $selectedComponent } from "$store/component/component-sotre";
-import { type Ref, createRef, ref } from "lit/directives/ref.js";
-import { $currentApplication } from "$store/apps";
+import { type Ref, createRef, ref } from 'lit/directives/ref.js';
+import { $currentApplication } from '$store/apps';
 
-@customElement("editor-interactive-panel")
+@customElement('editor-interactive-panel')
 export class EditorInteractivePanel extends LitElement {
-  @state()
-  mode: ViewMode = ViewMode.Edit;
+  @state() mode: ViewMode = ViewMode.Edit;
+  @state() zoomLevel = 100;
+  @state() selectedComponent: ComponentElement;
+  @state() currentPageViewPort: string;
 
-  @state()
-  zoomLevel = 100;
-  //
-  @state()
-  selectedComponent: ComponentElement;
-
-  inputRef: Ref<HTMLInputElement> = createRef();
+  private inputRef: Ref<HTMLInputElement> = createRef();
 
   static styles = css`
-  :host {
+    :host {
       height: 100vh;
       display: block;
-      background-color:#949494
+      background-color: #949494;
     }
     .page-container {
       width: 100%;
@@ -41,104 +37,113 @@ export class EditorInteractivePanel extends LitElement {
       min-height: 800px;
     }
     .zoom-controll {
-      bottom: 0px;
+      bottom: 0;
       text-align: right;
     }
   `;
-  @state()
-  currentPageViewPort: string
+
   constructor() {
     super();
-    $selectedComponent($currentApplication.get().uuid).subscribe((selectedComponent) => {
-      /* if(selectedComponent?.uuid !== this.component?.uuid){
-         this.showQuickAction = false;
-       }*/
+    this.initializeSubscriptions();
+  }
+
+  private initializeSubscriptions() {
+    $selectedComponent($currentApplication.get().uuid).subscribe(selectedComponent => {
       this.selectedComponent = selectedComponent;
     });
+
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
     });
 
-    $currentPageViewPort.subscribe((currentPageViewPort) => {
-      if (currentPageViewPort) {
-        switch (currentPageViewPort) {
-          case "tablet":
-            this.currentPageViewPort = "720px";
-            break;
-          case "mobile":
-            this.currentPageViewPort = "375px";
-            break;
-          default:
-            this.currentPageViewPort = "100%";
-        }
-        this.requestUpdate();
-      }
+    $currentPageViewPort.subscribe(viewPort => {
+      this.updateViewPort(viewPort);
+    });
+
+    $pageZoom.subscribe(pageZoom => {
+      this.updateZoomLevel(pageZoom);
     });
   }
 
-  handleScroll(event) {
-    this.inputRef.value!.style!.display = 'none';
+  private updateViewPort(viewPort: string) {
+    const viewPortMap = {
+      tablet: '720px',
+      mobile: '375px',
+      default: '100%',
+    };
+    this.currentPageViewPort = viewPortMap[viewPort] || viewPortMap.default;
+    this.requestUpdate();
+  }
+
+  private updateZoomLevel(pageZoom: string) {
+    requestAnimationFrame(() => {
+      this.zoomLevel = Number(pageZoom);
+      this.requestUpdate();
+    });
+  }
+
+  handleScroll = (event: Event) => {
+    if (this.inputRef.value) {
+      this.inputRef.value.style.display = 'none';
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    $contextMenuEvent.subscribe(this.handleContextMenuEvent);
+    requestAnimationFrame(() => {
+      this.shadowRoot?.querySelector('.page-container')?.addEventListener('scroll', this.handleScroll);
+    });
+    document.addEventListener('keydown', this.handleEscapeKey);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.shadowRoot.querySelector('.page-container').removeEventListener('scroll', this.handleScroll.bind(this));
-
+    this.shadowRoot?.querySelector('.page-container')?.removeEventListener('scroll', this.handleScroll);
+    document.removeEventListener('keydown', this.handleEscapeKey);
   }
-  connectedCallback(): void {
-    super.connectedCallback();
-    $contextMenuEvent.subscribe((contextMenuEvent: any) => {
-      if (contextMenuEvent && Object.keys(contextMenuEvent).length) {
-        if (this.inputRef && this.inputRef.value) {
-          this.inputRef.value.style.display = 'block'
-          this.inputRef.value.style.top = `${contextMenuEvent.ComponentTop - 5}px`;
-          this.inputRef.value.style.left = `${contextMenuEvent.ComponentLeft - 0}px`;
-          this.inputRef.value!.style!.display = 'block'
-        }
-      } else {
-        this.inputRef.value ? this.inputRef.value!.style!.display = 'none' : 'none'
+
+  private handleContextMenuEvent = (contextMenuEvent: any) => {
+    if (contextMenuEvent && Object.keys(contextMenuEvent).length) {
+      if (this.inputRef.value) {
+        this.inputRef.value.style.display = 'block';
+        this.inputRef.value.style.top = `${contextMenuEvent.ComponentTop - 5}px`;
+        this.inputRef.value.style.left = `${contextMenuEvent.ComponentLeft}px`;
       }
-    })
-    requestAnimationFrame(() => {
-      this.shadowRoot!.querySelector('.page-container').addEventListener('scroll', this.handleScroll.bind(this));
-    });
-    $pageZoom.subscribe((pageZoom: string) => {
-      requestAnimationFrame(() => {
-        this.zoomLevel = Number(pageZoom);
-        this.requestUpdate();
-      });
-    });
-
-
+    } else if (this.inputRef.value) {
+      this.inputRef.value.style.display = 'none';
+    }
   }
-  render() {
 
-    return html`<div >
-  <quick-action-wrapper
-  ${ref(this.inputRef)}
-  style="position : absolute ; display : none"
-               @click=${(e: Event) => {
-      }}
-             @displayQuickActionChanged=${(e: CustomEvent) => {
-        // this.showQuickAction = e.detail.showQuickAction;
-      }}
-             .component=${{ ...this.selectedComponent }}
-             ></quick-action-wrapper>
+  private handleEscapeKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this.inputRef.value) {
+      this.inputRef.value.style.display = 'none';
+    }
+  }
+
+  render() {
+    return html`
+      <div>
+        <quick-action-wrapper
+          ${ref(this.inputRef)}
+          style="position: absolute; display: none;"
+          @click=${(e: Event) => {}}
+          @displayQuickActionChanged=${(e: CustomEvent) => {}}
+          .component=${{ ...this.selectedComponent }}
+        ></quick-action-wrapper>
         <div class="page-container">
           <div
             class="zoom-area"
             style=${styleMap({
-        margin: "0px auto",
-        width: `${this.currentPageViewPort}`,
-        scale: this.zoomLevel / 100,
-      })}
+              margin: '0 auto',
+              width: this.currentPageViewPort,
+              scale: this.zoomLevel / 100,
+            })}
           >
             <slot></slot>
           </div>
         </div>
       </div>
-      <br />
-
     `;
   }
 }
