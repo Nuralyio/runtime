@@ -24,9 +24,11 @@ export class TextLabelBlock extends BaseElementBlock {
       :host {
         display: block;
       }
+      label {
+        user-select: none; /* Disable text selection */
+      }
     `,
   ];
-
 
   @state()
   components: ComponentElement[];
@@ -66,7 +68,7 @@ export class TextLabelBlock extends BaseElementBlock {
   render() {
     const labelStyles = this.component?.style || {};
     return html`
-      ${labelStyles.display ? html`
+      ${true ? html`
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"

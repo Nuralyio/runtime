@@ -28,6 +28,7 @@ export class ComponentTitle extends LitElement {
       font-size: 14px;
       cursor: pointer;
       user-select: none;
+      margin-top: -20px;
     }
   `;
 

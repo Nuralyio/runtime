@@ -2,7 +2,6 @@ import { type ComponentElement } from '$store/component/interface';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js'
 import styles from './QuickActionWrapper.style';
-import { copyComponentAction, deleteComponentAction, pasteComponentAction } from '$store/actions/component';
 
 @customElement('quick-action-wrapper')
 export class QuickActionWrapper extends LitElement {
@@ -39,39 +38,9 @@ export class QuickActionWrapper extends LitElement {
   render() {
     return html`
         <div class="quick-action">
-          <div style="width: 120px;">
-            <attribute-text-font-size
-                .component=${{ ...this.component }}
-                ?slim=${true}
-            ></attribute-text-font-size>
-            </div>
-          <div style="margin-left: 20px;width: 100px;">
-            <attribute-text-font-weight
-             ?slim=${true}
-                .component=${{ ...this.component }}
-              ></attribute-text-font-weight>
-             
-            </div>
-            <div style="margin-left: 0px;width: 60px; margin-top : 4px">
-            <attribute-color
-             ?slim=${true}
-                .component=${{ ...this.component }}
-              ></attribute-color>
-             
-            </div>
-          <div style="margin-left: 0px;width: 110px;">
-          <attribute-text-font-style
-                ?slim=${true}
-                .component=${{ ...this.component }}
-              ></attribute-text-font-style>
-            </div>
-            <hy-button  style="margin-left : 10px" danger
-            
-            @click=${() => {
-        deleteComponentAction(this.component.uuid);
-      }}>Delete</hy-button>
-
-
+          <div style="">
+      <micro-app uuid="1" componentToRenderUUID="quick-action-wrapper">  </micro-app>
+          </div>
         </div>
         `;
   }

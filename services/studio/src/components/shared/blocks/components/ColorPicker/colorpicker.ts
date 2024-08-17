@@ -38,7 +38,7 @@ export class ColorPickerBlock extends BaseElementBlock {
   handleValueChange = debounce((e) => {
     if (this.component.event.valueChange) {
       
-      e.detail?.value && executeEventHandler(this.component, "event", "valueChange", {
+      e?.detail?.value && executeEventHandler(this.component, "event", "valueChange", {
         EventData: {
           value: e.detail?.value ?? "",
         },

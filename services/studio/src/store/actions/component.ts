@@ -11,6 +11,7 @@ import {
   $currentComponentId,
   $draggingComponentInfo,
   $hoveredComponentId,
+  type ComponentStore,
 } from "../component/component-sotre";
 import { addComponentToCurrentPageAction, removeComponentToCurrentPageAction } from "$store/actions/page";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
@@ -18,11 +19,15 @@ import { addComponentHandler } from "../handlers/components/add-component.handle
 import { updateComponentHandler } from "../handlers/components/update-component.handler";
 import { eventDispatcher } from "utils/change-detection";
 import type { AddComponentAction } from "$store/interfaces/component.interfaces";
+import { getVar } from "$store/context";
+import { deleteComponentActionHandler } from "$store/handlers/components/delete-component.handler";
 const isServer = typeof window === 'undefined';
 
 
 /** Actions*/
 export const addComponentAction = (component: AddComponentAction, uuid: string/* page uuid */, currentApplicatinId) => {
+  const currentComponentId = getVar("global", "selectedComponents")?.value[0]
+
   const componentId = uuidv4();
   const newComponent = {
     ...component,
@@ -30,6 +35,10 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
     pageId: uuid,
     applicationId: currentApplicatinId
   } as ComponentElement
+  if (!currentComponentId) {
+    newComponent.root = true;
+  }
+
   // Add component to the application's components
   $components.set({
     ...$components.get(),
@@ -42,12 +51,12 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
 
   addComponentHandler({ component: newComponent }, currentApplicatinId);
 
-  const currentComponentId = $currentComponentId.get();
+
   if (currentComponentId) {
-    const currentComponent = $components.get()[uuid].find((component: ComponentElement) => component.uuid === currentComponentId);
+    const currentComponent = $components.get()[currentApplicatinId].find((component: ComponentElement) => component.uuid === currentComponentId);
     // or ComponentType.Collection
     if (currentComponent?.component_type === ComponentType.VerticalContainer || currentComponent?.component_type === ComponentType.Collection) {
-      addComponentAsChildOf(componentId, currentComponentId);
+      addComponentAsChildOf(componentId, currentComponentId, currentApplicatinId);
     } else {
       addComponentToCurrentPageAction(componentId);
     }
@@ -56,19 +65,32 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
   }
 };
 
-export function addComponentAsChildOf(componentId: string, parentComponent: string) {
-  // $components.set([
-  //   ...$components.get().map((component: ComponentElement) => {
-  //     if (component.uuid === parentComponent) {
-  //       if (!component.childrenIds) {
-  //         component.childrenIds = [];
-  //       }
-  //       component.childrenIds.push(componentId);
-  //     }
-  //     return component;
-  //   }),
-  // ]);
+export function addComponentAsChildOf(componentId: string, parentComponentId: string, applicationId: string) {
+  const componentsStore: ComponentStore = $components.get();
+  const components: ComponentElement[] = componentsStore[applicationId] || [];
+
+  // Find the parent component
+  const parentComponent = components.find((component) => component.uuid === parentComponentId);
+
+  if (parentComponent) {
+    // Ensure the parent component has a childrenIds array
+    if (!parentComponent.childrenIds) {
+      parentComponent.childrenIds = [];
+    }
+
+    // Add the new component ID to the parent's childrenIds array
+    parentComponent.childrenIds.push(componentId);
+    setTimeout(() => {
+      updateComponentHandler(parentComponent, applicationId);
+    }, 0);
+    // Update the components store
+    componentsStore[applicationId] = [...components];
+    $components.set(componentsStore);
+  } else {
+    console.error(`Parent component with ID ${parentComponentId} not found.`);
+  }
 }
+
 
 export function setDraggingComponentInfo(
   draggingComponentInfo: DraggingComponentInfo | null
@@ -441,40 +463,50 @@ export function setHoveredComponentIdAction(componentId: string) {
 }
 
 
-export function deleteComponentAction(componentId: string) {
-  const components = $components.get();
+export async function deleteComponentAction(componentId: string, applicationId: string) {
+  const components = $components.get()[applicationId];
 
-  function removeFromChildrenIdsRecursive(component: ComponentElement) {
-    if (component.childrenIds && component.childrenIds.includes(componentId)) {
-      component.childrenIds = component.childrenIds.filter(childId => childId !== componentId);
+  const componentToDelete = components.find(
+    (component: ComponentElement) => component.uuid === componentId
+  );
+  if (componentToDelete) {
+    if (componentToDelete.root) {
+      removeComponentToCurrentPageAction(componentId);
+    } else {
+      // Traverse all components and remove the componentId from their childrenIds arrays
+      components.forEach((component) => {
+        if (component.childrenIds) {
+          const originalChildrenIds = [...component.childrenIds];
+          component.childrenIds = component.childrenIds.filter(
+            (childId) => childId !== componentId
+          );
+
+          // If the componentId was removed, dispatch the handler
+          if (originalChildrenIds.length !== component.childrenIds.length) {
+            updateComponentHandler(component, applicationId);  // Dispatch the handler
+          }
+        }
+      });
+
+      // Save the updated components to the store
+      $components.set({
+        ...$components.get(),
+        [applicationId]: components,
+      });
     }
-    for (const childId of component.childrenIds || []) {
-      const child = components.find((c) => c.id === childId);
-      if (child) {
-        removeFromChildrenIdsRecursive(child);
-      }
-    }
-  }
 
-  // Find the index of the component to delete
-  const indexToDelete = components.findIndex((component: ComponentElement) => component.uuid === componentId);
-
-  if (indexToDelete !== -1) {
-    // Remove the component from the components array
-    components.splice(indexToDelete, 1);
-
-    // Update the store with the modified components array
-    $components.set([...components]);
-
-    // Call the recursive function to remove from parent's childrenIds
-    components.forEach((component: ComponentElement) => {
-      removeFromChildrenIdsRecursive(component);
+    // Remove the component from the components store
+    $components.set({
+      ...$components.get(),
+      [applicationId]: components.filter(
+        (component: ComponentElement) => component.uuid !== componentId
+      ),
     });
+    await deleteComponentActionHandler(componentId);
 
-    // Remove the component from the current page if it was on the page
-    removeComponentToCurrentPageAction(componentId);
+    eventDispatcher.emit("component:register");
+    eventDispatcher.emit("component:refresh");
   }
-
 }
 
 let clipboardComponent: ComponentElement | null = null;
@@ -519,4 +551,12 @@ export function pasteComponentAction() {
   //     addComponentToCurrentPageAction(componentId);
   //   }
   // }
+}
+
+
+export function addTempApplication(uuid, components) {
+  $components.set({
+    ...$components.get(),
+    [uuid]: components,
+  });
 }

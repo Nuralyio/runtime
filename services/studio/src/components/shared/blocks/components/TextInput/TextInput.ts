@@ -60,7 +60,7 @@ export class TextInputBlock extends BaseElementBlock {
       .value=${this.inputHandlersValue.value} 
       .size=${inputStyles.size}
       .state =${inputStyles.state}
-      placeholder="Text input"
+      placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
     >
     <span slot="label"></span>
     <span slot="helper-text"></span>

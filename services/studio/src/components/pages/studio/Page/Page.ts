@@ -4,9 +4,10 @@ import "../../../shared/blocks/components/Containers/Container";
 import "../../../shared/blocks/components/TextInput/TextInput";
 import "../../../shared/blocks/components/TextLabel/TextLabel";
 import "../../../shared/blocks/wrappers/GenerikWrapper/GenerikWrapper";
+import "../../../shared/blocks/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
 import { $currentApplication, $resizing } from "$store/apps";
-import { moveDraggedComponentIntoCurrentPageRoot, setCurrentComponentIdAction } from "$store/actions/component";
+import { deleteComponentAction, moveDraggedComponentIntoCurrentPageRoot, setCurrentComponentIdAction } from "$store/actions/component";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
 import { $applicationComponents, $components, $draggingComponentInfo, $selectedComponent } from "$store/component/component-sotre";
 import { updatePageInfo } from "$store/actions/page";
@@ -58,9 +59,8 @@ export class PageContent extends LitElement {
 
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
       const components = $applicationComponents(currentAppUuid).get();
-      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value);
+      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root );
       console.log(this.components ,this.currentPage);
-      log.prefix("PageContent : " + this.currentPage.name).info(this.components);
 
     }
     this.requestUpdate();
@@ -81,23 +81,71 @@ export class PageContent extends LitElement {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
 
-    window.addEventListener('keydown', this.handleEscapeKey);
+    window.addEventListener('keydown', this.handleEscapeKey.bind(this));
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('keydown', this.handleEscapeKey);
+    window.removeEventListener('keydown', this.handleEscapeKey.bind(this));
   }
-
   handleEscapeKey(e) {
-    if (e.key === 'Escape') {
-      setVar("global","selectedComponents", []);
-    }else if(e.key === 'Enter'){
-      eventDispatcher.emit("keydown",{
-        key: e.key,
-        selectedComponents : getVar("global","selectedComponents").value ?? []
-      });
+    switch (e.key) {
+      case 'Escape':
+        this.clearSelectedComponents();
+        break;
+      case 'Enter':
+        this.handleEnterKey(e);
+        break;
+      case 'Delete':
+        this.confirmDelete();
+        break;
+      case 'Backspace':
+        if (e.metaKey) {
+          this.confirmDelete();
+        }
+        break;
     }
+  }
+  
+  clearSelectedComponents() {
+    try {
+      setVar("global", "selectedComponents", []);
+    } catch (error) {
+      console.error("Error clearing selected components:", error);
+    }
+  }
+  
+  handleEnterKey(e) {
+    try {
+      const selectedComponents = getVar("global", "selectedComponents").value ?? [];
+      eventDispatcher.emit("keydown", {
+        key: e.key,
+        selectedComponents: selectedComponents
+      });
+    } catch (error) {
+      console.error("Error handling Enter key:", error);
+    }
+  }
+  
+  
+  
+  confirmDelete() {
+    const selectedComponents = getVar("global", "selectedComponents").value ?? [];
+    if (selectedComponents.length > 0) {
+      const confirmation = window.confirm("Are you sure you want to delete the selected components?");
+      if (confirmation) {
+        this.handleDeleteKey();
+      }
+    }
+  }
+  handleDeleteKey() {
+    const selectedComponents = getVar("global", "selectedComponents").value ?? [];
+    selectedComponents.forEach(componentId => {
+      const currentEditingApplication = getVar("global", "currentEditingApplication");
+      const currentAppUuid = currentEditingApplication.value.uuid;
+      deleteComponentAction(componentId, currentAppUuid);
+      console.log(`Removing component with ID: ${componentId}`);
+    });
   }
 
   updatePageInfo(containerWidth) {
@@ -118,6 +166,8 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
+      <rectangle-selection>
+
       <div
         class="page-container"
         style=${styleMap(this.currentPage?.style || {})}
@@ -134,6 +184,8 @@ export class PageContent extends LitElement {
               <p class="page-empty-message">Add an item from the insert panel</p>
             </div>`}
       </div>
+      </rectangle-selection>
+
     `;
   }
 
