@@ -44,6 +44,7 @@ services:
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
       DOMAIN :  ${HOST_DOMAIN:-localhost} 
       KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+      CHAT_HOSTNAME: ${CHAT_HOSTNAME:-chat.copilot.tn:6900}
     volumes:
       - ./Nginx/nginx-backend.conf:/usr/local/openresty/nginx/conf/nginx.conf
 
