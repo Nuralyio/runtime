@@ -202,7 +202,7 @@ self.GetComponents = function (componentIds: string[]): ComponentElement[] {
 self.addEventListener('message', event => {
   port = event.ports[0];
 
-  if (!activated) {
+  if (!activated && port) {
     if (verbose) {
       console.log(`%cWorker : activated`, 'background: #4682B4; color: white; padding: 2px; border-radius: 3px;');
     }
