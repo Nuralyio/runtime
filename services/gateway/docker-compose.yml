@@ -29,6 +29,7 @@ services:
       KEYCLOAK_SCHEME :  ${KEYCLOAK_SCHEME:-http} 
       DOMAIN :  ${HOST_DOMAIN:-localhost} 
       KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io} 
+      CHAT_HOSTNAME: ${CHAT_HOSTNAME:-chat.copilot.tn:6900}
     volumes:
       - ./Nginx/nginx-fully.conf:/usr/local/openresty/nginx/conf/nginx.conf
     ports:
@@ -36,18 +37,18 @@ services:
     depends_on:
       - redis
   nuraly_services:
-      build:
-        context:  ../backend
-        dockerfile: Dockerfile
-      ports:
-        - "${SERVICES_PORT:-8081}:8081"
-      environment:
-        KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
-        KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
-        KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
-      env_file:
-      - .env.default
-      - .env
+       build:
+         context:  ../backend
+         dockerfile: Dockerfile
+       ports:
+         - "${SERVICES_PORT:-8081}:8081"
+       environment:
+         KEYCLOAK_REALM : ${KEYCLOAK_REALM:-nuraly} 
+         KEYCLOAK_CLIENT_ID :  ${KEYCLOAK_CLIENT_ID:-nuraly-stage} 
+         KEYCLOAK_CLIENT_SECRET :  ${KEYCLOAK_CLIENT_SECRET:-xyzzyQs2uEdo6yAHw4pQiqQoDudXlMA2} 
+       env_file:
+       - .env.default
+       - .env
 volumes:
  pgadmin-data:
  postgres-data:
