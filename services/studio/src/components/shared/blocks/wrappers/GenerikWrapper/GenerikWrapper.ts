@@ -64,13 +64,16 @@ export class GenerikComponentWrapper extends LitElement {
   @state()
   showQuickAction = true;
 
+  @property({ type: Boolean })
+  highlighted: boolean;
+
   @state()
   currentSelection = []
 
   inputRef: Ref<HTMLInputElement> = createRef();
   constructor() {
     super();
-    //this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
 
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
@@ -118,6 +121,17 @@ export class GenerikComponentWrapper extends LitElement {
     if (changedProperties.has("component")) {
      this.requestUpdate();
     }
+    if (changedProperties.has("highlighted")) {
+      if(this.highlighted){
+        let currentSelection = (getVar("global", "selectedComponents")?.value || []);
+        setVar("global", "selectedComponents", [...currentSelection, this.component.uuid]);
+      }else{
+        let currentSelection = (getVar("global", "selectedComponents")?.value || []);
+        setVar("global", "selectedComponents", currentSelection.filter((uuid) => uuid !== this.component .uuid));
+      }
+
+      console.log('highlighted: ', this.component);
+     }
   }
 
   onContextMenu(e) {

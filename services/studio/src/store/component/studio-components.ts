@@ -165,18 +165,6 @@ export default [
                 type: "text",
                 value: "Demo button"
             },
-
-            // show : {
-            //     type: "hander",
-            //     value:  /* js */ `
-            //         const currentEditingApplication = GetVar("currentEditingApplication");
-            //         const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-            //         if(!appPages) {
-            //             false;
-            //         }
-            //         appPages?.length;
-            //     `
-            // }
         },
 
         event: {
@@ -319,7 +307,7 @@ export default [
                                     const childrenIds = component.childrenIds;
                                     if(childrenIds?.length){
                                         children[children.length-1]={...children[children.length-1],children:[]};
-                                        findChildren(appId,children[children.length-1].children,childrenIds)
+                                        //findChildren(appId,children[children.length-1].children,childrenIds)
                                     }     
                                 }
                             })

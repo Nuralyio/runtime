@@ -10,31 +10,11 @@ export function addPageAction(page: PageElement) {
   addPageHandler(page)
 }
 
-// export function updatePageAction(page: PageElement) {
-//   const existingPages = $pages.get();
-//   const updatedPages = existingPages.map((existingPage) =>
-//     existingPage.uuid === page.uuid ? page : existingPage
-//   );
-
-//   $pages.set(updatedPages);
-// }
-
-/**
- * 
- * using this 
- * interface PageStore {
-  [key: string]: PageElement[];
-}
-
-export const $pages = atom<PageStore>(initialState);
-export const $resetPageStore = () => { };
-
- */ 
 
 export function addPageToApplicationAction(page: PageElement,applicationId: string) {
     $pages.set({
       ...$pages.get(),
-      [applicationId]: [...($pages.get()[applicationId] || []), page],
+      [applicationId]: [page, ...($pages.get()[applicationId] || [])],
     });
 
     const pages = $pages.get()[applicationId];
@@ -67,7 +47,6 @@ export function addComponentToCurrentPageAction(componentId: string) {
     };
 
     // Set the updated pages to the store
-    console.log(updatedPages);
     $pages.set(updatedPages);
     updatePageHandler(updatedPage)
     // Update the page in the handler
@@ -88,19 +67,32 @@ export function updatePageStyleAttributes(pageId: string, style: any) {
 }
 
 export function removeComponentToCurrentPageAction(removedComponentId: string) {
-  $pages.set([
-    ...$pages.get().map((page: PageElement) => {
-      if (page.uuid === $currentPage.get().uuid) {
-        let { component_ids = [] } = page;
-        component_ids = component_ids.filter(
-          (componentId: string) => componentId !== removedComponentId
-        );
-        page = { ...page, component_ids };
-      }
-      return page;
-    }),
-  ]);
+  const currentApp = $currentApplication.get();
+  const currentAppId = currentApp.uuid;
+  const currentPageId = getVar("global", "currentPage").value;
+
+  const currentPages = $pages.get();
+
+  const currentPage = currentPages[currentAppId].find((page: PageElement) => page.uuid === currentPageId);
+  if (currentPage) {
+    const { component_ids = [] } = currentPage;
+    const updatedComponentIds = component_ids.filter(
+      (componentId: string) => componentId !== removedComponentId
+    );
+    const updatedPage: PageElement = { ...currentPage, component_ids: updatedComponentIds };
+    const updatedPages = {
+      ...currentPages,
+      [currentAppId]: currentPages[currentAppId].map((page: PageElement) =>
+        page.uuid === currentPageId ? updatedPage : page
+      ),
+    };
+
+    // Set the updated pages to the store
+    $pages.set(updatedPages);
+    updatePageHandler(updatedPage);
+  }
 }
+
 
 
 
