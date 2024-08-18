@@ -14,8 +14,7 @@ export const addPageHandler = (page: PageElement, resolve?,reject ?) => {
 		body: JSON.stringify({page : {...page, application_id: $currentApplication.get().uuid}})
 	}).then(res => res.json())
 		.then(
-			(responce) => {
-				const { page } = responce;
+			(page) => {
 				if(resolve){
 					resolve(page)
 				}

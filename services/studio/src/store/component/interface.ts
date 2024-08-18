@@ -17,7 +17,8 @@ export const enum ComponentType {
   Checkbox = "checkbox", 
   DatePicker = "DatePicker",
   Icon = "Icon",
-  Image = "Image"
+  Image = "Image",
+  AI = "AI"
 }
 
 export interface DraggingComponentInfo {
@@ -30,6 +31,7 @@ export interface DraggingComponentInfo {
 
 export interface ComponentElement {
   parent: ComponentElement;
+  root?: boolean;
   uuid: string;
   name: string;
   component_type: ComponentType;

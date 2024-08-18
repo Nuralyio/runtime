@@ -35,7 +35,7 @@ export class TabsBlock extends BaseElementBlock {
     }
 
     private generateComponent(childrensIds: string[]) {
-        const childrens = this.componentsWithChildrens.filter(component => childrensIds.includes(component.uuid));
+        const childrens = this.componentsWithChildrens.filter(component => childrensIds?.includes(component.uuid));
         return html`${renderComponent(childrens, null, true)}`;
     }
 

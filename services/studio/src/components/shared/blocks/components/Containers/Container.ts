@@ -23,6 +23,7 @@ import { renderComponent } from "utils/render-util";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import styles from "./Container.style";
 import { setContextMenuEvent } from "$store/actions/page";
+import { getVar } from "$store/context";
 
 @customElement("vertical-container-block")
 export class VerticalContainer extends LitElement {
@@ -64,10 +65,13 @@ export class VerticalContainer extends LitElement {
 
   @state()
   containerRef: Ref<HTMLInputElement> = createRef();
+  currentEditingApplication: any;
 
   connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener("contextmenu", this.onContextMenu.bind(this));
+    this.currentEditingApplication = getVar("global", "currentEditingApplication").value;
+
   }
 
   onContextMenu(e: MouseEvent) {
@@ -112,7 +116,6 @@ export class VerticalContainer extends LitElement {
               .hoveredComponent=${{ ...this.hoveredComponent }}
             >
               <div
-                draggable="true"
                 @mouseenter="${() => {
             this.dragOverSituation = true;
             setHoveredComponentIdAction(this.component?.uuid);
@@ -177,7 +180,7 @@ export class VerticalContainer extends LitElement {
             ? renderComponent(
               this.component.childrenIds.map((id) =>
               ({
-                ...$components.get().find((component) => component.uuid === id),
+                ...$components.get()[this.currentEditingApplication.uuid].find((component) => component.uuid === id),
                 item: this.item,
               } as ComponentElement)
               ),
