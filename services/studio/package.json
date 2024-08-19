@@ -18,7 +18,7 @@
     "@astrojs/node": "^8.3.2",
     "@astrojs/react": "^3.6.1",
     "@astrojs/tailwind": "^5.1.0",
-    "@astropub/worker": "^0.1.0",
+    "@astropub/worker": "^0.2.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
