@@ -58,7 +58,7 @@ export class TextInputBlock extends BaseElementBlock {
     <hy-input 
       @valueChange=${this.handleValueChange}
       @focused=${this.onFocus}
-      .value=${this.inputHandlersValue.value} 
+      .value=${this.inputHandlersValue.value ??"Text input"} 
       .size=${inputStyles.size ?? nothing}
       .state =${inputStyles.state ?? nothing}
       placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
