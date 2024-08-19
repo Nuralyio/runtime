@@ -16,6 +16,10 @@ export class ElButtonDemoElement extends LitElement {
   _focusHandler(_e: unknown) {
     console.log('e', _e);
   }
+
+  enterPressedHandler(e:CustomEvent){
+    console.log('e ',e.detail.value)
+  }
   override render() {
     return html` <div>
       <h3>Text input</h3>
@@ -24,6 +28,7 @@ export class ElButtonDemoElement extends LitElement {
         size="large"
         @input=${this._changeHandler}
         @focused=${this._focusHandler}
+        @enter-pressed=${this.enterPressedHandler}
       >
         <span slot="label">Large input</span>
         <span slot="helper-text">helper</span>
