@@ -12,6 +12,11 @@ export class SelectBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
+  constructor(){
+    super()
+    console.log('render')
+  }
+
 
   handleValueChange = (e) => {
     if (this.component.event.changed) {
@@ -27,14 +32,15 @@ export class SelectBlock extends BaseElementBlock {
 
   render() {
     const options = this.inputHandlersValue?.value[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value[1];
+    const defaultSelected = this.inputHandlersValue?.value[1]??[];
     return html`
       <span style=${styleMap({ ...this.component.style })}> 
-        <hy-select 
-          @changed=${this.handleValueChange}
-          .options=${options}
-          .defaultSelected="${defaultSelected}"
-        ></hy-select>
+        <hy-select
+        .options=${options}
+        .defaultSelected="${defaultSelected}"
+        @changed=${this.handleValueChange}
+      >
+      </hy-select>
       </span>
     `;
   }

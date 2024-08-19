@@ -4,7 +4,7 @@ export default [
     {
         uuid: "font_weight_block",
         applicationId: "1",
-        name: "Left panel",
+        name: "label font weight block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -22,7 +22,7 @@ export default [
     },
     {
         uuid: "text_label_font_weight",
-        name: "text_label",
+        name: "label font weight",
         component_type: ComponentType.TextLabel,
         
         applicationId: "1",
@@ -43,7 +43,7 @@ export default [
         component_type: ComponentType.Select,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "Left panel",
+        name: "label font weight select",
         input: {
             value: {
                 type: "handler",

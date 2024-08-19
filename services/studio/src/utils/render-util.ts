@@ -104,14 +104,9 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
 export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean): TemplateResult {
   if (!components || !components.length) return html``;
 
-  let componentCache = renderCache.get(components);
-  if (!componentCache) {
-    componentCache = new Map();
-    renderCache.set(components, componentCache);
-  }
+  
 
-  const cacheKey = JSON.stringify({ item, isViewMode });
-  let renderedTemplate = componentCache.get(cacheKey);
+  let renderedTemplate
 
   if (!renderedTemplate) {
     renderedTemplate = html`
@@ -120,7 +115,6 @@ export function renderComponent(components: ComponentElement[], item?: any, isVi
       return renderComponentElement(component, commonProps, isViewMode);
     })}
     `;
-    componentCache.set(cacheKey, renderedTemplate);
   }
 
   return renderedTemplate;
