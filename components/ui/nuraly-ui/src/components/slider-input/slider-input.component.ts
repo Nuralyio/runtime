@@ -1,6 +1,7 @@
 import { LitElement, html, PropertyValueMap } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import styles from './slider-input.style.js';
+import { debounce } from './utils.js';
 
 export class SliderInput extends LitElement {
 	
@@ -96,7 +97,7 @@ export class SliderInput extends LitElement {
 	 * Updates the slider's value width and thumb position (UI).
 	 * @event change
 	 */
-	_updateSlider() {
+	_updateSlider= debounce(()=> {
 		const min = this.min < this._actualMin ? this._actualMin : this.min;
 		const max = this.max > this._actualMax ? this._actualMax : this.max;
 		const percentage = (this.value - min) / (max - min);
@@ -116,6 +117,6 @@ export class SliderInput extends LitElement {
 			}
 		}));
 		this.requestUpdate()
-	}
+	})
 }
 customElements.define('hy-slider-input', SliderInput);
