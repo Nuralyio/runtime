@@ -12,13 +12,15 @@
   <script type="module" src="../dist/components/tabs/index.js"></script>
   <script type="module" src="../dist/components/tabs/demo/tabs-demo.js"></script>
   <style>
-      html {
+     html {
         --theme-bg: white;
         --theme-color: black;
       }
-      body[theme='dark'] {
-        --theme-color: white;
-        --theme-bg: black;
+      @media (prefers-color-scheme: dark) {
+        body{
+          --theme-color: white;
+          --theme-bg: black;
+        }
       }
       body {
         background-color: var(--theme-bg);

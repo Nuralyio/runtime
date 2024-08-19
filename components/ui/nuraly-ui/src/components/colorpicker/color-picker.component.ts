@@ -43,13 +43,6 @@ export class ColorPicker extends LitElement {
   override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('color')) {
       this.checkIsValidColor()
-      this.dispatchEvent(
-        new CustomEvent('color-changed', {
-          detail: {
-            value: this.color,
-          },
-        })
-      );
     }
   }
   private async toggleColorHolder() {
@@ -80,10 +73,22 @@ export class ColorPicker extends LitElement {
   };
   private handleColorChanged(colorChangedEvent: CustomEvent) {
     this.color = colorChangedEvent.detail.value;
+    this.dispatchColorChange()
   }
 
   private onInputChange(inputChangedEvent: CustomEvent) {
     this.color = inputChangedEvent.detail.value;
+    this.dispatchColorChange()
+  }
+  private dispatchColorChange(){
+    this.dispatchEvent(
+      new CustomEvent('color-changed', {
+        detail: {
+          value: this.color,
+        },
+      })
+    );
+
   }
 
   private checkIsValidColor(){
