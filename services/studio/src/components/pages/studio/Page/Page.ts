@@ -20,6 +20,7 @@ import { renderComponent } from "utils/render-util";
 import { $context, getVar, setVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
+import { $environment, ViewMode, type Environment } from "$store/environment";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -30,6 +31,7 @@ export class PageContent extends LitElement {
   @state() components: ComponentElement[] = [];
 
   @property({ type: Boolean }) isViewMode = false;
+  mode: ViewMode;
 
   constructor() {
     super();
@@ -37,7 +39,10 @@ export class PageContent extends LitElement {
     $pages.listen(() => this.refreshComponent());
     $components.listen(() => this.refreshComponent());
     $context.listen(() => this.refreshComponent());
-
+    $environment.subscribe((environment: Environment) => {
+      this.mode = environment.mode;
+      this.requestUpdate();
+    });
     eventDispatcher.on("component:refresh", () => {
       this.refreshComponent()
     });
@@ -167,7 +172,6 @@ export class PageContent extends LitElement {
   render() {
     return html`
       <rectangle-selection>
-
       <div
         class="page-container"
         style=${styleMap(this.currentPage?.style || {})}
@@ -179,7 +183,7 @@ export class PageContent extends LitElement {
         @drop=${this.handleDrop}
       >
         ${this.components.length
-        ? renderComponent(this.components, null, false)
+        ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode)
         : html`<div class="page-empty-message-container">
               <p class="page-empty-message">Add an item from the insert panel</p>
             </div>`}

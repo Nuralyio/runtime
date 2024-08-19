@@ -8,6 +8,8 @@ label{
 
 :host{
     --text-label-color:black;
+    display: flex;
+    
 }
 
 @media (prefers-color-scheme: dark) {

@@ -26,7 +26,7 @@ export class RightPanel extends LitElement {
         <span class="font-mono text-xl font-bold tracking-widest"></span>
       </div>
       <div class="my-4 flex-grow" style="width:355px;height: 100%">
-        <control-panel class="w-full h-full" ></control-panel>
+        <control-panel class="w-full h-full"  style="width:355px;height: 100%"></control-panel>
       </div>
     </aside>`
       : nothing}`;
