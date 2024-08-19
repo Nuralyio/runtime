@@ -22,7 +22,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
-    "@hybridui/button": "^0.0.39",
+    "@hybridui/button": "^0.1.0",
     "@hybridui/checkbox": "^0.0.3",
     "@hybridui/color-picker": "^0.0.5",
     "@hybridui/datepicker": "^0.0.24",
