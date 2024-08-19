@@ -1,7 +1,7 @@
 import {LitElement, html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {styles} from './checkbox.style';
-import {CheckboxSize} from './checkbox.types';
+import {styles} from './checkbox.style.js';
+import {CheckboxSize} from './checkbox.types.js';
 
 @customElement('hy-checkbox')
 export class HyCheckBox extends LitElement {
