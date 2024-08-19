@@ -1,8 +1,13 @@
 import {css} from 'lit';
 
 export const styles = css`
+  :host{
+    display: block;
+    height: 100%;
+  }
    .tabs-container{
     background-color:var(--hybrid-tabs-container-background-color);
+    height: 100%;
    }
   .tab-labels,
   .tabs-container {
