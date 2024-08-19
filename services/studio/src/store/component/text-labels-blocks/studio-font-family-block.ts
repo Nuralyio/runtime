@@ -4,7 +4,7 @@ export default [
     {
         uuid: "font_family_block",
         applicationId: "1",
-        name: "Left panel",
+        name: "label family block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -70,7 +70,7 @@ export default [
         component_type: ComponentType.Select,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "Left panel",
+        name: "label font family select",
         input: {
             value: {
                 type: "handler",
