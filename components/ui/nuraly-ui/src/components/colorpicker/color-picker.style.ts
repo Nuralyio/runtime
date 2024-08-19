@@ -64,9 +64,12 @@ export default css`
     --hybrid-colorpicker-large-width: 35px;
     --hybrid-colorpicker-large-height: 30px;
   }
-  :host([data-theme='dark']) {
-    --hybrid-colorpicker-background-color: #393939;
-    --hybrid-colorpicker-border-color: 1px solid #f4f4f4;
-    --hybrid-colorpicker-disabled-opacity: 0.2;
+ 
+  @media (prefers-color-scheme: dark) {
+    :host { 
+      --hybrid-colorpicker-background-color: #393939;
+      --hybrid-colorpicker-border-color: 1px solid #f4f4f4;
+      --hybrid-colorpicker-disabled-opacity: 0.2;
+    }
   }
 `;
