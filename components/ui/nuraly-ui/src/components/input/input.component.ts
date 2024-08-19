@@ -82,6 +82,15 @@ export class HyInputElement extends LitElement {
       })
     );
   }
+  private handleKeyDown(keyDownEvent:KeyboardEvent){
+    if(keyDownEvent.key ==='Enter'){
+      this.dispatchEvent(
+        new CustomEvent('enter-pressed', {
+          detail: keyDownEvent.target,
+        })
+      );
+    }
+  }
   private onCopy() {
     const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
     input.select();
@@ -116,6 +125,7 @@ export class HyInputElement extends LitElement {
           .type="${this.inputType}"
           @input=${this._valueChange}
           @focus=${this._focusEvent}
+          @keydown=${this.handleKeyDown}
         />
         ${this.withCopy
           ? html`<hy-icon
