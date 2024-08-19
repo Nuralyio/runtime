@@ -4,6 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
+import "@hybridui/input"
 
 
 // Debounce function with default wait time
@@ -58,8 +59,8 @@ export class TextInputBlock extends BaseElementBlock {
       @valueChange=${this.handleValueChange}
       @focused=${this.onFocus}
       .value=${this.inputHandlersValue.value} 
-      .size=${inputStyles.size}
-      .state =${inputStyles.state}
+      .size=${inputStyles.size ?? nothing}
+      .state =${inputStyles.state ?? nothing}
       placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
     >
     <span slot="label"></span>
