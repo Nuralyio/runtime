@@ -44,7 +44,7 @@ export class HySelectComponent extends LitElement {
     this.initSelectedOptions();
   }
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-    if (_changedProperties.has('selected')) {
+    if (_changedProperties.has('selected') && _changedProperties.get('selected')) {
       this.dispatchChangeEvent();
     }
   }
