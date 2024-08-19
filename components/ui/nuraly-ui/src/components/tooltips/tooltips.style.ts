@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './tooltips.variables';
+import {styleVariables} from './tooltips.variables.js';
 
 const tooltipStyles = css`
   :host([show]) {

@@ -1,6 +1,9 @@
 import {css} from 'lit';
 
 export const styles = css`
+   .tabs-container{
+    background-color:var(--hybrid-tabs-container-background-color);
+   }
   .tab-labels,
   .tabs-container {
     display: flex;
@@ -123,6 +126,7 @@ export const styles = css`
     --hybrid-icon-color:var(--hybrid-tabs-add-icon-color);
   }
   :host{
+    --hybrid-tabs-container-background-color:#ffffff;
     --hybrid-tabs-container-box-shadow:none;
     --hybrid-tabs-dragging-start-border:1px dashed black;
     --hybrid-tabs-dragging-enter-background-color:#1661b1;
@@ -168,10 +172,13 @@ export const styles = css`
     --hybrid-tabs-label-color:gray;
     --hybrid-tabs-add-icon-color: #000000;
   }
-  :host([data-theme='dark']) {
-    --hybrid-tabs-content-background-color: #2d2d2d;
-    --hybrid-tabs-label-hover-color: #aaa;
-    --hybrid-tabs-label-active:#ffffff;   
-    --hybrid-tabs-add-icon-color: #ffffff;
-}
+  @media (prefers-color-scheme: dark) {
+    :host{
+      --hybrid-tabs-container-background-color: #000000;
+      --hybrid-tabs-content-background-color: #2d2d2d;
+      --hybrid-tabs-label-hover-color: #aaa;
+      --hybrid-tabs-label-active:#ffffff;   
+      --hybrid-tabs-add-icon-color: #ffffff;
+    }
+  }
 `;
