@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, PropertyValueMap, html, nothing} from 'lit';
-import {property, state, customElement, query} from 'lit/decorators.js';
+import {LitElement, PropertyValues, html, nothing} from 'lit';
+import {property,state, customElement, query} from 'lit/decorators.js';
 import {styles} from './select.style.js';
 import {map} from 'lit/directives/map.js';
 import '../icon/icon.component.js';
@@ -15,7 +15,7 @@ export class HySelectComponent extends LitElement {
   @property()
   options!: IOption[];
   @property()
-  defaultSelected: string[] = [];
+  defaultSelected:string[]=[]
   @property()
   placeholder = 'Select an option';
   @property({type: Boolean, reflect: true})
@@ -39,33 +39,19 @@ export class HySelectComponent extends LitElement {
   @query('.wrapper')
   wrapper!: HTMLElement;
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.initSelectedOptions();
-  }
-  override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-    if (_changedProperties.has('selected') && _changedProperties.get('selected')) {
-      this.dispatchChangeEvent();
+  protected override updated(_changedProperties: PropertyValues): void {
+    if(_changedProperties.has('defaultSelected') && JSON.stringify(_changedProperties.get('defaultSelected'))!=JSON.stringify(this.defaultSelected)){
+      let defaultOptions:IOption[]=[]
+      this.defaultSelected.forEach((value)=>{
+      const option = this.options.find((option)=>option.label ==value)
+      if(option)
+        defaultOptions.push(option)
+     })
+      this.selected =[...defaultOptions]
     }
+    
   }
-  private initSelectedOptions() {
-    if (this.defaultSelected.length) {
-      if (this.selectionMode == OptionSelectionMode.Multiple) {
-        this.defaultSelected.forEach((defaultOption) => {
-          const option = this.options.find((option) => defaultOption == option.label);
-          if (option) {
-            this.selected.push(option);
-          }
-        });
-      } else {
-        const option = this.options.find((option) => this.defaultSelected[0] == option.label);
-        if (option) {
-          this.selected = [option];
-        }
-      }
-    }
-  }
-
+  
   private async toggleOptions() {
     this.show = !this.show;
     await this.updateComplete;
@@ -106,14 +92,17 @@ export class HySelectComponent extends LitElement {
         this.selected = [...this.selected, selectedOption];
       }
     }
+    this.dispatchChangeEvent()
   }
   private unselectAll(unselectAllEvent: Event) {
     unselectAllEvent.stopPropagation();
     this.selected = [];
+    this.dispatchChangeEvent()
   }
   private unselectOne(unselectOneEvent: Event, selectedIndex: number) {
     unselectOneEvent.stopPropagation();
     this.selected = this.selected.filter((_, index) => index != selectedIndex);
+    this.dispatchChangeEvent()
   }
   private dispatchChangeEvent() {
     let result = this.selectionMode == OptionSelectionMode.Single?this.selected[0]:this.selected
