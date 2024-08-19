@@ -9,10 +9,13 @@ export class LeftPanel extends LitElement {
     css`
       .thecontainer {
       --hybrid-tabs-content-background-color: #f8fafc;
+      background: #f8fafc;
     }
     @media (prefers-color-scheme: dark) {
         .thecontainer {
         --hybrid-tabs-content-background-color: #313131;
+      background: #313131;
+
         color:#f8fafc;
       }
     }

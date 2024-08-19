@@ -36,7 +36,7 @@
     "@hybridui/select": "^0.0.10",
     "@hybridui/slider-input": "^0.0.4",
     "@hybridui/table": "^0.0.6",
-    "@hybridui/tabs": "^0.0.16",
+    "@hybridui/tabs": "^0.0.17",
     "@lit-labs/react": "^2.1.2",
     "@lit-labs/ssr-client": "1.1.7",
     "@lit-labs/ssr-dom-shim": "^1.2.0",

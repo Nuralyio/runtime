@@ -2,6 +2,7 @@ import {
   setCurrentComponentIdAction,
   setDraggingComponentInfo,
   setHoveredComponentIdAction,
+  updateComponentAttributes,
 } from "$store/actions/component";
 import {
   type ComponentElement,
@@ -71,7 +72,10 @@ export class GenerikComponentWrapper extends LitElement {
   currentSelection = []
 
   inputRef: Ref<HTMLInputElement> = createRef();
-  constructor() {
+   initialMouseX: number;
+   initialMouseY: number;
+   initialMarginTop: number;
+   initialMarginLeft: number;  constructor() {
     super();
     this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
 
@@ -143,6 +147,12 @@ export class GenerikComponentWrapper extends LitElement {
     setContextMenuEvent(e);
 
   }
+  handleMouseMove = (e: MouseEvent) => {
+    const deltaX = e.clientX - this.initialMouseX;
+    const deltaY = e.clientY - this.initialMouseY;
+    this.inputRef.value.style.marginTop = `${this.initialMarginTop + deltaY}px`;
+    this.inputRef.value.style.marginLeft = `${this.initialMarginLeft + deltaX}px`;
+  };
 
   @state()
   dropDragPalceHolderStyle: any = {};
@@ -172,7 +182,17 @@ export class GenerikComponentWrapper extends LitElement {
       }}
      
           @mousedown="${(e) => {
+    window.addEventListener('mousemove', this.handleMouseMove);
+
         e.stopPropagation();
+        this.initialMouseX = e.clientX;
+    this.initialMouseY = e.clientY;
+
+    const computedStyle = window.getComputedStyle(this.inputRef.value);
+    this.initialMarginTop = parseInt(computedStyle.marginTop, 10);
+    this.initialMarginLeft = parseInt(computedStyle.marginLeft, 10);
+
+
    //    e.preventDefault();
         let currentSelection = (getVar("global", "selectedComponents")?.value || []);
         if (e.metaKey) {
@@ -192,6 +212,17 @@ export class GenerikComponentWrapper extends LitElement {
           @mouseleave="${() => {
         setHoveredComponentIdAction(null);
       }}"
+      @mouseup="${(e) => {
+        //  updateComponentAttributes(this.component.applicationId, this.component.uuid, "style",{
+        //     componentId: this.component.uuid,
+        //     marginTop: this.inputRef.value.style.marginTop,
+        //     marginLeft: this.inputRef.value.style.marginLeft,
+        //   });
+          window.removeEventListener('mousemove', this.handleMouseMove);
+         
+          // window.removeEventListener('mouseup', this.handleMouseUp);
+
+        }}"
         >
           <component-title
             @dragInit=${(e) => {
