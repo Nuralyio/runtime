@@ -77,9 +77,6 @@ export default [
         applicationId: "1",
         name: "name",
         component_type: ComponentType.Tabs,
-        parameters: {
-            value: "22px",
-        },
 
         event: {
             valueChange: `
@@ -130,9 +127,6 @@ export default [
         },
 
         ...COMMON_ATTRIBUTES,
-        style: {
-            width: "250px",
-        },
         childrenIds: ["left_panel_tabs"],
     },
 
@@ -143,15 +137,13 @@ export default [
         applicationId: "1",
         name: "Pages panel",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-
         input: {
             direction: "vertical",
         },
 
         style: {
             width: "225px",
+            height : "100%"
         },
         childrenIds: ["btn_1", "menu_1", "btn_2"],
     },

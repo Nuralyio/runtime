@@ -2,7 +2,6 @@ import { css } from "lit";
 
 const pageStyle = css`
   :host {
-    height: 100vh;
     display: block;
   }
   .page-empty-message-container {
