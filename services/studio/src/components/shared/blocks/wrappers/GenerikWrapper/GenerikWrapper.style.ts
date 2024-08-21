@@ -96,11 +96,36 @@ const ComponentWrapperStyle = css`
     border: 2px dashed rgb(110 110 110);
   }
 
-  ::host .selected {
+  :host .selected {
     background-color: var(--editor-selection-color, #79ade6) !important;
+  
   }
+ .left-resizer {
+  position : absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 
+.left-resizer .text {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5); 
+  padding: 5px;
+  border-radius: 3px;
+}
 
+.left-resizer:hover {
+    background : #79ade6
+}
+.left-resizer:hover .text {
+  display: block;
+}
 `;
 
 export default [ComponentWrapperStyle];

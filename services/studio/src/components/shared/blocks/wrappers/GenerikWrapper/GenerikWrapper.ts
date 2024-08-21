@@ -1,272 +1,221 @@
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { styleMap } from "lit/directives/style-map.js";
+import { classMap } from "lit/directives/class-map.js";
+import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import {
   setCurrentComponentIdAction,
   setDraggingComponentInfo,
   setHoveredComponentIdAction,
   updateComponentAttributes,
 } from "$store/actions/component";
-import {
-  type ComponentElement,
-  type DraggingComponentInfo,
-} from "$store/component/interface";
-import {
-  $draggingComponentInfo,
-} from "$store/component/component-sotre";
-import { LitElement, html} from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
-import { classMap } from "lit/directives/class-map.js";
-import styles from "./GenerikWrapper.style";
-
+import { setContextMenuEvent } from "$store/actions/page";
+import { $draggingComponentInfo } from "$store/component/component-sotre";
+import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
 import { $environment, type Environment, ViewMode } from "$store/environment";
+import { $context, getVar, setVar } from "$store/context";
+
+import styles from "./GenerikWrapper.style";
 
 import "./DragWrapper/DragWrapper";
 import "./ResizeWrapper/ResizeWrapper";
 import "./QuickActionWrapper/QuickActionWrapper";
 import "../ComponentTitle/ComponentTitle";
-import { type Ref, createRef, ref } from "lit/directives/ref.js";
-import { setContextMenuEvent } from "$store/actions/page";
-import { $context, getVar, setVar } from "$store/context";
+
+function safeParseInt(value) {
+  const result = parseInt(value, 10);
+  return isNaN(result) ? 0 : result;
+}
+
 @customElement("generik-component-wrapper")
 export class GenerikComponentWrapper extends LitElement {
-  @property({ type: Object })
-  component: ComponentElement;
-  static styles = styles;
+  @property({ type: Object }) component: ComponentElement;
+  @property({ type: Boolean }) highlighted: boolean;
 
-  @state()
-  selectedComponent: ComponentElement;
-
-  @state()
-  hoveredComponent: ComponentElement;
-
-  @state()
-  displayTitle = true;
-
-  @state()
-  isDraggbale = false;
-
-  @state()
-  isDragintiator = false;
-
-  @state()
-  draggingSituation = false;
-
-  @state()
-  dragOver = false;
-
-  @state()
-  draggingComponentInfo: DraggingComponentInfo;
-
-  @state()
-  environmentMode: ViewMode;
-
-  @state()
-  wrapperStyle: any = {};
-
-  @state()
-  showQuickAction = true;
-
-  @property({ type: Boolean })
-  highlighted: boolean;
-
-  @state()
-  currentSelection = []
+  @state() selectedComponent: ComponentElement;
+  @state() hoveredComponent: ComponentElement;
+  @state() displayTitle = true;
+  @state() isDraggable = false;
+  @state() isDragInitiator = false;
+  @state() draggingSituation = false;
+  @state() dragOver = false;
+  @state() draggingComponentInfo: DraggingComponentInfo;
+  @state() environmentMode: ViewMode;
+  @state() wrapperStyle: any = {};
+  @state() showQuickAction = true;
+  @state() currentSelection = [];
+  @state() dropDragPlaceholderStyle: any = {};
 
   inputRef: Ref<HTMLInputElement> = createRef();
-   initialMouseX: number;
-   initialMouseY: number;
-   initialMarginTop: number;
-   initialMarginLeft: number;  constructor() {
+  resizerRef: Ref<HTMLDivElement> = createRef();
+
+  static styles = styles;
+
+  private isResizing = false;
+  private startX = 0;
+  private startMarginLeft = 0;
+
+  constructor() {
     super();
-    this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+    this.addEventListener("contextmenu", (e) => this.onContextMenu(e));
 
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
-      if (environment.mode === ViewMode.Edit) {
-        this.wrapperStyle = {
-          "pointer-events": "none",
-        };
-      } else {
-        this.wrapperStyle = {};
-      }
+      this.wrapperStyle =
+        environment.mode === ViewMode.Edit ? { "pointer-events": "none" } : {};
     });
-    $context.subscribe(() => { 
-      this.currentSelection = (getVar("global", "selectedComponents")?.value || [])
-
+    $context.subscribe(() => {
+      this.currentSelection = getVar("global", "selectedComponents")?.value || [];
     });
-    $draggingComponentInfo.subscribe(
-      (draggingComponentInfo: DraggingComponentInfo) => {
-        if (draggingComponentInfo) {
-          this.draggingComponentInfo = draggingComponentInfo;
-
-          this.draggingSituation = true;
-          if (this.draggingComponentInfo?.componentId === this.component?.uuid) {
-            if (this.draggingComponentInfo?.blockInfo && !this.draggingComponentInfo?.blockInfo?.height) {
-              this.draggingComponentInfo.blockInfo.height = `${this.inputRef.value?.getBoundingClientRect().height}px`;
-              this.draggingComponentInfo.blockInfo.width = `${this.inputRef.value?.getBoundingClientRect().width}px`;
-              setDraggingComponentInfo({
-                componentId: this.draggingComponentInfo?.componentId,
-                blockInfo: {
-                  ...this.draggingComponentInfo.blockInfo
-                },
-              });
-
-            }
+    $draggingComponentInfo.subscribe((draggingComponentInfo: DraggingComponentInfo) => {
+      if (draggingComponentInfo) {
+        this.draggingComponentInfo = draggingComponentInfo;
+        this.draggingSituation = true;
+        if (this.draggingComponentInfo?.componentId === this.component?.uuid) {
+          if (
+            this.draggingComponentInfo?.blockInfo &&
+            !this.draggingComponentInfo?.blockInfo?.height
+          ) {
+            const rect = this.inputRef.value?.getBoundingClientRect();
+            this.draggingComponentInfo.blockInfo.height = `${rect.height}px`;
+            this.draggingComponentInfo.blockInfo.width = `${rect.width}px`;
+            setDraggingComponentInfo({
+              componentId: this.draggingComponentInfo?.componentId,
+              blockInfo: { ...this.draggingComponentInfo.blockInfo },
+            });
           }
-        } else {
-          this.draggingSituation = false;
-          this.draggingComponentInfo = null;
         }
+      } else {
+        this.draggingSituation = false;
+        this.draggingComponentInfo = null;
       }
-    );
+    });
   }
 
   override updated(changedProperties) {
     super.updated(changedProperties);
-    if (changedProperties.has("component")) {
-     this.requestUpdate();
-    }
-    if (changedProperties.has("highlighted")) {
-      if(this.highlighted){
-        let currentSelection = (getVar("global", "selectedComponents")?.value || []);
-        setVar("global", "selectedComponents", [...currentSelection, this.component.uuid]);
-      }else{
-        let currentSelection = (getVar("global", "selectedComponents")?.value || []);
-        setVar("global", "selectedComponents", currentSelection.filter((uuid) => uuid !== this.component .uuid));
-      }
 
-      console.log('highlighted: ', this.component);
-     }
+    if (changedProperties.has("component")) {
+      this.requestUpdate();
+    }
+
+    if (changedProperties.has("highlighted")) {
+      const currentSelection = getVar("global", "selectedComponents")?.value || [];
+      if (this.highlighted) {
+        setVar("global", "selectedComponents", [...currentSelection, this.component.uuid]);
+      } else {
+        setVar("global", "selectedComponents", currentSelection.filter((uuid) => uuid !== this.component.uuid));
+      }
+    }
   }
 
   onContextMenu(e) {
     e.preventDefault();
     e.stopPropagation();
     setCurrentComponentIdAction(this.component?.uuid);
-    e.ComponentTop = this.inputRef.value?.getBoundingClientRect().top;
-    e.ComponentLeft = this.inputRef.value?.getBoundingClientRect().left;
+    const rect = this.inputRef.value?.getBoundingClientRect();
+    e.ComponentTop = rect.top;
+    e.ComponentLeft = rect.left;
     setContextMenuEvent(e);
-
   }
-  handleMouseMove = (e: MouseEvent) => {
-    const deltaX = e.clientX - this.initialMouseX;
-    const deltaY = e.clientY - this.initialMouseY;
-    this.inputRef.value.style.marginTop = `${this.initialMarginTop + deltaY}px`;
-    this.inputRef.value.style.marginLeft = `${this.initialMarginLeft + deltaX}px`;
-  };
 
-  @state()
-  dropDragPalceHolderStyle: any = {};
+  private handleMouseDown(e: MouseEvent) {
+    e.stopPropagation();
+    let currentSelection = getVar("global", "selectedComponents")?.value || [];
+    if (e.metaKey) {
+      currentSelection.push(this.component.uuid);
+    } else if (e.shiftKey) {
+      currentSelection = currentSelection.filter((uuid) => uuid !== this.component.uuid);
+    } else {
+      currentSelection = [this.component.uuid];
+    }
+    setVar("global", "selectedComponents", [...currentSelection]);
+    this.requestUpdate();
+  }
+
+  private startResizing(e: MouseEvent) {
+    this.isResizing = true;
+    this.startX = e.clientX;
+    this.startMarginLeft = safeParseInt(this.component?.style?.marginLeft) || 0;
+    document.addEventListener("mousemove", this.resize);
+    document.addEventListener("mouseup", this.stopResizing);
+  }
+
+  private updateComponentMarginLeft(newMarginLeft: number) {
+    const updatedStyle = {
+      ...this.component.style,
+      marginLeft: `${newMarginLeft}px`,
+    };
+    this.component = { ...this.component, style: updatedStyle };
+    updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", updatedStyle);
+    this.requestUpdate();
+  }
+
+  private resize = (e: MouseEvent) => {
+    if (this.isResizing) {
+      const deltaX = e.clientX - this.startX;
+      const newMarginLeft = this.startMarginLeft + deltaX;
+      this.updateComponentMarginLeft(newMarginLeft);
+    }
+  }
+
+  private stopResizing = () => {
+    this.isResizing = false;
+    document.removeEventListener("mousemove", this.resize.bind(this));
+    document.removeEventListener("mouseup", this.stopResizing.bind(this));
+    requestAnimationFrame(() => {
+      this.requestUpdate();
+    })
+  }
 
   render() {
     return html`
-  
-    
-    <resize-wrapper
-    .isSelected=${this.currentSelection.includes( this.component.uuid)}
-      .component=${{ ...this.component }}
-      .selectedComponent=${{ ...this.selectedComponent }}
-      .hoveredComponent=${{ ...this.hoveredComponent }}
-    >
-      <drag-wrapper
+      <resize-wrapper
+        .isSelected=${this.currentSelection.includes(this.component.uuid)}
         .component=${{ ...this.component }}
-        .draggingComponentInfo=${{ ...this.draggingComponentInfo }}
-        .isDragintiator=${this.isDragintiator}
+        .selectedComponent=${{ ...this.selectedComponent }}
+        .hoveredComponent=${{ ...this.hoveredComponent }}
       >
-        <span
-          draggable=${this.isDragintiator}
-          class=${classMap({
-      isDraggable: this.isDragintiator,
-    })}
-          @dragend=${() => {
-        this.requestUpdate();
-      }}
-     
-          @mousedown="${(e) => {
-    window.addEventListener('mousemove', this.handleMouseMove);
-
-        e.stopPropagation();
-        this.initialMouseX = e.clientX;
-    this.initialMouseY = e.clientY;
-
-    const computedStyle = window.getComputedStyle(this.inputRef.value);
-    this.initialMarginTop = parseInt(computedStyle.marginTop, 10);
-    this.initialMarginLeft = parseInt(computedStyle.marginLeft, 10);
-
-
-   //    e.preventDefault();
-        let currentSelection = (getVar("global", "selectedComponents")?.value || []);
-        if (e.metaKey) {
-          currentSelection.push(this.component.uuid);
-        }else if (e.shiftKey) {
-          currentSelection.splice(currentSelection.indexOf(this.component.uuid), 1);
-        }else{
-          currentSelection = [this.component.uuid];
-        }
-        setVar("global", "selectedComponents", [...currentSelection]);
-        this.requestUpdate();
-
-      }}"
-          @mouseenter="${() => {
-        setHoveredComponentIdAction(this.component?.uuid);
-      }}"
-          @mouseleave="${() => {
-        setHoveredComponentIdAction(null);
-      }}"
-      @mouseup="${(e) => {
-        //  updateComponentAttributes(this.component.applicationId, this.component.uuid, "style",{
-        //     componentId: this.component.uuid,
-        //     marginTop: this.inputRef.value.style.marginTop,
-        //     marginLeft: this.inputRef.value.style.marginLeft,
-        //   });
-          window.removeEventListener('mousemove', this.handleMouseMove);
-         
-          // window.removeEventListener('mouseup', this.handleMouseUp);
-
-        }}"
+        <drag-wrapper
+          .component=${{ ...this.component }}
+          .draggingComponentInfo=${{ ...this.draggingComponentInfo }}
+          .isDragInitiator=${this.isDragInitiator}
         >
-          <component-title
-            @dragInit=${(e) => {
-        this.isDragintiator = e.detail.value;
-      }}
-            .component=${{ ...this.component }}
-            .selectedComponent=${{ ...this.selectedComponent }}
-          ></component-title>
-          <!--span
-            style=${styleMap({
-        display:
-          this.selectedComponent?.uuid === this.component.uuid &&
-            this.displayTitle
-            ? "block"
-            : "none",
-      })}
-            @mousedown=${(e: Event) => {
-        this.isDragintiator = true;
-        setTimeout(() => {
-          setDraggingComponentInfo({
-            componentId: this.component?.uuid,
-            blockInfo: {
-              height: this.component.style.height,
-              width: this.component.style.width,
-            },
-          });
-        }, 100);
-      }}
-            @mouseup=${(e: Event) => {
-        e.preventDefault();
-        this.isDragintiator = false;
-        setDraggingComponentInfo(null);
-      }}
-            class="component-name"
-            >${this.component.name}</span
-          -->
-          <div  ${ref(this.inputRef)}   class=${classMap({
-        selected:
-          this.selectedComponent?.uuid === this.component.uuid
-      })} >
-            <slot></slot>
-          </div>
-        </span>
-      </drag-wrapper>
-    </resize-wrapper>`;
+          <span
+            draggable=${this.isDragInitiator}
+            class=${classMap({ isDraggable: this.isDragInitiator })}
+            @dragend=${() => this.requestUpdate()}
+            @mousedown=${(e) => this.handleMouseDown(e)}
+            @mouseenter=${() => setHoveredComponentIdAction(this.component?.uuid)}
+            @mouseleave=${() => setHoveredComponentIdAction(null)}
+          >
+            <component-title
+              @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}
+              .component=${{ ...this.component }}
+              .selectedComponent=${{ ...this.selectedComponent }}
+            ></component-title>
+            <div
+              ${ref(this.inputRef)}
+              class=${classMap({ selected: this.selectedComponent?.uuid === this.component.uuid })}
+            >
+              <div
+                ${ref(this.resizerRef)}
+                class="left-resizer"
+                style=${styleMap({
+                  width: `${safeParseInt(this.component?.style?.marginLeft) + 10}px`,
+                  zIndex: 1000,
+                  height: `${this.inputRef?.value?.offsetHeight}px`,
+                  cursor: "ew-resize",
+                })}
+                @mousedown=${this.startResizing}
+              >
+                <span class="text">${safeParseInt(this.component?.style?.marginLeft)}px</span>
+              </div>
+              <slot></slot>
+            </div>
+          </span>
+        </drag-wrapper>
+      </resize-wrapper>
+    `;
   }
 }

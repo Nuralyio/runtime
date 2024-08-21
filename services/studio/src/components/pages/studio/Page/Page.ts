@@ -12,7 +12,7 @@ import { type ComponentElement, type DraggingComponentInfo } from "$store/compon
 import { $applicationComponents, $components, $draggingComponentInfo, $selectedComponent } from "$store/component/component-sotre";
 import { updatePageInfo } from "$store/actions/page";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
-import { $currentPage, $currentPageViewPort, $pages } from "$store/page";
+import { $applicationPages, $currentPage, $currentPageViewPort, $pages } from "$store/page";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -85,7 +85,10 @@ export class PageContent extends LitElement {
     window.onresize = () => {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
-
+    const currentPage = getVar("global", "currentPage");
+    if(!currentPage) {
+      setVar( "global" , "currentPage" , $applicationPages($currentApplication.get().uuid).get()[0].uuid );
+    }
     window.addEventListener('keydown', this.handleEscapeKey.bind(this));
   }
 
