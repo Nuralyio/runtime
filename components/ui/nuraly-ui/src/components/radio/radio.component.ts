@@ -30,17 +30,15 @@ export class HyRadioComponent extends LitElement {
 
   isAllDisabled = false;
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.selectedOption = this.defaultValue;
-  }
-
   override willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     if (_changedProperties.has('options')) {
       const option = this.options.find((option) => option.value == this.defaultValue && option.disabled);
       if (option) {
         this.isAllDisabled = true;
       }
+    }
+    if(_changedProperties.has('defaultValue') && _changedProperties.get('defaultValue')!=this.defaultValue){
+      this.selectedOption = this.defaultValue;
     }
   }
 
