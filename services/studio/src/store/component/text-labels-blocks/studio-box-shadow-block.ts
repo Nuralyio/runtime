@@ -37,18 +37,16 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 if (currentComponent.style["box-shadow"]) {
-                    console.log('box shadow values ',currentComponent.style["box-shadow"])
-                    const values = currentComponent.style["box-shadow"].match(/-?\d+px/g);  
-                    console.log('values ',values)                  
+                    const values = currentComponent.style["box-shadow"].match(/-?[0-9]+px/g);  
                     const horizontalValue = parseInt(values[0], 10);
                     const verticalValue = parseInt(values[1], 10);
                     const blurValue = parseInt(values[2], 10);
                     const spreadValue = parseInt(values[3], 10);
                     const colorMatch = currentComponent.style["box-shadow"].match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/);
-                    const insetMatch = currentComponent.style["box-shadow"].match(/\binset\b/);
-                    const insetValue = insetMatch[0] ? true : false;
-                    const colorValue = colorMatch ? colorMatch[0] : "#000000";
-                    [horizontalValue,verticalValue,blurValue,spreadValue,insetValue,colorValue]
+                    const insetMatch = currentComponent.style["box-shadow"].includes('inset');
+                    const colorValue = colorMatch ? colorMatch[0] : "#ffffff";
+                    const result=[horizontalValue,verticalValue,blurValue,spreadValue,insetMatch,colorValue];
+                    result;
 
                 }
                 else {

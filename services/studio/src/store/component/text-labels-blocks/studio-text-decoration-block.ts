@@ -58,153 +58,51 @@ export default [
             display: 'flex',
             gap: "10px"
         },
-        childrenIds: ["text_decoration_overline", "text_decoration_line_through", "text_decoration_underline", "text_decoration_underline_overline", "text_decoration_none"],
+        childrenIds: ["text_decoration_content"],
     },
     {
-        uuid: "text_decoration_overline",
+        uuid: "text_decoration_content",
         name: "name",
         applicationId: "1",
-        component_type: ComponentType.IconButton,
+        component_type: ComponentType.RadioButton,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "font-awesome",
-        },
+        input: {
+            value: {
+                type: "handler",
+                value: /* js */ `
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                const defaultTextDecoration = currentComponent.style['text-decoration'] ||'';
+                const options =[{value:'overline',icon: "font-awesome"},
+                                {value:'line-through',icon: "strikethrough"},
+                                {value:'underline',icon: "underline"},
+                                {value:'underline overline',icon: "grip-lines"},
+                                {value:'none',icon: "xmark"}]
 
+
+                const radioType='button';
+                const result =[options,defaultTextDecoration,radioType];
+                result;           
+                `
+            }
+        },
         event: {
-            click: /* js */ `
-           
+            changed: /* js */ `
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
+                if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-decoration", "overline");
-        
+                    const textDecorationValue = EventData.value?EventData.value:''
+                    updateStyle(currentComponent, "text-decoration", textDecorationValue);
                 }
             }catch(error){
                 console.log(error);
-            }
-            
+            }   
       `
         },
 
-    },
-    {
-        uuid: "text_decoration_line_through",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "strikethrough",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-decoration", "line-through");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-    },
-
-    {
-        uuid: "text_decoration_underline",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "underline",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-decoration", "underline");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-    },
-    {
-        uuid: "text_decoration_underline_overline",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "grip-lines",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-decoration", "underline overline");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-    },
-    {
-        uuid: "text_decoration_none",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "xmark",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-decoration", "none");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-    },
+    }
 ]

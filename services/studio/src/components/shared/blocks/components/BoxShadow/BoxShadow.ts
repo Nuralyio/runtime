@@ -5,6 +5,13 @@ import "@hybridui/checkbox";
 import "@hybridui/slider-input"
 import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
+function debounce(func, wait = 100) {
+	let timeout;
+	return function (...args) {
+	  clearTimeout(timeout);
+	  timeout = setTimeout(() => func.apply(this, args), wait);
+	};
+  }
 export class AttributeBoxShadowValue extends BaseElementBlock {
 	@property()
 	component: ComponentElement;
@@ -57,21 +64,6 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 
 	@state()
 	insetValue = false;
-	
-    firstUpdated(_changedProperties: PropertyValues): void {
-	    this.horizontalValue= this.inputHandlersValue.value[0];
-		this.verticalValue= this.inputHandlersValue.value[1];
-		this.blurValue= this.inputHandlersValue.value[2];
-		this.spreadValue= this.inputHandlersValue.value[3];
-		this.insetValue= this.inputHandlersValue.value[4];
-		this.colorValue= this.inputHandlersValue.value[5]
-    }  
-
-	updated(_changedProperties: PropertyValues): void {
-		if(_changedProperties.has('horizontalValue') || _changedProperties.has('verticalValue') || _changedProperties.has('blurValue') || _changedProperties.has('spreadValue') || _changedProperties.has('colorValue') || _changedProperties.has('insetValue')) {
-			this.boxShadow();
-		}
-	}
 
 	boxShadow() {
 		const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
@@ -93,10 +85,20 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 	toggleShadowBox() {
 		this.shadowBox = !this.shadowBox;
 	}
+	handleColorChange =debounce((e)=>{
+		this.colorValue = e.detail.value;
+		this.boxShadow()
+	})
 
 	override render() {
+		this.horizontalValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[0]:0;
+		this.verticalValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[1]:0;
+		this.blurValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[2]:0;
+		this.spreadValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[3]:0;
+		this.insetValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[4]:false;
+		this.colorValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[5]:'#000000'
 		return html`
-		<hy-checkbox .checked=${this.insetValue} @checkbox-changed=${(e) => { this.insetValue = e.detail.value}} >
+		<hy-checkbox .checked=${this.inputHandlersValue?.value?this.inputHandlersValue.value[4]:false} @checkbox-changed=${(e) => { this.insetValue = e.detail.value;this.boxShadow()}} >
 		${this.insetValue ? html`Disable` : html`Enable`} Shodow Box
 		</hy-checkbox>
 		<div>
@@ -108,12 +110,21 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
-			          .value=${this.horizontalValue}
-			           @changed="${(e) => (this.horizontalValue = e.detail.value) }"
+			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[0]:0}
+			           @changed="${(e) => {this.horizontalValue = e.detail.value ;this.boxShadow()}}"
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input   .value=${this.horizontalValue + "px"} @ch></hy-input>
+		        	 <hy-input .value=${this.horizontalValue}
+					 @valueChange=${(e)=>{
+						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
+						{ 
+							this.horizontalValue = e.detail.value;
+							this.boxShadow()
+						}
+					}}
+					 >
+					 </hy-input>
 		        </div>
 			</div>
 
@@ -125,12 +136,22 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
-			          .value=${this.verticalValue}
-			           @changed="${(e) => (this.verticalValue = e.detail.value)}"
+			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[1]:0}
+			           @changed="${(e) => {this.verticalValue = e.detail.value;this.boxShadow()}}"
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input .value=${this.verticalValue + "px"}></hy-input>
+		        	 <hy-input .value=${this.verticalValue} 
+					 @valueChange=${(e)=>{
+						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
+						{ 
+							this.verticalValue = e.detail.value;
+							this.boxShadow()
+						}
+					}}
+					 
+					 >
+					 </hy-input>
 		        </div>
 			</div>
 
@@ -142,13 +163,23 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
-			          .value=${this.blurValue}
-			           @changed="${(e) => (this.blurValue = e.detail.value) }"
+			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[2]:0}
+					  @changed="${(e) => {this.blurValue = e.detail.value;this.boxShadow()} }"
 
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input   .value=${this.blurValue + "px"}></hy-input>
+		        	 <hy-input   
+					 .value=${this.blurValue} 
+					 @valueChange=${(e)=>{
+						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
+						{ 
+							this.blurValue = e.detail.value;
+							this.boxShadow()
+						}
+					}}
+					>
+					</hy-input>
 		        </div>
 			</div>
 
@@ -160,24 +191,29 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
-			          .value=${this.spreadValue}
-			           @changed="${(e) => (this.spreadValue = e.detail.value) }"
-
+			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[3]:0}
+			           @changed="${(e) => {this.spreadValue = e.detail.value;this.boxShadow()} }"
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input  .value=${this.spreadValue + "px"}></hy-input>
+		        	 <hy-input  .value=${this.spreadValue }
+					 @valueChange=${(e)=>{
+						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
+						{ 
+							this.spreadValue = e.detail.value;
+							this.boxShadow()
+						}
+					}}
+					 ></hy-input>
 		        </div>
 			</div>
 			<div>
 			<hy-color-picker
 			style="height: 100px; width: 100%;"
-    .color="${this.colorValue}"
-    @color-changed="${(e) => (this.colorValue = e.detail.value)}"
+    .color="${this.inputHandlersValue?.value?this.inputHandlersValue.value[5]:'#000000'}"
+    @color-changed="${this.handleColorChange}"
     ></hy-color-picker>
-    </div>
-
-				
+    </div>			
 		</div>
         `	
 	}
