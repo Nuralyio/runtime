@@ -54,11 +54,6 @@ export class AttributeBorderValue extends BaseElementBlock {
     `,
 	];
 
-	firstUpdated(_changedProperties: PropertyValues): void {
-		this.borderRadius = this.inputHandlersValue.value[0];
-		this.unity = this.inputHandlersValue.value[1];
-	}
-
 	// Debounced changed event handler
 	debouncedChanged = debounce((e: Event) => {
 		if (this.component.event.borderRadiusChanged) {
@@ -71,6 +66,8 @@ export class AttributeBorderValue extends BaseElementBlock {
 	}, 100); // Adjust the debounce delay as needed
 
 	override render() {
+    this.borderRadius = this.inputHandlersValue.value?this.inputHandlersValue.value[0]:0;
+		this.unity = this.inputHandlersValue.value[1];
 		return html`
       <div style="display: flex">
         <div class="first-row">

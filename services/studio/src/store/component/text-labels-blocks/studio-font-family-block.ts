@@ -107,7 +107,7 @@ export default [
             if(fontFamily){
                 selectedFontFamily = options.find((option)=> option.value == fontFamily);   
             }
-            const result =[options,[selectedFontFamily? selectedFontFamily.label : "initial"]]
+            const result =[options,[selectedFontFamily? selectedFontFamily.label : ""]]
             result;
                 
                 `

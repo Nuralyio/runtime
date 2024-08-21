@@ -49,7 +49,7 @@ export default [
             display: 'flex',
             'justify-content': 'space-between'
         },
-        childrenIds: ["text-align-left", "text-align-center", "text-align-right", "text-align-justify", "text-align-top", "text-align-bottom"],
+        childrenIds: ["text-align-content"],
     },
     {
         uuid: "text_label_alignement",
@@ -68,270 +68,48 @@ export default [
         },
     },
     {
-        uuid: "text-align-left",
+        uuid: "text-align-content",
         name: "name",
         applicationId: "1",
-        component_type: ComponentType.IconButton,
+        component_type: ComponentType.RadioButton,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "align-left",
-        },
 
+        input: {
+            value: {
+                type: "handler",
+                value: /* js */ `
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let defaultTextAlign = currentComponent.style['text-align'] ||'';
+                const options =[{value:'left',icon: "align-left"},
+                                {value:'right',icon: "align-right"},
+                                {value:'center',icon: "align-center"},
+                                {value:'justify',icon: "align-justify"},
+                                {value:'top',icon: "arrow-up"},
+                                {value:'bottom',icon: "arrow-down"}
+                              ]
+                const radioType='button';
+                const result =[options,defaultTextAlign,radioType];
+                result;           
+                `
+            }
+        },
         event: {
-            click: /* js */ `
-           
+            changed: /* js */ `
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-align", "left");
-        
+                    const textAlignValue = EventData.value?EventData.value:''
+                    updateStyle(currentComponent, "text-align", textAlignValue);
                 }
             }catch(error){
                 console.log(error);
-            }
-            
+            }  
       `
         },
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['text-align']|| "right";
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-        }
     },
-    {
-        uuid: "text-align-right",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "align-right",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-align", "right");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['text-align']|| "right";
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-        }
-    },
-    {
-        uuid: "text-align-center",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "align-center",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-align", "center");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['text-align']|| "right";
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-        }
-    },
-    {
-        uuid: "text-align-justify",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "align-justify",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "text-align", "justify");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['text-align']|| "right";
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-        }
-    },
-    {
-        uuid: "text-align-top",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "arrow-up",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "display", "inline-block");
-                    updateStyle(currentComponent, "vertical-align", "top");
-
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['vertical-align']|| "top";
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-        }
-    },
-    {
-        uuid: "text-align-bottom",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "arrow-down",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "display", "inline-block");
-                    updateStyle(currentComponent, "vertical-align", "bottom");
-
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-        inputHandlers: {
-            value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                currentComponent.style['vertical-align']|| "top";
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-        }
-    },
-
 ] 

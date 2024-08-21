@@ -32,6 +32,7 @@ export class IconButtonBlock extends BaseElementBlock {
     const { style } = this.component ?? {};
     const { icon } = this.component?.parameters ?? {};
     const color = this.thisvalue ?? this.item?.value ?? "";
+    const type=this.inputHandlersValue.value??'default'
 
     return html`
       <span style=${styleMap(style)}>
@@ -39,6 +40,7 @@ export class IconButtonBlock extends BaseElementBlock {
           @mousedown=${this.handleClick}
           .color=${color}
           .icon=${[icon]}
+          .type=${type}
         ></hy-button>
       </span>
     `;

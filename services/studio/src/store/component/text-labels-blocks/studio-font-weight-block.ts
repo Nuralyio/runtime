@@ -18,7 +18,7 @@ export default [
             'flex-direction': 'column',
             'margin-top': '10px',
         },
-        childrenIds: ["text_label_font_weight", "font_weight_select"],
+        childrenIds: ["text_label_font_weight", "font_weight_content"],
     },
     {
         uuid: "text_label_font_weight",
@@ -38,54 +38,45 @@ export default [
         },
     },
     {
-        uuid: "font_weight_select",
+        uuid: "font_weight_content",
         applicationId: "1",
-        component_type: ComponentType.Select,
+        component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "label font weight select",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let fontWeight = currentComponent.style['font-weight'];
-                    let selectedFontWeight;
-                    const options = [{label: "Normal",value: "normal"},{label:'Bold',value:'bold'},{label:'Extra bold',value:'800'}]
-                    if(fontWeight){
-                        selectedFontWeight = options.find((option)=> option.value == fontWeight);   
-                    }
-                    const result = [options,[selectedFontWeight?selectedFontWeight.label:'Normal']]
-                    result;
-                }
-                catch(e){
-                    console.log(e)
-                }
-
-                
-                `
-            }
-        },
+        name: "label font weight",
+        
         style: {
            
                 display:'block',
                 width: "350px",
             
         },
+        input: {
+            value: {
+                type: "handler",
+                value: /* js */ `
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let defaultFontWeight = currentComponent.style['font-weight'] ||'';
+                const options =[{value:'normal',icon: "font-awesome"},
+                                {value:'bold',icon: "bold"},
+                                {value:'900',icon: "font-awesome"}]
+                const radioType='button';
+                const result =[options,defaultFontWeight,radioType];
+                result;           
+                `
+            }
+        },
         event: {
             changed: /* js */ `
-
-            try{
+           try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
+                if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const fontWeightValue = EventData.value?EventData.value:'initial'
+                    const fontWeightValue = EventData.value?EventData.value:''
                     updateStyle(currentComponent, "font-weight", fontWeightValue);
-        
                 }
             }catch(error){
                 console.log(error);

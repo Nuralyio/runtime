@@ -52,89 +52,41 @@ export default [
             display: 'flex',
             gap: "10px"
         },
-        childrenIds: ["font_style_normal", "font_style_italic", "font_style_oblique"],
+        childrenIds: ["font_style_content"],
     },
     {
-        uuid: "font_style_normal",
+        uuid: "font_style_content",
         name: "name",
         applicationId: "1",
-        component_type: ComponentType.IconButton,
+        component_type: ComponentType.RadioButton,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "font-awesome",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
+        input: {
+            value: {
+                type: "handler",
+                value: /* js */ `
                 const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "font-style", "normal");
-        
-                }
-            }catch(error){
-                console.log(error);
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let defaultFontStyle = currentComponent.style['font-style'] ||'';
+                const options =[{value:'normal',icon: "font-awesome"},
+                                {value:'italic',icon: "italic"},
+                                {value:'oblique',icon: "font-awesome"}]
+                const radioType='button';
+                const result =[options,defaultFontStyle,radioType];
+                result;           
+                `
             }
-            
-      `
         },
-
-    },
-    {
-        uuid: "font_style_italic",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "italic",
-        },
-
         event: {
-            click: /* js */ `
-           
+            changed: /* js */ `
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "font-style", "italic");
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
-      `
-        },
-    },
-
-    {
-        uuid: "font_style_oblique",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.IconButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        parameters: {
-            icon: "font-awesome",
-        },
-
-        event: {
-            click: /* js */ `
-           
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "font-style", "oblique");
-        
+                    const fontStyleValue = EventData.value?EventData.value:''
+                    updateStyle(currentComponent, "font-style", fontStyleValue);
                 }
             }catch(error){
                 console.log(error);
