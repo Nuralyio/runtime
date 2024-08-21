@@ -5,6 +5,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';
 import { BaseElementBlock } from '../BaseElement';
 import { eventDispatcher } from 'utils/change-detection';
+import { styleMap } from 'lit/directives/style-map.js';
 
 @customElement('tabs-block')
 export class TabsBlock extends BaseElementBlock {
@@ -20,6 +21,7 @@ export class TabsBlock extends BaseElementBlock {
     static override styles = css`
     :host {
       display: block;
+      height: 100%;
     }
   `;
     tabsValueRecived(tabs: any) {
@@ -30,7 +32,7 @@ export class TabsBlock extends BaseElementBlock {
         super();
         this.registerCallback('tabs', this.tabsValueRecived.bind(this));
         eventDispatcher.on('component:refresh', () => {
-             this.updateComponents();
+            this.updateComponents();
         })
     }
 
@@ -68,9 +70,12 @@ export class TabsBlock extends BaseElementBlock {
 
     override render() {
         return html`
-      <div>
         ${this.editableTabs?.length > 0 ? html`
           <hy-tabs
+          style=${styleMap({
+
+            ...this.component.style,
+        })}
             .activeTab=${0}
             .tabs=${this.editableTabs}
             .editable=${{
@@ -81,7 +86,6 @@ export class TabsBlock extends BaseElementBlock {
                 }}
           ></hy-tabs>
         ` : ''}
-      </div>
     `;
     }
 }

@@ -64,7 +64,6 @@ export default [
             try{
             SetContextVar("text_label_value", EventData.value);
             updateStyle(app1.text_label, "color", EventData.value);
-            console.log(GetContextVar("text_label_value"));
             }catch(e){
                 console.log(e);
             }
@@ -77,14 +76,10 @@ export default [
         applicationId: "1",
         name: "name",
         component_type: ComponentType.Tabs,
-        parameters: {
-            value: "22px",
-        },
 
         event: {
             valueChange: `
         updateStyle(app1.text_label, "color", EventData.value);
-        console.log("app1",app1);
       `
         },
         ...COMMON_ATTRIBUTES,
@@ -124,14 +119,13 @@ export default [
         applicationId: "1",
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
         input: {
             direction: "vertical",
         },
-
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "250px",
+        style:{
+            width: "100%",
+            height: "100%",
+            display: "grid"
         },
         childrenIds: ["left_panel_tabs"],
     },
@@ -143,15 +137,13 @@ export default [
         applicationId: "1",
         name: "Pages panel",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-
         input: {
             direction: "vertical",
         },
 
         style: {
             width: "225px",
+            height : "100%"
         },
         childrenIds: ["btn_1", "menu_1", "btn_2"],
     },
@@ -268,9 +260,7 @@ export default [
                 type: "handler",
                 value: /* js */ `
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                console.log('currentEditingApplication', currentEditingApplication);
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                console.log(appPages)
                 if(!appPages) {
                      [];
                 }else{
@@ -329,19 +319,18 @@ export default [
     {
         uuid: "right_panel_tabs",
         applicationId: "1",
-        name: "name",
+        name: "right_panel_tabs",
         component_type: ComponentType.Tabs,
-        parameters: {
-            value: "22px",
-        },
-
         event: {
             valueChange: `
-        updateStyle(app1.text_label, "color", EventData.value);
-        console.log("app1",app1);
-      `
+                updateStyle(app1.text_label, "color", EventData.value);
+            `
         },
-        ...COMMON_ATTRIBUTES,
+        style:{
+            width : "100%",
+            height : "100%",
+            disply: "grid"
+        },
         input: {
             tabs: {
                 type: "handler",
