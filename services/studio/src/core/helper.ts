@@ -167,7 +167,12 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
             setTimeout(() => {
               updateComponentAttributes(component.applicationId, component.uuid, "event", eventData);
             }, 0);
-            break
+            break;
+          case 'updateInput':
+            setTimeout(() => {
+              updateComponentAttributes(component.applicationId, component.uuid, "input", eventData);
+            }, 0);
+            break;
         case 'addPage':
           const { requestId } = event.data;
           addPageHandler(eventData.page, (page) => {
