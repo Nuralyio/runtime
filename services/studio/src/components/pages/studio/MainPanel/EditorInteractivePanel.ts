@@ -11,6 +11,8 @@ import { type ComponentElement } from '$store/component/interface';
 import { $selectedComponent } from "$store/component/component-sotre";
 import { type Ref, createRef, ref } from 'lit/directives/ref.js';
 import { $currentApplication } from '$store/apps';
+import "../Layout/ThemeContainer";
+
 
 @customElement('editor-interactive-panel')
 export class EditorInteractivePanel extends LitElement {
@@ -25,7 +27,6 @@ export class EditorInteractivePanel extends LitElement {
     :host {
       height: 100vh;
       display: block;
-      background-color: #949494;
     }
     .page-container {
       width: 100%;
@@ -33,7 +34,6 @@ export class EditorInteractivePanel extends LitElement {
     }
     .zoom-area {
       overflow: visible;
-      background-color: white;
       min-height: 800px;
     }
     .zoom-controll {
@@ -123,6 +123,7 @@ export class EditorInteractivePanel extends LitElement {
 
   render() {
     return html`
+    <theme-contaienr>
       <div>
         <quick-action-wrapper
           ${ref(this.inputRef)}
@@ -144,6 +145,7 @@ export class EditorInteractivePanel extends LitElement {
           </div>
         </div>
       </div>
+      </theme-contaienr>
     `;
   }
 }

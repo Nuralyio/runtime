@@ -32,20 +32,14 @@ export class TopbarAppActions extends LitElement {
     );
   }
   render() {
-    return html`<div class="app-action-wrapper">
+    return html`<div class="app-action-wrapper" >
       <!-- <hy-button icon="comment"></hy-button> -->
       <hy-button
         @click=${() => {
-        if (this.viewTab) {
-          this.viewTab.close();
-        } else {
-          this.viewTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
-        }
-        const newTab = window.open(`/app/view/${this.application.uuid}`, '_blank');
-
+        this.togglePreviewMode();
       }
       }
-        .icon=${this.environmentMode === ViewMode.Edit ? ["play"] : ["edit"]}
+        .icon=${this.environmentMode === ViewMode.Edit ? ["play"] : ["pencil"]}
       ></hy-button>
     </div>`;
   }

@@ -1,3 +1,4 @@
+import { $environment, ViewMode, type Environment } from '$store/environment';
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
@@ -27,7 +28,14 @@ class SelectableElement extends LitElement {
 class RectangleSelection extends LitElement {
   @property({ type: Object }) selectionStart = null;
   @property({ type: Object }) selectionRect = null;
-
+  mode: ViewMode;
+  constructor(){
+    super();
+    $environment.subscribe((environment: Environment) => {
+      this.mode = environment.mode;
+      this.requestUpdate();
+    });
+  }
   static styles = css`
     :host {
       display: block;
@@ -88,6 +96,7 @@ class RectangleSelection extends LitElement {
   }
 
   updateSelection(event) {
+    if(this.mode === ViewMode.Preview) return;
     if (!this.selectionRect) return;
 
     requestAnimationFrame(() => {

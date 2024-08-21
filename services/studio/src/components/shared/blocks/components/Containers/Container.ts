@@ -89,8 +89,9 @@ export class VerticalContainer extends LitElement {
     return html`
       <div
         style=${styleMap({
-      ...this.component.style,
+     
       "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
+      ...this.component.style,
     })}
         class=${classMap({
       container: true,

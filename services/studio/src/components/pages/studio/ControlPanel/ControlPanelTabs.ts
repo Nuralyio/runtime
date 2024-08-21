@@ -34,9 +34,7 @@ export class ParametersPanel extends LitElement {
 
   render() {
     return html`
-      <div style="color:white">
       <micro-app uuid="1" componentToRenderUUID="right_panel_tabs"></micro-app>
-      </div>
     `;
   }
 }
