@@ -393,7 +393,7 @@ export function updateComponentAttributes(
         updateComponentHandler(componentToUpdate, applicationId);
       }, 0);
     } else {
-      console.log('Attributes are the same, no update needed.');
+      console.log('Attributes are the same, no update needed.', updatedAttributes);
     }
   }
 
