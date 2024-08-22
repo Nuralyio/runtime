@@ -28,8 +28,7 @@ export class ComponentService {
   }
 
   public async update(component: Component, uuid: string): Promise<Component> {
-    const ucomponent: Component = new Component(component.component, component.user_id, uuid, component.application_id);
-    return await this.ComponentRepository.update(uuid, ucomponent);
+    return await this.ComponentRepository.update(uuid, component);
   }
 
   public async delete(uuid: string): Promise<Component> {

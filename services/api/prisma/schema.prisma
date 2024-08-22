@@ -72,7 +72,7 @@ model pages {
   url                   String
   application_id        String
   user_id               String
-  uuid                  String
+  uuid                  String @unique
   need_authentification Boolean  @default(false) @map("need_authentication")
 
   @@map("pages")

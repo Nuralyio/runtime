@@ -34,7 +34,7 @@ export class PageRepository implements IPageRepository {
 
     public async findPagesByApplicationUUID(uuid: string): Promise<Page[]> {
         const pages = await prisma.pages.findMany(
-            { where: { application_id : uuid } }
+            { where: { application_id : uuid } , orderBy: { id: 'asc' } }
         );
         return pages.reverse().map((page: any) => new Page(
             page.name,
@@ -64,29 +64,22 @@ export class PageRepository implements IPageRepository {
             page.component_id
         ));
     }
-    public async update(id: number, page: Page): Promise<Page> {
-        const { name, url, application_id, user_id, uuid, need_authentification } = page;
+    public async update( page: Page): Promise<Page> {
+        const { name, url, application_id, user_id, uuid, need_authentification, component_ids } = page;
 
         const updatedPage = await prisma.pages.update({
-            where: { id },
+            where: { uuid },
             data: {
                 name,
                 url,
                 application_id,
                 user_id,
                 uuid,
-                need_authentification
+                need_authentification,
+                component_ids
             }
         });
-        return new Page(
-            updatedPage.name,
-            updatedPage.url,
-            updatedPage.application_id,
-            updatedPage.user_id,
-            updatedPage.uuid,
-            updatedPage.need_authentification,
-            updatedPage.component_ids
-        );
+        return updatedPage;
     }
     public async delete(id: number): Promise<Page> {
         const deletePage = await prisma.pages.delete({

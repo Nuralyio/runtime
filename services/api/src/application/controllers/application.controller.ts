@@ -8,6 +8,7 @@ import { ResourcePermissionRequest } from "../../ownership/interfaces/resource-p
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
 import { ApplicationPermission } from "../interfaces/enum/application-permission.enum";
 import { ResourceType } from "../../shared/interfaces/enum/resources-type.enum";
+import { v4 as uuidv4 } from 'uuid';
 
 @Route('/api/applications')
 @Tags('Applications')
@@ -23,9 +24,10 @@ export class ApplicationController extends Controller {
 
   @Post()
   public async create(
-    @Body() requestBody: { published: boolean; name: string; uuid: string; user_id: string }): Promise<Application> {
-    const { published, name, uuid, user_id } = requestBody;
-    return await this.applicationService.create(published, name, uuid, user_id);
+    @Request() request: NRequest,
+    @Body() requestBody: {  name: string; }): Promise<Application> {
+    const {  name} = requestBody;
+    return await this.applicationService.create(false /* published */, name, uuidv4(), request.user.uuid);
   }
 
   @Get()
