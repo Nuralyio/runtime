@@ -55,40 +55,16 @@ export class TopbarScreenActions extends LitElement {
     {
       label: "Text Input",
       value: ComponentType.TextInput,
-      handler: () => {
-        addComponentAction({
-          name: "text_input888",
-          component_type: ComponentType.TextInput,
-          parameters: {
-            value: "Text Label",
-          },
-        },
-          getVar("global", "currentPage").value,
-          getVar("global", "currentEditingApplication").value.uuid);
-      },
+  
     },
     {
       label: "Button", //vertical-container-block
-      handler: () => {
-        addComponentAction({
-          name: GenerateName(ComponentType.Button),
-          component_type: ComponentType.Button,
-        }, getVar("global", "currentPage").value,
-          getVar("global", "currentEditingApplication").value.uuid);
-      },
+      value: ComponentType.Button,
     },
     { type: "divider" },
     {
       label: "Vertical Container", //
       value: ComponentType.VerticalContainer,
-      handler: () => {
-        addComponentAction({
-          name: GenerateName(ComponentType.VerticalContainer),
-          component_type: ComponentType.VerticalContainer,
-        },
-          getVar("global", "currentPage").value,
-          getVar("global", "currentEditingApplication").value.uuid);
-      },
     },
   ];
 
