@@ -30,6 +30,7 @@ import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event";
 import studioInputFocusEvent from "./text-input-blocks/studio-input-focus-event";
+import stduioTable from "./table-block/columns-block";
 import  QuickActions from "../editor-micro-apps/quick-action"
 export default [
 
@@ -387,6 +388,11 @@ export default [
                                 'button_click_event_block'
                             ];
                             break;
+                        case "Table":
+                            parameters=[
+                                'table_columns_block',
+                            ];
+                            break;
                         
                         
 
@@ -465,7 +471,6 @@ export default [
     ...studioButtonSizeBlock,
     ...studioButtonTypeBlock,
     ...studioButtonStateBlock,
-    ...studioButtonClickEventBlock
-    
-    
+    ...studioButtonClickEventBlock,
+    ...stduioTable
 ]
