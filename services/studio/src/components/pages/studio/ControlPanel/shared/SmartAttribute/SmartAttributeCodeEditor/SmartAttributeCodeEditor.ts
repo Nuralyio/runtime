@@ -31,9 +31,6 @@ export class SmartAttributeCodeeditor extends LitElement {
     this.handleCodeEditorChange = this.handleCodeEditorChange.bind(this);
   }
 
-  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-  }
-
   disconnectedCallback() {
     super.disconnectedCallback();
     // Ensure that any existing debounce timeout is cleared when the component is disconnected
@@ -65,7 +62,6 @@ export class SmartAttributeCodeeditor extends LitElement {
     return html`
       <div style=${styleMap(this.containerStyle)}>
         <code-editor
-        
           theme="vs"
           @change=${(event: CustomEvent) => {
             const {

@@ -51,19 +51,20 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const event ='focus';
+                let currentEventValue =''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(!currentComponent.event){
-                            currentComponent= {...currentComponent,event:{focus:{}}}
-                        }
+                        if(currentComponent.event?.focus){
+                            currentEventValue= currentComponent.event.focus;
+                        } 
                     }
                 }catch(error){
                     console.log(error);
                 }
-                event;
+                [event,currentEventValue];
             `
             }
         },

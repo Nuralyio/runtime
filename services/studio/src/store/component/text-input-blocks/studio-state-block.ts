@@ -17,7 +17,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["input_state_label", "input_state_select"],
+        childrenIds: ["input_state_label", "input_state_radio"],
     },
     
     {
@@ -40,12 +40,12 @@ export default [
         }
     },
     {
-        uuid: "input_state_select",
+        uuid: "input_state_radio",
         applicationId: "1",
-        component_type: ComponentType.Select,
+        component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "input state select",
+        name: "input state radio",
         input: {
             value: {
                 type: "handler",
@@ -53,25 +53,24 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentState = currentComponent.parameters?.state || "default"
+                const currentState = currentComponent.style['state'] || 'default'
                 const options = 
                 [
                     {
-                        label: "Default",
                         value: "default",
+                        icon:'font-awesome'
                     }, 
                     {
-                        label: "Warning",
-                        value: "warning"
+                        value: "warning",
+                        icon:'triangle-exclamation'
                     },
                     {
-                        label: "Error",
-                        value: "error"
+                        value: "error",
+                        icon:'circle-exclamation'
                     }
-                ]   
-            let defaultState = options.find((option)=>option.value == currentState).label
-            console.log('defaultstate ',defaultState)
-            const result =[options,[defaultState]];
+                ]  
+            const radioType='button' 
+            const result =[options,currentState,radioType];
             result;
                 `
             }
@@ -88,7 +87,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const stateValue = EventData.value;
+                    const stateValue = EventData.value?EventData.value:'default';
                     updateStyle(currentComponent,'state',stateValue)
                 }
             }catch(error){

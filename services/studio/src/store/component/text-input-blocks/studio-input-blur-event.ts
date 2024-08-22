@@ -43,9 +43,36 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const event ='blur';
-                event;
+                let currentEventValue =''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent.event?.blur){
+                            currentEventValue= currentComponent.event.blur;
+                        } 
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [event,currentEventValue];
             `
             }
+        },
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateEvent(currentComponent, "blur",EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
         },
         styleHandlers: {},
         name: "input blur event value",

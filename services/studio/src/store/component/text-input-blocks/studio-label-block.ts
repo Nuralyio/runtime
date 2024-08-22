@@ -45,22 +45,20 @@ export default [
             size:"medium",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:/* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        console.log('new value ',EventData.value)
-                        // here I need to pass new label value to the component
+                        const newLabelText = EventData.value;
+                        updateInput(currentComponent,'label','string',newLabelText);
                     }
                 }catch(error){
                     console.log(error);
                 } 
   `
-            }
+            
         },
         input: {
             value: {
@@ -71,7 +69,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const currentLabel= currentComponent.parameters.label || '';
+                const currentLabel=  currentComponent.input?.label.value??'';
                 currentLabel;
             }
 

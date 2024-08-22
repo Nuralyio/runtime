@@ -48,23 +48,18 @@ export default [
             size:"medium",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:  /* js */ `
                 try{
+                    console.log('blured', EventData.value)
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        console.log('new value ',EventData.value)
-                        // here I need to pass new input value to the component
-                        currentComponent.parameters.value=EventData.value;
+                        updateInput(currentComponent,'value','string',EventData.value);
                     }
                 }catch(error){
                     console.log(error);
-                } 
-  `
-            }
+                }`
         },
         input: {
             value: {
@@ -75,8 +70,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                // here I need to retrieve current component value 
-                const currentValue=currentComponent.parameters.value || "";
+                const currentValue=currentComponent.input?.value?.value || "";
                 currentValue;
             }
 

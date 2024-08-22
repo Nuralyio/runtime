@@ -17,7 +17,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["input_size_label", "input_size_select"],
+        childrenIds: ["input_size_label", "input_size_radio"],
     },
     
     {
@@ -40,9 +40,9 @@ export default [
         }
     },
     {
-        uuid: "input_size_select",
+        uuid: "input_size_radio",
         applicationId: "1",
-        component_type: ComponentType.Select,
+        component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
         name: "input size select",
@@ -53,24 +53,24 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentSize = currentComponent.parameters?.size || 'medium';
+                const currentSize = currentComponent.style['size'] || 'medium'
                 const options = 
                     [
-                    {
-                    label: "Large",
-                    value: "large",
-                    }, 
-                    {
-                    label: "Medium",
-                    value: "medium"
-                   },
-                    {
-                     label: "Small",
-                     value: "small"
-                   }
+                        {
+                            value: "small",
+                            icon:'font-awesome'
+                        },
+                        {
+                            value: "medium",
+                            icon:'font-awesome'
+                        },
+                        {
+                            value: "large",
+                            icon:'font-awesome'
+                        }
             ]   
-            const defaultSize = options.find((option)=>option.value == currentSize).label
-            const result = [options,[defaultSize]];
+            const radioType ='button'
+            const result = [options,currentSize,radioType];
             result;
                 `
             },

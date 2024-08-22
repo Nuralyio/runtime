@@ -61,9 +61,14 @@ export class ButtonBlock extends BaseElementBlock {
 
 
   render() {
+    const inputStyles = this.component?.style || {};
+
     return html`
   ${this.display ? html`
     <hy-button 
+    .size=${inputStyles.size}
+    .type=${inputStyles.type}     
+    .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
      @click=${({ x, y, type, }) => {
           if (this.component.event?.onClick) {
             executeEventHandler(this.component, "event", "onClick", {
@@ -71,7 +76,7 @@ export class ButtonBlock extends BaseElementBlock {
             });
           }
         }}
-    style=${styleMap({ ...this.component.style })}
+    style=${styleMap(inputStyles)}
       >${this.getValue()}</hy-button
     >` : nothing}
 `;

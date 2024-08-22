@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { createRef, type  Ref, ref } from "lit/directives/ref.js";
 
@@ -39,6 +39,14 @@ export class CodeEditor extends LitElement {
     }
   `;
 
+
+  
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if(this.editor){
+      this.editor.setValue(this.code)
+    }
+  }
   render() {
     return html`
       <style>
@@ -99,9 +107,8 @@ export class CodeEditor extends LitElement {
     this.editor!.updateOptions(value);
   }
 
-  firstUpdated() {
+  override firstUpdated() {
       monaco.languages.register({ id: "mylang" });
-  
       monaco.languages.setMonarchTokensProvider("mylang", {
         tokenizer: {
           root: [

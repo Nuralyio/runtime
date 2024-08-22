@@ -108,8 +108,7 @@ export default [
                 selectedFontFamily = options.find((option)=> option.value == fontFamily);   
             }
             const result =[options,[selectedFontFamily? selectedFontFamily.label : ""]]
-            result;
-                
+            result;  
                 `
             }
         },

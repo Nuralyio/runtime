@@ -42,12 +42,21 @@ export class TextInputBlock extends BaseElementBlock {
   // Debounced event handler with default debounce wait time
   handleValueChange = debounce((e) => {
     if (this.component?.event?.valueChange) {
-      executeEventHandler(this.component,'event','valueChange',{eventData:e.detail.value})
+      executeEventHandler(this.component,'event','valueChange',{
+        EventData: {
+          value: e.detail.value,
+        },
+      })
     }
   }, 300); // Adjust the debounce wait time as needed.
   onFocus=()=>{
     if(this.component?.event?.focus){
       executeEventHandler(this.component,'event','focus')
+    }
+  }
+  onBlur=(e)=>{
+    if(this.component?.event?.blur){
+      executeEventHandler(this.component,'event','blur')
     }
   }
 
@@ -58,13 +67,14 @@ export class TextInputBlock extends BaseElementBlock {
     <hy-input 
       @valueChange=${this.handleValueChange}
       @focused=${this.onFocus}
-      .value=${this.inputHandlersValue.value ??"Text input"} 
+      @blured=${this.onBlur}
+      .value=${this.inputHandlersValue.value ??""} 
       .size=${inputStyles.size ?? nothing}
       .state =${inputStyles.state ?? nothing}
       placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
     >
-    <span slot="label"></span>
-    <span slot="helper-text"></span>
+    <span slot="label">${this.inputHandlersValue?.label??''}</span>
+    <span slot="helper-text">${this.inputHandlersValue?.helper??''}</span>
     </hy-input>
   </span>
       
