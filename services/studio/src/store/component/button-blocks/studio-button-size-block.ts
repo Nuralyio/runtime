@@ -23,11 +23,16 @@ export default [
         uuid: "button_size_label",
         name: "button size label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Size",
-        },
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        input:{
+            value:{
+                type:'handler',
+                value:/* js*/ `
+                const label = 'Size';
+                label;
+                `}
+        },
         style: {
 
         }
@@ -35,7 +40,7 @@ export default [
     {
         uuid: "button_size_select",
         applicationId: "1",
-        component_type: ComponentType.Select,
+        component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
         name: "button size select",
@@ -46,25 +51,24 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentSize;
-                // need to find current button size and return default selected option 
-                // in addition to all option list
+                const currentSize = currentComponent.style['size'] || 'default'
                 const options = 
                     [
-                    {
-                    label: "Large",
-                    value: "large",
-                    }, 
-                    {
-                    label: "Default",
-                    value: "default"
-                   },
-                    {
-                     label: "Small",
-                     value: "small"
-                   }
+                      {
+                         icon: "font-awesome",
+                         value: "small"
+                      },
+                      {
+                       icon: "font-awesome",
+                       value: "default"
+                      },
+                      {
+                       icon: "font-awesome",
+                       value: "large",
+                       }, 
             ]   
-            const result = [options,[]];
+            const radioType='button'
+            const result = [options,currentSize,radioType];
             result;
                 `
             }
@@ -82,7 +86,7 @@ export default [
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     const sizeValue = EventData.value;
-                    // update button size with new sizeValue
+                    updateStyle(currentComponent,'size',sizeValue)
                 }
             }catch(error){
                 console.log(error);

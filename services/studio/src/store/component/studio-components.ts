@@ -23,6 +23,9 @@ import studioSizeBlock from "./text-input-blocks/studio-size-block";
 import studioStateBlock from "./text-input-blocks/studio-state-block";
 import studioValueBlock from "./text-input-blocks/studio-value-block";
 import studioButtonSizeBlock from "./button-blocks/studio-button-size-block";
+import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
+import studioButtonStateBlock from "./button-blocks/studio-button-state-block";
+import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block";
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event";
@@ -341,6 +344,7 @@ export default [
                 if(selectedComponents.length)
                 {
                     const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
+                    console.log('component type ', component.component_type)
                     switch(component.component_type){
                         case "text_label":
                             parameters=[
@@ -375,8 +379,13 @@ export default [
                                 "input_focus_event_block"
                             ];
                             break;
-                        case "button":
-                            parameters=['button_size_block'];
+                        case "button_input":
+                            parameters=[
+                                'button_size_block',
+                                'button_type_block',
+                                'button_state_block',
+                                'button_click_event_block'
+                            ];
                             break;
                         
                         
@@ -453,6 +462,10 @@ export default [
     ...studioInputClearEvent,
     ...studioInputValuechangeEvent,
     ...studioInputFocusEvent,
-    ...studioButtonSizeBlock 
+    ...studioButtonSizeBlock,
+    ...studioButtonTypeBlock,
+    ...studioButtonStateBlock,
+    ...studioButtonClickEventBlock
+    
     
 ]

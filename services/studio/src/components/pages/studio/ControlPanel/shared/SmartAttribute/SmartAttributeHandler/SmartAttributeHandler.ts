@@ -12,6 +12,9 @@ export class SmartAttributeHandler extends LitElement {
   @property()
   attributeName: string;
 
+  @property()
+  attributeValue:string;
+
   @property({ type: Object })
   containerStyle: any;
 
@@ -99,7 +102,7 @@ export class SmartAttributeHandler extends LitElement {
         : nothing}
       ${this.view ? html`<smart-attribute-codeeditor
               .containerStyle=${this.containerStyle ?? nothing}
-              .value=${this.smartValue}
+              .value=${this.attributeValue}
               @change=${this.codeChangeHandler}
             ></smart-attribute-codeeditor>` : nothing}`;
   }

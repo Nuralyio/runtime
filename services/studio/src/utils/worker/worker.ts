@@ -103,7 +103,7 @@ self.updateInput = function (component: ComponentElement, inputName : string, ha
     component.applicationId = component.application_id;
   }
   port?.postMessage({
-    funtionNameToExecute: "updateEvent",
+    funtionNameToExecute: "updateInput",
     component,
     eventData: { [inputName] : {
       type: handlerType,
