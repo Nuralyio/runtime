@@ -10,7 +10,7 @@ export class PageService {
     constructor(pageRepository: PageRepository) {
         this.pageRepository = pageRepository;
     }
-    public async create(name: string, url: string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_id:string[]): Promise<Page> {
+    public async create(name: string, url: string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_id: string[]): Promise<Page> {
         const page: Page = new Page(
             name,
             url,
@@ -33,19 +33,10 @@ export class PageService {
     public async findPagesByApplicationUUID(applicationUUID: string): Promise<Page[]> {
         return await this.pageRepository.findPagesByApplicationUUID(applicationUUID);
     }
-    
 
-    public async update(id: number, name: string, url: string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_ids: string[]): Promise<Page> {
-        const page: Page = new Page(
-            name,
-            url,
-            application_id,
-            user_id,
-            uuid,
-            need_authentification,
-            component_ids
-        );
-        return await this.pageRepository.update(id, page);
+
+    public async update(page: Page): Promise<Page> {
+        return await this.pageRepository.update(page);
     }
 
     public async delete(id: number): Promise<Page> {

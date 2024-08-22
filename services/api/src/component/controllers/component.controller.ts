@@ -56,7 +56,7 @@ export class ComponentController extends Controller {
     if (componentToUpdate! == null) {
       throw new NotFoundException(`Component with uuid ${uuid} not found`);
     }
-    componentToUpdate = { ...componentToUpdate.component, ...component }
+    componentToUpdate.component = { ...componentToUpdate.component, ...component }
     componentToUpdate = removeNullProperties(componentToUpdate);
     return await this.componentService.update(componentToUpdate as Component, uuid);
   }
