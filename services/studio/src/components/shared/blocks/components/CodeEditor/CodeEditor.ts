@@ -39,12 +39,11 @@ export class CodeEditor extends LitElement {
     }
   `;
 
-
-  
-  override connectedCallback(): void {
-    super.connectedCallback();
-    if(this.editor){
-      this.editor.setValue(this.code)
+  protected override updated(_changedProperties: PropertyValues): void {
+    if(_changedProperties.has('code')&& this.code != _changedProperties.get('code')){
+      const cursorPosition =this.editor.getPosition()
+      this.editor.setValue(this.code);
+      this.editor.setPosition(cursorPosition)
     }
   }
   render() {
