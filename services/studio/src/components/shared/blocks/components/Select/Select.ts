@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
@@ -35,6 +35,7 @@ export class SelectBlock extends BaseElementBlock {
     return html`
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-select
+        selectionMode=${this.inputHandlersValue?.type === 'multiple' ? 'multiple' : nothing}
         .options=${options}
         .defaultSelected="${defaultSelected}"
         @changed=${this.handleValueChange}
