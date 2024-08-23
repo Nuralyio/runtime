@@ -133,6 +133,7 @@ const calendarStyles = css`
     display: flex;
     flex-grow: 1;
     flex-wrap: wrap;
+    color: var(--hybrid-datepicker-month-container-color);
   }
 
   .month-container {
@@ -156,6 +157,7 @@ const calendarStyles = css`
     display: flex;
     flex-grow: 1;
     flex-wrap: wrap;
+    color: var(--hybrid-datepicker-year-container-color);
   }
 
   .year-container {
@@ -191,6 +193,8 @@ const calendarStyles = css`
     --hybrid-datepicker-month-container-hover-background-color: #e4e4e4;
     --hybrid-datepicker-day-container-height: 30px;
     --hybrid-datepicker-day-container-color: #000000;
+    --hybrid-datepicker-month-container-color: #000000;
+    --hybrid-datepicker-year-container-color: #000000;
     --hybrid-datepicker-small-day-container-height: 25px;
     --hybrid-datepicker-large-day-container-height: 35px;
     --hybrid-datepicker-day-container-hover-background-color: #e4e4e4;
@@ -205,6 +209,8 @@ const calendarStyles = css`
     :host {
       --hybrid-datepicker-background-color: #000000;
       --hybrid-datepicker-day-container-color: #ffffff;
+      --hybrid-datepicker-month-container-color: #ffffff;
+      --hybrid-datepicker-year-container-color: #ffffff;
       --hybrid-datepicker-button-background-color: #000000;
       --hybrid-datepicker-button-text-color: #ffffff;
       --hybrid-datepicker-day-container-hover-background-color: #393939;
