@@ -42,6 +42,7 @@ import studioImageSrcBlock from "./image-blocks/studio-image-src-block";
 import studioImageFallbackBlock from "./image-blocks/studio-image-fallback-block";
 import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-locale-block";
 import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block";
+import stduioTable from "./table-block/columns-block";
 import  QuickActions from "../editor-micro-apps/quick-action"
 export default [
 
@@ -437,6 +438,14 @@ export default [
                                         ];
                                         break;
                         
+                        case "Table":
+                            parameters=[
+                                'table_columns_block',
+                            ];
+                            break;
+                        
+                        
+
                     }
                 }
                 [
@@ -525,4 +534,6 @@ export default [
     ...studioImageAltBlock,
     ...studioImageSrcBlock,
     ...studioImageFallbackBlock,
+    ...studioButtonClickEventBlock,
+    ...stduioTable
 ]
