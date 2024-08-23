@@ -3,9 +3,9 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 
 export default [
     {
-        uuid: "input_size_block",
+        uuid: "checkbox_size_block",
         applicationId: "1",
-        name: "input size block",
+        name: "checkbox size block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -17,12 +17,12 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["input_size_label", "input_size_radio"],
+        childrenIds: ["checkbox_size_label", "checkbox_size_radio"],
     },
     
     {
-        uuid: "input_size_label",
-        name: "input size label",
+        uuid: "checkbox_size_label",
+        name: "checkbox size label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -40,12 +40,12 @@ export default [
         }
     },
     {
-        uuid: "input_size_radio",
+        uuid: "checkbox_size_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "input size select",
+        name: "checkbox size radio",
         input: {
             value: {
                 type: "handler",

@@ -30,7 +30,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='State';
+               const label ='Status';
                label;
             `
             }

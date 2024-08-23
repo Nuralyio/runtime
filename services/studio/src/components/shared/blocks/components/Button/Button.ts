@@ -21,18 +21,7 @@ export class ButtonBlock extends BaseElementBlock {
 
   @state()
   display: any = false;
-
-  getValue() {
-    /* if (isServer) {
-       if (this.component.parameters?.value) {
-         if (this.component?.parent?.component_type === "Collection") {
-           return this.component.iterations[this.item.index];
-         }
-       }
-     }*/
-    return isServer ? this.component.input?.value?.value : this.thisvalue ?? this.component.input?.value?.value;
-  }
-
+ 
 
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -77,7 +66,7 @@ export class ButtonBlock extends BaseElementBlock {
           }
         }}
     style=${styleMap(inputStyles)}
-      >${this.getValue()}</hy-button
+      >${this.inputHandlersValue.label??''}</hy-button
     >` : nothing}
 `;
   }

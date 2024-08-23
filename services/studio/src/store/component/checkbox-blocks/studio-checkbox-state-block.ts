@@ -1,11 +1,10 @@
 import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
-
 export default [
     {
-        uuid: "input_size_block",
+        uuid: "checkbox_state_block",
         applicationId: "1",
-        name: "input size block",
+        name: "checkbox state block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -17,22 +16,23 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["input_size_label", "input_size_radio"],
+        childrenIds: ["checkbox_state_label", "checkbox_state_radio"],
     },
     
     {
-        uuid: "input_size_label",
-        name: "input size label",
+        uuid: "checkbox_state_label",
+        name: "checkbox state label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
-               const label ='Size';
-               label;
-            `
+        input:{
+            value:{
+                type:'handler',
+                value:/* js */`
+                const checkedLabel='State';
+                checkedLabel;
+                
+                `
             }
         },
         style: {
@@ -40,12 +40,12 @@ export default [
         }
     },
     {
-        uuid: "input_size_radio",
+        uuid: "checkbox_state_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "input size select",
+        name: "checkbox state radio",
         input: {
             value: {
                 type: "handler",
@@ -53,24 +53,23 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentSize = currentComponent.style['size'] || 'medium'
+                const currentState = currentComponent.input?.state?.value || 'enable';
                 const options = 
                     [
-                        {   label:'Small',
-                            value: "small",
-                        },
-                        {   label:'Medium',
-                            value: "medium",
-                        },
-                        {   label:'Large',
-                            value: "large",
-                        }
+                    {
+                    label: "Enable",
+                    value: "enable",
+                    }, 
+                    {
+                    label: "Disable",
+                    value: "disable"
+                   }
             ]   
             const radioType ='button'
-            const result = [options,currentSize,radioType];
+            const result = [options,currentState,radioType];
             result;
                 `
-            },
+            }
         },
         style: {
             display:'block',
@@ -78,14 +77,13 @@ export default [
         },
         event: {
             changed: /* js */ `
-
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const sizeValue = EventData.value;
-                    updateStyle(currentComponent,'size',sizeValue)
+                    const checkedValue = EventData.value;
+                    updateInput(currentComponent,'state','string',EventData.value)
                 }
             }catch(error){
                 console.log(error);

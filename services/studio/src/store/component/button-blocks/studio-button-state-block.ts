@@ -57,11 +57,11 @@ export default [
                 const options = 
                     [
                     {
-                    icon: "font-awesome",
+                    label: "Enabled",
                     value: "enabled",
                     }, 
                     {
-                    icon: "font-awesome",
+                    label: "Disabled",
                     value: "disabled"
                    }
             ]   

@@ -55,15 +55,15 @@ export default [
                 const options = 
                     [
                       {
-                         icon: "font-awesome",
+                         label: "Small",
                          value: "small"
                       },
                       {
-                       icon: "font-awesome",
+                       label: "Medium",
                        value: "default"
                       },
                       {
-                       icon: "font-awesome",
+                       label: "Large",
                        value: "large",
                        }, 
             ]   
