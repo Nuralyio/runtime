@@ -135,6 +135,9 @@ export class HyDatePickerElement extends LitElement {
     this.fillInputField()
   }
   override willUpdate(changedProperties: PropertyValues) {
+   if(changedProperties.has('fieldFormat')){
+    this.fillInputField()
+   }
     if (changedProperties.has('openedCalendar') && this.openedCalendar) {
       this.daysPresentation = getMonthDetails(this.currentYear, this.currentMonth - 1, this.days);
       this.positionCalendar();
