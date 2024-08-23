@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
@@ -25,12 +25,18 @@ export class SelectBlock extends BaseElementBlock {
   };
 
   render() {
-    const options = this.inputHandlersValue?.value?.[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value?.[1];
-  
     return html`
+    ${JSON.stringify(this.inputHandlersValue)}
       <span style=${styleMap({ ...this.component.style })}> 
-        <hy-datepicker
+        <hy-datepicker 
+         .helper=${this.inputHandlersValue.helper??nothing}
+         .label=${this.inputHandlersValue.label??nothing}
+         .locale=${this.inputHandlersValue.locale??nothing}
+         .state=${this.component.style.state??nothing}
+         .size=${this.component.style.size??nothing}
+         .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
+         .dateValue=${this.inputHandlersValue.value??nothing}
+         .fieldFormat=${this.inputHandlersValue.format??nothing}
         ></hy-datepicker>
       </span>
     `;

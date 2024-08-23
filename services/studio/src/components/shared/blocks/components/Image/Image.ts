@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@hybridui/image";
 import { type ComponentElement } from "$store/component/interface";
@@ -25,7 +25,16 @@ export class ImageBlock extends BaseElementBlock {
   render() {
     return html`
     <!-- for the sake of the demo -->
-      <hy-image  .src="${'https://picss00'}"></hy-image>
+      <hy-image  
+      .src=${this.inputHandlersValue.src??nothing} 
+      .fallback=${this.inputHandlersValue.fallback??nothing}
+      .width=${this.inputHandlersValue.width+'px'}
+      .height=${this.inputHandlersValue.height+'px'}
+      .alt=${this.inputHandlersValue.alt??nothing}
+      
+      >
+      
+      </hy-image>
     `;
   }
 }

@@ -28,89 +28,7 @@ export class TextInputBlock extends BaseElementBlock {
     css``,
   ];
 
-  @state()
-  headers = [
-    {
-      name: 'Id',
-      key: 'id',
-    },
-    {
-      name: 'Status',
-      key: 'status',
-    },
-    {
-      name: 'Priority',
-      key: 'priority',
-    },
-    {
-      name: 'Title',
-      key: 'title',
-    },
-    {
-      name: 'Assignee',
-      key: 'assignee',
-    },
-  ];
-
-  @state()
-  rows = [
-    {
-      id: 1,
-      status: 'Open',
-      priority: 'Normal',
-      title: 'Product Details Page - Variant Component (1)',
-      assignee: 'William Jones',
-    },
-    {
-      id: 2,
-      status: 'Open',
-      priority: 'High',
-      title: 'Product Details Page - Variant Component (2)',
-      assignee: 'Natalia Hayward',
-    },
-    {
-      id: 3,
-      status: 'Closed',
-      priority: 'Normal',
-      title: 'Product Details Page - Variant Component (3)',
-      assignee: 'Jess Plant',
-    },
-    {
-      id: 4,
-      status: 'Open',
-      priority: 'Normal',
-      title: 'Product Details Page - Variant Component (4)',
-      assignee: 'William Jones',
-    },
-    {
-      id: 5,
-      status: 'Open',
-      priority: 'Normal',
-      title: 'Product Details Page - Variant Component (5)',
-      assignee: 'Kathleen Knowles',
-    },
-    {
-      id: 6,
-      status: 'Open',
-      priority: 'High',
-      title: 'Product Details Page - Variant Component (6)',
-      assignee: 'Mel Young',
-    },
-    {
-      id: 7,
-      status: 'Closed',
-      priority: 'Normal',
-      title: 'Product Details Page - Variant Component (7)',
-      assignee: 'Zahid Allison',
-    },
-    {
-      id: 8,
-      status: 'Closed',
-      priority: 'High',
-      title: 'Product Details Page - Variant Component (8)',
-      assignee: 'William Jones',
-    },
-  ];
+ 
   unsubscribe: () => void;
 
 
@@ -138,8 +56,13 @@ export class TextInputBlock extends BaseElementBlock {
   }, 300); // Adjust the debounce wait time as needed.
 
   render() {
+    const checkBoxStyles = this.component?.style || {};
     return html`
-     <hy-checkbox indeterminate>Default: indeterminate</hy-checkbox>
+     <hy-checkbox 
+     .checked=${this.inputHandlersValue?.checked =='check'?true:false}
+     .disabled=${this.inputHandlersValue?.state =='disable'?true:false}
+     .size=${checkBoxStyles.size ?? nothing}
+     >${this.inputHandlersValue?.label??''}</hy-checkbox>
     `;
   }
 }

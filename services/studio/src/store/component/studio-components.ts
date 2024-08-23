@@ -26,10 +26,22 @@ import studioButtonSizeBlock from "./button-blocks/studio-button-size-block";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
 import studioButtonStateBlock from "./button-blocks/studio-button-state-block";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block";
+import studioButtonLabelBlock from "./button-blocks/studio-button-label-block";
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event";
 import studioInputFocusEvent from "./text-input-blocks/studio-input-focus-event";
+import studioCheckboxCheckedBlock from "./checkbox-blocks/studio-checkbox-checked-block";
+import studioCheckboxStateBlock from "./checkbox-blocks/studio-checkbox-state-block";
+import studioCheckboxLabelBlock from "./checkbox-blocks/studio-checkbox-label-block";
+import studioCheckboxSizeBlock from "./checkbox-blocks/studio-checkbox-size-block";
+import studioImageWidthBlock from "./image-blocks/studio-image-width-block";
+import studioImageHeightBlock from "./image-blocks/studio-image-height-block";
+import studioImageAltBlock from "./image-blocks/studio-image-alt-block";
+import studioImageSrcBlock from "./image-blocks/studio-image-src-block";
+import studioImageFallbackBlock from "./image-blocks/studio-image-fallback-block";
+import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-locale-block";
+import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block";
 import  QuickActions from "../editor-micro-apps/quick-action"
 export default [
 
@@ -156,10 +168,13 @@ export default [
         component_type: ComponentType.Button,
         ...COMMON_ATTRIBUTES,
         input: {
-            value: {
-                type: "text",
-                value: "Demo button"
-            },
+            label: {
+                type: 'handler',
+                value: /* js */`
+                const demoLabelBtn='Demo button';
+                demoLabelBtn;
+            `
+            }
         },
 
         event: {
@@ -196,9 +211,13 @@ export default [
         component_type: ComponentType.Button,
         ...COMMON_ATTRIBUTES,
         input: {
-            value: {
-                value: "Add Page"
-            },
+            label: {
+                type: 'handler',
+                value: /* js */`
+                const addPageLabelBtn='Add Page';
+                addPageLabelBtn;
+            `
+            }
 
             // show : {
             //     type: "hander",
@@ -381,15 +400,43 @@ export default [
                             break;
                         case "button_input":
                             parameters=[
+                                'button_label_text_block',
                                 'button_size_block',
                                 'button_type_block',
                                 'button_state_block',
                                 'button_click_event_block'
                             ];
                             break;
+                        case "checkbox":
+                            parameters=[
+                                'checkbox_label_text_block',
+                                'checkbox_checked_block',
+                                'checkbox_state_block',
+                                'checkbox_size_block'
+                                ];
+                                break;
+                        case "Image":
+                            parameters=[
+                                'image_width_vertical_container',
+                                'image_height_vertical_container',
+                                'image_alt_text_block',
+                                'image_src_text_block',
+                                'image_fallback_text_block'
+                                        ];
+                                        break;
+                        case "DatePicker":
+                            parameters=[
+                                "value_text_block",
+                                'datepicker_locale_block',
+                                'input_size_block',
+                                'input_state_block',
+                                'button_state_block',
+                                "helper_text_block",
+                                "label_text_block",
+                                "datepicker_format_block",
+                                        ];
+                                        break;
                         
-                        
-
                     }
                 }
                 [
@@ -436,6 +483,8 @@ export default [
         ...COMMON_ATTRIBUTES,
 
     },
+    ...studioDatepickerLocaleBlock,
+    ...studioDatepickerFormatBlock,
     ...studioTextValueBlock,
     ...studioFontSizeBlock,
     ...studioFontColorBlock,
@@ -462,10 +511,18 @@ export default [
     ...studioInputClearEvent,
     ...studioInputValuechangeEvent,
     ...studioInputFocusEvent,
+    ...studioButtonLabelBlock,
     ...studioButtonSizeBlock,
     ...studioButtonTypeBlock,
     ...studioButtonStateBlock,
-    ...studioButtonClickEventBlock
-    
-    
+    ...studioButtonClickEventBlock,
+    ...studioCheckboxLabelBlock,
+    ...studioCheckboxCheckedBlock,
+    ...studioCheckboxStateBlock,
+    ...studioCheckboxSizeBlock,
+    ...studioImageWidthBlock,
+    ...studioImageHeightBlock,
+    ...studioImageAltBlock,
+    ...studioImageSrcBlock,
+    ...studioImageFallbackBlock,
 ]
