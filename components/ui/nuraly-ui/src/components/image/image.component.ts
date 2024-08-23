@@ -1,5 +1,5 @@
-import { LitElement,html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { LitElement,PropertyValues,html } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 
 @customElement('hy-image')
 export class HyImage extends LitElement{
@@ -18,29 +18,39 @@ export class HyImage extends LitElement{
 
     @property()
     alt=''
+
+    @state()
+    image=''
     defaultFallBack='https://placehold.co/50?text=image'
 
+
+    override willUpdate(_changedProperties: PropertyValues): void {
+        if(_changedProperties.has('fallback') || _changedProperties.has('src')){
+            this.image = this.src;
+        }
+    }
+
+    
     private handleError(){
-        const currentImgSrc = (this.shadowRoot?.querySelector('img') as HTMLImageElement).src;
         this.dispatchEvent(new CustomEvent('onError', {
             bubbles: true,
             composed: true,
             detail: {
-                error:`error loading image ${currentImgSrc}`
+                error:`error loading image ${this.image}`
             }
         }))
-        if(this.fallback && currentImgSrc!== this.fallback && currentImgSrc!=this.defaultFallBack){
-            (this.shadowRoot?.querySelector('img') as HTMLImageElement).src = this.fallback
+        if(this.fallback && this.image!== this.fallback && this.image!=this.defaultFallBack){
+            this.image = this.fallback
         }
-        else if(currentImgSrc!=this.defaultFallBack){
-            (this.shadowRoot?.querySelector('img') as HTMLImageElement).src = this.defaultFallBack
+        else if(this.image!=this.defaultFallBack){
+            this.image = this.defaultFallBack
         }
     }
 
     override render(){
         return html`
         <img 
-        src=${this.src}
+        src=${this.image}
         @error=${this.handleError}
         style="width:${this.width}; height:${this.height}"
         alt=${this.alt}
