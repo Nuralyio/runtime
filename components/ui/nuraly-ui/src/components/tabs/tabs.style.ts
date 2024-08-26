@@ -55,6 +55,9 @@ export const styles = css`
     flex-grow: 1;
     background-color: var(--hybrid-tabs-content-background-color);
     border-top: var(--hybrid-tabs-content-border-top);
+    max-height:85vh;
+    overflow-y:auto;
+    overflow-x:hidden;
   }
   .right-align > .tab-labels {
     flex-direction: var(--hybrid-tabs-right-align-labels-flex-direction);
