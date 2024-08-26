@@ -2,9 +2,9 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
-        uuid: "checkbox_state_block",
+        uuid: "select_type_block",
         applicationId: "1",
-        name: "checkbox state block",
+        name: "select type block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -16,12 +16,12 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["checkbox_state_label", "checkbox_state_radio"],
+        childrenIds: ["select_type_label", "select_type_radio"],
     },
     
     {
-        uuid: "checkbox_state_label",
-        name: "checkbox state label",
+        uuid: "select_type_label",
+        name: "select type label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -29,8 +29,8 @@ export default [
             value:{
                 type:'handler',
                 value:/* js */`
-                const checkedLabel='State';
-                checkedLabel;
+                const typeLabel='Type';
+                typeLabel;
                 
                 `
             }
@@ -40,12 +40,12 @@ export default [
         }
     },
     {
-        uuid: "checkbox_state_radio",
+        uuid: "select_type_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "checkbox state radio",
+        name: "select type radio",
         input: {
             value: {
                 type: "handler",
@@ -53,20 +53,20 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentState = currentComponent.input?.state?.value || 'enable';
+                const currentType = currentComponent.input?.type?.value || 'default';
                 const options = 
                     [
                     {
-                    label: "Enable",
-                    value: "enable",
+                    label: "Default",
+                    value: "default",
                     }, 
                     {
-                    label: "Disable",
-                    value: "disable"
+                    label: "Inline",
+                    value: "inline"
                    }
             ]   
             const radioType ='button'
-            const result = [options,currentState,radioType];
+            const result = [options,currentType,radioType];
             result;
                 `
             }
@@ -82,8 +82,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const checkedValue = EventData.value;
-                    updateInput(currentComponent,'state','string',EventData.value)
+                    const typeValue = EventData.value;
+                    updateInput(currentComponent,'type','string',EventData.value)
                 }
             }catch(error){
                 console.log(error);

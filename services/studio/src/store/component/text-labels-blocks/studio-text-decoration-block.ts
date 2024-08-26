@@ -74,7 +74,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const defaultTextDecoration = currentComponent.style['text-decoration'] ||'';
+                const defaultTextDecoration = currentComponent.style['text-decoration'] ||'none';
                 const options =[{value:'overline',icon: "font-awesome"},
                                 {value:'line-through',icon: "strikethrough"},
                                 {value:'underline',icon: "underline"},
@@ -95,7 +95,7 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const textDecorationValue = EventData.value?EventData.value:''
+                    const textDecorationValue = EventData.value?EventData.value:'none'
                     updateStyle(currentComponent, "text-decoration", textDecorationValue);
                 }
             }catch(error){

@@ -2,9 +2,9 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
-        uuid: "button_state_block",
+        uuid: "state_block",
         applicationId: "1",
-        name: "button state block",
+        name: "state block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -16,12 +16,12 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["button_state_label", "button_state_radio"],
+        childrenIds: ["state_label", "state_radio"],
     },
     
     {
-        uuid: "button_state_label",
-        name: "button state label",
+        uuid: "state_label",
+        name: "state label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -40,12 +40,12 @@ export default [
         }
     },
     {
-        uuid: "button_state_radio",
+        uuid: "state_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "button state radio",
+        name: "state radio",
         input: {
             value: {
                 type: "handler",

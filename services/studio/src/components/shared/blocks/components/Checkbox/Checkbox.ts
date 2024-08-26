@@ -54,7 +54,7 @@ export class TextInputBlock extends BaseElementBlock {
     return html`
      <hy-checkbox 
      .checked=${this.inputHandlersValue?.checked =='check'?true:false}
-     .disabled=${this.inputHandlersValue?.state =='disable'?true:false}
+     .disabled=${this.inputHandlersValue?.state =='disabled'?true:false}
      .size=${checkBoxStyles.size ?? nothing}
      @checkbox-changed=${this.handleCheckboxChange}
      >${this.inputHandlersValue?.label??''}</hy-checkbox>
