@@ -71,6 +71,8 @@ export class TextInputBlock extends BaseElementBlock {
       .value=${this.inputHandlersValue.value ??""} 
       .size=${inputStyles.size ?? nothing}
       .state =${inputStyles.state ?? nothing}
+      .type=${this.inputHandlersValue.type??nothing}
+      .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
       placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
     >
     <span slot="label">${this.inputHandlersValue?.label??''}</span>

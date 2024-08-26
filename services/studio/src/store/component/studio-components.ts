@@ -42,8 +42,12 @@ import studioImageSrcBlock from "./image-blocks/studio-image-src-block";
 import studioImageFallbackBlock from "./image-blocks/studio-image-fallback-block";
 import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-locale-block";
 import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block";
+import studioDatepickerDateChangeEventBlock from "./datepicker-blocks/studio-datepicker-date-change-event-block";
+import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block";
+import studioInputPlaceholderBlock from "./text-input-blocks/studio-input-placeholder-block";
 import stduioTable from "./table-block/columns-block";
 import  QuickActions from "../editor-micro-apps/quick-action"
+import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block";
 export default [
 
     ...QuickActions,
@@ -391,8 +395,11 @@ export default [
                                 "value_text_block",
                                 "helper_text_block",
                                 "label_text_block",
+                                "placeholder_text_block",
                                 "input_size_block",
+                                "input_type_block",
                                 "input_state_block",
+                                "button_state_block",
                                 "input_blur_event_block",
                                 "input_clear_event_block",
                                 "input_valuechange_event_block",
@@ -413,7 +420,8 @@ export default [
                                 'checkbox_label_text_block',
                                 'checkbox_checked_block',
                                 'checkbox_state_block',
-                                'checkbox_size_block'
+                                'checkbox_size_block',
+                                "checkbox_changed_event_block"
                                 ];
                                 break;
                         case "Image":
@@ -435,6 +443,7 @@ export default [
                                 "helper_text_block",
                                 "label_text_block",
                                 "datepicker_format_block",
+                                "datepicker_date_change_event_block",
                                         ];
                                         break;
                         
@@ -512,18 +521,20 @@ export default [
     ...studioMouseEnterEvent,
     ...studioMouseLeaveEvent,
     ...studioValueBlock,
+    ...studioInputPlaceholderBlock,
     ...studioHelperTextBlock, 
     ...studioLabelBlock,
     ...studioSizeBlock,
+    ...studioInputTypeBlock,
     ...studioStateBlock,
-    ...studioInputBlurEvent,
-    ...studioInputClearEvent,
-    ...studioInputValuechangeEvent,
-    ...studioInputFocusEvent,
     ...studioButtonLabelBlock,
     ...studioButtonSizeBlock,
     ...studioButtonTypeBlock,
     ...studioButtonStateBlock,
+    ...studioInputBlurEvent,
+    ...studioInputClearEvent,
+    ...studioInputValuechangeEvent,
+    ...studioInputFocusEvent,
     ...studioButtonClickEventBlock,
     ...studioCheckboxLabelBlock,
     ...studioCheckboxCheckedBlock,
@@ -534,6 +545,7 @@ export default [
     ...studioImageAltBlock,
     ...studioImageSrcBlock,
     ...studioImageFallbackBlock,
-    ...studioButtonClickEventBlock,
+    ...studioDatepickerDateChangeEventBlock,
+    ...studioCheckboxChangedEventBlock,
     ...stduioTable
 ]
