@@ -31,9 +31,7 @@ export class ImageBlock extends BaseElementBlock {
       .width=${this.inputHandlersValue.width+'px'}
       .height=${this.inputHandlersValue.height+'px'}
       .alt=${this.inputHandlersValue.alt??nothing}
-      
       >
-      
       </hy-image>
     `;
   }

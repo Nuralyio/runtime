@@ -13,12 +13,11 @@ export class SelectBlock extends BaseElementBlock {
   component: ComponentElement;
 
 
-  handleValueChange = (e) => {
-    if (this.component.event.changed) {
-      const optionValue = e.detail.value.length? e.detail.value[0].value:undefined;
-      executeEventHandler(this.component, "event", "changed", {
+  handleDateChange = (e) => {
+    if (this.component.event?.dateChange) {
+      executeEventHandler(this.component, "event", "dateChange", {
         EventData: {
-          value: optionValue,
+          value: e.detail,
         },
       });
     }
@@ -26,7 +25,6 @@ export class SelectBlock extends BaseElementBlock {
 
   render() {
     return html`
-    ${JSON.stringify(this.inputHandlersValue)}
       <span style=${styleMap({ ...this.component.style })}> 
         <hy-datepicker 
          .helper=${this.inputHandlersValue.helper??nothing}
@@ -37,6 +35,7 @@ export class SelectBlock extends BaseElementBlock {
          .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
          .dateValue=${this.inputHandlersValue.value??nothing}
          .fieldFormat=${this.inputHandlersValue.format??nothing}
+         @date-change=${this.handleDateChange}
         ></hy-datepicker>
       </span>
     `;

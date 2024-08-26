@@ -5,6 +5,7 @@ import { type ComponentElement } from "$store/component/interface";
 import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/checkbox"
+import { executeEventHandler } from "core/engine";
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 // Debounce function with default wait time
@@ -38,22 +39,15 @@ export class TextInputBlock extends BaseElementBlock {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  // Debounced event handler with default debounce wait time
-  handleValueChange = debounce((e) => {
-    if (this.component?.event?.valueChange) {
-      executeHandler(
-        {
-          component: this.component,
-          type: `event.valueChange`,
-          extras: {
-            EventData: {
-              value: e.detail.value,
-            },
-          },
-        }
-      );
+  handleCheckboxChange = (e) => {
+    if (this.component.event?.checkBoxChanged) {
+      executeEventHandler(this.component, "event", "checkboxChanged", {
+        EventData: {
+          value: e.detail,
+        },
+      });
     }
-  }, 300); // Adjust the debounce wait time as needed.
+  }
 
   render() {
     const checkBoxStyles = this.component?.style || {};
@@ -62,6 +56,7 @@ export class TextInputBlock extends BaseElementBlock {
      .checked=${this.inputHandlersValue?.checked =='check'?true:false}
      .disabled=${this.inputHandlersValue?.state =='disable'?true:false}
      .size=${checkBoxStyles.size ?? nothing}
+     @checkbox-changed=${this.handleCheckboxChange}
      >${this.inputHandlersValue?.label??''}</hy-checkbox>
     `;
   }
