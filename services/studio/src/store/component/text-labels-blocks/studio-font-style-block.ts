@@ -68,7 +68,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultFontStyle = currentComponent.style['font-style'] ||'';
+                let defaultFontStyle = currentComponent.style['font-style'] ||'normal';
                 const options =[{value:'normal',icon: "font-awesome"},
                                 {value:'italic',icon: "italic"},
                                 {value:'oblique',icon: "font-awesome"}]
@@ -85,7 +85,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const fontStyleValue = EventData.value?EventData.value:''
+                    const fontStyleValue = EventData.value?EventData.value:'normal'
                     updateStyle(currentComponent, "font-style", fontStyleValue);
                 }
             }catch(error){

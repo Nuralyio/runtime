@@ -3,26 +3,26 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 
 export default [
     {
-        uuid: "checkbox_size_block",
+        uuid: "status_block",
         applicationId: "1",
-        name: "checkbox size block",
+        name: "status block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
             direction: "vertical",
         },
         ...COMMON_ATTRIBUTES,
-        style: {
+        style: { 
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["checkbox_size_label", "checkbox_size_radio"],
+        childrenIds: ["status_label", "status_radio"],
     },
     
     {
-        uuid: "checkbox_size_label",
-        name: "checkbox size label",
+        uuid: "status_label",
+        name: "status label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -30,7 +30,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Size';
+               const label ='Status';
                label;
             `
             }
@@ -40,12 +40,12 @@ export default [
         }
     },
     {
-        uuid: "checkbox_size_radio",
+        uuid: "status_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "checkbox size radio",
+        name: "status radio",
         input: {
             value: {
                 type: "handler",
@@ -53,24 +53,27 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentSize = currentComponent.style['size'] || 'medium'
+                const currentState = currentComponent.style['state'] || 'default'
                 const options = 
-                    [
-                        {   label:'Small',
-                            value: "small",
-                        },
-                        {   label:'Medium',
-                            value: "medium",
-                        },
-                        {   label:'Large',
-                            value: "large",
-                        }
-            ]   
-            const radioType ='button'
-            const result = [options,currentSize,radioType];
+                [
+                    {
+                        value: "default",
+                        icon:'font-awesome'
+                    }, 
+                    {
+                        value: "warning",
+                        icon:'triangle-exclamation'
+                    },
+                    {
+                        value: "error",
+                        icon:'circle-exclamation'
+                    }
+                ]  
+            const radioType='button' 
+            const result =[options,currentState,radioType];
             result;
                 `
-            },
+            }
         },
         style: {
             display:'block',
@@ -84,8 +87,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const sizeValue = EventData.value;
-                    updateStyle(currentComponent,'size',sizeValue)
+                    const stateValue = EventData.value?EventData.value:'default';
+                    updateStyle(currentComponent,'state',stateValue)
                 }
             }catch(error){
                 console.log(error);

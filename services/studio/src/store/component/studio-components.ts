@@ -17,24 +17,19 @@ import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event
 import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event";
 import studioTextValueBlock from "./text-labels-blocks/studio-text-value-block";
 import studioDisplayBlock from "./text-labels-blocks/studio-display-block";
-import studioHelperTextBlock from "./text-input-blocks/studio-helper-text-block";
-import studioLabelBlock from "./text-input-blocks/studio-label-block";
-import studioSizeBlock from "./text-input-blocks/studio-size-block";
-import studioStateBlock from "./text-input-blocks/studio-state-block";
-import studioValueBlock from "./text-input-blocks/studio-value-block";
-import studioButtonSizeBlock from "./button-blocks/studio-button-size-block";
+import studioHelperTextBlock from "./common-blocks/studio-helper-block";
+import studioStateBlock from "./common-blocks/studio-state-block";
+import studioStatusBlock from "./common-blocks/studio-status-block";
+import studioSizeBlock from "./common-blocks/studio-size-block";
+import studioPlaceholderBlock from "./common-blocks/studio-placeholder-block";
+import studioValueBlock from "./common-blocks/studio-value-block";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
-import studioButtonStateBlock from "./button-blocks/studio-button-state-block";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block";
-import studioButtonLabelBlock from "./button-blocks/studio-button-label-block";
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event";
 import studioInputFocusEvent from "./text-input-blocks/studio-input-focus-event";
 import studioCheckboxCheckedBlock from "./checkbox-blocks/studio-checkbox-checked-block";
-import studioCheckboxStateBlock from "./checkbox-blocks/studio-checkbox-state-block";
-import studioCheckboxLabelBlock from "./checkbox-blocks/studio-checkbox-label-block";
-import studioCheckboxSizeBlock from "./checkbox-blocks/studio-checkbox-size-block";
 import studioImageWidthBlock from "./image-blocks/studio-image-width-block";
 import studioImageHeightBlock from "./image-blocks/studio-image-height-block";
 import studioImageAltBlock from "./image-blocks/studio-image-alt-block";
@@ -44,10 +39,13 @@ import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-l
 import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block";
 import studioDatepickerDateChangeEventBlock from "./datepicker-blocks/studio-datepicker-date-change-event-block";
 import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block";
-import studioInputPlaceholderBlock from "./text-input-blocks/studio-input-placeholder-block";
+import studioSelectTypeBlock from "./select-blocks/studio-select-type-block";
+import studioSelectSelectionmodeBlock from "./select-blocks/studio-select-selectionmode-block";
+import studioSelectChangedEventBlock from "./select-blocks/studio-select-changed-event-block";
 import stduioTable from "./table-block/columns-block";
 import  QuickActions from "../editor-micro-apps/quick-action"
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block";
+import studioLabelBlock from "./common-blocks/studio-label-block";
 export default [
 
     ...QuickActions,
@@ -372,7 +370,7 @@ export default [
                     switch(component.component_type){
                         case "text_label":
                             parameters=[
-                                "text_value_vertical_container",
+                                "value_text_block",
                                 "font_size_vertical_container",
                                 "font_color_block",
                                 "font_family_block",
@@ -396,10 +394,10 @@ export default [
                                 "helper_text_block",
                                 "label_text_block",
                                 "placeholder_text_block",
-                                "input_size_block",
+                                "size_block",
                                 "input_type_block",
-                                "input_state_block",
-                                "button_state_block",
+                                "status_block",
+                                "state_block",
                                 "input_blur_event_block",
                                 "input_clear_event_block",
                                 "input_valuechange_event_block",
@@ -408,19 +406,19 @@ export default [
                             break;
                         case "button_input":
                             parameters=[
-                                'button_label_text_block',
-                                'button_size_block',
+                                'label_text_block',
+                                'size_block',
                                 'button_type_block',
-                                'button_state_block',
+                                'state_block',
                                 'button_click_event_block'
                             ];
                             break;
                         case "checkbox":
                             parameters=[
-                                'checkbox_label_text_block',
+                                'label_text_block',
                                 'checkbox_checked_block',
-                                'checkbox_state_block',
-                                'checkbox_size_block',
+                                'state_block',
+                                'size_block',
                                 "checkbox_changed_event_block"
                                 ];
                                 break;
@@ -437,15 +435,28 @@ export default [
                             parameters=[
                                 "value_text_block",
                                 'datepicker_locale_block',
-                                'input_size_block',
-                                'input_state_block',
-                                'button_state_block',
+                                'size_block',
+                                'status_block',
+                                'state_block',
                                 "helper_text_block",
                                 "label_text_block",
                                 "datepicker_format_block",
                                 "datepicker_date_change_event_block",
                                         ];
                                         break;
+                        case "select":
+                            parameters=[
+                                'placeholder_text_block',
+                                "helper_text_block",
+                                "label_text_block",
+                                'status_block',
+                                'state_block',
+                                'size_block',
+                                'select_type_block',
+                                'select_selectionmode_block',
+                                'select_changed_event_block'
+                            ]
+                            break;
                         
                         case "Table":
                             parameters=[
@@ -501,6 +512,7 @@ export default [
         ...COMMON_ATTRIBUTES,
 
     },
+    ...studioValueBlock,
     ...studioDatepickerLocaleBlock,
     ...studioDatepickerFormatBlock,
     ...studioTextValueBlock,
@@ -520,26 +532,20 @@ export default [
     ...studioClickEvent,
     ...studioMouseEnterEvent,
     ...studioMouseLeaveEvent,
-    ...studioValueBlock,
-    ...studioInputPlaceholderBlock,
+    ...studioPlaceholderBlock,
     ...studioHelperTextBlock, 
     ...studioLabelBlock,
+    ...studioStatusBlock,
     ...studioSizeBlock,
     ...studioInputTypeBlock,
     ...studioStateBlock,
-    ...studioButtonLabelBlock,
-    ...studioButtonSizeBlock,
     ...studioButtonTypeBlock,
-    ...studioButtonStateBlock,
     ...studioInputBlurEvent,
     ...studioInputClearEvent,
     ...studioInputValuechangeEvent,
     ...studioInputFocusEvent,
     ...studioButtonClickEventBlock,
-    ...studioCheckboxLabelBlock,
     ...studioCheckboxCheckedBlock,
-    ...studioCheckboxStateBlock,
-    ...studioCheckboxSizeBlock,
     ...studioImageWidthBlock,
     ...studioImageHeightBlock,
     ...studioImageAltBlock,
@@ -547,5 +553,8 @@ export default [
     ...studioImageFallbackBlock,
     ...studioDatepickerDateChangeEventBlock,
     ...studioCheckboxChangedEventBlock,
+    ...studioSelectTypeBlock,
+    ...studioSelectSelectionmodeBlock,
+    ...studioSelectChangedEventBlock,
     ...stduioTable
 ]

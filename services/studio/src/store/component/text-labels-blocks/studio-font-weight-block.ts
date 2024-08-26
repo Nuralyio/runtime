@@ -58,7 +58,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultFontWeight = currentComponent.style['font-weight'] ||'';
+                let defaultFontWeight = currentComponent.style['font-weight'] ||'normal';
                 const options =[{value:'normal',icon: "font-awesome"},
                                 {value:'bold',icon: "bold"},
                                 {value:'900',icon: "font-awesome"}]
@@ -75,7 +75,7 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const fontWeightValue = EventData.value?EventData.value:''
+                    const fontWeightValue = EventData.value?EventData.value:'normal'
                     updateStyle(currentComponent, "font-weight", fontWeightValue);
                 }
             }catch(error){

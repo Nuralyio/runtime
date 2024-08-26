@@ -2,9 +2,9 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
-        uuid: "button_label_text_block",
+        uuid: "label_text_block",
         applicationId: "1",
-        name: "button label text block",
+        name: "label text block",
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         input: {
@@ -16,10 +16,10 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["button_text_label", "button_label_text_input"],
+        childrenIds: ["label_text_label", "label_text_input"],
     },
     {
-        uuid: "button_text_label",
+        uuid: "label_text_label",
         name: "label text label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
@@ -35,8 +35,8 @@ export default [
         },
     },
     {
-        uuid: "button_label_text_input",
-        name: "button label text input",
+        uuid: "label_text_input",
+        name: "label text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
         styleHandlers: {},
