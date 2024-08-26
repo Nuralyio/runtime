@@ -75,10 +75,7 @@ const ComponentWrapperStyle = css`
   .element.selected .component-name {
     display: block;
   }
-  :host {
-    display: flex;
-  }
-
+  
   @keyframes change-height {
     0% {
       height: 500px;
