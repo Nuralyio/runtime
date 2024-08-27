@@ -57,23 +57,23 @@ export default [
                 const options = 
                     [
                     {
-                    icon: "font-awesome",
+                    label: "Primary",
                     value: "primary",
                     }, 
                     {
-                    icon: "font-awesome",
+                    label: "Secondary",
                     value: "secondary"
                    },
                     {
-                     icon: "font-awesome",
+                     label: "Danger",
                      value: "danger"
                    },
                    {
-                    icon: "font-awesome",
+                    label: "Ghost",
                     value: "ghost"
                    },
                    {
-                    icon: "font-awesome",
+                    label: "Default",
                     value: "default"
                    },
             ]   

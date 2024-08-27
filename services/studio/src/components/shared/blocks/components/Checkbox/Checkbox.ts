@@ -2,7 +2,6 @@ import { html, css, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/checkbox"
 import { executeEventHandler } from "core/engine";
@@ -52,12 +51,18 @@ export class TextInputBlock extends BaseElementBlock {
   render() {
     const checkBoxStyles = this.component?.style || {};
     return html`
-     <hy-checkbox 
-     .checked=${this.inputHandlersValue?.checked =='check'?true:false}
-     .disabled=${this.inputHandlersValue?.state =='disabled'?true:false}
-     .size=${checkBoxStyles.size ?? nothing}
-     @checkbox-changed=${this.handleCheckboxChange}
-     >${this.inputHandlersValue?.label??''}</hy-checkbox>
+    ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show'?
+    html`
+    <hy-checkbox 
+    style=${styleMap(checkBoxStyles)}
+    .checked=${this.inputHandlersValue?.checked =='check'?true:false}
+    .indeterminate=${this.inputHandlersValue?.checked =='indeterminate'?true:false}
+    .disabled=${this.inputHandlersValue?.state =='disabled'?true:false}
+    .size=${checkBoxStyles.size ?? nothing}
+    @checkbox-changed=${this.handleCheckboxChange}
+    >${this.inputHandlersValue?.label??''}</hy-checkbox>
+      `:nothing}
+     
     `;
   }
 }
