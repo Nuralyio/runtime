@@ -25,9 +25,9 @@ export class RadioButtonBlock extends BaseElementBlock{
     }
 
     render() {
-      const options = this.inputHandlersValue?.value[0]??[];
-      const defaultValue = this.inputHandlersValue?.value[1]??'';
-      const type = this.inputHandlersValue?.value[2]??'default';
+      const options = this.inputHandlersValue?.value?this.inputHandlersValue?.value[0]:[];
+      const defaultValue = this.inputHandlersValue?.value?this.inputHandlersValue?.value[1]:'';
+      const type = this.inputHandlersValue?.value?this.inputHandlersValue?.value[2]:'default';
         
         return html`
           <span style=${styleMap({...this.component.style})}>
