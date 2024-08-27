@@ -44,8 +44,8 @@ export class SelectBlock extends BaseElementBlock {
         .options=${options}
         .defaultSelected="${defaultSelected}"
         .placeholder=${this.inputHandlersValue.placeholder||'Select an option'}
-        .status=${selectStyles.state ?? nothing}
-        .size=${selectStyles.size ??nothing}
+        .status=${selectStyles?.state ?? nothing}
+        .size=${selectStyles?.size ??nothing}
         .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
         .type=${this.inputHandlersValue.type=='inline'?'inline':nothing}
         @changed=${this.handleValueChange}
