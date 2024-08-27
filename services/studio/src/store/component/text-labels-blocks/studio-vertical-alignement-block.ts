@@ -2,58 +2,44 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
-        uuid: "text_alignement_block",
+        uuid: "text_vertical_alignement_block",
         applicationId: "1",
-        name: "Left panel",
+        name: "text vertical alignement block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
 
         },
 
-        childrenIds: ["alignement_label_container", "alignement_content_container"],
+        childrenIds: ["vertical_alignement_label_container", "vertical_alignement_content_container"],
     },
     {
-        uuid: "alignement_label_container",
+        uuid: "vertical_alignement_label_container",
         applicationId: "1",
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
         },
-        childrenIds: ["text_label_alignement"],
+        childrenIds: ["text_label_vertical_alignement"],
     },
     {
-        uuid: "alignement_content_container",
+        uuid: "vertical_alignement_content_container",
         applicationId: "1",
-        name: "Left panel",
+        name: "vertical alignement content container",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-
         ...COMMON_ATTRIBUTES,
         style: {
             width: "280px",
             display: 'flex',
             'justify-content': 'space-between'
         },
-        childrenIds: ["text-align-content"],
+        childrenIds: ["text_vertical_align_content"],
     },
     {
-        uuid: "text_label_alignement",
-        name: "text_label",
+        uuid: "text_label_vertical_alignement",
+        name: "text_label vertical alignement",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -61,20 +47,18 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Horizontal alignement';
+               const label ='Vertical alignement';
                label;
             `
             }
         },
     },
     {
-        uuid: "text-align-content",
+        uuid: "text_vertical_align_content",
         name: "name",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
-
         input: {
             value: {
                 type: "handler",
@@ -82,13 +66,14 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultTextAlign = currentComponent.style['justify-content'] ||'start';
-                const options =[{value:'start',icon: "align-left"},
-                                {value:'center',icon: "align-center"},
-                                 {value:'end',icon: "align-right"},
+                let defaultVerticalAlign = currentComponent.style['align-items'] ||'start';
+                const options =[
+                                {value:'start',icon: "arrow-up"},
+                                {value:'end',icon: "arrow-down"},
+                                {value:'center',icon:'align-center'}
                               ]
                 const radioType='button';
-                const result =[options,defaultTextAlign,radioType];
+                const result =[options,defaultVerticalAlign,radioType];
                 result;           
                 `
             }
@@ -101,11 +86,11 @@ export default [
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     const currentComponentDisplay = currentComponent.style['display'];
-                    const textAlignValue = EventData.value;
+                    const verticalAlignValue = EventData.value;
                     if(currentComponentDisplay!='flex')
                     updateStyle(currentComponent, "display", 'flex');
                 
-                    updateStyle(currentComponent, "justify-content", textAlignValue);
+                    updateStyle(currentComponent, "align-items", verticalAlignValue);
                 }
             }catch(error){
                 console.log(error);

@@ -2,6 +2,7 @@ import { ComponentType } from "./interface";
 import { COMMON_ATTRIBUTES } from "./helper/common_attributes";
 import studioFontColorBlock from './text-labels-blocks/studio-font-color-block';
 import studioAlignementBlock from './text-labels-blocks/studio-alignement-block';
+import studioVerticalAlignementBlock from './text-labels-blocks/studio-vertical-alignement-block'
 import studioFontWeightBlock from './text-labels-blocks/studio-font-weight-block';
 import studioFontStyleBlock from './text-labels-blocks/studio-font-style-block';
 import studioTextDecorationBlock from './text-labels-blocks/studio-text-decoration-block';
@@ -377,6 +378,7 @@ export default [
                                 "font_color_block",
                                 "font_family_block",
                                 "text_alignement_block",
+                                "text_vertical_alignement_block",
                                 "font_weight_block",
                                 "font_style_block",
                                 "text_decoration_block",
@@ -531,6 +533,7 @@ export default [
     ...studioFontFamilyBlock,
     ...studioBackgroundcolorBlock,
     ...studioAlignementBlock,
+    ...studioVerticalAlignementBlock,
     ...studioFontWeightBlock,
     ...studioFontStyleBlock,
     ...studioTextDecorationBlock,
