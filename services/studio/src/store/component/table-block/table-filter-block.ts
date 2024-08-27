@@ -2,26 +2,22 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
-        uuid: "checkbox_checked_block",
+        uuid: "table_filter_block",
         applicationId: "1",
-        name: "checkbox checked block",
+        name: "table filter block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["checkbox_checked_label", "checkbox_checked_radio"],
+        childrenIds: ["table_filter_label", "table_filter_radio"],
     },
     
     {
-        uuid: "checkbox_checked_label",
-        name: "checkbox checked label",
+        uuid: "table_filter_label",
+        name: "table filter label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -29,8 +25,8 @@ export default [
             value:{
                 type:'handler',
                 value:/* js */`
-                const checkedLabel='Checked';
-                checkedLabel;
+                const filterLabel='Filter';
+                filterLabel;
                 
                 `
             }
@@ -40,12 +36,12 @@ export default [
         }
     },
     {
-        uuid: "checkbox_checked_radio",
+        uuid: "table_filter_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "checkbox checked radio",
+        name: "table filter radio",
         input: {
             value: {
                 type: "handler",
@@ -53,24 +49,20 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentCheck = currentComponent.input?.checked?.value || 'uncheck';
+                const currentFilter = currentComponent.input?.filter?.value || 'none';
                 const options = 
                     [
                     {
-                    icon: "check",
-                    value: "check",
+                    icon: "filter",
+                    value: "filter",
                     }, 
                     {
                     icon: "xmark",
-                    value: "uncheck"
-                    },
-                    {
-                        icon:'bars',
-                        value:'indeterminate'
-                    }
+                    value: "none"
+                   }
             ]   
             const radioType ='button'
-            const result = [options,currentCheck,radioType];
+            const result = [options,currentFilter,radioType];
             result;
                 `
             }
@@ -86,8 +78,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const checkedValue = EventData.value;
-                    updateInput(currentComponent,'checked','string',EventData.value)
+                    const filterValue = EventData.value;
+                    updateInput(currentComponent,'filter','string',EventData.value)
                 }
             }catch(error){
                 console.log(error);

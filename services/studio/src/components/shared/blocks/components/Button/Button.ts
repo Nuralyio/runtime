@@ -53,8 +53,8 @@ export class ButtonBlock extends BaseElementBlock {
     const inputStyles = this.component?.style || {};
 
     return html`
-  ${this.display ? html`
-    <hy-button 
+  ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show' ? html`
+    <hy-button
     .size=${inputStyles.size}
     .type=${inputStyles.type}     
     .disabled=${this.inputHandlersValue.state=='disabled'?true:false}

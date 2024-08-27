@@ -142,8 +142,12 @@ export class TextInputBlock extends BaseElementBlock {
     return html`
     <hy-table
     style=${styleMap(inputStyles)}
-    .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}>
-
+    .headers="${this.headers}"
+    .rows="${this.rows}" 
+    .size=${inputStyles.size??nothing}
+    .withFilter=${this.inputHandlersValue.filter=='filter'?true:false}
+    .selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : this.inputHandlersValue?.selectionMode === 'single'?'single':nothing}
+    > 
     </hy-table>
       
     `;

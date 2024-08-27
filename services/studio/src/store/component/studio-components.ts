@@ -16,7 +16,7 @@ import studioClickEvent from "./text-labels-blocks/studio-click-event";
 import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event";
 import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event";
 import studioTextValueBlock from "./text-labels-blocks/studio-text-value-block";
-import studioDisplayBlock from "./text-labels-blocks/studio-display-block";
+import studioDisplayBlock from "./common-blocks/studio-display-block";
 import studioHelperTextBlock from "./common-blocks/studio-helper-block";
 import studioStateBlock from "./common-blocks/studio-state-block";
 import studioStatusBlock from "./common-blocks/studio-status-block";
@@ -43,6 +43,8 @@ import studioSelectTypeBlock from "./select-blocks/studio-select-type-block";
 import studioSelectSelectionmodeBlock from "./select-blocks/studio-select-selectionmode-block";
 import studioSelectChangedEventBlock from "./select-blocks/studio-select-changed-event-block";
 import stduioTable from "./table-block/columns-block";
+import tableSelectionModeBlock from './table-block/table-selectionmode-block'
+import tableFilterBlock from './table-block/table-filter-block'
 import  QuickActions from "../editor-micro-apps/quick-action"
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block";
 import studioLabelBlock from "./common-blocks/studio-label-block";
@@ -410,7 +412,8 @@ export default [
                                 'size_block',
                                 'button_type_block',
                                 'state_block',
-                                'button_click_event_block'
+                                'button_click_event_block',
+                                'display_block'
                             ];
                             break;
                         case "checkbox":
@@ -419,7 +422,8 @@ export default [
                                 'checkbox_checked_block',
                                 'state_block',
                                 'size_block',
-                                "checkbox_changed_event_block"
+                                "checkbox_changed_event_block",
+                                "display_block"
                                 ];
                                 break;
                         case "Image":
@@ -461,6 +465,9 @@ export default [
                         case "Table":
                             parameters=[
                                 'table_columns_block',
+                                'size_block',
+                                'table_selectionmode_block',
+                                'table_filter_block'
                             ];
                             break;
                         
@@ -512,6 +519,9 @@ export default [
         ...COMMON_ATTRIBUTES,
 
     },
+    ...stduioTable,
+    ...tableSelectionModeBlock,
+    ...tableFilterBlock,
     ...studioValueBlock,
     ...studioDatepickerLocaleBlock,
     ...studioDatepickerFormatBlock,
@@ -556,5 +566,4 @@ export default [
     ...studioSelectTypeBlock,
     ...studioSelectSelectionmodeBlock,
     ...studioSelectChangedEventBlock,
-    ...stduioTable
 ]

@@ -59,9 +59,9 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 let defaultFontWeight = currentComponent.style['font-weight'] ||'normal';
-                const options =[{value:'normal',icon: "font-awesome"},
-                                {value:'bold',icon: "bold"},
-                                {value:'900',icon: "font-awesome"}]
+                const options =[{value:'normal',label: "Normal"},
+                                {value:'bold',label: "Bold"},
+                                {value:'900',label: "Extra bold"}]
                 const radioType='button';
                 const result =[options,defaultFontWeight,radioType];
                 result;           

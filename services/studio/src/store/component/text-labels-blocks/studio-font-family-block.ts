@@ -124,7 +124,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const fontFamilyValue = EventData.value?EventData.value:'initial'
+                    const fontFamilyValue = EventData.value?EventData.value:'arial'
                     updateStyle(currentComponent, "font-family", fontFamilyValue);
         
                 }

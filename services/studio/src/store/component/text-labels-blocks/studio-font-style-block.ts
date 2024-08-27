@@ -69,9 +69,9 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 let defaultFontStyle = currentComponent.style['font-style'] ||'normal';
-                const options =[{value:'normal',icon: "font-awesome"},
-                                {value:'italic',icon: "italic"},
-                                {value:'oblique',icon: "font-awesome"}]
+                const options =[{value:'normal',label: "Normal"},
+                                {value:'italic',label: "Italic"},
+                                {value:'oblique',label: "Oblique"}]
                 const radioType='button';
                 const result =[options,defaultFontStyle,radioType];
                 result;           

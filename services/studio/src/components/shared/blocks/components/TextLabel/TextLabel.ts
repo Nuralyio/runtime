@@ -60,7 +60,7 @@ export class TextLabelBlock extends BaseElementBlock {
   render() {
     const labelStyles = this.component?.style || {};
     return html`
-      ${true ? html`
+      ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show' ? html`
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
