@@ -102,7 +102,10 @@ export class BaseElementBlock extends LitElement {
     });
 
     eventDispatcher.on('component:refresh', () => {
-      this.traitInputsHandlers();
+      setTimeout(async () => {
+        await this.traitInputsHandlers();
+      }, 0);
+
     })
 
     eventDispatcher.on('keydown', ({ key, selectedComponents }) => {

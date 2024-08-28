@@ -286,7 +286,7 @@ self.addEventListener('message', event => {
             self[self[application_id].name] = {};
           }
           self[self[application_id].name][component.uuid] = { ...component };
-          console.log(self[self[application_id].name][component.uuid])
+          //console.log(self[self[application_id].name][component.uuid])
 
           if (component && application_id) {
             if (!self.applications[application_id]) {
@@ -315,10 +315,8 @@ self.addEventListener('message', event => {
         const syncResponse = executeCode(codeToExecuteAsString);
         const application_id = component.applicationId || component.application_id;
         self[self[application_id].name][component.uuid] = { ...component, value:  syncResponse};
-
-        console.log('-----')
         self[self[application_id].name][component.uuid] = { ...component, values:  {syncResponse : "aa"}};
-        console.log(self[self[application_id].name][component.uuid])
+        //console.log(self[self[application_id].name][component.uuid])
         port?.postMessage({
           syncResponse,
           funtionNameToExecute: "syncResponse",

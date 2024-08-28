@@ -121,7 +121,6 @@ class RectangleSelection extends LitElement {
     if (!this.selectionRect) return;
 
     const rect = this.selectionRect.getBoundingClientRect();
-    console.log('Selection rect:', this.selectableElements);
 
     // Dynamically query and update highlighted elements
     this.selectableElements.forEach(element => {

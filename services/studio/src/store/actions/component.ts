@@ -384,12 +384,15 @@ export function updateComponentAttributes(
 
       // Directly update the component in the store
       console.time('setTime'); // Start the timer
-      console.log(`${applicationId}[${componentIndex}]`);
-      console.log($components.get());
+      //console.log(`${applicationId}[${componentIndex}]`);
+      //console.log($components.get());
       $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
       console.timeEnd('setTime'); // End the timer and log the execution time
       eventDispatcher.emit("component:register");
+      setTimeout(() => {
       eventDispatcher.emit("component:refresh");
+
+      }, 100);
       if (save) {
         setTimeout(() => {
           updateComponentHandler(componentToUpdate, applicationId);
