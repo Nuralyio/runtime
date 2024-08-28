@@ -67,6 +67,7 @@ class RectangleSelection extends LitElement {
   }
 
   firstUpdated() {
+    if(this.mode === ViewMode.Preview) return;
     this.addEventListener('mousedown', this.startSelection.bind(this));
     this.addEventListener('mousemove', this.updateSelection.bind(this));
     this.addEventListener('mouseup', this.endSelection.bind(this));

@@ -341,13 +341,14 @@ export function updateComponentInput(componentId: string, updatedInputs: any) {
 
 
 
-type UpdateType = 'style' | 'event' | 'input'; // Define the types of updates allowed
+type UpdateType = 'style' | 'event' | 'input' | 'values'; // Define the types of updates allowed
 
 export function updateComponentAttributes(
   applicationId: string,
   componentId: string,
   updateType: UpdateType,
-  updatedAttributes: any
+  updatedAttributes: any,
+  save = true
 ) {
   console.time('updateComponentAttributesExecutionTime'); // Start the timer
 
@@ -389,9 +390,11 @@ export function updateComponentAttributes(
       console.timeEnd('setTime'); // End the timer and log the execution time
       eventDispatcher.emit("component:register");
       eventDispatcher.emit("component:refresh");
-      setTimeout(() => {
-        updateComponentHandler(componentToUpdate, applicationId);
-      }, 0);
+      if (save) {
+        setTimeout(() => {
+          updateComponentHandler(componentToUpdate, applicationId);
+        }, 0);
+      }
     } else {
       console.log('Attributes are the same, no update needed.', updatedAttributes);
     }
