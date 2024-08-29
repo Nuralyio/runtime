@@ -59,12 +59,7 @@ self.FontSize = 'sss';
 self.Color = "color";
 self.Value = "value";
 
-self.SetStyle = function (component: ComponentElement, symbol: string, value: any) {
-  if (!updatedAttributes[component.uuid]) {
-    updatedAttributes[component.uuid] = {};
-  }
-  updatedAttributes[component.uuid][symbol] = value;
-};
+
 
 self.updateStyle = function (component: ComponentElement, symbol: string, value: any) {
   if (verbose) {
@@ -250,6 +245,7 @@ self.addEventListener('message', event => {
       if (applications) {
         applications.forEach(application => {
           self[application.name] = application;
+          self[application.uuid] = application;
         });
       }
       self.applications = applicationArrayToObject(applications);
@@ -286,6 +282,12 @@ self.addEventListener('message', event => {
       if (componentWithChildren) {
         componentWithChildren.forEach(component => {
           const application_id = component.applicationId || component.application_id;
+          if(!self[self[application_id].name]){
+            self[self[application_id].name] = {};
+          }
+          self[self[application_id].name][component.uuid] = { ...component };
+          //console.log(self[self[application_id].name][component.uuid])
+
           if (component && application_id) {
             if (!self.applications[application_id]) {
               self.applications[application_id] = {}; // Ensure the applicationId exists
@@ -311,6 +313,10 @@ self.addEventListener('message', event => {
       }
       try {
         const syncResponse = executeCode(codeToExecuteAsString);
+        const application_id = component.applicationId || component.application_id;
+        self[self[application_id].name][component.uuid] = { ...component, value:  syncResponse};
+        self[self[application_id].name][component.uuid] = { ...component, values:  {syncResponse : "aa"}};
+        //console.log(self[self[application_id].name][component.uuid])
         port?.postMessage({
           syncResponse,
           funtionNameToExecute: "syncResponse",
@@ -371,7 +377,6 @@ interface CustomSelf extends Worker {
     FontSize: string;
     Color: string;
     Value: string;
-    SetStyle: (component: ComponentElement, symbol: string, value: any) => void;
     updateStyle: (component: ComponentElement, symbol: string, value: any) => void;
     AddPage: (page: any, applicationId: string) => Promise<any>;
     GetContextVar: (symbol: string, customContentId: string | null, component: ComponentElement) => any;

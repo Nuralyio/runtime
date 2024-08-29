@@ -67,6 +67,7 @@ class RectangleSelection extends LitElement {
   }
 
   firstUpdated() {
+    if(this.mode === ViewMode.Preview) return;
     this.addEventListener('mousedown', this.startSelection.bind(this));
     this.addEventListener('mousemove', this.updateSelection.bind(this));
     this.addEventListener('mouseup', this.endSelection.bind(this));
@@ -120,7 +121,6 @@ class RectangleSelection extends LitElement {
     if (!this.selectionRect) return;
 
     const rect = this.selectionRect.getBoundingClientRect();
-    console.log('Selection rect:', this.selectableElements);
 
     // Dynamically query and update highlighted elements
     this.selectableElements.forEach(element => {

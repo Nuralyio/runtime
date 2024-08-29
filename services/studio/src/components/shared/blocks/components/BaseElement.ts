@@ -5,6 +5,7 @@ import { $context } from "$store/context";
 import { generateRandomId } from "utils/randomness";
 import { type ComponentElement } from "$store/component/interface";
 import { eventDispatcher } from "utils/change-detection";
+import { updateComponentAttributes } from "$store/actions/component";
 
 export class BaseElementBlock extends LitElement {
   @property({ type: Object })
@@ -59,6 +60,14 @@ export class BaseElementBlock extends LitElement {
           this.callbacks[inputName](input.value);
         }
       }
+      if (this.inputHandlersValue[inputName]) {
+        if (this.inputHandlersValue[inputName] !== this.component.values?.[inputName]) {
+          updateComponentAttributes(this.component.applicationId, this.component.uuid, "values",
+            { [inputName]: this.inputHandlersValue[inputName] },
+            false
+          );
+        }
+      }
     }
   }
 
@@ -89,11 +98,14 @@ export class BaseElementBlock extends LitElement {
   override async connectedCallback() {
     super.connectedCallback();
     $context.subscribe(async (context) => {
-        await this.traitInputsHandlers();
+      await this.traitInputsHandlers();
     });
-    
+
     eventDispatcher.on('component:refresh', () => {
-      this.traitInputsHandlers();
+      setTimeout(async () => {
+        await this.traitInputsHandlers();
+      }, 0);
+
     })
 
     eventDispatcher.on('keydown', ({ key, selectedComponents }) => {

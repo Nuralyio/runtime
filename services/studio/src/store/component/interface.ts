@@ -34,6 +34,7 @@ export interface DraggingComponentInfo {
 export interface ComponentElement {
   parent: ComponentElement;
   root?: boolean;
+  values?: any;
   uuid: string;
   name: string;
   component_type: ComponentType;
