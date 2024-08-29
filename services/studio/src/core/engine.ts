@@ -19,7 +19,7 @@ interface ExecuteStack {
 }
 
 let executeStack: ExecuteStack[] = [];
-let _isServiceWorkerReady = true;
+let _isServiceWorkerReady = false;
 let _components: ComponentElement[] = [];
 
 if (!isServer) {
@@ -36,19 +36,7 @@ export function executeEventHandler(
   attributeName: string,
   extras?: Extrats
 ) {
-  if (!_isServiceWorkerReady) {
-    if (isVerbose) {
-      console.warn('Service worker not ready yet, pushing to stack');
-    }
-    executeStack.push({
-      components: _components,
-      component,
-      handlerScope,
-      attributeName,
-      extras
-    });
-    return;
-  }
+ 
   executeInServiceWorker(_components, component, handlerScope, attributeName, extras);
 }
 

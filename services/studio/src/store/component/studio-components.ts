@@ -99,7 +99,7 @@ export default [
     {
         uuid: "left_panel_tabs",
         applicationId: "1",
-        name: "name",
+        name: "left_panel_tabs",
         component_type: ComponentType.Tabs,
 
         event: {

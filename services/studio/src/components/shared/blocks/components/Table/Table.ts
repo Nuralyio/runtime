@@ -138,13 +138,13 @@ export class TextInputBlock extends BaseElementBlock {
   }, 300); // Adjust the debounce wait time as needed.
 
   render() {
-    const inputStyles = this.component?.style || {};
+    const tableStyles = this.component?.style || {};
     return html`
     <hy-table
-    style=${styleMap(inputStyles)}
+    style=${styleMap(tableStyles)}
     .headers="${this.headers}"
     .rows="${this.rows}" 
-    .size=${inputStyles.size??nothing}
+    .size=${tableStyles.size??nothing}
     .withFilter=${this.inputHandlersValue.filter=='filter'?true:false}
     .selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : this.inputHandlersValue?.selectionMode === 'single'?'single':nothing}
     > 
