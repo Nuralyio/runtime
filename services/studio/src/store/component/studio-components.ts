@@ -25,6 +25,7 @@ import studioSizeBlock from "./common-blocks/studio-size-block";
 import studioPlaceholderBlock from "./common-blocks/studio-placeholder-block";
 import studioValueBlock from "./common-blocks/studio-value-block";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
+import studioIconPickerBlock from './common-blocks/studio-icon-picker-block'
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block";
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
@@ -46,6 +47,9 @@ import studioSelectChangedEventBlock from "./select-blocks/studio-select-changed
 import stduioTable from "./table-block/columns-block";
 import tableSelectionModeBlock from './table-block/table-selectionmode-block'
 import tableFilterBlock from './table-block/table-filter-block'
+import studioIconWidthBlock from './icon-blocks/studio-icon-width-block';
+import studioIconHeightBlock from './icon-blocks/studio-icon-height-block';
+import studioIconColorBlock from './icon-blocks/studio-icon-color-block';
 import  QuickActions from "../editor-micro-apps/quick-action"
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block";
 import studioLabelBlock from "./common-blocks/studio-label-block";
@@ -413,6 +417,7 @@ export default [
                                 'label_text_block',
                                 'size_block',
                                 'button_type_block',
+                                'icon_picker_block',
                                 'state_block',
                                 'button_click_event_block',
                                 'display_block'
@@ -472,9 +477,15 @@ export default [
                                 'table_filter_block'
                             ];
                             break;
+                        case "Icon":
+                            parameters=[
+                                'icon_picker_block',
+                                'icon_width_vertical_container',
+                                'icon_height_vertical_container',
+                                'icon_color_block'
+                            ]
                         
-                        
-
+            
                     }
                 }
                 [
@@ -553,6 +564,10 @@ export default [
     ...studioInputTypeBlock,
     ...studioStateBlock,
     ...studioButtonTypeBlock,
+    ...studioIconPickerBlock,
+    ...studioIconWidthBlock,
+    ...studioIconHeightBlock,
+    ...studioIconColorBlock,
     ...studioInputBlurEvent,
     ...studioInputClearEvent,
     ...studioInputValuechangeEvent,

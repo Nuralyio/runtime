@@ -19,6 +19,7 @@ export const enum ComponentType {
   Icon = "Icon",
   Image = "Image",
   RadioButton="RadioButton",
+  IconPicker ='IconPicker',
   AI = "AI"
 }
 
