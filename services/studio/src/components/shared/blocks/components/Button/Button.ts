@@ -59,6 +59,7 @@ export class ButtonBlock extends BaseElementBlock {
     .type=${inputStyles.type}     
     .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
     .icon="${this.inputHandlersValue.icon?[this.inputHandlersValue.icon]:nothing}"
+    .iconPosition=${this.inputHandlersValue.iconPosition??nothing}
      @click=${({ x, y, type, }) => {
           if (this.component.event?.onClick) {
             executeEventHandler(this.component, "event", "onClick", {

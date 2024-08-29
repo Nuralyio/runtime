@@ -25,6 +25,7 @@ import studioSizeBlock from "./common-blocks/studio-size-block";
 import studioPlaceholderBlock from "./common-blocks/studio-placeholder-block";
 import studioValueBlock from "./common-blocks/studio-value-block";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
+import studioButtonIconPosition from './button-blocks/studio-button-icon-position-block'
 import studioIconPickerBlock from './common-blocks/studio-icon-picker-block'
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block";
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
@@ -420,7 +421,8 @@ export default [
                                 'icon_picker_block',
                                 'state_block',
                                 'button_click_event_block',
-                                'display_block'
+                                'display_block',
+                                'button_icon_position_block'
                             ];
                             break;
                         case "checkbox":
@@ -565,6 +567,7 @@ export default [
     ...studioStateBlock,
     ...studioButtonTypeBlock,
     ...studioIconPickerBlock,
+    ...studioButtonIconPosition,
     ...studioIconWidthBlock,
     ...studioIconHeightBlock,
     ...studioIconColorBlock,
