@@ -17,6 +17,7 @@ import '../components/shared/blocks/components/Icon/Icon';
 import '../components/shared/blocks/components/Image/Image';
 import '../components/shared/blocks/components/RadioButton/Radio-button' 
 import '../components/shared/blocks/components/AIChat/AIChat'; 
+import '../components/shared/blocks/components/IconPicker/IconPicker';
 
 // Simple memoization cache
 
@@ -45,6 +46,7 @@ const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .compo
 const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`; // Add this template
 const radioButtonTemplate=(props:any)=>html`<radio-button-block .item=${props.item} .component=${props.component}></radio-button-block>`
 const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`; // Add this template
+const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`; 
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -100,6 +102,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return radioButtonTemplate(commonProps)
     case ComponentType.AI: // Add this case
       return aiTemplate(commonProps);
+    case ComponentType.IconPicker:
+      return iconPickerTemplate(commonProps)
     default:
       return html``;
   }

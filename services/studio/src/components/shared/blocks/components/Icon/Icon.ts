@@ -25,13 +25,14 @@ export class IconBlock extends BaseElementBlock {
   };
 
   render() {
-    const options = this.inputHandlersValue?.value?.[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value?.[1];
+    const iconStyles = this.component?.style || {};
+
   
     return html`
-    <!-- for the sake of the demo -->
-      <hy-icon name="check"
-      style="  --hybrid-icon-width: 30px; --hybrid-icon-height: 35px;  --hybrid-icon-color: green;"></hy-icon>
+      <hy-icon 
+      .name=${this.inputHandlersValue.icon??''}
+      style=${styleMap(iconStyles)}>
+      </hy-icon>
     `;
   }
 }
