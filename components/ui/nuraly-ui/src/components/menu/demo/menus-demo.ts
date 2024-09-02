@@ -21,19 +21,28 @@ export class ElMeenuElement extends LitElement {
     {
       text: 'First Menu',
       children: [
-        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right'},
-        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree'},
+        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
+        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',iconPosition:'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},children: [
+          {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
+          {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',iconPosition:'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},children: [
+            {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
+            {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',iconPosition:'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
+          ],},
+        ]},
       ],
       disabled: false,
+      icon:'bug',
+      menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}
     },
     {
       text: 'Second Menu',
       children: [
-        {text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud'},
-        {text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi'},
+        {text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
+        {text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
       
       ],
       link: '',
+      menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}
     },
   ];
 
@@ -85,6 +94,10 @@ export class ElMeenuElement extends LitElement {
       <h3>Treeview</h3>
       <hy-menu
         .items=${this.items}
+        @action-click=${(e:CustomEvent)=>{
+          console.log('action name',e.detail.value)
+          console.log('option path',e.detail.path)
+        }}
         @change=${(e: CustomEvent) => {
           this.path = e.detail.path;
           this.value = e.detail.value;

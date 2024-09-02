@@ -16,6 +16,16 @@ const subMenuStyle = css`
     margin-right: auto;
     padding-left: var(--hybrid-sub-menu-padding-left-text);
   }
+
+  .icons-container{
+    display:flex;
+    align-items:center;
+  }
+  .action-icon{
+    margin-right:4px;
+    --hybrid-icon-color: var(--hybrid-sub-menu-action-icon-color);
+  }
+
   #text-icon {
     --hybrid-icon-color: var(--hybrid-sub-menu-text-icon-color);
   }

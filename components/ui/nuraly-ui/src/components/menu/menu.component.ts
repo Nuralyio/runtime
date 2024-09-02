@@ -55,6 +55,13 @@ export class HyMenuComponent extends LitElement {
     });
   }
   _selectMenu(selectMenuEvent:CustomEvent){
+    if (this._currentSelectedLink >= 0) 
+    {
+      this._menuLinks[this._currentSelectedLink].removeAttribute('selected');
+      this._currentSelectedLink = -1;
+    }
+
+    this._handleInitHighlighted()
     this.dispatchEvent(new CustomEvent('change',{bubbles:true,composed:true,detail:{path:selectMenuEvent.detail.path,value:selectMenuEvent.detail.value}}));
   }
 
@@ -63,7 +70,13 @@ export class HyMenuComponent extends LitElement {
       const currentPath = [...path, index].join('-');
       if (menu.children) {
         return html`
-          <hy-sub-menu .text=${menu.text} .icon=${menu.icon} .disabled=${menu.disabled} data-path=${currentPath} @select-menu=${this._selectMenu}>
+          <hy-sub-menu 
+          .menu=${menu.menu} 
+          .text=${menu.text} 
+          .icon=${menu.icon} 
+          .disabled=${menu.disabled} 
+          data-path=${currentPath} 
+          @select-menu=${this._selectMenu}>
             ${this._display(menu.children, [...path, index])}
           </hy-sub-menu>
         `;
@@ -71,6 +84,7 @@ export class HyMenuComponent extends LitElement {
         return html` <hy-menu-link
           data-path=${currentPath}
           icon=${menu.icon}
+          .menu=${menu.menu}
           text=${menu.text}
           link=${menu.link}
           iconposition=${menu.iconPosition}
