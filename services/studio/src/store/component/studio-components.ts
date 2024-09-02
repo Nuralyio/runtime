@@ -306,7 +306,7 @@ export default [
                                 id: component.uuid,
                                 handlerKey: "onSelect",
                             })
-                            if(componentChildrenIds.length){
+                            if(componentChildrenIds){
                                 children[children.length-1]={...children[children.length-1],children:[]}
                                 findChildren(appId,children[children.length-1].children,componentChildrenIds);
                             }
@@ -318,7 +318,7 @@ export default [
                         const componentIds= page.component_ids;
                         const appId = page.application_id;
                         var children=[];
-                        if(componentIds?.length){
+                        if(componentIds){
                             componentIds.map((componentId) => {
                                 const component= GetComponent(componentId,appId);
                                 if(component){
@@ -327,10 +327,10 @@ export default [
                                         id: component.uuid,
                                         handlerKey : "onSelect",
                                     })
-                                    const childrenIds = component.childrenIds;
-                                    if(childrenIds?.length){
+                                    const childrenIds = component?.childrenIds;
+                                    if(childrenIds){
                                         children[children.length-1]={...children[children.length-1],children:[]};
-                                        //findChildren(appId,children[children.length-1].children,childrenIds)
+                                        findChildren(appId,children[children.length-1].children,childrenIds)
                                     }     
                                 }
                             })
