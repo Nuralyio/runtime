@@ -30,7 +30,11 @@ const menuLinkStyle = css`
   hy-icon {
     --hybrid-icon-color: var(--hybrid-menu-link-icon-color);
   }
-
+   .icon-container{
+    display:flex;
+    align-items:center;
+    margin-right:3px;
+   }
   li {
     list-style: none;
     display: flex;

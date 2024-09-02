@@ -39,6 +39,7 @@ const menuStyle = css`
     --hybrid-sub-menu-active-color: #161616;
     --hybrid-sub-menu-highlighted-color: #0f62fe;
     --hybrid-sub-menu-text-icon-color: #525252;
+    --hybrid-sub-menu-action-icon-color:#525252;
     --hybrid-sub-menu-toggle-icon-color: #525252;
     --hybrid-sub-menu-padding-y: 8px;
     --hybrid-sub-menu-margin-y: 0px;
@@ -50,7 +51,7 @@ const menuStyle = css`
   @media (prefers-color-scheme: dark) {
     :host {
       --hybrid-menu-border: 1px solid #ffffff;
-      --hybrid-menu-link-color: #525252;
+      --hybrid-menu-link-color:#c6c6c6;
       --hybrid-menu-focus-border: 1px solid #ffffff;
       --hybrid-menu-focus-color: #525252;
       --hybrid-menu-hover-link-background-color: #f4f4f4;
@@ -59,9 +60,9 @@ const menuStyle = css`
       --hybrid-menu-active-background-color: #c6c6c6;
       --hybrid-menu-selected-link-border: 3px solid #ffffff;
       --hybrid-menu-selected-link-background-color: #e0e0e0;
-      --hybrid-menu-disabled-link-color: #c6c6c6;
-      --hybrid-sub-menu-color: #525252;
-      --hybrid-sub-menu-disabled-color: #c6c6c6;
+      --hybrid-menu-disabled-link-color: #525252;
+      --hybrid-sub-menu-color: #c6c6c6;
+      --hybrid-sub-menu-disabled-color: #525252;
       --hybrid-sub-menu-focus-border: 1px solid #ffffff;
       --hybrid-sub-menu-focus-color: #525252;
       --hybrid-sub-menu-hover-background-color: #f4f4f4;

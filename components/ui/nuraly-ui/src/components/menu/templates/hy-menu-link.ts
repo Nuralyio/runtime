@@ -3,6 +3,8 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {styles} from './menu-link.style.js';
 import {EMPTY_STRING} from '../menu.constants.js';
 import {ICON_POSITION} from './menu-link.contants.js';
+import { IAction } from '../menu.types.js';
+import '../../dropdown/hy-dropdown.component.js'
 
 @customElement('hy-menu-link')
 export class HyMenuLink extends LitElement {
@@ -29,9 +31,17 @@ export class HyMenuLink extends LitElement {
   @property({type: Boolean, reflect: true})
   selected = false;
 
+  @property()
+  menu!:{icon:string,actions:IAction[]}
+
+  optionPath!:number[];
+
+
   override connectedCallback(): void {
     super.connectedCallback();
-    const isTheFirstOption=this.getAttribute('data-path')?.split('-').filter((path)=>path!="0").length==0
+    this.optionPath=this.getAttribute('data-path')!.split('-').map((stringValue)=>+stringValue);
+
+    const isTheFirstOption=this.optionPath.filter((path)=>path!=0).length==0
     if (isTheFirstOption) {
       HyMenuLink.index = 0;
     }
@@ -55,9 +65,15 @@ export class HyMenuLink extends LitElement {
     );
   }
 
+  onActionClick(e:CustomEvent){
+    e.stopPropagation()
+    this.dispatchEvent(new CustomEvent('action-click',{detail:{value:e.detail.value,path:this.optionPath},composed:true,bubbles:true}))
+  }
+
   override render() {
     return html`
       <li tabindex="0" @click=${!this.disabled ? this._clickLink : nothing}>
+      <div class="icon-container" @click=${(e:Event)=>e.stopPropagation()}>
         ${this.icon
           ? html`${!this.text
               ? html`
@@ -67,6 +83,12 @@ export class HyMenuLink extends LitElement {
                 `
               : html`<hy-icon name="${this.icon}"></hy-icon>`} `
           : nothing}
+          ${this.menu?.actions?html`
+              <hy-dropdown .options=${this.menu.actions} @click-item=${this.onActionClick}>
+                <hy-icon name="${this.menu.icon}"></hy-icon>
+              </hy-dropdown>
+                `:nothing}
+        </div>
         ${this.text
           ? html`
               <div id="text-container">
