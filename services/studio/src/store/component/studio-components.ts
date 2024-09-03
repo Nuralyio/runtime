@@ -301,8 +301,28 @@ export default [
                         childrenIds.map((componentId)  => {
                             const component= GetComponent(componentId,appId);
                             const componentChildrenIds = component.childrenIds;
+                            let componentIcon='smile';
+                            switch(component.component_type){
+                                case 'text_label':
+                                    componentIcon="i-cursor";
+                                    break;
+                                case 'select':
+                                    componentIcon='th-list';
+                                    break;
+                                case 'checkbox':
+                                    componentIcon='toggle-off';
+                                    break;
+                                case 'Table':
+                                    componentIcon='table';
+                                    break;
+                                case 'vertical-container-block':
+                                    componentIcon='grip-vertical';
+                                    break;
+                            }
+
                             children.push({
                                 text: component.name,
+                                icon:componentIcon,
                                 id: component.uuid,
                                 handlerKey: "onSelect",
                             })
@@ -319,25 +339,12 @@ export default [
                         const appId = page.application_id;
                         var children=[];
                         if(componentIds){
-                            componentIds.map((componentId) => {
-                                const component= GetComponent(componentId,appId);
-                                if(component){
-                                    children.push({
-                                        text: component.name,
-                                        id: component.uuid,
-                                        handlerKey : "onSelect",
-                                    })
-                                    const childrenIds = component?.childrenIds;
-                                    if(childrenIds){
-                                        children[children.length-1]={...children[children.length-1],children:[]};
-                                        findChildren(appId,children[children.length-1].children,childrenIds)
-                                    }     
-                                }
-                            })
+                            findChildren(appId,children,componentIds)  
                         }
                         return {
                             text: page.name,
                             id: page.uuid,
+                            icon:'file',
                             type: "page",
                             handlerKey : "onSelect",
                             children: children
