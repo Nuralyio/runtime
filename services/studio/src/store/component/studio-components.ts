@@ -324,6 +324,7 @@ export default [
                                 text: component.name,
                                 icon:componentIcon,
                                 id: component.uuid,
+                                menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
                                 handlerKey: "onSelect",
                             })
                             if(componentChildrenIds){
@@ -347,6 +348,7 @@ export default [
                             icon:'file',
                             type: "page",
                             handlerKey : "onSelect",
+                            menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
                             children: children
                         }
                     });
