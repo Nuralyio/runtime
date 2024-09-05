@@ -21,18 +21,25 @@ export class ElMeenuElement extends LitElement {
     {
       text: 'First Menu',
       children: [
-        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
-        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',iconPosition:'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},children: [
-          {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
-          {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',iconPosition:'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},children: [
-            {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
-            {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',iconPosition:'right',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
+        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
+      },
+        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
+        ,children: [
+          {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'circle-exclamation',label:'error'}
+        },
+          {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
+          ,children: [
+            {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'circle-exclamation',label:'error'}
+          },
+            {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
+          },
           ],},
         ]},
       ],
       disabled: false,
       icon:'bug',
-      menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}
+      menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
+      status:{icon:'warning',label:'warning'}
     },
     {
       text: 'Second Menu',

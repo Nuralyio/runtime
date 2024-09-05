@@ -33,14 +33,24 @@ const menuLinkStyle = css`
    .icon-container{
     display:flex;
     align-items:center;
-    margin-right:3px;
+    position:relative;
    }
+   
+   .status-icon{
+    padding-right:0px;
+   }
+
   li {
     list-style: none;
     display: flex;
     cursor: pointer;
     padding-bottom: var(--hybrid-menu-link-padding-y);
     padding-top: var(--hybrid-menu-link-padding-y);
+  }
+  .action-text-container{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
   }
 
   :host([iconPosition='right']) li {

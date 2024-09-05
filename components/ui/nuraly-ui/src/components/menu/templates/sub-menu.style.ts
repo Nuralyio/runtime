@@ -20,10 +20,15 @@ const subMenuStyle = css`
   .icons-container{
     display:flex;
     align-items:center;
+    position:relative;
   }
   .action-icon{
-    margin-right:4px;
+    margin-right:1px;
     --hybrid-icon-color: var(--hybrid-sub-menu-action-icon-color);
+  }
+  .status-icon{
+    margin-right:10px;
+    --hybrid-icon-color: var(--hybrid-sub-menu-status-icon-color);
   }
 
   #text-icon {

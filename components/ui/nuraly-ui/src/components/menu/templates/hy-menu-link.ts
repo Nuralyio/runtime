@@ -34,6 +34,9 @@ export class HyMenuLink extends LitElement {
   @property()
   menu!:{icon:string,actions:IAction[]}
 
+  @property()
+  status!:{icon:string,label:string}
+
   optionPath!:number[];
 
 
@@ -55,25 +58,26 @@ export class HyMenuLink extends LitElement {
     }
   }
 
-  _clickLink() {
-    this.dispatchEvent(
-      new CustomEvent('selected-link', {
-        detail: {index: this.linkPosition, value: this.text},
-        bubbles: true,
-        composed: true,
-      })
-    );
+  _clickLink(event?:Event) {
+    if((event?.target as HTMLElement)?.id !='action-icon'){
+      this.dispatchEvent(
+        new CustomEvent('selected-link', {
+          detail: {index: this.linkPosition, value: this.text},
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
   }
 
   onActionClick(e:CustomEvent){
-    e.stopPropagation()
     this.dispatchEvent(new CustomEvent('action-click',{detail:{value:e.detail.value,path:this.optionPath},composed:true,bubbles:true}))
   }
 
   override render() {
     return html`
       <li tabindex="0" @click=${!this.disabled ? this._clickLink : nothing}>
-      <div class="icon-container" @click=${(e:Event)=>e.stopPropagation()}>
+      <div class="icon-container" >
         ${this.icon
           ? html`${!this.text
               ? html`
@@ -83,17 +87,26 @@ export class HyMenuLink extends LitElement {
                 `
               : html`<hy-icon name="${this.icon}"></hy-icon>`} `
           : nothing}
-          ${this.menu?.actions?html`
-              <hy-dropdown .options=${this.menu.actions} @click-item=${this.onActionClick}>
-                <hy-icon name="${this.menu.icon}"></hy-icon>
-              </hy-dropdown>
-                `:nothing}
+         
         </div>
         ${this.text
           ? html`
+          <div class="action-text-container">
               <div id="text-container">
                 <span>${this.text}</span>
               </div>
+              <div class="icon-container" >
+              ${this.status?.icon?html`
+              <hy-icon name=${this.status.icon} class="status-icon"></hy-icon>
+                `:nothing}
+              ${this.menu?.actions?html`
+                <hy-dropdown .options=${this.menu.actions} .trigger=${'hover'} @click-item=${this.onActionClick}>
+                  <hy-icon name="${this.menu.icon}" id="action-icon" ></hy-icon>
+                </hy-dropdown>
+                  `:nothing}
+              </div>
+                
+          </div>
             `
           : nothing}
       </li>

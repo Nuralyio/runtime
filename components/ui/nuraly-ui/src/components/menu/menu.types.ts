@@ -2,6 +2,7 @@ export interface IMenu {
   text: string;
   link?: string;
   menu?:{icon:string,actions:IAction[]};
+  status?:{icon:string,label:string};
   icon?: string;
   iconPosition?: string;
   selected?: boolean;

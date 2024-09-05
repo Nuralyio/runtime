@@ -3,6 +3,7 @@ import {css} from 'lit';
 const dropdownStyle = css`
   .dropdown-container {
     display: none;
+    z-index:1;
   }
   :host {
     cursor: pointer;

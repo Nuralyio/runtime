@@ -88,9 +88,8 @@ export class ElButtonDemoElement extends LitElement {
     </hy-dropdown>
       <div id="centered">
         <h3>Centered trigger</h3>
-
         <hy-dropdown .options=${this.options} @click-item=${(e: CustomEvent) => console.log('value clicked', e.detail)}>
-          <span> hover me</span>
+          <div style="overflow-y:scroll;max-height:100px;width:100px"> hover meee, hover meeehover meeehover meeehover meeehover meeehover meeehover meee</div>
         </hy-dropdown>
 
         <br /><br />
