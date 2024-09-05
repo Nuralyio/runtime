@@ -40,6 +40,7 @@ const menuStyle = css`
     --hybrid-sub-menu-highlighted-color: #0f62fe;
     --hybrid-sub-menu-text-icon-color: #525252;
     --hybrid-sub-menu-action-icon-color:#525252;
+    --hybrid-sub-menu-status-icon-color:#525252;
     --hybrid-sub-menu-toggle-icon-color: #525252;
     --hybrid-sub-menu-padding-y: 8px;
     --hybrid-sub-menu-margin-y: 0px;

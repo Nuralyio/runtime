@@ -75,6 +75,7 @@ export class HyMenuComponent extends LitElement {
           .text=${menu.text} 
           .icon=${menu.icon} 
           .disabled=${menu.disabled} 
+          .status=${menu.status}
           data-path=${currentPath} 
           @select-menu=${this._selectMenu}>
             ${this._display(menu.children, [...path, index])}
@@ -85,6 +86,7 @@ export class HyMenuComponent extends LitElement {
           data-path=${currentPath}
           icon=${menu.icon}
           .menu=${menu.menu}
+          .status=${menu.status}
           text=${menu.text}
           link=${menu.link}
           iconposition=${menu.iconPosition}
