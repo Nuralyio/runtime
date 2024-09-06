@@ -62,7 +62,7 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const currentColor = currentComponent.style['--hybrid-icon-color'] ;
+                        const currentColor = currentComponent?.style&&currentComponent.style['--hybrid-icon-color']||"" ;
                         currentColor;
                     }
 

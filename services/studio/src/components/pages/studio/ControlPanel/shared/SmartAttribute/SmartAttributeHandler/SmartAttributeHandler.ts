@@ -75,19 +75,19 @@ export class SmartAttributeHandler extends LitElement {
     this.smartValue = this.getAttributeValue();
   }
   getAttributeValue() {
-    let attributes = this.component[this.attributeScope];
+    let attributes = this.attributeScope && this.component?this.component[this.attributeScope]:'';
     let attributeValue;
     if (this.attributeScope === "style") {
       attributeValue = `"${attributes[this.attributeName]}"`;
     } else {
-      attributeValue = attributes[this.attributeName] ?? "";
+      attributeValue = this.attributeName?attributes[this.attributeName] : "";
     }
 
-    if (!this.component[this.handlerScope]) {
+    if (this.handlerScope &&!this.component[this.handlerScope]) {
       this.component[this.handlerScope] = {}
     }
-    const smartAttributeValue =
-      this.component[this.handlerScope]![this.attributeName];
+    const smartAttributeValue = this.component&&this.handlerScope &&this.attributeName?
+      this.component[this.handlerScope]![this.attributeName]:'';
     return smartAttributeValue && smartAttributeValue !== ""
       ? smartAttributeValue
       : attributeValue;

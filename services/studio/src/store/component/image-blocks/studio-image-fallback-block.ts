@@ -68,7 +68,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const currentFallback=  currentComponent.input?.fallback.value??'';
+                const currentFallback=  currentComponent.input?.fallback?.value??'';
                 currentFallback;
             }
 

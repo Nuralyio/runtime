@@ -7,6 +7,7 @@ import { generateRandomId } from 'utils/randomness';
 import '@hybridui/menu/templates/hy-sub-menu.js'
 import '@hybridui/menu/templates/hy-menu-link.js'
 import { BaseElementBlock } from '../BaseElement';
+import { executeEventHandler } from 'core/engine';
 
 @customElement('menu-block')
 export class MenuBlock extends BaseElementBlock {
@@ -103,6 +104,15 @@ export class MenuBlock extends BaseElementBlock {
         };
         document.addEventListener(eventId, handler as any);
     }
+    onActionClick(e){
+        if(this.component?.event?.actionClick){
+            executeEventHandler(this.component,'event','actionClick',{
+                EventData:{value:e.detail.value,path:e.detail.path},
+                })
+
+        }
+
+    }
 
 
     override render() {
@@ -112,6 +122,7 @@ export class MenuBlock extends BaseElementBlock {
                 <hy-menu
                     placeholder="Select an option"
                     .items=${this.inputHandlersValue?.options ?? []}
+                    @action-click=${this.onActionClick}
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });

@@ -77,7 +77,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const iconheight = currentComponent.style['--hybrid-icon-height']||0;
+                const iconheight = currentComponent?.style&&currentComponent.style['--hybrid-icon-height']||0;
                 iconheight;
                 
             }

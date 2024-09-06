@@ -97,7 +97,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent.style['fontSize']?.split('')
+                const fontSize =currentComponent?.style && currentComponent.style['fontSize']?.split('')
                 if(fontSize) 
                     {
                         let unity='';
