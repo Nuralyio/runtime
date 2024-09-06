@@ -68,7 +68,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const currentAlt=  currentComponent.input?.alt.value??'';
+                const currentAlt=  currentComponent.input?.alt?.value??'';
                 currentAlt;
             }
 

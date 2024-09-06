@@ -67,7 +67,7 @@ export class AttributeBorderValue extends BaseElementBlock {
 
 	override render() {
     this.borderRadius = this.inputHandlersValue.value?this.inputHandlersValue.value[0]:0;
-		this.unity = this.inputHandlersValue.value[1];
+		this.unity = this.inputHandlersValue.value?this.inputHandlersValue.value[1]:'px';
 		return html`
       <div style="display: flex">
         <div class="first-row">
@@ -77,7 +77,7 @@ export class AttributeBorderValue extends BaseElementBlock {
             data-prop="slider-change-via-textbox"
             .min=${0}
             .max=${200}
-            .value=${this.inputHandlersValue.value[0]}
+            .value=${this.borderRadius}
             @changed="${this.debouncedChanged}"
           ></hy-slider-input>
         </div>

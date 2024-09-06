@@ -107,8 +107,12 @@ export default [
             valueChange: `
         updateStyle(app1.text_label, "color", EventData.value);
       `
+           
         },
         ...COMMON_ATTRIBUTES,
+        style:{
+            width:"300px"
+        },
         input: {
             tabs: {
                 type: "json",
@@ -356,6 +360,18 @@ export default [
                 `
             },
         },
+        event: {
+            /* js */
+            actionClick: `
+            try {
+               
+                
+             } catch(e) {
+                 console.log(e);
+             }
+             `
+           
+        },
         applicationId: "1",
     },
     {
@@ -417,7 +433,6 @@ export default [
                                 "status_block",
                                 "state_block",
                                 "input_blur_event_block",
-                                "input_clear_event_block",
                                 "input_valuechange_event_block",
                                 "input_focus_event_block"
                             ];

@@ -53,7 +53,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentSize = currentComponent.style['size'] || 'medium'
+                const currentSize = currentComponent.style && currentComponent.style['size'] || 'medium'
                 const options = 
                     [
                         {   label:'Small',

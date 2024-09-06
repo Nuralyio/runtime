@@ -30,8 +30,8 @@ export class SelectBlock extends BaseElementBlock {
          .helper=${this.inputHandlersValue.helper??nothing}
          .label=${this.inputHandlersValue.label??nothing}
          .locale=${this.inputHandlersValue.locale??nothing}
-         .state=${this.component.style.state??nothing}
-         .size=${this.component.style.size??nothing}
+         .state=${this.component?.style?.state??nothing}
+         .size=${this.component?.style?.size??nothing}
          .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
          .dateValue=${this.inputHandlersValue.value??nothing}
          .fieldFormat=${this.inputHandlersValue.format??nothing}

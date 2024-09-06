@@ -36,7 +36,7 @@ export default [
 
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                if (currentComponent.style["box-shadow"]) {
+                if (currentComponent?.style["box-shadow"]) {
                     const values = currentComponent.style["box-shadow"].match(/-?[0-9]+px/g);  
                     const horizontalValue = parseInt(values[0], 10);
                     const verticalValue = parseInt(values[1], 10);

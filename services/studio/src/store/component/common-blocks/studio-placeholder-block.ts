@@ -69,7 +69,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const currentPlaceholderText=  currentComponent.input?.placeholder.value??'';
+                const currentPlaceholderText=  currentComponent.input?.placeholder?.value??'';
                 currentPlaceholderText;
             }
 

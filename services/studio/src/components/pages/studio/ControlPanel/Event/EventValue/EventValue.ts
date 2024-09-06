@@ -1,6 +1,6 @@
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "components/shared/blocks/components/BaseElement";
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
 import "@hybridui/dropdown";
@@ -26,7 +26,7 @@ export class ParameterEventLabel extends BaseElementBlock {
   ];
 
   handleCodeChange=(e:CustomEvent)=>{
-    if (this.component.event.codeChange) {
+    if (this.component?.event?.codeChange) {
       executeEventHandler(this.component,'event','codeChange',{
         EventData: {
           value: e.detail.value,
@@ -37,8 +37,8 @@ export class ParameterEventLabel extends BaseElementBlock {
   renderCodeEditorTemplate() {
     return html`<smart-attribute-handler
       .component=${{ ...this.component }}
-      .attributeName=${this.inputHandlersValue.value[0]}
-      .attributeValue=${this.inputHandlersValue.value[1]}
+      .attributeName=${this.inputHandlersValue.value?this.inputHandlersValue.value[0]:nothing}
+      .attributeValue=${this.inputHandlersValue.value?this.inputHandlersValue.value[1]:nothing}
       .attributeScope=${"event"}
       .handlerScope=${"event"}
       @code-change=${this.handleCodeChange}
