@@ -24,6 +24,9 @@ import studioStatusBlock from "./common-blocks/studio-status-block";
 import studioSizeBlock from "./common-blocks/studio-size-block";
 import studioPlaceholderBlock from "./common-blocks/studio-placeholder-block";
 import studioValueBlock from "./common-blocks/studio-value-block";
+import studioPositionBlock from './common-blocks/studio-position-block'
+import studioWidthBlock from './common-blocks/studio-width-block'
+import studioHeightBlock from "./common-blocks/studio-height-block";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
 import studioButtonIconPosition from './button-blocks/studio-button-icon-position-block'
 import studioIconPickerBlock from './common-blocks/studio-icon-picker-block'
@@ -409,6 +412,9 @@ export default [
                                 "font_family_block",
                                 "text_alignement_block",
                                 "text_vertical_alignement_block",
+                                "position_block",
+                                "width_vertical_container",
+                                "height_vertical_container",
                                 "font_weight_block",
                                 "font_style_block",
                                 "text_decoration_block",
@@ -571,6 +577,9 @@ export default [
     ...studioBackgroundcolorBlock,
     ...studioAlignementBlock,
     ...studioVerticalAlignementBlock,
+    ...studioPositionBlock,
+    ...studioWidthBlock,
+    ...studioHeightBlock,
     ...studioFontWeightBlock,
     ...studioFontStyleBlock,
     ...studioTextDecorationBlock,

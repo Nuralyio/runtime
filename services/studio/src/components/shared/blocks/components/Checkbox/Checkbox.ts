@@ -39,10 +39,10 @@ export class TextInputBlock extends BaseElementBlock {
   }
 
   handleCheckboxChange = (e) => {
-    if (this.component.event?.checkBoxChanged) {
+    if (this.component.event?.checkboxChanged) {
       executeEventHandler(this.component, "event", "checkboxChanged", {
         EventData: {
-          value: e.detail,
+          value: e.detail.value,
         },
       });
     }
