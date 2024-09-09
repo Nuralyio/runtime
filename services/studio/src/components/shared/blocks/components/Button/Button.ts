@@ -68,7 +68,7 @@ export class ButtonBlock extends BaseElementBlock {
           }
         }}
     style=${styleMap(inputStyles)}
-      >${this.inputHandlersValue.label??''}</hy-button
+      >${this.inputHandlersValue.label?? 'Button'}</hy-button
     >` : nothing}
 `;
   }
