@@ -3,6 +3,7 @@ import {css} from 'lit';
 export const styleVariables = css`
   :host {
     --hybrid-checkbox-filled-background-color: #161616;
+    --hybrid-checkbox-color:#000000;
     --hybrid-checkbox-empty-background-color: #ffffff;
     --hybrid-checkbox-disabled-background-color: #c6c6c6;
     --hybrid-checkbox-disabled-text-color: #c6c6c6;
@@ -42,6 +43,7 @@ export const styleVariables = css`
       --hybrid-checkbox-focus-border: 2px solid #161616;
       --hybrid-checkbox-disabled-background-color: #6f6f6f;
       --hybrid-checkbox-disabled-text-color: #6f6f6f;
+      --hybrid-checkbox-color:#ffffff;
     }
   }
 `;
