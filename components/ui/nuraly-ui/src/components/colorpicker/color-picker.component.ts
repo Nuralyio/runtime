@@ -72,13 +72,17 @@ export class ColorPicker extends LitElement {
     }
   };
   private handleColorChanged(colorChangedEvent: CustomEvent) {
-    this.color = colorChangedEvent.detail.value;
-    this.dispatchColorChange()
+    if(this.color !=colorChangedEvent.detail.value){
+      this.color = colorChangedEvent.detail.value;
+      this.dispatchColorChange()
+    }
   }
 
   private onInputChange(inputChangedEvent: CustomEvent) {
-    this.color = inputChangedEvent.detail.value;
-    this.dispatchColorChange()
+    if(this.color != inputChangedEvent.detail.value){
+      this.color = inputChangedEvent.detail.value;
+      this.dispatchColorChange()
+    }
   }
   private dispatchColorChange(){
     this.dispatchEvent(
