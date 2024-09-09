@@ -59,12 +59,15 @@ export class TextLabelBlock extends BaseElementBlock {
 
   render() {
     const labelStyles = this.component?.style || {};
+    const labelAutoWidth = this.inputHandlersValue?.width;
+    const labelAutoHeight = this.inputHandlersValue?.height;
+
     return html`
       ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show' ? html`
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
-          style=${styleMap({ ...labelStyles })}
+          style=${styleMap({ ...labelStyles,width:labelAutoWidth?'auto':labelStyles.width,height:labelAutoHeight?'auto':labelStyles.height })}
           @click=${() => {
           if (this.component.event?.onClick) {
             executeEventHandler(this.component, 'event', 'onClick');
