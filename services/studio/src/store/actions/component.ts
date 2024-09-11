@@ -27,7 +27,7 @@ const isServer = typeof window === 'undefined';
 /** Actions*/
 export const addComponentAction = (component: AddComponentAction, uuid: string/* page uuid */, currentApplicatinId) => {
   const currentComponentId = getVar("global", "selectedComponents")?.value[0]
-
+  const currentComponent = $components.get()[currentApplicatinId].find((component: ComponentElement) => component.uuid === currentComponentId);
   const componentId = uuidv4();
   const newComponent = {
     ...component,
@@ -35,7 +35,7 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
     pageId: uuid,
     applicationId: currentApplicatinId
   } as ComponentElement
-  if (!currentComponentId) {
+  if (!currentComponentId || (currentComponent?.component_type != ComponentType.VerticalContainer && currentComponent?.component_type != ComponentType.Collection)) {
     newComponent.root = true;
   }
 
@@ -53,7 +53,6 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
 
 
   if (currentComponentId) {
-    const currentComponent = $components.get()[currentApplicatinId].find((component: ComponentElement) => component.uuid === currentComponentId);
     // or ComponentType.Collection
     if (currentComponent?.component_type === ComponentType.VerticalContainer || currentComponent?.component_type === ComponentType.Collection) {
       addComponentAsChildOf(componentId, currentComponentId, currentApplicatinId);

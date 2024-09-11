@@ -30,7 +30,7 @@ export class ImageBlock extends BaseElementBlock {
       .fallback=${this.inputHandlersValue.fallback??nothing}
       .width=${this.inputHandlersValue.width+'px'}
       .height=${this.inputHandlersValue.height+'px'}
-      .alt=${this.inputHandlersValue.alt??nothing}
+      .alt=${this.inputHandlersValue.alt??'image'}
       >
       </hy-image>
     `;

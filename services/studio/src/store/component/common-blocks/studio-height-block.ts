@@ -131,7 +131,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const autoHeightChecked = currentComponent?.input?.height?.value =='auto'?'check':''
+                const autoHeightChecked = !currentComponent?.style?.height||currentComponent?.input?.height?.value =='auto'?'check':''
                 autoHeightChecked;  
             }
 

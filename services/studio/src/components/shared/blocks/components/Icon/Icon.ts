@@ -30,7 +30,7 @@ export class IconBlock extends BaseElementBlock {
   
     return html`
       <hy-icon 
-      .name=${this.inputHandlersValue.icon??''}
+      .name=${this.inputHandlersValue.icon??'smile'}
       style=${styleMap(iconStyles)}>
       </hy-icon>
     `;

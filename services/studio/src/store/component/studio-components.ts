@@ -434,6 +434,9 @@ export default [
                                 "helper_text_block",
                                 "label_text_block",
                                 "placeholder_text_block",
+                                "position_block",
+                                "width_vertical_container",
+                                "height_vertical_container",
                                 "size_block",
                                 "input_type_block",
                                 "status_block",
@@ -446,6 +449,7 @@ export default [
                         case "button_input":
                             parameters=[
                                 'label_text_block',
+                                "position_block",
                                 'size_block',
                                 'button_type_block',
                                 'icon_picker_block',
@@ -459,6 +463,7 @@ export default [
                             parameters=[
                                 'label_text_block',
                                 'checkbox_checked_block',
+                                'position_block',
                                 'state_block',
                                 'size_block',
                                 "checkbox_changed_event_block",
@@ -469,6 +474,7 @@ export default [
                             parameters=[
                                 'image_width_vertical_container',
                                 'image_height_vertical_container',
+                                'position_block',
                                 'image_alt_text_block',
                                 'image_src_text_block',
                                 'image_fallback_text_block'
@@ -479,6 +485,8 @@ export default [
                                 "value_text_block",
                                 'datepicker_locale_block',
                                 'size_block',
+                                'position_block',
+                                'width_vertical_container',
                                 'status_block',
                                 'state_block',
                                 "helper_text_block",
@@ -491,6 +499,8 @@ export default [
                             parameters=[
                                 'placeholder_text_block',
                                 "helper_text_block",
+                                'position_block',
+                                'width_vertical_container',
                                 "label_text_block",
                                 'status_block',
                                 'state_block',
@@ -505,6 +515,8 @@ export default [
                             parameters=[
                                 'table_columns_block',
                                 'size_block',
+                                'position_block',
+                                'width_vertical_container',
                                 'table_selectionmode_block',
                                 'table_filter_block'
                             ];
@@ -514,10 +526,17 @@ export default [
                                 'icon_picker_block',
                                 'icon_width_vertical_container',
                                 'icon_height_vertical_container',
+                                'position_block',
                                 'icon_color_block'
+                            ];
+                            break;
+                        case "vertical-container-block":
+                            parameters=[
+                                "position_block",
+                                "width_vertical_container",
+                                "height_vertical_container", 
                             ]
-                        
-            
+                            break;
                     }
                 }
                 [
@@ -577,7 +596,6 @@ export default [
     ...studioBackgroundcolorBlock,
     ...studioAlignementBlock,
     ...studioVerticalAlignementBlock,
-    ...studioPositionBlock,
     ...studioWidthBlock,
     ...studioHeightBlock,
     ...studioFontWeightBlock,
@@ -588,9 +606,6 @@ export default [
     ...studioLetterSpacingBlock,
     ...studioLineHeightBlock,
     ...studioDisplayBlock,
-    ...studioClickEvent,
-    ...studioMouseEnterEvent,
-    ...studioMouseLeaveEvent,
     ...studioPlaceholderBlock,
     ...studioHelperTextBlock, 
     ...studioLabelBlock,
@@ -600,7 +615,11 @@ export default [
     ...studioStateBlock,
     ...studioButtonTypeBlock,
     ...studioIconPickerBlock,
+    ...studioPositionBlock,
     ...studioButtonIconPosition,
+    ...studioClickEvent,
+    ...studioMouseEnterEvent,
+    ...studioMouseLeaveEvent,
     ...studioIconWidthBlock,
     ...studioIconHeightBlock,
     ...studioIconColorBlock,

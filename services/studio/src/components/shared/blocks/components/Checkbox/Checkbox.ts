@@ -50,11 +50,13 @@ export class TextInputBlock extends BaseElementBlock {
 
   render() {
     const checkBoxStyles = this.component?.style || {};
+    const checkboxAutoWidth = this.inputHandlersValue?.width;
+    const checkboxAutoHeight = this.inputHandlersValue?.height;
     return html`
     ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show'?
     html`
     <hy-checkbox 
-    style=${styleMap(checkBoxStyles)}
+    style=${styleMap({...checkBoxStyles,width:checkboxAutoWidth?'auto':checkBoxStyles.width,height:checkboxAutoHeight?'auto':checkBoxStyles.height})}
     .checked=${this.inputHandlersValue?.checked =='check'?true:false}
     .indeterminate=${this.inputHandlersValue?.checked =='indeterminate'?true:false}
     .disabled=${this.inputHandlersValue?.state =='disabled'?true:false}

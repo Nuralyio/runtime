@@ -37,9 +37,11 @@ export class SelectBlock extends BaseElementBlock {
   render() {
     const options = this.inputHandlersValue?.value?.[0] ??  [];
     const defaultSelected = this.inputHandlersValue?.value?.[1]??[];
-    const selectStyles = this.component.style
+    const selectStyles = this.component?.style ||{}
+    const selectAutoWidth = this.inputHandlersValue?.width;
+
     return html`
-        <hy-select style=${styleMap({ ...selectStyles })}
+        <hy-select style=${styleMap({ ...selectStyles,width:selectAutoWidth?'auto':selectStyles?.width })}
         selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : nothing}
         .options=${options}
         .defaultSelected="${defaultSelected}"
