@@ -301,6 +301,8 @@ export default [
                 value: /* js */ `
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
+                const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
+
                 if(!appPages) {
                      [];
                 }else{
@@ -352,6 +354,7 @@ export default [
                         return {
                             text: page.name,
                             id: page.uuid,
+                            selected:page.uuid == currentPage,
                             icon:'file',
                             type: "page",
                             handlerKey : "onSelect",
