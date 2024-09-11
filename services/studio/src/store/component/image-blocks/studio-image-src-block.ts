@@ -76,6 +76,13 @@ export default [
             console.log(e);
         }
             `
+            },
+            placeholder: {
+                type: 'handler',
+                value: /* js */`
+                const inputPlaceHolder ="src";
+                inputPlaceHolder;
+            `
             }
         }
     },
