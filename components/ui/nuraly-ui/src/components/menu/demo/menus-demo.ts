@@ -20,6 +20,7 @@ export class ElMeenuElement extends LitElement {
   items: IMenu[] = [
     {
       text: 'First Menu',
+      selected:true,
       children: [
         {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
       },
