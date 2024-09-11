@@ -12,6 +12,7 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
+            width:"200px"
         
 
         },

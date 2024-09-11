@@ -131,7 +131,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const autoWidthChecked = currentComponent?.input?.width?.value =='auto'?'check':''
+                const autoWidthChecked = !currentComponent?.style?.width||currentComponent?.input?.width?.value =='auto'?'check':''
                 autoWidthChecked;  
             }
 

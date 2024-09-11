@@ -13,7 +13,7 @@ export default [
 
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "250px",
+        width: "70px",
         display: 'flex',
         "flex-direction": "column",
     },
@@ -33,7 +33,10 @@ export default [
                 label;`
             }
         },
-        style: {},
+        style: {
+            width:"100px",
+            display:'block'
+        },
     },
 {
     uuid: "font_color_input_2",
@@ -58,6 +61,10 @@ export default [
   `
     },
     ...COMMON_ATTRIBUTES,
+   style:{
+    width:"50px",
+    display:'block'
+   },
     input: {
         value: {
             type: "handler",

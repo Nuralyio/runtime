@@ -3,8 +3,7 @@ import { css } from "lit";
 export default css`
   .container {
     display: flex;
-    min-width: 180px;
-    width: 100%;
+    width: fit-content;
     min-height: 300px;
     flex-wrap: wrap;
   }

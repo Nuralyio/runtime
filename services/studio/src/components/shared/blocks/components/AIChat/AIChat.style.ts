@@ -1,6 +1,10 @@
 import { css } from "lit";
 
 export default css`
+            :host {
+              display:flex;
+              align-items:center;
+            }
             .chat-input-container {
                 position: relative;
                 display: inline-block;

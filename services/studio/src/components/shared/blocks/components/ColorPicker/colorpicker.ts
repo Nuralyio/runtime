@@ -24,7 +24,9 @@ export class ColorPickerBlock extends BaseElementBlock {
   item: any;
 
   static styles = [
-    css``,
+    css`:host{
+      width:fit-content
+    }`,
   ];
 
   @state()

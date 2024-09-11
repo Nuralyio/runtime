@@ -14,6 +14,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display: 'flex',
+            "width":"380px"
         },
 
         childrenIds: ["font_color_block", "font_family_block", "ask-ai"],

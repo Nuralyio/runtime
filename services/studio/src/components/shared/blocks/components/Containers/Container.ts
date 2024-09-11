@@ -24,9 +24,10 @@ import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import styles from "./Container.style";
 import { setContextMenuEvent } from "$store/actions/page";
 import { getVar } from "$store/context";
+import { BaseElementBlock } from "../BaseElement";
 
 @customElement("vertical-container-block")
-export class VerticalContainer extends LitElement {
+export class VerticalContainer extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -107,6 +108,9 @@ export class VerticalContainer extends LitElement {
   }
 
   render() {
+    const verticalContainerStyles = this.component?.style || {};
+    const verticalContainerAutoWidth = this.inputHandlersValue?.width;
+    const verticalContainerAutoHeight = this.inputHandlersValue?.height;
     return html`
       ${this.isViewMode
         ? this.renderView()
@@ -137,7 +141,8 @@ export class VerticalContainer extends LitElement {
           }}"
                 style=${styleMap({
             "min-width": "120px",
-            ...this.component.style,
+            ...verticalContainerStyles,
+            width:verticalContainerAutoWidth?'auto':verticalContainerStyles.width,height:verticalContainerAutoHeight?'auto':verticalContainerStyles.height,
             "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
           })}
                 class=${classMap({

@@ -53,7 +53,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentType = currentComponent.style['type'] || 'default'
+                const currentType = currentComponent?.style &&currentComponent.style['type'] || 'default'
                 const options = 
                     [
                     {

@@ -1,3 +1,4 @@
+import { styleMap } from 'lit/directives/style-map.js';
 import type { ComponentElement } from '$store/component/interface';
 import { BaseElementBlock } from '../BaseElement';
 import { html, type PropertyValues } from 'lit';
@@ -134,8 +135,9 @@ export class AiChat extends BaseElementBlock {
     }
 
     override render() {
+        const aiChatStyle = this.component?.style || {}
         return html`
-            <div class="chat-input-container">
+            <div class="chat-input-container" style=${styleMap({...aiChatStyle})}>
                 <hy-button @click=${this.toggleChatBox}>Ask AI</hy-button>
                 ${this.isChatBoxVisible ? html`
                     <div class="chat-input">
