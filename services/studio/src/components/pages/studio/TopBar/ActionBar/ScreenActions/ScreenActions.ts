@@ -10,7 +10,9 @@ import { GenerateName } from "utils/naming-generator";
 import { setShowBorder } from "$store/actions/page";
 import { v4 as uuidv4 } from "uuid";
 import { AddCollection } from "./AddCollection";
-import { getVar } from "$store/context";
+import { getVar,setVar } from "$store/context";
+import { $applicationPages } from "$store/page";
+import { $currentApplication } from "$store/apps";
 
 @customElement("topbar-screen-actions")
 export class TopbarScreenActions extends LitElement {
@@ -79,12 +81,19 @@ export class TopbarScreenActions extends LitElement {
       trigger="click"
         .options=${this.options}
         @click-item="${(e: any) => {
-        addComponentAction({
-          name: GenerateName(e.detail.value),
-          component_type: e.detail.value,
-        }, 
-        getVar("global", "currentPage").value,
-        getVar("global", "currentEditingApplication").value.uuid);
+          let currentPage = getVar("global", "currentPage")?.value;
+        if(!currentPage) {
+          currentPage= $applicationPages($currentApplication.get().uuid).get()[0]?.uuid ;
+          setVar( "global" , "currentPage" , currentPage);
+          }
+          if(currentPage){
+            addComponentAction({
+              name: GenerateName(e.detail.value),
+              component_type: e.detail.value,
+            }, 
+            currentPage,
+            getVar("global", "currentEditingApplication").value.uuid);
+          }
       }
       }"
         >
