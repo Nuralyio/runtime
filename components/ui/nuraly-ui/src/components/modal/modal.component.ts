@@ -9,7 +9,7 @@ export class ModalComponent extends LitElement {
     font-size: 16px;
     }
     .modal {
-      position: absolute;
+      position: fixed;
       z-index: 9999;
       background-color: #ffffff;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
