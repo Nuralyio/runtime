@@ -1,6 +1,10 @@
 import { css } from "lit";
 
 export default css`
+  :host{
+    display:block;
+    width:fit-content;
+   }
   .resizer-line-top,
   .resizer-line-bottom,
   .resizer-line-right,
