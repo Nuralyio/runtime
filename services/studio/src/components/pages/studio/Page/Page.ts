@@ -198,7 +198,6 @@ export class PageContent extends LitElement {
 
   handlePageClick(e) {
     if (!$resizing.get()) {
-      e.preventDefault();
       if (!this.isViewMode) {
         setCurrentComponentIdAction(null);
       }
