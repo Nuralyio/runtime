@@ -145,6 +145,8 @@ const inputStyle = css`
     border: none;
     outline: none;
     color: var(--hybrid-input-text-color);
+    font-family: var(--hybrid-input-font-family);
+    font-size:var(--hybrid-input-font-size);
   }
 
   ::slotted([slot='label']) {

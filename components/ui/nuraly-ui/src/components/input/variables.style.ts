@@ -5,6 +5,7 @@ export const styleVariables = css`
     --hybrid-input-background-color: #f4f4f4;
     --hybrid-input-text-color: #000000;
     --hybrid-input-font-family: IBM Plex Sans;
+    --hybrid-input-font-size:13px;
     --hybrid-input-label-color: #525252;
     --hybrid-input-placeholder-color: #a8a8a8;
     --hybrid-input-border-bottom: 1px solid #a8a8a8;
