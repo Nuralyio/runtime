@@ -155,10 +155,13 @@ const selectStyle = css`
 
   ::slotted([slot='helper-text']) {
     color: var(--hybrid-select-helper-text-color);
+    font-size:var(--hybrid-select-helper-text-font-size)
   }
 
   ::slotted([slot='label']) {
     color: var(--hybrid-select-label-text-color);
+    font-size:var(--hybrid-select-label-font-size)
+
   }
   :host {
     --hybrid-select-width: 50%;
@@ -198,6 +201,8 @@ const selectStyle = css`
     --hybrid-select-inline-gap: 5px;
     --hybrid-select-helper-text-color: #a8a8a8;
     --hybrid-select-label-text-color: #a8a8a8;
+    --hybrid-select-helper-text-font-size:13px;
+    --hybrid-select-label-font-size:13px;
   }
   @media (prefers-color-scheme: dark) {
     :host {
