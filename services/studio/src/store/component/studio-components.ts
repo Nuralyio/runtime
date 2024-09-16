@@ -31,6 +31,10 @@ import studioButtonTypeBlock from "./button-blocks/studio-button-type-block";
 import studioButtonIconPosition from './button-blocks/studio-button-icon-position-block'
 import studioIconPickerBlock from './common-blocks/studio-icon-picker-block'
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block";
+import studioInputLabelColor from "./text-input-blocks/studio-input-label-color"
+import studioInputLabelSize from './text-input-blocks/studio-input-label-size' 
+import studioInputHelperColor from './text-input-blocks/studio-input-helper-color'
+import studioInputHelperSize from './text-input-blocks/studio-input-helper-size'
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event";
@@ -45,6 +49,10 @@ import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-l
 import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block";
 import studioDatepickerDateChangeEventBlock from "./datepicker-blocks/studio-datepicker-date-change-event-block";
 import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block";
+import studioSelectHelperColor from './select-blocks/studio-select-helper-color-block';
+import studioSelectHelperSize from './select-blocks/studio-select-helper-size-block';
+import studioSelectLabelColor from './select-blocks/studio-select-label-color-block';
+import studioSelectLabelSize from './select-blocks/studio-select-label-size-block';
 import studioSelectTypeBlock from "./select-blocks/studio-select-type-block";
 import studioSelectSelectionmodeBlock from "./select-blocks/studio-select-selectionmode-block";
 import studioSelectChangedEventBlock from "./select-blocks/studio-select-changed-event-block";
@@ -436,6 +444,10 @@ export default [
                                 "value_text_block",
                                 "helper_text_block",
                                 "label_text_block",
+                                "input_label_color_block",
+                                "input_label_font_size_vertical_container",
+                                "input_helper_color_block",
+                                "input_helper_font_size_vertical_container",
                                 "placeholder_text_block",
                                 "position_block",
                                 "width_vertical_container",
@@ -502,6 +514,10 @@ export default [
                             parameters=[
                                 'placeholder_text_block',
                                 "helper_text_block",
+                                "select_helper_color_block",
+                                "select_helper_font_size_vertical_container",
+                                "select_label_color_block",
+                                "select_label_font_size_vertical_container",
                                 'position_block',
                                 'width_vertical_container',
                                 "label_text_block",
@@ -610,8 +626,16 @@ export default [
     ...studioLineHeightBlock,
     ...studioDisplayBlock,
     ...studioPlaceholderBlock,
-    ...studioHelperTextBlock, 
+    ...studioHelperTextBlock,
+    ...studioInputHelperColor,
+    ...studioSelectHelperColor, 
+    ...studioInputHelperSize, 
+    ...studioSelectHelperSize, 
     ...studioLabelBlock,
+    ...studioSelectLabelColor,
+    ...studioInputLabelColor,
+    ...studioInputLabelSize,
+    ...studioSelectLabelSize,
     ...studioStatusBlock,
     ...studioSizeBlock,
     ...studioInputTypeBlock,

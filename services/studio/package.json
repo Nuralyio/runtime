@@ -33,7 +33,7 @@
     "@hybridui/menu": "^0.0.27",
     "@hybridui/modal": "^0.0.7",
     "@hybridui/radio": "^0.0.8",
-    "@hybridui/select": "^0.0.10",
+    "@hybridui/select": "^0.0.11",
     "@hybridui/slider-input": "^0.0.4",
     "@hybridui/table": "^0.0.6",
     "@hybridui/tabs": "^0.0.18",

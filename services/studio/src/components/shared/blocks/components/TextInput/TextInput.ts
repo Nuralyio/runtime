@@ -77,8 +77,21 @@ export class TextInputBlock extends BaseElementBlock {
       .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
       placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
     >
-    <span slot="label">${this.inputHandlersValue?.label??''}</span>
-    <span slot="helper-text">${this.inputHandlersValue?.helper??''}</span>
+    <span slot="label" 
+    style=${styleMap(
+      {"--hybrid-input-label-color":inputStyles['--hybrid-input-label-color'],
+       "--hybrid-input-label-font-size":inputStyles['--hybrid-input-label-font-size']
+      })}>
+    ${this.inputHandlersValue?.label??''}
+    </span>
+    <span slot="helper-text"
+    style=${styleMap(
+      {"--hybrid-input-helper-text-color":inputStyles['--hybrid-input-helper-text-color'],
+       "--hybrid-input-helper-text-font-size":inputStyles['--hybrid-input-helper-text-font-size']
+      })}
+    >
+    ${this.inputHandlersValue?.helper??''}
+    </span>
     </hy-input>
   </span>
       
