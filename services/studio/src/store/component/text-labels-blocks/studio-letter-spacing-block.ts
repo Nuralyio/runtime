@@ -32,7 +32,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Letter spacing';
-               label;
+             return label;
             `
             }
         },
@@ -56,7 +56,7 @@ export default [
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         const letterSpacing =currentComponent.style && currentComponent.style['letter-spacing']?.split('px')[0] || 0
                         if(letterSpacing)
-                            letterSpacing;
+                            return letterSpacing;
                         else  
                         0       
                     }

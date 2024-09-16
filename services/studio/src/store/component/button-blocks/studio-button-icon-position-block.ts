@@ -72,7 +72,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentIconPosition,radioType];
-            result;
+           return  result;
                 `
             }
         },

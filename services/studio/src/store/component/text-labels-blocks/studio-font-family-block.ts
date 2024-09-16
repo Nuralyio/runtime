@@ -36,7 +36,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Font family';
-               label;
+             return label;
             `
             }
         }
@@ -65,7 +65,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent.style['font-family'];
+                let fontFamily = currentComponent?.style['font-family'];
                 let selectedFontFamily;
                 const options = 
                     [
@@ -95,7 +95,7 @@ export default [
                 selectedFontFamily = options.find((option)=> option.value == fontFamily);   
             }
             const result =[options,[selectedFontFamily? selectedFontFamily.label : ""]]
-            result;  
+            return  result;  
                 `
             },
             state:{

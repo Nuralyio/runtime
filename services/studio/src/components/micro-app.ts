@@ -44,7 +44,6 @@ export class MicroApp extends LitElement {
         eventDispatcher.on("component:refresh", () => {
             this.refreshComponent()
         });
-        
         setTimeout(() => {
             this.refreshComponent();
         }, 0);

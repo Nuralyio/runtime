@@ -6,6 +6,9 @@ import { generateRandomId } from "utils/randomness";
 import { type ComponentElement } from "$store/component/interface";
 import { eventDispatcher } from "utils/change-detection";
 import { updateComponentAttributes } from "$store/actions/component";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
+import { setValue } from "$store/apps";
 
 export class BaseElementBlock extends LitElement {
   @property({ type: Object })
@@ -34,6 +37,18 @@ export class BaseElementBlock extends LitElement {
   async traitInputHandler(input: any, inputName: string): Promise<void> {
     if (input) {
       if (input?.type === "handler") {
+        const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value);
+        if (fn) {
+          return new Promise((resolve) => {
+            this.inputHandlersValue[inputName] = fn;
+            this.thisvalue = fn;
+            setValue(this.component.name, inputName, fn);
+            if (this?.callbacks[inputName]) {
+              this.callbacks[inputName](this.inputHandlersValue[inputName]);
+            }
+            resolve();
+          });
+        }
         const eventId = generateRandomId();
         return new Promise((resolve) => {
           const handler = ({ detail: { data } }) => {
@@ -56,6 +71,7 @@ export class BaseElementBlock extends LitElement {
       } else {
 
         this.inputHandlersValue[inputName] = input.value;
+        setValue(this.component.name, inputName, input.value);
         if (this?.callbacks[inputName]) {
           this.callbacks[inputName](input.value);
         }
@@ -83,6 +99,7 @@ export class BaseElementBlock extends LitElement {
   override updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
+        this.traitInputsHandlers();
       }
     });
   }

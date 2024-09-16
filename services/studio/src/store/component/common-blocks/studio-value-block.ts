@@ -27,7 +27,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Value';
-               label;
+               return label;
             `
             }
         },
@@ -101,7 +101,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const inputPlaceHolder ="value";
-                inputPlaceHolder;
+                return inputPlaceHolder;
             `
             }
         }

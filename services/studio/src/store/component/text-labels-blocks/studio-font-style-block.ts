@@ -31,7 +31,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Font style';
-               label;
+             return label;
             `
             }
         },
@@ -80,7 +80,7 @@ export default [
                                 {value:'oblique',label: "Oblique",disabled:isDisabled}]
                 const radioType='button';
                 const result =[options,defaultFontStyle,radioType];
-                result;           
+                return  result;           
                 `
             }
         },

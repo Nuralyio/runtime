@@ -51,7 +51,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Width';
-                label;
+              return label;
             `
             }
         },
@@ -93,7 +93,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const width = currentComponent?.style&&currentComponent.style['width']||0;
-                width;
+                return width;
                 
             }
 
@@ -141,7 +141,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
               const checkboxLabel ='auto width';
-              checkboxLabel;
+              return checkboxLabel;
             `
             },
             checked: {
@@ -153,7 +153,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const autoWidthChecked = !currentComponent?.style?.width||currentComponent?.input?.width?.value =='auto'?'check':''
-                autoWidthChecked;  
+                return autoWidthChecked;  
             }
 
         }catch(e){

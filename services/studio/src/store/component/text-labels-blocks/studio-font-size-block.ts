@@ -35,7 +35,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Font size';
-                label;
+              return label;
             `
             }
         },
@@ -96,10 +96,10 @@ export default [
                             unity+=char
                            }
                         );
-                        [+value,unity]
+                        return [+value,unity]
                     }
                     else 
-                       [0,'px']
+                       return [0,'px']
             }
 
         }catch(e){

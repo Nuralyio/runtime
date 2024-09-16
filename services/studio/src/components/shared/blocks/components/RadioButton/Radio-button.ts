@@ -5,6 +5,8 @@ import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import '@hybridui/radio'
 import { executeEventHandler } from "core/engine";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 @customElement("radio-button-block")
 export class RadioButtonBlock extends BaseElementBlock{
@@ -18,9 +20,8 @@ export class RadioButtonBlock extends BaseElementBlock{
     handleChange =(e)=>{
         if(this.component.event.changed){
             const value = e.detail.value;
-            executeEventHandler(this.component,'event','changed',{
-                EventData:{value}
-            })
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.changed`), {value});
+           
         }
     }
 

@@ -40,10 +40,43 @@ function getType(value: any): string {
   return typeof value;
 }
 
+// Utility function to perform deep comparison of two values
+function deepEqual(a: any, b: any): boolean {
+  if (a === b) return true; // Check if the values are strictly equal
+
+  if (typeof a !== typeof b) return false; // Check for type mismatch
+
+  if (typeof a === 'object') {
+    if (a === null || b === null) return false; // Check for null values
+
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+
+    if (keysA.length !== keysB.length) return false; // Check for different number of keys
+
+    for (const key of keysA) {
+      if (!keysB.includes(key) || !deepEqual(a[key], b[key])) {
+        return false; // Recursively compare values
+      }
+    }
+    return true;
+  }
+
+  return false;
+}
+
 // Action to set a variable inside a specific application or globally
 export function setVar(contextId: string, varName: string, varValue: any) {
   const varType = getType(varValue);
   const currentContext = $context.get();
+  
+  // Check if the value has changed
+  const currentVar = currentContext[contextId]?.[varName]?.value;
+  if (deepEqual(currentVar, varValue)) {
+    // No need to update if the value is the same
+    return;
+  }
+
   const updatedContext = {
     ...currentContext,
     [contextId]: {
@@ -54,11 +87,10 @@ export function setVar(contextId: string, varName: string, varValue: any) {
       }
     }
   };
+
   registerContextInServiceWorker(updatedContext);
   $context.set(updatedContext);
-
 }
-
 // Action to read a variable from a specific application or globally
 export function getVar(contextId: string, varName: string): Var | undefined {
   const currentContext = $context.get();

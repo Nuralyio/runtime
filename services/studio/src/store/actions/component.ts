@@ -382,27 +382,25 @@ export function updateComponentAttributes(
       };
 
       // Directly update the component in the store
-      console.time('setTime'); // Start the timer
-      //console.log(`${applicationId}[${componentIndex}]`);
+      // console.time('setTime'); // Start the timer
       //console.log($components.get());
       $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
-      console.timeEnd('setTime'); // End the timer and log the execution time
-      eventDispatcher.emit("component:register");
       setTimeout(() => {
-      eventDispatcher.emit("component:refresh");
 
-      }, 100);
+      eventDispatcher.emit("component:refresh");
+    }, 100);
+
       if (save) {
         setTimeout(() => {
           updateComponentHandler(componentToUpdate, applicationId);
         }, 0);
       }
     } else {
-      console.log('Attributes are the same, no update needed.', updatedAttributes);
+      // console.log('Attributes are the same, no update needed.', updatedAttributes);
     }
   }
 
-  console.timeEnd('updateComponentAttributesExecutionTime'); // End the timer and log the execution time
+  //console.timeEnd('updateComponentAttributesExecutionTime'); // End the timer and log the execution time
 }
 
 

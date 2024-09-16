@@ -30,7 +30,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Checkbox change';
-               label;
+             return label;
             `
             }
         },

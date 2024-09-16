@@ -6,6 +6,8 @@ import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
 import { updateComponentAttributes } from "$store/actions/component";
 import { styles } from "./TextLabel.style";
+import { getNestedAttribute } from "utils/object.utils";
+import { executeCodeWithClosure } from "core/executer";
 
 const isServer = typeof window === 'undefined';
 
@@ -30,6 +32,10 @@ export class TextLabelBlock extends BaseElementBlock {
 
   constructor() {
     super();
+    this.registerCallback('value', (v)=>{
+      this.thisvalue = v;
+    });
+
   }
 
   handleBodyClick = (event) => {
@@ -42,12 +48,7 @@ export class TextLabelBlock extends BaseElementBlock {
   @property({ type: Object })
   item: any;
 
-  updated(changedProperties) {
-    changedProperties.forEach((_oldValue, propName) => {
-      if (propName === "component" || propName === "item") {
-      }
-    });
-  }
+  
 
   handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -65,24 +66,25 @@ export class TextLabelBlock extends BaseElementBlock {
     const labelAutoHeight = this.inputHandlersValue?.height;
 
     return html`
-      ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show' ? html`
+
+      ${!this.inputHandlersValue?.display|| (this.inputHandlersValue.value  && this.inputHandlersValue.display =='show') ? html`
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
           style=${styleMap({ ...labelStyles,width:labelAutoWidth?'auto':labelStyles.width,height:labelAutoHeight?'auto':labelStyles.height,...labelStyleHandlers })}
           @click=${() => {
           if (this.component.event?.onClick) {
-            executeEventHandler(this.component, 'event', 'onClick');
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
           }
         }}
               @mouseenter=${(e) => {
           if (this.component?.event?.mouseEnter) {
-            executeEventHandler(this.component, 'event', 'mouseEnter');
+            //executeEventHandler(this.component, 'event', 'mouseEnter');
           }
         }}
         @mouseleave=${(e) => {
           if (this.component?.event?.mouseLeave) {
-            executeEventHandler(this.component, 'event', 'mouseLeave')
+           // executeEventHandler(this.component, 'event', 'mouseLeave')
           }
         }}
           @blur=${(e) => {

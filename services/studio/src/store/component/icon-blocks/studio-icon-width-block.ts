@@ -37,7 +37,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Width';
-                label;
+              return label;
             `
             }
         },
@@ -78,7 +78,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const iconWidth = currentComponent?.style&&currentComponent.style['--hybrid-icon-width']||0;
-                iconWidth;
+                return iconWidth;
                 
             }
 

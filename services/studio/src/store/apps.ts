@@ -1,6 +1,8 @@
 import { atom, keepMount } from "nanostores";
 import { logger } from "@nanostores/logger";
 import { persistentAtom } from "@nanostores/persistent";
+import { deepMap } from "nanostores";
+
 import { getVar, setVar } from "./context";
 import { $pages } from "./page";
 const isServer = typeof window === 'undefined';
@@ -25,6 +27,12 @@ const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APP
 export const $applications = atom<any>([...initialState, ...coreApplications]);
 export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
+export const $values = deepMap<any>({});
+
+export function setValue(componentId, key, value) {
+  const componentValues = $values.get(componentId)[componentId] || {};
+  $values.setKey(componentId, {...componentValues,[key]: value});
+}
 
 export const $resizing = atom<Boolean>(false);
 
