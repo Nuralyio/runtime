@@ -25,7 +25,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Fallback';
-               label;
+             return label;
             `
             }
         },
@@ -98,7 +98,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const inputPlaceHolder ="fallback";
-                inputPlaceHolder;
+             return  inputPlaceHolder;
             `
             }
         }

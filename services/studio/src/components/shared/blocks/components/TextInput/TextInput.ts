@@ -5,6 +5,9 @@ import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
 import "@hybridui/input"
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
+import { setValue } from "$store/apps";
 
 
 // Debounce function with default wait time
@@ -41,14 +44,15 @@ export class TextInputBlock extends BaseElementBlock {
 
   // Debounced event handler with default debounce wait time
   handleValueChange = debounce((e) => {
+    setValue(this.component.name, "value", e.detail.value)
     if (this.component?.event?.valueChange) {
-      executeEventHandler(this.component,'event','valueChange',{
-        EventData: {
-          value: e.detail.value,
-        },
-      })
+      console.log(getNestedAttribute(this.component, `event.valueChange`))
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`),{
+        value: e.detail.value,
+      });
+      console.log(fn)
     }
-  }, 300); // Adjust the debounce wait time as needed.
+  }, 0); // Adjust the debounce wait time as needed.
   onFocus=()=>{
     if(this.component?.event?.focus){
       executeEventHandler(this.component,'event','focus')

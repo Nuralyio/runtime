@@ -48,7 +48,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Vertical alignement';
-               label;
+             return label;
             `
             }
         },
@@ -80,7 +80,7 @@ export default [
                               ]
                 const radioType='button';
                 const result =[options,defaultVerticalAlign,radioType];
-                result;           
+                return  result;           
                 `
             }
         },

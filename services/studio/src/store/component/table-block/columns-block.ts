@@ -12,7 +12,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["table_column_label", "table_columns_select", "box_shadow_block", "font_family_block", "font_size_vertical_container"],
+        childrenIds: ["table_column_label", "table_columns_select", "font_family_block", "font_size_vertical_container"],
     },
     
     {
@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const typeLabel='Columns';
-                typeLabel;
+                return typeLabel;
                 
                 `
             }
@@ -51,7 +51,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent.style['font-family'];
+                let fontFamily = currentComponent?.style['font-family'];
                 let selectedFontFamily;
                 const options = 
                     [
@@ -79,7 +79,7 @@ export default [
             ]
      
             const result =[options,[]]
-            result;  
+           return  result;  
                 `
             }
         },

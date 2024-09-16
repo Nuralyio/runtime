@@ -25,7 +25,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Color';
-                label;`
+              return label;`
             }
         },
         style: {},

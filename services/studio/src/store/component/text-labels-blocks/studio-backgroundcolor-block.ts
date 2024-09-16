@@ -32,7 +32,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Background Color';
-               label;
+             return label;
             `
             }
         },

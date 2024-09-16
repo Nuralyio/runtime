@@ -51,7 +51,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Height';
-                label;
+              return label;
             `
             }
         },
@@ -93,7 +93,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const height = currentComponent?.style&&currentComponent.style['height']||0;
-                height;
+                return height;
                 
             }
 
@@ -141,7 +141,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
               const checkboxLabel ='auto height';
-              checkboxLabel;
+              return checkboxLabel;
             `
             },
             checked: {
@@ -153,7 +153,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const autoHeightChecked = !currentComponent?.style?.height||currentComponent?.input?.height?.value =='auto'?'check':''
-                autoHeightChecked;  
+                return autoHeightChecked;  
             }
 
         }catch(e){

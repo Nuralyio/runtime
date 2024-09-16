@@ -30,7 +30,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Value change';
-               label;
+             return label;
             `
             }
         },

@@ -326,7 +326,10 @@ export default [
                     function findChildren(appId,children,childrenIds){
                         childrenIds.map((componentId)  => {
                             const component= GetComponent(componentId,appId);
-                            const componentChildrenIds = component.childrenIds;
+                            if(!component){
+                                return;
+                            }
+                            const componentChildrenIds = component?.childrenIds;
                             let componentIcon='smile';
                             switch(component.component_type){
                                 case 'text_label':
@@ -438,7 +441,7 @@ export default [
                     const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
                     switch(component.component_type){
                         case "text_label":
-                            parameters=[
+                             parameters=[
                                 "value_text_block",
                                 "font_size_vertical_container",
                                 "font_color_block",
@@ -462,7 +465,7 @@ export default [
                             ];
                             break;
                         case "text_input":
-                            parameters=[
+                             parameters=[
                                 "value_text_block",
                                 "helper_text_block",
                                 "label_text_block",
@@ -483,7 +486,7 @@ export default [
                             ];
                             break;
                         case "button_input":
-                            parameters=[
+                             parameters=[
                                 'label_text_block',
                                 "position_block",
                                 'size_block',
@@ -496,7 +499,7 @@ export default [
                             ];
                             break;
                         case "checkbox":
-                            parameters=[
+                             parameters=[
                                 'label_text_block',
                                 'checkbox_checked_block',
                                 'position_block',
@@ -507,7 +510,7 @@ export default [
                                 ];
                                 break;
                         case "Image":
-                            parameters=[
+                             parameters=[
                                 'image_width_vertical_container',
                                 'image_height_vertical_container',
                                 'position_block',
@@ -517,7 +520,7 @@ export default [
                                         ];
                                         break;
                         case "DatePicker":
-                            parameters=[
+                             parameters=[
                                 "value_text_block",
                                 'datepicker_locale_block',
                                 'size_block',
@@ -532,7 +535,7 @@ export default [
                                         ];
                                         break;
                         case "select":
-                            parameters=[
+                             parameters=[
                                 'placeholder_text_block',
                                 "helper_text_block",
                                 "select_helper_color_block",
@@ -553,11 +556,8 @@ export default [
                             break;
                         
                         case "Table":
-                            parameters=[
-                                'table_values_handler_block',
-                                "box_shadow_block", 
-                                "font_family_block", 
-                                "font_size_vertical_container",
+                             parameters=[
+                                'table_columns_block',
                                 'size_block',
                                 'position_block',
                                 'width_vertical_container',
@@ -570,7 +570,7 @@ export default [
                             ];
                             break;
                         case "Icon":
-                            parameters=[
+                             parameters=[
                                 'icon_picker_block',
                                 'icon_width_vertical_container',
                                 'icon_height_vertical_container',
@@ -579,7 +579,7 @@ export default [
                             ];
                             break;
                         case "vertical-container-block":
-                            parameters=[
+                             parameters=[
                                 "position_block",
                                 "width_vertical_container",
                                 "height_vertical_container", 
@@ -587,13 +587,7 @@ export default [
                             break;
                     }
                 }
-                else if(currentPageId) {
-                        parameters=[
-                            "page_name_block", 
-                            "page_url_block"    
-                        ]
-                }
-                [
+                return [
                     {
                         label: {
                             type: "text",

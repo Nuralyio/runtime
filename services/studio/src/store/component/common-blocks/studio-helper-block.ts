@@ -29,7 +29,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Helper text';
-                label;`
+              return label;`
             },
             
         },
@@ -105,7 +105,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const inputPlaceHolder ="helper text";
-                inputPlaceHolder;
+                return inputPlaceHolder;
             `
             }
         }

@@ -37,7 +37,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Width';
-                label;
+              return label;
             `
             }
         },
@@ -81,7 +81,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const imageWidth = currentComponent?.style&&currentComponent.style['width']||0;
-                imageWidth;
+                return imageWidth;
             }
 
         }catch(e){

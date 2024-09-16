@@ -25,7 +25,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Color';
-                label;`
+              return label;`
             }
         },
         style: {
@@ -69,7 +69,7 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        currentComponent.style?.color || "black";
+                       return currentComponent.style?.color || "black";
                     }
 
                 }catch(e){

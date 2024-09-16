@@ -29,7 +29,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Mouseenter';
-               label;
+             return label;
             `
             }
         },

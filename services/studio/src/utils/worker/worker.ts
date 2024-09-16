@@ -364,6 +364,7 @@ self.addEventListener('message', event => {
         const result = eval(codeToExecuteAsString);
         port?.postMessage({
           result,
+          component,
           updatedAttributes,
           updatedParameters
         });

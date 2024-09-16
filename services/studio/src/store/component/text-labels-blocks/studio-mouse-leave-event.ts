@@ -29,7 +29,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Mouseleave';
-               label;
+             return label;
             `
             }
         },
