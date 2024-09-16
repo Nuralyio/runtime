@@ -43,7 +43,7 @@ export class SelectBlock extends BaseElementBlock {
     return html`
         <hy-select style=${styleMap({ ...selectStyles,width:selectAutoWidth?'auto':selectStyles?.width })}
         selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : nothing}
-        .options=${options}
+        .options=${this.inputHandlersValue?.options || options}
         .defaultSelected="${defaultSelected}"
         .placeholder=${this.inputHandlersValue.placeholder||'Select an option'}
         .status=${selectStyles?.state ?? nothing}

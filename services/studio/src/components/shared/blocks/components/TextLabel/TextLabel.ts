@@ -86,12 +86,12 @@ export class TextLabelBlock extends BaseElementBlock {
           @blur=${(e) => {
           this.isEditable = false;
           this.requestUpdate();
-          updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
-            value: {
-              type: "value",
-              value: e.target.textContent,
-            },
-          });
+            // updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
+            //   value: {
+            //     type: "value",
+            //     value: e.target.textContent,
+            //   },
+            // });
         }}
           @dblclick=${(e) => {
           e.preventDefault();

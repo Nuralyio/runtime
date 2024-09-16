@@ -65,6 +65,7 @@ import studioIconColorBlock from './icon-blocks/studio-icon-color-block';
 import  QuickActions from "../editor-micro-apps/quick-action"
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block";
 import studioLabelBlock from "./common-blocks/studio-label-block";
+import studioSelectValuesBlock from './select-blocks/studio-select-values-block'
 export default [
 
     ...QuickActions,
@@ -518,6 +519,7 @@ export default [
                                 "select_helper_font_size_vertical_container",
                                 "select_label_color_block",
                                 "select_label_font_size_vertical_container",
+                                'select_values_handler_block',
                                 'position_block',
                                 'width_vertical_container',
                                 "label_text_block",
@@ -636,6 +638,7 @@ export default [
     ...studioInputLabelColor,
     ...studioInputLabelSize,
     ...studioSelectLabelSize,
+    ...studioSelectValuesBlock,
     ...studioStatusBlock,
     ...studioSizeBlock,
     ...studioInputTypeBlock,
