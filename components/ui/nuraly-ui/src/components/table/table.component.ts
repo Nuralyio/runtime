@@ -42,7 +42,7 @@ export class HyTable extends LitElement {
         this._initPagination();
       }
     }
-    if (_changedProperties.has('activeSearch')) {
+    if (_changedProperties.has('activeSearch') || _changedProperties.has('rows')) {
       if (!this.activeSearch) {
         this.rowsCopy = [...this.rows];
         this._initPagination();
