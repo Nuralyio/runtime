@@ -5,6 +5,7 @@ import { deepMap } from "nanostores";
 
 import { getVar, setVar } from "./context";
 import { $pages } from "./page";
+import { eventDispatcher } from "utils/change-detection";
 const isServer = typeof window === 'undefined';
 
 if(!isServer){
@@ -29,9 +30,19 @@ export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
 export const $values = deepMap<any>({});
 
+function deepEqual(obj1, obj2) {
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
 export function setValue(componentId, key, value) {
   const componentValues = $values.get(componentId)[componentId] || {};
-  $values.setKey(componentId, {...componentValues,[key]: value});
+  
+  // Perform a deep comparison of the current and new values
+  if (!deepEqual(componentValues[key], value)) {
+    $values.setKey(componentId, { ...componentValues, [key]: value });
+    
+    // Emit the refresh event only if the value has changed
+  }
 }
 
 export const $resizing = atom<Boolean>(false);

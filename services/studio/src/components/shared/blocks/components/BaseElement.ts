@@ -37,18 +37,23 @@ export class BaseElementBlock extends LitElement {
   async traitInputHandler(input: any, inputName: string): Promise<void> {
     if (input) {
       if (input?.type === "handler") {
-        const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value);
-        if (fn) {
-          return new Promise((resolve) => {
-            this.inputHandlersValue[inputName] = fn;
-            this.thisvalue = fn;
-            setValue(this.component.name, inputName, fn);
-            if (this?.callbacks[inputName]) {
-              this.callbacks[inputName](this.inputHandlersValue[inputName]);
-            }
-            resolve();
-          });
+        try{
+          const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value);
+          if (fn) {
+            return new Promise((resolve) => {
+              this.inputHandlersValue[inputName] = fn;
+              this.thisvalue = fn;
+              setValue(this.component.name, inputName, fn);
+              if (this?.callbacks[inputName]) {
+                this.callbacks[inputName](this.inputHandlersValue[inputName]);
+              }
+              resolve();
+            });
+          }
+        }catch(e){
+
         }
+      
         const eventId = generateRandomId();
         return new Promise((resolve) => {
           const handler = ({ detail: { data } }) => {
@@ -131,7 +136,7 @@ export class BaseElementBlock extends LitElement {
           this.isEditable = true;
           this.requestUpdate();
           requestAnimationFrame(() => {
-            this.focusLabel();
+            //this.focusLabel();
           })
         }
       }

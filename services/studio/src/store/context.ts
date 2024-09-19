@@ -30,7 +30,12 @@ export const $context = atom<ContextVarStore>({
       value: "value"
     }
   },
-  global: {}
+  global: {
+    showSecondsRow :  {
+      type: "boolean",
+      value: false
+    }
+  }
 });
 
 // Function to get the type of a value

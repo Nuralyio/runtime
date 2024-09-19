@@ -52,9 +52,8 @@ export class TextLabelBlock extends BaseElementBlock {
 
   handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      alert('')
       this.isEditable = true;
-      this.requestUpdate();
+      //this.requestUpdate();
     }
   };
 
