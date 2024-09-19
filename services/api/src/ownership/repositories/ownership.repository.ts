@@ -32,7 +32,7 @@ export class OwnershipRepository implements IOwnershipRepository {
   }
 
   public async getResourceIDWithPermissionOrOwner(resourcePermissionRequest: ResourcePermissionRequest): Promise<string[]> {
-    const { user, resourceType, permissionType } = resourcePermissionRequest;
+    const { user = { uuid : "0000", roles: []}, resourceType, permissionType } = resourcePermissionRequest;
 
     const resources = await prisma.$queryRaw`
         SELECT resource_id
