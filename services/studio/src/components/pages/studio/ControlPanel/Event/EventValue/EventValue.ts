@@ -5,6 +5,8 @@ import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
 import "@hybridui/dropdown";
 import { executeEventHandler } from "core/engine";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 setTimeout(() => {
   if(!isServer)
   { 
@@ -27,6 +29,10 @@ export class ParameterEventLabel extends BaseElementBlock {
 
   handleCodeChange=(e:CustomEvent)=>{
     if (this.component?.event?.codeChange) {
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.codeChange`),  {
+        value: e.detail.value,
+      });
+
       executeEventHandler(this.component,'event','codeChange',{
         EventData: {
           value: e.detail.value,
