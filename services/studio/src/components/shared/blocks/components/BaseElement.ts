@@ -9,6 +9,7 @@ import { updateComponentAttributes } from "$store/actions/component";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 import { setValue } from "$store/apps";
+import { isServer } from "utils/envirement";
 
 export class BaseElementBlock extends LitElement {
   @property({ type: Object })
@@ -35,6 +36,9 @@ export class BaseElementBlock extends LitElement {
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
+    if(isServer){
+      return;
+    }
     if (input) {
       if (input?.type === "handler") {
         try{
