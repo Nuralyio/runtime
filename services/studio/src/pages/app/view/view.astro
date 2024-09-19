@@ -48,7 +48,7 @@ try {
   console.error("An error occurred while loading data:", error);
 }
 ---
-<PageContent isViewMode="true" client:load />
+<PageContent isViewMode="true" client:only="lit" />
 <script define:vars={{ pageData, componentData, applications, application }}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
