@@ -66,7 +66,7 @@ export default [
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                if(currentComponent.input?.value?.type=="value"){
                    const currentValue=currentComponent.input?.value?.value || "";
-                   currentValue;
+                   return currentValue;
                }
             }
 

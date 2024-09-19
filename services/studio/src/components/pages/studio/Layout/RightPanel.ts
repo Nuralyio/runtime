@@ -3,17 +3,24 @@ import { customElement, property, state } from "lit/decorators.js";
 import { $environment, type Environment, ViewMode } from "$store/environment";
 
 import "../ControlPanel/ControlPanelTabs";
+import { $context, getVar, setVar } from "$store/context";
 @customElement("right-panel")
 export class RightPanel extends LitElement {
   static styles = [css``];
 
   @state()
   mode: ViewMode = ViewMode.Edit;
+  showSecondsRow: boolean;
 
   constructor() {
     super();
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
+    });
+    $context.listen(() => {
+      this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
+      console.log( this.showSecondsRow)
+      this.requestUpdate();
     });
   }
 
@@ -21,7 +28,22 @@ export class RightPanel extends LitElement {
 
   render() {
     return html` ${this.mode === ViewMode.Edit
-      ? html`<aside class="sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col" style="height: 100%;">
+      ? html`
+      ${this.showSecondsRow ?  html`
+        <aside 
+      class="sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col" style="height: 100%;
+    border: 1px solid white;
+    background: #2d2d2d;
+    position: absolute;
+    width: 260px;
+    margin-left: -260px;">
+        <hy-button @click="${() =>  {
+          setVar("global", "showSecondsRow", false)
+        }}">Close</hy-button>
+
+      </aside>` : nothing}
+   
+      <aside class="sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col" style="height: 100%;">
       <div class="my-4 w-full text-center">
         <span class="font-mono text-xl font-bold tracking-widest"></span>
       </div>

@@ -4,6 +4,7 @@ import { $components } from "$store/component/component-sotre";
 import type { ComponentElement } from "$store/component/interface";
 import { $context, setVar } from "$store/context";
 import { eventDispatcher } from "utils/change-detection";
+import { isServer } from "utils/envirement";
 
 class Executer {
     static instance: Executer;
@@ -102,6 +103,9 @@ const instance = Executer.getInstance();
 export default instance;
 
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}) {
+    if(isServer){
+        return;
+      }
     const context = instance.context;
     const applications = instance.applications;
     const Apps = instance.Apps;

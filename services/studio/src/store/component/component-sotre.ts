@@ -14,6 +14,9 @@ export interface ComponentStore {
 const isServer = typeof window === 'undefined';
 
 // Parse initial component states from the window object if running on the client
+if(!isServer){
+console.log(JSON.stringify(window['__INITIAL_COMPONENT_STATE__']));
+}
 const initialStates = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STATE__'] ?? '[]');
 
 // Initialize the state with default components for the first application
@@ -54,7 +57,7 @@ const fillApplicationComponents = (components: ComponentElement[]) =>
 export const $applicationComponents = ($applicationId: string) => computed(
   [$components],
   (componentsStore: ComponentStore) => {
-    const applicationComponents = componentsStore[$applicationId]?.map(component => ({
+    const applicationComponents = Array.from(componentsStore[$applicationId])?.map(component => ({
       ...component,
       applicationId: $applicationId
     })) ?? [];

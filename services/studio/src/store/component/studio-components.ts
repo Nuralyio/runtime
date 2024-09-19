@@ -205,7 +205,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const demoLabelBtn='Demo button';
-                demoLabelBtn;
+                return demoLabelBtn;
             `
             }
         },
@@ -377,7 +377,7 @@ export default [
                         })
 
                     }
-                    appPages.map((page, index) => {  
+                    return appPages.map((page, index) => {                        
                         const componentIds= page.component_ids;
                         const appId = page.application_id;
                         var children=[];
@@ -620,11 +620,15 @@ export default [
         uuid: "select_component_text",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Select Component to start",
+        input:{
+            value:{
+                type: "string",
+                value:"Select Component to start"
+            }
         },
         event: {
             onClick:  /* js */ `
+                SetVar("showSecondsRow",true);
             `
         },
         applicationId: "1",

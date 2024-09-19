@@ -15,6 +15,14 @@ const pageStyle = css`
     height: 100%;
     margin-top:15px;
   }
+  @media (prefers-color-scheme: dark) {
+        .page-container {
+        --hybrid-tabs-content-background-color: #313131;
+      background: #313131;
+
+        color:#f8fafc;
+      }
+    }
   .page-empty-message {
     position: absolute;
     top: 50%;

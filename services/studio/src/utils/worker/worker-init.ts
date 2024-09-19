@@ -1,5 +1,5 @@
 
-const worker = new Worker("./worker.ts", { type: "module" })
+const worker = undefined; ;
 
 export function getWorkerInstance(): Worker {
   return worker;

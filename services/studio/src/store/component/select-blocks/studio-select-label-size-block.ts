@@ -35,7 +35,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Label size';
-                label;
+                return label;
             `
             }
         },
