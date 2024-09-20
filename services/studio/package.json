@@ -35,7 +35,7 @@
     "@hybridui/radio": "^0.0.8",
     "@hybridui/select": "^0.0.11",
     "@hybridui/slider-input": "^0.0.4",
-    "@hybridui/table": "^0.0.6",
+    "@hybridui/table": "^0.0.7",
     "@hybridui/tabs": "^0.0.18",
     "@lit-labs/react": "^2.1.2",
     "@lit-labs/ssr-client": "1.1.7",

@@ -16,7 +16,6 @@ import studioLineHeightBlock from "./text-labels-blocks/studio-line-height-block
 import studioClickEvent from "./text-labels-blocks/studio-click-event";
 import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event";
 import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event";
-import studioTextValueBlock from "./text-labels-blocks/studio-text-value-block";
 import studioDisplayBlock from "./common-blocks/studio-display-block";
 import studioHelperTextBlock from "./common-blocks/studio-helper-block";
 import studioStateBlock from "./common-blocks/studio-state-block";
@@ -66,6 +65,9 @@ import  QuickActions from "../editor-micro-apps/quick-action"
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block";
 import studioLabelBlock from "./common-blocks/studio-label-block";
 import studioSelectValuesBlock from './select-blocks/studio-select-values-block'
+import studioTableValuesBlock from './table-block/table-values-block'
+import studioPageNameBlock from './page-blocks/studio-page-name-block'
+import studioPageUrlBlock from "./page-blocks/studio-page-url-block"
 export default [
 
     ...QuickActions,
@@ -298,9 +300,10 @@ export default [
                 value: /* js */ `
                 if(EventData.type === "page"){
                     SetVar("currentPage" , EventData.id)
+                    SetVar("selectedComponents",[])
                     //SelectPage({id : EventData.page.id}) 
                 }else{
-                    SetVar("selectedComponents",[ EventData.id])
+                    SetVar("selectedComponents",[EventData.id])
                 }
                 `
             },
@@ -353,7 +356,7 @@ export default [
                         })
 
                     }
-                    appPages.map((page, index) => {                        
+                    appPages.map((page, index) => {  
                         const componentIds= page.component_ids;
                         const appId = page.application_id;
                         var children=[];
@@ -409,12 +412,12 @@ export default [
                 type: "handler",
                 value: /* js */ `
                 const selectedComponents = GetVar("selectedComponents") || [];
+                const currentPageId = GetVar("currentPage");
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 let parameters;
                 if(selectedComponents.length)
                 {
                     const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
-                    console.log('component type ', component.component_type)
                     switch(component.component_type){
                         case "text_label":
                             parameters=[
@@ -534,7 +537,10 @@ export default [
                         
                         case "Table":
                             parameters=[
-                                'table_columns_block',
+                                'table_values_handler_block',
+                                "box_shadow_block", 
+                                "font_family_block", 
+                                "font_size_vertical_container",
                                 'size_block',
                                 'position_block',
                                 'width_vertical_container',
@@ -560,6 +566,12 @@ export default [
                             break;
                     }
                 }
+                else if(currentPageId) {
+                        parameters=[
+                            "page_name_block", 
+                            "page_url_block"    
+                        ]
+                }
                 [
                     {
                         label: {
@@ -568,7 +580,7 @@ export default [
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value: selectedComponents.length
+                            value: selectedComponents.length|| currentPageId
                                 ? parameters
                                 : ["select_component_text"]
                         }
@@ -604,13 +616,15 @@ export default [
         ...COMMON_ATTRIBUTES,
 
     },
+    ...studioPageNameBlock,
+    ...studioPageUrlBlock,
+    ...studioTableValuesBlock,
     ...stduioTable,
     ...tableSelectionModeBlock,
     ...tableFilterBlock,
     ...studioValueBlock,
     ...studioDatepickerLocaleBlock,
     ...studioDatepickerFormatBlock,
-    ...studioTextValueBlock,
     ...studioFontSizeBlock,
     ...studioFontColorBlock,
     ...studioFontFamilyBlock,

@@ -21,6 +21,22 @@ export function addPageToApplicationAction(page: PageElement,applicationId: stri
     setVar(applicationId, `${applicationId}.appPages`, pages);
 
 }
+export function updatePageAction(page: PageElement,applicationId: string) {
+  $pages.set({
+    ...$pages.get(),
+    [applicationId]: [...($pages.get()[applicationId].map((oldPage)=>{
+      if(oldPage.uuid==page.uuid){
+      return page;
+       }
+       return oldPage
+  
+  }) || [])],
+  });
+
+  const pages = $pages.get()[applicationId];
+  setVar(applicationId, `${applicationId}.appPages`, pages);
+
+}
 
 export function setCurrentPageAction(pageId: string) {
 

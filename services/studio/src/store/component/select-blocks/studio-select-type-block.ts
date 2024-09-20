@@ -6,17 +6,13 @@ export default [
         applicationId: "1",
         name: "select type block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["select_type_label", "select_type_radio"],
+        childrenIds: ["select_type_label", "select_type_radio","type_handler_block"],
     },
     
     {
@@ -53,16 +49,24 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentType = currentComponent.input?.type?.value || 'default';
+                let currentType=""
+                let isDisabled=false;
+                if(currentComponent.input?.type?.type =='handler'&&currentComponent.input?.type?.value){
+                    isDisabled =true
+                }
+                else 
+                currentType = currentComponent.input?.type?.value || 'default';
                 const options = 
                     [
                     {
                     label: "Default",
                     value: "default",
+                    disabled:isDisabled
                     }, 
                     {
                     label: "Inline",
-                    value: "inline"
+                    value: "inline",
+                    disabled:isDisabled
                    }
             ]   
             const radioType ='button'
@@ -90,6 +94,71 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "type_handler_block",
+        applicationId: "1",
+        name: "type handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["type_handler"],
+    },
+    {
+        uuid: "type_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "type handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='type';
+                let typeHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.type?.type =='handler' && currentComponent?.input?.type?.value){
+                            typeHandler = currentComponent?.input?.type?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,typeHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.type?.value)
+                    updateInput(currentComponent,'type','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

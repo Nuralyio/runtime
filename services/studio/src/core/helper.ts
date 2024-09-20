@@ -5,7 +5,7 @@ import { type ComponentElement } from "$store/component/interface";
 import type { ComponentStore } from "$store/component/component-sotre";
 import { setVar, type ContextVarStore } from "$store/context";
 import { setCurrentPageAction } from "$store/actions/page";
-import { addPageHandler } from "$store/handlers/pages/handler";
+import { addPageHandler,updatePageHandler } from "$store/handlers/pages/handler";
 import type { Application, Execute, Extrats, ServiceWorkerMessage } from "interfaces/core.interfaces";
 import { NO_EVENT_LISTENER } from "utils/constants";
 import { isVerbose } from "utils/envirement";
@@ -163,6 +163,11 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
             updateComponentAttributes(component.applicationId, component.uuid, "style", eventData);
           }, 0);
           break;
+        case 'updateStyleHandlers':
+            setTimeout(() => {
+              updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", eventData);
+            }, 0);
+          break;
           case 'updateEvent':
             setTimeout(() => {
               updateComponentAttributes(component.applicationId, component.uuid, "event", eventData);
@@ -183,6 +188,19 @@ function handleServiceWorkerMessageWrapper(eventId: string) {
               console.error("Error in addPage:", error);
               if (!workerInstance) workerInstance = getWorkerInstance();
               workerInstance.postMessage({ requestId, success: false, result: error });
+            }
+          });
+          break;
+        case 'updatePage':
+           const { request } = event.data;
+           updatePageHandler(eventData.page, (page) => {
+            try {
+              if (!workerInstance) workerInstance = getWorkerInstance();
+              workerInstance.postMessage({ request, success: true, result: page });
+            } catch (error) {
+              console.error("Error in updatePage:", error);
+              if (!workerInstance) workerInstance = getWorkerInstance();
+              workerInstance.postMessage({ request, success: false, result: error });
             }
           });
           break;

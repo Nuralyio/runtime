@@ -6,17 +6,13 @@ export default [
         applicationId: "1",
         name: "image fallback text block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["label_image_fallback", "fallback_text_input"],
+        childrenIds: ["label_image_fallback", "fallback_text_input","fallback_handler_block"],
     },
     {
         uuid: "label_image_fallback",
@@ -39,7 +35,6 @@ export default [
         name: "fallback text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             size:"medium",
@@ -68,14 +63,36 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                if(currentComponent.input?.fallback?.type=="string"){
                 const currentFallback=  currentComponent.input?.fallback?.value??'';
                 currentFallback;
+                }
             }
 
         }catch(e){
             console.log(e);
         }
             `
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if(selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                let state = "unabled";
+                if(currentComponent.input?.fallback?.type =="handler"&&currentComponent.input?.fallback?.value){
+                   state = "disabled"
+               }
+               state;
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `, 
             },
             placeholder: {
                 type: 'handler',
@@ -85,6 +102,71 @@ export default [
             `
             }
         }
+    },
+    {
+        uuid: "fallback_handler_block",
+        applicationId: "1",
+        name: "fallback handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["fallback_handler"],
+    },
+    {
+        uuid: "fallback_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "fallback handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='fallback';
+                let fallbackHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.fallback?.type =='handler' && currentComponent?.input?.fallback?.value){
+                           fallbackHandler = currentComponent?.input?.fallback?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,fallbackHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.fallback?.value != EventData.value )
+                    updateInput(currentComponent,'fallback','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
     },
 
 ]

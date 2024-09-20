@@ -16,7 +16,7 @@ export default [
 
         },
 
-        childrenIds: ["datepicker_format_label_container", "datepicker_format_content_container"],
+        childrenIds: ["datepicker_format_label_container", "datepicker_format_content_container","format_handler_block"],
     },
     {
         uuid: "datepicker_format_label_container",
@@ -78,7 +78,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let format = currentComponent.input.format?.value??'DD/MM/YYYY';
+                let format = currentComponent.input?.format?.value??'DD/MM/YYYY';
                 let selectedFormat;
                 const options = 
                     [
@@ -101,7 +101,27 @@ export default [
             const result =[options,[selectedFormat? selectedFormat.label : ""]]
             result;  
                 `
-            }
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if(selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                let state = "unabled";
+                if(currentComponent.input?.format?.type =="handler" && currentComponent.input?.format?.value){
+                   state = "disabled"
+               }
+               state;
+             }
+
+        }catch(e){
+            console.log(e);
+        }
+            `, 
+            },
         },
         style: {
             display:'block',
@@ -125,6 +145,71 @@ export default [
             
       `
         },
-    }
+    },
+    {
+        uuid: "format_handler_block",
+        applicationId: "1",
+        name: "format handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["format_handler"],
+    },
+    {
+        uuid: "format_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "format handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='format';
+                let formatHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.format?.type =='handler' && currentComponent?.input?.format?.value){
+                            formatHandler = currentComponent?.input?.format?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,formatHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.format?.value)
+                    updateInput(currentComponent,'format','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

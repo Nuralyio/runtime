@@ -7,17 +7,13 @@ export default [
         applicationId: "1",
         name: "input type block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: { 
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["input_type_label", "input_type_radio"],
+        childrenIds: ["input_type_label", "input_type_radio","input_type_handler_block"],
     },
     
     {
@@ -53,20 +49,29 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentType = currentComponent.input?.type?.value || 'text'
+                let currentType="";
+                let isDisabled=false;
+                if(currentComponent.input?.type?.type =='handler' && currentComponent.input?.type?.value){
+                    isDisabled = true
+                }
+                else 
+                currentType = currentComponent.input?.type?.value || 'text'
                 const options = 
                 [
                     {
                         value: "text",
-                        icon:'font'
+                        icon:'font',
+                        disabled:isDisabled
                     }, 
                     {
                         value: "password",
-                        icon:'lock'
+                        icon:'lock',
+                        disabled:isDisabled
                     },
                     {
                         value: "number",
-                        icon:'hashtag'
+                        icon:'hashtag',
+                        disabled:isDisabled
                     }
                 ]  
             const radioType='button' 
@@ -95,6 +100,71 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "input_type_handler_block",
+        applicationId: "1",
+        name: "input type handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["input_type_handler"],
+    },
+    {
+        uuid: "input_type_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "type handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='type';
+                let typeHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if(selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.type?.type =='handler' && currentComponent?.input?.type?.value){
+                            typeHandler = currentComponent?.input?.type?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,typeHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.type?.value)
+                    updateInput(currentComponent,'type','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

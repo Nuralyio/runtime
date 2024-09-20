@@ -52,7 +52,7 @@ export class ParameterEventLabel extends BaseElementBlock {
       @closed=${() => {}}
       .template=${this.renderCodeEditorTemplate()}
     >
-        <hy-button .icon=${['code']} type="text" class="unit">handler</hy-button>
+        <hy-button .icon=${['code']} type="text" class="unit">${this.inputHandlersValue?.triggerText??""}</hy-button>
     </hy-dropdown>
      `;
   }

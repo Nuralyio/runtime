@@ -3,7 +3,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 
 export default [
     {
-        uuid: "select_values_handler_block",
+        uuid: "table_values_handler_block",
         applicationId: "1",
         name: "value handler block",
         component_type: ComponentType.VerticalContainer,
@@ -15,11 +15,11 @@ export default [
             'justify-content':'space-between',
         },
         
-        childrenIds: ["select_values_label","select_values_handler"],
+        childrenIds: ["table_values_handler_label","table_values_handler"],
     },
     {
-        uuid: "select_values_label",
-        name: "select values label",
+        uuid: "table_values_handler_label",
+        name: "table values handler label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -31,15 +31,15 @@ export default [
                label;
             `
             }
-        },
+        }
     },
     {
-        uuid: "select_values_handler",
+        uuid: "table_values_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "value handler",
+        name: "table value handler",
         style: {
                 display:'block',
                 width: "250px", 
@@ -55,8 +55,8 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.options?.type =='handler' && currentComponent?.input?.options?.value){
-                           valueHandler = currentComponent?.input?.options?.value
+                        if(currentComponent?.input?.data?.value){
+                           valueHandler = currentComponent?.input?.data?.value
                         }
                     }
                 }catch(error){
@@ -74,8 +74,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.value?.value != EventData.value )
-                    updateInput(currentComponent,'options','handler',EventData.value);
+                    if(currentComponent?.input?.value?.value != EventData.value )
+                    updateInput(currentComponent,'data','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);

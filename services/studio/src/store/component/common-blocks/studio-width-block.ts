@@ -11,7 +11,7 @@ export default [
             width: "250px",
             "margin-top":'10px'
         },
-        childrenIds: ["width_block","auto_width_block"],
+        childrenIds: ["width_block","auto_width_block","width_handler_block"],
     },
     {
         uuid: "width_block",
@@ -154,6 +154,68 @@ export default [
                 }catch(error){
                     console.log(error);
                 }`
+        },
+    },
+    {
+        uuid: "width_handler_block",
+        applicationId: "1",
+        name: "width handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["width_handler"],
+    },
+    {
+        uuid: "width_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "width handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='width';
+                let widthHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    widthHandler = currentComponent?.styleHandlers['width'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,widthHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'width',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
         },
     },
 

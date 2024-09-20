@@ -59,6 +59,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
   render() {
     const labelStyles = this.component?.style || {};
+    const labelStyleHandlers = this.component?.styleHandlers || {};
     const labelAutoWidth = this.inputHandlersValue?.width;
     const labelAutoHeight = this.inputHandlersValue?.height;
 
@@ -67,7 +68,7 @@ export class TextLabelBlock extends BaseElementBlock {
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
-          style=${styleMap({ ...labelStyles,width:labelAutoWidth?'auto':labelStyles.width,height:labelAutoHeight?'auto':labelStyles.height })}
+          style=${styleMap({ ...labelStyles,width:labelAutoWidth?'auto':labelStyles.width,height:labelAutoHeight?'auto':labelStyles.height,...labelStyleHandlers })}
           @click=${() => {
           if (this.component.event?.onClick) {
             executeEventHandler(this.component, 'event', 'onClick');
@@ -86,12 +87,14 @@ export class TextLabelBlock extends BaseElementBlock {
           @blur=${(e) => {
           this.isEditable = false;
           this.requestUpdate();
-            // updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
-            //   value: {
-            //     type: "value",
-            //     value: e.target.textContent,
-            //   },
-            // });
+          if(this.component.input?.value?.type =="value"){
+            updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
+              value: {
+                type: "value",
+                value: e.target.textContent,
+              },
+            });
+          }
         }}
           @dblclick=${(e) => {
           e.preventDefault();
