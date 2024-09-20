@@ -176,11 +176,17 @@ export class PageContent extends LitElement {
     return "unknown";
   }
 
+  isPreviewMode(){
+    return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
+  }
+
   render() {
     return html`
-      <rectangle-selection>
+      ${!this.isViewMode && this.mode !== ViewMode.Preview ? html`
+        <rectangle-selection>
+      ` : ''}
       <div
-        class="page-container"
+        class="page-container ${this.isPreviewMode() ? 'viewer' : ''}"
         style=${styleMap(this.currentPage?.style || {})}
         @click=${this.handlePageClick}
         @dragend=${this.preventDefault}
@@ -190,13 +196,14 @@ export class PageContent extends LitElement {
         @drop=${this.handleDrop}
       >
         ${this.components.length
-        ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
-        : html`<div class="page-empty-message-container">
-              <p class="page-empty-message">Add an item from the insert panel</p>
-            </div>`}
+          ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
+          : html`<div class="page-empty-message-container">
+                <p class="page-empty-message">Add an item from the insert panel</p>
+              </div>`}
       </div>
-      </rectangle-selection>
-
+      ${!this.isViewMode && this.mode !== ViewMode.Preview ? html`
+        </rectangle-selection>
+      ` : ''}
     `;
   }
 
