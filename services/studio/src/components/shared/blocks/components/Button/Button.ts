@@ -4,9 +4,9 @@ import "@hybridui/button";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
-import { executeHandler } from "core/helper";
-import { $context } from "$store/context";
 import { BaseElementBlock } from "../BaseElement";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 const isServer = typeof window === 'undefined';
 
 
@@ -36,16 +36,11 @@ export class ButtonBlock extends BaseElementBlock {
 
   // display handler
   updateDisplay() {
-    const messageChannel = executeHandler({
-      component: this.component,
-      type: "input.show",
-      extras: {},
+
+    const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.show`),{
     });
-    messageChannel.onmessage = (event) => {
-      if (event.data.result || typeof event.data.result === "boolean") {
-        this.display = event.data.result;
-      }
-    };
+    this.display = fn;
+    console.log(fn)
   }
 
 

@@ -45,7 +45,6 @@ export class SmartAttributeHandler extends LitElement {
     const {
       detail: { value },
     } = event;
-
     updateComponentAttributeHandlers(this.component.uuid, this.handlerScope, {
       [this.attributeName]: value,
     });
