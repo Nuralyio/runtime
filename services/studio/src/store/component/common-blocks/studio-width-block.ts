@@ -68,20 +68,17 @@ export default [
             width: "120px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "width",EventData.value+'px');
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }         `
-            }
+            valueChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyle(currentComponent, "width",EventData.value+'px');
+                }
+            }catch(error){
+                console.log(error);
+            }         `
         },
         input: {
             value: {
