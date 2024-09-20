@@ -58,27 +58,7 @@ export class BaseElementBlock extends LitElement {
 
         }
       
-        const eventId = generateRandomId();
-        return new Promise((resolve) => {
-          const handler = ({ detail: { data } }) => {
-            document.removeEventListener(eventId, handler as any);
-            this.thisvalue = data.result;
-            this.inputHandlersValue[inputName] = data.result;
-            if (this?.callbacks[inputName]) {
-              this.callbacks[inputName](data.result);
-            }
-            resolve();
-          };
-          document.addEventListener(eventId, handler as any);
-          executeHandler({
-            eventId,
-            component: this.component,
-            type: `input.${inputName}`,
-            extras: {},
-          });
-        });
-      } else {
-
+      }else{
         this.inputHandlersValue[inputName] = input.value;
         setValue(this.component.name, inputName, input.value);
         if (this?.callbacks[inputName]) {

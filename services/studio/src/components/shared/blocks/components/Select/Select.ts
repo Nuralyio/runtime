@@ -6,6 +6,8 @@ import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { BaseElementBlock } from "../BaseElement";
 import { $environment, ViewMode } from "$store/environment";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 
 @customElement("select-block")
@@ -14,7 +16,7 @@ export class SelectBlock extends BaseElementBlock {
   component: ComponentElement;
   mode: ViewMode;
 
-  constructor(){
+  constructor() {
     super()
     $environment.subscribe((environment) => {
       this.mode = environment.mode;
@@ -25,19 +27,17 @@ export class SelectBlock extends BaseElementBlock {
 
   handleValueChange = (e) => {
     if (this.component.event.changed) {
-      const optionValue = e.detail.value?e.detail.value.value:'';
-      executeEventHandler(this.component, "event", "changed", {
-        EventData: {
-          value: optionValue,
-        },
+      const optionValue = e.detail.value ? e.detail.value.value : '';
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.changed`), {
+        value: optionValue,
       });
     }
   };
 
   render() {
-    const options = this.inputHandlersValue?.value?.[0] ??  [];
-    const defaultSelected = this.inputHandlersValue?.value?.[1]??[];
-    const selectStyles = this.component?.style ||{}
+    const options = this.inputHandlersValue?.value?.[0] ?? [];
+    const defaultSelected = this.inputHandlersValue?.value?.[1] ?? [];
+    const selectStyles = this.component?.style || {}
     const selectAutoWidth = this.inputHandlersValue?.width;
     const selectStyleHandlers = this.component?.styleHandlers? Object.fromEntries(
       Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) : {}
@@ -47,15 +47,15 @@ export class SelectBlock extends BaseElementBlock {
         selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : nothing}
         .options=${this.inputHandlersValue?.options || options}
         .defaultSelected="${defaultSelected}"
-        .placeholder=${this.inputHandlersValue.placeholder||'Select an option'}
+        .placeholder=${this.inputHandlersValue.placeholder || 'Select an option'}
         .status=${selectStyles?.state ?? nothing}
-        .size=${selectStyles?.size ??nothing}
-        .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
-        .type=${this.inputHandlersValue.type=='inline'?'inline':nothing}
+        .size=${selectStyles?.size ?? nothing}
+        .disabled=${this.inputHandlersValue.state == 'disabled' ? true : false}
+        .type=${this.inputHandlersValue.type == 'inline' ? 'inline' : nothing}
         @changed=${this.handleValueChange}
       >
-        <span slot="label">${this.inputHandlersValue.label??nothing}</span>
-        <span slot="helper-text">${this.inputHandlersValue.helper??nothing}</span>
+        <span slot="label">${this.inputHandlersValue.label ?? nothing}</span>
+        <span slot="helper-text">${this.inputHandlersValue.helper ?? nothing}</span>
       </hy-select>
     `;
   }

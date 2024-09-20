@@ -96,6 +96,7 @@ export function registerContextInServiceWorker(context: ContextVarStore) {
 }
 
 export function registerApplicationComponentsInServiceWorker(componentStore: ComponentStore) {
+  return;
   log.prefix("Core Helper:").info('register application components', componentStore);
     let messageChannel = new MessageChannel();
     const command = "registerApplicationComponents";

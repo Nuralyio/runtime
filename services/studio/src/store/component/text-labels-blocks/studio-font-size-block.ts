@@ -54,9 +54,7 @@ export default [
             width: "20px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:  /* js */`
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         console.log(selectedComponens);
@@ -72,7 +70,6 @@ export default [
                     }
                     
   `
-            }
         },
         input: {
             value: {

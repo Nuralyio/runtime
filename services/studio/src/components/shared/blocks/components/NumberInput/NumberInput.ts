@@ -3,7 +3,8 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
-import { executeHandler } from "core/helper";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 @customElement("number-input-block")
 export class NumberInputBlock extends BaseElementBlock {
@@ -29,15 +30,9 @@ export class NumberInputBlock extends BaseElementBlock {
 
   handleValueChange = (e) => {
     if (this.component.event.valueChange) {
-      executeHandler({
-        component: this.component,
-        type: `event.valueChange`,
-        extras: {
-          EventData: {
-            value: e.detail.value,
-            unity: this.thisvalue[1]
-          },
-        },
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
+        value: e.detail.value,
+        unity: this.thisvalue[1]
       });
     }
   };

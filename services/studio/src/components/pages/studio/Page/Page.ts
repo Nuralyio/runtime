@@ -182,9 +182,7 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
-      ${!this.isViewMode && this.mode !== ViewMode.Preview ? html`
-        <rectangle-selection>
-      ` : ''}
+       <rectangle-selection>
       <div
         class="page-container ${this.isPreviewMode() ? 'viewer' : ''}"
         style=${styleMap(this.currentPage?.style || {})}
@@ -201,9 +199,7 @@ export class PageContent extends LitElement {
                 <p class="page-empty-message">Add an item from the insert panel</p>
               </div>`}
       </div>
-      ${!this.isViewMode && this.mode !== ViewMode.Preview ? html`
-        </rectangle-selection>
-      ` : ''}
+      </rectangle-selection>
     `;
   }
 

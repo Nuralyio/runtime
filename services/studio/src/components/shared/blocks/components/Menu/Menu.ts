@@ -8,6 +8,8 @@ import '@hybridui/menu/templates/hy-sub-menu.js'
 import '@hybridui/menu/templates/hy-menu-link.js'
 import { BaseElementBlock } from '../BaseElement';
 import { executeEventHandler } from 'core/engine';
+import { executeCodeWithClosure } from 'core/executer';
+import { getNestedAttribute } from 'utils/object.utils';
 
 @customElement('menu-block')
 export class MenuBlock extends BaseElementBlock {
@@ -62,7 +64,6 @@ export class MenuBlock extends BaseElementBlock {
         );
 
         const handler = ({ detail: { data } }) => {
-            document.removeEventListener(eventId, handler as any);
             if (data.error) {
                 this.error = data.error;
                 console.error(data.error)
@@ -73,7 +74,11 @@ export class MenuBlock extends BaseElementBlock {
                             id,
                             text
                         }) => {
-                            executeHandler(
+                            const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`),{
+                                    id,
+                                    text
+                            });
+                            /*executeHandler(
                                 {
                                     eventId: generateRandomId(),
                                     component: this.component,
@@ -85,7 +90,7 @@ export class MenuBlock extends BaseElementBlock {
                                         }
                                     }
                                 }
-                            );
+                            );*/
                         }
                         if (option.children) {
                             option.children = processOptions(option.children);
@@ -127,7 +132,13 @@ export class MenuBlock extends BaseElementBlock {
                 const selectedOptionPath = e.detail.path;
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
                 console.log('option',   option);
-                executeHandler(
+                executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`).value,{
+                        id: option.id,
+                        text: option.text,
+                        type: option.type
+                });
+
+                /*executeHandler(
                     {
                         eventId: generateRandomId(),
                         component: this.component,
@@ -139,7 +150,7 @@ export class MenuBlock extends BaseElementBlock {
                                 type: option.type
                             }
                         }
-                    })
+                    })*/
             }}" >
                 </hy-menu>
             </div>

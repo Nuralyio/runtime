@@ -299,19 +299,6 @@ export default [
         component_type: ComponentType.Menu,
         ...COMMON_ATTRIBUTES,
         input: {
-            onSelect: {
-                type: "handler",
-                value: /* js */ `
-                if(EventData.type === "page"){
-                    SetVar("currentPage" , EventData.id)
-                    SetVar("selectedComponents",[])
-                    //SelectPage({id : EventData.page.id}) 
-                }else{
-                    SetVar("selectedComponents",[EventData.id])
-                }
-                `
-            },
-
             options: {
                 type: "handler",
                 value: /* js */ `
@@ -400,7 +387,19 @@ export default [
             },
         },
         event: {
+            onSelect: {
+                type: "handler",
+                value: /* js */ `
+                if(EventData.type === "page"){
+                    SetVar("currentPage" , EventData.id)
+                    //SelectPage({id : EventData.page.id}) 
+                }else{
+                    SetVar("selectedComponents",[ EventData.id])
+                }
+                `
+            },
             /* js */
+            
             actionClick: `
             try {
                

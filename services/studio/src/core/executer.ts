@@ -112,7 +112,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     const Values = instance.Values;
 
     function SetVar(symbol: string, value: any): void {
-        setVar(component.applicationId, symbol, value);
+        setVar("global", symbol, value);
     }
 
     function GetContextVar(symbol: string, customContentId: string | null, component: any): any {

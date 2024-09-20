@@ -78,30 +78,22 @@ export class TextLabelBlock extends BaseElementBlock {
         }}
               @mouseenter=${(e) => {
           if (this.component?.event?.mouseEnter) {
-            //executeEventHandler(this.component, 'event', 'mouseEnter');
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseEnter`));
           }
         }}
         @mouseleave=${(e) => {
           if (this.component?.event?.mouseLeave) {
-           // executeEventHandler(this.component, 'event', 'mouseLeave')
+
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseLeave`));
           }
         }}
           @blur=${(e) => {
           this.isEditable = false;
-          this.requestUpdate();
-          if(this.component.input?.value?.type =="value"){
-            updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
-              value: {
-                type: "value",
-                value: e.target.textContent,
-              },
-            });
-          }
+         
         }}
           @dblclick=${(e) => {
           e.preventDefault();
           this.isEditable = true;
-          this.requestUpdate();
         }}
           
         >${this.inputHandlersValue.value ?? "Text label"}</label>
