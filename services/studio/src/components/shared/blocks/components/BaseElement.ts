@@ -22,11 +22,13 @@ export class BaseElementBlock extends LitElement {
   inputHandlersValue: any = {};
 
   @state()
+  stylesHandlersValue: any = {};
+
+  @state()
   thisvalue: any;
 
   @state()
   callbacks: any = {};
-
 
   @state()
   isEditable = false;
@@ -36,12 +38,12 @@ export class BaseElementBlock extends LitElement {
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
-    if(isServer){
+    if (isServer) {
       return;
     }
     if (input) {
       if (input?.type === "handler") {
-        try{
+        try {
           const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value);
           if (fn) {
             return new Promise((resolve) => {
@@ -54,23 +56,22 @@ export class BaseElementBlock extends LitElement {
               resolve();
             });
           }
-        }catch(e){
-
+        } catch (e) {
+          console.error(e);
         }
-      
-      }else{
+      } else {
         this.inputHandlersValue[inputName] = input.value;
         setValue(this.component.name, inputName, input.value);
         if (this?.callbacks[inputName]) {
           this.callbacks[inputName](input.value);
         }
       }
+
       if (this.inputHandlersValue[inputName]) {
         if (this.inputHandlersValue[inputName] !== this.component.values?.[inputName]) {
-          updateComponentAttributes(this.component.applicationId, this.component.uuid, "values",
-            { [inputName]: this.inputHandlersValue[inputName] },
-            false
-          );
+          updateComponentAttributes(this.component.applicationId, this.component.uuid, "values", {
+            [inputName]: this.inputHandlersValue[inputName]
+          }, false);
         }
       }
     }
@@ -85,17 +86,53 @@ export class BaseElementBlock extends LitElement {
       await Promise.all(handlerPromises);
     }
   }
+
+  async traitStyleHandler(style: any, styleName: string): Promise<void> {
+    if (isServer) {
+      return;
+    }
+    if (style) {
+      if (style?.startsWith("return ")) {
+        try {
+          const fn = executeCodeWithClosure(this.component, style);
+          if (fn) {
+            return new Promise((resolve) => {
+              this.stylesHandlersValue[styleName] = fn;
+              this.requestUpdate();
+              resolve();
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        this.stylesHandlersValue[styleName] = style;
+        this.requestUpdate();
+      }
+    }
+  }
+
+  async traitStylesHandlers() {
+    const handlerPromises = [];
+    if (this.component?.styleHandlers) {
+      for (const [styleName, style] of Object.entries(this.component?.styleHandlers)) {
+        handlerPromises.push(this.traitStyleHandler(style, styleName));
+      }
+      await Promise.all(handlerPromises);
+    }
+  }
+
   override updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
         this.traitInputsHandlers();
+        this.traitStylesHandlers();
       }
     });
   }
 
   focusLabel() {
     const label = this.shadowRoot.querySelector("label");
-    console.log(label)
     if (label) {
       label.focus();
     }
@@ -105,14 +142,15 @@ export class BaseElementBlock extends LitElement {
     super.connectedCallback();
     $context.subscribe(async (context) => {
       await this.traitInputsHandlers();
+      await this.traitStylesHandlers();
     });
 
     eventDispatcher.on('component:refresh', () => {
       setTimeout(async () => {
         await this.traitInputsHandlers();
+        await this.traitStylesHandlers();
       }, 0);
-
-    })
+    });
 
     eventDispatcher.on('keydown', ({ key, selectedComponents }) => {
       if (key === 'Enter') {
@@ -121,9 +159,10 @@ export class BaseElementBlock extends LitElement {
           this.requestUpdate();
           requestAnimationFrame(() => {
             //this.focusLabel();
-          })
+          });
         }
       }
-    })
+    });
   }
+
 }

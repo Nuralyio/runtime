@@ -248,7 +248,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const addPageLabelBtn='Add Page';
-                addPageLabelBtn;
+                return addPageLabelBtn;
             `
             }
 

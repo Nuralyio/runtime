@@ -32,7 +32,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
   constructor() {
     super();
-    this.registerCallback('value', (v)=>{
+    this.registerCallback('value', (v) => {
       this.thisvalue = v;
     });
 
@@ -48,7 +48,7 @@ export class TextLabelBlock extends BaseElementBlock {
   @property({ type: Object })
   item: any;
 
-  
+
 
   handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -64,13 +64,21 @@ export class TextLabelBlock extends BaseElementBlock {
     const labelAutoWidth = this.inputHandlersValue?.width;
     const labelAutoHeight = this.inputHandlersValue?.height;
 
+    const combinedStyles = {
+      ...labelStyles,
+      width: labelAutoWidth ? 'auto' : labelStyles.width,
+      height: labelAutoHeight ? 'auto' : labelStyles.height,
+      ...labelStyleHandlers
+    };
+
+
     return html`
 
-      ${!this.inputHandlersValue?.display|| (this.inputHandlersValue.value  && this.inputHandlersValue.display =='show') ? html`
+      ${!this.inputHandlersValue?.display || (this.inputHandlersValue.value && this.inputHandlersValue.display == 'show') ? html`
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
-          style=${styleMap({ ...labelStyles,width:labelAutoWidth?'auto':labelStyles.width,height:labelAutoHeight?'auto':labelStyles.height,...labelStyleHandlers })}
+          style=${styleMap(combinedStyles)}
           @click=${() => {
           if (this.component.event?.onClick) {
             executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
@@ -89,7 +97,7 @@ export class TextLabelBlock extends BaseElementBlock {
         }}
           @blur=${(e) => {
           this.isEditable = false;
-         
+
         }}
           @dblclick=${(e) => {
           e.preventDefault();

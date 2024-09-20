@@ -91,6 +91,7 @@ class Executer {
                 'applications',
                 'updateInput',
                 'updateEvent',
+                'updateStyleHandlers',
                 'EventData',
                 'updateStyle',
                 `return (function() { ${code} }).apply(this);`
@@ -125,6 +126,10 @@ function AddPage  (page: any, applicationId: string) {
     });
 
   };
+  function updateStyleHandlers  (component: ComponentElement, symbol: string, value: any) {
+    updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", { [symbol]: value });
+
+  }
 
     function GetContextVar(symbol: string, customContentId: string | null, component: any): any {
         const contentId = customContentId || component.applicationId;
@@ -203,6 +208,7 @@ function AddPage  (page: any, applicationId: string) {
         applications,
         updateInput,
         updateEvent,
+        updateStyleHandlers,
         EventData,
         updateStyle
     );

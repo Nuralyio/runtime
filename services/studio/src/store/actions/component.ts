@@ -340,7 +340,7 @@ export function updateComponentInput(componentId: string, updatedInputs: any) {
 
 
 
-type UpdateType = 'style' | 'event' | 'input' | 'values'; // Define the types of updates allowed
+type UpdateType = 'style' | 'event' | 'input' | 'values' | 'styleHandlers'; 
 
 export function updateComponentAttributes(
   applicationId: string,
