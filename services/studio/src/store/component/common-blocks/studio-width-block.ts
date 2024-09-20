@@ -237,7 +237,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,widthHandler];
+                return [parameter,widthHandler];
             `
             }
         },
