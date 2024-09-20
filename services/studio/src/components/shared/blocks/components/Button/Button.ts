@@ -59,9 +59,7 @@ export class ButtonBlock extends BaseElementBlock {
     .iconPosition=${this.inputHandlersValue.iconPosition??nothing}
      @click=${({ x, y, type, }) => {
           if (this.component.event?.onClick) {
-            executeEventHandler(this.component, "event", "onClick", {
-              EventData: { x, y, type, },
-            });
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`))
           }
         }}
     style=${styleMap({...buttonStyles,...buttonStyleHandlers})}
