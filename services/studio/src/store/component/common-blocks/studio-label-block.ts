@@ -6,17 +6,13 @@ export default [
         applicationId: "1",
         name: "label text block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["label_text_label", "label_text_input"],
+        childrenIds: ["label_text_label", "label_text_input","label_handler_block"],
     },
     {
         uuid: "label_text_label",
@@ -39,7 +35,6 @@ export default [
         name: "label text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             size:"medium",
@@ -68,14 +63,36 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const currentLabel=  currentComponent.input?.label?.value??'';
+                if(currentComponent.input?.label?.type=="value"){
+                const currentLabel=currentComponent.input?.label?.value??'';
                 currentLabel;
+                }
             }
 
         }catch(e){
             console.log(e);
         }
             `
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if(selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                let state = "unabled";
+                if(currentComponent.input?.label?.type =="handler" && currentComponent.input?.label?.value){
+                   state = "disabled"
+               }
+               state;
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `, 
             },
             placeholder: {
                 type: 'handler',
@@ -85,6 +102,71 @@ export default [
             `
             }
         }
+    },
+    {
+        uuid: "label_handler_block",
+        applicationId: "1",
+        name: "label handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["label_handler"],
+    },
+    {
+        uuid: "label_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "label handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='label';
+                let labelHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.label?.type =='handler' && currentComponent?.input?.label?.value){
+                            labelHandler = currentComponent?.input?.label?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,labelHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.label?.value)
+                    updateInput(currentComponent,'label','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
     },
 
 ]

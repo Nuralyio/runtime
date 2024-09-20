@@ -16,7 +16,7 @@ export default [
 
         },
 
-        childrenIds: ["datepicker_locale_label_container", "datepicker_locale_content_container"],
+        childrenIds: ["datepicker_locale_label_container", "datepicker_locale_content_container","locale_handler_block"],
     },
     {
         uuid: "datepicker_locale_label_container",
@@ -110,7 +110,27 @@ export default [
             const result =[options,[selectedLocale? selectedLocale.label : ""]]
             result;  
                 `
-            }
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if(selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                let state = "unabled";
+                if(currentComponent.input?.locale?.type =="handler" && currentComponent.input?.locale?.value){
+                   state = "disabled"
+               }
+               state;
+             }
+
+        }catch(e){
+            console.log(e);
+        }
+            `, 
+            },
         },
         style: {
             display:'block',
@@ -134,6 +154,71 @@ export default [
             
       `
         },
-    }
+    },
+    {
+        uuid: "locale_handler_block",
+        applicationId: "1",
+        name: "locale handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["locale_handler"],
+    },
+    {
+        uuid: "locale_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "locale handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='locale';
+                let localeHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.locale?.type =='handler' && currentComponent?.input?.locale?.value){
+                            localeHandler = currentComponent?.input?.locale?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,localeHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.locale?.value)
+                    updateInput(currentComponent,'locale','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

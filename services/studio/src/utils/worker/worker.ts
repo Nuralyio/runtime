@@ -74,6 +74,19 @@ self.updateStyle = function (component: ComponentElement, symbol: string, value:
     eventData: { [symbol]: value }
   });
 };
+self.updateStyleHandlers = function (component: ComponentElement, symbol: string, value: any) {
+  if (verbose) {
+    console.log(`%cupdateStyle`, 'background: #D1D1D1; color: black; padding: 2px; border-radius: 3px;', component, symbol, value);
+  }
+  if (!component.applicationId) {
+    component.applicationId = component.application_id;
+  }
+  port?.postMessage({
+    funtionNameToExecute: "updateStyleHandlers",
+    component,
+    eventData: { [symbol]: value }
+  });
+};
 
 
 self.updateEvent = function (component: ComponentElement, symbol: string, value: any) {
@@ -118,6 +131,22 @@ self.AddPage = function (page: any, applicationId: string): Promise<any> {
     // Send the message to the service worker
     port?.postMessage({
       funtionNameToExecute: "addPage",
+      applicationId,
+      eventData: { page },
+      requestId
+    });
+  });
+};
+self.UpdatePage = function (page: any, applicationId: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const requestId = generateRequestId();
+
+    // Store the resolve and reject functions in the map
+    requestMap.set(requestId, { resolve, reject });
+
+    // Send the message to the service worker
+    port?.postMessage({
+      funtionNameToExecute: "updatePage",
       applicationId,
       eventData: { page },
       requestId

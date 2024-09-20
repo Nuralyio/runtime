@@ -141,11 +141,13 @@ export class TextInputBlock extends BaseElementBlock {
     const tableStyles = this.component?.style || {};
     const tableAutoWidth = this.inputHandlersValue?.width;
     const tableAutoHeight = this.inputHandlersValue?.height;
+    const headers = this.inputHandlersValue?.data?this.inputHandlersValue?.data[0]: this.headers
+    const rows = this.inputHandlersValue?.data?this.inputHandlersValue?.data[1]: this.rows
     return html`
     <hy-table
     style=${styleMap({...tableStyles,width:tableAutoWidth?'auto':tableStyles.width})}
-    .headers="${this.headers}"
-    .rows="${this.rows}" 
+    .headers="${headers}"
+    .rows="${rows}" 
     .size=${tableStyles.size??nothing}
     .withFilter=${this.inputHandlersValue.filter=='filter'?true:false}
     .selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : this.inputHandlersValue?.selectionMode === 'single'?'single':nothing}

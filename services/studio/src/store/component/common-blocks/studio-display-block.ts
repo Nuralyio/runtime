@@ -6,17 +6,12 @@ export default [
         applicationId: "1",
         name: "display block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'flex-direction':'column'
         },
-
-        childrenIds: ["display_label", "display_radio"],
+        childrenIds: ["display_label", "display_radio","display_handler_block"],
     },
     
     {
@@ -31,7 +26,6 @@ export default [
                 value:/* js */`
                 const displayLabel='Display';
                 displayLabel;
-                
                 `
             }
         },
@@ -53,16 +47,25 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentDisplay = currentComponent.input?.display?.value || 'show';
+                let currentDisplay=""
+                let isDisabled=false;
+                if(currentComponent.input?.display?.type =='handler' && currentComponent.input?.display?.value)
+                {
+                  isDisabled = true;
+                }
+                else
+                currentDisplay = currentComponent.input?.display?.value || 'show';
                 const options = 
                     [
                     {
                     icon: "eye",
                     value: "show",
+                    disabled:isDisabled
                     }, 
                     {
                     icon: "eye-slash",
-                    value: "none"
+                    value: "none",
+                    disabled:isDisabled
                    }
             ]   
             const radioType ='button'
@@ -90,6 +93,72 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "display_handler_block",
+        applicationId: "1",
+        name: "display handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["display_handler"],
+    },
+    {
+        uuid: "display_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "display handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='display';
+                let displayHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.display?.type =='handler' && currentComponent?.input?.display?.value){
+                            displayHandler = currentComponent?.input?.display?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,displayHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.display?.value)
+                    updateInput(currentComponent,'display','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
+
 
 ]

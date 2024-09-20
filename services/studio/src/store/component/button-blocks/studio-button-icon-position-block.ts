@@ -12,7 +12,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["icon_position_label", "icon_position_radio"],
+        childrenIds: ["icon_position_label", "icon_position_radio","icon_position_handler_block"],
     },
     
     {
@@ -49,16 +49,25 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentIconPosition = currentComponent.input?.iconPosition?.value || 'left';
+                let currentIconPosition=''
+                let isDisabled=false
+                if(currentComponent.input?.iconPosition?.type=='handler' && currentComponent.input?.iconPosition?.value)
+                {
+                 isDisabled=true
+                }
+                else
+                currentIconPosition = currentComponent.input?.iconPosition?.value || 'left';
                 const options = 
                     [
                     {
                     label: "Left",
                     value: "left",
+                    disabled:isDisabled
                     }, 
                     {
                     label: "Right",
-                    value: "right"
+                    value: "right",
+                    disabled:isDisabled
                    }
             ]   
             const radioType ='button'
@@ -79,11 +88,76 @@ export default [
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     const iconPositionValue = EventData.value;
-                    updateInput(currentComponent,'iconPosition','string',iconPositionValue)
+                    updateInput(currentComponent,'iconPosition','value',iconPositionValue)
                 }
             }catch(error){
                 console.log(error);
             }  
+      `
+        },
+    },
+    {
+        uuid: "icon_position_handler_block",
+        applicationId: "1",
+        name: "icon position handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["icon_position_handler"],
+    },
+    {
+        uuid: "icon_position_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "icon position handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='iconPosition';
+                let iconPositionHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.iconPosition?.type =='handler' && currentComponent?.input?.iconPosition?.value){
+                            iconPositionHandler = currentComponent?.input?.iconPosition?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,iconPositionHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.iconPosition?.value)
+                    updateInput(currentComponent,'iconPosition','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
       `
         },
     }

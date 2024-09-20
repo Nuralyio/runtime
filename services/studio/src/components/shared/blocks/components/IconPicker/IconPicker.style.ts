@@ -77,10 +77,15 @@ input{
 input:focus{
     outline:none;
 }
+.disable{
+    background-color: var(--icon-picker-disabled-background-color);
+    cursor: not-allowed;
+}
 :host{
       --icon-picker-input-container-border: 2px solid #d0d0d0;
       --icon-picker-icon-preview: #000000;
       --icon-picker-icon-text-color: #393939;
+      --icon-picker-disabled-background-color: grey;
       --icon-picker-dropdown-background:#ffffff;
       --icon-picker-dropdown-border:1px solid #d0d0d0;
       --icon-picker-icon-item-color:#000000;

@@ -49,7 +49,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentPosition = currentComponent?.style['position'] || 'static'
+                const currentPosition = currentComponent?.style && currentComponent.style['position'] || 'static'
                 const options = 
                     [
                     {

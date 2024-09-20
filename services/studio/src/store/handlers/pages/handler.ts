@@ -1,6 +1,6 @@
 import { setDefaultApplicationPageIfNotSet } from "$store/actions/app";
 import { $currentApplication } from "$store/apps";
-import { addPageToApplicationAction, /*updatePageAction*/ } from "../../actions/page";
+import { addPageToApplicationAction, updatePageAction } from "../../actions/page";
 import { type PageElement } from "./interfaces/interface"
 import { $pages } from "../../page";
 
@@ -38,6 +38,6 @@ export const updatePageHandler = (page: PageElement) => {
 		body: JSON.stringify({page})
 	}).then(res => res.json())
 		.then((res) => {
-		//	updatePageAction(res)
+		updatePageAction(res,$currentApplication.get().uuid)
 		});
 }

@@ -12,7 +12,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["table_filter_label", "table_filter_radio"],
+        childrenIds: ["table_filter_label", "table_filter_radio","table_filter_handler_block"],
     },
     
     {
@@ -49,16 +49,24 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentFilter = currentComponent.input?.filter?.value || 'none';
+                let currentFilter="";
+                let isDisabled =false;
+                if(currentComponent.input?.filter?.type =="handler" && currentComponent.input?.filter?.value){
+                    isDisabled =true
+                }
+                else 
+                currentFilter = currentComponent.input?.filter?.value || 'none';
                 const options = 
                     [
                     {
                     icon: "filter",
                     value: "filter",
+                    disabled:isDisabled
                     }, 
                     {
                     icon: "xmark",
-                    value: "none"
+                    value: "none",
+                    disabled:isDisabled
                    }
             ]   
             const radioType ='button'
@@ -86,6 +94,71 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "table_filter_handler_block",
+        applicationId: "1",
+        name: "table filter handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["table_filter_handler"],
+    },
+    {
+        uuid: "table_filter_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "filter handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='filter';
+                let filterHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.filter?.type =='handler' && currentComponent?.input?.filter?.value){
+                            filterHandler = currentComponent?.input?.filter?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,filterHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.filter?.value)
+                    updateInput(currentComponent,'filter','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

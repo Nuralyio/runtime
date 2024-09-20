@@ -62,8 +62,9 @@ export class IconPicker extends BaseElementBlock{
 
     override render(){
         this.selectedIcon = this.inputHandlersValue.value??''
+        const isDisabled = this.inputHandlersValue?.disable || false
         return html`
-        <div class="input-container" @click=${this.toggleDropDown}>
+        <div class="input-container ${isDisabled?'disable':''}" @click=${!isDisabled &&this.toggleDropDown}>
         <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>
         </div>
         ${

@@ -16,7 +16,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["helper_text_label", "helper_text_input"],
+        childrenIds: ["helper_text_label", "helper_text_input","helper_handler_block"],
     },
     {
         uuid: "helper_text_label",
@@ -53,7 +53,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         const newHelperText = EventData.value;
-                        updateInput(currentComponent,'helper','string',newHelperText);
+                        updateInput(currentComponent,'helper','value',newHelperText);
                     }
                 }catch(error){
                     console.log(error);
@@ -69,8 +69,10 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                const currentHelperText=  currentComponent.input?.helper?.value??'';
-                currentHelperText;
+                if(currentComponent.input?.helper?.type=="value"){
+                 const currentHelperText=  currentComponent.input?.helper?.value??'';
+                 currentHelperText;
+                }
             }
 
         }catch(e){
@@ -78,6 +80,27 @@ export default [
         }
             `
             },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if(selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                let state = "unabled";
+                if(currentComponent.input?.helper?.type =="handler"&&currentComponent.input?.helper?.value){
+                   state = "disabled"
+               }
+               state;
+            }
+
+        }catch(e){
+            console.log(e);
+        }
+            `, 
+            }
+            ,
             placeholder: {
                 type: 'handler',
                 value: /* js */`
@@ -87,5 +110,69 @@ export default [
             }
         }
     },
-
+    {
+        uuid: "helper_handler_block",
+        applicationId: "1",
+        name: "helper handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["helper_handler"],
+    },
+    {
+        uuid: "helper_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "helper handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='helper';
+                let helperHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        if(currentComponent?.input?.helper?.type =='handler' && currentComponent?.input?.helper?.value){
+                           helperHandler = currentComponent?.input?.helper?.value
+                        }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,helperHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(EventData.value != currentComponent?.input?.helper?.value != EventData.value )
+                    updateInput(currentComponent,'helper','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 ]

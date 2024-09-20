@@ -7,10 +7,6 @@ export default [
         applicationId: "1",
         name: "value text block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
@@ -42,7 +38,6 @@ export default [
         name: "vlaue text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             size:"medium",
@@ -116,7 +111,6 @@ export default [
         applicationId: "1",
         name: "value handler block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             width: "220px",
@@ -168,8 +162,9 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.value?.value != EventData.value )
-                    updateInput(currentComponent,'value','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.value?.value)   
+                      updateInput(currentComponent,'value','handler',EventData.value);
+                
                 }
             }catch(error){
                 console.log(error);
