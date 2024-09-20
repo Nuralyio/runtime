@@ -3,9 +3,9 @@ import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeEventHandler } from "core/engine";
-import { $context } from "$store/context";
 import { BaseElementBlock } from "../BaseElement";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 // Debounce function with default wait time
 function debounce(func, wait = 300) {
@@ -39,11 +39,8 @@ export class ColorPickerBlock extends BaseElementBlock {
 
   handleValueChange = debounce((e) => {
     if (this.component.event.valueChange) {
-      
-      e?.detail?.value && executeEventHandler(this.component, "event", "valueChange", {
-        EventData: {
-          value: e.detail?.value ?? "",
-        },
+      e?.detail?.value  && executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
+        value: e.detail?.value ?? "",
       });
     }
   })
