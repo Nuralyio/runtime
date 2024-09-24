@@ -68,6 +68,7 @@ export class AttributeBorderValue extends BaseElementBlock {
 	override render() {
     this.borderRadius = this.inputHandlersValue.value?this.inputHandlersValue.value[0]:0;
 		this.unity = this.inputHandlersValue.value?this.inputHandlersValue.value[1]:'px';
+    const isDisabled = this.inputHandlersValue.state =='disabled'?true:false;
 		return html`
       <div style="display: flex">
         <div class="first-row">
@@ -78,11 +79,15 @@ export class AttributeBorderValue extends BaseElementBlock {
             .min=${0}
             .max=${200}
             .value=${this.borderRadius}
+            .disabled =${isDisabled}
             @changed="${this.debouncedChanged}"
           ></hy-slider-input>
         </div>
         <div class="second-row">
-          <hy-input .value=${this.borderRadius}></hy-input>
+          <hy-input 
+          .value=${this.borderRadius} 
+          .disabled =${isDisabled}
+          ></hy-input>
         </div>
       </div>
     `;

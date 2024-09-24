@@ -50,13 +50,15 @@ export class ButtonBlock extends BaseElementBlock {
 
 
   render() {
-    const inputStyles = this.component?.style || {};
+    const buttonStyles = this.component?.style || {};
+    const buttonStyleHandlers = this.component?.styleHandlers? Object.fromEntries(
+      Object.entries(this.component.styleHandlers).filter(([key,value])=>value)) : {};
 
     return html`
   ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show' ? html`
     <hy-button
-    .size=${inputStyles.size}
-    .type=${inputStyles.type}     
+    .size=${buttonStyleHandlers?.size?buttonStyleHandlers.size:buttonStyles?.size?buttonStyles.size:nothing}
+    .type=${buttonStyleHandlers?.type?buttonStyleHandlers.type:buttonStyles?.type?buttonStyles.type:nothing}     
     .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
     .icon="${this.inputHandlersValue.icon?[this.inputHandlersValue.icon]:nothing}"
     .iconPosition=${this.inputHandlersValue.iconPosition??nothing}
@@ -67,7 +69,7 @@ export class ButtonBlock extends BaseElementBlock {
             });
           }
         }}
-    style=${styleMap(inputStyles)}
+    style=${styleMap({...buttonStyles,...buttonStyleHandlers})}
       >${this.inputHandlersValue.label?? 'Button'}</hy-button
     >` : nothing}
 `;

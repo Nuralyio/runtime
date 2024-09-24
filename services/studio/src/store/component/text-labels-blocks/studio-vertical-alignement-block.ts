@@ -11,7 +11,7 @@ export default [
 
         },
 
-        childrenIds: ["vertical_alignement_label_container", "vertical_alignement_content_container"],
+        childrenIds: ["vertical_alignement_label_container", "vertical_alignement_content_container","vertical_alignement_handler_block"],
     },
     {
         uuid: "vertical_alignement_label_container",
@@ -66,11 +66,17 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultVerticalAlign = currentComponent.style['align-items'] ||'start';
+                let defaultVerticalAlign='';
+                let isDisabled = false;
+                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['align-items']) {
+                    isDisabled = true
+                }
+                else 
+                defaultVerticalAlign = currentComponent.style['align-items'] ||'start';
                 const options =[
-                                {value:'start',icon: "arrow-up"},
-                                {value:'end',icon: "arrow-down"},
-                                {value:'center',icon:'align-center'}
+                                {value:'start',icon: "arrow-up",disabled:isDisabled},
+                                {value:'end',icon: "arrow-down",disabled:isDisabled},
+                                {value:'center',icon:'align-center',disabled:isDisabled}
                               ]
                 const radioType='button';
                 const result =[options,defaultVerticalAlign,radioType];
@@ -95,6 +101,73 @@ export default [
             }catch(error){
                 console.log(error);
             }  
+      `
+        },
+    },
+    {
+        uuid: "vertical_alignement_handler_block",
+        applicationId: "1",
+        name: "vertical alignement handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["vertical_alignement_handler"],
+    },
+    {
+        uuid: "vertical_alignement_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "vertical alignement handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='verticalAlignement';
+                let verticalAlignementHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    verticalAlignementHandler= currentComponent?.styleHandlers['align-items'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,verticalAlignementHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    const currentComponentDisplay = currentComponent?.style['display'];
+                    
+                    if(currentComponentDisplay!='flex')
+                     updateStyle(currentComponent, "display", 'flex');
+                    
+                    updateStyleHandlers(currentComponent,'align-items',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
       `
         },
     },

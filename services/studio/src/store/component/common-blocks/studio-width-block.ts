@@ -101,8 +101,29 @@ export default [
             console.log(e);
         }
             `
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if( selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let state =''
+                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['width']){
+                  state ='disabled'
+                }
+                state;
+                
             }
+
+        }catch(e){
+            console.log(e);
         }
+            `
+            }
+        },
     },
 
     {
@@ -139,6 +160,27 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+                    type: 'handler',
+                    value: /* js */`
+                    try{
+                        const selectedComponens =  GetVar( "selectedComponents")||[];
+                        if(selectedComponens.length) {
+                            const selectedComponent = selectedComponens[0];
+                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                            let state ='';
+                            if(currentComponent?.styleHandlers && currentComponent.styleHandlers['width']){
+                                state ='disabled'
+                            }
+                            state;  
+                        }
+            
+                    }catch(e){
+                        console.log(e);
+                    }
+                    
+                    `
             }
         },
         event: {

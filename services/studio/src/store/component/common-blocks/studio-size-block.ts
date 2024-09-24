@@ -7,17 +7,13 @@ export default [
         applicationId: "1",
         name: "size block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["size_label", "size_radio"],
+        childrenIds: ["size_label", "size_radio","size_handler_block"],
     },
     
     {
@@ -53,17 +49,28 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentSize = currentComponent.style && currentComponent.style['size'] || 'medium'
+                let isDisabled = false;
+                let currentSize =''
+                if(currentComponent.styleHandlers && currentComponent?.styleHandlers?.size) {
+                    isDisabled = true
+                }
+                else
+                currentSize = currentComponent.style && currentComponent.style['size'] || 'medium'
                 const options = 
                     [
                         {   label:'Small',
                             value: "small",
+                            disabled:isDisabled
                         },
                         {   label:'Medium',
                             value: "medium",
+                            disabled:isDisabled
+
                         },
                         {   label:'Large',
                             value: "large",
+                            disabled:isDisabled
+
                         }
             ]   
             const radioType ='button'
@@ -92,6 +99,68 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "size_handler_block",
+        applicationId: "1",
+        name: "status handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["size_handler"],
+    },
+    {
+        uuid: "size_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "size handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='size';
+                let sizeHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    sizeHandler = currentComponent?.styleHandlers['size'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,sizeHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'size',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

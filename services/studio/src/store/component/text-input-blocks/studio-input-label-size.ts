@@ -21,7 +21,7 @@ export default [
         style: {
             width: "250px",
         },
-        childrenIds: ["text_label_font_size", "font_size_input"],
+        childrenIds: ["text_label_font_size", "font_size_input","input_label_size_handler_block"],
     },
 
     {
@@ -62,7 +62,8 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "--hybrid-input-label-font-size", EventData.value+EventData.unity);
+                            const unity= EventData.unity ||"px"
+                            updateStyle(currentComponent, "--hybrid-input-label-font-size", EventData.value+unity);
                         
                         }
                     }catch(error){
@@ -104,8 +105,90 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+                type:'handler',
+                value:/* js */`
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if(selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state='';
+                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-label-font-size']){
+                         state='disabled'
+                        }
+                        state
+                    }
+        
+                }catch(e){
+                    console.log(e);
+                } 
+                
+                `
             }
         }
+    },
+    {
+        uuid: "input_label_size_handler_block",
+        applicationId: "1",
+        name: "input label size handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        }, 
+        childrenIds: ["input_label_size_handler"],
+    },
+    {
+        uuid: "input_label_size_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "input label size handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='labelSize';
+                let labelSizeHandler =''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    labelSizeHandler= currentComponent?.styleHandlers['--hybrid-input-label-font-size'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,labelSizeHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'--hybrid-input-label-font-size',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
     },
 
 ]

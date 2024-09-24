@@ -6,17 +6,13 @@ export default [
         applicationId: "1",
         name: "button type block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["button_type_label", "button_type_select"],
+        childrenIds: ["button_type_label", "button_type_select","button_type_handler_block"],
     },
     
     {
@@ -53,28 +49,40 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentType = currentComponent?.style &&currentComponent.style['type'] || 'default'
+                let isDisabled = false;
+                let currentType =''
+                if(currentComponent.styleHandlers && currentComponent?.styleHandlers?.type) {
+                    isDisabled = true
+                }
+                else
+                currentType = currentComponent?.style &&currentComponent.style['type'] || 'default'
                 const options = 
                     [
                     {
                     label: "Primary",
                     value: "primary",
+                    disabled:isDisabled
                     }, 
                     {
                     label: "Secondary",
-                    value: "secondary"
+                    value: "secondary",
+                    disabled:isDisabled
+
                    },
                     {
                      label: "Danger",
-                     value: "danger"
+                     value: "danger",
+                     disabled:isDisabled
                    },
                    {
                     label: "Ghost",
-                    value: "ghost"
+                    value: "ghost",
+                    disabled:isDisabled
                    },
                    {
                     label: "Default",
-                    value: "default"
+                    value: "default",
+                    disabled:isDisabled
                    },
             ]   
             const radioType ='button'
@@ -102,6 +110,68 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "button_type_handler_block",
+        applicationId: "1",
+        name: "button type handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["button_type_handler"],
+    },
+    {
+        uuid: "button_type_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "type  handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='type';
+                let typeHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    typeHandler = currentComponent?.styleHandlers['type'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,typeHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'type',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

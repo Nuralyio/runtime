@@ -11,7 +11,7 @@ export default [
             width: "250px",
             "margin-top":'10px'
         },
-        childrenIds: ["height_block","auto_height_block"],
+        childrenIds: ["height_block","auto_height_block","height_handler_block"],
     },
     {
         uuid: "height_block",
@@ -97,6 +97,27 @@ export default [
                 
             }
 
+        }
+         catch(e){
+             console.log(e);
+          }
+            `
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+            try{
+            const selectedComponens =  GetVar( "selectedComponents")||[];
+            if( selectedComponens.length) {
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let state =''
+                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['height']){
+                  state ='disabled'
+                }
+                state;  
+            }
+
         }catch(e){
             console.log(e);
         }
@@ -139,7 +160,28 @@ export default [
             console.log(e);
         }
             `
-            }
+            },
+            state:{
+                type: 'handler',
+                value: /* js */`
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if(selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state ='';
+                        if(currentComponent?.styleHandlers && currentComponent.styleHandlers['height']){
+                            state ='disabled'
+                        }
+                        state;  
+                    }
+        
+                }catch(e){
+                    console.log(e);
+                }
+                
+                `
+        }
         },
         event: {
             checkboxChanged:  /* js */ `
@@ -154,6 +196,68 @@ export default [
                 }catch(error){
                     console.log(error);
                 }`
+        },
+    },
+    {
+        uuid: "height_handler_block",
+        applicationId: "1",
+        name: "height handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["height_handler"],
+    },
+    {
+        uuid: "height_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "height handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='height';
+                let heightHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    heightHandler = currentComponent?.styleHandlers['height'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,heightHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'height',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
         },
     },
 

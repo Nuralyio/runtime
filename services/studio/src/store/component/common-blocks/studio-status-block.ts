@@ -7,17 +7,13 @@ export default [
         applicationId: "1",
         name: "status block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: { 
             display:'flex',
             'flex-direction':'column'
         },
 
-        childrenIds: ["status_label", "status_radio"],
+        childrenIds: ["status_label", "status_radio","status_handler_block"],
     },
     
     {
@@ -53,20 +49,30 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentState = currentComponent.style && currentComponent.style['state'] || 'default'
+                let isDisabled = false;
+                let currentState =''
+                if(currentComponent.styleHandlers && currentComponent?.styleHandlers?.state) {
+                    isDisabled = true
+                }
+                else
+                currentState = currentComponent.style && currentComponent.style['state'] || 'default'
+                
                 const options = 
                 [
                     {
                         value: "default",
-                        icon:'font-awesome'
+                        icon:'font-awesome',
+                        disabled:isDisabled
                     }, 
                     {
                         value: "warning",
-                        icon:'triangle-exclamation'
+                        icon:'triangle-exclamation',
+                        disabled:isDisabled
                     },
                     {
                         value: "error",
-                        icon:'circle-exclamation'
+                        icon:'circle-exclamation',
+                        disabled:isDisabled
                     }
                 ]  
             const radioType='button' 
@@ -95,6 +101,68 @@ export default [
             }  
       `
         },
-    }
+    },
+    {
+        uuid: "status_handler_block",
+        applicationId: "1",
+        name: "status handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["status_handler"],
+    },
+    {
+        uuid: "status_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "status handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='status';
+                let statusHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    statusHandler = currentComponent?.styleHandlers['state'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,statusHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'state',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

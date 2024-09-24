@@ -26,12 +26,14 @@ export class IconBlock extends BaseElementBlock {
 
   render() {
     const iconStyles = this.component?.style || {};
+    const iconStyleHandlers =this.component?.styleHandlers? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) : {};
 
   
     return html`
       <hy-icon 
       .name=${this.inputHandlersValue.icon??'smile'}
-      style=${styleMap(iconStyles)}>
+      style=${styleMap({...iconStyles,...iconStyleHandlers})}>
       </hy-icon>
     `;
   }

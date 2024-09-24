@@ -23,7 +23,7 @@ export default [
             display:'flex',
             'flex-direction':'column'
         },
-        childrenIds: ["icon_width", "icon_width_input"],
+        childrenIds: ["icon_width", "icon_width_input","icon_width_handler_block"],
     },
 
     {
@@ -86,8 +86,91 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+                type:'handler',
+                value:/* js */`
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if(selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state='';
+                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-icon-width']){
+                         state='disabled'
+                        }
+                        state
+                    }
+        
+                }catch(e){
+                    console.log(e);
+                } 
+                
+                `
             }
         }
     },
+    {
+        uuid: "icon_width_handler_block",
+        applicationId: "1",
+        name: "icon with handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        }, 
+        childrenIds: ["icon_width_handler"],
+    },
+    {
+        uuid: "icon_width_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "icon width handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='iconWidth';
+                let iconWidthHandler =''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    iconWidthHandler= currentComponent?.styleHandlers['--hybrid-icon-width'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,iconWidthHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'--hybrid-icon-width',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
+
 
 ]

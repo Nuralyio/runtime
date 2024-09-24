@@ -7,18 +7,13 @@ export default [
             applicationId: "1",
             name: "Left panel",
             component_type: ComponentType.VerticalContainer,
-            styleHandlers: {},
-            input: {
-                direction: "vertical",
-            },
-    
             ...COMMON_ATTRIBUTES,
             style: {
                 width: "250px",
                 display:'flex',
                 'flex-direction':'column',
             },
-            childrenIds: ["border_radius_label","border_radius_block"],
+            childrenIds: ["border_radius_label","border_radius_block","label_border_radius_handler_block"],
         
     },
     {
@@ -46,7 +41,6 @@ export default [
         name: "name",
         applicationId: "1",
         component_type: ComponentType.BorderRadius,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         event: {
             borderRadiusChanged: {
@@ -97,7 +91,93 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+            type:'handler',
+            value:/* js */`
+            
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    let state='' 
+                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['border-radius'])
+                     {  state='disabled'
+                        
+                     }
+                     state
+                }
+    
+            }catch(e){
+                console.log(e);
             }
+            
+            `
+
+            }
+
         }
+    },
+    {
+        uuid: "label_border_radius_handler_block",
+        applicationId: "1",
+        name: "label border radius handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        }, 
+        childrenIds: ["label_border_radius_handler"],
+    },
+    {
+        uuid: "label_border_radius_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "label border radius handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='borderRadius';
+                let borderRadiusHandler =''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    borderRadiusHandler= currentComponent?.styleHandlers['border-radius'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,borderRadiusHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'border-radius',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
     },
 ]

@@ -91,6 +91,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 	})
 
 	override render() {
+		const isDisabled = this.inputHandlersValue?.state =='disabled'?true:false
 		this.horizontalValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[0]:0;
 		this.verticalValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[1]:0;
 		this.blurValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[2]:0;
@@ -98,7 +99,11 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 		this.insetValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[4]:false;
 		this.colorValue = this.inputHandlersValue?.value?this.inputHandlersValue.value[5]:'#000000'
 		return html`
-		<hy-checkbox .checked=${this.inputHandlersValue?.value?this.inputHandlersValue.value[4]:false} @checkbox-changed=${(e) => { this.insetValue = e.detail.value;this.boxShadow()}} >
+		<hy-checkbox 
+		.disabled=${isDisabled}
+		.checked=${this.inputHandlersValue?.value?this.inputHandlersValue.value[4]:false} 
+		@checkbox-changed=${(e) => { this.insetValue = e.detail.value;this.boxShadow()}}
+		 >
 		${this.insetValue ? html`Disable` : html`Enable`} Shodow Box
 		</hy-checkbox>
 		<div>
@@ -110,12 +115,15 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
+					  .disabled=${isDisabled}
 			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[0]:0}
 			           @changed="${(e) => {this.horizontalValue = e.detail.value ;this.boxShadow()}}"
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input .value=${this.horizontalValue}
+		        	 <hy-input 
+					 .value=${this.horizontalValue} 				
+					 .disabled=${isDisabled}
 					 @valueChange=${(e)=>{
 						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
 						{ 
@@ -136,12 +144,15 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
+					  .disabled=${isDisabled}
 			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[1]:0}
 			           @changed="${(e) => {this.verticalValue = e.detail.value;this.boxShadow()}}"
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input .value=${this.verticalValue} 
+		        	 <hy-input 
+					 .value=${this.verticalValue} 					  
+					 .disabled=${isDisabled}
 					 @valueChange=${(e)=>{
 						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
 						{ 
@@ -163,6 +174,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
+					  .disabled=${isDisabled}
 			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[2]:0}
 					  @changed="${(e) => {this.blurValue = e.detail.value;this.boxShadow()} }"
 
@@ -170,6 +182,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 				</div>
 		        <div class="second-row">
 		        	 <hy-input   
+					 .disabled=${isDisabled}
 					 .value=${this.blurValue} 
 					 @valueChange=${(e)=>{
 						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
@@ -191,12 +204,15 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
 			          .max=${50}
+					  .disabled=${isDisabled}
 			          .value=${this.inputHandlersValue?.value?this.inputHandlersValue.value[3]:0}
 			           @changed="${(e) => {this.spreadValue = e.detail.value;this.boxShadow()} }"
 			        ></hy-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input  .value=${this.spreadValue }
+		        	 <hy-input 					  
+					 .disabled=${isDisabled}
+					 .value=${this.spreadValue }
 					 @valueChange=${(e)=>{
 						if(e.detail.value &&!isNaN(e.detail.value) && +e.detail.value>=-50 && +e.detail.value<=50)
 						{ 
@@ -210,9 +226,11 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			<div>
 			<hy-color-picker
 			style="height: 100px; width: 100%;"
-    .color="${this.inputHandlersValue?.value?this.inputHandlersValue.value[5]:'#000000'}"
-    @color-changed="${this.handleColorChange}"
-    ></hy-color-picker>
+			.disabled=${isDisabled}
+            .color="${this.inputHandlersValue?.value?this.inputHandlersValue.value[5]:'#000000'}"
+            @color-changed="${this.handleColorChange}"
+             >
+			 </hy-color-picker>
     </div>			
 		</div>
         `	

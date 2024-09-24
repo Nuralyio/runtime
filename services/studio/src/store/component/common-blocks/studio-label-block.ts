@@ -47,7 +47,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         const newLabelText = EventData.value;
-                        updateInput(currentComponent,'label','string',newLabelText);
+                        updateInput(currentComponent,'label','value',newLabelText);
                     }
                 }catch(error){
                     console.log(error);
