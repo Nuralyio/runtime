@@ -97,7 +97,17 @@ export class TableDemo extends LitElement {
     return html`
       <h1>With selection</h1>
       <h3>Multiple selection</h3>
-      <hy-table .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}></hy-table>
+      <hy-table  
+      @onSelect=${(e:CustomEvent)=>{
+        console.log('selected', e.detail.value)
+      }} 
+      @onPaginate=${(e:CustomEvent)=>{
+        console.log('page ',e.detail.value)
+      }}
+      @onSort=${(e:CustomEvent)=>{
+        console.log('sorted ', e.detail.value)
+      }}
+      .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}></hy-table>
       <h3>Single selection</h3>
       <hy-table .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'single'}></hy-table>
       <h1>With Expandable attribute (title)</h1>
@@ -110,6 +120,15 @@ export class TableDemo extends LitElement {
         .rows="${this.rows}"
         .withFilter=${true}
         .expandable=${'priority'}
+        @onSelect=${(e:CustomEvent)=>{
+          console.log('selected', e.detail.value)
+        }}
+        @onSearch=${(e:CustomEvent)=>{
+          console.log('searched ',e.detail.value)
+        }}
+        @onSort=${(e:CustomEvent)=>{
+          console.log('sorted ', e.detail.value)
+        }}
       ></hy-table>
 
       <h1>Sizes</h1>
