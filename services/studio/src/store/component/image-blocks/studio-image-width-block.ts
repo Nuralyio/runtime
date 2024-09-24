@@ -6,8 +6,6 @@ export default [
         applicationId: "1",
         name: "image width vertical container",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
@@ -19,14 +17,13 @@ export default [
         applicationId: "1",
         name: "Image width block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             width: "250px",
             display:'flex',
             'flex-direction':'column'
         },
-        childrenIds: ["image_width", "image_width_input"],
+        childrenIds: ["image_width", "image_width_input","image_width_handler_block"],
     },
 
     {
@@ -51,7 +48,6 @@ export default [
         name: "name",
         applicationId: "1",
         component_type: ComponentType.NumberInput,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             width: "20px",
@@ -65,7 +61,6 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            console.log('eventdata ',EventData.value)
                             updateInput(currentComponent, "width", "string",EventData.value);
                         }
                     }catch(error){
@@ -84,17 +79,105 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const imageWidth = currentComponent.input?.width?.value??''
+                if(currentComponent.input?.width?.type != 'handler' && currentComponent.input?.width?.value)
+                {
+                const imageWidth = currentComponent.input?.width?.value??0
                 const unity="px";
                 [imageWidth,unity];
+             }
             }
 
         }catch(e){
             console.log(e);
         }
             `
+            },
+            state:{
+                type:'handler',
+                value:/* js */`
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state=''
+                        if(currentComponent.input?.width?.type == 'handler' && currentComponent.input?.width?.value ){
+                        state='disabled'
+                        }
+                        state;
+                        
+                    }
+        
+                }catch(e){
+                    console.log(e);
+                }
+                `
             }
         }
+    },
+    {
+        uuid: "image_width_handler_block",
+        applicationId: "1",
+        name: "image with handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        }, 
+        childrenIds: ["image_width_handler"],
+    },
+    {
+        uuid: "image_width_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "image width handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='imageWidth';
+                let imageWidthHandler =''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    if(currentComponent.input?.width?.type == 'handler' && currentComponent.input?.width?.value){
+                        imageWidthHandler= currentComponent?.input.width.value  
+                    }
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,imageWidthHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    if(currentComponent?.input?.width?.value != EventData.value)
+                        updateInput(currentComponent,'width','handler',EventData.value);
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
     },
 
 ]

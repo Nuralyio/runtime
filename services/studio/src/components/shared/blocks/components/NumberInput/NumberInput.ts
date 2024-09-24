@@ -51,6 +51,7 @@ export class NumberInputBlock extends BaseElementBlock {
           value=${parseInt(this.inputHandlersValue.value)}
           min="0"
           type="number"
+          .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
         ></hy-input>
       </span>
     `;

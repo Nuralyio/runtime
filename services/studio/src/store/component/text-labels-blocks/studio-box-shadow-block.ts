@@ -5,6 +5,15 @@ export default [
         uuid: "box_shadow_block",
         name: "name",
         applicationId: "1",
+        component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        ...COMMON_ATTRIBUTES,
+        childrenIds: ["box_shadow_values","box_shadow_handler_block"],
+    },
+    {
+        uuid: "box_shadow_values",
+        name: "name",
+        applicationId: "1",
         component_type: ComponentType.ShadowBox,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
@@ -65,8 +74,90 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+                type:'handler',
+                value:/* js */`
+
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state =''
+                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['box-shadow']){
+                               state='disabled'
+                        }
+                    }
+                }
+                catch(e){
+                    console.log(e)
+                }
+                
+                `
             }
-        }
-    }
+        },
+    },
+    {
+        uuid: "box_shadow_handler_block",
+        applicationId: "1",
+        name: "box shadow handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        }, 
+        childrenIds: ["box_shadow_handler"],
+    },
+    {
+        uuid: "box_shadow_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "box shadow handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='boxShadow';
+                let boxShadowHandler =''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    boxShadowHandler= currentComponent?.styleHandlers['box-shadow'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,boxShadowHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'box-shadow',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
 
 ]

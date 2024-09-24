@@ -12,7 +12,7 @@ export default [
             'flex-direction':'column'
         },
 
-        childrenIds: ["position_label", "position_select","position_values"],
+        childrenIds: ["position_label", "position_select","position_handler_block","position_values"],
     },
     
     {
@@ -49,28 +49,39 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentPosition = currentComponent?.style && currentComponent.style['position'] || 'static'
+                let currentPosition=""
+                let isDisabled = false;
+                if(currentComponent.styleHandlers && currentComponent.styleHandlers?.position){
+                     isDisabled =true
+                }
+                else
+                currentPosition = currentComponent?.style && currentComponent.style['position'] || 'static'
                 const options = 
                     [
                     {
                     label: "Relative",
                     value: "relative",
+                    disabled:isDisabled
                     }, 
                     {
                     label: "Absolute",
-                    value: "absolute"
+                    value: "absolute",
+                    disabled:isDisabled
                    },
                     {
                      label: "Fixed",
-                     value: "fixed"
+                     value: "fixed",
+                     disabled:isDisabled
                    },
                    {
                     label: "Sticky",
-                    value: "sticky"
+                    value: "sticky",
+                    disabled:isDisabled
                    },
                    {
                     label: "Static",
-                    value: "static"
+                    value: "static",
+                    disabled:isDisabled
                    },
             ]   
             const radioType ='button'
@@ -100,6 +111,68 @@ export default [
         },
     },
     {
+        uuid: "position_handler_block",
+        applicationId: "1",
+        name: "position handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["position_handler"],
+    },
+    {
+        uuid: "position_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "position handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='position';
+                let positionHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    positionHandler = currentComponent?.styleHandlers['position'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,positionHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if(selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'position',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },
+    {
         uuid: "position_values",
         applicationId: "1",
         name: "position x axis",
@@ -107,11 +180,11 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:"flex",
-            "align-items":"center",
+            "flex-direction":'column',
             gap:"10px",
             "margin-top":"10px"
         },
-        childrenIds: ["top_label", "top_input","left_label","left_input"],
+        childrenIds: ["top_label", "top_input","top_handler_block","left_label","left_input","left_handler_block"],
     },
     {
         uuid: "top_label",
@@ -123,7 +196,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='T';
+                const label ='Top';
                 label;
             `
             }
@@ -174,8 +247,92 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+                type:'handler',
+                value: /* js */ `
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state =''
+                        if(currentComponent?.styleHandlers && currentComponent.styleHandlers?.top){
+                            state='disabled'
+                        }
+                        state;  
+                    }
+        
+                }catch(e){
+                    console.log(e);
+                }
+                
+                
+                `
             }
         }
+    },
+    {
+        uuid: "top_handler_block",
+        applicationId: "1",
+        name: "top handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["top_handler"],
+    },
+    {
+        uuid: "top_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "top handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='top';
+                let topHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    topHandler = currentComponent?.styleHandlers['top'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,topHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'top',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
     },
     {
         uuid: "left_label",
@@ -187,7 +344,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='L';
+                const label ='Left';
                 label;
             `
             }
@@ -238,10 +395,89 @@ export default [
             console.log(e);
         }
             `
+            },
+            state:{
+                type:'handler',
+                value: /* js */ `
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                        const selectedComponent = selectedComponens[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                        let state =''
+                        if(currentComponent?.styleHandlers && currentComponent.styleHandlers?.left){
+                            state='disabled'
+                        }
+                        state;  
+                    }
+        
+                }catch(e){
+                    console.log(e);
+                } 
+                `
             }
         }
     },
-    
-
-
+    {
+        uuid: "left_handler_block",
+        applicationId: "1",
+        name: "left handler block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            width: "220px",
+            'margin-top': '10px',
+            display:'flex',
+            'justify-content':'space-between',
+        },
+        
+        childrenIds: ["left_handler"],
+    },
+    {
+        uuid: "left_handler",
+        applicationId: "1",
+        component_type: ComponentType.Event,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "left handler",
+        style: {
+                display:'block',
+                width: "250px", 
+        },
+        input: { 
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const parameter ='left';
+                let leftHandler=''
+                try{
+                    const selectedComponens =  GetVar( "selectedComponents")||[];
+                    if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
+                    leftHandler = currentComponent?.styleHandlers['left'] || ''  
+                    }
+                }catch(error){
+                    console.log(error);
+                }
+                [parameter,leftHandler];
+            `
+            }
+        },
+        
+        event: {
+            codeChange: /* js */ `
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    updateStyleHandlers(currentComponent,'left',EventData.value)
+                }
+            }catch(error){
+                console.log(error);
+            }
+      `
+        },
+    },    
 ]

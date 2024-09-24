@@ -64,30 +64,33 @@ export class TextInputBlock extends BaseElementBlock {
     const inputStyles = this.component?.style || {};
     const inputAutoWidth = this.inputHandlersValue?.width;
     const inputAutoHeight = this.inputHandlersValue?.height;
+    const inputStyleHandlers = this.component?.styleHandlers?Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)): {}
+
     return html`
-    <span style=${styleMap({...inputStyles,width:inputAutoWidth?'auto':inputStyles.width,height:inputAutoHeight?'auto':inputStyles.height,display:'block'})}> 
+    <span style=${styleMap({...inputStyles,width:inputAutoWidth?'auto':inputStyles.width,height:inputAutoHeight?'auto':inputStyles.height,display:'block',...inputStyleHandlers})}> 
     <hy-input 
       @valueChange=${this.handleValueChange}
       @focused=${this.onFocus}
       @blured=${this.onBlur}
       .value=${this.inputHandlersValue.value ??""} 
-      .size=${inputStyles.size ?? nothing}
-      .state =${inputStyles.state ?? nothing}
+      .size=${inputStyleHandlers?.size ?inputStyleHandlers?.size: inputStyles?.size?inputStyles?.size: nothing}
+      .state =${inputStyleHandlers?.state ?inputStyleHandlers?.state: inputStyles?.state ?inputStyles?.state: nothing}
       .type=${this.inputHandlersValue.type??nothing}
       .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
       placeholder=${this.inputHandlersValue.placeholder ??"Text input"}
     >
     <span slot="label" 
     style=${styleMap(
-      {"--hybrid-input-label-color":inputStyles['--hybrid-input-label-color'],
-       "--hybrid-input-label-font-size":inputStyles['--hybrid-input-label-font-size']
+      {"--hybrid-input-label-color":inputStyleHandlers['--hybrid-input-label-color']??inputStyles['--hybrid-input-label-color'],
+       "--hybrid-input-label-font-size":inputStyleHandlers['--hybrid-input-label-font-size']??inputStyles['--hybrid-input-label-font-size']
       })}>
     ${this.inputHandlersValue?.label??''}
     </span>
     <span slot="helper-text"
     style=${styleMap(
-      {"--hybrid-input-helper-text-color":inputStyles['--hybrid-input-helper-text-color'],
-       "--hybrid-input-helper-text-font-size":inputStyles['--hybrid-input-helper-text-font-size']
+      {"--hybrid-input-helper-text-color":inputStyleHandlers['--hybrid-input-helper-text-color']??inputStyles['--hybrid-input-helper-text-color'],
+       "--hybrid-input-helper-text-font-size":inputStyleHandlers['--hybrid-input-helper-text-font-size']??inputStyles['--hybrid-input-helper-text-font-size']
       })}
     >
     ${this.inputHandlersValue?.helper??''}
