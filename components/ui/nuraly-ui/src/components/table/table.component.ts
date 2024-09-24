@@ -73,16 +73,21 @@ export class HyTable extends LitElement {
       (updatePageEvent.detail.page - 1) * this.selectedItemPerPage,
       (updatePageEvent.detail.page - 1) * this.selectedItemPerPage + this.selectedItemPerPage
     );
+    this.dispatchEvent(new CustomEvent('onPaginate',{bubbles:true,composed:true,detail:{value:this.currentPage}}))
+
   }
 
   _handleCheckAll(checkAllEvent: CustomEvent) {
     const everyItemChecked = checkAllEvent.detail.isEveryItemChecked;
     this.selectedItems = everyItemChecked ? this.selectedItems.map(() => false) : this.selectedItems.map(() => true);
+    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.rowsCopy.filter((_,i)=>this.selectedItems[i])}}))
+
   }
   _handleCheckOne(checkOneEvent: CustomEvent) {
     const indexSelected = checkOneEvent.detail.index;
     this.selectedItems[indexSelected + (this.currentPage - 1) * this.selectedItemPerPage] = checkOneEvent.detail.value;
     this.selectedItems = [...this.selectedItems];
+    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.rowsCopy.filter((_,i)=>this.selectedItems[i])}}))
   }
   _handleSelectOne(selectOneEvent: CustomEvent) {
     const previousSelected = this.selectedItems.findIndex((isSelected) => isSelected);
@@ -92,10 +97,13 @@ export class HyTable extends LitElement {
     const indexSelected = selectOneEvent.detail.index;
     this.selectedItems[indexSelected + (this.currentPage - 1) * this.selectedItemPerPage] = true;
     this.selectedItems = [...this.selectedItems];
+    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.rowsCopy.filter((_,i)=>this.selectedItems[i])}}))
+
   }
 
   _handleCancelSelection() {
     this.selectedItems = this.selectedItems.map(() => false);
+    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.selectedItems}}))
   }
 
   _handleSearch(searchEvent: CustomEvent) {
@@ -108,6 +116,7 @@ export class HyTable extends LitElement {
           return stringValue.includes(searchValue);
         });
       }) as [];
+      this.dispatchEvent(new CustomEvent('onSearch',{bubbles:true,composed:true,detail:{value:this.rowsCopy}}))
     } else {
       this.activeSearch = false;
     }
@@ -140,6 +149,7 @@ export class HyTable extends LitElement {
         const result = stringifyA < stringifyB ? -1 : stringifyA > stringifyB ? 1 : 0;
         return result * sortOrder;
       });
+      this.dispatchEvent(new CustomEvent('onSort',{bubbles:true,composed:true,detail:{value:this.rowsCopy}}))
     }
   }
 
