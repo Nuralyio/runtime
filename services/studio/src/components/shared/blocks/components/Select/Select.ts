@@ -24,7 +24,12 @@ export class SelectBlock extends BaseElementBlock {
     })
   }
 
-
+override connectedCallback() {
+  super.connectedCallback();
+  this.registerCallback('value', (v) => {
+    this.requestUpdate();
+  })
+}
   handleValueChange = (e) => {
     if (this.component.event.changed) {
       const optionValue = e.detail.value ? e.detail.value.value : '';

@@ -21,7 +21,12 @@ const coreApplications = [{
 {
   uuid: "2",
   name: "app2",
-}]
+},
+{
+  uuid: "landing",
+  name: "landing",
+},
+]
 const initialState = isServer ? [] : JSON.parse(window['__INITIAL_APPLICATION_STATE__'] ?? []);
 
 const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
@@ -78,6 +83,9 @@ keepMount($resizing)
 
 if (!isServer) {
     const currentApplication = $currentApplication.get();
-      console.log(currentApplication)
-      setVar('global', `currentEditingApplication`, currentApplication);
+    setVar('global', `currentEditingApplication`, currentApplication);
+    setTimeout(() => {
+      // setVar('global', `currentEditingApplication`, currentApplication);
+    },10)
+   
 }

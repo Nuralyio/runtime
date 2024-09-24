@@ -42,7 +42,7 @@ export class PageContent extends LitElement {
     $values.listen(() => this.refreshComponent());
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
-      this.requestUpdate();
+      this.refreshComponent()
     });
     eventDispatcher.on("component:refresh", () => {
       this.refreshComponent()
@@ -57,18 +57,14 @@ export class PageContent extends LitElement {
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
     const selectedComponents = getVar("global","selectedComponents")
-    console.log('selectedComponents: ', selectedComponents);
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {
       const currentAppUuid = currentEditingApplication.value.uuid;
 
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
-      console.log('this.currentPage: ', this.currentPage);
       const components = $applicationComponents(currentAppUuid).get();
-      console.log('components: ', components);
       this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root );
-      console.log(this.components ,this.currentPage);
 
     }
     this.requestUpdate();
@@ -156,7 +152,6 @@ export class PageContent extends LitElement {
       const currentEditingApplication = getVar("global", "currentEditingApplication");
       const currentAppUuid = currentEditingApplication.value.uuid;
       deleteComponentAction(componentId, currentAppUuid);
-      console.log(`Removing component with ID: ${componentId}`);
     });
   }
 

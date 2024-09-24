@@ -78,6 +78,7 @@ export function setVar(contextId: string, varName: string, varValue: any) {
   // Check if the value has changed
   const currentVar = currentContext[contextId]?.[varName]?.value;
   if (deepEqual(currentVar, varValue)) {
+    console.log('No need to update if the value is the same')
     // No need to update if the value is the same
     return;
   }
@@ -93,7 +94,6 @@ export function setVar(contextId: string, varName: string, varValue: any) {
     }
   };
 
-  registerContextInServiceWorker(updatedContext);
   $context.set(updatedContext);
 }
 // Action to read a variable from a specific application or globally

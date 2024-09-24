@@ -6,7 +6,13 @@ import "../ControlPanel/ControlPanelTabs";
 import { $context, getVar, setVar } from "$store/context";
 @customElement("right-panel")
 export class RightPanel extends LitElement {
-  static styles = [css``];
+  static styles = [css`
+     aside {
+        display: none;
+      }
+      aside.visible {
+        display: flex;
+      }`];
 
   @state()
   mode: ViewMode = ViewMode.Edit;
@@ -27,30 +33,15 @@ export class RightPanel extends LitElement {
  
 
   render() {
-    return html` ${this.mode === ViewMode.Edit
-      ? html`
-      ${this.showSecondsRow ?  html`
-        <aside 
-      class="sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col" style="height: 100%;
-    border: 1px solid white;
-    background: #2d2d2d;
-    position: absolute;
-    width: 260px;
-    margin-left: -260px;">
-        <hy-button @click="${() =>  {
-          setVar("global", "showSecondsRow", false)
-        }}">Close</hy-button>
-
-      </aside>` : nothing}
-   
-      <aside class="sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col" style="height: 100%;">
+    return html`
+     
+      <aside class=" sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col ${this.mode === ViewMode.Edit ? 'visible' : ''}" style="height: 100%;">
       <div class="my-4 w-full text-center">
         <span class="font-mono text-xl font-bold tracking-widest"></span>
       </div>
       <div class="my-4 flex-grow" style="width:355px;height: 100%">
         <control-panel class="w-full h-full"  style="width:355px;height: 100%"></control-panel>
       </div>
-    </aside>`
-      : nothing}`;
+    </aside>`;
   }
 }
