@@ -130,7 +130,6 @@ export class GenerikComponentWrapper extends LitElement {
       currentSelection = [this.component.uuid];
     }
     setVar("global", "selectedComponents", [...currentSelection]);
-    this.requestUpdate();
   }
 
   private startResizing(e: MouseEvent) {

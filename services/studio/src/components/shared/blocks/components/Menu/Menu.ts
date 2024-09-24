@@ -10,6 +10,7 @@ import { BaseElementBlock } from '../BaseElement';
 import { executeEventHandler } from 'core/engine';
 import { executeCodeWithClosure } from 'core/executer';
 import { getNestedAttribute } from 'utils/object.utils';
+import { styleMap } from "lit/directives/style-map.js";
 
 @customElement('menu-block')
 export class MenuBlock extends BaseElementBlock {
@@ -125,32 +126,19 @@ export class MenuBlock extends BaseElementBlock {
             <div>
                 ${this.error ? html`<pre class="error">${this.error}</pre>` : nothing}
                 <hy-menu
+                    style=${styleMap({ ...this.component?.style })}
                     placeholder="Select an option"
                     .items=${this.inputHandlersValue?.options ?? []}
                     @action-click=${this.onActionClick}
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
-                console.log('option',   option);
                 executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`).value,{
                         id: option.id,
                         text: option.text,
                         type: option.type
                 });
 
-                /*executeHandler(
-                    {
-                        eventId: generateRandomId(),
-                        component: this.component,
-                        type: "input.onSelect",
-                        extras: {
-                            EventData: {
-                                id: option.id,
-                                text: option.text,
-                                type: option.type
-                            }
-                        }
-                    })*/
             }}" >
                 </hy-menu>
             </div>

@@ -31,11 +31,9 @@ export class TabsBlock extends BaseElementBlock {
     constructor() {
         super();
         this.registerCallback('tabs', this.tabsValueRecived.bind(this));
-        eventDispatcher.on('component:refresh', () => {
-            this.updateComponents();
-        })
+       
     }
-
+    
     private generateComponent(childrensIds: string[]) {
         const childrens = this.componentsWithChildrens.filter(component => childrensIds?.includes(component.uuid));
         return html`${renderComponent(childrens, null, true)}`;
@@ -50,6 +48,9 @@ export class TabsBlock extends BaseElementBlock {
 
     override connectedCallback() {
         super.connectedCallback();
+        eventDispatcher.on('component:refresh', () => {
+            this.updateComponents();
+        })
         this.traitInputsHandlers();
     }
 
@@ -58,6 +59,7 @@ export class TabsBlock extends BaseElementBlock {
             this.componentsWithChildrens = components;
             this.editableTabs = this.generateTabs();
         });
+        this.requestUpdate();
     }
 
     override updated(changedProperties: Map<string | number | symbol, unknown>) {

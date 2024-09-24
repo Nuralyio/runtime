@@ -47,9 +47,7 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
       ,
     ],
   });
-  console.log(newComponent)
 
-  addComponentHandler({ component: newComponent }, currentApplicatinId);
 
 
   if (currentComponentId) {
@@ -62,6 +60,10 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
   } else {
     addComponentToCurrentPageAction(componentId);
   }
+
+  setTimeout(() => {
+  addComponentHandler({ component: newComponent }, currentApplicatinId);
+  }, 0);
 };
 
 export function addComponentAsChildOf(componentId: string, parentComponentId: string, applicationId: string) {
@@ -350,7 +352,7 @@ export function updateComponentAttributes(
   save = true
 ) {
   console.time('updateComponentAttributesExecutionTime'); // Start the timer
-
+  console.log('updateComponentAttributes', applicationId, componentId, updateType, updatedAttributes, save);
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
   const componentIndex = applicationComponents.findIndex(
@@ -363,16 +365,8 @@ export function updateComponentAttributes(
     // Get the current attributes of the specified type
     const currentAttributes = componentToUpdate[updateType] || {};
 
-    // Flag to track if any attributes need to be updated
-    let needsUpdate = false;
-
-    // Check each attribute in the updatedAttributes object
-    for (const key in updatedAttributes) {
-      if (currentAttributes[key] !== updatedAttributes[key]) {
-        needsUpdate = true;
-        break;
-      }
-    }
+    // Check deep equality between current and updated attributes
+    const needsUpdate = JSON.stringify(currentAttributes) !== JSON.stringify(updatedAttributes);
 
     if (needsUpdate) {
       // Update the specified attribute of the component
@@ -382,13 +376,9 @@ export function updateComponentAttributes(
       };
 
       // Directly update the component in the store
-      // console.time('setTime'); // Start the timer
-      //console.log($components.get());
       $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
-      setTimeout(() => {
-
+      
       eventDispatcher.emit("component:refresh");
-    }, 100);
 
       if (save) {
         setTimeout(() => {
@@ -400,7 +390,7 @@ export function updateComponentAttributes(
     }
   }
 
-  //console.timeEnd('updateComponentAttributesExecutionTime'); // End the timer and log the execution time
+  console.timeEnd('updateComponentAttributesExecutionTime'); // End the timer and log the execution time
 }
 
 
@@ -506,8 +496,6 @@ export async function deleteComponentAction(componentId: string, applicationId: 
       ),
     });
     await deleteComponentActionHandler(componentId);
-
-    eventDispatcher.emit("component:register");
     eventDispatcher.emit("component:refresh");
   }
 }
