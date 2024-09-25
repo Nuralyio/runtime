@@ -5,6 +5,7 @@ import { type ComponentElement } from "$store/component/interface";
 import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/table"
+import { executeEventHandler } from "core/engine";
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 // Debounce function with default wait time
@@ -120,22 +121,27 @@ export class TextInputBlock extends BaseElementBlock {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  // Debounced event handler with default debounce wait time
-  handleValueChange = debounce((e) => {
-    if (this.component?.event?.valueChange) {
-      executeHandler(
-        {
-          component: this.component,
-          type: `event.valueChange`,
-          extras: {
-            EventData: {
-              value: e.detail.value,
-            },
-          },
-        }
-      );
-    }
-  }, 300); // Adjust the debounce wait time as needed.
+ onSelect(e:CustomEvent){
+  if (this.component.event?.onSelect) {
+    executeEventHandler(this.component, "event", "onSelect");
+  }
+ }
+ onSearch(e:CustomEvent){
+  if (this.component.event?.onSearch) {
+    executeEventHandler(this.component, "event", "onSearch");
+  }
+ }
+ onPaginate(e:CustomEvent){
+  if (this.component.event?.onPaginate) {
+    executeEventHandler(this.component, "event", "onPaginate");
+  }
+ }
+ onSort(e:CustomEvent){
+  if (this.component.event?.onSort) {
+    executeEventHandler(this.component, "event", "onSort");
+  }
+ }
+
 
   render() {
     const tableStyles = this.component?.style || {};
@@ -151,6 +157,10 @@ export class TextInputBlock extends BaseElementBlock {
     .size=${tableStyles.size??nothing}
     .withFilter=${this.inputHandlersValue.filter=='filter'?true:false}
     .selectionMode=${this.inputHandlersValue?.selectionMode === 'multiple' ? 'multiple' : this.inputHandlersValue?.selectionMode === 'single'?'single':nothing}
+    @onSelect=${this.onSelect}
+    @onSearch=${this.onSearch}
+    @onSort=${this.onSort}
+    @onPaginate=${this.onPaginate}
     > 
     </hy-table>
       
