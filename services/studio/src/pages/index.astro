@@ -2,18 +2,29 @@
 import Layout from './layouts/LandingLayout.astro';
 import "../components/micro-app";
 import { MicroApp } from '../components/micro-app';
+import { processHeaders } from 'utils/api-calls-utils';
+import { fetchApplicationPagesById } from '$services/page.service';
+const { page_url } = Astro.props;
+const processedHeaders = processHeaders(Astro.request.headers);
+
+let pageData = [];
+
+try {
+  const pageRequest = await fetchApplicationPagesById(processedHeaders, '8639f6d5-9171-41e4-a21c-447c8c1b62c2');
+  pageData = pageRequest.data;
+} catch (error) {
+  console.error('An error occurred while loading data:', error);
+}
+const page = pageData.find((page) => page.url === page_url);
 ---
-
 <Layout title="Welcome to Astrolus.">
-  <main class="space-y-10 mb-40">
-
   <MicroApp
   client:load
   mode="preview"
   uuid="landing"
+  page_uuid={page?.uuid}
  ></MicroApp>
-  </main>
-  
+ <a href="/page_2"> Page 2</a>
 </Layout>
 <style>
   html {
