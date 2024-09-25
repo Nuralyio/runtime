@@ -1,0 +1,8 @@
+---
+const { params } = Astro;
+const segments = params.params ? params.params.split('/') : [];
+const page_url = segments[0] ;
+import Index from './index.astro';
+---
+<Index page_url={page_url} param2={page_url} />
+

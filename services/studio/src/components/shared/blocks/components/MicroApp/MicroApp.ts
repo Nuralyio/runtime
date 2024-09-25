@@ -13,6 +13,7 @@ import { fetchApplicationById } from "$services/applications.service";
 import { fetchApplicationComponentById } from "$services/component.service";
 import { $components } from "$store/component/component-sotre";
 import { eventDispatcher } from "utils/change-detection";
+import { $microAppCurrentPage } from "$store/page";
 
 function debounce(func, wait) {
   let timeout;
@@ -58,6 +59,7 @@ export class MicroAppBlock extends BaseElementBlock {
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
+    const pageUUID =  $microAppCurrentPage.get()["8639f6d5-9171-41e4-a21c-447c8c1b62c2"];
     this.registerCallback('appUUID', debounce((appUUID) => {
       if (appUUID) {
         const apploaded = $components.get()[appUUID];
@@ -68,6 +70,8 @@ export class MicroAppBlock extends BaseElementBlock {
               return data.map((component) => component.component);
             })
             .then((data) => {
+              if(pageUUID)
+              data = data.filter((component) => component.pageId === pageUUID);
               $components.setKey(appUUID, data);
               this.requestUpdate();
             });

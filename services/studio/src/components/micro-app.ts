@@ -5,7 +5,7 @@ import { renderComponent } from 'utils/render-util';
 import "../components/shared/blocks/components/TextLabel/TextLabel"
 import "../components/shared/blocks/components/Containers/Container"
 import { $context } from '$store/context';
-import { $pages } from '$store/page';
+import { $microAppCurrentPage, $pages } from '$store/page';
 import { eventDispatcher } from 'utils/change-detection';
 import { $environment, ViewMode } from '$store/environment';
 import { debounceTime } from 'rxjs/operators';
@@ -16,6 +16,8 @@ export class MicroApp extends LitElement {
 
     @property({ type: String, reflect: true })
     uuid: string;
+    @property({ type: String, reflect: true })
+    page_uuid: string;
     @property({ type: String, reflect: false })
     componentToRenderUUID: string;
 
@@ -35,11 +37,14 @@ export class MicroApp extends LitElement {
     refreshComponent(): void {
         const components = $applicationComponents(this.uuid).get();
         this.components = [...components];
+        console.log(this.components);
     }
 
     override connectedCallback() {
         super.connectedCallback();
-
+        if(this.page_uuid){
+        }
+        $microAppCurrentPage.setKey("8639f6d5-9171-41e4-a21c-447c8c1b62c2", this.page_uuid);
         // Create Observables for each store listener
         const pages$ = new Observable((subscriber) => {
             const unsubscribe = $pages.subscribe(() => {
@@ -95,6 +100,7 @@ export class MicroApp extends LitElement {
 
     override render() {
         return html`
+        
             ${this.uuid && this.components.length ? html`
                 ${this.componentToRenderUUID ?
                         renderComponent([...this.components.filter((component: any) => component.uuid === this.componentToRenderUUID)], null, this.isPreviewMode())
