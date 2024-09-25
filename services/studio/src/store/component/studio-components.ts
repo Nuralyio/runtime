@@ -68,6 +68,10 @@ import studioSelectValuesBlock from './select-blocks/studio-select-values-block'
 import studioTableValuesBlock from './table-block/table-values-block'
 import studioPageNameBlock from './page-blocks/studio-page-name-block'
 import studioPageUrlBlock from "./page-blocks/studio-page-url-block"
+import studioTableSelectEvent from './table-block/studio-table-select-event'
+import studioTableSearchEvent from './table-block/studio-table-search-event'
+import studioTableSortEvent from './table-block/studio-table-sort-event'
+import studioTablePaginateEvent from './table-block/studio-table-paginate-event'
 export default [
 
     ...QuickActions,
@@ -545,7 +549,11 @@ export default [
                                 'position_block',
                                 'width_vertical_container',
                                 'table_selectionmode_block',
-                                'table_filter_block'
+                                'table_filter_block',
+                                "table_select_event_block",
+                                "table_search_event_block",
+                                "table_sort_event_block",
+                                "table_paginate_event_block"
                             ];
                             break;
                         case "Icon":
@@ -683,4 +691,8 @@ export default [
     ...studioSelectTypeBlock,
     ...studioSelectSelectionmodeBlock,
     ...studioSelectChangedEventBlock,
+    ...studioTableSelectEvent,
+    ...studioTableSearchEvent,
+    ...studioTableSortEvent,
+    ...studioTablePaginateEvent
 ]
