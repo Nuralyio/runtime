@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>hy-card Demo</title>
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    <script type="module" src="../dist/components/card/index.js"></script>
+    <script type="module" src="../dist/components/card/demo/hy-card-demo.js"></script>
+    <style>
+      html {
+        --theme-bg: white;
+        --theme-color: black;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          --theme-color: white;
+          --theme-bg: black;
+        }
+      }
+      body {
+        background-color: var(--theme-bg);
+        color: var(--theme-color);
+      }
+    </style>
+  </head>
+
+  <body>
+    <hy-card-demo></hy-card-demo>
+  </body>
+</html>
