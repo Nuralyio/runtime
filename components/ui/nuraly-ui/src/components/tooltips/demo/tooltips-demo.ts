@@ -19,10 +19,20 @@ export class ElMeenuElement extends LitElement {
   protected override render() {
     return html`
       <h3>BOTTOM</h3>
-      <span>hover me</span>
-      <hy-tooltip>
-          <div> This is bottom and center (default) </div>
-      </div>
+      <span>click me</span>
+      <hy-tooltip
+        .isPopConfirm=${true}
+        .popConfirmDescription=${'Are you sure to delete this task?'}
+        .popConfirmTitle=${'delete the task'}
+        .cancelText=${'Cancel'}
+        .okText=${'Ok'}
+        @onCancel=${() => {
+          console.log('canceled');
+        }}
+        @onConfirm=${() => {
+          console.log('confirm');
+        }}
+      >
       </hy-tooltip>
 
       <br /><br /><br />

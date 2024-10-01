@@ -15,6 +15,26 @@ const tooltipStyles = css`
     animation-fill-mode: forwards;
   }
 
+  .popconfirm-container {
+    display: flex;
+    flex-direction: column;
+  }
+  .btn-block {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    margin: 10px;
+  }
+
+  .popconfirm-description,
+  .popconfirm-title {
+    margin: 5px;
+    text-align: left;
+  }
+  .popconfirm-title {
+    font-weight: bold;
+  }
+
   @keyframes show-animation {
     from {
       opacity: 0;
