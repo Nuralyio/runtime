@@ -318,7 +318,8 @@ export default [
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
                 const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
-
+                const currentComponent= GetVar("selectedComponents");
+                
                 if(!appPages) {
                      [];
                 }else{
@@ -349,6 +350,7 @@ export default [
                                 text: component.name,
                                 icon:componentIcon,
                                 id: component.uuid,
+                                selected: currentComponent?.length && component.uuid == currentComponent[0],
                                 menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
                                 handlerKey: "onSelect",
                             })
