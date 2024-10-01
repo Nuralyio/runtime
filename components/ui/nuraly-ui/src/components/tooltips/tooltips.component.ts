@@ -2,6 +2,7 @@
 import {html, LitElement, nothing, PropertyValueMap} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {styles} from './tooltips.style.js';
+import '../button/hy-button.component.js';
 import {EMPTY_STRING, TooltipAlignment, TooltipPosition} from './tooltips.constant.js';
 @customElement('hy-tooltip')
 export class TooltipElement extends LitElement {
@@ -17,32 +18,59 @@ export class TooltipElement extends LitElement {
   target!: Element;
   @property({reflect: true, type: Boolean})
   show = false;
+  @property()
+  isPopConfirm = false;
+  @property()
+  popConfirmTitle = '';
+  @property()
+  popConfirmDescription = '';
+  @property()
+  okText = 'Yes';
+  @property()
+  cancelText = 'No';
 
   horizontalOffset = 10;
   verticalOffset = 10;
   override connectedCallback(): void {
     super.connectedCallback();
     this.target = this.previousElementSibling!;
-    this.target.addEventListener('mouseover', this.onMouseOver);
-    this.target.addEventListener('mouseleave', this.onMouseLeave);
+    if (!this.isPopConfirm) {
+      this.target.addEventListener('mouseover', this.onMouseOver);
+      this.target.addEventListener('mouseleave', this.onMouseLeave);
+    } else {
+      document.addEventListener('scroll', this.calculatePosition);
+      this.target.addEventListener('click', this.onClick);
+      document.addEventListener('click', this.onClickOutside);
+    }
   }
 
   private onMouseOver = () => {
     this.show = true;
   };
+
   private onMouseLeave = () => {
     this.show = false;
+    this.initStyles();
+  };
+
+  private onClick = () => {
+    this.show = !this.show;
+  };
+
+  private initStyles() {
     this.style.top = EMPTY_STRING;
     this.style.left = EMPTY_STRING;
     this.style.width = EMPTY_STRING;
     this.classList.remove(...this.classList.values());
-  };
+  }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     if (this.show) this.calculatePosition();
   }
 
   private calculatePosition = () => {
+    this.initStyles();
+
     this.style.width = `${this.clientWidth}px`;
     if (this.position == TooltipPosition.Bottom || this.position == TooltipPosition.Top) {
       this.calculateYposition();
@@ -195,13 +223,53 @@ export class TooltipElement extends LitElement {
       }
     }
   };
+
+  onPopConfirmCancel() {
+    this.dispatchEvent(new CustomEvent('onCancel'));
+    this.show = false;
+    this.initStyles();
+  }
+  onPopConfirmConfirm() {
+    this.dispatchEvent(new CustomEvent('onConfirm'));
+    this.show = false;
+    this.initStyles();
+  }
+  onClickOutside = (onClickEvent: Event) => {
+    const eventPath = onClickEvent.composedPath();
+    const outsideClick = !eventPath.includes(this.target) && !eventPath.includes(this);
+    if (outsideClick) this.show = false;
+  };
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.target.removeEventListener('mouseover', this.onMouseOver);
-    this.target.removeEventListener('mouseleave', this.onMouseLeave);
+    if (!this.isPopConfirm) {
+      this.target.removeEventListener('mouseover', this.onMouseOver);
+      this.target.removeEventListener('mouseleave', this.onMouseLeave);
+    } else {
+      this.target.removeEventListener('click', this.onClick);
+      document.removeEventListener('scroll', this.calculatePosition);
+    }
   }
 
   override render() {
-    return this.show ? html`<slot></slot> ` : nothing;
+    return !this.isPopConfirm
+      ? this.show
+        ? html`<slot></slot>`
+        : nothing
+      : this.show
+      ? html`
+          <div class="popconfirm-container">
+            <p class="popconfirm-title">${this.popConfirmTitle}</p>
+            <p class="popconfirm-description">${this.popConfirmDescription}</p>
+            <div class="btn-block">
+              <hy-button .size=${'small'} type=${'primary'} @click=${this.onPopConfirmConfirm}
+                >${this.okText}</hy-button
+              >
+              <hy-button .size=${'small'} type=${'danger'} @click=${this.onPopConfirmCancel}
+                >${this.cancelText}</hy-button
+              >
+            </div>
+          </div>
+        `
+      : nothing;
   }
 }
