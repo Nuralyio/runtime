@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, nothing} from 'lit';
+import {LitElement, PropertyValues, html, nothing} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {styles} from './input.style.js';
 import {INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING} from './input.constant.js';
@@ -50,11 +50,12 @@ export class HyInputElement extends LitElement {
 
   @query('#input')
   input!: HTMLInputElement;
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.inputType = this.type;
-    if (this.inputType == INPUT_TYPE.NUMBER) if (this.min && !this.value) this.value = this.min;
+  
+  override willUpdate(_changedProperties: PropertyValues): void {
+    if(_changedProperties.has('type')){
+      this.inputType = this.type;
+      if (this.inputType == INPUT_TYPE.NUMBER) if (this.min && !this.value) this.value = this.min;
+    }
   }
 
   private _increment() {
