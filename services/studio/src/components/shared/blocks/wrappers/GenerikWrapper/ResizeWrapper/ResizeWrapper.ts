@@ -251,7 +251,6 @@ export class ResizeWrapper extends LitElement {
     updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
       width: this.inputRef.value.style.width,
       height: this.inputRef.value.style.height,
-      display: "block",
     });
   };
 
