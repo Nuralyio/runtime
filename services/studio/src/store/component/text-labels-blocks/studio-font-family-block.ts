@@ -173,7 +173,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    fontFamilyHandler = currentComponent?.styleHandlers['font-family'] || ''  
+                    fontFamilyHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family'] || ''  
                     }
                 }catch(error){
                     console.log(error);

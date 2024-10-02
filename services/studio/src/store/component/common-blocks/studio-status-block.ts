@@ -139,7 +139,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    statusHandler = currentComponent?.styleHandlers['state'] || ''  
+                    statusHandler =currentComponent?.styleHandlers && currentComponent?.styleHandlers['state'] || ''  
                     }
                 }catch(error){
                     console.log(error);

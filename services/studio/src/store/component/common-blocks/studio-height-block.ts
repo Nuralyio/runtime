@@ -235,7 +235,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    heightHandler = currentComponent?.styleHandlers['height'] || ''  
+                    heightHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['height'] || ''  
                     }
                 }catch(error){
                     console.log(error);

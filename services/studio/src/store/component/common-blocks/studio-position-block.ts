@@ -147,7 +147,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    positionHandler = currentComponent?.styleHandlers['position'] || ''  
+                    positionHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['position'] || ''  
                     }
                 }catch(error){
                     console.log(error);
@@ -309,7 +309,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    topHandler = currentComponent?.styleHandlers['top'] || ''  
+                    topHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['top'] || ''  
                     }
                 }catch(error){
                     console.log(error);
@@ -455,7 +455,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    leftHandler = currentComponent?.styleHandlers['left'] || ''  
+                    leftHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['left'] || ''  
                     }
                 }catch(error){
                     console.log(error);

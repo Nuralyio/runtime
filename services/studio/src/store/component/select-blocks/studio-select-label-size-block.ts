@@ -165,7 +165,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    labelSizeHandler= currentComponent?.styleHandlers['--hybrid-select-label-font-size'] || ''  
+                    labelSizeHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-label-font-size'] || ''  
                     }
                 }catch(error){
                     console.log(error);

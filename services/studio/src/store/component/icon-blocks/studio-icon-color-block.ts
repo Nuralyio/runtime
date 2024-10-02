@@ -129,7 +129,7 @@ export default [
                 if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                iconColorHandler= currentComponent?.styleHandlers['--hybrid-icon-color'] || ''  
+                iconColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-icon-color'] || ''  
                 }
             }catch(error){
                 console.log(error);

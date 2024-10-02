@@ -141,7 +141,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    horizontalAlignementHandler= currentComponent?.styleHandlers['justify-content'] || ''  
+                    horizontalAlignementHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['justify-content'] || ''  
                     }
                 }catch(error){
                     console.log(error);

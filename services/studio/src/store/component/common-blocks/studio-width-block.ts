@@ -235,7 +235,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    widthHandler = currentComponent?.styleHandlers['width'] || ''  
+                    widthHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['width'] || ''  
                     }
                 }catch(error){
                     console.log(error);

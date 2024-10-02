@@ -51,7 +51,7 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const lineHeight=currentComponent.style['line-height']?.split('px')[0]
+                        const lineHeight= currentComponent?.styleHandlers && currentComponent.style['line-height']?.split('px')[0] || 0
                         if(lineHeight)
                             lineHeight;
                         else  
@@ -143,7 +143,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    lineHeightHandler= currentComponent?.styleHandlers['line-height'] || ''  
+                    lineHeightHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['line-height'] || ''  
                     }
                 }catch(error){
                     console.log(error);

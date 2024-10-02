@@ -141,7 +141,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    verticalAlignementHandler= currentComponent?.styleHandlers['align-items'] || ''  
+                    verticalAlignementHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['align-items'] || ''  
                     }
                 }catch(error){
                     console.log(error);
