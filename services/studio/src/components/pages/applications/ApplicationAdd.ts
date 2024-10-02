@@ -2,6 +2,8 @@ import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import "@hybridui/modal"
 import "@hybridui/button"
+import "@hybridui/icon";
+
 import { Validations } from '@hybridui/input';
 import { $showCreateApplicationModal } from '$store/apps';
 import { closeCreateApplicationModalAction } from '$store/actions/app';
@@ -105,14 +107,14 @@ export class ApplicationAdd extends LitElement {
         >
          <hy-button
           danger
-          icon="cancel"
+          .icon=${['cancel']}
             @click=${() => {
 			}}
           >
             Cancel
           </hy-button>
           <hy-button
-          icon="plus"
+          .icon=${['plus']}
             @click=${() => {
 				this.submitForm();
 			}}
