@@ -8,7 +8,30 @@ export default [
         component_type: ComponentType.VerticalContainer,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
-        childrenIds: ["box_shadow_values","box_shadow_handler_block"],
+        style:{
+            "margin-top":'10px'
+        },
+        childrenIds: ["box_shadow_label","box_shadow_values","box_shadow_handler_block"],
+    },
+    {
+        uuid: "box_shadow_label",
+        name: "box shadow label",
+        component_type: ComponentType.TextLabel,
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const label ='Box shadow';
+                label;`
+            }
+        },
+        style: {
+            width:"100px",
+            display:'block',
+            'margin-bottom':'5px'
+        },
     },
     {
         uuid: "box_shadow_values",
