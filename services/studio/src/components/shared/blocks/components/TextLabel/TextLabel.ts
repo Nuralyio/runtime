@@ -59,8 +59,8 @@ export class TextLabelBlock extends BaseElementBlock {
 
   render() {
     const labelStyles = this.component?.style || {};
-    const labelStyleHandlers = Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) || {};
+    const labelStyleHandlers = this.component?.styleHandlers? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) : {};
     const labelAutoWidth = this.inputHandlersValue?.width;
     const labelAutoHeight = this.inputHandlersValue?.height;
 

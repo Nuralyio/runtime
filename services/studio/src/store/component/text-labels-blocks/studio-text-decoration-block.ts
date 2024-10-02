@@ -147,7 +147,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    textDecorationHandler= currentComponent?.styleHandlers['text-decoration'] || ''  
+                    textDecorationHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['text-decoration'] || ''  
                     }
                 }catch(error){
                     console.log(error);

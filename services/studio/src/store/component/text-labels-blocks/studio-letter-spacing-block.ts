@@ -54,7 +54,7 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const letterSpacing =currentComponent.style['letter-spacing']?.split('px')[0]
+                        const letterSpacing =currentComponent.style && currentComponent.style['letter-spacing']?.split('px')[0] || 0
                         if(letterSpacing)
                             letterSpacing;
                         else  
@@ -146,7 +146,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    letterSpacingHandler= currentComponent?.styleHandlers['letter-spacing'] || ''  
+                    letterSpacingHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['letter-spacing'] || ''  
                     }
                 }catch(error){
                     console.log(error);

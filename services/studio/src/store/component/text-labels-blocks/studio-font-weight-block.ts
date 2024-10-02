@@ -128,7 +128,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    fontWeightHandler= currentComponent?.styleHandlers['font-weight'] || ''  
+                    fontWeightHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-weight'] || ''  
                     }
                 }catch(error){
                     console.log(error);

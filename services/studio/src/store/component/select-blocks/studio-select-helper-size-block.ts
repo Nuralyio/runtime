@@ -165,7 +165,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    helperSizeHandler = currentComponent?.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
+                    helperSizeHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
                     }
                 }catch(error){
                     console.log(error);

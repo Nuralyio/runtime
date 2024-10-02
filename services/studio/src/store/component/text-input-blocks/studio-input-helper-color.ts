@@ -137,7 +137,7 @@ export default [
                 if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                helperColorHandler= currentComponent?.styleHandlers['--hybrid-input-helper-text-color'] || ''  
+                helperColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-input-helper-text-color'] || ''  
                 }
             }catch(error){
                 console.log(error);

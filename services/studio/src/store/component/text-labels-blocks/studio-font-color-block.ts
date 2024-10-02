@@ -136,7 +136,7 @@ export default [
                 if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                fontColorHandler = currentComponent?.styleHandlers['color'] || ''  
+                fontColorHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['color'] || ''  
                 }
             }catch(error){
                 console.log(error);

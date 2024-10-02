@@ -146,7 +146,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    iconWidthHandler= currentComponent?.styleHandlers['--hybrid-icon-width'] || ''  
+                    iconWidthHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-icon-width'] || ''  
                     }
                 }catch(error){
                     console.log(error);

@@ -166,7 +166,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    labelFontSizeHandler= currentComponent?.styleHandlers['fontSize'] || ''  
+                    labelFontSizeHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['fontSize'] || ''  
                     }
                 }catch(error){
                     console.log(error);

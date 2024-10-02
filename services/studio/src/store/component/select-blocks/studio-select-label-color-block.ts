@@ -137,7 +137,7 @@ export default [
                 if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                labelColorHandler= currentComponent?.styleHandlers['--hybrid-select-label-text-color'] || ''  
+                labelColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-label-text-color'] || ''  
                 }
             }catch(error){
                 console.log(error);

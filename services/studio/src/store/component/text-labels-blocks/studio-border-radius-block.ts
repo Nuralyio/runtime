@@ -68,7 +68,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                if (currentComponent?.style["border-radius"]) {
+                if (currentComponent?.style && currentComponent.style["border-radius"]) {
                             let unity='';
                             let value='';
                             currentComponent.style["border-radius"].split('').forEach((char)=>
@@ -155,7 +155,7 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    borderRadiusHandler= currentComponent?.styleHandlers['border-radius'] || ''  
+                    borderRadiusHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['border-radius'] || ''  
                     }
                 }catch(error){
                     console.log(error);
