@@ -13,6 +13,7 @@ class SelectableElement extends LitElement {
       border: 1px solid #000;
       background: lightgray;
       transition: background-color 0.3s;
+      
     }
     :host([highlighted]) {
       background: #007bff; 
@@ -39,9 +40,11 @@ class RectangleSelection extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: 100vh;
+      height:93vh;
       border: 1px solid #ccc;
       position: relative; 
+      overflow-y:scroll;
+      overflow-x:hidden;
     }
     .rectangle {
       position: absolute;
