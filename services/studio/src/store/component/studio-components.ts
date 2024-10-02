@@ -336,13 +336,25 @@ export default [
                                     componentIcon='th-list';
                                     break;
                                 case 'checkbox':
-                                    componentIcon='toggle-off';
+                                    componentIcon='square-check';
                                     break;
                                 case 'Table':
                                     componentIcon='table';
                                     break;
                                 case 'vertical-container-block':
                                     componentIcon='grip-vertical';
+                                    break;
+                                case 'text_input':
+                                    componentIcon='pen-to-square';
+                                    break;
+                                case 'image':
+                                    componentIcon='image';
+                                    break;
+                                case 'icon':
+                                    componentIcon='icons';
+                                    break;
+                                case 'DatePicker':
+                                    componentIcon='calendar';
                                     break;
                             }
 
