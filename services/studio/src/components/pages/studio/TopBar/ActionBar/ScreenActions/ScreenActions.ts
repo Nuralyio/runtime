@@ -23,50 +23,60 @@ export class TopbarScreenActions extends LitElement {
     {
       label: "Text Label",
       value: ComponentType.TextLabel,
+      icon:'i-cursor'
     },
     {
       label: "Table",
       value: ComponentType.Table,
+      icon:'table'
     },
     {
       label: "Checkbox",
       value: ComponentType.Checkbox,
+      icon:'square-check'
     },
     {
       label: "Select",
       value: ComponentType.Select,
+      icon:'th-list'
     },
     {
       label: "DatePicker",
       value: ComponentType.DatePicker,
+      icon:'calendar'
     },
     {
       label: "Icon",
       value: ComponentType.Icon,
+      icon:'icons'
     },
     {
       label: "Image",
       value: ComponentType.Image,
+      icon:'image'
     },
     {
       label: "Collections",
       handler: () => {
         AddCollection();
       },
+      icon:"square"
     },
     {
       label: "Text Input",
       value: ComponentType.TextInput,
-  
+      icon:'pen-to-square'
     },
     {
       label: "Button", //vertical-container-block
       value: ComponentType.Button,
+      icon:'smile'
     },
     { type: "divider" },
     {
       label: "Vertical Container", //
       value: ComponentType.VerticalContainer,
+      icon:'grip-vertical'
     },
   ];
 
