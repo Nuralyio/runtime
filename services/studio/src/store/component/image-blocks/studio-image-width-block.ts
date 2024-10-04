@@ -61,7 +61,8 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateInput(currentComponent, "width", "string",EventData.value);
+                            updateStyle(currentComponent, "width",EventData.value+'px');
+
                         }
                     }catch(error){
                         console.log(error);
@@ -79,12 +80,8 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                if(currentComponent.input?.width?.type != 'handler' && currentComponent.input?.width?.value)
-                {
-                const imageWidth = currentComponent.input?.width?.value??0
-                const unity="px";
-                [imageWidth,unity];
-             }
+                const imageWidth = currentComponent?.style&&currentComponent.style['width']||0;
+                imageWidth;
             }
 
         }catch(e){
@@ -100,11 +97,11 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state=''
-                        if(currentComponent.input?.width?.type == 'handler' && currentComponent.input?.width?.value ){
-                        state='disabled'
+                        let state='';
+                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['width']){
+                         state='disabled'
                         }
-                        state;
+                        state
                         
                     }
         
@@ -151,9 +148,8 @@ export default [
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    if(currentComponent.input?.width?.type == 'handler' && currentComponent.input?.width?.value){
-                        imageWidthHandler= currentComponent?.input.width.value  
-                    }
+                    imageWidthHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['width'] || ''  
+
                     }
                 }catch(error){
                     console.log(error);
@@ -170,8 +166,7 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(currentComponent?.input?.width?.value != EventData.value)
-                        updateInput(currentComponent,'width','handler',EventData.value);
+                    updateStyleHandlers(currentComponent,'width',EventData.value)
                 }
             }catch(error){
                 console.log(error);

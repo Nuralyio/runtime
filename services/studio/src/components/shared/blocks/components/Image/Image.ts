@@ -4,6 +4,8 @@ import "@hybridui/image";
 import { type ComponentElement } from "$store/component/interface";
 import { executeEventHandler } from "core/engine";
 import { BaseElementBlock } from "../BaseElement";
+import { styleMap } from "lit/directives/style-map.js";
+
 
 @customElement("image-block")
 export class ImageBlock extends BaseElementBlock {
@@ -23,13 +25,15 @@ export class ImageBlock extends BaseElementBlock {
   };
 
   render() {
+    const imageStyles = this.component?.style || {};
+    const imageStyleHandlers =this.component?.styleHandlers? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) : {};
     return html`
-    <!-- for the sake of the demo -->
       <hy-image  
       .src=${this.inputHandlersValue.src??nothing} 
       .fallback=${this.inputHandlersValue.fallback??nothing}
-      .width=${this.inputHandlersValue.width+'px'}
-      .height=${this.inputHandlersValue.height+'px'}
+      .width=${imageStyleHandlers?.width?imageStyleHandlers.width:imageStyles?.width}
+      .height=${imageStyleHandlers?.height?imageStyleHandlers?.height:imageStyles?.height}
       .alt=${this.inputHandlersValue.alt??'image'}
       >
       </hy-image>

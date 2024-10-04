@@ -151,7 +151,7 @@ export class TextInputBlock extends BaseElementBlock {
     const rows = this.inputHandlersValue?.data?this.inputHandlersValue?.data[1]: this.rows
     return html`
     <hy-table
-    style=${styleMap({...tableStyles,width:tableAutoWidth?'auto':tableStyles.width})}
+    style=${styleMap({...tableStyles,width:tableAutoWidth?'auto':tableStyles.width,'overflow':'auto'})}
     .headers="${headers}"
     .rows="${rows}" 
     .size=${tableStyles.size??nothing}
