@@ -473,7 +473,6 @@ export default [
                                 "placeholder_text_block",
                                 "position_block",
                                 "width_vertical_container",
-                                "height_vertical_container",
                                 "size_block",
                                 "input_type_block",
                                 "status_block",

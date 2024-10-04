@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type Ref, createRef, ref } from "lit/directives/ref.js";
 import { updateComponentAttributes } from "$store/actions/component";
-import { type ComponentElement } from "$store/component/interface";
+import { ComponentType, type ComponentElement } from "$store/component/interface";
 import styles from "./ResizeWrapper.style";
 import { classMap } from "lit/directives/class-map.js";
 import { $pageZoom, $showBorder } from "$store/page";
@@ -11,6 +11,8 @@ import { setResizing } from "$store/actions/page";
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {
   inputRef: Ref<HTMLInputElement> = createRef();
+  onlyWidthResizableComponents= [ComponentType.TextInput,ComponentType.Select,ComponentType.DatePicker,ComponentType.Button,ComponentType.Checkbox]
+  notResizableComponents = [ComponentType.Checkbox,ComponentType.TextLabel]
 
   static styles = styles;
 
@@ -86,7 +88,6 @@ export class ResizeWrapper extends LitElement {
   }
 
   resize = (e) => {
-    
     e.preventDefault();
     e.stopPropagation();  
     if (this.currentResizer.classList.contains("resizer-point-right-bottom")) {
@@ -99,15 +100,20 @@ export class ResizeWrapper extends LitElement {
       if (width > this.minimum_size) {
         this.inputRef.value.style.width = width + "px";
       }
-      if (height > this.minimum_size) {
+      if (height > this.minimum_size && 
+        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      ) {
         this.inputRef.value.style.height = height + "px";
       }
     } else if (
       this.currentResizer.classList.contains("resizer-point-left-bottom")
     ) {
+
       const height = this.original_height + (e.pageY - this.original_mouse_y);
       const width = this.original_width - (e.pageX - this.original_mouse_x);
-      if (height > this.minimum_size) {
+      if (height > this.minimum_size && 
+        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      ) {
         this.inputRef.value.style.height = height + "px";
       }
       if (width > this.minimum_size) {
@@ -122,7 +128,9 @@ export class ResizeWrapper extends LitElement {
     ) {
       const height = this.original_height + (e.pageY - this.original_mouse_y);
       const width = this.original_width - (e.pageX - this.original_mouse_x);
-      if (height > this.minimum_size) {
+      if (height > this.minimum_size && 
+        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      ) {
         this.inputRef.value.style.height = height + "px";
       }
     } else if (
@@ -135,7 +143,9 @@ export class ResizeWrapper extends LitElement {
         this.inputRef.value.style.left =
           this.original_x + (e.pageX - this.original_mouse_x) + "px";
       }
-      if (height > this.minimum_size) {
+      if (height > this.minimum_size &&         
+        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      ) {
         this.inputRef.value.style.height = height + "px";
         this.inputRef.value.style.top =
           this.original_y + (e.pageY - this.original_mouse_y) + "px";
@@ -148,7 +158,9 @@ export class ResizeWrapper extends LitElement {
       if (width > this.minimum_size) {
         this.inputRef.value.style.width = width + "px";
       }
-      if (height > this.minimum_size) {
+      if (height > this.minimum_size &&         
+        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      ) {
         this.inputRef.value.style.height = height + "px";
         this.inputRef.value.style.top =
           this.original_y + (e.pageY - this.original_mouse_y) + "px";
@@ -158,6 +170,9 @@ export class ResizeWrapper extends LitElement {
     setTimeout(() => {
       this.firstUpdated();
     });
+    setTimeout(() => {
+      this.applyResize()
+    }, 1000);
   };
 
   @state()
@@ -172,10 +187,20 @@ export class ResizeWrapper extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     window.removeEventListener("resize", this.firstUpdated);
+    window.addEventListener('mouseup',this.stopResize)
     $pageZoom.subscribe((pageZoom: string) => {
       this.zoomLevel = Number(pageZoom);
       this.firstUpdated();
     });
+  }
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener('mouseup',this.stopResize);
+    if(
+      !this.notResizableComponents.includes(this.component.component_type)
+    ){
+      window.removeEventListener("mousemove", this.resize);
+    }
   }
 
   firstUpdated() {
@@ -243,15 +268,44 @@ export class ResizeWrapper extends LitElement {
     });
   }
 
-  stopResize = (e: Event) => {
-    e.preventDefault();
-    e.stopPropagation();
+  stopResize = ()=>{
     window.removeEventListener("mousemove", this.resize);
     setTimeout(()=>{ setResizing(false);})
-    updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
-      width: this.inputRef.value.style.width,
-      height: this.inputRef.value.style.height,
-    });
+  }
+  applyResize = () => {
+    if(this.component.component_type == ComponentType.Button){
+      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
+        '--hybrid-button-width':this.inputRef.value.style.width,
+      });
+    }
+    else if(this.component.component_type == ComponentType.Icon){
+      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
+        '--hybrid-icon-width':this.inputRef.value.style.width,
+        '--hybrid-icon-height':this.inputRef.value.style.height
+      });
+
+    }
+    else if(this.component.component_type == ComponentType.Select){
+      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
+        '--hybrid-select-width':this.inputRef.value.style.width,
+      });
+
+    }
+    else if(
+      this.component.component_type == ComponentType.TextInput 
+      || this.component.component_type == ComponentType.DatePicker
+    ){
+      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
+        width:this.inputRef.value.style.width,
+      });
+
+    } 
+    else {
+      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
+        width: this.inputRef.value.style.width,
+        height: this.inputRef.value.style.height,
+      });
+    }
   };
 
   
@@ -267,9 +321,11 @@ export class ResizeWrapper extends LitElement {
     this.original_mouse_x = e.pageX;
     this.original_mouse_y = e.pageY;
 
-
-    window.addEventListener("mousemove", this.resize);
-    window.addEventListener("mouseup", this.stopResize);
+    if(
+      !this.notResizableComponents.includes(this.component.component_type)
+    ){
+      window.addEventListener("mousemove", this.resize);
+    }
   };
 
   render() {
