@@ -356,17 +356,14 @@ export default [
             },
         },
         event: {
-            onSelect: {
-                type: "handler",
-                value: /* js */ `
+            onSelect: /* js */ `
                 if(EventData.type === "page"){
                     SetVar("currentPage" , EventData.id)
                     //SelectPage({id : EventData.page.id}) 
                 }else{
                     SetVar("selectedComponents",[ EventData.id])
                 }
-                `
-            },
+            `,
             /* js */
             
             actionClick: `
