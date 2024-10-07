@@ -49,11 +49,12 @@ local realm = os.getenv("KEYCLOAK_REALM")
 local client_id = os.getenv("KEYCLOAK_CLIENT_ID")
 local client_secret = os.getenv("KEYCLOAK_CLIENT_SECRET")
 local scheme = os.getenv("KEYCLOAK_SCHEME")
+local keycloak_fullurl = os.getenv("KEYCLOAK_FULLURL")
 local redirect_uri = ngx.var.request_uri
 local opts = {
     ssl_verify = "no",
     redirect_uri = "/cb",
-    discovery = "https://nuraly.io/auth/realms/".. realm .."/.well-known/openid-configuration",
+    discovery = keycloak_fullurl .."/auth/realms/".. realm .."/.well-known/openid-configuration",
     client_id = client_id,
     client_secret = client_secret,
     scope = "openid email profile roles",
@@ -67,7 +68,8 @@ ngx.log(ngx.INFO, "scheme: " .. scheme )
 
 
 local function authenticateWithKeycloakPass(customRedirectUri)
-    
+    ngx.log(ngx.INFO, "host: " .. host )
+ngx.log(ngx.INFO, "scheme: " .. scheme )
     ngx.log(ngx.INFO, "request_uri: " .. ngx.var.request_uri)
     local redirectUriToUse = ""
     if customRedirectUri then 

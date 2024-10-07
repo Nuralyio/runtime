@@ -44,6 +44,7 @@ services:
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-nuraly-stage}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-empty}
       KEYCLOAK_SCHEME: ${KEYCLOAK_SCHEME:-http}
+      KEYCLOAK_FULLURL :  ${KEYCLOAK_FULLURL:-http://localhost} 
       DOMAIN: ${HOST_DOMAIN:-localhost}
       KC_HOSTNAME: ${KC_HOSTNAME:-nuraly.io}
       CHAT_HOSTNAME: ${CHAT_HOSTNAME:-chat.copilot.tn:6900}

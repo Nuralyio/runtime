@@ -33,10 +33,34 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-    #volumes:
-    #    - ./redis/data:/data
-    #    - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    volumes:
+       - ./redis/data:/data
+       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server"]
+  keycloak:
+    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/keycloak
+    environment:
+      KC_DB: keycloak
+      KC_DB_URL: 'jdbc:postgresql://postgres/keycloak'
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-postgres} 
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-postgres}
+      KC_DB_SCHEMA: public
+      KC_HOSTNAME_STRICT_HTTPS: ${KC_HOSTNAME_STRICT_HTTPS:-false}  
+      #KC_HTTP_ENABLED: true
+      #KC_HOSTNAME_URL: https://nuraly.io
+      KC_HOSTNAME_ADMIN_URL: https://nuraly.io/auth
 
+      KEYCLOAK_USER: ${KEYCLOAK_USERNAME:-admin} 
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD:-user} 
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USERNAME:-admin} 
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin} 
+      KC_HTTP_RELATIVE_PATH: "/auth"
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost} 
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    volumes: 
+      - infinispan_data:/opt/keycloak/cache
 volumes:
   pgadmin-data:
