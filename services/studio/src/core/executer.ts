@@ -62,7 +62,7 @@ class Executer {
             if (!this.applications[applicationId]) {
                 this.applications[applicationId] = {};
             }
-            if(!this.Apps[loadedApplicationObj[applicationId]] ){
+            if (!this.Apps[loadedApplicationObj[applicationId]]) {
                 this.Apps[loadedApplicationObj[applicationId]] = {};
             }
             this.Apps[loadedApplicationObj[applicationId]][component.name] = { ...component };
@@ -78,6 +78,8 @@ class Executer {
     prepareClosureFunction(code: string) {
         if (!this.functionCache[code]) {
             const func = new Function(
+                'Item',
+                'Current',
                 'Values',
                 'Apps',
                 'SetVar',
@@ -105,10 +107,11 @@ class Executer {
 const instance = Executer.getInstance();
 export default instance;
 
-export function executeCodeWithClosure(component: any, code: string, EventData: any = {}) {
-    if(isServer){
+export function executeCodeWithClosure(component: any, code: string, EventData: any = {} , item) {
+    
+    if (isServer) {
         return;
-      }
+    }
     const context = instance.context;
     const applications = instance.applications;
     const Apps = instance.Apps;
@@ -118,18 +121,18 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
         setVar("global", symbol, value);
     }
 
-function AddPage  (page: any, applicationId: string) {
-    return new Promise((resolve, reject) => {
-        addPageHandler(page, (page) => {
-            resolve(page);
-      });
-    });
+    function AddPage(page: any, applicationId: string) {
+        return new Promise((resolve, reject) => {
+            addPageHandler(page, (page) => {
+                resolve(page);
+            });
+        });
 
-  };
-  function updateStyleHandlers  (component: ComponentElement, symbol: string, value: any) {
-    updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", { [symbol]: value });
+    };
+    function updateStyleHandlers(component: ComponentElement, symbol: string, value: any) {
+        updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", { [symbol]: value });
 
-  }
+    }
 
     function GetContextVar(symbol: string, customContentId: string | null, component: any): any {
         const contentId = customContentId || component.applicationId;
@@ -187,7 +190,7 @@ function AddPage  (page: any, applicationId: string) {
         const eventData = { [symbol]: value };
         updateComponentAttributes(component.applicationId, component.uuid, "event", eventData);
     }
-    function updateStyle(component: ComponentElement,  symbol: string, value: any) {
+    function updateStyle(component: ComponentElement, symbol: string, value: any) {
         const eventData = { [symbol]: value };
         updateComponentAttributes(component.applicationId, component.uuid, "style", eventData);
     }
@@ -195,6 +198,8 @@ function AddPage  (page: any, applicationId: string) {
     const closureFunction = instance.prepareClosureFunction(code);
 
     return closureFunction(
+        JSON.parse(JSON.stringify(item ?? {})),
+        component,
         Values,
         Apps,
         SetVar,

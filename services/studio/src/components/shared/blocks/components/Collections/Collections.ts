@@ -8,21 +8,34 @@ import { $componentWithChildrens, $components, $draggingComponentInfo, $hoveredC
 import { setCurrentComponentIdAction } from '$store/actions/component';
 import { setContextMenuEvent } from '$store/actions/page';
 import { $resizing } from '$store/apps';
+import { BaseElementBlock } from '../BaseElement';
+import { getVar } from '$store/context';
+import { $environment, type Environment, ViewMode } from '$store/environment';
 
-@customElement('colletion-viwer')   
-export class CollectionViwer extends LitElement {
+@customElement('collection-viewer')
+export class CollectionViwer extends BaseElementBlock {
 
+    constructor() {
+        super();
 
-    @property()
+        this.registerCallback('data', (data) => {
+            console.log(data)
+        })
+        $environment.subscribe((environment: Environment) => {
+            this.mode = environment.mode;
+          });
+    }
+
+    @property({ type: Object })
     component: ComponentElement;
+    @property({ type: Boolean }) isViewMode = false;
+    mode: ViewMode;
 
-    @state()
-    data: any;
-    
     static override styles = styles;
     @state()
     hoveredComponent: Readonly<ComponentElement>;
-
+    @state()
+    currentEditingApplication: any;
     @state()
     draggingComponentInfo: DraggingComponentInfo;
 
@@ -46,93 +59,23 @@ export class CollectionViwer extends LitElement {
     @state()
     thisvalue = "";
 
-
-    constructor() {
-        super();
-        $componentWithChildrens.subscribe((components: ComponentElement[]) => {
-            this.components = components;
-        });
-
-        $hoveredComponent.subscribe((hoveredComponent) => {
-            this.hoveredComponent = hoveredComponent;
-        });
-        $draggingComponentInfo.subscribe(
-            (draggingComponentInfo: DraggingComponentInfo) => {
-                if (draggingComponentInfo) {
-                    this.draggingComponentInfo = draggingComponentInfo;
-                    this.dropDragPalceHolderStyle = {
-                        ...this.dropDragPalceHolderStyle,
-                    };
-                } else {
-                    this.draggingComponentInfo = null;
-                    this.dropDragPalceHolderStyle = {
-                        ...this.dropDragPalceHolderStyle,
-                        display: "none",
-                    };
-                }
-            }
-        );
-        $selectedComponent.subscribe((selectedComponent) => {
-            this.selectedComponent = selectedComponent;
-        });
-    }
-    protected firstUpdated(): void {
+   override connectedCallback() {
+         super.connectedCallback();
+    this.currentEditingApplication = getVar("global", "currentEditingApplication").value;
         
     }
+
+    isPreviewMode(){
+        return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
+      }
     @state()
     containerRef: Ref<HTMLInputElement> = createRef();
 
-
-    onContextMenu(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.ComponentTop = this.containerRef.value?.getBoundingClientRect().top;
-        e.ComponentLeft = this.containerRef.value?.getBoundingClientRect().left;
-        setContextMenuEvent(e);
-    }
-    override connectedCallback(): void {
-        super.connectedCallback();
-        this.addEventListener('contextmenu', (e) => this.onContextMenu(e));
-    }
-    override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
-        super.updated(changedProperties);
-
-        if (changedProperties.has('component')) {
-            if (!this.data || !Array.isArray(this.data)) {
-                this.data = [{}, {}, {}]
-            }
-            this.updateValue()
-        }
-    }
-
-    updateValue() {
-        let messageChannel = new MessageChannel();
-        messageChannel.port1.onmessage = function (event) {
-            if (Array.isArray(event.data.result)) {
-                this.data = event.data.result;
-            }
-        }.bind(this)
-        const command = "executeValue";
-        navigator.serviceWorker.controller.postMessage(
-            {
-                command,
-                value: this.component?.inputHandlers.data,
-                components: this.components,
-                component: this.component,
-            },
-            [messageChannel.port2]
-        );
-    }
-
-   
-
-
     renderRow(item: any) {
-        this.component.Item = item;
         return html`
 
          <div class="collection"   ${ref(this.containerRef)}
- @click="${(e: any) => {
+            @click="${(e: any) => {
                 setContextMenuEvent(null);
                 if (!$resizing.get()) {
                     setCurrentComponentIdAction(this.component?.uuid);
@@ -153,11 +96,11 @@ export class CollectionViwer extends LitElement {
 ${renderComponent(
                     this.component.childrenIds?.map(
                         (uuid) => {
-                            return { ...$components.get().find((component) => component.uuid === uuid), item } as ComponentElement
+                            return {  ...$components.get()[this.currentEditingApplication.uuid].find((component) => component.uuid === uuid), item } as ComponentElement
                         }
                     ),
                     JSON.parse(JSON.stringify(item)),
-                    true
+                    false
                 )}
                 `
                 : html`<div
@@ -174,23 +117,18 @@ ${renderComponent(
 
     override render() {
         return html`
-<resize-wrapper
-      .component=${{ ...this.component }}
-      .selectedComponent=${{ ...this.selectedComponent }}
-      .hoveredComponent=${{ ...this.hoveredComponent }}
-    >
-<component-title
-          @dragInit=${() => {
-            }}
-          .component=${{ ...this.component }}
-          .selectedComponent=${{ ...this.selectedComponent }}
-        ></component-title>
+        <resize-wrapper
+            .component=${{ ...this.component }}
+            .selectedComponent=${{ ...this.selectedComponent }}
+            .hoveredComponent=${{ ...this.hoveredComponent }}
+            >
+        <div class="collection_viewer">   
+        ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data : [{},{},{}])?.map((item: any, index) => {
+                return html`${this.renderRow({ ...item, index })}`
+        })}
+        </div>
 
-        ${(this.data || this.component.data)?.map((item: any, index) => {
-                return html`${this.renderRow({...item,index})}`
-
-            })}
-
-        </resize-wrapper>`;
+        </resize-wrapper>
+        `;
     }
 }
