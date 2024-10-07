@@ -35,7 +35,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Font size';
-                label;
+              return label;
             `
             }
         },
@@ -54,9 +54,7 @@ export default [
             width: "20px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:  /* js */`
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         console.log(selectedComponens);
@@ -72,7 +70,6 @@ export default [
                     }
                     
   `
-            }
         },
         input: {
             value: {
@@ -96,10 +93,10 @@ export default [
                             unity+=char
                            }
                         );
-                        [+value,unity]
+                        return [+value,unity]
                     }
                     else 
-                       [0,'px']
+                       return [0,'px']
             }
 
         }catch(e){

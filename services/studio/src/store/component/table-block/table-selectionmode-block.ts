@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const selectionModeLabel='Selection mode';
-                selectionModeLabel;
+                return selectionModeLabel;
                 
                 `
             }
@@ -76,7 +76,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentSelectionMode,radioType];
-            result;
+           return  result;
                 `
             }
         },

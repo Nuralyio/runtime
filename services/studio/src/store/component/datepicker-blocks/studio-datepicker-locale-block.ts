@@ -44,7 +44,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Language';
-               label;
+             return label;
             `
             }
         }
@@ -108,7 +108,7 @@ export default [
                 selectedLocale = options.find((option)=> option.value == locale);   
             }
             const result =[options,[selectedLocale? selectedLocale.label : ""]]
-            result;  
+           return  result;  
                 `
             },
             state: {

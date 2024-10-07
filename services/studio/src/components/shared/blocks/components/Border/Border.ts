@@ -1,9 +1,10 @@
 import type { ComponentElement } from '$store/component/interface';
 import { BaseElementBlock } from '../BaseElement';
-import { executeHandler } from 'core/helper';
 import { html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import '@hybridui/slider-input';
+import { executeCodeWithClosure } from 'core/executer';
+import { getNestedAttribute } from 'utils/object.utils';
 
 // Debounce function
 function debounce(func: Function, wait: number) {
@@ -57,11 +58,8 @@ export class AttributeBorderValue extends BaseElementBlock {
 	// Debounced changed event handler
 	debouncedChanged = debounce((e: Event) => {
 		if (this.component.event.borderRadiusChanged) {
-			executeHandler({
-				component: this.component,
-				type: 'event.borderRadiusChanged',
-				extras: { EventData: { value: (e as CustomEvent).detail.value, unity: this.unity } },
-			});
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.borderRadiusChanged`),{
+        value: (e as CustomEvent).detail.value, unity: this.unity });
 		}
 	}, 100); // Adjust the debounce delay as needed
 

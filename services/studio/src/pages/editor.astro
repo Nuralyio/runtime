@@ -118,7 +118,9 @@ try {
     <main
       class="main flex flex-grow flex-col transition-all duration-150 ease-in md:ml-0"
     >
-      <TabsPanel client:only="lit" />
+    <div class="spinner"></div>
+    <p class="loading-text">Loading editor...</p>
+          <TabsPanel client:only="lit" />
     </main>
     <RightPanel client:only="lit" />
   </div>
@@ -133,4 +135,48 @@ try {
   html {
     overflow: hidden;
   }
+  @media (prefers-color-scheme: dark) {
+      body {
+        --hybrid-tabs-content-background-color: #313131;
+      background: #313131;
+
+      height: 100vh;
+
+      }
+    }
+    /* Spinner CSS */
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1); /* Light gray */
+  border-top: 4px solid #8f8f8f;        /* Blue */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+
+  /* Centering styles */
+  position: absolute;
+  top: 50%;
+  left: 48%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+  
+}
+.loading-text {
+  text-align: center;
+  margin-top: 10px; /* Space between spinner and text */
+  font-size: 18px;   /* Text size */
+  color: #8f8f8f;    /* Text color (same as spinner top border) */
+  position: absolute;
+  top: calc(50% + 60px); /* Adjust based on spinner size */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+}
 </style>

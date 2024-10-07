@@ -1,0 +1,97 @@
+import { ComponentType } from "../interface";
+import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
+export default [
+    {
+        uuid: "micro_app_selection_blocks",
+        applicationId: "1",
+        name: "micro_app_selection_blocks",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+             display:'flex',
+            'flex-direction':'column'
+        },
+        childrenIds: ["micro_app_selection_label", "micro_app_selection_select"],
+    },
+    {
+        uuid: "micro_app_selection_label",
+        name: "label image src",
+        component_type: ComponentType.TextLabel,
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+               return "Select Micro Application"
+            `
+            }
+        },
+    },
+    {
+        uuid: "micro_app_selection_select",
+        applicationId: "1",
+        component_type: ComponentType.Select,
+        ...COMMON_ATTRIBUTES,
+        styleHandlers: {},
+        name: "label font family select",
+        input: {
+            value: {
+                type: "handler",
+                value: /* js */ ` 
+
+                let options = [];
+                let selectedMicroApplication;
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let appUUID = currentComponent?.input?.['appUUID'];
+              
+            return new Promise((resolve, reject)=>{
+            fetch('/api/applications')
+            .then(res=>res.json())
+            .then(data=>{
+                data.map((app)=>{
+                    options.push({
+                        label:app.name,
+                        value:app.uuid
+                    })
+                })
+                if(appUUID){
+                    selectedMicroApplication = options.find((option)=> option.value == appUUID.value);   
+                 }
+                resolve([options,[selectedMicroApplication? selectedMicroApplication.label : ""]])
+                console.log('op',options)
+            })
+            .catch(err=>{
+                reject(err)
+            })
+            })
+          
+                `
+            }
+        },
+        style: {
+            display:'block',
+            width: "350px",
+        },
+        event: {
+            changed: /* js */ `
+
+            try{
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                if( selectedComponens.length) {
+                    const selectedComponent = selectedComponens[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    const appUUIDValue = EventData.value?EventData.value:''
+                    updateInput(currentComponent, "appUUID", 'string',  appUUIDValue);
+                }
+            }catch(error){
+                console.log(error);
+            }
+            
+      `
+        },
+    }
+
+]

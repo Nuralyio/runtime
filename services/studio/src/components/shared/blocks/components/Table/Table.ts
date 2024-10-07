@@ -2,7 +2,6 @@ import { html, css, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/table"
 import { executeEventHandler } from "core/engine";

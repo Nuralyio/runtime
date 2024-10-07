@@ -4,6 +4,7 @@ import '../components/shared/blocks/components/Tabs/Tabs';
 import '../components/shared/blocks/components/Menu/Menu';
 import '../components/shared/blocks/components/ColorPicker/colorpicker';
 import '../components/shared/blocks/components/NumberInput/NumberInput';
+import '../components/shared/blocks/components/TextInput/TextInput';
 import '../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper';
 import '../components/shared/blocks/components/IconButton/iconbutton';
 import '../components/shared/blocks/components/Select/Select';
@@ -15,14 +16,10 @@ import '../components/shared/blocks/components/Checkbox/Checkbox';
 import '../components/shared/blocks/components/DatePicker/DatePicker';
 import '../components/shared/blocks/components/Icon/Icon';
 import '../components/shared/blocks/components/Image/Image';
-import '../components/shared/blocks/components/RadioButton/Radio-button' 
-import '../components/shared/blocks/components/AIChat/AIChat'; 
+import '../components/shared/blocks/components/RadioButton/Radio-button';
+import '../components/shared/blocks/components/AIChat/AIChat';
 import '../components/shared/blocks/components/IconPicker/IconPicker';
-
-// Simple memoization cache
-
-// Memoization cache using WeakMap for better memory management
-const renderCache = new WeakMap<ComponentElement[], Map<string, TemplateResult>>();
+import '../components/shared/blocks/components/MicroApp/MicroApp';
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -44,9 +41,10 @@ const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item
 const datePickerTemplate = (props: any) => html`<date-picker-block .item=${props.item} .component=${props.component}></date-picker-block>`;
 const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .component=${props.component}></icon-block>`;
 const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`; // Add this template
-const radioButtonTemplate=(props:any)=>html`<radio-button-block .item=${props.item} .component=${props.component}></radio-button-block>`
+const radioButtonTemplate = (props: any) => html`<radio-button-block .item=${props.item} .component=${props.component}></radio-button-block>`;
 const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`; // Add this template
-const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`; 
+const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`;
+const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -96,14 +94,16 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return datePickerTemplate(commonProps);
     case ComponentType.Icon:
       return iconTemplate(commonProps);
-    case ComponentType.Image: // Add this case
+    case ComponentType.Image:
       return imageTemplate(commonProps);
     case ComponentType.RadioButton:
-      return radioButtonTemplate(commonProps)
-    case ComponentType.AI: // Add this case
+      return radioButtonTemplate(commonProps);
+    case ComponentType.AI:
       return aiTemplate(commonProps);
     case ComponentType.IconPicker:
-      return iconPickerTemplate(commonProps)
+      return iconPickerTemplate(commonProps);
+      case ComponentType.MicroApp:
+      return microAppTemplate(commonProps);
     default:
       return html``;
   }
@@ -112,25 +112,10 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
 export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean): TemplateResult {
   if (!components || !components.length) return html``;
 
-  let componentCache = renderCache.get(components);
-  if (!componentCache) {
-    componentCache = new Map();
-    renderCache.set(components, componentCache);
-  }
-
-  const cacheKey = JSON.stringify({ item, isViewMode });
-  let renderedTemplate = componentCache.get(cacheKey);
-
-
-  if (!renderedTemplate) {
-    renderedTemplate = html`
-      ${components.map((component: ComponentElement) => {
+  return html`
+    ${components.map((component: ComponentElement) => {
       const commonProps = { item: { ...item }, component };
       return renderComponentElement(component, commonProps, isViewMode);
     })}
-    `;
-    componentCache.set(cacheKey, renderedTemplate);
-  }
-
-  return renderedTemplate;
+  `;
 }

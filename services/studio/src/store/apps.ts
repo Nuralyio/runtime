@@ -1,8 +1,11 @@
 import { atom, keepMount } from "nanostores";
 import { logger } from "@nanostores/logger";
 import { persistentAtom } from "@nanostores/persistent";
+import { deepMap } from "nanostores";
+
 import { getVar, setVar } from "./context";
 import { $pages } from "./page";
+import { eventDispatcher } from "utils/change-detection";
 const isServer = typeof window === 'undefined';
 
 if(!isServer){
@@ -18,13 +21,33 @@ const coreApplications = [{
 {
   uuid: "2",
   name: "app2",
-}]
+},
+{
+  uuid: "landing",
+  name: "landing",
+},
+]
 const initialState = isServer ? [] : JSON.parse(window['__INITIAL_APPLICATION_STATE__'] ?? []);
 
 const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
 export const $applications = atom<any>([...initialState, ...coreApplications]);
 export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
+export const $values = deepMap<any>({});
+
+function deepEqual(obj1, obj2) {
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
+export function setValue(componentId, key, value) {
+  const componentValues = $values.get()[componentId] || {};
+  // Perform a deep comparison of the current and new values
+  if (!deepEqual(componentValues[key], value)) {
+    $values.setKey(componentId, { ...componentValues, [key]: value });
+    
+    // Emit the refresh event only if the value has changed
+  }
+}
 
 export const $resizing = atom<Boolean>(false);
 
@@ -59,8 +82,9 @@ keepMount($resizing)
 
 if (!isServer) {
     const currentApplication = $currentApplication.get();
+    setVar('global', `currentEditingApplication`, currentApplication);
     setTimeout(() => {
-      setVar('global', `currentEditingApplication`, currentApplication);
-    },0)
+      // setVar('global', `currentEditingApplication`, currentApplication);
+    },10)
    
 }

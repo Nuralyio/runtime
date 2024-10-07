@@ -37,7 +37,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='height';
-                label;
+              return label;
             `
             }
         },
@@ -78,7 +78,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const iconheight = currentComponent?.style&&currentComponent.style['--hybrid-icon-height']||0;
-                iconheight;
+                return iconheight;
                 
             }
 

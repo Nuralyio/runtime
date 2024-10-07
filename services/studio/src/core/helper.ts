@@ -75,6 +75,7 @@ export function registerApplicationsInServiceWorker(applications: Application[])
 }
 
 export function registerContextInServiceWorker(context: ContextVarStore) {
+  return;
   log.prefix("Core Helper:").info('register context', context);
     let messageChannel = new MessageChannel();
     const command = "registerContext";
@@ -95,6 +96,7 @@ export function registerContextInServiceWorker(context: ContextVarStore) {
 }
 
 export function registerApplicationComponentsInServiceWorker(componentStore: ComponentStore) {
+  return;
   log.prefix("Core Helper:").info('register application components', componentStore);
     let messageChannel = new MessageChannel();
     const command = "registerApplicationComponents";

@@ -56,11 +56,12 @@ export class TopbarScreenActions extends LitElement {
       icon:'image'
     },
     {
+      label: "MicroApp",
+      value: ComponentType.MicroApp,
+    },
+    {
       label: "Collections",
-      handler: () => {
-        AddCollection();
-      },
-      icon:"square"
+      value: ComponentType.Collection,
     },
     {
       label: "Text Input",

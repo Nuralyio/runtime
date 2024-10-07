@@ -1,4 +1,4 @@
-import { atom, computed, keepMount, onMount } from "nanostores";
+import { atom, computed, deepMap, keepMount, onMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
 import { type PageElement } from "./handlers/pages/interfaces/interface";
 import { setVar } from "$store/context";
@@ -22,6 +22,7 @@ interface PageStore {
 
 
 export const $pages = atom<PageStore>(initialState);
+export const $microAppCurrentPage = deepMap<any>({});
 
 export const $resetPageStore = () => { };
 

@@ -72,9 +72,13 @@ import studioTableSelectEvent from './table-block/studio-table-select-event'
 import studioTableSearchEvent from './table-block/studio-table-search-event'
 import studioTableSortEvent from './table-block/studio-table-sort-event'
 import studioTablePaginateEvent from './table-block/studio-table-paginate-event'
+import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks";
+import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks";
+import collectionContainerBlocks from "./collection-blocks/collection-blocks-container";
+import collectionDataBlocks from "./collection-blocks/collection-blocks-data";
+
 export default [
 
-    ...QuickActions,
     {
         uuid: "1",
         name: "text_label",
@@ -129,7 +133,8 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style:{
-            width:"300px"
+            width:"300px",
+            "--hybrid-menu-border" : "none"
         },
         input: {
             tabs: {
@@ -193,50 +198,7 @@ export default [
             width: "225px",
             height : "100%"
         },
-        childrenIds: ["btn_1", "menu_1", "btn_2"],
-    },
-    {
-        uuid: "btn_2",
-        name: "text_label",
-        component_type: ComponentType.Button,
-        ...COMMON_ATTRIBUTES,
-        input: {
-            label: {
-                type: 'handler',
-                value: /* js */`
-                const demoLabelBtn='Demo button';
-                demoLabelBtn;
-            `
-            }
-        },
-
-        event: {
-            /* js */
-            onClick: `
-            try {
-                const currentEditingApplication = GetVar("currentEditingApplication");
-                const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                const newPage = {
-                    name: "Page_" + (appPages.length + 1),
-                    url: ("Page_" + (appPages.length + 1)).toLowerCase(),
-                    component_ids : []
-                };
-                AddPage(newPage, currentEditingApplication.uuid).then(() => {
-                    console.log("Page added");
-                }).catch((e) => {
-                    console.error(e);
-                })
-             } catch(e) {
-                 console.log(e);
-             }
-             `
-            /* end */
-        },
-        applicationId: "1",
-        inputHandlers: {
-            value: ` GetContextVar("text_label_value");`
-        },
-
+        childrenIds: ["btn_1", "menu_1"],
     },
     {
         uuid: "btn_1",
@@ -248,7 +210,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const addPageLabelBtn='Add Page';
-                addPageLabelBtn;
+                return addPageLabelBtn;
             `
             }
 
@@ -298,20 +260,10 @@ export default [
         name: "menu",
         component_type: ComponentType.Menu,
         ...COMMON_ATTRIBUTES,
+        style:{
+        "--hybrid-menu-border" : "none"
+        },
         input: {
-            onSelect: {
-                type: "handler",
-                value: /* js */ `
-                if(EventData.type === "page"){
-                    SetVar("currentPage" , EventData.id)
-                    SetVar("selectedComponents",[])
-                    //SelectPage({id : EventData.page.id}) 
-                }else{
-                    SetVar("selectedComponents",[EventData.id])
-                }
-                `
-            },
-
             options: {
                 type: "handler",
                 value: /* js */ `
@@ -326,7 +278,10 @@ export default [
                     function findChildren(appId,children,childrenIds){
                         childrenIds.map((componentId)  => {
                             const component= GetComponent(componentId,appId);
-                            const componentChildrenIds = component.childrenIds;
+                            if(!component){
+                                return;
+                            }
+                            const componentChildrenIds = component?.childrenIds;
                             let componentIcon='smile';
                             switch(component.component_type){
                                 case 'text_label':
@@ -372,32 +327,45 @@ export default [
                             }
                             
                         })
-
                     }
-                    appPages.map((page, index) => {  
-                        const componentIds= page.component_ids;
-                        const appId = page.application_id;
-                        var children=[];
-                        if(componentIds){
-                            findChildren(appId,children,componentIds)  
-                        }
-                        return {
-                            text: page.name,
-                            id: page.uuid,
-                            selected:page.uuid == currentPage,
-                            icon:'file',
-                            type: "page",
-                            handlerKey : "onSelect",
-                            menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
-                            children: children
-                        }
-                    });
                 }
+           
+
+                return appPages.map((page) => {
+                    const componentIds = page.component_ids;
+                    const appId = page.application_id;
+                    const children = [];
+
+                    if (componentIds) {
+                        findChildren(appId, children, componentIds);
+                    }
+
+                    return {
+                        text: page.name,
+                        id: page.uuid,
+                        selected: page.uuid === currentPage,
+                        icon: 'file',
+                        type: "page",
+                        handlerKey: "onSelect",
+                        menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] },
+                        children: children
+                    };
+                });
+
                 `
             },
         },
         event: {
+            onSelect: /* js */ `
+                if(EventData.type === "page"){
+                    SetVar("currentPage" , EventData.id)
+                    //SelectPage({id : EventData.page.id}) 
+                }else{
+                    SetVar("selectedComponents",[ EventData.id])
+                }
+            `,
             /* js */
+            
             actionClick: `
             try {
                
@@ -585,6 +553,12 @@ export default [
                                 "height_vertical_container", 
                             ]
                             break;
+
+                        case "Collection":
+                            parameters=[
+                                "collection_data",
+                            ]
+                            break;
                     }
                 }
                 else if(currentPageId) {
@@ -593,7 +567,7 @@ export default [
                             "page_url_block"    
                         ]
                 }
-                [
+                return [
                     {
                         label: {
                             type: "text",
@@ -619,18 +593,22 @@ export default [
                 ];
                 `
             }
-        },
+        }
     },
     
     {
         uuid: "select_component_text",
         name: "text_label",
         component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Select Component to start",
+        input:{
+            value:{
+                type: "string",
+                value:"Select Component to start"
+            }
         },
         event: {
             onClick:  /* js */ `
+                SetVar("showSecondsRow",true);
             `
         },
         applicationId: "1",
@@ -707,5 +685,10 @@ export default [
     ...studioTableSelectEvent,
     ...studioTableSearchEvent,
     ...studioTableSortEvent,
-    ...studioTablePaginateEvent
+    ...studioTablePaginateEvent,
+    ...QuickActions,
+    ...microAppSelectionBlocks,
+    ...microAppContainerBlocks,
+    ...collectionContainerBlocks,
+    ...collectionDataBlocks
 ]

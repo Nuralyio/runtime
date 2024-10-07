@@ -77,7 +77,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentCheck,radioType];
-            result;
+           return  result;
                 `
             }
         },

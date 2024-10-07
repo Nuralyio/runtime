@@ -6,6 +6,8 @@ import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
 import { updateComponentAttributes } from "$store/actions/component";
 import { styles } from "./TextLabel.style";
+import { getNestedAttribute } from "utils/object.utils";
+import { executeCodeWithClosure } from "core/executer";
 
 const isServer = typeof window === 'undefined';
 
@@ -30,6 +32,10 @@ export class TextLabelBlock extends BaseElementBlock {
 
   constructor() {
     super();
+    this.registerCallback('value', (v) => {
+      this.thisvalue = v;
+    });
+
   }
 
   handleBodyClick = (event) => {
@@ -42,65 +48,59 @@ export class TextLabelBlock extends BaseElementBlock {
   @property({ type: Object })
   item: any;
 
-  updated(changedProperties) {
-    changedProperties.forEach((_oldValue, propName) => {
-      if (propName === "component" || propName === "item") {
-      }
-    });
-  }
+
 
   handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      alert('')
       this.isEditable = true;
-      this.requestUpdate();
+      //this.requestUpdate();
     }
   };
 
   render() {
     const labelStyles = this.component?.style || {};
-    const labelStyleHandlers = this.component?.styleHandlers? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) : {};
+    const labelStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers)?.filter(([key,value])=>value)) :{};
     const labelAutoWidth = this.inputHandlersValue?.width;
     const labelAutoHeight = this.inputHandlersValue?.height;
 
+    const combinedStyles = {
+      ...labelStyles,
+      width: labelAutoWidth ? 'auto' : labelStyles.width,
+      height: labelAutoHeight ? 'auto' : labelStyles.height,
+      ...labelStyleHandlers
+    };
+
+
     return html`
-      ${!this.inputHandlersValue?.display||this.inputHandlersValue.display =='show' ? html`
+      ${!this.inputHandlersValue?.display || (this.inputHandlersValue.value && this.inputHandlersValue.display == 'show') ? html`
         <label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
-          style=${styleMap({ ...labelStyles,width:labelAutoWidth?'auto':labelStyles.width,height:labelAutoHeight?'auto':labelStyles.height,...labelStyleHandlers })}
+          style=${styleMap(combinedStyles)}
           @click=${() => {
           if (this.component.event?.onClick) {
-            executeEventHandler(this.component, 'event', 'onClick');
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
           }
         }}
               @mouseenter=${(e) => {
           if (this.component?.event?.mouseEnter) {
-            executeEventHandler(this.component, 'event', 'mouseEnter');
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseEnter`));
           }
         }}
         @mouseleave=${(e) => {
           if (this.component?.event?.mouseLeave) {
-            executeEventHandler(this.component, 'event', 'mouseLeave')
+
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseLeave`));
           }
         }}
           @blur=${(e) => {
           this.isEditable = false;
-          this.requestUpdate();
-          if(this.component.input?.value?.type =="value"){
-            updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
-              value: {
-                type: "value",
-                value: e.target.textContent,
-              },
-            });
-          }
+
         }}
           @dblclick=${(e) => {
           e.preventDefault();
           this.isEditable = true;
-          this.requestUpdate();
         }}
           
         >${this.inputHandlersValue.value ?? "Text label"}</label>
