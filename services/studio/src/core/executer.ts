@@ -107,7 +107,7 @@ class Executer {
 const instance = Executer.getInstance();
 export default instance;
 
-export function executeCodeWithClosure(component: any, code: string, EventData: any = {} , item) {
+export function executeCodeWithClosure(component: any, code: string, EventData: any = {} , item = {}) {
     
     if (isServer) {
         return;
