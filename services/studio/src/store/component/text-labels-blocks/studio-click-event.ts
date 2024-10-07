@@ -29,7 +29,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Click';
-               label;
+             return label;
             `
             }
         },
@@ -65,7 +65,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                event;
+                return event;
             `
             }
         },

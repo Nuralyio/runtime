@@ -27,7 +27,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Line height';
-               label;
+             return label;
             `
             }
         },
@@ -53,7 +53,7 @@ export default [
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         const lineHeight= currentComponent?.styleHandlers && currentComponent.style['line-height']?.split('px')[0] || 0
                         if(lineHeight)
-                            lineHeight;
+                            return lineHeight;
                         else  
                         0       
                     }

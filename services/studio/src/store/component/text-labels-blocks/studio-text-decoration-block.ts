@@ -34,7 +34,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Text decoration';
-               label;
+             return label;
             `
             }
         },
@@ -91,7 +91,7 @@ export default [
 
                 const radioType='button';
                 const result =[options,defaultTextDecoration,radioType];
-                result;           
+               return  result;           
                 `
             }
         },

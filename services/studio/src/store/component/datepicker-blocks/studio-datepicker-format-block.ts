@@ -44,7 +44,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Format';
-               label;
+             return label;
             `
             }
         }
@@ -99,7 +99,7 @@ export default [
                 selectedFormat = options.find((option)=> option.value == format);   
             }
             const result =[options,[selectedFormat? selectedFormat.label : ""]]
-            result;  
+           return  result;  
                 `
             },
             state: {

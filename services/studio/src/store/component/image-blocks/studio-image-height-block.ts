@@ -37,7 +37,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Height';
-                label;
+              return label;
             `
             }
         },
@@ -81,7 +81,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const imageHeight = currentComponent?.style&&currentComponent.style['height']||0;
-                imageHeight;
+                return imageHeight;
             }
 
         }catch(e){

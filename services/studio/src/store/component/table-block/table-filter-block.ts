@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const filterLabel='Filter';
-                filterLabel;
+                return filterLabel;
                 
                 `
             }
@@ -71,7 +71,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentFilter,radioType];
-            result;
+           return  result;
                 `
             }
         },

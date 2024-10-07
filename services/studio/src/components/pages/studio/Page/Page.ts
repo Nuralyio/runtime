@@ -6,7 +6,7 @@ import "../../../shared/blocks/components/TextLabel/TextLabel";
 import "../../../shared/blocks/wrappers/GenerikWrapper/GenerikWrapper";
 import "../../../shared/blocks/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
-import { $currentApplication, $resizing } from "$store/apps";
+import { $currentApplication, $resizing, $values } from "$store/apps";
 import { deleteComponentAction, moveDraggedComponentIntoCurrentPageRoot, setCurrentComponentIdAction } from "$store/actions/component";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
 import { $applicationComponents, $components, $draggingComponentInfo, $selectedComponent } from "$store/component/component-sotre";
@@ -39,9 +39,10 @@ export class PageContent extends LitElement {
     $pages.listen(() => this.refreshComponent());
     $components.listen(() => this.refreshComponent());
     $context.listen(() => this.refreshComponent());
+    $values.listen(() => this.refreshComponent());
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
-      this.requestUpdate();
+      this.refreshComponent()
     });
     eventDispatcher.on("component:refresh", () => {
       this.refreshComponent()
@@ -56,7 +57,6 @@ export class PageContent extends LitElement {
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
     const selectedComponents = getVar("global","selectedComponents")
-    console.log('selectedComponents: ', selectedComponents);
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {
@@ -65,7 +65,6 @@ export class PageContent extends LitElement {
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
       const components = $applicationComponents(currentAppUuid).get();
       this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root );
-      console.log(this.components ,this.currentPage);
 
     }
     this.requestUpdate();
@@ -78,6 +77,7 @@ export class PageContent extends LitElement {
       requestAnimationFrame(() => {
       });
     });
+    
 
     const pageContainer = this.shadowRoot!.querySelector('.page-container');
     this.updatePageInfo(pageContainer?.clientWidth);
@@ -152,7 +152,6 @@ export class PageContent extends LitElement {
       const currentEditingApplication = getVar("global", "currentEditingApplication");
       const currentAppUuid = currentEditingApplication.value.uuid;
       deleteComponentAction(componentId, currentAppUuid);
-      console.log(`Removing component with ID: ${componentId}`);
     });
   }
 
@@ -172,11 +171,15 @@ export class PageContent extends LitElement {
     return "unknown";
   }
 
+  isPreviewMode(){
+    return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
+  }
+
   render() {
     return html`
-      <rectangle-selection>
+       <rectangle-selection>
       <div
-        class="page-container"
+        class="page-container ${this.isPreviewMode() ? 'viewer' : ''}"
         style=${styleMap(this.currentPage?.style || {})}
         @click=${this.handlePageClick}
         @dragend=${this.preventDefault}
@@ -186,13 +189,12 @@ export class PageContent extends LitElement {
         @drop=${this.handleDrop}
       >
         ${this.components.length
-        ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode)
-        : html`<div class="page-empty-message-container">
-              <p class="page-empty-message">Add an item from the insert panel</p>
-            </div>`}
+          ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
+          : html`<div class="page-empty-message-container">
+                <p class="page-empty-message">Add an item from the insert panel</p>
+              </div>`}
       </div>
       </rectangle-selection>
-
     `;
   }
 

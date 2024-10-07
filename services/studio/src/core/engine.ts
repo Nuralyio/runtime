@@ -37,7 +37,7 @@ export function executeEventHandler(
   extras?: Extrats
 ) {
  
-  executeInServiceWorker(_components, component, handlerScope, attributeName, extras);
+  //executeInServiceWorker(_components, component, handlerScope, attributeName, extras);
 }
 
 /**
@@ -52,27 +52,12 @@ export function serviceWorkerReadyCallback() {
     if (isVerbose) {
       console.warn('Service worker ready, executing stack');
     }
-    executeInServiceWorker(components, component, handlerScope, attributeName, extras);
+    //executeInServiceWorker(components, component, handlerScope, attributeName, extras);
   }
 }
 let _isregistred = false;
 if (!isServer) {
-  getWorkerInstance().postMessage({ type: 'CHECK_SERVICE_WORKER' });
-  _isServiceWorkerReady = true;
-  // serviceWorkerReadyCallback();
 
-  $applications.subscribe((applications) => {
-    registerApplicationsInServiceWorker(applications);
-    eventDispatcher.on("component:register" , ()=>{
-      console.log('component:registe')
-      registerApplicationComponentsInServiceWorker($components.get());
-
-    })
-    $components.subscribe((applicationComponents: ComponentStore) => {
-      registerApplicationComponentsInServiceWorker(applicationComponents);
-      _isregistred = true;
-    });
-  });
 }
 
 export default {};

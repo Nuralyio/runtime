@@ -27,7 +27,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Type';
-               label;
+             return label;
             `
             }
         },
@@ -76,7 +76,7 @@ export default [
                 ]  
             const radioType='button' 
             const result =[options,currentType,radioType];
-            result;
+           return  result;
                 `
             }
         },

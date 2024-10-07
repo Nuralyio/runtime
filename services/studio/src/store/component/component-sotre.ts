@@ -2,6 +2,7 @@ import { persistentAtom } from "@nanostores/persistent";
 import { type ComponentElement, type DraggingComponentInfo } from "./interface";
 import { atom, computed, deepMap } from "nanostores";
 import studioComponents from "./studio-components";
+import landingComponents from "./landing/landing-main-components";
 import { currentLoadedApplication } from "$store/ssr/server-data";
 import { fillComponentChildren } from "./helper";
 import { logger } from "@nanostores/logger";
@@ -14,11 +15,14 @@ export interface ComponentStore {
 const isServer = typeof window === 'undefined';
 
 // Parse initial component states from the window object if running on the client
+if(!isServer){
+}
 const initialStates = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STATE__'] ?? '[]');
 
 // Initialize the state with default components for the first application
 const initialState: ComponentStore = isServer ? {} : {
   "1": studioComponents as any,
+  "landing": landingComponents as any,
 };
 
 if (currentLoadedApplication) {
@@ -54,7 +58,7 @@ const fillApplicationComponents = (components: ComponentElement[]) =>
 export const $applicationComponents = ($applicationId: string) => computed(
   [$components],
   (componentsStore: ComponentStore) => {
-    const applicationComponents = componentsStore[$applicationId]?.map(component => ({
+    const applicationComponents = Array.from(componentsStore[$applicationId] ?? [])?.map(component => ({
       ...component,
       applicationId: $applicationId
     })) ?? [];

@@ -32,7 +32,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Font weight';
-               label;
+             return label;
             `
             }
         },
@@ -70,7 +70,7 @@ export default [
                                 {value:'900',label: "Extra bold",disabled:isDisabled}]
                 const radioType='button';
                 const result =[options,defaultFontWeight,radioType];
-                result;           
+               return  result;           
                 `
             }
         },

@@ -29,7 +29,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Alt';
-               label;
+             return label;
             `
             }
         },
@@ -103,7 +103,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const inputPlaceHolder ="alt";
-                inputPlaceHolder;
+             return  inputPlaceHolder;
             `
             }
 

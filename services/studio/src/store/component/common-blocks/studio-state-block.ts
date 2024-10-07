@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const stateLabel='State';
-                stateLabel;
+                return stateLabel;
                 
                 `
             }
@@ -73,8 +73,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentState,radioType];
-            console.log('result ',result)
-            result;
+           return  result;
                 `
             }
         },

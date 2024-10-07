@@ -3,8 +3,9 @@ import {css, html, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 import "@hybridui/checkbox";
 import "@hybridui/slider-input"
-import { executeHandler } from "core/helper";
 import { BaseElementBlock } from "../BaseElement";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 function debounce(func, wait = 100) {
 	let timeout;
 	return function (...args) {
@@ -68,11 +69,11 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 	boxShadow() {
 		const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
 		if(this.component.event.boxShadowChanged){
-			executeHandler({
-				component:this.component,
-				type:'event.boxShadowChanged',
-				extras:{EventData:{value:shadowBox}}
-			})
+			
+			const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.boxShadowChanged`),{
+				value: shadowBox,
+			  });
+			  console.log(fn)
 		}
 	}
 

@@ -78,7 +78,7 @@ export default [
                     const insetMatch = currentComponent.style["box-shadow"].includes('inset');
                     const colorValue = colorMatch ? colorMatch[0] : "#ffffff";
                     const result=[horizontalValue,verticalValue,blurValue,spreadValue,insetMatch,colorValue];
-                    result;
+                    return  result;
 
                 }
                 else {
@@ -88,7 +88,7 @@ export default [
                     const spreadValue = 0;
                     const colorValue = "#000000";
                     const insetValue = false;
-                    [horizontalValue,verticalValue,blurValue,spreadValue,insetValue,colorValue]
+                    return [horizontalValue,verticalValue,blurValue,spreadValue,insetValue,colorValue]
                 }
                 
             }

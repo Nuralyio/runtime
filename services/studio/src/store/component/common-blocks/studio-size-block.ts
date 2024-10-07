@@ -27,7 +27,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Size';
-               label;
+             return label;
             `
             }
         },
@@ -75,7 +75,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentSize,radioType];
-            result;
+           return  result;
                 `
             },
         },

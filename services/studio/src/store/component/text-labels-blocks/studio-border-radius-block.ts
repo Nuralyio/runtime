@@ -28,7 +28,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Border radius';
-               label;
+             return label;
             `
             }
         },

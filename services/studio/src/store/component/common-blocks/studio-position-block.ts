@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const positionLabel='Position';
-                positionLabel;
+                return positionLabel;
                 
                 `
             }
@@ -86,7 +86,7 @@ export default [
             ]   
             const radioType ='button'
             const result = [options,currentPosition,radioType];
-            result;
+           return  result;
                 `
             }
         },
@@ -197,7 +197,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Top';
-                label;
+                return label;
             `
             }
         },
@@ -239,7 +239,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const topValue = currentComponent?.style&&currentComponent.style['top']||0;
-                topValue;
+                return topValue;
                 
             }
 
@@ -345,7 +345,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Left';
-                label;
+                return label;
             `
             }
         },
@@ -387,7 +387,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const leftValue = currentComponent?.style&&currentComponent.style['left']||0;
-                leftValue;
+                return leftValue;
                 
             }
 
