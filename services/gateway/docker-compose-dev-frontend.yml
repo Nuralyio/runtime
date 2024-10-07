@@ -1,6 +1,14 @@
 version: "3.4"
 
 services:
+  keycloak:
+    extends:
+      file: docker-compose-common.yml
+      service: keycloak   
+  postgres:
+    extends:
+      file: docker-compose-common.yml
+      service: postgres
   redis:
     image: "redis:alpine"
     ports:
@@ -64,8 +72,8 @@ services:
       - "host.docker.internal:host-gateway"
 
 volumes:
-  #  infinispan_data:
-  #  postgres-data:
+  infinispan_data:
+  postgres-data:
   pgadmin-data:
 #  keycloak-db-data:
 #  redis-data:
