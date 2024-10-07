@@ -61,10 +61,7 @@ export class TopbarScreenActions extends LitElement {
     },
     {
       label: "Collections",
-      handler: () => {
-        AddCollection();
-      },
-      icon:"square"
+      value: ComponentType.Collection,
     },
     {
       label: "Text Input",

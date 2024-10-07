@@ -40,8 +40,7 @@ function deepEqual(obj1, obj2) {
 }
 
 export function setValue(componentId, key, value) {
-  const componentValues = $values.get(componentId)[componentId] || {};
-  
+  const componentValues = $values.get()[componentId] || {};
   // Perform a deep comparison of the current and new values
   if (!deepEqual(componentValues[key], value)) {
     $values.setKey(componentId, { ...componentValues, [key]: value });

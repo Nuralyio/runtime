@@ -105,7 +105,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 let isDisabled ='';
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['font-family']) {
+                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family']) {
                     isDisabled ='disabled'
                 } 
                 isDisabled

@@ -25,7 +25,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Page url';
-                label;`
+                return label;`
             },
             
         },
@@ -73,7 +73,7 @@ export default [
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
                 const currentPage = appPages.find((page)=>page.uuid == currentPageId);
-                currentPage?.url || '';
+                return currentPage?.url || '';
             }
 
         }catch(e){
@@ -85,7 +85,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const inputPlaceHolder ="page url";
-                inputPlaceHolder;
+                return inputPlaceHolder;
             `
             }
         }
