@@ -53,9 +53,7 @@ export default [
             width: "20px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange: /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -69,7 +67,7 @@ export default [
                     }
                     
   `
-            }
+            
         },
         input: {
             value: {
@@ -97,12 +95,11 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state='';
+                        let state='enabled';
                         if(currentComponent.styleHandlers && currentComponent.styleHandlers['height']){
                          state='disabled'
                         }
-                        state
-                        
+                        return state   
                     }
         
                 }catch(e){
@@ -154,7 +151,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,imageHeightHandler];
+                return [parameter,imageHeightHandler];
             `
             }
         },

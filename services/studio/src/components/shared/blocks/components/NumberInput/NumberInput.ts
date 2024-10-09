@@ -32,7 +32,6 @@ export class NumberInputBlock extends BaseElementBlock {
     if (this.component.event.valueChange) {
       const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
         value: e.detail.value,
-        unity: this.thisvalue[1]
       });
     }
   };

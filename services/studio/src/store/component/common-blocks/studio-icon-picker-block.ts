@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const iconLabel='Icon';
-                iconLabel;
+                return iconLabel;
                 
                 `
             }
@@ -50,14 +50,14 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                 const currentIcon = currentComponent.input?.icon?.value;
-                currentIcon;
+                return currentIcon;
                 `
             },
             placeholder: {
                 type: "handler",
                 value: /* js */ ` 
                 const placeholder ='choose an icon';
-                placeholder;
+                return placeholder;
                 `
             },
             disable:{
@@ -69,7 +69,7 @@ export default [
                 let disable = false;
                 if(currentComponent.input?.icon?.type=="handler" && currentComponent.input?.icon?.value)
                     disable=true;
-                disable;
+                return disable;
                 `
 
             }
@@ -135,7 +135,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,iconPickerHandler];
+                return [parameter,iconPickerHandler];
             `
             }
         },

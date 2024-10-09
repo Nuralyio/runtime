@@ -65,7 +65,7 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent?.style['font-family'];
+                let fontFamily = currentComponent?.style && currentComponent.style['font-family'];
                 let selectedFontFamily;
                 const options = 
                     [
@@ -104,11 +104,11 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let isDisabled ='';
+                let isDisabled ='enabled';
                 if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family']) {
                     isDisabled ='disabled'
                 } 
-                isDisabled
+                return isDisabled
                  
                  `
             }
@@ -178,7 +178,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,fontFamilyHandler];
+                return [parameter,fontFamilyHandler];
             `
             }
         },

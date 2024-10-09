@@ -25,7 +25,9 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Label color';
-                label;`
+                return label;
+                
+                `
             }
         },
         style: {
@@ -70,7 +72,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         if(currentComponent?.style)
-                        currentComponent.style['--hybrid-select-label-text-color'];
+                        return currentComponent.style['--hybrid-select-label-text-color'];
                     }
 
                 }catch(e){
@@ -86,9 +88,10 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='';
+                    let state='enabled';
                     if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-label-text-color']){
                         state='disabled'
+                        return state;
                     }
                 }
 
@@ -142,7 +145,7 @@ export default [
             }catch(error){
                 console.log(error);
             }
-            [parameter,labelColorHandler];
+            return [parameter,labelColorHandler];
         `
         }
     },

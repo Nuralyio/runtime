@@ -1,10 +1,11 @@
 import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeEventHandler } from "core/engine";
 import { $context } from "$store/context";
 import { BaseElementBlock } from "../BaseElement";
 import type { ComponentElement } from "$store/component/interface";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 @customElement("icon-button-block")
 export class IconButtonBlock extends BaseElementBlock {
@@ -23,7 +24,7 @@ export class IconButtonBlock extends BaseElementBlock {
   handleClick = () => {
     setTimeout(() => {
       if (this.component?.event?.click) {
-        executeEventHandler(this.component, "event", "click");
+        const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.click`));
       }
     }, 0);
   }

@@ -64,7 +64,7 @@ export default [
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 if(currentComponent.input?.src?.type == "value"){
                 const currentSrc=currentComponent.input?.src?.value??'';
-                currentSrc;
+                return currentSrc;
                 }
             }
 
@@ -85,7 +85,7 @@ export default [
                 if(currentComponent.input?.src?.type =="handler"&&currentComponent.input?.src?.value){
                    state = "disabled"
                }
-               state;
+               return state;
             }
 
         }catch(e){
@@ -146,7 +146,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,srcHandler];
+                return [parameter,srcHandler];
             `
             }
         },

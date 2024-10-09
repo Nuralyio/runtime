@@ -71,7 +71,7 @@ export default [
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 if(currentComponent.input?.helper?.type=="value"){
                  const currentHelperText=  currentComponent.input?.helper?.value??'';
-                 currentHelperText;
+                 return currentHelperText;
                 }
             }
 
@@ -92,7 +92,7 @@ export default [
                 if(currentComponent.input?.helper?.type =="handler"&&currentComponent.input?.helper?.value){
                    state = "disabled"
                }
-               state;
+              return state;
             }
 
         }catch(e){
@@ -154,7 +154,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,helperHandler];
+                return [parameter,helperHandler];
             `
             }
         },

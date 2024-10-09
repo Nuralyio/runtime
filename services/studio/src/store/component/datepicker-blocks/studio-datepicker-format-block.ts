@@ -114,7 +114,7 @@ export default [
                 if(currentComponent.input?.format?.type =="handler" && currentComponent.input?.format?.value){
                    state = "disabled"
                }
-               state;
+               return state;
              }
 
         }catch(e){
@@ -190,7 +190,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,formatHandler];
+                return [parameter,formatHandler];
             `
             }
         },

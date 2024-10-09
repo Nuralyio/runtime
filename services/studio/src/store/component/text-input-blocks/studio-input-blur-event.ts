@@ -6,7 +6,6 @@ export default [
         applicationId: "1",
         name: "Input blur event",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             width: "220px",
@@ -56,7 +55,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [event,currentEventValue];
+                return [event,currentEventValue];
             `
             }
         },

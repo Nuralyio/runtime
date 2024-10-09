@@ -4,7 +4,8 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/table"
-import { executeEventHandler } from "core/engine";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 // Debounce function with default wait time
@@ -122,22 +123,26 @@ export class TextInputBlock extends BaseElementBlock {
 
  onSelect(e:CustomEvent){
   if (this.component.event?.onSelect) {
-    executeEventHandler(this.component, "event", "onSelect");
+    const fn=executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`));
+    console.log(fn)
   }
  }
  onSearch(e:CustomEvent){
   if (this.component.event?.onSearch) {
-    executeEventHandler(this.component, "event", "onSearch");
+    const fn=executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSearch`));
+  console.log(fn)
   }
  }
  onPaginate(e:CustomEvent){
   if (this.component.event?.onPaginate) {
-    executeEventHandler(this.component, "event", "onPaginate");
+    const fn=executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onPaginate`));
+  console.log(fn)
   }
  }
  onSort(e:CustomEvent){
   if (this.component.event?.onSort) {
-    executeEventHandler(this.component, "event", "onSort");
+    const fn=executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSort`));
+    console.log(fn)
   }
  }
 

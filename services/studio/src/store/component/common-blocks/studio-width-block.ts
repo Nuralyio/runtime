@@ -107,7 +107,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let state =''
+                let state ='enabled'
                 if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['width']){
                   state ='disabled'
                 }
@@ -166,11 +166,11 @@ export default [
                         if(selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            let state ='';
+                            let state ='enabled';
                             if(currentComponent?.styleHandlers && currentComponent.styleHandlers['width']){
                                 state ='disabled'
                             }
-                            state;  
+                            return state;  
                         }
             
                     }catch(e){

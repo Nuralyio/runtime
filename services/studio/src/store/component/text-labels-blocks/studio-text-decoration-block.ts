@@ -152,7 +152,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,textDecorationHandler];
+                return [parameter,textDecorationHandler];
             `
             }
         },

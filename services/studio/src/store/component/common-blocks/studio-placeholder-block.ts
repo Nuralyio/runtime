@@ -66,8 +66,9 @@ export default [
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 if(currentComponent.input?.placeholder?.type=="value"){
                 const currentPlaceholderText=currentComponent.input?.placeholder?.value??'';
-                currentPlaceholderText;
-                }
+                return currentPlaceholderText;
+                } 
+                return ''
             }
 
         }catch(e){
@@ -87,7 +88,7 @@ export default [
                 if(currentComponent.input?.placeholder?.type =="handler" && currentComponent.input?.placeholder?.value){
                    state = "disabled"
                }
-               state;
+               return state;
             }
 
         }catch(e){
@@ -148,7 +149,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,placeholderHandler];
+                return [parameter,placeholderHandler];
             `
             }
         },

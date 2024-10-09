@@ -133,7 +133,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,fontWeightHandler];
+                return [parameter,fontWeightHandler];
             `
             }
         },

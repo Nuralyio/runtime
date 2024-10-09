@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const typeLabel='Type';
-                typeLabel;
+                return typeLabel;
                 
                 `
             }
@@ -139,7 +139,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,typeHandler];
+                return [parameter,typeHandler];
             `
             }
         },

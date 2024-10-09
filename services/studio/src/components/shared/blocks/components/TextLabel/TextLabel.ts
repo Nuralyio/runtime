@@ -103,7 +103,7 @@ export class TextLabelBlock extends BaseElementBlock {
           this.isEditable = true;
         }}
           
-        >${this.inputHandlersValue.value ?? "Text label"}</label>
+        >${this.inputHandlersValue.value || "Text label"}</label>
       ` : nothing}
     `;
   }

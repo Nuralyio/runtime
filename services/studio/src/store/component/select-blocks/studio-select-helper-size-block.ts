@@ -35,7 +35,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Helper size';
-                label;
+                return label;
             `
             }
         },
@@ -54,9 +54,7 @@ export default [
             width: "20px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -68,10 +66,8 @@ export default [
                         }
                     }catch(error){
                         console.log(error);
-                    }
-                    
+                    }                 
   `
-            }
         },
         input: {
             value: {
@@ -95,10 +91,10 @@ export default [
                             unity+=char
                            }
                         );
-                        [+value,unity]
+                        return [+value,unity]
                     }
                     else 
-                       [0,'px']
+                      return [0,'px']
             }
 
         }catch(e){
@@ -114,11 +110,11 @@ export default [
                     if(selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state='';
+                        let state='enabled';
                         if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-helper-text-font-size']){
                          state='disabled'
                         }
-                        state
+                        return state
                     }
         
                 }catch(e){
@@ -170,7 +166,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,helperSizeHandler];
+                return [parameter,helperSizeHandler];
             `
             }
         },

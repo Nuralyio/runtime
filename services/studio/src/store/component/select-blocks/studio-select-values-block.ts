@@ -28,7 +28,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='Data';
-               label;
+               return label;
             `
             }
         },
@@ -62,7 +62,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,valueHandler];
+                return [parameter,valueHandler];
             `
             }
         },

@@ -357,9 +357,9 @@ export default [
         },
         event: {
             onSelect: /* js */ `
-                if(EventData.type === "page"){
+            if(EventData.type === "page"){
                     SetVar("currentPage" , EventData.id)
-                    //SelectPage({id : EventData.page.id}) 
+                    SetVar("selectedComponents",[])
                 }else{
                     SetVar("selectedComponents",[ EventData.id])
                 }
@@ -402,8 +402,8 @@ export default [
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 let parameters;
                 if(selectedComponents.length)
-                {
-                    const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
+                    { 
+                        const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
                     switch(component.component_type){
                         case "text_label":
                             parameters=[
@@ -526,7 +526,6 @@ export default [
                                 "box_shadow_block", 
                                 "font_family_block", 
                                 "font_size_vertical_container",
-                                'size_block',
                                 'position_block',
                                 'width_vertical_container',
                                 'table_selectionmode_block',

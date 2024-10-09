@@ -146,7 +146,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,horizontalAlignementHandler];
+                return [parameter,horizontalAlignementHandler];
             `
             }
         },
