@@ -59,7 +59,6 @@ export default [
         name: "name",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         input: {
             value: {
@@ -142,7 +141,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,fontStyleHandler];
+                return [parameter,fontStyleHandler];
             `
             }
         },

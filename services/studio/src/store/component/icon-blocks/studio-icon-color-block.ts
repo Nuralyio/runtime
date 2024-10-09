@@ -63,7 +63,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         const currentColor = currentComponent?.style&&currentComponent.style['--hybrid-icon-color']||"" ;
-                        currentColor;
+                        return currentColor;
                     }
 
                 }catch(e){
@@ -79,10 +79,11 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='';
+                    let state='enabled';
                     if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-icon-color']){
                         state='disabled'
                     }
+                    return state;
                 }
             }catch(e){
                 console.log(e);
@@ -134,7 +135,7 @@ export default [
             }catch(error){
                 console.log(error);
             }
-            [parameter,iconColorHandler];
+            return [parameter,iconColorHandler];
         `
         }
     },

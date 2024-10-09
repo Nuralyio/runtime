@@ -28,7 +28,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='onSort';
-               label;
+               return label;
             `
             }
         },
@@ -64,9 +64,10 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [event,eventValue]
+                return [event,eventValue]
             `
             }
+            
         },
         event: {
             codeChange: /* js */ `

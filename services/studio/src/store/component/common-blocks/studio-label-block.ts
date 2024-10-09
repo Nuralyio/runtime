@@ -63,9 +63,10 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+                console.log('current component label ',currentComponent)
                 if(currentComponent.input?.label?.type=="value"){
                 const currentLabel=currentComponent.input?.label?.value??'';
-                currentLabel;
+                return currentLabel;
                 }
             }
 
@@ -86,7 +87,7 @@ export default [
                 if(currentComponent.input?.label?.type =="handler" && currentComponent.input?.label?.value){
                    state = "disabled"
                }
-               state;
+               return state;
             }
 
         }catch(e){
@@ -147,7 +148,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,labelHandler];
+                return [parameter,labelHandler];
             `
             }
         },

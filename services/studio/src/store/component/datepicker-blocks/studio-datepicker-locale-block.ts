@@ -123,7 +123,7 @@ export default [
                 if(currentComponent.input?.locale?.type =="handler" && currentComponent.input?.locale?.value){
                    state = "disabled"
                }
-               state;
+               return state;
              }
 
         }catch(e){
@@ -199,7 +199,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,localeHandler];
+                return [parameter,localeHandler];
             `
             }
         },

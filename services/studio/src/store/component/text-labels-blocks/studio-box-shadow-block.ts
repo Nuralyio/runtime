@@ -24,7 +24,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Box shadow';
-                label;`
+                return label;`
             }
         },
         style: {
@@ -41,9 +41,7 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         event: {
-            boxShadowChanged: {
-                type: "handler",
-                value: /* js */ `
+            boxShadowChanged:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -56,7 +54,6 @@ export default [
                         console.log(error);
                     }      
   `
-            }
         },
         input: {
             value: {
@@ -107,10 +104,11 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state =''
+                        let state ='enabled'
                         if(currentComponent.styleHandlers && currentComponent.styleHandlers['box-shadow']){
                                state='disabled'
                         }
+                        return state;
                     }
                 }
                 catch(e){
@@ -162,7 +160,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,boxShadowHandler];
+                return [parameter,boxShadowHandler];
             `
             }
         },

@@ -28,7 +28,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                const label ='onSearch';
-               label;
+               return label;
             `
             }
         },
@@ -64,7 +64,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [event,eventValue]
+                return [event,eventValue]
             `
             }
         },

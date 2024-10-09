@@ -145,7 +145,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,typeHandler];
+                return [parameter,typeHandler];
             `
             }
         },

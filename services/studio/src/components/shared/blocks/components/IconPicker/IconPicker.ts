@@ -3,9 +3,10 @@ import { css, html, nothing } from 'lit';
 import {customElement, property, state} from 'lit/decorators.js'
 import { BaseElementBlock } from '../BaseElement';
 import '@hybridui/icon'
-import { executeEventHandler } from 'core/engine';
 import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import {styles} from "./IconPicker.style"
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 @customElement("icon-picker-block")
 export class IconPicker extends BaseElementBlock{
@@ -37,7 +38,9 @@ export class IconPicker extends BaseElementBlock{
         this.dropdownOpen =false;
         this.dispatchEvent(new CustomEvent('icon-selected',{detail:icon}));
         if(this.component.event?.iconChanged){
-            executeEventHandler(this.component,'event','iconChanged',{EventData:{value:this.selectedIcon}})
+            const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.iconChanged`),{
+                value: this.selectedIcon,
+              });
         }
     }
     handleIconChange= (e:Event)=>{

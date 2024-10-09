@@ -25,7 +25,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const displayLabel='Display';
-                displayLabel;
+                return displayLabel;
                 `
             }
         },
@@ -138,7 +138,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,displayHandler];
+                return [parameter,displayHandler];
             `
             }
         },

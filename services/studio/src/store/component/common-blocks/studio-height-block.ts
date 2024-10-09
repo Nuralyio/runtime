@@ -68,9 +68,8 @@ export default [
             width: "120px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange: 
+             /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -81,7 +80,7 @@ export default [
                     }catch(error){
                         console.log(error);
                     }         `
-            }
+            
         },
         input: {
             value: {
@@ -111,11 +110,11 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let state =''
+                let state ='enabled'
                 if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['height']){
                   state ='disabled'
                 }
-                state;  
+                return state;  
             }
 
         }catch(e){
@@ -169,11 +168,11 @@ export default [
                     if(selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state ='';
+                        let state ='enabled';
                         if(currentComponent?.styleHandlers && currentComponent.styleHandlers['height']){
                             state ='disabled'
                         }
-                        state;  
+                        return state;  
                     }
         
                 }catch(e){
@@ -240,7 +239,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,heightHandler];
+                return [parameter,heightHandler];
             `
             }
         },

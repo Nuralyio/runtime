@@ -4,7 +4,10 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/checkbox"
-import { executeEventHandler } from "core/engine";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
+
+
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
 // Debounce function with default wait time
@@ -40,11 +43,7 @@ export class TextInputBlock extends BaseElementBlock {
 
   handleCheckboxChange = (e) => {
     if (this.component.event?.checkboxChanged) {
-      executeEventHandler(this.component, "event", "checkboxChanged", {
-        EventData: {
-          value: e.detail.value,
-        },
-      });
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.checkboxChanged`)) 
     }
   }
 

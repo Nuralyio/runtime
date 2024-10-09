@@ -64,7 +64,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [event,currentEventValue];
+                return [event,currentEventValue];
             `
             }
         },

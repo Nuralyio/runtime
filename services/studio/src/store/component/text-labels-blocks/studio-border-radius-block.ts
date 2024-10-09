@@ -43,9 +43,7 @@ export default [
         component_type: ComponentType.BorderRadius,
         ...COMMON_ATTRIBUTES,
         event: {
-            borderRadiusChanged: {
-                type: "handler",
-                value: /* js */ `
+            borderRadiusChanged:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -57,7 +55,6 @@ export default [
                         console.log(error);
                     }      
   `
-            }
         },
         input: {
             value: {
@@ -79,10 +76,10 @@ export default [
                                 unity+=char
                                }
                             );
-                            [value,unity]
+                            return [value,unity]
                           }
                          else 
-                            [0,'px']    
+                            return [0,'px']    
                               
                 
             }
@@ -101,12 +98,12 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='' 
+                    let state='enabled' 
                     if(currentComponent.styleHandlers && currentComponent.styleHandlers['border-radius'])
                      {  state='disabled'
                         
                      }
-                     state
+                     return state
                 }
     
             }catch(e){
@@ -160,7 +157,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,borderRadiusHandler];
+                return [parameter,borderRadiusHandler];
             `
             }
         },

@@ -25,7 +25,7 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const label ='Label color';
-                label;`
+                return label;`
             }
         },
         style: {
@@ -70,7 +70,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         if(currentComponent?.style)
-                        currentComponent.style['--hybrid-input-label-color'];
+                        return currentComponent.style['--hybrid-input-label-color'];
                     }
 
                 }catch(e){
@@ -86,7 +86,7 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='';
+                    let state='enabled';
                     if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-label-color']){
                         state='disabled'
                     }
@@ -142,7 +142,7 @@ export default [
             }catch(error){
                 console.log(error);
             }
-            [parameter,labelColorHandler];
+            return [parameter,labelColorHandler];
         `
         }
     },

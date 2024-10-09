@@ -133,7 +133,7 @@ export class MenuBlock extends BaseElementBlock {
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
-                executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`).value,{
+                executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`),{
                         id: option.id,
                         text: option.text,
                         type: option.type

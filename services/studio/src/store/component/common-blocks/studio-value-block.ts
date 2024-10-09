@@ -64,10 +64,11 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-               if(currentComponent.input?.value?.type=="value"){
-                   const currentValue=currentComponent.input?.value?.value || "";
+                if(currentComponent.input?.value?.type=="value"){
+                   const currentValue=currentComponent.input?.value?.value || [];
                    return currentValue;
                }
+               return [];
             }
 
         }catch(e){
@@ -88,7 +89,7 @@ export default [
                 if(currentComponent.input?.value?.type =="handler"&&currentComponent.input?.value?.value){
                    state = "disabled"
                }
-               state;
+               return state;
             }
 
         }catch(e){
@@ -150,7 +151,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,valueHandler];
+                return [parameter,valueHandler];
             `
             }
         },

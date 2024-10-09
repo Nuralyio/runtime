@@ -6,7 +6,6 @@ export default [
         applicationId: "1",
         name: "Input clear event",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
             width: "220px",

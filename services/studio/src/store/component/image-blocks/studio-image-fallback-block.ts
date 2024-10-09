@@ -86,7 +86,7 @@ export default [
                 if(currentComponent.input?.fallback?.type =="handler"&&currentComponent.input?.fallback?.value){
                    state = "disabled"
                }
-               state;
+               return state;
             }
 
         }catch(e){
@@ -147,7 +147,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,fallbackHandler];
+                return [parameter,fallbackHandler];
             `
             }
         },

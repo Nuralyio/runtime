@@ -70,7 +70,7 @@ export default [
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 if(currentComponent.input?.alt?.type=="value"){
                 const currentAlt=currentComponent.input?.alt?.value??'';
-                currentAlt;
+                return currentAlt;
                 }
             }
 
@@ -91,7 +91,7 @@ export default [
                 if(currentComponent.input?.alt?.type =="handler"&&currentComponent.input?.alt?.value){
                    state = "disabled"
                }
-               state;
+               return state;
             }
 
         }catch(e){
@@ -153,7 +153,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,altHandler];
+                return [parameter,altHandler];
             `
             }
         },

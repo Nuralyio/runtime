@@ -152,7 +152,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,positionHandler];
+                return [parameter,positionHandler];
             `
             }
         },
@@ -214,9 +214,7 @@ export default [
             width: "120px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -227,7 +225,6 @@ export default [
                     }catch(error){
                         console.log(error);
                     }         `
-            }
         },
         input: {
             value: {
@@ -238,9 +235,10 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const topValue = currentComponent?.style&&currentComponent.style['top']||0;
-                return topValue;
-                
+                let topValue =0;
+                if(currentComponent?.style && currentComponent.style['top'])
+                    topValue = currentComponent.style['top']
+                return topValue;  
             }
 
         }catch(e){
@@ -256,11 +254,11 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state =''
+                        let state ='enabled'
                         if(currentComponent?.styleHandlers && currentComponent.styleHandlers?.top){
                             state='disabled'
                         }
-                        state;  
+                        return state;  
                     }
         
                 }catch(e){
@@ -314,7 +312,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,topHandler];
+                return [parameter,topHandler];
             `
             }
         },
@@ -362,9 +360,7 @@ export default [
             width: "120px",
         },
         event: {
-            valueChange: {
-                type: "handler",
-                value: /* js */ `
+            valueChange:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -375,7 +371,7 @@ export default [
                     }catch(error){
                         console.log(error);
                     }         `
-            }
+            
         },
         input: {
             value: {
@@ -404,11 +400,11 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state =''
+                        let state ='enabled'
                         if(currentComponent?.styleHandlers && currentComponent.styleHandlers?.left){
                             state='disabled'
                         }
-                        state;  
+                        return state;  
                     }
         
                 }catch(e){
@@ -460,7 +456,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,leftHandler];
+                return [parameter,leftHandler];
             `
             }
         },

@@ -141,7 +141,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,stateHandler];
+                return [parameter,stateHandler];
             `
             }
         },

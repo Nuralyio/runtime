@@ -3,9 +3,10 @@ import { customElement, property } from "lit/decorators.js";
 import "@hybridui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeEventHandler } from "core/engine";
 import { BaseElementBlock } from "../BaseElement";
 import "@hybridui/datepicker";
+import { executeCodeWithClosure } from "core/executer";
+import { getNestedAttribute } from "utils/object.utils";
 
 @customElement("date-picker-block")
 export class SelectBlock extends BaseElementBlock {
@@ -15,11 +16,11 @@ export class SelectBlock extends BaseElementBlock {
 
   handleDateChange = (e) => {
     if (this.component.event?.dateChange) {
-      executeEventHandler(this.component, "event", "dateChange", {
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.dateChange`,{
         EventData: {
           value: e.detail,
         },
-      });
+      }))
     }
   };
 

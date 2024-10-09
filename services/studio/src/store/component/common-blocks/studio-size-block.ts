@@ -142,7 +142,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,sizeHandler];
+                return [parameter,sizeHandler];
             `
             }
         },

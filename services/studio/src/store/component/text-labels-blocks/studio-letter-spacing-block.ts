@@ -58,7 +58,7 @@ export default [
                         if(letterSpacing)
                             return letterSpacing;
                         else  
-                        0       
+                        return 0       
                     }
         
                 }catch(e){
@@ -74,11 +74,11 @@ export default [
                     if(selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state='';
+                        let state='enabled';
                         if(currentComponent.styleHandlers && currentComponent.styleHandlers['letter-spacing']){
                          state='disabled'
                         }
-                        state
+                        return state
                     }
         
                 }catch(e){
@@ -93,9 +93,7 @@ export default [
                 width: "250px", 
         },
         event: {
-            valueChange:  {
-                type:'handler',
-                value: /* js */ `
+            valueChange:  /* js */ `
                   try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -106,8 +104,7 @@ export default [
             }catch(error){
                 console.log(error);
             }     
-      `
-            }     
+      `    
         },
     },
     {
@@ -151,7 +148,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,letterSpacingHandler];
+                return [parameter,letterSpacingHandler];
             `
             }
         },

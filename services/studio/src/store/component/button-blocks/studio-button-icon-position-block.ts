@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const iconPositionLabel='Icon position';
-                iconPositionLabel;
+                return iconPositionLabel;
                 
                 `
             }
@@ -140,7 +140,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,iconPositionHandler];
+                return [parameter,iconPositionHandler];
             `
             }
         },

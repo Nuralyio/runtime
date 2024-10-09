@@ -3,7 +3,6 @@ import { customElement, property, state } from "lit/decorators.js";
 import "@hybridui/button";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
-import { executeEventHandler } from "core/engine";
 import { BaseElementBlock } from "../BaseElement";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";

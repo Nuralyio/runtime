@@ -85,10 +85,11 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['color']){
+                    let state='enabled';
+                    if(currentComponent?.styleHandlers && currentComponent.styleHandlers['color']){
                         state='disabled'
                     }
+                return state;
                 }
 
             }catch(e){
@@ -141,7 +142,7 @@ export default [
             }catch(error){
                 console.log(error);
             }
-            [parameter,fontColorHandler];
+            return [parameter,fontColorHandler];
         `
         }
     },

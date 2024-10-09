@@ -26,7 +26,7 @@ export default [
                 type:'handler',
                 value:/* js */`
                 const checkedLabel='Checked';
-                checkedLabel;
+                return checkedLabel;
                 
                 `
             }
@@ -145,7 +145,7 @@ export default [
                 }catch(error){
                     console.log(error);
                 }
-                [parameter,checkboxHandler];
+                return [parameter,checkboxHandler];
             `
             }
         },

@@ -4,7 +4,6 @@ import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
 import "@hybridui/dropdown";
-import { executeEventHandler } from "core/engine";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 setTimeout(() => {
@@ -33,11 +32,6 @@ export class ParameterEventLabel extends BaseElementBlock {
         value: e.detail.value,
       });
 
-      executeEventHandler(this.component,'event','codeChange',{
-        EventData: {
-          value: e.detail.value,
-        },
-      });
     }
   }
   renderCodeEditorTemplate() {

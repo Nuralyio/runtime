@@ -69,7 +69,7 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            currentComponent.style?.backgroundColor || "#ffffff";
+                            return currentComponent.style?.backgroundColor || "#ffffff";
                         }
 
                     }catch(e){

@@ -3,7 +3,7 @@ import { $applications, $values } from "$store/apps";
 import { $components } from "$store/component/component-sotre";
 import type { ComponentElement } from "$store/component/interface";
 import { $context, setVar } from "$store/context";
-import { addPageHandler } from "$store/handlers/pages/handler";
+import { addPageHandler,updatePageHandler } from "$store/handlers/pages/handler";
 import { eventDispatcher } from "utils/change-detection";
 import { isServer } from "utils/envirement";
 
@@ -89,6 +89,7 @@ class Executer {
                 'GetComponents',
                 'SetContextVar',
                 'AddPage',
+                'UpdatePage',
                 'context',
                 'applications',
                 'updateInput',
@@ -129,6 +130,16 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
         });
 
     };
+
+    function UpdatePage(page: any, applicationId: string) {
+        return new Promise((resolve, reject) => {
+            updatePageHandler(page, (page) => {
+                resolve(page);
+            });
+        });
+
+    };
+
     function updateStyleHandlers(component: ComponentElement, symbol: string, value: any) {
         updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", { [symbol]: value });
 
@@ -209,6 +220,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
         GetComponents,
         SetContextVar,
         AddPage,
+        UpdatePage,
         context,
         applications,
         updateInput,
