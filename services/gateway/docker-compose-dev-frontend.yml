@@ -36,14 +36,6 @@ services:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
 
-  nuraly_engine:
-    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/engine
-    ports:
-      - "${ENGINE_PORT:-3000}:3000"
-    environment:
-      NURALY_SERVICES_HOST: "nginx"
-      NURALY_ENGINE_HOST: "nuraly_engine:3000"
-
   nginx:
     image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/gateway
     environment:

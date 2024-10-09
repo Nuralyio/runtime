@@ -92,7 +92,7 @@ ngx.log(ngx.INFO, "scheme: " .. scheme )
     local res, err = require("resty.openidc").authenticate(optsWithCustomRedirect, nil, "pass")
     
     if err then
-        if string.find(err, "no session state found") then
+        if string.find(err, "no  state found") then
             ngx.redirect(redirectUriToUse)
         elseif string.find(err, "state from argument does not") then
             ngx.redirect("/")
@@ -129,8 +129,25 @@ local function authenticateWithKeycloak()
     end
 end
 
+local function logout()
+    local optsWithCustomRedirect = {
+        ssl_verify = "no",
+        redirect_uri = redirectUriToUse,
+        discovery = scheme .. "://"..host.."/auth/realms/" .. realm .. "/.well-known/openid-configuration",
+        client_id = client_id,
+        logout_path = "/logout",
+        revoke_tokens_on_logout = true,
+        logout_post_redirect_uri = "/",
+        client_secret = client_secret,
+        scope = "openid email profile roles",
+        session_contents = {id_token=true, access_token=true, refresh_token=true, enc_id_token=true, realm_access=true},
+    }
+    local res, err = require("resty.openidc").authenticate(optsWithCustomRedirect)
+end
+
 return {
     authenticateWithKeycloak = authenticateWithKeycloak,
-    authenticateWithKeycloakPass = authenticateWithKeycloakPass
+    authenticateWithKeycloakPass = authenticateWithKeycloakPass,
+    logout = logout
 }
 
