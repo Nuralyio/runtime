@@ -33,7 +33,10 @@ export class TopbarAppActions extends LitElement {
   }
   render() {
     return html`<div class="app-action-wrapper" >
-      <!-- <hy-button icon="comment"></hy-button> -->
+      <hy-button .icon=${["sign-out-alt"]} @click=${
+      () => {
+        window.location.href = "/logout";}
+      }>Logout</hy-button>
       <hy-button
         @click=${() => {
         this.togglePreviewMode();
