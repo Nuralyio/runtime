@@ -76,6 +76,7 @@ import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-block
 import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks";
 import collectionContainerBlocks from "./collection-blocks/collection-blocks-container";
 import collectionDataBlocks from "./collection-blocks/collection-blocks-data";
+import TopBar from '../editor-micro-apps/top-bar'
 
 export default [
 
@@ -689,5 +690,6 @@ export default [
     ...microAppSelectionBlocks,
     ...microAppContainerBlocks,
     ...collectionContainerBlocks,
-    ...collectionDataBlocks
+    ...collectionDataBlocks,
+    ...TopBar
 ]

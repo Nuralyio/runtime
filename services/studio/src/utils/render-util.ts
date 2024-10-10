@@ -20,6 +20,8 @@ import '../components/shared/blocks/components/RadioButton/Radio-button';
 import '../components/shared/blocks/components/AIChat/AIChat';
 import '../components/shared/blocks/components/IconPicker/IconPicker';
 import '../components/shared/blocks/components/MicroApp/MicroApp';
+import '../components/shared/blocks/components/UsersDropdown/UsersDropdown'
+import '../components/shared/blocks/components/InsertDropdown/InsertDropdown'
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -44,8 +46,10 @@ const imageTemplate = (props: any) => html`<image-block .item=${props.item} .com
 const radioButtonTemplate = (props: any) => html`<radio-button-block .item=${props.item} .component=${props.component}></radio-button-block>`;
 const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`; // Add this template
 const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`;
-const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
+const usersDropdownTemplate = (props: any) => html`<users-dropdown-block .item=${props.item} .component=${props.component}></users-dropdown-block>`;
+const insertDropdownTemplate = (props: any) => html`<insert-dropdown-block .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
 
+const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
 
@@ -102,8 +106,12 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return aiTemplate(commonProps);
     case ComponentType.IconPicker:
       return iconPickerTemplate(commonProps);
-      case ComponentType.MicroApp:
+    case ComponentType.MicroApp:
       return microAppTemplate(commonProps);
+    case ComponentType.UsersDropdown:
+        return usersDropdownTemplate(commonProps);
+    case ComponentType.InsertDropdown:
+         return insertDropdownTemplate(commonProps);
     default:
       return html``;
   }

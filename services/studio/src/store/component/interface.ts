@@ -21,6 +21,8 @@ export const enum ComponentType {
   MicroApp = "MicroApp",
   RadioButton="RadioButton",
   IconPicker ='IconPicker',
+  UsersDropdown ='UsersDropdown',
+  InsertDropdown ='InsertDropdown',
   AI = "AI"
 }
 

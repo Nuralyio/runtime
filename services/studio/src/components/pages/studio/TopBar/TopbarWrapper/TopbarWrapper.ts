@@ -8,9 +8,9 @@ import "../ActionBar/ActionBar";
 export class TopbarPanelWrapper extends LitElement {
   static override styles = styles;
   render() {
-    return html`<div class="topbar-wrapper">
-      <topbar-user-environment></topbar-user-environment>
-     
+    return html`
+    <div class="topbar-wrapper">
+     <micro-app uuid="1" componentToRenderUUID="top-bar"></micro-app>
     </div>`;
   }
 }
