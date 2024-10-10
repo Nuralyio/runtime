@@ -16,7 +16,7 @@ export class UsersDropdownBlock extends BaseElementBlock {
     return html`
     <hy-dropdown
     trigger=${this.inputHandlersValue?.trigger??nothing}
-    .options=${this.inputHandlersValue?.users??nothing}
+    .options=${this.inputHandlersValue?.users??[]}
     @click-item=${(e: CustomEvent) => console.log('value clicked', e.detail)}
   >
     <hy-image

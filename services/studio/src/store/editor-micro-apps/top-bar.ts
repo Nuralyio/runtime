@@ -143,7 +143,10 @@ export default [{
         'margin-left':'5px',
         'type':'ghost',
         "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px'
+        "--hybrid-button-padding-x": '2px',
+        "--hybrid-button-ghost-background-color":'transparent',
+        "--hybrid-button-ghost-border-color":'transparent'
+
     },
     input: { 
         label: {
@@ -195,7 +198,7 @@ export default [{
         'align-items':'center'
 
     },
-    childrenIds:['platform_top_bar','zoom_top_bar','prev_next_top_bar','app_users_top_bar','app_preview_publish_top_bar']
+    childrenIds:['platform_top_bar','zoom_top_bar','prev_next_top_bar','app_users_top_bar','app_preview_publish_top_bar','app_logout_top_bar']
 },
 {
     uuid: "zoom_top_bar",
@@ -333,8 +336,9 @@ export default [{
     style:{
         'type':'ghost',
         "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px'
-
+        "--hybrid-button-padding-x": '2px',
+        "--hybrid-button-ghost-border-color":'transparent',
+        "--hybrid-button-ghost-background-color":'transparent'
     },
     input: {
         label: {
@@ -388,7 +392,9 @@ export default [{
     style:{
         'type':'ghost',
         "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px'
+        "--hybrid-button-padding-x": '2px',
+        "--hybrid-button-ghost-border-color":'transparent',
+        "--hybrid-button-ghost-background-color":'transparent'
     },
     input: {
         label: {
@@ -442,7 +448,9 @@ export default [{
     style:{
         'type':'ghost',
         "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px'
+        "--hybrid-button-padding-x": '2px',
+        "--hybrid-button-ghost-border-color":'transparent',
+        "--hybrid-button-ghost-background-color":'transparent'
     },
     input: {
         label: {
@@ -502,7 +510,9 @@ export default [{
         'type':'ghost',
         'margin-right':'4px',
          "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px'
+        "--hybrid-button-padding-x": '2px',
+        "--hybrid-button-ghost-border-color":'transparent',
+        "--hybrid-button-ghost-background-color":'transparent'
     },
     input: {
         label: {
@@ -529,7 +539,9 @@ export default [{
           'type':'ghost',
           'margin-left':'4px',
           '--hybrid-button-padding-y': '2px',
-          '--hybrid-button-padding-x': '2px'
+          '--hybrid-button-padding-x': '2px',
+          "--hybrid-button-ghost-border-color":'transparent',
+          "--hybrid-button-ghost-background-color":'transparent'
     },
     input: {
         label: {
@@ -557,6 +569,8 @@ export default [{
         'height':'55px',
         'margin-right':'12px',
         'align-items':'center',
+        'border-right': '1px solid gray',
+        'padding-right':'4px'
     },
     childrenIds:['preview_button','publish_button']
 
@@ -568,7 +582,10 @@ export default [{
     style:{
         'type':'ghost',
          "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px'
+        "--hybrid-button-padding-x": '2px',
+        "--hybrid-button-ghost-border-color":'transparent',
+        "--hybrid-button-ghost-background-color":'transparent'
+
     },
     input: {
         label: {
@@ -587,7 +604,9 @@ export default [{
     style:{
           'type':'ghost',
            "--hybrid-button-padding-y": '2px',
-           "--hybrid-button-padding-x": '2px'
+           "--hybrid-button-padding-x": '2px',
+           "--hybrid-button-ghost-border-color":'transparent',
+           "--hybrid-button-ghost-background-color":'transparent'
     },
     input: {
         label: {
@@ -598,6 +617,40 @@ export default [{
             `
         }
     },   
+},
+{
+    uuid: "app_logout_top_bar",
+    name: "logout",
+    component_type: ComponentType.Button,
+    style:{
+        "--hybrid-button-padding-y": '2px',
+        "--hybrid-button-padding-x": '2px',
+        'margin-right':'5px',
+        'type':'ghost',
+        "--hybrid-button-ghost-border-color":'transparent',
+        "--hybrid-button-ghost-background-color":'transparent'
+    },
+    input: {
+        label: {
+            type: 'handler',
+            value: /* js */`
+            const buttonLabel = 'Logout'
+            return buttonLabel;
+            `
+        },
+        icon: {
+            type: 'handler',
+            value: /* js */`
+            const iconName = 'sign-out-alt'
+            return iconName;
+            `
+        }
+    }, 
+    event: {
+        onClick: /* js */ `
+        window.location.href = "/logout";
+         `
+        },   
 },
 
 {
