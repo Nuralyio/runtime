@@ -1,4 +1,6 @@
-import { updateComponentAttributes } from "$store/actions/component";
+import { updateComponentAttributes,addComponentAction } from "$store/actions/component";
+import { GenerateName } from "utils/naming-generator";
+
 import { $applications, $values } from "$store/apps";
 import { $components } from "$store/component/component-sotre";
 import type { ComponentElement } from "$store/component/interface";
@@ -87,6 +89,7 @@ class Executer {
                 'GetVar',
                 'GetComponent',
                 'GetComponents',
+                'AddComponent',
                 'SetContextVar',
                 'AddPage',
                 'UpdatePage',
@@ -183,6 +186,10 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     function GetComponent(componentUuid: string, applicationId: string): any {
         return Object.values(applications[applicationId] || {}).find(c => c.uuid === componentUuid);
     }
+    function AddComponent(applicationId: string,pageId:string,componentType:string):any{
+     const generatedName = GenerateName(componentType)
+     addComponentAction({name:generatedName,component_type:componentType},pageId,applicationId)
+    }
 
     function GetComponents(componentIds: string[]): any[] {
         return Object.values(applications).flat().filter((c: any) => componentIds.includes(c.uuid));
@@ -218,6 +225,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
         GetVar,
         GetComponent,
         GetComponents,
+        AddComponent,
         SetContextVar,
         AddPage,
         UpdatePage,
