@@ -6,6 +6,7 @@ const subMenuStyle = css`
     cursor: not-allowed;
   }
   :host(:not([disabled])[highlighted]) ul > div {
+    background: var(--hybrid-sub-menu-highlighted-background-color);
     color: var(--hybrid-sub-menu-highlighted-color);
   }
   :host(:not([disabled])) {
