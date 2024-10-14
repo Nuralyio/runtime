@@ -77,6 +77,7 @@ import microAppContainerBlocks from "./microapp-blocks/micro-app-container-block
 import collectionContainerBlocks from "./collection-blocks/collection-blocks-container";
 import collectionDataBlocks from "./collection-blocks/collection-blocks-data";
 import TopBar from '../editor-micro-apps/top-bar'
+import LeftPanel from '../editor-micro-apps/left-panel'
 
 export default [
 
@@ -135,7 +136,8 @@ export default [
         ...COMMON_ATTRIBUTES,
         style:{
             width:"300px",
-            "--hybrid-menu-border" : "none"
+            "--hybrid-menu-border" : "none",
+            "--hybrid-sub-menu-highlighted-background-color":"red"
         },
         input: {
             tabs: {
@@ -168,217 +170,7 @@ export default [
             }
         },
     },
-    {
-        uuid: "331",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        input: {
-            direction: "vertical",
-        },
-        style:{
-            width: "100%",
-            height: "100%",
-            display: "grid"
-        },
-        childrenIds: ["left_panel_tabs"],
-    },
-
-
-    // pages component 
-    {
-        uuid: "pages_panel",
-        applicationId: "1",
-        name: "Pages panel",
-        component_type: ComponentType.VerticalContainer,
-        input: {
-            direction: "vertical",
-        },
-
-        style: {
-            width: "225px",
-            height : "100%"
-        },
-        childrenIds: ["btn_1", "menu_1"],
-    },
-    {
-        uuid: "btn_1",
-        name: "text_label",
-        component_type: ComponentType.Button,
-        ...COMMON_ATTRIBUTES,
-        input: {
-            label: {
-                type: 'handler',
-                value: /* js */`
-                const addPageLabelBtn='Add Page';
-                return addPageLabelBtn;
-            `
-            }
-
-            // show : {
-            //     type: "hander",
-            //     value:  /* js */ `
-            //         const currentEditingApplication = GetVar("currentEditingApplication");
-            //         const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-            //         if(!appPages) {
-            //             false;
-            //         }
-            //         appPages?.length;
-            //     `
-            // }
-        },
-
-        event: {
-            /* js */
-            onClick: `
-            try {
-                const currentEditingApplication = GetVar("currentEditingApplication");
-                const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                const newPage = {
-                    name: "Page_" + (appPages.length + 1),
-                    url: ("Page_" + (appPages.length + 1)).toLowerCase(),
-                    component_ids : []
-                };
-                AddPage(newPage, currentEditingApplication.uuid).then(() => {
-                    console.log("Page added");
-                }).catch((e) => {
-                    console.error(e);
-                })
-             } catch(e) {
-                 console.log(e);
-             }
-             `
-            /* end */
-        },
-        applicationId: "1",
-        inputHandlers: {
-            value: ` GetContextVar("text_label_value");`
-        },
-
-    },
-    {
-        uuid: "menu_1",
-        name: "menu",
-        component_type: ComponentType.Menu,
-        ...COMMON_ATTRIBUTES,
-        style:{
-        "--hybrid-menu-border" : "none"
-        },
-        input: {
-            options: {
-                type: "handler",
-                value: /* js */ `
-                const currentEditingApplication = GetVar("currentEditingApplication");
-                const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
-                const currentComponent= GetVar("selectedComponents");
-                
-                if(!appPages) {
-                     [];
-                }else{
-                    function findChildren(appId,children,childrenIds){
-                        childrenIds.map((componentId)  => {
-                            const component= GetComponent(componentId,appId);
-                            if(!component){
-                                return;
-                            }
-                            const componentChildrenIds = component?.childrenIds;
-                            let componentIcon='smile';
-                            switch(component.component_type){
-                                case 'text_label':
-                                    componentIcon="i-cursor";
-                                    break;
-                                case 'select':
-                                    componentIcon='th-list';
-                                    break;
-                                case 'checkbox':
-                                    componentIcon='square-check';
-                                    break;
-                                case 'Table':
-                                    componentIcon='table';
-                                    break;
-                                case 'vertical-container-block':
-                                    componentIcon='grip-vertical';
-                                    break;
-                                case 'text_input':
-                                    componentIcon='pen-to-square';
-                                    break;
-                                case 'image':
-                                    componentIcon='image';
-                                    break;
-                                case 'icon':
-                                    componentIcon='icons';
-                                    break;
-                                case 'DatePicker':
-                                    componentIcon='calendar';
-                                    break;
-                            }
-
-                            children.push({
-                                text: component.name,
-                                icon:componentIcon,
-                                id: component.uuid,
-                                selected: currentComponent?.length && component.uuid == currentComponent[0],
-                                menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
-                                handlerKey: "onSelect",
-                            })
-                            if(componentChildrenIds){
-                                children[children.length-1]={...children[children.length-1],children:[]}
-                                findChildren(appId,children[children.length-1].children,componentChildrenIds);
-                            }
-                            
-                        })
-                    }
-                }
-           
-
-                return appPages.map((page) => {
-                    const componentIds = page.component_ids;
-                    const appId = page.application_id;
-                    const children = [];
-
-                    if (componentIds) {
-                        findChildren(appId, children, componentIds);
-                    }
-
-                    return {
-                        text: page.name,
-                        id: page.uuid,
-                        selected: page.uuid === currentPage,
-                        icon: 'file',
-                        type: "page",
-                        handlerKey: "onSelect",
-                        menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] },
-                        children: children
-                    };
-                });
-
-                `
-            },
-        },
-        event: {
-            onSelect: /* js */ `
-            if(EventData.type === "page"){
-                    SetVar("currentPage" , EventData.id)
-                    SetVar("selectedComponents",[])
-                }else{
-                    SetVar("selectedComponents",[ EventData.id])
-                }
-            `,
-            /* js */
-            
-            actionClick: `
-            try {
-               
-                
-             } catch(e) {
-                 console.log(e);
-             }
-             `
-           
-        },
-        applicationId: "1",
-    },
+    
     {
         uuid: "right_panel_tabs",
         applicationId: "1",
@@ -691,5 +483,6 @@ export default [
     ...microAppContainerBlocks,
     ...collectionContainerBlocks,
     ...collectionDataBlocks,
-    ...TopBar
+    ...TopBar,
+    ...LeftPanel
 ]
