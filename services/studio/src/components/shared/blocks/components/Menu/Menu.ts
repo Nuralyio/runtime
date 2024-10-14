@@ -132,11 +132,13 @@ export class MenuBlock extends BaseElementBlock {
                     @action-click=${this.onActionClick}
                     @change="${(e: CustomEvent) => {
                 const selectedOptionPath = e.detail.path;
+                const selectedPage = this.inputHandlersValue.options[selectedOptionPath[0]]?.id
                 const option = selectedOptionPath.reduce((acc, curr) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
                 executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`),{
                         id: option.id,
                         text: option.text,
-                        type: option.type
+                        type: option.type,
+                        page:selectedPage
                 });
 
             }}" >
