@@ -272,7 +272,12 @@ export default [{
                 SetVar("currentPage" , EventData.id)
                 SetVar("selectedComponents",[])
             }else{
-                SetVar("selectedComponents",[ EventData.id])
+                const componentParentPage = EventData.page;
+                const currentPage = GetVar("currentPage")
+                if(componentParentPage != currentPage ){
+                    SetVar("currentPage" , componentParentPage)
+                }
+                SetVar("selectedComponents",[EventData.id]);
             }
         `,
         /* js */
