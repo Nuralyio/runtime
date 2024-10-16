@@ -44,6 +44,9 @@ const buttonStyles = css`
   }
   button hy-icon {
     --hybrid-icon-color: var(--hybrid-button-text-color,var(--hybrid-button-local-text-color));
+    --hybrid-icon-width: var(--hybrid-button-icon-width,var(--hybrid-button-local-icon-width));
+    --hybrid-icon-height: var(--hybrid-button-icon-height,var(--hybrid-button-local-icon-height));
+
   }
 
   button:hover:not(:disabled) {
@@ -243,6 +246,8 @@ const buttonStyles = css`
     --hybrid-button-local-width: auto;
     --hybrid-button-local-padding-y: 0.5rem;
     --hybrid-button-local-padding-x: 0.6rem;
+    --hybrid-button-local-icon-width:14px;
+    --hybrid-button-local-icon-height:15px;
 
     /* Primary Button Style */
     --hybrid-button-local-primary-border-color: #0f62fe;
