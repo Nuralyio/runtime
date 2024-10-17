@@ -13,12 +13,26 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            width: "330px",
             display: 'flex',
-            'flex-direction': 'column',
+            'justify-content':'space-between',
+            'align-items':'center',
             'margin-top': '10px',
         },
-        childrenIds: ["text_label_letter_spacing", "letter_spacing_input","letter_spacing_handler_block"],
+        childrenIds: ["letter_spacing_input_block","letter_spacing_handler_block"],
+    },
+    {
+        uuid: "letter_spacing_input_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["text_label_letter_spacing", "letter_spacing_input"],
     },
     {
         uuid: "text_label_letter_spacing",
@@ -27,6 +41,10 @@ export default [
         
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+          'font-size':'14px',
+          width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -36,13 +54,16 @@ export default [
             `
             }
         },
-        style:{display:true}
     },
     {
         uuid: "letter_spacing_input",
         applicationId: "1",
         component_type: ComponentType.NumberInput,
         ...COMMON_ATTRIBUTES,
+        style:{
+            size:'small',
+            'width':'120px',
+        },
         styleHandlers: {},
         name: "Left panel",
         input: {
@@ -88,10 +109,6 @@ export default [
                 `
             }
         },
-        style: {
-                display:'block',
-                width: "250px", 
-        },
         event: {
             valueChange:  /* js */ `
                   try{
@@ -114,8 +131,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         }, 
@@ -130,7 +146,6 @@ export default [
         name: "letter spacing handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

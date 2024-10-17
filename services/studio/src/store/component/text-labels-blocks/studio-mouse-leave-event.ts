@@ -9,10 +9,11 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center'
         },
         
         childrenIds: ["text_label_mouse_leave_event", "mouse_leave_event_value"],

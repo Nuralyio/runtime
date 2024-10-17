@@ -8,11 +8,26 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "70px",
+        width: "330px",
         display: 'flex',
-        "flex-direction": "column",
+        'align-items':'center',
+        'justify-content':'space-between',
+        'margin-top': '10px',
     },
-    childrenIds: ["input_label_color_label", "label_color_input","input_label_color_handler_block"]
+    childrenIds: ["label_input_block","input_label_color_handler_block"]
+    },
+    {
+        uuid: "label_input_block",
+        applicationId: "1",
+        name: "label input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["input_label_color_label", "label_color_input"],
     },
     {
         uuid: "input_label_color_label",
@@ -20,6 +35,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -27,10 +46,6 @@ export default [
                 const label ='Label color';
                 return label;`
             }
-        },
-        style: {
-            width:"100px",
-            display:'block'
         },
     },
 {
@@ -107,8 +122,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "220px",
-        'margin-top': '10px',
+        width: "50px",
         display:'flex',
         'justify-content':'space-between',
     },
@@ -124,7 +138,6 @@ export default [
     name: "label color handler",
     style: {
             display:'block',
-            width: "250px", 
     },
     input: { 
         value: {

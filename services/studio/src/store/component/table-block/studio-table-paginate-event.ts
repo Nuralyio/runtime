@@ -8,10 +8,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center'
         },
         
         childrenIds: ["text_label_paginate_event", "paginate_event_value"],

@@ -9,10 +9,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column'
+             'align-items':'center',
+             'justify-content':'space-between',
+             'width':'330px'
         },
 
-        childrenIds: ["placeholder_text_label", "placeholder_text_input","placeholder_handler_block"],
+        childrenIds: ["placeholder_input_block","placeholder_handler_block"],
+    },
+    {
+        uuid: "placeholder_input_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between',
+            "margin-top":'10px'
+        },
+        childrenIds: ["placeholder_text_label", "placeholder_text_input"],
     },
     {
         uuid: "placeholder_text_label",
@@ -29,7 +45,10 @@ export default [
             },
             
         },
-        style: {},
+        style: {
+            'font-size':'14px',
+            'width':'90px'
+        },
     },
     {
         uuid: "placeholder_text_input",
@@ -38,7 +57,8 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            size:'medium'
+            size:'small',
+            'width':"120px"
         },
         event: {
             valueChange:  /* js */ `
@@ -112,8 +132,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -129,7 +148,6 @@ export default [
         name: "placeholder handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

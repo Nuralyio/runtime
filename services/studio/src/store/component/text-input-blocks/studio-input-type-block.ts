@@ -10,10 +10,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: { 
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between',
+            'width':'330px',
+            'margin-top': '10px',
         },
 
-        childrenIds: ["input_type_label", "input_type_radio","input_type_handler_block"],
+        childrenIds: ["input_stype_radio_block","input_type_handler_block"],
+    },
+    {
+        uuid: "input_stype_radio_block",
+        applicationId: "1",
+        name: "input type radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["input_type_label", "input_type_radio"],
     },
     
     {
@@ -32,6 +48,8 @@ export default [
             }
         },
         style: {
+            'font-size':'14px',
+            width:'90px'
 
         }
     },
@@ -82,7 +100,8 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'30px',
         },
         event: {
             changed: /* js */ `
@@ -108,8 +127,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -125,7 +143,6 @@ export default [
         name: "type handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

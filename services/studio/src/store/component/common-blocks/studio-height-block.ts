@@ -8,8 +8,10 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
-            "margin-top":'10px'
+            width: "330px",
+            "margin-top":'10px',
+            'align-items':'center',
+            'justify-content':'space-between',
         },
         childrenIds: ["height_block","auto_height_block","height_handler_block"],
     },
@@ -20,9 +22,9 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between',
         },
         childrenIds: ["height_label", "height_container"],
     },
@@ -46,6 +48,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+        'font-size':'14px',
+        width:"90px"
+        },
         input: {
             value: {
                 type: 'handler',
@@ -66,6 +72,7 @@ export default [
         style: {
             display:'block',
             width: "120px",
+            size:'small',
         },
         event: {
             valueChange: 
@@ -139,7 +146,7 @@ export default [
             label: {
                 type: 'handler',
                 value: /* js */`
-              const checkboxLabel ='auto height';
+              const checkboxLabel ='auto';
               return checkboxLabel;
             `
             },
@@ -204,8 +211,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -221,7 +227,6 @@ export default [
         name: "height handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

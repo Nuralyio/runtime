@@ -13,10 +13,25 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column'
+             'align-items':'center',
+             'justify-content':'space-between',
+             width:'330px'
         },
 
-        childrenIds: ["label_image_alt", "alt_text_input","alt_handler_block"],
+        childrenIds: ["alt_input_block","alt_handler_block"],
+    },
+    {
+        uuid: "alt_input_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["label_image_alt", "alt_text_input"],
     },
     {
         uuid: "label_image_alt",
@@ -24,6 +39,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+           'font-size':'14px',
+           'width':'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -42,7 +61,8 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            size:"medium",
+            size:"small",
+            width:'120px'
         },
         event: {
             valueChange:/* js */ `
@@ -116,7 +136,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -133,7 +153,6 @@ export default [
         name: "alt handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

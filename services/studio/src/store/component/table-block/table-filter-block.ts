@@ -9,10 +9,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between',
+            'margin-top':'10px',
+            width:'330px'
         },
 
-        childrenIds: ["table_filter_label", "table_filter_radio","table_filter_handler_block"],
+        childrenIds: ["table_filter_radio_block","table_filter_handler_block"],
+    },
+    {
+        uuid: "table_filter_radio_block",
+        applicationId: "1",
+        name: "table filter radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["table_filter_label", "table_filter_radio"],
     },
     
     {
@@ -32,7 +48,8 @@ export default [
             }
         },
         style: {
-
+            'font-size':'14px',
+            width:'90px'
         }
     },
     {
@@ -77,7 +94,8 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+        '--hybrid-button-height':'30px',
+        '--hybrid-button-width':'30px',
         },
         event: {
             changed: /* js */ `
@@ -102,8 +120,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -119,7 +136,6 @@ export default [
         name: "filter handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

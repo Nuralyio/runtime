@@ -9,10 +9,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column'
+             'align-items':'center',
+             'justify-content':'space-between',
+             width:"330px",
+             "margin-top":'10px'
         },
 
-        childrenIds: ["label_text_label", "label_text_input","label_handler_block"],
+        childrenIds: ["label_text_input_block","label_handler_block"],
+    },
+    {
+        uuid: "label_text_input_block",
+        applicationId: "1",
+        name: "label input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["label_text_label", "label_text_input"],
     },
     {
         uuid: "label_text_label",
@@ -20,6 +36,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            'width':'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -37,7 +57,8 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            size:"medium",
+            size:"small",
+            width:'120px'
         },
         event: {
             valueChange:/* js */ `
@@ -111,8 +132,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -128,7 +148,6 @@ export default [
         name: "label handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

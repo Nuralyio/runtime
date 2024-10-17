@@ -9,12 +9,27 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between',
+            width:'330px',
+            "margin-top":'10px'
         },
 
-        childrenIds: ["state_label", "state_radio","state_handler_block"],
+        childrenIds: ["state_radio_block","state_handler_block"],
     },
-    
+    {
+        uuid: "state_radio_block",
+        applicationId: "1",
+        name: "state radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["state_label", "state_radio"],
+    },
     {
         uuid: "state_label",
         name: "state label",
@@ -32,7 +47,8 @@ export default [
             }
         },
         style: {
-
+            width:'90px',
+            'font-size':'14px'
         }
     },
     {
@@ -79,7 +95,9 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'60px',
+            '--hybrid-button-font-size':'12px'
         },
         event: {
             changed: /* js */ `
@@ -104,8 +122,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -121,7 +138,6 @@ export default [
         name: "state handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

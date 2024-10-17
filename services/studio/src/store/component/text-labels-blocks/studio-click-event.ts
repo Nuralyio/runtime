@@ -9,10 +9,11 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center'
         },
         
         childrenIds: ["text_label_click_event", "click_event_value"],
@@ -46,7 +47,6 @@ export default [
         name: "label click event value",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

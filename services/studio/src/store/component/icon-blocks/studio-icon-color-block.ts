@@ -8,11 +8,25 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "250px",
+        width: "330px",
         display: 'flex',
-        "flex-direction": "column",
+        'justify-content':'space-between',
+        "align-items": "center",
     },
-    childrenIds: ["icon_color_label", "icon_color_input","icon_color_handler_block"]
+    childrenIds: ["icon_input_block","icon_color_handler_block"]
+    },
+    {
+        uuid: "icon_input_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["icon_color_label", "icon_color_input"],
     },
     {
         uuid: "icon_color_label",
@@ -28,7 +42,10 @@ export default [
               return label;`
             }
         },
-        style: {},
+        style: {
+            'font-size':'14px',
+            width:'90px'
+        },
     },
 {
     uuid: "icon_color_input",
@@ -100,7 +117,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "220px",
+        width: "50px",
         'margin-top': '10px',
         display:'flex',
         'justify-content':'space-between',
@@ -117,7 +134,6 @@ export default [
     name: "icon color handler",
     style: {
             display:'block',
-            width: "250px", 
     },
     input: { 
         value: {

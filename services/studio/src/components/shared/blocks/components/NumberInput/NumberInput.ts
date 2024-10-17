@@ -1,4 +1,4 @@
-import { html, css, type PropertyValues } from "lit";
+import { html, css, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
@@ -39,8 +39,10 @@ export class NumberInputBlock extends BaseElementBlock {
 
   render() {
     return html`
-      <span style=${styleMap({ ...this.component.style })}> 
+      <span> 
         <hy-input 
+        style=${styleMap({ ...this.component.style })}
+        .size=${ this.component.style.size ?? nothing}
           @valueChange=${this.handleValueChange}
           value=${parseInt(this.inputHandlersValue.value)}
           min="0"

@@ -10,10 +10,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: { 
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between',
+            width:'330px',
+            "margin-top":'10px'
         },
 
-        childrenIds: ["status_label", "status_radio","status_handler_block"],
+        childrenIds: ["status_radios_block","status_handler_block"],
+    },
+    {
+        uuid: "status_radios_block",
+        applicationId: "1",
+        name: "status input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["status_label", "status_radio"],
     },
     
     {
@@ -32,6 +48,8 @@ export default [
             }
         },
         style: {
+            width:'90px',
+            'font-size':'14px'
 
         }
     },
@@ -40,6 +58,10 @@ export default [
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
+        style:{
+           '--hybrid-button-height':'30px',
+           '--hybrid-button-width':'30px'
+        },
         styleHandlers: {},
         name: "status radio",
         input: {
@@ -81,10 +103,6 @@ export default [
                 `
             }
         },
-        style: {
-            display:'block',
-            width: "350px",
-        },
         event: {
             changed: /* js */ `
 
@@ -109,8 +127,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -126,7 +143,6 @@ export default [
         name: "status handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

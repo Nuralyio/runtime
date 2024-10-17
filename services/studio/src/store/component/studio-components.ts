@@ -137,7 +137,6 @@ export default [
         style:{
             width:"300px",
             "--hybrid-menu-border" : "none",
-            "--hybrid-sub-menu-highlighted-background-color":"red"
         },
         input: {
             tabs: {

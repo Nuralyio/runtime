@@ -8,7 +8,50 @@ import { $context, getVar } from "$store/context";
 
 @customElement("control-panel")
 export class ParametersPanel extends LitElement {
-  static styles = css``;
+  static styles = css` 
+   micro-app{
+     --hybrid-input-border-radius:7px;
+     --hybrid-input-border-bottom: 1px solid #a8a8a8;
+     --hybrid-input-border-top: 1px solid #a8a8a8;
+     --hybrid-input-border-left: 1px solid #a8a8a8;
+     --hybrid-input-border-right: 1px solid #a8a8a8;
+     --hybrid-input-focus-border: 1px solid gray;
+     --hybrid-input-number-icons-container-width:48px;
+
+     --hybrid-select-small-height: 28px;
+     --hybrid-select-icon-width: 11px;
+     --hybrid-select-border-bottom: 1px solid #a8a8a8;
+     --hybrid-select-border-top: 1px solid #a8a8a8;
+     --hybrid-select-border-left: 1px solid #a8a8a8;
+     --hybrid-select-border-right: 1px solid #a8a8a8;
+     --hybrid-select-border-radius: 7px;
+     --hybrid-select-focus-border: 1px solid gray;
+
+     --hybrid-button-background-color: #000000;
+     --hybrid-button-text-color: #ffffff;
+     --hybrid-button-border-left: 1px solid #a8a8a8 ;
+     --hybrid-button-border-right: 1px solid #a8a8a8 ;
+     --hybrid-button-border-top: 1px solid #a8a8a8 ;
+     --hybrid-button-border-bottom: 1px solid #a8a8a8 ;
+    
+   }
+   @media (prefers-color-scheme: dark) {
+    micro-app{
+      --hybrid-input-focus-border: 1px solid #ffffff;
+
+      --hybrid-select-focus-border: 1px solid #ffffff;
+
+      --hybrid-button-border-left: 1px solid #a8a8a8 ;
+      --hybrid-button-border-right: 1px solid #a8a8a8 ;
+      --hybrid-button-border-top: 1px solid #a8a8a8 ;
+      --hybrid-button-border-bottom: 1px solid #a8a8a8 ;
+     }
+      
+   }
+  
+   
+
+  `;
 
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];

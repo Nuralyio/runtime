@@ -9,10 +9,25 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+             'justify-content':'space-between',
+             'align-items':'center',
+             width:'330px'
         },
 
-        childrenIds: ["checkbox_checked_label", "checkbox_checked_radio","checkbox_handler_block"],
+        childrenIds: ["checkbox_checked_radio_block","checkbox_handler_block"],
+    },
+    {
+        uuid: "checkbox_checked_radio_block",
+        applicationId: "1",
+        name: "checkbox checked radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["checkbox_checked_label", "checkbox_checked_radio"],
     },
     
     {
@@ -32,6 +47,8 @@ export default [
             }
         },
         style: {
+            'font-size':'14px',
+            width:'90px'
 
         }
     },
@@ -83,7 +100,8 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'30px',
         },
         event: {
             changed: /* js */ `
@@ -108,7 +126,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -125,7 +143,6 @@ export default [
         name: "checkbox handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

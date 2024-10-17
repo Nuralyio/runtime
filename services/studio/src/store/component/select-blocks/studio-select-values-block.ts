@@ -9,7 +9,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -23,6 +23,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+         'font-size':'14px',
+          width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -42,7 +46,7 @@ export default [
         name: "value handler",
         style: {
                 display:'block',
-                width: "250px", 
+                width: "50px", 
         },
         input: { 
             value: {

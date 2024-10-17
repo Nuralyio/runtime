@@ -12,11 +12,27 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-        
+            width:'330px',
+            display:'flex',
+            'justify-content':'space-between',
+            'align-items':'center'
 
         },
 
-        childrenIds: ["datepicker_locale_label_container", "datepicker_locale_content_container","locale_handler_block"],
+        childrenIds: ["datepicker_local_input_block","locale_handler_block"],
+    },
+    {
+        uuid: "datepicker_local_input_block",
+        applicationId: "1",
+        name: "datepicker local input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["datepicker_locale_label_container", "datepicker_locale_content_container"],
     },
     {
         uuid: "datepicker_locale_label_container",
@@ -39,6 +55,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+          'font-size':'14px',
+          width:'90px;'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -134,7 +154,8 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            "--hybrid-select-width":"120px",
+            'size':'small'
         },
         event: {
             changed: /* js */ `
@@ -162,7 +183,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -179,7 +200,6 @@ export default [
         name: "locale handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

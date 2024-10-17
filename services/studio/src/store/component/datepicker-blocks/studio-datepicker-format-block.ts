@@ -12,11 +12,26 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-        
-
+            width:'330px',
+            "display":'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
         },
 
-        childrenIds: ["datepicker_format_label_container", "datepicker_format_content_container","format_handler_block"],
+        childrenIds: ["datepicker_input_block","format_handler_block"],
+    },
+    {
+        uuid: "datepicker_input_block",
+        applicationId: "1",
+        name: "datepicker input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["datepicker_format_label_container", "datepicker_format_content_container"],
     },
     {
         uuid: "datepicker_format_label_container",
@@ -39,6 +54,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+        'font-size':'14px',
+        width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -125,7 +144,8 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            "--hybrid-select-width":"120px",
+            'size':'small'
         },
         event: {
             changed: /* js */ `
@@ -153,7 +173,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',

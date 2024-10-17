@@ -9,10 +9,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+            'justify-content':'space-between',
+            'align-items':'center',
+            width:'330px',
+            "margin-top":'10px'
         },
 
-        childrenIds: ["select_selectionmode_label", "select_selectionmode_radio","selectionmode_handler_block"],
+        childrenIds: ["select_selectionmode_radio_block","selectionmode_handler_block"],
+    },
+    {
+        uuid: "select_selectionmode_radio_block",
+        applicationId: "1",
+        name: "select radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["select_selectionmode_label", "select_selectionmode_radio"],
     },
     
     {
@@ -32,6 +48,8 @@ export default [
             }
         },
         style: {
+            'font-size':'14px',
+            width:'90px;'
 
         }
     },
@@ -78,7 +96,9 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'50px',
+            '--hybrid-button-font-size':'12px'
         },
         event: {
             changed: /* js */ `
@@ -104,8 +124,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -121,7 +140,6 @@ export default [
         name: "selection mode handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

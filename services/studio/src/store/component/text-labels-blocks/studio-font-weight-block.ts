@@ -13,12 +13,26 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
-            display: 'flex',
-            'flex-direction': 'column',
-            'margin-top': '10px',
+            display:'flex',
+             'align-items':'center',
+             'justify-content':'space-between',
+             'width':'330px',
+             "margin-top":'10px'
         },
-        childrenIds: ["text_label_font_weight", "font_weight_content","font_weight_handler_block"],
+        childrenIds: ["label_font_weight_radio_block","font_weight_handler_block"],
+    },
+    {
+        uuid: "label_font_weight_radio_block",
+        applicationId: "1",
+        name: "label font weight radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["text_label_font_weight", "font_weight_content"],
     },
     {
         uuid: "text_label_font_weight",
@@ -27,6 +41,10 @@ export default [
         
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+        'font-size':'14px',
+        'width':'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -45,11 +63,11 @@ export default [
         styleHandlers: {},
         name: "label font weight",
         
-        style: {
-           
-                display:'block',
-                width: "350px",
-            
+        style: {           
+            display:'block',
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'70px',
+            '--hybrid-button-font-size':'11px'
         },
         input: {
             value: {
@@ -98,8 +116,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -115,7 +132,6 @@ export default [
         name: "font weight handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

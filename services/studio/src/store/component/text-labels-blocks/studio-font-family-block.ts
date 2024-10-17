@@ -8,13 +8,30 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width:"200px"
-        
+            width:"330px",
+            display:'flex',
+            'justify-content':'space-between',
+            'align-items':'center',
+            'margin-top': '10px',
 
         },
 
-        childrenIds: ["font_family_label_container", "font_family_content_container","font_family_handler_block"],
+        childrenIds: ["font_family_input_block","font_family_handler_block"],
     },
+    {
+        uuid: "font_family_input_block",
+        applicationId: "1",
+        name: "font family input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["font_family_label_container", "font_family_content_container"],
+    },
+
     {
         uuid: "font_family_label_container",
         applicationId: "1",
@@ -31,6 +48,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+       'font-size':'14px',
+        width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -59,6 +80,13 @@ export default [
         styleHandlers: {},
         name: "label font family select",
         input: {
+            placeholder:{
+                type:'handler',
+                value: /* js*/`
+                 const placeholder ='Font';
+                 return placeholder;
+                `
+            },
             value: {
                 type: "handler",
                 value: /* js */ ` 
@@ -115,7 +143,8 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            "--hybrid-select-width":"120px",
+            'size':'small'
         },
         event: {
             changed: /* js */ `
@@ -143,8 +172,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -160,7 +188,6 @@ export default [
         name: "font family handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {
