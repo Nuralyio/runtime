@@ -9,11 +9,25 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+            'justify-content':'space-between',
+            'align-items':'center',
+            width:'330px'
         },
-        childrenIds: ["display_label", "display_radio","display_handler_block"],
+        childrenIds: ["display_radio_block","display_handler_block"],
     },
-    
+    {
+        uuid: "display_radio_block",
+        applicationId: "1",
+        name: "display radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["display_label", "display_radio"],
+    },
     {
         uuid: "display_label",
         name: "display label",
@@ -30,6 +44,8 @@ export default [
             }
         },
         style: {
+            'font-size':'14px',
+            'width':'90px'
 
         }
     },
@@ -76,8 +92,9 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
-        },
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'30px',
+                },
         event: {
             changed: /* js */ `
             try{
@@ -101,7 +118,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -118,7 +135,6 @@ export default [
         name: "display handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

@@ -11,7 +11,8 @@ export default [
             style: {
                 width: "250px",
                 display:'flex',
-                'flex-direction':'column',
+                'align-items':'center'
+
             },
             childrenIds: ["border_radius_label","border_radius_block","label_border_radius_handler_block"],
         

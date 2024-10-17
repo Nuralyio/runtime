@@ -9,7 +9,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -42,7 +42,6 @@ export default [
         name: "table value handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

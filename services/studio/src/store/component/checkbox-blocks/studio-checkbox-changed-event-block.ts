@@ -9,10 +9,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center'
         },
         
         childrenIds: ["text_label_checkbox_changed_event_block", "checkbox_changed_event_value"],

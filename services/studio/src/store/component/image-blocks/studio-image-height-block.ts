@@ -8,9 +8,12 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            width: "330px",
+            display:'flex',
+            'justify-content':'space-between',
+            'align-items':'center'
         },
-        childrenIds: ["image_height_block"],
+        childrenIds: ["image_height_block","image_height_handler_block"],
     },
     {
         uuid: "image_height_block",
@@ -19,11 +22,12 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between'
+
         },
-        childrenIds: ["image_height", "image_height_input","image_height_handler_block"],
+        childrenIds: ["image_height", "image_height_input"],
     },
 
     {
@@ -32,6 +36,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -50,7 +58,8 @@ export default [
         component_type: ComponentType.NumberInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "20px",
+            width: "120px",
+            size:'small',
         },
         event: {
             valueChange: /* js */ `
@@ -116,7 +125,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -132,7 +141,6 @@ export default [
         name: "image height handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

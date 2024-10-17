@@ -10,15 +10,28 @@ export default [
         input: {
             direction: "vertical",
         },
-
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            width: "330px",
             display: 'flex',
-            'flex-direction': 'column',
+            "justify-content":'space-between',
+            "align-items":'center',
             "margin-top": "10px"
         },
-        childrenIds: ["text_label_font_style", "font_style_values_block","font_style_handler_block"],
+        childrenIds: ["label_fontstyle_radio_block","font_style_handler_block"],
+    },
+    {
+        uuid: "label_fontstyle_radio_block",
+        applicationId: "1",
+        name: "label fontstyle radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["text_label_font_style", "font_style_values_block"],
     },
     {
         uuid: "text_label_font_style",
@@ -26,6 +39,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+         'font-size':'14px',
+         width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -48,7 +65,6 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "150px",
             display: 'flex',
             gap: "10px"
         },
@@ -60,6 +76,11 @@ export default [
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
+        style:{
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'50px',
+            '--hybrid-button-font-size':'12px'
+        },
         input: {
             value: {
                 type: "handler",
@@ -106,8 +127,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -123,7 +143,6 @@ export default [
         name: "font style handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

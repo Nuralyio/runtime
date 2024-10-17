@@ -13,12 +13,26 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
-            display: 'flex',
-            'flex-direction': 'column',
-            "margin-top": "10px"
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between',
+            'width':'330px',
+            'margin-top': '10px',
         },
-        childrenIds: ["text_label_text_decoration", "text_decoration_values_block","text_decoration_handler_block"],
+        childrenIds: ["label_text_decoration_radio_block","text_decoration_handler_block"],
+    },
+    {
+        uuid: "label_text_decoration_radio_block",
+        applicationId: "1",
+        name: "label text decoration radio block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["text_label_text_decoration", "text_decoration_values_block"],
     },
     {
         uuid: "text_label_text_decoration",
@@ -33,13 +47,14 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Text decoration';
-             return label;
-            `
+                const label ='Text decoration';
+                return label;
+                `
             }
         },
         style:{
-            display:true
+        'font-size':'14px',
+        width:'90px'
         }
     },
     {
@@ -54,7 +69,6 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
             display: 'flex',
             gap: "10px"
         },
@@ -67,6 +81,10 @@ export default [
         component_type: ComponentType.RadioButton,
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
+        style:{
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'30px',
+        },
         input: {
             value: {
                 type: "handler",
@@ -118,8 +136,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         }, 

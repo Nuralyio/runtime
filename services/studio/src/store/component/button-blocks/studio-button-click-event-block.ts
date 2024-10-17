@@ -10,10 +10,11 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "310px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center'
         },
         
         childrenIds: ["text_label_button_click_event", "button_click_event_value"],

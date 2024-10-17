@@ -8,11 +8,27 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "70px",
+        width: "330px",
         display: 'flex',
-        "flex-direction": "column",
+        'justify-content':'space-between',
+        'align-items':'center',
+        'margin-top': '10px',
+
     },
-    childrenIds: ["font_color_label", "font_color_input_2","font_color_handler_block"]
+    childrenIds: ["font_color_input_block","font_color_handler_block"]
+    },
+    {
+        uuid: "font_color_input_block",
+        applicationId: "1",
+        name: "font color input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["font_color_label", "font_color_input_2"],
     },
     {
         uuid: "font_color_label",
@@ -29,7 +45,8 @@ export default [
             }
         },
         style: {
-            width:"100px",
+            width:"90px",
+            'font-size':'14px',
             display:'block'
         },
     },
@@ -57,7 +74,7 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
    style:{
-    width:"50px",
+    width:"120px",
     display:'block'
    },
     input: {
@@ -107,8 +124,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "220px",
-        'margin-top': '10px',
+        width: "50px",
         display:'flex',
         'justify-content':'space-between',
     },
@@ -124,7 +140,6 @@ export default [
     name: "font color handler",
     style: {
             display:'block',
-            width: "250px", 
     },
     input: { 
         value: {

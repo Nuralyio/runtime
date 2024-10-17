@@ -8,10 +8,28 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between',
+            'width':'330px',
+            'margin-top': '10px',
 
         },
 
-        childrenIds: ["vertical_alignement_label_container", "vertical_alignement_content_container","vertical_alignement_handler_block"],
+        childrenIds: ["label_vertical_alignement_radio_block","vertical_alignement_handler_block"],
+    },
+    {
+        uuid: "label_vertical_alignement_radio_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["vertical_alignement_label_container", "vertical_alignement_content_container"],
     },
     {
         uuid: "vertical_alignement_label_container",
@@ -20,7 +38,6 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
         },
         childrenIds: ["text_label_vertical_alignement"],
     },
@@ -31,7 +48,6 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "280px",
             display: 'flex',
             'justify-content': 'space-between'
         },
@@ -43,6 +59,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            'width':'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -59,6 +79,11 @@ export default [
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
+        style:{
+
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'30px',
+        },
         input: {
             value: {
                 type: "handler",
@@ -111,8 +136,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -128,7 +152,6 @@ export default [
         name: "vertical alignement handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

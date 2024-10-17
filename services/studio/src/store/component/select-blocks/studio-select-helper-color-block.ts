@@ -8,11 +8,26 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "70px",
+        width: "330px",
         display: 'flex',
-        "flex-direction": "column",
+        'justify-content':'space-between',
+        'align-items':'center',
+        "margin-top":'10px'
     },
-    childrenIds: ["select_helper_color_label", "select_helper_color_input","select_helper_color_handler_block"]
+    childrenIds: ["select_helper_color_input_block","select_helper_color_handler_block"]
+    },
+    {
+        uuid: "select_helper_color_input_block",
+        applicationId: "1",
+        name: "select helper color block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["select_helper_color_label", "select_helper_color_input"],
     },
     {
         uuid: "select_helper_color_label",
@@ -29,8 +44,8 @@ export default [
             }
         },
         style: {
-            width:"100px",
-            display:'block'
+            'font-size':'14px',
+            'width':'90px'
         },
     },
 {
@@ -108,8 +123,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "220px",
-        'margin-top': '10px',
+        width:'50px',
         display:'flex',
         'justify-content':'space-between',
     },
@@ -125,7 +139,6 @@ export default [
     name: "helper color handler",
     style: {
             display:'block',
-            width: "250px", 
     },
     input: { 
         value: {

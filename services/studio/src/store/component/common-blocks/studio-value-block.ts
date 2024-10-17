@@ -10,10 +10,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column',
+             'align-items':'center',
+             "justify-content":'space-between',
+             width:'330px',
+             "margin-top":'10px'
         },
 
-        childrenIds: ["value_text_label", "value_text_input","value_handler_block"],
+        childrenIds: ["value_input_block","value_handler_block"],
+    },
+    {
+        uuid: "value_input_block",
+        applicationId: "1",
+        name: "value input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["value_text_label", "value_text_input"],
     },
     {
         uuid: "value_text_label",
@@ -22,6 +38,10 @@ export default [
         
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -31,7 +51,7 @@ export default [
             `
             }
         },
-        style: {}
+        
     },
     {
         uuid: "value_text_input",
@@ -40,7 +60,8 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            size:"medium",
+            width:'120px',
+            size:"small",
         },
         event: {
             valueChange:  /* js */ `
@@ -114,8 +135,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -131,7 +151,6 @@ export default [
         name: "value handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

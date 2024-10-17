@@ -8,11 +8,26 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "70px",
+        width: "330px",
         display: 'flex',
-        "flex-direction": "column",
+        'justify-content':'space-between',
+        'align-items':'center',
+        "margin-top":'10px'
     },
-    childrenIds: ["select_label_color_label", "select_label_color_input","select_label_color_handler_block"]
+    childrenIds: ["select_label_color_input_block","select_label_color_handler_block"]
+    },
+    {
+        uuid: "select_label_color_input_block",
+        applicationId: "1",
+        name: "select label color input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["select_label_color_label", "select_label_color_input"],
     },
     {
         uuid: "select_label_color_label",
@@ -31,8 +46,9 @@ export default [
             }
         },
         style: {
-            width:"100px",
-            display:'block'
+            display:'block',
+            width:"90px",
+            'font-size':'14px'
         },
     },
 {
@@ -110,8 +126,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "220px",
-        'margin-top': '10px',
+        width: "50px",
         display:'flex',
         'justify-content':'space-between',
     },
@@ -127,7 +142,6 @@ export default [
     name: "label color handler",
     style: {
             display:'block',
-            width: "250px", 
     },
     input: { 
         value: {

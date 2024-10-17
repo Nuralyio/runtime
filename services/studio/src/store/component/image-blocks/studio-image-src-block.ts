@@ -9,9 +9,25 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column'
+             'align-items':'center',
+             'justify-content':'space-between',
+             width:'330px'
+
         },
-        childrenIds: ["label_image_src", "src_text_input","src_handler_block"],
+        childrenIds: ["src_input_block","src_handler_block"],
+    },
+    {
+        uuid: "src_input_block",
+        applicationId: "1",
+        name: "src block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["label_image_src", "src_text_input"],
     },
     {
         uuid: "label_image_src",
@@ -19,6 +35,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+          'font-size':'14px',
+          width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -36,7 +56,8 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            size:"medium",
+            width:'120px',
+            size:"small",
         },
         event: {
             valueChange:/* js */ `
@@ -109,7 +130,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -126,7 +147,6 @@ export default [
         name: "src handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

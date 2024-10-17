@@ -6,6 +6,7 @@ import { isServer } from "utils/envirement";
 import "@hybridui/dropdown";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
+import { styleMap } from "lit/directives/style-map.js";
 setTimeout(() => {
   if(!isServer)
   { 
@@ -52,7 +53,22 @@ export class ParameterEventLabel extends BaseElementBlock {
       @closed=${() => {}}
       .template=${this.renderCodeEditorTemplate()}
     >
-        <hy-button .icon=${['code']} type="text" class="unit">${this.inputHandlersValue?.triggerText??""}</hy-button>
+        <hy-button 
+        style=${styleMap(
+          {'--hybrid-button-height':'30px',
+          '--hybrid-button-width':'30px',
+          '--hybrid-button-border-top-left-radius':'5px',
+          '--hybrid-button-border-top-right-radius':'5px',
+          '--hybrid-button-border-bottom-left-radius':'5px',
+          '--hybrid-button-border-bottom-right-radius':'5px',
+          '--hybrid-button-icon-width':'12px',
+          '--hybrid-button-icon-height':'12px'
+        
+        })}
+        .icon=${['code']} 
+         type="text" 
+         class="unit"
+         >${this.inputHandlersValue?.triggerText??""}</hy-button>
     </hy-dropdown>
      `;
   }

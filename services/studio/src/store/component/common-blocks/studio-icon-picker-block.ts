@@ -9,10 +9,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+            'justify-content':'space-between',
+            'align-items':'center',
+            width:'330px',
+            "margin-top":'10px'
         },
 
-        childrenIds: ["icon_picker_label", "icon_picker_content","icon_picker_handler_block"],
+        childrenIds: ["icon_picker_input_block","icon_picker_handler_block"],
+    },
+    {
+        uuid: "icon_picker_input_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["icon_picker_label", "icon_picker_content"],
     },
     
     {
@@ -32,6 +48,8 @@ export default [
             }
         },
         style: {
+            'font-size':'14px',
+            width:'90px'
 
         }
     },
@@ -98,8 +116,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -115,7 +132,6 @@ export default [
         name: "icon picker handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

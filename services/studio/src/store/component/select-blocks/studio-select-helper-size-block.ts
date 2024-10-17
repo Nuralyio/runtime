@@ -1,27 +1,34 @@
 import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
+    
     {
-        uuid:"select_helper_font_size_vertical_container",
+        uuid: "select_helper_font_size_vertical_container",
         applicationId: "1",
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            width: "330px",
+            display:'flex',
+            'justify-content':'space-between',
+            'align-items':'center',
+            "margin-top":'10px'
         },
-        childrenIds: ["select_helper_font_size_block"],
+        childrenIds: ["helper_size_block","helper_size_handler_block"],
     },
     {
-        uuid: "select_helper_font_size_block",
+        uuid: "helper_size_block",
         applicationId: "1",
-        name: "Left panel",
+        name: "placeholder block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
         },
-        childrenIds: ["select_text_label_helper_font_size", "select_font_size_helper_input","helper_size_handler_block"],
+        childrenIds: ["select_text_label_helper_font_size", "select_font_size_helper_input"],
     },
 
     {
@@ -30,6 +37,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+        'font-size':'14px',
+        width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -51,7 +62,8 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "20px",
+            width: "120px",
+            size:'small',
         },
         event: {
             valueChange:  /* js */ `
@@ -132,8 +144,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         }, 
@@ -148,7 +159,6 @@ export default [
         name: "helper size handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

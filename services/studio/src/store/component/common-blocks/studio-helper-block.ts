@@ -13,10 +13,26 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column'
+             'align-items':'center',
+             'justify-content':'space-between',
+             'width':'330px',
+             "margin-top":'10px'
         },
 
-        childrenIds: ["helper_text_label", "helper_text_input","helper_handler_block"],
+        childrenIds: ["helper_input_block","helper_handler_block"],
+    },
+    {
+        uuid: "helper_input_block",
+        applicationId: "1",
+        name: "placeholder block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between'
+        },
+        childrenIds: ["helper_text_label", "helper_text_input"],
     },
     {
         uuid: "helper_text_label",
@@ -33,7 +49,10 @@ export default [
             },
             
         },
-        style: {},
+        style: {
+            'font-size':'14px',
+            'width':'90px'
+        },
     },
     {
         uuid: "helper_text_input",
@@ -43,7 +62,8 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            size:'medium'
+            size:'small',
+            width:'120px'
         },
         event: {
             valueChange:  /* js */ `
@@ -117,8 +137,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
-            'margin-top': '10px',
+            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
@@ -134,7 +153,6 @@ export default [
         name: "helper handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

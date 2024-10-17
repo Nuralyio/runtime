@@ -9,7 +9,9 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
              display:'flex',
-            'flex-direction':'column'
+             width:'250px',
+             'justify-content':'space-between',
+             'align-items':'center'
         },
 
         childrenIds: ["page_name_text_label", "page_name_text_input"],
@@ -29,7 +31,10 @@ export default [
             },
             
         },
-        style: {},
+        style: {
+            'font-size':'14px',
+            width:'90px'
+        },
     },
     {
         uuid: "page_name_text_input",
@@ -38,7 +43,8 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            size:'medium'
+            size:'small',  
+            width:'120px'        
         },
         event: {
             valueChange:  /* js */ `

@@ -9,7 +9,8 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'flex-direction':'column'
+            'flex-direction':'column',
+            "margin-top":'10px'
         },
 
         childrenIds: ["position_label", "position_select","position_handler_block","position_values"],
@@ -32,6 +33,7 @@ export default [
             }
         },
         style: {
+            'font-size':'14px'
 
         }
     },
@@ -92,7 +94,9 @@ export default [
         },
         style: {
             display:'block',
-            width: "350px",
+            '--hybrid-button-height':'30px',
+            '--hybrid-button-width':'60px',
+            '--hybrid-button-font-size':'12px'
         },
         event: {
             changed: /* js */ `
@@ -178,13 +182,67 @@ export default [
         name: "position x axis",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
+        style:{
+          display:'flex',
+          'flex-direction':'column'
+        },
+        childrenIds: ["top_block","left_block"],
+    },
+    {
+        uuid: "top_block",
+        applicationId: "1",
+        name: "position x axis",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
         style: {
             display:"flex",
-            "flex-direction":'column',
-            gap:"10px",
-            "margin-top":"10px"
+            'justify-content':'space-between',
+            'align-items':'center',
+            "margin-top":"10px",
+            width:'330px'
         },
-        childrenIds: ["top_label", "top_input","top_handler_block","left_label","left_input","left_handler_block"],
+        childrenIds: ["top_input_block","top_handler_block"],
+    },
+    {
+        uuid: "left_block",
+        applicationId: "1",
+        name: "position x axis",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:"flex",
+            'justify-content':'space-between',
+            'align-items':'center',
+            "margin-top":"10px",
+            width:'330px'
+        },
+        childrenIds: ["left_input_block","left_handler_block"],
+    },
+    {
+        uuid: "top_input_block",
+        applicationId: "1",
+        name: "top input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between',
+        },
+        childrenIds: ["top_label", "top_input"],
+    },
+    {
+        uuid: "left_input_block",
+        applicationId: "1",
+        name: "left input block",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display:'flex',
+            'align-items':'center',
+            'justify-content':'space-between',
+        },
+        childrenIds: ["left_label","left_input"],
     },
     {
         uuid: "top_label",
@@ -192,6 +250,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -212,6 +274,7 @@ export default [
         style: {
             display:'block',
             width: "120px",
+            size:'small',
         },
         event: {
             valueChange:  /* js */ `
@@ -277,7 +340,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -294,7 +357,6 @@ export default [
         name: "top handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {
@@ -338,6 +400,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            'font-size':'14px',
+            width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -358,6 +424,7 @@ export default [
         style: {
             display:'block',
             width: "120px",
+            size:'small',
         },
         event: {
             valueChange:  /* js */ `
@@ -421,7 +488,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -438,7 +505,6 @@ export default [
         name: "left handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {

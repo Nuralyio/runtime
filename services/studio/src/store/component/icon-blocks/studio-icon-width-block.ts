@@ -8,9 +8,12 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
+            width: "330px",
+            display:'flex',
+            'justify-content':'space-between',
+            'align-items':'center'
         },
-        childrenIds: ["icon_width_block"],
+        childrenIds: ["icon_width_block","icon_width_handler_block"],
     },
     {
         uuid: "icon_width_block",
@@ -19,11 +22,12 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "250px",
             display:'flex',
-            'flex-direction':'column'
+            'align-items':'center',
+            'justify-content':'space-between'
+
         },
-        childrenIds: ["icon_width", "icon_width_input","icon_width_handler_block"],
+        childrenIds: ["icon_width", "icon_width_input"],
     },
 
     {
@@ -32,6 +36,10 @@ export default [
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+            width:'90px',
+            'font-size':'14px'
+        },
         input: {
             value: {
                 type: 'handler',
@@ -50,7 +58,8 @@ export default [
         component_type: ComponentType.NumberInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "20px",
+            width: "120px",
+            size:'small'
         },
         event: {
             valueChange: {
@@ -117,7 +126,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "220px",
+            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
@@ -133,7 +142,6 @@ export default [
         name: "icon width handler",
         style: {
                 display:'block',
-                width: "250px", 
         },
         input: { 
             value: {
