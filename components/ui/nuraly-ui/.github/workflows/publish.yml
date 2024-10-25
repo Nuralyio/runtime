@@ -63,5 +63,6 @@ jobs:
           cd ../checkbox && publish-if-not-published
           cd ../table && publish-if-not-published
           cd ../slider-input && publish-if-not-published
+          cd ../collapse && publish-if-not-published
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
