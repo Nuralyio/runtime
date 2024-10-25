@@ -39,6 +39,7 @@ export class HyCollapse extends LitElement {
               ${classMap({
                 'disabled-header': section.collapsible == false,
                 'collapsed-header': section.open == true,
+                'fold-header': section.open != true
               })}
                 "
               @click="${() => this.toggleSection(index)}"
