@@ -23,6 +23,7 @@ export const enum ComponentType {
   IconPicker ='IconPicker',
   UsersDropdown ='UsersDropdown',
   InsertDropdown ='InsertDropdown',
+  Collapse ='Collapse',
   AI = "AI"
 }
 

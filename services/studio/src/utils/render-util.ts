@@ -22,6 +22,7 @@ import '../components/shared/blocks/components/IconPicker/IconPicker';
 import '../components/shared/blocks/components/MicroApp/MicroApp';
 import '../components/shared/blocks/components/UsersDropdown/UsersDropdown'
 import '../components/shared/blocks/components/InsertDropdown/InsertDropdown'
+import '../components/shared/blocks/components/Collapse/Collapse'
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -48,8 +49,9 @@ const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .comp
 const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`;
 const usersDropdownTemplate = (props: any) => html`<users-dropdown-block .item=${props.item} .component=${props.component}></users-dropdown-block>`;
 const insertDropdownTemplate = (props: any) => html`<insert-dropdown-block .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
-
 const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
+const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item} .component=${props.component}></collapse-block>`;
+
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
 
@@ -111,7 +113,9 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
     case ComponentType.UsersDropdown:
         return usersDropdownTemplate(commonProps);
     case ComponentType.InsertDropdown:
-         return insertDropdownTemplate(commonProps);
+        return insertDropdownTemplate(commonProps);
+    case ComponentType.Collapse:
+        return collapseTemplate(commonProps);
     default:
       return html``;
   }

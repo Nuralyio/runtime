@@ -6,6 +6,7 @@ import { renderComponent } from 'utils/render-util';
 import { BaseElementBlock } from '../BaseElement';
 import { eventDispatcher } from 'utils/change-detection';
 import { styleMap } from 'lit/directives/style-map.js';
+import { getVar } from '$store/context';
 
 @customElement('tabs-block')
 export class TabsBlock extends BaseElementBlock {
@@ -17,6 +18,8 @@ export class TabsBlock extends BaseElementBlock {
 
     @state()
     private componentsWithChildrens: ComponentElement[] = [];
+   
+    selectedComponents="";
 
     static override styles = css`
     :host {
@@ -24,15 +27,6 @@ export class TabsBlock extends BaseElementBlock {
       height: 100%;
     }
   `;
-    tabsValueRecived(tabs: any) {
-        this.updateComponents();
-    }
-
-    constructor() {
-        super();
-        this.registerCallback('tabs', this.tabsValueRecived.bind(this));
-       
-    }
     
     private generateComponent(childrensIds: string[]) {
         const childrens = this.componentsWithChildrens.filter(component => childrensIds?.includes(component.uuid));
@@ -47,10 +41,7 @@ export class TabsBlock extends BaseElementBlock {
     }
 
     override connectedCallback() {
-        super.connectedCallback();
-        eventDispatcher.on('component:refresh', () => {
-            this.updateComponents();
-        })
+        super.connectedCallback();     
         this.traitInputsHandlers();
     }
 
@@ -65,7 +56,11 @@ export class TabsBlock extends BaseElementBlock {
     override updated(changedProperties: Map<string | number | symbol, unknown>) {
         super.updated(changedProperties);
         if (changedProperties.has('component')) {
-            this.traitInputsHandlers();
+            const newSelectedComponent= getVar("global", "selectedComponents")?.value ?? [];
+            if((newSelectedComponent[0]!=this.selectedComponents) || !this.selectedComponents){
+                this.selectedComponents = newSelectedComponent[0] 
+                this.updateComponents()
+            }
             //this.editableTabs = this.memoizedGenerateTabs();
         }
     }

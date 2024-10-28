@@ -205,7 +205,7 @@ export default [
                                 "font_family_block",
                                 "text_alignement_block",
                                 "text_vertical_alignement_block",
-                                "position_block",
+                                "position_collapse_container",
                                 "width_vertical_container",
                                 "height_vertical_container",
                                 "font_weight_block",
@@ -231,7 +231,7 @@ export default [
                                 "input_helper_color_block",
                                 "input_helper_font_size_vertical_container",
                                 "placeholder_text_block",
-                                "position_block",
+                                "position_collapse_container",
                                 "width_vertical_container",
                                 "size_block",
                                 "input_type_block",
@@ -245,7 +245,7 @@ export default [
                         case "button_input":
                             parameters=[
                                 'label_text_block',
-                                "position_block",
+                                "position_collapse_container",
                                 'size_block',
                                 'button_type_block',
                                 'icon_picker_block',
@@ -259,7 +259,7 @@ export default [
                             parameters=[
                                 'label_text_block',
                                 'checkbox_checked_block',
-                                'position_block',
+                                'position_collapse_container',
                                 'state_block',
                                 'size_block',
                                 "checkbox_changed_event_block",
@@ -270,7 +270,7 @@ export default [
                             parameters=[
                                 'image_width_vertical_container',
                                 'image_height_vertical_container',
-                                'position_block',
+                                'position_collapse_container',
                                 'image_alt_text_block',
                                 'image_src_text_block',
                                 'image_fallback_text_block'
@@ -281,7 +281,7 @@ export default [
                                 "value_text_block",
                                 'datepicker_locale_block',
                                 'size_block',
-                                'position_block',
+                                'position_collapse_container',
                                 'width_vertical_container',
                                 'status_block',
                                 'state_block',
@@ -300,7 +300,7 @@ export default [
                                 "select_label_color_block",
                                 "select_label_font_size_vertical_container",
                                 'select_values_handler_block',
-                                'position_block',
+                                'position_collapse_container',
                                 'width_vertical_container',
                                 "label_text_block",
                                 'status_block',
@@ -318,7 +318,7 @@ export default [
                                 "box_shadow_block", 
                                 "font_family_block", 
                                 "font_size_vertical_container",
-                                'position_block',
+                                'position_collapse_container',
                                 'width_vertical_container',
                                 'table_selectionmode_block',
                                 'table_filter_block',
@@ -333,13 +333,13 @@ export default [
                                 'icon_picker_block',
                                 'icon_width_vertical_container',
                                 'icon_height_vertical_container',
-                                'position_block',
+                                'position_collapse_container',
                                 'icon_color_block'
                             ];
                             break;
                         case "vertical-container-block":
                             parameters=[
-                                "position_block",
+                                "position_collapse_container",
                                 "width_vertical_container",
                                 "height_vertical_container", 
                             ]

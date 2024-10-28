@@ -2,6 +2,44 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
+        uuid: "position_collapse_container",
+        applicationId: "1",
+        name: "position collapse container",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            "margin-top":'10px',
+        },
+        childrenIds: ["position_collapse"]
+    },
+    {
+        uuid: "position_collapse",
+        applicationId: "1",
+        name: "position collapse",
+        component_type: ComponentType.Collapse,
+        style:{
+          "--hy-collapse-content-small-size-padding":"5px",
+          "--hy-collapse-font-weight:":"normal",
+          '--hy-collapse-border-radius':'5px',
+          '--hy-collapse-width':'320px',
+        },
+        input: {
+            size:{
+                type:'handler',
+                value:/* js */`
+                const size='small';
+                return size;
+                `
+            },
+            components:{
+                type:'handler',
+                value:/* js */`
+                return [{blockName:'position_block',label:'Box'}];
+                `
+            }
+        }
+    },
+    {
         uuid: "position_block",
         applicationId: "1",
         name: "position block",
@@ -10,7 +48,7 @@ export default [
         style: {
             display:'flex',
             'flex-direction':'column',
-            "margin-top":'10px'
+            "margin-top":'10px',
         },
 
         childrenIds: ["position_label", "position_select","position_handler_block","position_values"],
@@ -341,7 +379,6 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "50px",
-            'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
         },
@@ -489,7 +526,6 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             width: "50px",
-            'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
         },
