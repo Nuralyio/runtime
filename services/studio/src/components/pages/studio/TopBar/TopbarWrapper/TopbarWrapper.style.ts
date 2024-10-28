@@ -9,6 +9,11 @@ const topbarWrapperStyle = css`
     width: 100%;
     height: 100%;
   }
+  @media (prefers-color-scheme: dark) {
+    micro-app{
+      --hybrid-button-ghost-text-color:white;
+    }
+  }
 `;
 
 export default [topbarWrapperStyle];
