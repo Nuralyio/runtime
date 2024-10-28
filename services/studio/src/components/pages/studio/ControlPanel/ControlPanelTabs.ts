@@ -33,19 +33,24 @@ export class ParametersPanel extends LitElement {
      --hybrid-button-border-right: 1px solid #a8a8a8 ;
      --hybrid-button-border-top: 1px solid #a8a8a8 ;
      --hybrid-button-border-bottom: 1px solid #a8a8a8 ;
-    
-   }
-   @media (prefers-color-scheme: dark) {
-    micro-app{
-      --hybrid-input-focus-border: 1px solid #ffffff;
-
-      --hybrid-select-focus-border: 1px solid #ffffff;
-
-      --hybrid-button-border-left: 1px solid #a8a8a8 ;
-      --hybrid-button-border-right: 1px solid #a8a8a8 ;
-      --hybrid-button-border-top: 1px solid #a8a8a8 ;
-      --hybrid-button-border-bottom: 1px solid #a8a8a8 ;
-     }
+     
+     --hy-collapse-content-background-color: transparent;
+    }
+    @media (prefers-color-scheme: dark) {
+      micro-app{
+        --hybrid-input-focus-border: 1px solid #ffffff;
+        
+        --hybrid-select-focus-border: 1px solid #ffffff;
+        
+        --hybrid-button-border-left: 1px solid #a8a8a8 ;
+        --hybrid-button-border-right: 1px solid #a8a8a8 ;
+        --hybrid-button-border-top: 1px solid #a8a8a8 ;
+        --hybrid-button-border-bottom: 1px solid #a8a8a8;
+        
+        --hy-collapse-border: 1px solid #a8a8a8;  
+        --hy-collapse-header-hover-background-color: #3a3a3a;
+        --hy-collapse-header-collapsed-background-color: #3a3a3a;
+      }
       
    }
   
