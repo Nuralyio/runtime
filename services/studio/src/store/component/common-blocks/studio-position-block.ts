@@ -356,7 +356,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         let state ='enabled'
-                        if(currentComponent?.styleHandlers && currentComponent.styleHandlers?.top){
+                        if((currentComponent?.styleHandlers && currentComponent.styleHandlers?.top) ||(currentComponent?.style && (!currentComponent?.style['position'] || currentComponent?.style['position'] == 'static')) ){
                             state='disabled'
                         }
                         return state;  
@@ -505,7 +505,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         let state ='enabled'
-                        if(currentComponent?.styleHandlers && currentComponent.styleHandlers?.left){
+                        if((currentComponent?.styleHandlers && currentComponent.styleHandlers?.left )||(!currentComponent?.style['position'] || currentComponent?.style && currentComponent?.style['position'] == 'static')){
                             state='disabled'
                         }
                         return state;  
