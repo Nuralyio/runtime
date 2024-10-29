@@ -95,12 +95,14 @@ export class EditorInteractivePanel extends LitElement {
       this.shadowRoot?.querySelector('.page-container')?.addEventListener('scroll', this.handleScroll);
     });
     document.addEventListener('keydown', this.handleEscapeKey);
+    document.addEventListener('click', this.handleClickOutside);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.shadowRoot?.querySelector('.page-container')?.removeEventListener('scroll', this.handleScroll);
     document.removeEventListener('keydown', this.handleEscapeKey);
+    document.removeEventListener('click',this.handleClickOutside)
   }
 
   private handleContextMenuEvent = (contextMenuEvent: any) => {
@@ -120,12 +122,20 @@ export class EditorInteractivePanel extends LitElement {
       this.inputRef.value.style.display = 'none';
     }
   }
+  private handleClickOutside =(clickOutsideEvent:Event)=>{
+    if(this.inputRef.value &&
+       !(clickOutsideEvent.composedPath() as HTMLElement[]).find((element)=>element.id =='quick-action-wrapper')
+    ){
+      this.inputRef.value.style.display = 'none';
+    }
 
+  }
   render() {
     return html`
     <theme-contaienr>
       <div>
         <quick-action-wrapper
+        id="quick-action-wrapper"
           ${ref(this.inputRef)}
           style="position: absolute; display: none;"
           @click=${(e: Event) => {}}
