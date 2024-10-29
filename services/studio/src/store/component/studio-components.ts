@@ -391,20 +391,18 @@ export default [
         uuid: "select_component_text",
         name: "text_label",
         component_type: ComponentType.TextLabel,
+        ...COMMON_ATTRIBUTES,
+        applicationId: "1",
         input:{
             value:{
-                type: "string",
-                value:"Select Component to start"
+                type:'handler',
+                value:/* js */`
+                const selectComponentText=' ';
+                return selectComponentText;
+                
+                `
             }
         },
-        event: {
-            onClick:  /* js */ `
-                SetVar("showSecondsRow",true);
-            `
-        },
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-
     },
     ...studioPageNameBlock,
     ...studioPageUrlBlock,
