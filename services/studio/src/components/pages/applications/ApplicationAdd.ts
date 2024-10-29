@@ -109,6 +109,7 @@ export class ApplicationAdd extends LitElement {
           danger
           .icon=${['cancel']}
             @click=${() => {
+				closeCreateApplicationModalAction()
 			}}
           >
             Cancel
