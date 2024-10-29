@@ -48,6 +48,7 @@ import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-l
 import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block";
 import studioDatepickerDateChangeEventBlock from "./datepicker-blocks/studio-datepicker-date-change-event-block";
 import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block";
+import studioSelectWidth from './select-blocks/studio-select-width-block'
 import studioSelectHelperColor from './select-blocks/studio-select-helper-color-block';
 import studioSelectHelperSize from './select-blocks/studio-select-helper-size-block';
 import studioSelectLabelColor from './select-blocks/studio-select-label-color-block';
@@ -301,7 +302,7 @@ export default [
                                 "select_label_font_size_vertical_container",
                                 'select_values_handler_block',
                                 'position_collapse_container',
-                                'width_vertical_container',
+                                'select_width_vertical_container',
                                 "label_text_block",
                                 'status_block',
                                 'state_block',
@@ -439,6 +440,7 @@ export default [
     ...studioSelectLabelColor,
     ...studioInputLabelColor,
     ...studioInputLabelSize,
+    ...studioSelectWidth,
     ...studioSelectLabelSize,
     ...studioSelectValuesBlock,
     ...studioStatusBlock,

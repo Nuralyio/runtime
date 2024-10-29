@@ -5,6 +5,13 @@ import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
+function debounce(func, wait = 300) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
 
 @customElement("number-input-block")
 export class NumberInputBlock extends BaseElementBlock {
@@ -28,13 +35,13 @@ export class NumberInputBlock extends BaseElementBlock {
   };
 
 
-  handleValueChange = (e) => {
-    if (this.component.event.valueChange) {
+  handleValueChange = debounce( (e) => {
+    if (this.component?.event?.valueChange) {
       const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
         value: e.detail.value,
       });
     }
-  };
+  },0)
 
 
   render() {

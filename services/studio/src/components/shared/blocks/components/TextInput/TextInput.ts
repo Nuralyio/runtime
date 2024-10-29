@@ -73,7 +73,7 @@ export class TextInputBlock extends BaseElementBlock {
     return html`
     <span style=${styleMap({...inputStyles,width:inputAutoWidth?'auto':inputStyles.width,height:inputAutoHeight?'auto':inputStyles.height,display:'block',...inputStyleHandlers})}> 
     <hy-input 
-    style=${styleMap({...inputStyles})}
+    style=${styleMap({...inputStyles,width:inputAutoWidth?'auto':inputStyles.width,height:inputAutoHeight?'auto':inputStyles.height})}
       @valueChange=${this.handleValueChange}
       @focused=${this.onFocus}
       @blured=${this.onBlur}
