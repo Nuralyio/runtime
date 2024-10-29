@@ -11,7 +11,8 @@ const selectStyle = css`
     border-bottom: var(--hybrid-select-border-bottom,var(--hybrid-select-local-border-bottom));
     border-top: var(--hybrid-select-border-top,var(--hybrid-select-local-border-top));
     border-left: var(--hybrid-select-border-left,var(--hybrid-select-local-border-left));
-    border-right: var(--hybrid-select-border-right,var(--hybrid-select-local-border-right))
+    border-right: var(--hybrid-select-border-right,var(--hybrid-select-local-border-right));
+    word-break:break-word;
   }
 
   .select {
