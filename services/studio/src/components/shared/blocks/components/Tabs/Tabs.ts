@@ -19,7 +19,6 @@ export class TabsBlock extends BaseElementBlock {
     @state()
     private componentsWithChildrens: ComponentElement[] = [];
    
-    selectedComponents="";
 
     static override styles = css`
     :host {
@@ -56,11 +55,7 @@ export class TabsBlock extends BaseElementBlock {
     override updated(changedProperties: Map<string | number | symbol, unknown>) {
         super.updated(changedProperties);
         if (changedProperties.has('component')) {
-            const newSelectedComponent= getVar("global", "selectedComponents")?.value ?? [];
-            if((newSelectedComponent[0]!=this.selectedComponents) || !this.selectedComponents){
-                this.selectedComponents = newSelectedComponent[0] 
                 this.updateComponents()
-            }
             //this.editableTabs = this.memoizedGenerateTabs();
         }
     }

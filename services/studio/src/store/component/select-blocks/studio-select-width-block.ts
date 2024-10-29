@@ -2,9 +2,9 @@ import { ComponentType } from "../interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 export default [
     {
-        uuid: "icon_width_vertical_container",
+        uuid: "select_width_vertical_container",
         applicationId: "1",
-        name: "icon width vertical container",
+        name: "select width vertical container",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -13,12 +13,12 @@ export default [
             'justify-content':'space-between',
             'align-items':'center'
         },
-        childrenIds: ["icon_width_block","icon_width_handler_block"],
+        childrenIds: ["select_width_block","select_width_handler_block"],
     },
     {
-        uuid: "icon_width_block",
+        uuid: "select_width_block",
         applicationId: "1",
-        name: "Icon width block",
+        name: "select width block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -27,12 +27,12 @@ export default [
             'justify-content':'space-between'
 
         },
-        childrenIds: ["icon_width", "icon_width_input"],
+        childrenIds: ["select_width", "select_width_input"],
     },
 
     {
-        uuid: "icon_width",
-        name: "icon width",
+        uuid: "select_width",
+        name: "select width",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -52,8 +52,8 @@ export default [
       
     },
     {
-        uuid: "icon_width_input",
-        name: "icon width",
+        uuid: "select_width_input",
+        name: "select width",
         applicationId: "1",
         component_type: ComponentType.NumberInput,
         ...COMMON_ATTRIBUTES,
@@ -68,7 +68,7 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "--hybrid-icon-width",EventData.value+'px');
+                            updateStyle(currentComponent, "--hybrid-select-width",EventData.value+'px');
                         }
                     }catch(error){
                         console.log(error);
@@ -83,8 +83,8 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const iconWidth = currentComponent?.style['--hybrid-icon-width']||0;
-                return iconWidth;
+                const selectWidth = currentComponent?.style&&currentComponent.style['--hybrid-select-width']||0;
+                return selectWidth;
                 
             }
 
@@ -102,7 +102,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-icon-width']){
+                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-width']){
                          state='disabled'
                         }
                        return state
@@ -117,9 +117,9 @@ export default [
         }
     },
     {
-        uuid: "icon_width_handler_block",
+        uuid: "select_width_handler_block",
         applicationId: "1",
-        name: "icon with handler block",
+        name: "select with handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -128,15 +128,15 @@ export default [
             display:'flex',
             'justify-content':'space-between',
         }, 
-        childrenIds: ["icon_width_handler"],
+        childrenIds: ["select_width_handler"],
     },
     {
-        uuid: "icon_width_handler",
+        uuid: "select_width_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "icon width handler",
+        name: "select width handler",
         style: {
                 display:'block',
         },
@@ -144,19 +144,19 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='iconWidth';
-                let iconWidthHandler =''
+                const parameter ='selectWidth';
+                let selectWidthHandler =''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    iconWidthHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-icon-width'] || ''  
+                    selectWidthHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-width'] || ''  
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,iconWidthHandler];
+                return [parameter,selectWidthHandler];
             `
             }
         },
@@ -168,7 +168,7 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'--hybrid-icon-width',EventData.value)
+                    updateStyleHandlers(currentComponent,'--hybrid-select-width',EventData.value)
                 }
             }catch(error){
                 console.log(error);

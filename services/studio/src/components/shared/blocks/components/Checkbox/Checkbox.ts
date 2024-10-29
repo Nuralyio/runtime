@@ -43,7 +43,7 @@ export class TextInputBlock extends BaseElementBlock {
 
   handleCheckboxChange = (e) => {
     if (this.component.event?.checkboxChanged) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.checkboxChanged`)) 
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.checkboxChanged`),{value:e.detail.value}) 
     }
   }
 
