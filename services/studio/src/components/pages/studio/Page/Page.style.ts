@@ -23,7 +23,7 @@ const pageStyle = css`
   @media (prefers-color-scheme: dark) {
         .page-container {
         --hybrid-tabs-content-background-color: #313131;
-      background: #313131;
+      background: transparent;
 
         color:#f8fafc;
       }
