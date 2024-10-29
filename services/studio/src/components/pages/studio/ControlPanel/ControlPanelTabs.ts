@@ -27,8 +27,8 @@ export class ParametersPanel extends LitElement {
      --hybrid-select-border-radius: 7px;
      --hybrid-select-focus-border: 1px solid gray;
 
-     --hybrid-button-background-color: #000000;
-     --hybrid-button-text-color: #ffffff;
+     --hybrid-button-background-color: #f4f4f4;
+     --hybrid-button-text-color: #535353;
      --hybrid-button-border-left: 1px solid #a8a8a8 ;
      --hybrid-button-border-right: 1px solid #a8a8a8 ;
      --hybrid-button-border-top: 1px solid #a8a8a8 ;
@@ -46,6 +46,10 @@ export class ParametersPanel extends LitElement {
         --hybrid-button-border-right: 1px solid #a8a8a8 ;
         --hybrid-button-border-top: 1px solid #a8a8a8 ;
         --hybrid-button-border-bottom: 1px solid #a8a8a8;
+        --hybrid-button-background-color: #000000;
+        --hybrid-button-text-color: #ffffff;
+
+
         
         --hy-collapse-border: 1px solid #a8a8a8;  
         --hy-collapse-header-hover-background-color: #3a3a3a;
