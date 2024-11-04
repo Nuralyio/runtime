@@ -33,7 +33,8 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
     ...component,
     uuid: componentId,
     pageId: uuid,
-    applicationId: currentApplicatinId
+    applicationId: currentApplicatinId,
+    
   } as ComponentElement
   if (!currentComponentId || (currentComponent?.component_type != ComponentType.VerticalContainer && currentComponent?.component_type != ComponentType.Collection)) {
     newComponent.root = true;

@@ -199,7 +199,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
         setVar(component.applicationId, symbol, value);
     }
 
-    function updateInput(component: ComponentElement, inputName: string, handlerType: string, handlerValue: any) {
+   function updateInput(component: ComponentElement, inputName: string, handlerType: string, handlerValue: any) {
         const eventData = { [inputName]: { type: handlerType, value: handlerValue } };
         updateComponentAttributes(component.applicationId, component.uuid, "input", eventData);
     }

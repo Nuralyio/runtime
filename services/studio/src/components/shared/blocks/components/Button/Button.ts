@@ -22,6 +22,12 @@ export class ButtonBlock extends BaseElementBlock {
   display: any = false;
  
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.registerCallback('value', (v) => {
+      this.requestUpdate();
+    })
+  }
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (changedProperties.has("component")) {

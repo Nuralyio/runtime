@@ -12,6 +12,13 @@ export class IconBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.registerCallback('value', (v) => {
+      this.requestUpdate();
+    })
+  }
+
 
 
   render() {
