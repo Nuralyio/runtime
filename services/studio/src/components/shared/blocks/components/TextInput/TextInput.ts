@@ -7,7 +7,7 @@ import "@hybridui/input"
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 import { setValue } from "$store/apps";
-
+import { updateComponentAttributes } from "$store/actions/component";
 
 // Debounce function with default wait time
 function debounce(func, wait = 300) {
@@ -39,6 +39,12 @@ export class TextInputBlock extends BaseElementBlock {
   override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.unsubscribe) this.unsubscribe();
+  }
+  override connectedCallback() {
+    super.connectedCallback();
+    this.registerCallback('value', (v) => {
+      this.requestUpdate();
+    })
   }
 
   // Debounced event handler with default debounce wait time

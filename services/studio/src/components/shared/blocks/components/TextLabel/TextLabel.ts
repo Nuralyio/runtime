@@ -30,12 +30,11 @@ export class TextLabelBlock extends BaseElementBlock {
   @state()
   thisvalue;
 
-  constructor() {
-    super();
+  override connectedCallback() {
+    super.connectedCallback();
     this.registerCallback('value', (v) => {
-      this.thisvalue = v;
-    });
-
+      this.requestUpdate();
+    })
   }
 
   handleBodyClick = (event) => {
@@ -94,9 +93,10 @@ export class TextLabelBlock extends BaseElementBlock {
             executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseLeave`));
           }
         }}
-          @blur=${(e) => {
+          @blur=${(e:Event) => {
           this.isEditable = false;
-
+          const value = (e.target as HTMLElement).innerText
+          updateComponentAttributes(this.component.applicationId,this.component.uuid,'input',{value:{type:'value',value}})
         }}
           @dblclick=${(e) => {
           e.preventDefault();

@@ -34,6 +34,13 @@ export class TextInputBlock extends BaseElementBlock {
  
   unsubscribe: () => void;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.registerCallback('value', (v) => {
+      this.requestUpdate();
+    })
+  }
+
 
 
   override disconnectedCallback() {

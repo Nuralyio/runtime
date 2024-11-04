@@ -97,6 +97,7 @@ export class BaseElementBlock extends LitElement {
 
   async traitInputsHandlers() {
     const handlerPromises = [];
+    console.log('component ',this.component)
     if (this.component?.input) {
       for (const [inputName, input] of Object.entries(this.component?.input)) {
         handlerPromises.push(this.traitInputHandler(input, inputName));
