@@ -1,9 +1,8 @@
 <p align="center">
-  <a href="https://ant.design">
-    <img width="200" src="https://github.com/hybridui/hybridui/assets/3775924/7ad26e1f-f869-4454-b4cb-b7a82113c53a">
-  </a>
+  <a href="https://nuraly.io">
+</a>
 
-<h1 align="center">Hybrid UI</h1>
+<h1 align="center">Nuraly UI</h1>
 
 <div align="center">
 
@@ -37,17 +36,17 @@ This library is still in early stages and once we'll collect enough feedback fro
 ## 📦 Install
 
 ```bash
-npm install @hybridui/{you awsome component}
+npm install @nuraly/{you awsome component}
 ```
 
 ```bash
-yarn add @hybridui/{you awsome component}
+yarn add @nuraly/{you awsome component}
 ```
 
 ## 🔨 Usage
 
 ```jsx
-import { HyButton } from "@hybridui/button/react";
+import { HyButton } from "@nuraly/button/react";
 
 export default function App() {
   return (
@@ -64,11 +63,11 @@ export default function App() {
 
 ### TypeScript
 
-`@hybridui` is written in TypeScript with complete definitions.
+`@nuraly` is written in TypeScript with complete definitions.
 
 ## 🌍 Internationalization
 
-Build-in internationalization for components like `@hybridui/calendar` ...
+Build-in internationalization for components like `@nuraly/calendar` ...
 
 ## 🔗 Links
 
