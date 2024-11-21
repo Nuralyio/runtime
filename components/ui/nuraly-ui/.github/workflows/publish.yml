@@ -53,6 +53,7 @@ jobs:
           cd ../icon && publish-if-not-published -- --access=public
           cd ../input && publish-if-not-published -- --access=public
           cd ../dropdown && publish-if-not-published -- --access=public
+          cd ../image && publish-if-not-published -- --access=public
           cd ../tabs && publish-if-not-published -- --access=public
           cd ../menu && publish-if-not-published -- --access=public
           cd ../radio && publish-if-not-published -- --access=public
