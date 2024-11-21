@@ -48,21 +48,21 @@ jobs:
       - name: Publish Components
         run: |
           npm i -g publish-if-not-published
-          cd dist/components/button && publish-if-not-published
-          cd ../datepicker && publish-if-not-published
-          cd ../icon && publish-if-not-published
-          cd ../input && publish-if-not-published
-          cd ../dropdown && publish-if-not-published
-          cd ../tabs && publish-if-not-published
-          cd ../menu && publish-if-not-published
-          cd ../radio && publish-if-not-published
-          cd ../select && publish-if-not-published
-          cd ../tooltips && publish-if-not-published
-          cd ../colorpicker && publish-if-not-published
-          cd ../modal && publish-if-not-published
-          cd ../checkbox && publish-if-not-published
-          cd ../table && publish-if-not-published
-          cd ../slider-input && publish-if-not-published
-          cd ../collapse && publish-if-not-published
+          cd dist/components/button && publish-if-not-published -- --access=public
+          cd ../datepicker && publish-if-not-published -- --access=public
+          cd ../icon && publish-if-not-published -- --access=public
+          cd ../input && publish-if-not-published -- --access=public
+          cd ../dropdown && publish-if-not-published -- --access=public
+          cd ../tabs && publish-if-not-published -- --access=public
+          cd ../menu && publish-if-not-published -- --access=public
+          cd ../radio && publish-if-not-published -- --access=public
+          cd ../select && publish-if-not-published -- --access=public
+          cd ../tooltips && publish-if-not-published -- --access=public
+          cd ../colorpicker && publish-if-not-published -- --access=public
+          cd ../modal && publish-if-not-published -- --access=public
+          cd ../checkbox && publish-if-not-published -- --access=public
+          cd ../table && publish-if-not-published -- --access=public
+          cd ../slider-input && publish-if-not-published -- --access=public
+          cd ../collapse && publish-if-not-published -- --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
