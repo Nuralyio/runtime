@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 import { executeEventHandler } from "core/engine";
-import "@hybridui/input";
+import "@nuraly/input";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 import { $applications, setValue } from "$store/apps";

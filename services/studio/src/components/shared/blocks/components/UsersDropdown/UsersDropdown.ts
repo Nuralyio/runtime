@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@hybridui/dropdown";
-import '@hybridui/image'
+import "@nuraly/dropdown";
+import '@nuraly/image'
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 

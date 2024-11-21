@@ -1,10 +1,10 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import "@hybridui/modal"
-import "@hybridui/button"
-import "@hybridui/icon";
+import "@nuraly/modal"
+import "@nuraly/button"
+import "@nuraly/icon";
 
-import { Validations } from '@hybridui/input';
+import { Validations } from '@nuraly/input';
 import { $showCreateApplicationModal } from '$store/apps';
 import { closeCreateApplicationModalAction } from '$store/actions/app';
 import { createApplicationAction } from '$store/handlers/applications/handler';

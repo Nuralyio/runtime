@@ -12,7 +12,7 @@ import {
     $showShareApplicationModal
   } from '$store/apps';
 import { addPermission } from '$store/handlers/applications/handler';
-import "@hybridui/modal";
+import "@nuraly/modal";
   
   import { LitElement, html, css, nothing } from 'lit';
   import { customElement, state } from 'lit/decorators.js';

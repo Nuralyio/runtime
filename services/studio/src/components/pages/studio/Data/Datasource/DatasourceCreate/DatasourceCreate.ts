@@ -1,7 +1,7 @@
 import { openTab } from '$store/actions/app';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { Validations } from '@hybridui/input';
+import { Validations } from '@nuraly/input';
 import { loadProviders } from '$store/actions/provider';
 
 @customElement('data-source-create')
