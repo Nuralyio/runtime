@@ -3,7 +3,7 @@ import { BaseElementBlock } from "../BaseElement";
 import type { ComponentElement } from "$store/component/interface";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
-import '@hybridui/radio'
+import '@nuraly/radio'
 import { executeEventHandler } from "core/engine";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";

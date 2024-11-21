@@ -1,8 +1,8 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import styles from "./EnvironmentSwitcher.style";
-import "@hybridui/dropdown";
-import "@hybridui/button";
+import "@nuraly/dropdown";
+import "@nuraly/button";
 @customElement("top-bar-environment-switcher")
 export class TopbarEnvironmentSwitcher extends LitElement {
   static styles = styles;

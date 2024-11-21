@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@hybridui/dropdown";
-import "@hybridui/button";
+import "@nuraly/dropdown";
+import "@nuraly/button";
 import styles from "./UserInfo.style";
 @customElement("topbar-user-info")
 export class TopbarUserInfo extends LitElement {

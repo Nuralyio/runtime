@@ -1,10 +1,10 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@hybridui/select";
+import "@nuraly/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
-import "@hybridui/icon"; 
+import "@nuraly/icon"; 
 
 
 @customElement("icon-block")

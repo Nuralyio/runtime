@@ -1,9 +1,9 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
-import '@hybridui/tabs';
-import '@hybridui/dropdown';
-import '@hybridui/color-picker';
-import '@hybridui/select';
+import '@nuraly/tabs';
+import '@nuraly/dropdown';
+import '@nuraly/color-picker';
+import '@nuraly/select';
 import { styleMap } from 'lit/directives/style-map.js';
 import { $environment, type Environment, ViewMode } from '$store/environment';
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from '$store/page';
