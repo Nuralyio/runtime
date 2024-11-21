@@ -12,6 +12,10 @@ export const styleVariables = css`
     --hybrid-input-local-border-top: 3px solid transparent;
     --hybrid-input-local-border-left: 2px solid transparent;
     --hybrid-input-local-border-right: 2px solid transparent;
+    --hybrid-input-local-disabled-border-bottom: none;
+    --hybrid-input-local-disabled-border-top: none;
+    --hybrid-input-local-disabled-border-left: none;
+    --hybrid-input-local-disabled-border-right: none;
     --hybrid-input-local-focus-border: 2px solid #0f62fe;
     --hybrid-input-local-border-radius: 0px;
     --hybrid-input-local-label-font-size: 13px;

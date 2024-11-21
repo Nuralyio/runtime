@@ -138,7 +138,11 @@ const inputStyle = css`
   }
 
   :host([disabled]) #input-container {
-    border-bottom: none;
+    border-bottom: var(--hybrid-input-disabled-border-bottom,var(--hybrid-input-local-disabled-border-bottom));
+    border-top: var(--hybrid-input-disabled-border-top,var(--hybrid-input-local-disabled-border-top));
+    border-left:var(--hybrid-input-disabled-border-left,var(--hybrid-input-local-disabled-border-left));
+    border-right:var(--hybrid-input-disabled-border-right,var(--hybrid-input-local-disabled-border-right));
+    opacity:0.6;
   }
 
   input {
