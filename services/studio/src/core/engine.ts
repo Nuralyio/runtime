@@ -1,12 +1,7 @@
-import { $components, type ComponentStore } from "$store/component/component-sotre";
 import { type ComponentElement } from "$store/component/interface";
 
-import { executeInServiceWorker, registerApplicationsInServiceWorker, registerApplicationComponentsInServiceWorker } from "./helper";
 import type { Extrats } from "../interfaces/core.interfaces";
-import { $applications } from "$store/apps";
 import { isServer } from "utils/envirement";
-import { getWorkerInstance } from "utils/worker/worker-init";
-import { eventDispatcher } from "utils/change-detection";
 
 const isVerbose = import.meta.env.PUBLIC_VERBOSE;
 
@@ -19,9 +14,6 @@ interface ExecuteStack {
 }
 
 let executeStack: ExecuteStack[] = [];
-let _isServiceWorkerReady = false;
-let _components: ComponentElement[] = [];
-
 if (!isServer) {
   // Handle default values executions here if needed.
 }
