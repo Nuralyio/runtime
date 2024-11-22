@@ -1,7 +1,7 @@
 ---
 import Layout from './layouts/LandingLayout.astro';
-import "../components/micro-app";
-import { MicroApp } from '../components/micro-app';
+import "../core/micro-app";
+import { MicroApp } from '../core/micro-app';
 import { processHeaders } from 'utils/api-calls-utils';
 import { fetchApplicationPagesById } from '$services/page.service';
 const { page_url } = Astro.props;

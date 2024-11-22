@@ -1,18 +1,18 @@
 ---
 import MakeLayout from "./layouts/MakeLayout.astro";
 
-import "../components/pages/studio/MainPanel/EditorInteractivePanel";
-import "../components/shared/blocks/components/Tabs/Tabs";
-import "../components/shared/blocks/components/Menu/Menu";
-import "../components/shared/blocks/components/ColorPicker/colorpicker";
-import "../components/shared/blocks/components/NumberInput/NumberInput";
-import "../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper";
-import "../components/shared/blocks/components/IconButton/iconbutton";
-import "../components/shared/blocks/components/Select/Select";
-import { TabsPanel } from "../components/pages/studio/MainPanel/TabsPanel";
-import { TopbarPanelWrapper } from "../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
-import { LeftPanel } from "../components/pages/studio/Layout/LeftPanel";
-import { RightPanel } from "../components/pages/studio/Layout/RightPanel";
+import "./app/studio/components/MainPanel/EditorInteractivePanel";
+import "../shared/blocks/components/Tabs/Tabs";
+import "../shared/blocks/components/Menu/Menu";
+import "../shared/blocks/components/ColorPicker/colorpicker";
+import "../shared/blocks/components/NumberInput/NumberInput";
+import "../shared/blocks/wrappers/GenerikWrapper/GenerikWrapper";
+import "../shared/blocks/components/IconButton/iconbutton";
+import "../shared/blocks/components/Select/Select";
+import { TabsPanel } from "./app/studio/components/MainPanel/TabsPanel";
+import { TopbarPanelWrapper } from "./app/studio/components/TopBar/TopbarWrapper/TopbarWrapper";
+import { LeftPanel } from "./app/studio/components/Layout/LeftPanel";
+import { RightPanel } from "./app/studio/components/Layout/RightPanel";
 import { $pages } from "../store/page"
 import { $components } from "$store/component/component-sotre";
 import { $applications } from "$store/apps";
@@ -21,7 +21,7 @@ import { processHeaders } from "utils/api-calls-utils";
 import { fetchAllApplications } from "$services/applications.service";
 import { fetchApplicationPagesById } from "$services/page.service";
 import { fetchApplicationComponentById } from "$services/component.service";
-import { EditorSpinner } from '../components/pages/studio/Layout/EditorSpinner'
+import { EditorSpinner } from './app/studio/components/Layout/EditorSpinner'
 
 // TODO: handle error
 const { app } = Astro.props;
