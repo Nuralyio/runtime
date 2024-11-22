@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@nuraly/dropdown";
-import '@nuraly/image'
+import "@nuralyui/dropdown";
+import '@nuralyui/image'
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
 

@@ -1,9 +1,9 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
-import '@nuraly/tabs';
-import '@nuraly/dropdown';
-import '@nuraly/color-picker';
-import '@nuraly/select';
+import '@nuralyui/tabs';
+import '@nuralyui/dropdown';
+import '@nuralyui/color-picker';
+import '@nuralyui/select';
 import { styleMap } from 'lit/directives/style-map.js';
 import { $environment, type Environment, ViewMode } from '$store/environment';
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from '$store/page';

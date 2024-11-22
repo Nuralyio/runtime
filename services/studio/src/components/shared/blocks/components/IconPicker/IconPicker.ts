@@ -2,7 +2,7 @@ import type { ComponentElement } from '$store/component/interface';
 import { css, html, nothing } from 'lit';
 import {customElement, property, state} from 'lit/decorators.js'
 import { BaseElementBlock } from '../BaseElement';
-import '@nuraly/icon'
+import '@nuralyui/icon'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import {styles} from "./IconPicker.style"
 import { executeCodeWithClosure } from "core/executer";

@@ -1,10 +1,10 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@nuraly/select";
+import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";
-import "@nuraly/datepicker";
+import "@nuralyui/datepicker";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 

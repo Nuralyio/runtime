@@ -1,8 +1,8 @@
 import type { ComponentElement } from "$store/component/interface";
 import {css, html, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
-import "@nuraly/checkbox";
-import "@nuraly/slider-input"
+import "@nuralyui/checkbox";
+import "@nuralyui/slider-input"
 import { BaseElementBlock } from "../BaseElement";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";

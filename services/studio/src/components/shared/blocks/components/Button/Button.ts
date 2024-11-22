@@ -1,6 +1,6 @@
 import {  html, type PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuraly/button";
+import "@nuralyui/button";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";

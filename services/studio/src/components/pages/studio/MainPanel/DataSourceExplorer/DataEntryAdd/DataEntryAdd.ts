@@ -1,7 +1,7 @@
 import { openTab } from '$store/actions/app';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { Validations } from '@nuraly/input';
+import { Validations } from '@nuralyui/input';
 import { loadProviders } from '$store/actions/provider';
 
 @customElement('data-entry-add')

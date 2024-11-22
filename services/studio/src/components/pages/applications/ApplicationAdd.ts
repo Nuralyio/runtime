@@ -1,10 +1,10 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import "@nuraly/modal"
-import "@nuraly/button"
-import "@nuraly/icon";
+import "@nuralyui/modal"
+import "@nuralyui/button"
+import "@nuralyui/icon";
 
-import { Validations } from '@nuraly/input';
+import { Validations } from '@nuralyui/input';
 import { $showCreateApplicationModal } from '$store/apps';
 import { closeCreateApplicationModalAction } from '$store/actions/app';
 import { createApplicationAction } from '$store/handlers/applications/handler';
