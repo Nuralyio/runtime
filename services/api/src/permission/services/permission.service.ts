@@ -32,6 +32,10 @@ export class PermissionService {
     return await this.PermissionRepository.findPermissionByType(permissionType);
   }
 
+  public async findPermissionByResourceId(resourceId: string): Promise<Permission> {
+    return await this.PermissionRepository.findPermissionByResourceId(resourceId);
+  }
+
   public async update(id: number, userId: string,
     resourceId: string,
     resourceType: string,

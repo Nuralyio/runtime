@@ -6,7 +6,7 @@ import { injectable } from "tsyringe";
 
 @Route('/api/permissions')
 @Tags('Permissions')
-
+@injectable()
 export class PermissionController extends Controller {
   private readonly permissionService: PermissionService;
   constructor(permissionService: PermissionService) {
@@ -35,6 +35,13 @@ export class PermissionController extends Controller {
     @Path() permissionType: string
   ): Promise<Permission[]> {
     return await this.permissionService.findPermissionByType(permissionType);
+  }
+
+  @Get("/resource/{resourceId}")
+  public async findPermissionByResourceId(
+    @Path() resourceId: string
+  ): Promise<Permission> {
+    return await this.permissionService.findPermissionByResourceId(resourceId);
   }
 
   @Put("{id}")

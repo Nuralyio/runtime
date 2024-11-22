@@ -4,8 +4,8 @@ import { Page } from "../models/page";
 import { injectable } from "tsyringe";
 import { v4 as uuidv4 } from 'uuid';
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
-import { NotFoundException } from "../../common/exceptions";
 import { removeNullProperties } from "../../shared/utils/remove-null-properties";
+import {NotFoundException} from "../../exceptions/NotFoundException";
 
 
 @Route('/api/pages')

@@ -5,6 +5,7 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   if (err.status && err.message) {
     res.status(err.status).json({ error: err.message });
   } else {
+    console.log(err)
     logger.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
   }

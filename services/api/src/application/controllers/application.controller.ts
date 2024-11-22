@@ -39,7 +39,6 @@ export class ApplicationController extends Controller {
       permissionType: ApplicationPermission.read
     }
     const applicationsIds = await this.ownershipService.getResourceIDWithPermissionOrOwner(resourcePermissionRequest)
-
     return await this.applicationService.findAll(applicationsIds);
   }
 
