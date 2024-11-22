@@ -36,17 +36,17 @@ This library is still in early stages and once we'll collect enough feedback fro
 ## 📦 Install
 
 ```bash
-npm install @nuraly/{you awsome component}
+npm install @nuralyui/{you awsome component}
 ```
 
 ```bash
-yarn add @nuraly/{you awsome component}
+yarn add @nuralyui/{you awsome component}
 ```
 
 ## 🔨 Usage
 
 ```jsx
-import { HyButton } from "@nuraly/button/react";
+import { HyButton } from "@nuralyui/button/react";
 
 export default function App() {
   return (
@@ -63,11 +63,11 @@ export default function App() {
 
 ### TypeScript
 
-`@nuraly` is written in TypeScript with complete definitions.
+`@nuralyui` is written in TypeScript with complete definitions.
 
 ## 🌍 Internationalization
 
-Build-in internationalization for components like `@nuraly/calendar` ...
+Build-in internationalization for components like `@nuralyui/calendar` ...
 
 ## 🔗 Links
 
