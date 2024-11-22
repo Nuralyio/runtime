@@ -1,7 +1,7 @@
 import { UserService } from "../../application/user.service";
 import { Body, Controller, Delete, Get, Path, Post, Put, Route, Security, Tags } from "tsoa";
 import { UserRepositoryPrismaPgSQL } from "../user.repository";
-import { IResponseMessage } from "../../../common/response.message.interface";
+import { IResponseMessage } from "../../../exceptions/Response.message.interface";
 
 @Route('/api/users')
 @Tags('Users')

@@ -5,7 +5,8 @@ import { ComponentRepositoryPrismaPgSQL } from "../repositories/component.reposi
 import authMiddleware from "../../middlewares/user.middleware";
 import { CreateComponentRequest } from "../interfaces/CreateComponentRequest";
 import { removeNullProperties } from "../../shared/utils/remove-null-properties";
-import { NotFoundException } from "../../common/exceptions";
+
+import {NotFoundException} from "../../exceptions/NotFoundException";
 
 @Route('/api/components')
 @Tags('Components')

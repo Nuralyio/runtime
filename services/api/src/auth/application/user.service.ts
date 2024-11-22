@@ -1,9 +1,9 @@
-import { NotFoundException } from '../../common/exceptions';
-import { handleError } from '../../common/handle.error';
+import { handleError } from '../../exceptions/handle.error';
 import { IUserRepository } from '../domain/interfaces/user.interface';
 import { User } from '../domain/user';
 import bcrypt from 'bcrypt';
 import { Logger } from 'tslog';
+import {NotFoundException} from "../../exceptions/NotFoundException";
 
 const logger = new Logger();
 

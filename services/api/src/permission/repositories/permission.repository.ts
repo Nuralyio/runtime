@@ -2,6 +2,7 @@ import prisma from '../../../prisma/prisma';
 import { IPermissionRepository } from '../interfaces/permission.interface';
 import { Permission } from '../models/permission';
 import { singleton } from 'tsyringe';
+import {NotFoundException} from "../../exceptions/NotFoundException";
 
 @singleton()
 export class PermissionRepository implements IPermissionRepository {
@@ -55,6 +56,21 @@ export class PermissionRepository implements IPermissionRepository {
             updatedPermission.ownerId,
             updatedPermission.allowed
         );
+    }
+    public async findPermissionByResourceId(resourceId: string): Promise<Permission> {
+        const permission = await prisma.permission.findFirst(
+            { where: { resourceId } }
+        );
+        if(!permission)  throw new NotFoundException('No permission found');
+        return  new Permission(
+            permission.userId,
+            permission.resourceId,
+            permission.resourceType,
+            permission.publicState,
+            permission.permissionType,
+            permission.ownerId,
+            permission.allowed
+        ) ;
     }
     public async delete(id: number): Promise<Permission> {
         const deletePermission = await prisma.permission.delete({

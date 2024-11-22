@@ -1,11 +1,9 @@
 import { Logger } from 'tslog';
-import {
-  BadRequestException,
-  ConflictException,
-  InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException
-} from './exceptions';
+import {InternalServerErrorException} from "./InternalServerErrorException";
+import {NotFoundException} from "./NotFoundException";
+import {BadRequestException} from "./BadRequestException";
+import {ConflictException} from "./ConflictException";
+import {UnauthorizedException} from "./UnauthorizedException";
 
 export const handleError = (error: any, logger: Logger<any>): void => {
   logger.error(error);
