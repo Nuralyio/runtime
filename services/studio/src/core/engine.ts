@@ -19,20 +19,6 @@ if (!isServer) {
 }
 
 /**
- * Executes an event handler for a component.
- * If the service worker is not ready, it pushes the execution details to a stack.
- */
-export function executeEventHandler(
-  component: ComponentElement,
-  handlerScope: string = "event",
-  attributeName: string,
-  extras?: Extrats
-) {
- 
-  //executeInServiceWorker(_components, component, handlerScope, attributeName, extras);
-}
-
-/**
  * Callback function to be called when the service worker is ready.
  * Executes all pending executions in the stack.
  */
