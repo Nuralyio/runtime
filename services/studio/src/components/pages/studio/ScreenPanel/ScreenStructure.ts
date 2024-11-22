@@ -1,10 +1,10 @@
 import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 
-import "@nuraly/menu";
-import "@nuraly/icon";
+import "@nuralyui/menu";
+import "@nuralyui/icon";
 import "../../../micro-app";
-import "@nuraly/button";
+import "@nuralyui/button";
 
 
 @customElement("screen-structure-editor")

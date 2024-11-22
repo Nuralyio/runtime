@@ -2,7 +2,7 @@ import type { ComponentElement } from '$store/component/interface';
 import { BaseElementBlock } from '../BaseElement';
 import { html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import '@nuraly/slider-input';
+import '@nuralyui/slider-input';
 import { executeCodeWithClosure } from 'core/executer';
 import { getNestedAttribute } from 'utils/object.utils';
 

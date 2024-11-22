@@ -2,9 +2,9 @@ import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { v4 as uuidv4 } from "uuid";
 
-import "@nuraly/menu";
-import "@nuraly/button";
-import "@nuraly/icon";
+import "@nuralyui/menu";
+import "@nuralyui/button";
+import "@nuralyui/icon";
 import { $pages } from "$store/page";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { addPageAction } from "$store/actions/page";

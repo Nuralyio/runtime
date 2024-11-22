@@ -1,9 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import styles from "./ScreenActions.style";
-import "@nuraly/button";
-import "@nuraly/dropdown";
-import "@nuraly/icon";
+import "@nuralyui/button";
+import "@nuralyui/dropdown";
+import "@nuralyui/icon";
 import { addComponentAction, setCurrentComponentIdAction } from "$store/actions/component";
 import { ComponentType } from "$store/component/interface";
 import { GenerateName } from "utils/naming-generator";

@@ -1,6 +1,6 @@
 import { html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuraly/color-picker";
+import "@nuralyui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface";
 import { BaseElementBlock } from "../BaseElement";

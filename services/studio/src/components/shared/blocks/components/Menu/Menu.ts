@@ -4,8 +4,8 @@ import { executeHandler } from 'core/helper';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { generateRandomId } from 'utils/randomness';
-import '@nuraly/menu/templates/hy-sub-menu.js'
-import '@nuraly/menu/templates/hy-menu-link.js'
+import '@nuralyui/menu/templates/hy-sub-menu.js'
+import '@nuralyui/menu/templates/hy-menu-link.js'
 import { BaseElementBlock } from '../BaseElement';
 import { executeEventHandler } from 'core/engine';
 import { executeCodeWithClosure } from 'core/executer';

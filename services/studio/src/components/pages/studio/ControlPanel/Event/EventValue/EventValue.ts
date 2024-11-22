@@ -3,7 +3,7 @@ import { BaseElementBlock } from "components/shared/blocks/components/BaseElemen
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
-import "@nuraly/dropdown";
+import "@nuralyui/dropdown";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 import { styleMap } from "lit/directives/style-map.js";

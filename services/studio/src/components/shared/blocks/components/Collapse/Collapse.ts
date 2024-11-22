@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit';
 import { BaseElementBlock } from './../BaseElement';
-import '@nuraly/collapse'
+import '@nuralyui/collapse'
 import { customElement, state } from 'lit/decorators.js';
 import { renderComponent } from 'utils/render-util';
 import type { ComponentElement } from '$store/component/interface';
