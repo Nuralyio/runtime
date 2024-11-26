@@ -12,25 +12,23 @@ export class IconBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.registerCallback('value', (v) => {
+  override async connectedCallback() {
+    await super.connectedCallback();
+    this.registerCallback("value", () => {
       this.requestUpdate();
-    })
+    });
   }
-
 
 
   render() {
     const iconStyles = this.component?.style || {};
-    const iconStyleHandlers =this.component?.styleHandlers? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key,value])=>value)) : {};
+    const iconStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([, value]) => value)) : {};
 
-  
     return html`
-      <hy-icon 
-      .name=${this.inputHandlersValue.icon??'smile'}
-      style=${styleMap({...iconStyles,...iconStyleHandlers})}>
+      <hy-icon
+        .name=${this.inputHandlersValue.icon ?? "smile"}
+        style=${styleMap({ ...iconStyles, ...iconStyleHandlers })}>
       </hy-icon>
     `;
   }

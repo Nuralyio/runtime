@@ -7,7 +7,8 @@ import "@nuralyui/button";
 import "@nuralyui/icon";
 import { $pages } from "$store/page";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
-import { addPageAction } from "$store/actions/page";
+
+import { addPageAction } from "$store/actions/page/addPageAction.ts";
 
 @customElement("add-screen-editor")
 export class AddScreen extends LitElement {

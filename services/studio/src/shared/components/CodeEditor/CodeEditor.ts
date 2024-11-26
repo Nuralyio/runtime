@@ -4,8 +4,11 @@ import { createRef, type  Ref, ref } from "lit/directives/ref.js";
 
 // -- Monaco Editor Imports --
 import * as monaco from "monaco-editor";
+// @ts-ignore
 import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
+// @ts-ignore
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+// @ts-ignore
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 
 // @ts-ignore
@@ -90,21 +93,9 @@ export class CodeEditor extends LitElement {
       window.matchMedia("(prefers-color-scheme: dark)").matches
     );
   }
-
-  setValue(value: string) {
-    this.editor!.setValue(value);
-  }
-
   getValue() {
-    const value = this.editor!.getValue();
-    return value;
+    return this.editor!.getValue();
   }
-
-  setReadOnly(value: boolean) {
-    this.readOnly = value;
-    this.setOptions({ readOnly: value });
-  }
-
   setOptions(value: monaco.editor.IStandaloneEditorConstructionOptions) {
     this.editor!.updateOptions(value);
   }
@@ -142,10 +133,4 @@ export class CodeEditor extends LitElement {
         });
     }
     
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "code-editor": CodeEditor;
-  }
 }

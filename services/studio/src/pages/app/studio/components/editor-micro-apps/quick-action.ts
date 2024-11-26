@@ -1,5 +1,5 @@
-import { COMMON_ATTRIBUTES } from "../../pages/app/studio/studio-microapp/helper/common_attributes";
-import { ComponentType } from "$store/component/interface";
+import { COMMON_ATTRIBUTES } from "../../studio-microapp/helper/common_attributes.ts";
+import { ComponentType } from "$store/component/interface.ts";
 
 export default [
     {

@@ -3,8 +3,8 @@ import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import './ApplicationAdd';
 import './ApplicationDelete';
-import { showCreateApplicationModalAction } from '$store/actions/app';
 import { repeat } from 'lit/directives/repeat.js';
+import { showCreateApplicationModalAction } from "$store/actions/application/showCreateApplicationModalAction.ts";
 
 @customElement('applications-list')
 export class ApplicationList extends LitElement {

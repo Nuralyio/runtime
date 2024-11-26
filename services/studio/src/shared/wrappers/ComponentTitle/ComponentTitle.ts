@@ -1,9 +1,9 @@
-import { setDraggingComponentInfo } from "$store/actions/component.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { $context, getVar } from "$store/context.ts";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
+import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
 
 @customElement("component-title")
 export class ComponentTitle extends LitElement {

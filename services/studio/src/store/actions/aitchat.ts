@@ -1,9 +1,10 @@
 import { $currentApplication } from "$store/apps";
-import { $applicationComponents } from "$store/component/component-sotre";
+import { $applicationComponents } from "$store/component/store.ts";
 import type { ComponentElement } from "$store/component/interface";
 import { getVar } from "$store/context";
 import { eventDispatcher } from "utils/change-detection";
-import { addComponentAction } from "./component";
+
+import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
 
 export function addGeneratedComponents(structureComponent: ComponentElement[]) {
 

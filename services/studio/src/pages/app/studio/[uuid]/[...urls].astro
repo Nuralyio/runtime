@@ -14,7 +14,7 @@ import { TopbarPanelWrapper } from "../components/TopBar/TopbarWrapper/TopbarWra
 import { LeftPanel } from "../components/Layout/LeftPanel";
 import { RightPanel } from "../components/Layout/RightPanel";
 import { $pages } from "$store/page"
-import { $components } from "$store/component/component-sotre";
+import { $components } from "../../../../store/component/store";
 import { $applications } from "$store/apps";
 import { processHeaders } from "../../../../utils/api-calls-utils";
 import { fetchAllApplications } from "../../../../services/applications.service";
@@ -28,7 +28,7 @@ const { title, uuid, urls = "" } = Astro.params;
 const processedHeaders = processHeaders(Astro.request.headers);
 
 let pageData, componentData, applications, application;
-let occuredError = null;
+let occurredError = null;
 try {
 
   // Load application pages, components, and applications in parallel
@@ -57,7 +57,7 @@ try {
   if(error instanceof ApplicationNotFound) {
     // Handle application not found here
     console.error("Application not found:", error);
-    occuredError = "not-found";
+    occurredError = "not-found";
   }
 }
 ---
@@ -66,7 +66,7 @@ try {
 
 <MakeLayout title="Make Apps">
   {(() => {
-    switch (occuredError) {
+    switch (occurredError) {
       case "not-found":
         return (
           <div class="flex flex-col justify-center items-center h-screen text-gray-800 bg-gray-100 space-y-4">

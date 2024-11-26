@@ -1,5 +1,5 @@
 import type { ComponentElement } from "$store/component/interface.ts";
-import { $components } from "$store/component/component-sotre.ts";
+import { $components } from "$store/component/store.ts";
 import { $currentPageId, $pages } from "$store/page.ts";
 import type { PageElement } from "$store/handlers/pages/interfaces/interface.ts";
 

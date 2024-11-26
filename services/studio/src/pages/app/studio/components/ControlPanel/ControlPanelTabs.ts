@@ -1,7 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { state, customElement } from "lit/decorators.js";
 import { $applicationComponents }
-  from "$store/component/component-sotre.ts";
+  from "$store/component/store.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { $currentApplication } from "$store/apps.ts";
 import { $context, getVar } from "$store/context.ts";

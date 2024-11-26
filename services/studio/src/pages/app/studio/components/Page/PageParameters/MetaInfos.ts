@@ -1,9 +1,9 @@
-import { updatePageAction } from '$store/actions/page.ts';
 import { updatePageHandler } from '$store/handlers/pages/handler.ts';
 import type { PageElement } from '$store/handlers/pages/interfaces/interface.ts';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { live } from 'lit/directives/live.js';
+import { updatePageAction } from "$store/actions/page/updatePageAction.ts";
 
 @customElement('page-meta-infos')
 export class PageMetaInfos extends LitElement {

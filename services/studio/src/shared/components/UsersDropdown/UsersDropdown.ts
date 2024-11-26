@@ -14,18 +14,18 @@ export class UsersDropdownBlock extends BaseElementBlock {
 
   render() {
     return html`
-    <hy-dropdown
-    trigger=${this.inputHandlersValue?.trigger??nothing}
-    .options=${this.inputHandlersValue?.users??[]}
-    @click-item=${(e: CustomEvent) => console.log('value clicked', e.detail)}
-  >
-    <hy-image
-        .src="${this.inputHandlersValue?.userImage ??nothing}"
-         .width="${this.inputHandlersValue?.imageWidth??nothing}"
-         .height="${this.inputHandlersValue?.imageHeight??nothing}"
-    >
-    </hy-image>
-  </hy-dropdown>
+      <hy-dropdown
+        trigger=${this.inputHandlersValue?.trigger ?? nothing}
+        .options=${this.inputHandlersValue?.users ?? []}
+        @click-item=${(e: CustomEvent) => console.log("value clicked", e.detail)}
+      >
+        <hy-image
+          .src="${this.inputHandlersValue?.userImage ?? nothing}"
+          .width="${this.inputHandlersValue?.imageWidth ?? nothing}"
+          .height="${this.inputHandlersValue?.imageHeight ?? nothing}"
+        >
+        </hy-image>
+      </hy-dropdown>
     `;
   }
 }

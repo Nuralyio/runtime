@@ -1,9 +1,9 @@
-import { updateApplication } from '$store/actions/app.ts';
 import { $currentApplication } from '$store/apps.ts';
 import type { PageElement } from '$store/handlers/pages/interfaces/interface.ts';
 import { $currentPage } from '$store/page.ts';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from "lit/decorators.js";
+import { updateApplication } from "$store/actions/application/updateApplication.ts";
 
 @customElement("attribute-page-default")
 export class AttributePageDefault extends LitElement {

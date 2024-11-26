@@ -1,6 +1,7 @@
 import type { ComponentElement } from "$store/component/interface.ts";
-import { $components } from "$store/component/component-sotre.ts";
-import { removeComponentToCurrentPageAction } from "$store/actions/page.ts";
+import { $components } from "$store/component/store.ts";
+
+import { removeComponentToCurrentPageAction } from "$store/actions/page/removeComponentToCurrentPageAction.ts";
 
 export function moveDraggedComponentInside(
   dropInComponentId: string,

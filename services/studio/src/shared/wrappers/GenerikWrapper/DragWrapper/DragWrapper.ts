@@ -4,7 +4,8 @@ import { styleMap } from "lit/directives/style-map.js";
 import styles from "./DragWrapper.style.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import { moveDraggedComponent, setDraggingComponentInfo } from "$store/actions/component.ts";
+import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
+import { moveDraggedComponent } from "$store/actions/component/moveDraggedComponent.ts";
 
 @customElement("drag-wrapper")
 export class DragWrapper extends LitElement {

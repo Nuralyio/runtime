@@ -4,7 +4,8 @@ import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
 import styles from "./BackgroundColorAttribute.style";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
-import { updatePageStyleAttributes } from "$store/actions/page";
+
+import { updatePageStyleAttributes } from "$store/actions/page/updatePageStyleAttributes.ts";
 
 @customElement("attribute-page-background-color")
 export class AttributeColor extends LitElement {

@@ -6,8 +6,8 @@ import "@nuralyui/icon";
 
 import { Validations } from '@nuralyui/input';
 import { $showCreateApplicationModal } from '$store/apps.ts';
-import { closeCreateApplicationModalAction } from '$store/actions/app.ts';
 import { createApplicationAction } from '$store/handlers/applications/handler.ts';
+import { closeCreateApplicationModalAction } from "$store/actions/editor/closeCreateApplicationModalAction.ts";
 export class ApplicationAdd extends LitElement {
 	static override styles = [
 		css`

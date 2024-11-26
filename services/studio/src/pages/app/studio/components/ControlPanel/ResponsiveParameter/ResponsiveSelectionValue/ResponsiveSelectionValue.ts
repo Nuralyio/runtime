@@ -1,7 +1,7 @@
-import { setCurrentPageViewPort } from '$store/actions/page.ts';
 import { $currentPageViewPort } from '$store/page.ts';
 import { LitElement, html, css } from 'lit';
 import { state } from 'lit/decorators.js';
+import { setCurrentPageViewPort } from "$store/actions/page/setCurrentPageViewPort.ts";
 
 export class ResponsiveSelection extends LitElement {
     static override styles = [
