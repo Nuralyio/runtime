@@ -1,16 +1,17 @@
 import { type ComponentElement } from "$store/component/interface";
-import { LitElement, html, css, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
 import "@nuralyui/dropdown";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 import { styleMap } from "lit/directives/style-map.js";
-import { BaseElementBlock } from "@shared/blocks/components/BaseElement.ts";
+import { BaseElementBlock } from "@shared/components/BaseElement.ts";
+
 setTimeout(() => {
   if(!isServer)
   { 
-    import('../../shared/SmartAttribute/SmartAttributeHandler/SmartAttributeHandler')  
+    import('../../shared/SmartAttribute/SmartAttributeHandler/SmartAttributeHandler')
   }
   
 });

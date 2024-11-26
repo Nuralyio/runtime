@@ -1,8 +1,6 @@
-import { atom, onMount } from "nanostores";
-import { logger } from "@nanostores/logger";
+import { atom } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
-import { registerContextInServiceWorker } from "core/helper";
-import { $pages } from "$store/page";
+
 
 const isServer = typeof window === 'undefined';
 

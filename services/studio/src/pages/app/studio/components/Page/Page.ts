@@ -1,26 +1,30 @@
-import "@shared/blocks/components/Collections/Collections";
-import "@shared/blocks/components/Button/Button";
-import "@shared/blocks/components/Containers/Container";
-import "@shared/blocks/components/TextInput/TextInput";
-import "@shared/blocks/components/TextLabel/TextLabel";
-import "@shared/blocks/wrappers/GenerikWrapper/GenerikWrapper";
-import "@shared/blocks/wrappers/RectangleSelection/RectangleSelection";
+import "@shared/components/Collections/Collections";
+import "@shared/components/Button/Button";
+import "@shared/components/Containers/Container";
+import "@shared/components/TextInput/TextInput";
+import "@shared/components/TextLabel/TextLabel";
+import "@shared/wrappers/GenerikWrapper/GenerikWrapper";
+import "@shared/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
 import { $currentApplication, $resizing, $values } from "$store/apps";
-import { deleteComponentAction, moveDraggedComponentIntoCurrentPageRoot, setCurrentComponentIdAction } from "$store/actions/component";
+import {
+  deleteComponentAction,
+  moveDraggedComponentIntoCurrentPageRoot,
+  setCurrentComponentIdAction
+} from "$store/actions/component";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $applicationComponents, $components, $draggingComponentInfo, $selectedComponent } from "$store/component/component-sotre";
+import { $applicationComponents, $components, $draggingComponentInfo } from "$store/component/component-sotre";
 import { updatePageInfo } from "$store/actions/page";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { $applicationPages, $currentPage, $currentPageViewPort, $pages } from "$store/page";
-import { LitElement, html } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
 import { $context, getVar, setVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
-import { $environment, ViewMode, type Environment } from "$store/environment";
+import { $environment, type Environment, ViewMode } from "$store/environment";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -56,7 +60,6 @@ export class PageContent extends LitElement {
   refreshComponent() {
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
-    const selectedComponents = getVar("global","selectedComponents")
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {

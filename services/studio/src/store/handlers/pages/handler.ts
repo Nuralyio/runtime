@@ -1,8 +1,6 @@
-import { setDefaultApplicationPageIfNotSet } from "$store/actions/app";
 import { $currentApplication } from "$store/apps";
 import { addPageToApplicationAction, updatePageAction } from "../../actions/page";
-import { type PageElement } from "./interfaces/interface"
-import { $pages } from "../../page";
+import { type PageElement } from "./interfaces/interface";
 
 export const addPageHandler = (page: PageElement, resolve?,reject ?) => {
 
@@ -29,7 +27,7 @@ export const addPageHandler = (page: PageElement, resolve?,reject ?) => {
 }
 
 
-export const updatePageHandler = (page: PageElement) => {
+export const updatePageHandler = (page: PageElement, callback: (page: any) => void) => {
 	fetch("/api/pages/"+page.uuid, {
 		method: "PUT",
 		headers: {
@@ -39,5 +37,6 @@ export const updatePageHandler = (page: PageElement) => {
 	}).then(res => res.json())
 		.then((res) => {
 		updatePageAction(res,$currentApplication.get().uuid)
+			// todo: call the callback when updated
 		});
 }
