@@ -53,20 +53,6 @@ export class TabsPanel extends LitElement {
 	override connectedCallback() {
 		super.connectedCallback();
 		$editorState.subscribe((editorState) => {
-			this.editableTabs = [
-				{
-					id: '1',
-					label: 'Page name',
-					content: html`
-					  	  <editor-interactive-panel >
-					          <content-page></content-page>
-					        </editor-interactive-panel>
-					  	`,
-					editable: {
-						canDeleteTab: false,
-					}
-				}
-			];
 			editorState.tabs.forEach((tab) => {
 				switch (tab.type) {
 					case 'datasource':

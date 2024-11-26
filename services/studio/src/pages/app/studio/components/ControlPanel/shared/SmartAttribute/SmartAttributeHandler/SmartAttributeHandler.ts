@@ -1,7 +1,6 @@
 import { LitElement, html, css, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from "$store/component/interface.ts";
-import { updateComponentAttributeHandlers } from "$store/actions/component.ts";
 import "../SmartAttributeCodeEditor/SmartAttributeCodeEditor.ts";
 
 @customElement("smart-attribute-handler")
@@ -45,9 +44,7 @@ export class SmartAttributeHandler extends LitElement {
     const {
       detail: { value },
     } = event;
-    updateComponentAttributeHandlers(this.component.uuid, this.handlerScope, {
-      [this.attributeName]: value,
-    });
+
     this.dispatchEvent(new CustomEvent('code-change',{bubbles:true,composed:true,detail:{value}}))
   }
   connectedCallback(): void {
