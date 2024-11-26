@@ -215,7 +215,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     if (context && context[contentId] && context[contentId][symbol] && "value" in context[contentId][symbol]) {
       return context[contentId][symbol].value;
     } else {
-      throw new VariableNotFoundException("Variable not found or invalid structure.");
+      console.warn("Variable not found or invalid structure." + symbol, );
     }
   }
 
@@ -228,7 +228,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
     } else {
-      throw new VariableNotFoundException("Variable not found or invalid structure.");
+      console.warn("Variable not found or invalid structure."+ symbol);
     }
   }
 

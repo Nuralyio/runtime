@@ -29,13 +29,11 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
     ...$components.get(),
     [currentApplicatinId]: [
       ...($components.get()[currentApplicatinId] || []), newComponent
-
     ]
   });
 
 
   if (currentComponentId) {
-    // or ComponentType.Collection
     if (currentComponent?.component_type === ComponentType.VerticalContainer || currentComponent?.component_type === ComponentType.Collection) {
       addComponentAsChildOf(componentId, currentComponentId, currentApplicatinId);
     } else {
@@ -47,5 +45,5 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
 
   setTimeout(() => {
     addComponentHandler({ component: newComponent }, currentApplicatinId);
-  }, 0);
+  }, 10);
 };

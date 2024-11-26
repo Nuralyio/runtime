@@ -76,10 +76,8 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   private updateZoomLevel(pageZoom: string) {
-    requestAnimationFrame(() => {
       this.zoomLevel = Number(pageZoom);
       this.requestUpdate();
-    });
   }
 
   handleScroll = (event: Event) => {
