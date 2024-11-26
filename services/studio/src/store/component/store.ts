@@ -2,7 +2,7 @@ import { persistentAtom } from "@nanostores/persistent";
 import { type ComponentElement, type DraggingComponentInfo } from "./interface";
 import { atom, computed, deepMap } from "nanostores";
 import studioComponents from "./studio-components";
-import landingComponents from "./landing/landing-main-components";
+import landingComponents from "../../pages/app/studio/studio-microapp/landing/landing-main-components";
 import { currentLoadedApplication } from "$store/ssr/server-data";
 import { fillComponentChildren } from "./helper";
 import { logger } from "@nanostores/logger";

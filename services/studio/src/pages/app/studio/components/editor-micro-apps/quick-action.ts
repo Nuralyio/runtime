@@ -1,4 +1,4 @@
-import { COMMON_ATTRIBUTES } from "$store/component/helper/common_attributes";
+import { COMMON_ATTRIBUTES } from "../../pages/app/studio/studio-microapp/helper/common_attributes";
 import { ComponentType } from "$store/component/interface";
 
 export default [
