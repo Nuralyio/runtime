@@ -1,7 +1,7 @@
-import { LitElement, html, css, type PropertyValueMap, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import "@shared/blocks/components/CodeEditor/CodeEditor";
+import "@shared/components/CodeEditor/CodeEditor";
 
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {

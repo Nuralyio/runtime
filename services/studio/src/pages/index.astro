@@ -1,5 +1,5 @@
 ---
-import Layout from './layouts/LandingLayout.astro';
+import Layout from './_layouts/LandingLayout.astro';
 import "../core/micro-app";
 import { MicroApp } from '../core/micro-app';
 import { processHeaders } from 'utils/api-calls-utils';
@@ -10,6 +10,7 @@ const processedHeaders = processHeaders(Astro.request.headers);
 let pageData = [];
 
 try {
+  // todo: make the default app dynamic
   const pageRequest = await fetchApplicationPagesById(processedHeaders, '8639f6d5-9171-41e4-a21c-447c8c1b62c2');
   pageData = pageRequest.data;
 } catch (error) {

@@ -1,113 +1,113 @@
-import { $applicationComponents, $components, } from '$store/component/component-sotre';
-import { LitElement, html, css, } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { renderComponent } from 'utils/render-util';
-import "@shared/blocks/components/TextLabel/TextLabel"
-import "@shared/blocks/components/Containers/Container"
-import { $context } from '$store/context';
-import { $microAppCurrentPage, $pages } from '$store/page';
-import { eventDispatcher } from 'utils/change-detection';
-import { $environment, ViewMode } from '$store/environment';
-import { debounceTime } from 'rxjs/operators';
-import { Observable , merge} from 'rxjs';
+import { $applicationComponents, $components } from "$store/component/component-sotre";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { renderComponent } from "utils/render-util";
+import "@shared/components/TextLabel/TextLabel";
+import "@shared/components/Containers/Container";
+import { $context } from "$store/context";
+import { $pages } from "$store/page";
+import { eventDispatcher } from "utils/change-detection";
+import { $environment, ViewMode } from "$store/environment";
+import { debounceTime } from "rxjs/operators";
+import { merge, Observable } from "rxjs";
 
-@customElement('micro-app')
+@customElement("micro-app")
 export class MicroApp extends LitElement {
 
-    @property({ type: String, reflect: true })
-    uuid: string;
-    @property({ type: String, reflect: true })
-    page_uuid: string;
-    @property({ type: String, reflect: false })
-    componentToRenderUUID: string;
+  static override styles = [
+    css``
+  ];
+  @property({ type: String, reflect: true })
+  uuid: string;
+  @property({ type: String, reflect: true })
+  page_uuid: string;
+  @property({ type: String, reflect: false })
+  componentToRenderUUID: string;
+  @property({ type: Object, reflect: false })
+  mode: ViewMode = ViewMode.Preview;
 
-    static override styles = [
-        css``
-    ];
+  @state()
+  components: any[] = [];
 
-    @property({ type: Object, reflect: false })
-    mode : ViewMode= ViewMode.Preview;
+  constructor() {
+    super();
+  }
 
-    @state()
-    components: any[] = [];
-    constructor() {
-        super();
+  refreshComponent(): void {
+    const components = $applicationComponents(this.uuid).get();
+    this.components = [...components];
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.page_uuid) {
     }
+    // todo: this need to revised
+    //$microAppCurrentPage.setKey("8639f6d5-9171-41e4-a21c-447c8c1b62c2", this.page_uuid);
+    // Create Observables for each store listener
+    const pages$ = new Observable((subscriber) => {
+      const unsubscribe = $pages.subscribe(() => {
+        subscriber.next();
+      });
+      return () => unsubscribe();
+    });
 
-    refreshComponent(): void {
-        const components = $applicationComponents(this.uuid).get();
-        this.components = [...components];
-    }
+    const components$ = new Observable((subscriber) => {
+      const unsubscribe = $components.subscribe(() => {
+        subscriber.next();
+      });
+      return () => unsubscribe();
+    });
 
-    override connectedCallback() {
-        super.connectedCallback();
-        if(this.page_uuid){
-        }
-        $microAppCurrentPage.setKey("8639f6d5-9171-41e4-a21c-447c8c1b62c2", this.page_uuid);
-        // Create Observables for each store listener
-        const pages$ = new Observable((subscriber) => {
-            const unsubscribe = $pages.subscribe(() => {
-                subscriber.next();
-            });
-            return () => unsubscribe();
-        });
+    const context$ = new Observable((subscriber) => {
+      const unsubscribe = $context.subscribe(() => {
+        subscriber.next();
+      });
+      return () => unsubscribe();
+    });
 
-        const components$ = new Observable((subscriber) => {
-            const unsubscribe = $components.subscribe(() => {
-                subscriber.next();
-            });
-            return () => unsubscribe();
-        });
+    const applicationComponents$ = new Observable((subscriber) => {
+      const unsubscribe = $applicationComponents(this.uuid).subscribe(() => {
+        subscriber.next();
+      });
+      return () => unsubscribe();
+    });
 
-        const context$ = new Observable((subscriber) => {
-            const unsubscribe = $context.subscribe(() => {
-                subscriber.next();
-            });
-            return () => unsubscribe();
-        });
+    const envirement$ = new Observable((subscriber) => {
+      const unsubscribe = $environment.subscribe(() => {
+        subscriber.next();
+      });
+      return () => unsubscribe();
+    });
 
-        const applicationComponents$ = new Observable((subscriber) => {
-            const unsubscribe = $applicationComponents(this.uuid).subscribe(() => {
-                subscriber.next();
-            });
-            return () => unsubscribe();
-        });
+    const eventDispatcher$ = new Observable((subscriber) => {
+      eventDispatcher.on("component:refresh", () => {
+        subscriber.next();
+      });
+    });
 
-        const envirement$ = new Observable((subscriber) => {
-            const unsubscribe = $environment.subscribe(() => {
-                subscriber.next();
-            });
-            return () => unsubscribe();
-        });
+    merge(pages$, components$, context$, applicationComponents$, eventDispatcher$, envirement$)
+      .pipe(debounceTime(10))
+      .subscribe(() => {
+        this.refreshComponent();
+      });
+  }
 
-        const eventDispatcher$ = new Observable((subscriber) => {
-            eventDispatcher.on("component:refresh", () => {
-                subscriber.next();
-            });
-        });
+  isPreviewMode() {
+    return this.mode === ViewMode.Preview;
+  }
 
-        merge(pages$, components$, context$, applicationComponents$, eventDispatcher$, envirement$)
-            .pipe(debounceTime(10))
-            .subscribe(() => {
-                this.refreshComponent();
-            });
-    }
-
-    isPreviewMode() {
-        return this.mode === ViewMode.Preview;
-    }
-
-    override render() {
-        return html`
+  override render() {
+    return html`
         
-            ${this.uuid && this.components.length ? html`
-                ${this.componentToRenderUUID ?
-                        renderComponent([...this.components.filter((component: any) => component.uuid === this.componentToRenderUUID)], null, this.isPreviewMode())
-                        :
-                        renderComponent(this.components, null, this.isPreviewMode())
-                }
-            ` : ""
-            }
-        `;
-    }
+      ${this.uuid && this.components.length ? html`
+        ${this.componentToRenderUUID ?
+          renderComponent([...this.components.filter((component: any) => component.uuid === this.componentToRenderUUID)], null, this.isPreviewMode())
+          :
+          renderComponent(this.components, null, this.isPreviewMode())
+        }
+      ` : ""
+      }
+    `;
+  }
 }

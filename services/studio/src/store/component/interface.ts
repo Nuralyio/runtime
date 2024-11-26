@@ -1,4 +1,4 @@
-export const enum ComponentType {
+export const enum   ComponentType {
   TextLabel = "text_label",
   Tabs = "tabs",
   TextInput = "text_input",

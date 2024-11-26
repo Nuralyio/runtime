@@ -1,28 +1,28 @@
 import { type ComponentElement, ComponentType } from "$store/component/interface";
 import { html, type TemplateResult } from "lit";
-import '../shared/blocks/components/Tabs/Tabs';
-import '../shared/blocks/components/Menu/Menu';
-import '../shared/blocks/components/ColorPicker/colorpicker';
-import '../shared/blocks/components/NumberInput/NumberInput';
-import '../shared/blocks/components/TextInput/TextInput';
-import '../shared/blocks/wrappers/GenerikWrapper/GenerikWrapper';
-import '../shared/blocks/components/IconButton/iconbutton';
-import '../shared/blocks/components/Select/Select';
-import '../pages/app/studio/components/ControlPanel/Event/EventValue/EventValue';
-import '../shared/blocks/components/Border/Border';
-import '../shared/blocks/components/BoxShadow/BoxShadow';
-import '../shared/blocks/components/Table/Table';
-import '../shared/blocks/components/Checkbox/Checkbox';
-import '../shared/blocks/components/DatePicker/DatePicker';
-import '../shared/blocks/components/Icon/Icon';
-import '../shared/blocks/components/Image/Image';
-import '../shared/blocks/components/RadioButton/Radio-button';
-import '../shared/blocks/components/AIChat/AIChat';
-import '../shared/blocks/components/IconPicker/IconPicker';
-import '../shared/blocks/components/MicroApp/MicroApp';
-import '../shared/blocks/components/UsersDropdown/UsersDropdown'
-import '../shared/blocks/components/InsertDropdown/InsertDropdown'
-import '../shared/blocks/components/Collapse/Collapse'
+import "@shared/components/Tabs/Tabs";
+import "@shared/components/Menu/Menu";
+import "@shared/components/ColorPicker/colorpicker";
+import "@shared/components/NumberInput/NumberInput";
+import "@shared/components/TextInput/TextInput";
+import "@shared/wrappers/GenerikWrapper/GenerikWrapper";
+import "@shared/components/IconButton/iconbutton";
+import "@shared/components/Select/Select";
+import "../pages/app/studio/components/ControlPanel/Event/EventValue/EventValue";
+import "@shared/components/Border/Border";
+import "@shared/components/BoxShadow/BoxShadow";
+import "@shared/components/Table/Table";
+import "@shared/components/Checkbox/Checkbox";
+import "@shared/components/DatePicker/DatePicker";
+import "@shared/components/Icon/Icon";
+import "@shared/components/Image/Image";
+import "@shared/components/RadioButton/Radio-button";
+import "@shared/components/AIChat/AIChat";
+import "@shared/components/IconPicker/IconPicker";
+import "@shared/components/MicroApp/MicroApp";
+import "@shared/components/UsersDropdown/UsersDropdown";
+import "@shared/components/InsertDropdown/InsertDropdown";
+import "@shared/components/Collapse/Collapse";
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
