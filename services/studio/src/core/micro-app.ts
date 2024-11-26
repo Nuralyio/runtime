@@ -1,4 +1,4 @@
-import { $applicationComponents, $components } from "$store/component/component-sotre";
+import { $applicationComponents, $components } from "$store/component/store.ts";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from "utils/render-util";

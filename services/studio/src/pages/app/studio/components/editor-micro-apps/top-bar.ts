@@ -1,4 +1,4 @@
-import { ComponentType } from "$store/component/interface";
+import { ComponentType } from "$store/component/interface.ts";
 export default [{
     uuid: "top-bar",
     applicationId: "1",

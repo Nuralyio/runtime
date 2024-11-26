@@ -3,14 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import {
-  setCurrentComponentIdAction,
-  setDraggingComponentInfo,
-  setHoveredComponentIdAction,
-  updateComponentAttributes
-} from "$store/actions/component.ts";
-import { setContextMenuEvent } from "$store/actions/page.ts";
-import { $draggingComponentInfo } from "$store/component/component-sotre.ts";
+import { $draggingComponentInfo } from "$store/component/store.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 import { $context, getVar, setVar } from "$store/context.ts";
@@ -21,6 +14,11 @@ import "./DragWrapper/DragWrapper.ts";
 import "./ResizeWrapper/ResizeWrapper.ts";
 import "./QuickActionWrapper/QuickActionWrapper.ts";
 import "../ComponentTitle/ComponentTitle.ts";
+import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
+import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
+import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
+import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 
 function safeParseInt(value) {
   const result = parseInt(value, 10);

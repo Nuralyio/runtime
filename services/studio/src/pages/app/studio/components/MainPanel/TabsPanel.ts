@@ -1,10 +1,9 @@
 import "../Page/Page.ts";
-import "./DataSourceExplorer/DataSourceExplorer.ts";
 import "./EditorInteractivePanel.ts";
-import { closeTab } from "$store/actions/app.ts";
 import { $editorState } from "$store/apps.ts";
 import { LitElement, css, html } from "lit";
 import { state } from "lit/decorators.js";
+import { closeEditorTab } from "$store/actions/editor/closeEditorTab.ts";
 
 export class TabsPanel extends LitElement {
 	static override styles = [
@@ -105,7 +104,7 @@ export class TabsPanel extends LitElement {
   		.activeTab=${this.activeTab}
   		@removeTab=${(e: CustomEvent) => {
 					
-					closeTab(this.editableTabs[e.detail.index])
+					closeEditorTab(this.editableTabs[e.detail.index])
 					//this.editableTabs = this.editableTabs.filter((tab, index) => index !== e.detail.index);
 				}}
         .tabs=${this.editableTabs}

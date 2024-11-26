@@ -2,11 +2,11 @@ import { LitElement, type PropertyValueMap } from "lit";
 import { property, state } from "lit/decorators.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../utils/change-detection.ts";
-import { updateComponentAttributes } from "$store/actions/component.ts";
 import { executeCodeWithClosure } from "../../core/executer.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
+import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 
 function isPromise(value) {
   return Boolean(value && typeof value.then === "function");

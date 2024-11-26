@@ -5,17 +5,11 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/input";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
-import { $components } from "$store/component/component-sotre.ts";
+import { $components } from "$store/component/store.ts";
 import { $microAppCurrentPage } from "$store/page.ts";
+import { debounce } from "@utils/time.ts";
 
-function debounce(func, wait) {
-  let timeout;
-  return function (...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
-  };
-}
+
 
 @customElement("micro-app-block")
 export class MicroAppBlock extends BaseElementBlock {
@@ -40,9 +34,6 @@ export class MicroAppBlock extends BaseElementBlock {
     `,
   ];
 
-  @state()
-  thisvalue: any;
-
   unsubscribe: () => void;
   mode: ViewMode;
 
@@ -53,7 +44,7 @@ export class MicroAppBlock extends BaseElementBlock {
   override async connectedCallback(): Promise<void> {
     await super.connectedCallback();
     const pageUUID =  $microAppCurrentPage.get()["8639f6d5-9171-41e4-a21c-447c8c1b62c2"];
-    this.registerCallback('appUUID', debounce((appUUID) => {
+    this.registerCallback('appUUID', debounce((appUUID: string) => {
       if (appUUID) {
         const appLoaded = $components.get()[appUUID];
         if (appLoaded === undefined) {

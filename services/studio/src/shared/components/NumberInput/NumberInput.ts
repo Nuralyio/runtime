@@ -4,15 +4,9 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
-import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { getNestedAttribute } from "@utils/object.utils.ts";
+import { debounce } from "@utils/time.ts";
 
-function debounce(func, wait = 300) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
 
 @customElement("number-input-block")
 export class NumberInputBlock extends BaseElementBlock {
@@ -23,7 +17,7 @@ export class NumberInputBlock extends BaseElementBlock {
   item: any;
 
   static styles = [
-    css``,
+    css``
   ];
 
   @state()
@@ -32,30 +26,30 @@ export class NumberInputBlock extends BaseElementBlock {
   @state()
   localValue: any = {
     value: 0,
-    unity: ''
+    unity: ""
   };
 
 
-  handleValueChange = debounce( (e) => {
+  handleValueChange = debounce((customEvent: CustomEvent) => {
     if (this.component?.event?.valueChange) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
-        value: e.detail.value,
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
+        value: customEvent.detail.value
       });
     }
-  },0)
+  }, 0);
 
 
   render() {
     return html`
       <span> 
-        <hy-input 
-        style=${styleMap({ ...this.component.style })}
-        .size=${ this.component.style.size ?? nothing}
+        <hy-input
+          style=${styleMap({ ...this.component.style })}
+          .size=${this.component.style.size ?? nothing}
           @valueChange=${this.handleValueChange}
           value=${parseInt(this.inputHandlersValue.value)}
           min="0"
           type="number"
-          .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
+          .disabled=${(this.inputHandlersValue.state == "disabled")}
         ></hy-input>
       </span>
     `;

@@ -6,7 +6,7 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/datepicker";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
-import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { getNestedAttribute } from "@utils/object.utils.ts";
 
 @customElement("date-picker-block")
 export class SelectBlock extends BaseElementBlock {
@@ -14,31 +14,35 @@ export class SelectBlock extends BaseElementBlock {
   component: ComponentElement;
 
 
-  handleDateChange = (e) => {
+  handleDateChange = (customEvent: CustomEvent) => {
     if (this.component.event?.dateChange) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.dateChange`,{
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.dateChange`), {
         EventData: {
-          value: e.detail,
-        },
-      }))
+          value: customEvent.detail
+        }
+      });
     }
   };
 
   render() {
-    const datepickerStyle= this.component?.style || {};
+    const datepickerStyle = this.component?.style || {};
     const datepickerAutoWidth = this.inputHandlersValue?.width;
     return html`
-      <span style=${styleMap({ ...datepickerStyle,width:datepickerAutoWidth ?'auto':datepickerStyle.width,display:'block'})}> 
-        <hy-datepicker 
-         .helper=${this.inputHandlersValue.helper??nothing}
-         .label=${this.inputHandlersValue.label??nothing}
-         .locale=${this.inputHandlersValue.locale??nothing}
-         .state=${this.component?.style?.state??nothing}
-         .size=${this.component?.style?.size??nothing}
-         .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
-         .dateValue=${this.inputHandlersValue.value??nothing}
-         .fieldFormat=${this.inputHandlersValue.format??nothing}
-         @date-change=${this.handleDateChange}
+      <span style=${styleMap({
+        ...datepickerStyle,
+        width: datepickerAutoWidth ? "auto" : datepickerStyle.width,
+        display: "block"
+      })}> 
+        <hy-datepicker
+          .helper=${this.inputHandlersValue.helper ?? nothing}
+          .label=${this.inputHandlersValue.label ?? nothing}
+          .locale=${this.inputHandlersValue.locale ?? nothing}
+          .state=${this.component?.style?.state ?? nothing}
+          .size=${this.component?.style?.size ?? nothing}
+          .disabled=${(this.inputHandlersValue.state == "disabled")}
+          .dateValue=${this.inputHandlersValue.value ?? nothing}
+          .fieldFormat=${this.inputHandlersValue.format ?? nothing}
+          @date-change=${this.handleDateChange}
         ></hy-datepicker>
       </span>
     `;

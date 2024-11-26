@@ -1,9 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorHandler/BackgroundColorHandler.ts";
-import { updateComponentAttributes } from "$store/actions/component.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
 import styles from "./BackgroundColor.style.ts";
+import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 
 @customElement("attribute-background-color")
 export class AttributeBackgroundColor extends LitElement {

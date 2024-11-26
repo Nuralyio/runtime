@@ -1,6 +1,7 @@
 import { $currentApplication } from "$store/apps";
-import { addPageToApplicationAction, updatePageAction } from "../../actions/page";
 import { type PageElement } from "./interfaces/interface";
+import { addPageToApplicationAction } from "$store/actions/application/addPageToApplicationAction.ts";
+import { updatePageAction } from "$store/actions/page/updatePageAction.ts";
 
 export const addPageHandler = (page: PageElement, resolve?,reject ?) => {
 

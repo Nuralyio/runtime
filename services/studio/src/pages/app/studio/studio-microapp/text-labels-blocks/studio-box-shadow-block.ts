@@ -1,5 +1,5 @@
-import { ComponentType } from "../interface";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
+import { ComponentType } from "$store/component/interface.ts";
+import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
     {
         uuid: "box_shadow_block",

@@ -1,14 +1,15 @@
-import { addComponentAction, updateComponentAttributes } from "$store/actions/component";
 import { GenerateName } from "utils/naming-generator";
 
 import { $applications, $values } from "$store/apps";
-import { $components } from "$store/component/component-sotre";
+import { $components } from "$store/component/store.ts";
 import type { ComponentElement, ComponentType } from "$store/component/interface";
 import { $context, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
 import { eventDispatcher } from "utils/change-detection";
 import { isServer } from "utils/envirement";
 import { VariableNotFoundException } from "../exceptions/VariableNotFoundException.ts";
+import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
+import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 
 /**
  * The Executor class manages the context and applications for a system.

@@ -1,5 +1,5 @@
 import type { DraggingComponentInfo } from "$store/component/interface.ts";
-import { $draggingComponentInfo } from "$store/component/component-sotre.ts";
+import { $draggingComponentInfo } from "$store/component/store.ts";
 
 export function setDraggingComponentInfo(
   draggingComponentInfo: DraggingComponentInfo | null

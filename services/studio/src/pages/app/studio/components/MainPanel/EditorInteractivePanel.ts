@@ -8,7 +8,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { $environment, type Environment, ViewMode } from '$store/environment';
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from '$store/page';
 import { type ComponentElement } from '$store/component/interface';
-import { $selectedComponent } from "$store/component/component-sotre";
+import { $selectedComponent } from "$store/component/store.ts";
 import { type Ref, createRef, ref } from 'lit/directives/ref.js';
 import { $currentApplication } from '$store/apps';
 import "../Layout/ThemeContainer";

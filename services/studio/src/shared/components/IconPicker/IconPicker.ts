@@ -6,89 +6,92 @@ import "@nuralyui/icon";
 import * as solidIcons from "@fortawesome/free-solid-svg-icons";
 import { styles } from "./IconPicker.style.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
-import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { getNestedAttribute } from "@utils/object.utils.ts";
+import { EMPTY_STRING } from "@utils/constants.ts";
 
 @customElement("icon-picker-block")
-export class IconPicker extends BaseElementBlock{
-   
-    icons=  Array.from(new Set([...Object.keys(solidIcons).filter((key)=>key.startsWith('fa')).map((key)=>solidIcons[key].iconName).filter((iconName)=>iconName)]) )
-    @state()
-    filtredIcons=this.icons;
-    @state() 
-    selectedIcon='';
-    @state() 
-    dropdownOpen=false;
-    @property()
-	component: ComponentElement;
+export class IconPicker extends BaseElementBlock {
 
-    static override styles= styles;
+  icons = Array.from(new Set([...Object.keys(solidIcons).filter((key) => key.startsWith("fa")).map((key) => solidIcons[key].iconName).filter((iconName) => iconName)]));
+  @state()
+  filteredIcons = this.icons;
+  @state()
+  selectedIcon = EMPTY_STRING;
+  @state()
+  dropdownOpen = false;
+  @property()
+  component: ComponentElement;
 
-    constructor(){
-        super();
-        document.addEventListener('click', this.onClickOutside);
+  static override styles = styles;
+
+  constructor() {
+    super();
+    document.addEventListener("click", this.onClickOutside);
+  }
+
+  toggleDropDown() {
+    this.dropdownOpen = !this.dropdownOpen;
+    this.filteredIcons = this.icons;
+  }
+
+  handleIconSelect(icon: string) {
+    this.selectedIcon = icon == this.selectedIcon ? EMPTY_STRING : icon;
+    this.dropdownOpen = false;
+    this.dispatchEvent(new CustomEvent("icon-selected", { detail: icon }));
+    if (this.component.event?.iconChanged) {
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.iconChanged`), {
+        value: this.selectedIcon
+      });
     }
+  }
 
-    toggleDropDown(){
-        this.dropdownOpen = !this.dropdownOpen;
-        this.filtredIcons = this.icons;
-    }
+  handleIconChange = (e: Event) => {
+    const searchString = (e.target as HTMLInputElement).value;
+    if (searchString) {
+      this.filteredIcons = this.icons.filter((icon) => icon.includes(searchString));
+    } else
+      this.filteredIcons = this.icons;
+  };
 
-    handleIconSelect(icon:string){
-        this.selectedIcon = icon == this.selectedIcon?'':icon;
-        this.dropdownOpen =false;
-        this.dispatchEvent(new CustomEvent('icon-selected',{detail:icon}));
-        if(this.component.event?.iconChanged){
-            const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.iconChanged`),{
-                value: this.selectedIcon,
-              });
-        }
-    }
-    handleIconChange= (e:Event)=>{
-        const searchString=(e.target as HTMLInputElement).value;
-         if(searchString){
-            this.filtredIcons = this.icons.filter((icon)=>icon.includes(searchString))
-         }
-         else 
-         this.filtredIcons = this.icons
-    }
+  private onClickOutside = (onClickEvent: Event) => {
+    const outsideClick = !onClickEvent.composedPath().includes(this);
+    if (outsideClick)
+      this.dropdownOpen = false;
+  };
 
-    private onClickOutside = (onClickEvent: Event) => {
-        const outsideClick =  !onClickEvent.composedPath().includes(this)
-          if(outsideClick)
-            this.dropdownOpen =false
-      };
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    document.removeEventListener("click", this.onClickOutside);
+  }
 
-      override disconnectedCallback(): void {
-          super.disconnectedCallback();
-          document.removeEventListener('click', this.onClickOutside);
-      }
-
-    override render(){
-        this.selectedIcon = this.inputHandlersValue.value??''
-        const isDisabled = this.inputHandlersValue?.disable || false
-        return html`
-        <div class="input-container ${isDisabled?'disable':''}" @click=${!isDisabled &&this.toggleDropDown}>
+  override render() {
+    this.selectedIcon = this.inputHandlersValue.value ?? EMPTY_STRING;
+    const isDisabled = this.inputHandlersValue?.disable || false;
+    return html`
+      <div class="input-container ${isDisabled ? "disable" : EMPTY_STRING}"
+           @click=${!isDisabled && this.toggleDropDown}>
         <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>
-        </div>
-        ${
-            this.dropdownOpen?html`
-             <div class="dropdown">
-                <div class="search-container">
-                    <input  .placeholder=${!this.selectedIcon?this.inputHandlersValue.placeholder:nothing} @input=${this.handleIconChange}/>
-                </div>
-                ${this.filtredIcons.map((icon)=>html` 
-                    <div 
-                    class="icon-item ${icon ==this.selectedIcon?'selected':''}"
-                    @click=${()=>this.handleIconSelect(icon)}
-                    >
-                        <hy-icon .name=${icon}></hy-icon>
-                    </div>
-                
-                    `)}
+      </div>
+      ${
+        this.dropdownOpen ? html`
+          <div class="dropdown">
+            <div class="search-container">
+              <input .placeholder=${!this.selectedIcon ? this.inputHandlersValue.placeholder : nothing}
+                     @input=${this.handleIconChange}/>
+            </div>
+            ${this.filteredIcons.map((icon) => html`
+              <div
+                class="icon-item ${icon == this.selectedIcon ? "selected" : EMPTY_STRING}"
+                @click=${() => this.handleIconSelect(icon)}
+              >
+                <hy-icon .name=${icon}></hy-icon>
+              </div>
 
-             </div>
-            `:nothing
-        }
-        ` 
-    }
+            `)}
+
+          </div>
+        ` : nothing
+      }
+    `;
+  }
 }

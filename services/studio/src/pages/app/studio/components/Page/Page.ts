@@ -7,14 +7,8 @@ import "@shared/wrappers/GenerikWrapper/GenerikWrapper";
 import "@shared/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
 import { $currentApplication, $resizing, $values } from "$store/apps";
-import {
-  deleteComponentAction,
-  moveDraggedComponentIntoCurrentPageRoot,
-  setCurrentComponentIdAction
-} from "$store/actions/component";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $applicationComponents, $components, $draggingComponentInfo } from "$store/component/component-sotre";
-import { updatePageInfo } from "$store/actions/page";
+import { $applicationComponents, $components, $draggingComponentInfo } from "$store/component/store.ts";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { $applicationPages, $currentPage, $currentPageViewPort, $pages } from "$store/page";
 import { html, LitElement } from "lit";
@@ -25,6 +19,10 @@ import { $context, getVar, setVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
 import { $environment, type Environment, ViewMode } from "$store/environment";
+import { moveDraggedComponentIntoCurrentPageRoot } from "$store/actions/component/moveDraggedComponentIntoCurrentPageRoot.ts";
+import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
+import { deleteComponentAction } from "$store/actions/component/deleteComponentAction.ts";
+import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
 
 @customElement("content-page")
 export class PageContent extends LitElement {

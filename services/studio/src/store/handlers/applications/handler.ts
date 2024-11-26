@@ -1,4 +1,6 @@
-import { closeCreateApplicationModalAction, setApplication, setPermissionMessage } from "../../actions/app"
+import { setApplication } from "$store/actions/application/setApplication.ts";
+import { closeCreateApplicationModalAction } from "$store/actions/editor/closeCreateApplicationModalAction.ts";
+import { setPermissionMessage } from "$store/actions/application/setPermissionMessage.ts";
 
 export function loadOrRefreshApplications() {
 

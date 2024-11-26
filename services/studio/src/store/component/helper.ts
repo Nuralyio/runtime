@@ -23,4 +23,6 @@ export const fillComponentChildren = (
   }
 
   return component;
-};
+}; // Helper function to fill component children
+export const fillApplicationComponents = (components: ComponentElement[]) =>
+  components.map(component => fillComponentChildren(components, component));

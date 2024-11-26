@@ -1,25 +1,19 @@
 import { persistentAtom } from "@nanostores/persistent";
 import { type ComponentElement, type DraggingComponentInfo } from "./interface";
 import { atom, computed, deepMap } from "nanostores";
-import studioComponents from "./studio-components";
+import studioComponents from "../../pages/app/studio/studio-microapp/studio-entrypoint.ts";
 import landingComponents from "../../pages/app/studio/studio-microapp/landing/landing-main-components";
 import { currentLoadedApplication } from "$store/ssr/server-data";
-import { fillComponentChildren } from "./helper";
-import { logger } from "@nanostores/logger";
+import { fillApplicationComponents } from "./helper";
 
 export interface ComponentStore {
   [key: string]: ComponentElement[];
 }
 
-// Determine if the code is running on the server
 const isServer = typeof window === 'undefined';
 
-// Parse initial component states from the window object if running on the client
-if(!isServer){
-}
 const initialStates = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STATE__'] ?? '[]');
 
-// Initialize the state with default components for the first application
 const initialState: ComponentStore = isServer ? {} : {
   "1": studioComponents as any,
   "landing": landingComponents as any,
@@ -51,10 +45,6 @@ export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
   }
 );
 
-// Helper function to fill component children
-const fillApplicationComponents = (components: ComponentElement[]) =>
-  components.map(component => fillComponentChildren(components, component));
-
 export const $applicationComponents = ($applicationId: string) => computed(
   [$components],
   (componentsStore: ComponentStore) => {
@@ -66,12 +56,12 @@ export const $applicationComponents = ($applicationId: string) => computed(
   }
 );
 
-export const $flattenedComponents = computed(
+computed(
   [$components],
   (componentsStore: ComponentStore) => Object.values(componentsStore).flat().filter(component => !component.parent)
 );
 
-export const $componentWithChildrens = ($applicationId: string) => computed(
+export const $componentWithChildren = ($applicationId: string) => computed(
   [$applicationComponents($applicationId)],
   (components: ComponentElement[]) => fillApplicationComponents(components)
 );
@@ -81,12 +71,3 @@ export const $selectedComponent = ($applicationId: string) => computed(
   (components: ComponentElement[], currentComponentId) =>
     components.find(component => component.uuid === currentComponentId) || null
 );
-
-export const $hoveredComponent = ($applicationId: string) => computed(
-  [$applicationComponents($applicationId), $hoveredComponentId],
-  (components: ComponentElement[], hoveredComponentId) =>
-    components.find(component => component.uuid === hoveredComponentId) || null
-);
-
-
-// logger({ $components, $currentComponentId, $draggingComponentInfo, $applicationComponents, $flattenedComponents, $componentWithChildrens, $selectedComponent, $hoveredComponent });

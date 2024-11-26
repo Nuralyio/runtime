@@ -1,4 +1,4 @@
-import { ComponentType } from "../interface";
+import { ComponentType } from "$store/component/interface.ts";
 
 export default [
 

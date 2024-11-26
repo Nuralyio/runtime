@@ -6,11 +6,11 @@ import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/slider-input";
 import "@nuralyui/button";
 import "@nuralyui/input";
-import { addTempApplication } from "$store/actions/component.ts";
 import styles from "./AIChat.style.ts";
 import { createChat } from "$store/handlers/aichat/create-chat.handler.ts";
 import { replaceUUIDs } from "./AIChat.helper.ts";
 import { addGeneratedComponents } from "$store/actions/aitchat.ts";
+import { addTempApplication } from "$store/actions/application/addTempApplication.ts";
 
 @customElement('ai-chat-block')
 export class AiChat extends BaseElementBlock {

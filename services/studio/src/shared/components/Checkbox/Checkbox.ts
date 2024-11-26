@@ -8,17 +8,6 @@ import { executeCodeWithClosure } from "../../../core/executer.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 
 
-const isVerbose = import.meta.env.PUBLIC_VERBOSE;
-
-// Debounce function with default wait time
-function debounce(func, wait = 300) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
-
 @customElement("checkbox-block")
 export class TextInputBlock extends BaseElementBlock {
   @property({ type: Object })
@@ -34,9 +23,9 @@ export class TextInputBlock extends BaseElementBlock {
  
   unsubscribe: () => void;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.registerCallback('value', (v) => {
+  override async connectedCallback() {
+    await super.connectedCallback();
+    this.registerCallback('value', () => {
       this.requestUpdate();
     })
   }
@@ -63,9 +52,9 @@ export class TextInputBlock extends BaseElementBlock {
     html`
     <hy-checkbox 
     style=${styleMap({...checkBoxStyles,width:checkboxAutoWidth?'auto':checkBoxStyles.width,height:checkboxAutoHeight?'auto':checkBoxStyles.height})}
-    .checked=${this.inputHandlersValue?.checked =='check'?true:false}
-    .indeterminate=${this.inputHandlersValue?.checked =='indeterminate'?true:false}
-    .disabled=${this.inputHandlersValue?.state =='disabled'?true:false}
+    .checked=${(this.inputHandlersValue?.checked == 'check')}
+    .indeterminate=${(this.inputHandlersValue?.checked == 'indeterminate')}
+    .disabled=${(this.inputHandlersValue?.state == 'disabled')}
     .size=${checkBoxStyles.size ?? nothing}
     @checkbox-changed=${this.handleCheckboxChange}
     >${this.inputHandlersValue?.label??''}</hy-checkbox>

@@ -5,16 +5,10 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
-import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { getNestedAttribute } from "@utils/object.utils.ts";
+import { debounce } from "@utils/time.ts";
+import { EMPTY_STRING } from "@utils/constants.ts";
 
-// Debounce function with default wait time
-function debounce(func, wait = 300) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
 @customElement("color-picker-block")
 export class ColorPickerBlock extends BaseElementBlock {
   @property({ type: Object })
@@ -24,34 +18,31 @@ export class ColorPickerBlock extends BaseElementBlock {
   item: any;
 
   static styles = [
-    css`:host{
-      width:fit-content
-    }`,
+    css`:host {
+        width: fit-content
+    }`
   ];
-
-  @state()
-  thisvalue: any;
 
   constructor() {
     super();
     this.registerCallback("value", this.handleValueChange);
   }
 
-  handleValueChange = debounce((e) => {
+  handleValueChange = debounce((event: { detail: { value: any; }; }) => {
     if (this.component.event.valueChange) {
-      e?.detail?.value  && executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
-        value: e.detail?.value ?? "",
+      event?.detail?.value && executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
+        value: event.detail?.value ?? ""
       });
     }
-  })
+  });
 
   render() {
     return html`
       <span style=${styleMap({ ...this.component.style })}> 
-        <hy-color-picker 
+        <hy-color-picker
           @color-changed=${this.handleValueChange}
-          .color=${this.inputHandlersValue.value?? ""}
-          .disabled=${this.inputHandlersValue?.state =='disabled'?true:false}
+          .color=${this.inputHandlersValue.value ?? EMPTY_STRING}
+          .disabled=${(this.inputHandlersValue?.state == "disabled")}
           placeholder="Text input"
         ></hy-color-picker>
       </span>

@@ -6,10 +6,6 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
-
-const isServer = typeof window === 'undefined';
-
-
 @customElement("button-block")
 export class ButtonBlock extends BaseElementBlock {
   @property({ type: Object })
@@ -17,15 +13,12 @@ export class ButtonBlock extends BaseElementBlock {
   static styles = [];
 
   @state()
-  thisvalue;
-
-  @state()
   display: any = false;
  
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.registerCallback('value', (v) => {
+   override async connectedCallback() {
+    await super.connectedCallback();
+    this.registerCallback('value', () => {
       this.requestUpdate();
     })
   }
@@ -40,15 +33,6 @@ export class ButtonBlock extends BaseElementBlock {
     }
   }
 
-  // display handler
-  updateDisplay() {
-
-    const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.show`),{
-    });
-    this.display = fn;
-    console.log(fn)
-  }
-
 
   render() {
     const buttonStyles = this.component?.style || {};
@@ -60,10 +44,10 @@ export class ButtonBlock extends BaseElementBlock {
     <hy-button
     .size=${buttonStyleHandlers?.size?buttonStyleHandlers.size:buttonStyles?.size?buttonStyles.size:nothing}
     .type=${buttonStyleHandlers?.type?buttonStyleHandlers.type:buttonStyles?.type?buttonStyles.type:nothing}     
-    .disabled=${this.inputHandlersValue.state=='disabled'?true:false}
+    .disabled=${(this.inputHandlersValue.state == 'disabled')}
     .icon="${this.inputHandlersValue.icon?[this.inputHandlersValue.icon]:nothing}"
     .iconPosition=${this.inputHandlersValue.iconPosition??nothing}
-     @click=${({ x, y, type, }) => {
+     @click=${() => {
           if (this.component.event?.onClick) {
             executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`))
           }

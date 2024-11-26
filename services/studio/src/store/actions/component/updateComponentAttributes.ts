@@ -1,6 +1,6 @@
-import { $components } from "$store/component/component-sotre.ts";
+import { $components } from "$store/component/store.ts";
 import type { ComponentElement } from "$store/component/interface.ts";
-import { eventDispatcher } from "../../utils/change-detection.ts";
+import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from "$store/handlers/components/update-component.handler.ts";
 import type { UpdateType } from "$store/actions/component.ts";
 
