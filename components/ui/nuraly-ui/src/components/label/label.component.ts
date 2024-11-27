@@ -1,6 +1,6 @@
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import styles from "./label.style";
+import { customElement, property } from "lit/decorators.js";
+import styles from "./label.style.js";
 
 @customElement('hy-label')
 export class HyTextLabel extends LitElement{
