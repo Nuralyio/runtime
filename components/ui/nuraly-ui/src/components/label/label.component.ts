@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { styles } from "./text-label.style";
+import styles from "./label.style";
 
-@customElement('hy-text-label')
+@customElement('hy-label')
 export class HyTextLabel extends LitElement{
    static override styles=styles
 
@@ -14,7 +14,9 @@ export class HyTextLabel extends LitElement{
     override render(){
 
         return html` 
-        <label></label>
+        <label>
+          <slot></slot>
+        </label>
         `
 
     }
