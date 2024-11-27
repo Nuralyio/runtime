@@ -1,12 +1,9 @@
 {
   "name": "@nuralyui/tabs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "type": "module",
-  "dependencies": {
-    "dayjs": "^1.11.7"
-  },
   "peerDependencies": {
     "@nuralyui/label": "^0.0.3"
   },
