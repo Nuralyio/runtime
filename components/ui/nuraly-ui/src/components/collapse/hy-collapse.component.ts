@@ -17,6 +17,7 @@ export class HyCollapse extends LitElement {
     if (section.collapsible != false) {
       this.sections = this.sections.map((section, i) => (i === index ? {...section, open: !section.open} : section));
     }
+    this.dispatchEvent(new CustomEvent('section-toggled', {detail: {index}}));
   }
 
   override render() {
@@ -26,7 +27,7 @@ export class HyCollapse extends LitElement {
         (section, index) => html`
           <div
             class="
-          collapse-section 
+          collapse-section
           ${classMap({
               'collapse-small': this.size == CollapseSize.Small,
               'collapse-large': this.size == CollapseSize.Large,
@@ -34,7 +35,7 @@ export class HyCollapse extends LitElement {
           "
           >
             <div
-              class=" 
+              class="
               header
               ${classMap({
                 'disabled-header': section.collapsible == false,
