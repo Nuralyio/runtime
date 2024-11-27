@@ -247,7 +247,7 @@ const buttonStyles = css`
     --hybrid-button-local-padding-y: 0.5rem;
     --hybrid-button-local-padding-x: 0.6rem;
     --hybrid-button-local-icon-width:18px;
-    --hybrid-button-local-icon-height:18px;
+    --hybrid-button-local-icon-height:14px;
 
     /* Primary Button Style */
     --hybrid-button-local-primary-border-color: #0f62fe;
