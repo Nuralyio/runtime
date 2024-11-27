@@ -7,6 +7,7 @@ import { styles } from "./TextLabel.style.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import "@nuralyui/label";
 
 
 @customElement("text-label-block")
@@ -32,8 +33,10 @@ export class TextLabelBlock extends BaseElementBlock {
       this.requestUpdate();
     });
   }
+
   @property({ type: Object })
   item: any;
+
   render() {
     const labelStyles = this.component?.style || {};
     const labelStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
@@ -51,7 +54,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
     return html`
       ${!this.inputHandlersValue?.display || (this.inputHandlersValue.value && this.inputHandlersValue.display == "show") ? html`
-        <label
+        <hy-label
           id=${this.component.uuid}
           contentEditable="${this.isEditable}"
           style=${styleMap(combinedStyles)}
@@ -86,7 +89,7 @@ export class TextLabelBlock extends BaseElementBlock {
             this.isEditable = true;
           }}
 
-        >${this.inputHandlersValue.value || "Text label"}</label>
+        >${this.inputHandlersValue.value || "Text label"}</hy-label>
       ` : nothing}
     `;
   }

@@ -46,7 +46,6 @@ export default [
         },
         style: {
             width:"90px",
-            'font-size':'14px',
             display:'block'
         },
     },

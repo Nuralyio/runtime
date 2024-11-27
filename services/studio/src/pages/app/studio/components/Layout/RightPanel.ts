@@ -34,14 +34,16 @@ export class RightPanel extends LitElement {
 
   render() {
     return html`
-     
-      <aside class=" sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col ${this.mode === ViewMode.Edit ? 'visible' : ''}" style="height: 100%;">
-      <div class="my-4 w-full text-center">
-        <span class="font-mono text-xl font-bold tracking-widest"></span>
-      </div>
-      <div class="my-4 flex-grow" style="width:355px;height: 100%">
-        <control-panel class="w-full h-full"  style="width:355px;height: 100%"></control-panel>
-      </div>
-    </aside>`;
+
+      <aside
+        class=" sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col ${this.mode === ViewMode.Edit ? 'visible' : ''}"
+        style="height: 100%;">
+        <div class="my-4 w-full text-center">
+          <span class="font-mono text-xl font-bold tracking-widest"></span>
+        </div>
+        <div class="my flex-grow" style="width:300px;height: 100%">
+          <control-panel class="w-full h-full" style="width:355px;height: 100%"></control-panel>
+        </div>
+      </aside>`;
   }
 }

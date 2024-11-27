@@ -50,7 +50,6 @@ export default [
             
         },
         style: {
-            'font-size':'14px',
             'width':'90px'
         },
     },

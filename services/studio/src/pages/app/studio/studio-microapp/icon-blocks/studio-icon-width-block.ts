@@ -38,7 +38,6 @@ export default [
         ...COMMON_ATTRIBUTES,
         style:{
             width:'90px',
-            'font-size':'14px'
         },
         input: {
             value: {

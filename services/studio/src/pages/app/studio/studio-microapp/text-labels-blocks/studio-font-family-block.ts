@@ -49,7 +49,6 @@ export default [
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
         style:{
-       'font-size':'14px',
         width:'90px'
         },
         input: {

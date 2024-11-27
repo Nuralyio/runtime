@@ -176,15 +176,11 @@ export default [
         applicationId: "1",
         name: "right_panel_tabs",
         component_type: ComponentType.Tabs,
-        event: {
-            valueChange: `
-                updateStyle(app1.text_label, "color", EventData.value);
-            `
-        },
+        event: {},
         style:{
             width : "100%",
             height : "100%",
-            disply: "grid"
+            display: "grid"
         },
         input: {
             tabs: {

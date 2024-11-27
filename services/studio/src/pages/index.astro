@@ -3,7 +3,7 @@ import Layout from './_layouts/LandingLayout.astro';
 import "../core/micro-app";
 import { MicroApp } from '../core/micro-app';
 import { processHeaders } from 'utils/api-calls-utils';
-import { fetchApplicationPagesById } from '$services/page.service';
+import { fetchApplicationPagesById } from '@services/page.service';
 const { page_url } = Astro.props;
 const processedHeaders = processHeaders(Astro.request.headers);
 
