@@ -1,12 +1,9 @@
 {
   "name": "@nuralyui/tabs",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "index.js",
   "type": "module",
-  "peerDependencies": {
-    "@nuralyui/label": "^0.0.3"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
