@@ -1,21 +1,56 @@
 import { css } from "lit";
 
 export default css`
-    label {
-        color: var(--text-label-local-color, --text-label-color);
-        display: block;
-        user-select: none
+    :host {
+        /* Default color variables */
+        --text-label-color: black; /* Default text color */
+        --text-label-local-dark-color: white; /* Dark mode text color */
+        --text-label-local-light-color: black; /* Light mode text color */
+
+        /* Font size and related properties */
+        --text-label-font-size: 13px; /* Default font size */
+        --text-label-font-weight: normal; /* Default font weight */
+        --text-label-line-height: 1.5; /* Default line height */
+
+        /* Padding and margin */
+        --text-label-padding: 0; /* Default padding */
+        --text-label-margin: 0; /* Default margin */
+
+        /* Use the local color variable first, then fallback to global or defined values */
+        --resolved-text-label-color: var(--text-label-local-color, var(--text-label-color));
+        --resolved-text-label-font-size: var(--text-label-font-size);
+        --resolved-text-label-font-weight: var(--text-label-font-weight);
+        --resolved-text-label-line-height: var(--text-label-line-height);
+        --resolved-text-label-padding: var(--text-label-padding);
+        --resolved-text-label-margin: var(--text-label-margin);
+
+        display: flex;
+        width: fit-content;
     }
 
-    :host {
-        --text-label-color: var(--text-label-local-color, --text-label-color);
-        display: flex;
-        width: fit-content
+    label {
+        /* Apply resolved styles */
+        color: var(--resolved-text-label-color);
+        font-size: var(--resolved-text-label-font-size);
+        font-weight: var(--resolved-text-label-font-weight);
+        line-height: var(--resolved-text-label-line-height);
+        padding: var(--resolved-text-label-padding);
+        margin: var(--resolved-text-label-margin);
+        display: block;
+        user-select: none;
     }
 
     @media (prefers-color-scheme: dark) {
         :host {
-            --text-label-color: var(--text-label-local-dark-color, --text-label-dark-color);
+            /* Update resolved color for dark mode */
+            --resolved-text-label-color: var(--text-label-local-dark-color, var(--text-label-color));
         }
-    }`
+    }
 
+    @media (prefers-color-scheme: light) {
+        :host {
+            /* Optionally update color for light mode */
+            --resolved-text-label-color: var(--text-label-local-light-color, var(--text-label-color));
+        }
+    }
+`;
