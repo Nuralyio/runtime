@@ -4,7 +4,8 @@ import {property} from 'lit/decorators.js';
 import {styles} from './tabs.style.js';
 import {classMap} from 'lit/directives/class-map.js';
 import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation, TabsAlign} from './tabs.constant.js';
-
+//todo: make this use peer dependency
+import "../label/label.component.js";
 /**
  * `hy-tabs` is a LitElement that provides a customizable tabs.
  * @customElement 'hy-tabs'
@@ -165,7 +166,7 @@ export class TabsComponent extends LitElement {
           class=${tabIndex === this.activeTab ? 'tab-label active' : 'tab-label'}
           @click=${(e: Event) => this.setActiveTab(tabIndex, children[tabIndex], e)}
         >
-          <span
+          <hy-label
             contenteditable=${this.editable?.canEditTabTitle ? true : nothing}
             @blur=${(event: Event) => {
               this.dispatchEvent(
@@ -179,7 +180,7 @@ export class TabsComponent extends LitElement {
                 })
               );
             }}
-            >${children[tabIndex].label}</span
+            >${children[tabIndex].label}</hy-label
           >
           ${children[tabIndex].editable?.canDeleteTab ?? this.editable?.canDeleteTab
             ? html`<hy-icon
