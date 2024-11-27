@@ -24,7 +24,7 @@ export default css`
         --resolved-text-label-padding: var(--text-label-padding);
         --resolved-text-label-margin: var(--text-label-margin);
 
-        display: flex;
+        display: inline-block;
         width: fit-content;
     }
 
