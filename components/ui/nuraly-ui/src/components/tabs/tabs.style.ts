@@ -113,7 +113,7 @@ export const styles = css`
 
   .close-icon {
     font-size: var(--hybrid-tabs-add-icon-font-size);
-    vertical-align: -webkit-baseline-middle;
+    vertical-align: bottom;
     margin-left: var(--hybrid-tabs-add-icon-margin-left);
   }
 
