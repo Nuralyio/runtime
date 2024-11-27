@@ -48,7 +48,6 @@ export default [
         style: {
             display:'block',
             width:"90px",
-            'font-size':'14px'
         },
     },
 {

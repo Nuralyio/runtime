@@ -13,7 +13,7 @@
       "@shared/*": [
         "shared/*"
       ],
-      "$services/*": [
+      "@services/*": [
         "services/*"
       ],
       "@utils/*": [

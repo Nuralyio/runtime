@@ -83,8 +83,4 @@ keepMount($resizing)
 if (!isServer) {
     const currentApplication = $currentApplication.get();
     setVar('global', `currentEditingApplication`, currentApplication);
-    setTimeout(() => {
-      // setVar('global', `currentEditingApplication`, currentApplication);
-    },10)
-   
 }

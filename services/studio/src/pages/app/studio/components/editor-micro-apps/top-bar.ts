@@ -310,7 +310,6 @@ export default [{
     component_type: ComponentType.VerticalContainer,
     style:{
         'min-height':'40px',
-         'width':'120px',
          'margin-right':'4px',
         'justify-content':'space-between',
         "align-items":'center'

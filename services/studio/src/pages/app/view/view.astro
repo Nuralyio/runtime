@@ -11,9 +11,9 @@ import { $componentWithChildren, $components } from "../../../store/component/st
 import "../studio/components/Page/Page";
 import { PageContent } from "../studio/components/Page/Page";
 import { processHeaders } from "utils/api-calls-utils";
-import { fetchApplicationPagesById } from "$services/page.service";
-import { fetchApplicationComponentById } from "$services/component.service";
-import { fetchAllApplications } from "$services/applications.service";
+import { fetchApplicationPagesById } from "@services/page.service";
+import { fetchApplicationComponentById } from "@services/component.service";
+import { fetchAllApplications } from "@services/applications.service";
 import { $applications } from "$store/apps";
 // TODO: handle error
 const { app } = Astro.props;

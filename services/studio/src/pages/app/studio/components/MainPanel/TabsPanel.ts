@@ -37,12 +37,6 @@ export class TabsPanel extends LitElement {
 			editable: {
 				canDeleteTab: false,
 			}
-		},
-		{
-			id: '2',
-			label: 'Data source',
-			content: html`
-  	<data-source-explorer></data-source-explorer>`
 		}
 	];
 
