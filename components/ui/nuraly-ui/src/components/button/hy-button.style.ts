@@ -30,7 +30,7 @@ const buttonStyles = css`
     border-top-left-radius:var(--hybrid-button-border-top-left-radius,var(--hybrid-button-local-border-top-left-radius)) ;
     border-top-right-radius: var(--hybrid-button-border-top-right-radius,var(--hybrid-button-local-border-top-right-radius));
     border-bottom-left-radius: var(--hybrid-button-border-bottom-left-radius,var(--hybrid-button-local-border-bottom-left-radius));
-    border-bottom-right-radius: var(--hybrid-button-local-border-bottom-right-radius,var(--hybrid-button-local-border-bottom-right-radius));
+    border-bottom-right-radius: var(--hybrid-button-border-bottom-right-radius,var(--hybrid-button-local-border-bottom-right-radius));
     background-color: var(--hybrid-button-background-color,var(--hybrid-button-local-background-color));
     color: var(--hybrid-button-text-color,var(--hybrid-button-local-text-color));
     font-size: var(--hybrid-button-font-size,var(--hybrid-button-local-font-size));
