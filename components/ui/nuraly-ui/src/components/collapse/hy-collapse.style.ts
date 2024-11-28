@@ -1,5 +1,12 @@
 import {css} from 'lit';
 const collapseStyles = css`
+    hy-label{
+    display: inline-block;  
+    }
+    hy-icon{
+        --hybrid-icon-width: 11px;
+        --hybrid-icon-height: 11px;
+    }
   .disabled-header {
     opacity: 0.5;
     cursor: not-allowed;
@@ -13,7 +20,6 @@ const collapseStyles = css`
   }
 
   .collapse-icon {
-    display: flex;
   }
 
   .header {
@@ -67,6 +73,7 @@ const collapseStyles = css`
     border-bottom-right-radius:var(--hy-collapse-border-radius,var(--hy-collapse-local-border-radius));
   }
   :host {
+      --hybrid-icon-width: 8px;
     --hy-collapse-local-content-background-color: #ffffff;
     --hy-collapse-local-header-background-color: #fafafa;
     --hy-collapse-local-content-color: #000000;
@@ -80,9 +87,9 @@ const collapseStyles = css`
     --hy-collapse-local-width:auto;
     --hy-collapse-local-border-radius:5px;
    
-    --hy-collapse-local-header-default-size-padding-y: 9px;
-    --hy-collapse-local-header-default-size-padding-x: 15px;
-    --hy-collapse-local-content-default-size-padding: 15px;
+    --hy-collapse-local-header-default-size-padding-y: 4px;
+    --hy-collapse-local-header-default-size-padding-x: 6px;
+    --hy-collapse-local-content-default-size-padding: 6px;
 
     --hy-collapse-local-header-small-size-padding-y: 5px;
     --hy-collapse-local-header-small-size-padding-x: 11px;
