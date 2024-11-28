@@ -23,6 +23,7 @@ const collapseStyles = css`
   }
 
   .header {
+      width: auto;
     border-top-left-radius:var(--hy-collapse-border-radius,var(--hy-collapse-local-border-radius));
     border-top-right-radius:var(--hy-collapse-border-radius,var(--hy-collapse-local-border-radius));
     display: flex;
