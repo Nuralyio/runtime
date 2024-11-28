@@ -16,7 +16,8 @@ export default [
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
-            'width':'330px',
+            
+
             'margin-top': '10px',
         },
         childrenIds: ["label_text_decoration_radio_block","text_decoration_handler_block"],

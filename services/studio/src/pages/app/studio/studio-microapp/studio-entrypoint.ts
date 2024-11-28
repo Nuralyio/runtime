@@ -30,6 +30,7 @@ import studioButtonTypeBlock from "./button-blocks/studio-button-type-block.ts";
 import studioButtonIconPosition from './button-blocks/studio-button-icon-position-block.ts'
 import studioIconPickerBlock from './common-blocks/studio-icon-picker-block.ts'
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
+import studioButtonThemeBlock from "./button-blocks/studio-button-theme-block.ts";
 import studioInputLabelColor from "./text-input-blocks/studio-input-label-color.ts"
 import studioInputLabelSize from './text-input-blocks/studio-input-label-size.ts'
 import studioInputHelperColor from './text-input-blocks/studio-input-helper-color.ts'
@@ -83,6 +84,14 @@ import LeftPanel from '../components/editor-micro-apps/left-panel.ts'
 export default [
 
     {
+        uuid: "divider",
+        name: "divider",
+        component_type: ComponentType.Divier,
+        applicationId: "1",
+        input:{
+        },
+    },
+    {
         uuid: "1",
         name: "text_label",
         component_type: ComponentType.TextLabel,
@@ -132,7 +141,7 @@ export default [
             valueChange: `
         updateStyle(app1.text_label, "color", EventData.value);
       `
-           
+
         },
         ...COMMON_ATTRIBUTES,
         style:{
@@ -170,7 +179,30 @@ export default [
             }
         },
     },
-    
+    {
+        uuid: "buttons_bocks",
+        applicationId: "1",
+        name: "Parent Color Container",
+        component_type: ComponentType.VerticalContainer,
+        ...COMMON_ATTRIBUTES,
+        style: {
+            display: "flex",
+            "flex-direction": "column",
+            gap: "10px",
+        },
+        childrenIds: ['label_text_block',
+            "position_collapse_container",
+            'size_block',
+            'button_type_block',
+          "divider",
+            'icon_picker_block',
+            'state_block',
+            'divider',
+            'button_click_event_block',
+            'parent_color_container',
+            'display_block',
+            'button_icon_position_block',],
+    },
     {
         uuid: "right_panel_tabs",
         applicationId: "1",
@@ -180,7 +212,8 @@ export default [
         style:{
             width : "100%",
             height : "100%",
-            display: "grid"
+            display: "grid",
+            "--hybrid-tabs-content-padding" : "0px",
         },
         input: {
             tabs: {
@@ -241,15 +274,7 @@ export default [
                             break;
                         case "button_input":
                             parameters=[
-                                'label_text_block',
-                                "position_collapse_container",
-                                'size_block',
-                                'button_type_block',
-                                'icon_picker_block',
-                                'state_block',
-                                'button_click_event_block',
-                                'display_block',
-                                'button_icon_position_block'
+                                'buttons_bocks'
                             ];
                             break;
                         case "checkbox":
@@ -401,6 +426,7 @@ export default [
             }
         },
     },
+
     ...studioPageNameBlock,
     ...studioPageUrlBlock,
     ...studioTableValuesBlock,
@@ -479,5 +505,6 @@ export default [
     ...collectionContainerBlocks,
     ...collectionDataBlocks,
     ...TopBar,
-    ...LeftPanel
+    ...LeftPanel,
+  ...studioButtonThemeBlock
 ]

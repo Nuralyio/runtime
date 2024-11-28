@@ -1,4 +1,4 @@
-import { html, nothing, type PropertyValues } from "lit";
+import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/button";
 import { styleMap } from "lit/directives/style-map.js";
@@ -10,7 +10,14 @@ import { getNestedAttribute } from "../../../utils/object.utils.ts";
 export class ButtonBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
-  static styles = [];
+  static styles = [
+    css`
+    :host {
+        --hybrid-button-icon-width: 19px;
+    }
+        
+    `
+  ];
 
   @state()
   display: any = false;

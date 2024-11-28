@@ -11,7 +11,8 @@ export default [
             display:'flex',
              'justify-content':'space-between',
              'align-items':'center',
-             width:'330px'
+             
+
         },
 
         childrenIds: ["checkbox_checked_radio_block","checkbox_handler_block"],

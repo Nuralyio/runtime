@@ -8,7 +8,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "330px",
+            
             "margin-top":'10px',
             'align-items':'center',
             'justify-content':'space-between',

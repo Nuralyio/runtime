@@ -11,7 +11,8 @@ export default [
             display:'flex',
             'justify-content':'space-between',
             'align-items':'center',
-            width:'330px'
+            
+
         },
 
         childrenIds: ["icon_position_radio_block","icon_position_handler_block"],
@@ -138,6 +139,7 @@ export default [
         name: "icon position handler",
         style: {
                 display:'block',
+
         },
         input: { 
             value: {

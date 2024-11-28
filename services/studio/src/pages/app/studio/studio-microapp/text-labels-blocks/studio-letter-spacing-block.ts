@@ -13,7 +13,7 @@ export default [
 
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "330px",
+            
             display: 'flex',
             'justify-content':'space-between',
             'align-items':'center',

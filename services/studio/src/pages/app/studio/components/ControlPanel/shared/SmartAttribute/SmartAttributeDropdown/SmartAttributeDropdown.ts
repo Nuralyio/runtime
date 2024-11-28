@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/dropdown";
 import "../SmartAttributeHandler/SmartAttributeHandler.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
 @customElement("smart-attribute-editor-dropdown")

@@ -12,7 +12,8 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-            width:'330px',
+            
+
             "display":'flex',
             'align-items':'center',
             'justify-content':'space-between'

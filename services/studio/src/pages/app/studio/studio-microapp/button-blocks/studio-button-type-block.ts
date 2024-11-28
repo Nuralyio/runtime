@@ -11,7 +11,8 @@ export default [
             display:'flex',
             'justif-content':'space-between',
             'align-items':'center',
-            width:'330px'
+            
+
         },
 
         childrenIds: ["button_type_radio_block","button_type_handler_block"],

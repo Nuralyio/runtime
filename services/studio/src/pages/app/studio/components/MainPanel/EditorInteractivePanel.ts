@@ -1,7 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { state, customElement } from 'lit/decorators.js';
 import '@nuralyui/tabs';
-import '@nuralyui/dropdown';
 import '@nuralyui/color-picker';
 import '@nuralyui/select';
 import { styleMap } from 'lit/directives/style-map.js';

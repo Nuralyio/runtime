@@ -1,7 +1,8 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
-    {
+
+  {
         uuid: "label_text_block",
         applicationId: "1",
         name: "label text block",
@@ -11,7 +12,7 @@ export default [
              display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-             width:"330px",
+             
              "margin-top":'10px'
         },
 

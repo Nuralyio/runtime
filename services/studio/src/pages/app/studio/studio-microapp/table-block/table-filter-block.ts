@@ -12,7 +12,8 @@ export default [
             'align-items':'center',
             'justify-content':'space-between',
             'margin-top':'10px',
-            width:'330px'
+            
+
         },
 
         childrenIds: ["table_filter_radio_block","table_filter_handler_block"],

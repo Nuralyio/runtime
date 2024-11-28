@@ -11,7 +11,8 @@ export default [
              display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-             width:'330px'
+             
+
         },
 
         childrenIds: ["image_fallback_input_block","fallback_handler_block"],

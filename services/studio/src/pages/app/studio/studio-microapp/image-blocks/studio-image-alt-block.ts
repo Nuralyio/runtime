@@ -15,7 +15,8 @@ export default [
              display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-             width:'330px'
+             
+
         },
 
         childrenIds: ["alt_input_block","alt_handler_block"],

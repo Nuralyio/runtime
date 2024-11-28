@@ -9,7 +9,7 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "310px",
+            
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',

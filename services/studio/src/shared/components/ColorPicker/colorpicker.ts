@@ -38,14 +38,13 @@ export class ColorPickerBlock extends BaseElementBlock {
 
   render() {
     return html`
-      <span style=${styleMap({ ...this.component.style })}> 
         <hy-color-picker
+          style=${styleMap({ width : "28px", height:"28px",  ...this.component.style })}
           @color-changed=${this.handleValueChange}
           .color=${this.inputHandlersValue.value ?? EMPTY_STRING}
           .disabled=${(this.inputHandlersValue?.state == "disabled")}
           placeholder="Text input"
         ></hy-color-picker>
-      </span>
     `;
   }
 }

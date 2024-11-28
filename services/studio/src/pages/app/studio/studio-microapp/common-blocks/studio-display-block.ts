@@ -11,9 +11,10 @@ export default [
             display:'flex',
             'justify-content':'space-between',
             'align-items':'center',
-            width:'330px'
+            
+
         },
-        childrenIds: ["display_radio_block","display_handler_block"],
+        childrenIds: ["display_divider","display_radio_block","display_handler_block"],
     },
     {
         uuid: "display_radio_block",
@@ -174,6 +175,13 @@ export default [
       `
         },
     },
+    {
+        uuid: "@",
+        name: "divider",
+        component_type: ComponentType.Divier,
+        applicationId: "1",
+        ...COMMON_ATTRIBUTES,
 
+    },
 
 ]
