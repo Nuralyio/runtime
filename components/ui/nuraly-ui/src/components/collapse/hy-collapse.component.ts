@@ -34,7 +34,7 @@ export class HyCollapse extends LitElement {
             })}
           "
           >
-            <div
+            <hy-label
               class="
               header
               ${classMap({
@@ -50,7 +50,7 @@ export class HyCollapse extends LitElement {
                 name="${section.open && section.collapsible != false ? 'chevron-down' : 'chevron-right'}"
               ></hy-icon>`}
               ${section.header}
-            </div>
+            </hy-label>
             ${section.open && section.collapsible != false ? html`<div class="content">${section.content}</div>` : ''}
           </div>
         `
