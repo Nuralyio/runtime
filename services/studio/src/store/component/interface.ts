@@ -24,7 +24,8 @@ export const enum   ComponentType {
   UsersDropdown ='UsersDropdown',
   InsertDropdown ='InsertDropdown',
   Collapse ='Collapse',
-  AI = "AI"
+  AI = "AI",
+  Divier = "Divider",
 }
 
 export interface DraggingComponentInfo {

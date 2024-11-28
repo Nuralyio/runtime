@@ -23,6 +23,7 @@ import "@shared/components/MicroApp/MicroApp";
 import "@shared/components/UsersDropdown/UsersDropdown";
 import "@shared/components/InsertDropdown/InsertDropdown";
 import "@shared/components/Collapse/Collapse";
+import "@shared/components/Divider/Divider";
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -51,6 +52,7 @@ const usersDropdownTemplate = (props: any) => html`<users-dropdown-block .item=$
 const insertDropdownTemplate = (props: any) => html`<insert-dropdown-block .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
 const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
 const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item} .component=${props.component}></collapse-block>`;
+const dividerTemplate = (props: any) => html`<divider-block .item=${props.item} .component=${props.component}></divider-block>`;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -98,6 +100,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return checkboxTemplate(commonProps);
     case ComponentType.DatePicker:
       return datePickerTemplate(commonProps);
+    case ComponentType.Divier:
+      return dividerTemplate(commonProps);
     case ComponentType.Icon:
       return iconTemplate(commonProps);
     case ComponentType.Image:
@@ -116,6 +120,7 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return insertDropdownTemplate(commonProps);
     case ComponentType.Collapse:
         return collapseTemplate(commonProps);
+
     default:
       return html``;
   }

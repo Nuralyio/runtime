@@ -16,7 +16,8 @@ export default [
             display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-             'width':'330px',
+             
+
              "margin-top":'10px'
         },
         childrenIds: ["label_font_weight_radio_block","font_weight_handler_block"],

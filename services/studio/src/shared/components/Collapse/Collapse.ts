@@ -57,7 +57,8 @@ export class Collapse extends BaseElementBlock {
   override render() {
     return html`
       <hy-collapse
-        style=${styleMap({ ...this.component.style })}
+        style=${styleMap({
+          ...this.component.style })}
         .sections=${this.sections ?? nothing}
         .size=${this.inputHandlersValue?.size ?? nothing}
         @section-toggled=${(e: CustomEvent) => {

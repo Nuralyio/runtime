@@ -11,7 +11,8 @@ export default [
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
-            'width':'330px',
+            
+
             'margin-top': '10px',
 
         },

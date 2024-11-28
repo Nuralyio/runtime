@@ -2,7 +2,6 @@ import { type ComponentElement } from "$store/component/interface";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
-import "@nuralyui/dropdown";
 import { executeCodeWithClosure } from "core/executer";
 import { getNestedAttribute } from "utils/object.utils";
 import { styleMap } from "lit/directives/style-map.js";
@@ -55,20 +54,22 @@ export class ParameterEventLabel extends BaseElementBlock {
       .template=${this.renderCodeEditorTemplate()}
     >
         <hy-button 
+          
         style=${styleMap(
-          {'--hybrid-button-height':'30px',
+          {
+            marginLeft : "15px",
+            '--hybrid-button-height':'30px',
           '--hybrid-button-width':'30px',
           '--hybrid-button-border-top-left-radius':'5px',
           '--hybrid-button-border-top-right-radius':'5px',
           '--hybrid-button-border-bottom-left-radius':'5px',
           '--hybrid-button-border-bottom-right-radius':'5px',
-          '--hybrid-button-icon-width':'12px',
-          '--hybrid-button-icon-height':'12px'
         
         })}
         .icon=${['code']} 
-         type="text" 
          class="unit"
+          type="secondary"
+        dashed
          >${this.inputHandlersValue?.triggerText??""}</hy-button>
     </hy-dropdown>
      `;

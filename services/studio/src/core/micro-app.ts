@@ -35,7 +35,7 @@ export class MicroApp extends LitElement {
 
   refreshComponent(): void {
     const components = $applicationComponents(this.uuid).get();
-    this.components = [...components];
+    this.components = components;
   }
 
   override connectedCallback() {

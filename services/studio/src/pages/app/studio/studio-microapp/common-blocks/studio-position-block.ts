@@ -21,7 +21,7 @@ export default [
           "--hy-collapse-content-small-size-padding":"5px",
           "--hy-collapse-font-weight:":"normal",
           '--hy-collapse-border-radius':'5px',
-          '--hy-collapse-width':'320px',
+          '--hy-collapse-width':'292px',
         },
         input: {
             size:{
@@ -236,7 +236,8 @@ export default [
             'justify-content':'space-between',
             'align-items':'center',
             "margin-top":"10px",
-            width:'330px'
+            
+
         },
         childrenIds: ["top_input_block","top_handler_block"],
     },
@@ -251,7 +252,8 @@ export default [
             'justify-content':'space-between',
             'align-items':'center',
             "margin-top":"10px",
-            width:'330px'
+            
+
         },
         childrenIds: ["left_input_block","left_handler_block"],
     },
