@@ -66,5 +66,6 @@ jobs:
           cd ../slider-input && publish-if-not-published -- --access=public
           cd ../collapse && publish-if-not-published -- --access=public
           cd ../label && publish-if-not-published -- --access=public
+          cd ../divider && publish-if-not-published -- --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
