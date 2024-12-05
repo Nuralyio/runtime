@@ -62,7 +62,7 @@ const selectStyle = css`
     position: absolute;
     top: 50%;
     transform: translate(0%, -50%);
-    left: 0%;
+    left: 5%;
     --hybrid-icon-color: var(--hybrid-select-trigger-text-color,var(--hybrid-select-local-trigger-text-color));
   }
   #warning-icon {
@@ -99,7 +99,7 @@ const selectStyle = css`
     color: var(--hybrid-select-option-text-color,var(--hybrid-select-local-option-text-color));
   }
   .option:hover {
-    border-radius: var(--hybrid-select-border-radius,var(--hybrid-select-local-border-radius));
+      border-radius: var(--hybrid-select-border-option-radius,var(--hybrid-select-hover-local-border-option-radius));
     background-color: var(--hybrid-select-option-hover,var(--hybrid-select-local-option-hover));
   }
   .option-text {
@@ -172,7 +172,7 @@ const selectStyle = css`
   }
   :host {
     --hybrid-select-local-width: 100%;
-    --hybrid-select-local-font-family: IBM Plex Sans;
+    --hybrid-select-local-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-select-local-background-color: #f4f4f4;
     --hybrid-select-local-hover-background-color: #e0e0e0;
     --hybrid-select-local-border-bottom: 1px solid #cccccc;
@@ -186,6 +186,7 @@ const selectStyle = css`
     --hybrid-select-local-focus-border: 2px solid #0f62fe;
     --hybrid-select-local-options-background-color: #f4f4f4;
     --hybrid-select-local-border-radius: 2px;
+      --hybrid-select-hover-local-border-radius: 0px;
     --hybrid-select-local-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     --hybrid-select-local-max-height: 250px;
     --hybrid-select-local-option-medium-padding: 10px;

@@ -11,7 +11,7 @@ export const styleVariables = css`
     --hybrid-checkbox-symbol-color: #ffffff;
     --hybrid-checkbox-focus-border: 2px solid #ffffff;
     --hybrid-checkbox-focus-outline: 2px solid #0f62fe;
-    --hybrid-checkbox-font-family: IBM Plex Sans;
+    --hybrid-checkbox-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-checkbox-border-radius: 1px;
     --hybrid-checkbox-gap: 5px;
 

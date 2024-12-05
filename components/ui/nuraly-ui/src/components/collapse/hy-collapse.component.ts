@@ -43,7 +43,7 @@ export class HyCollapse extends LitElement {
                 'fold-header': section.open != true
               })}
                 "
-              @click="${() => this.toggleSection(index)}"
+              @mousedown="${() => this.toggleSection(index)}"
             >
               ${html`<hy-icon
                 class="collapse-icon"

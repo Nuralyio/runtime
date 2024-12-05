@@ -3,7 +3,6 @@ import {LitElement, PropertyValues, html, nothing} from 'lit';
 import {property,state, customElement, query} from 'lit/decorators.js';
 import {styles} from './select.style.js';
 import {map} from 'lit/directives/map.js';
-import '../icon/icon.component.js';
 import {IOption, OptionSelectionMode, OptionSize, OptionStatus, OptionType} from './select.types.js';
 import {choose} from 'lit/directives/choose.js';
 import {EMPTY_STRING, MULTIPLE_OPTIONS_SEPARATOR} from './select.constant.js';
@@ -42,8 +41,9 @@ export class HySelectComponent extends LitElement {
   protected override updated(_changedProperties: PropertyValues): void {
     if(_changedProperties.has('defaultSelected') && JSON.stringify(_changedProperties.get('defaultSelected'))!=JSON.stringify(this.defaultSelected)){
       let defaultOptions:IOption[]=[]
+
       this.defaultSelected.forEach((value)=>{
-      const option = this.options.find((option)=>option.label ==value)
+      const option = this.options.find((option)=>option.value ==value)
       if(option)
         defaultOptions.push(option)
      })

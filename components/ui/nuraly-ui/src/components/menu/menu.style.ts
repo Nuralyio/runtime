@@ -10,7 +10,7 @@ const menuStyle = css`
   }
   :host {
     --hybrid-menu-font-size:13px;
-    --hybrid-menu-font-family:serif;
+    --hybrid-menu-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-menu-padding: 2px;
     --hybrid-menu-width: 45%;
     --hybrid-menu-border: 1px solid #f4f4f4;

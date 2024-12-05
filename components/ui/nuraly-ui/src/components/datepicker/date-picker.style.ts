@@ -177,7 +177,7 @@ const calendarStyles = css`
     line-height: var(--hybrid-datepicker-large-year-container-line-height);
   }
   :host {
-    --hybrid-datepicker-font-family: IBM Plex Sans;
+    --hybrid-datepicker-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-datepicker-background-color: #f9f9f9;
     --hybrid-datepicker-toggle-month-year-font-weight: bold;
     --hybrid-datepicker-button-background-color: #f9f9f9;

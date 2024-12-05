@@ -4,7 +4,6 @@ import {styles} from './menu-link.style.js';
 import {EMPTY_STRING} from '../menu.constants.js';
 import {ICON_POSITION} from './menu-link.contants.js';
 import { IAction } from '../menu.types.js';
-import '../../dropdown/hy-dropdown.component.js'
 
 @customElement('hy-menu-link')
 export class HyMenuLink extends LitElement {

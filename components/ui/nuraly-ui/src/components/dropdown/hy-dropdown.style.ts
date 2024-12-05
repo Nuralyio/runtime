@@ -4,6 +4,8 @@ const dropdownStyle = css`
   .dropdown-container {
     display: none;
     z-index:1;
+      border-radius: var(--hybrid-dropdown-border-radius, var(--hybrid-dropdown-border-radius));
+      font-family: var(--hybrid-dropdown-font-family, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;);
   }
   :host {
     cursor: pointer;
@@ -29,10 +31,12 @@ const dropdownStyle = css`
     --hybrid-dropdown-menu-children-top: 10px;
     --hybrid-dropdown-menu-children-offset: 5px;
     --hybrid-dropdown-menu-children-z-index: 2;
+      --hybrid-dropdown-font-size-local: 13px;
+      --hybrid-dropdown-border-radius   : 0px;
   }
   @media (prefers-color-scheme: dark) {
     :host {
-      --hybrid-dropdown-background-color: #393939;
+      --hybrid-dropdown-background-color: #1b1b1b;
       --hybrid-dropdown-hovered-background-color: #4c4c4c;
       --hybrid-dropdown-disabled-background-color: #6f6f6f;
       --hybrid-dropdown-text-color: #f4f4f4;
