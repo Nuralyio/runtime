@@ -11,9 +11,6 @@ export default [
             display:'flex',
             'justify-content':'space-between',
             'align-items':'center',
-            
-
-            "margin-top":'10px'
         },
 
         childrenIds: ["icon_picker_input_block","icon_picker_handler_block"],

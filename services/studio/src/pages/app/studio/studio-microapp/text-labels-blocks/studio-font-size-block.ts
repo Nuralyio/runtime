@@ -2,32 +2,18 @@ import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
     {
-        uuid: "font_size_vertical_container",
+            uuid: "font_size_vertical_container",
         applicationId: "1",
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            
             display:'flex',
-            'justify-content':'space-between',
             'align-items':'center',
-            'margin-top': '10px',
-        },
-        childrenIds: ["font_size_block","label_fontsize_handler_block"],
-    },
-    {
-        uuid: "font_size_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
             'justify-content':'space-between',
-            'align-items':'center'
+            "width": "290px",
         },
-        childrenIds: ["text_label_font_size", "font_size_input_2"],
+        childrenIds: ["text_label_font_size", "font_size_input_2", "label_fontsize_handler"],
     },
 
     {
@@ -43,8 +29,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='Font size';
-                return label;
+                return 'Font size';
             `
             }
         },
@@ -60,7 +45,7 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "120px",
+            width: "155px",
             size:'small',
         },
         event: {
@@ -137,19 +122,7 @@ export default [
             }
         }
     },
-    {
-        uuid: "label_fontsize_handler_block",
-        applicationId: "1",
-        name: "label fontsize handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["label_fontsize_handler"],
-    },
+
     {
         uuid: "label_fontsize_handler",
         applicationId: "1",

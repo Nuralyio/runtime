@@ -15,9 +15,6 @@ export default [
              display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-             
-
-             "margin-top":'10px'
         },
 
         childrenIds: ["helper_input_block","helper_handler_block"],

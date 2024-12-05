@@ -8,39 +8,13 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            
             display:'flex',
+            'align-items':'center',
             'justify-content':'space-between',
-            'align-items':'center',
-            'margin-top': '10px',
-
+            "width": "290px",
         },
 
-        childrenIds: ["font_family_input_block","font_family_handler_block"],
-    },
-    {
-        uuid: "font_family_input_block",
-        applicationId: "1",
-        name: "font family input block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["font_family_label_container", "font_family_content_container"],
-    },
-
-    {
-        uuid: "font_family_label_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-        },
-        childrenIds: ["font_family_label"],
+        childrenIds: ["font_family_label", "font_family_select", "font_family_handler"],
     },
     {
         uuid: "font_family_label",
@@ -55,35 +29,23 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Font family';
-             return label;
+               return 'Font family';
             `
             }
         }
     },
-    {
-        uuid: "font_family_content_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-        },
-        childrenIds: ["font_family_select"],
-    },
+
     {
         uuid: "font_family_select",
         applicationId: "1",
         component_type: ComponentType.Select,
-        ...COMMON_ATTRIBUTES,
         styleHandlers: {},
         name: "label font family select",
         input: {
             placeholder:{
                 type:'handler',
                 value: /* js*/`
-                 const placeholder ='Font';
-                 return placeholder;
+                 return 'Font';
                 `
             },
             value: {
@@ -121,7 +83,7 @@ export default [
             if(fontFamily){
                 selectedFontFamily = options.find((option)=> option.value == fontFamily);   
             }
-            const result =[options,[selectedFontFamily? selectedFontFamily.label : ""]]
+            const result =[options,[selectedFontFamily? selectedFontFamily.value : ""]]
             return  result;  
                 `
             },
@@ -142,7 +104,7 @@ export default [
         },
         style: {
             display:'block',
-            "--hybrid-select-width":"120px",
+            "--hybrid-select-width":"155px",
             'size':'small'
         },
         event: {
@@ -164,20 +126,7 @@ export default [
       `
         },
     },
-    {
-        uuid: "font_family_handler_block",
-        applicationId: "1",
-        name: "font family handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["font_family_handler"],
-    },
+
     {
         uuid: "font_family_handler",
         applicationId: "1",

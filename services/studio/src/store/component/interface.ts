@@ -24,6 +24,7 @@ export const enum   ComponentType {
   UsersDropdown ='UsersDropdown',
   InsertDropdown ='InsertDropdown',
   Collapse ='Collapse',
+  Handlers ='Handlers',
   AI = "AI",
   Divier = "Divider",
 }

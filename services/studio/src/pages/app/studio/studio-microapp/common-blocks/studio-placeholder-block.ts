@@ -11,8 +11,6 @@ export default [
              display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-
-
         },
 
         childrenIds: ["placeholder_input_block","placeholder_handler_block"],

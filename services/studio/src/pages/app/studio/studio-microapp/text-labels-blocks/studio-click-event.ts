@@ -9,13 +9,11 @@ export default [
         styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center'
+            display: "flex",
+            "align-items": "center",
+            "justify-content": "space-between",
+            "width": "290px"
         },
-        
         childrenIds: ["text_label_click_event", "click_event_value"],
     },
     {
@@ -29,9 +27,8 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Click';
-             return label;
-            `
+                     return 'Click event';
+                    `
             }
         },
         style:{
@@ -48,7 +45,11 @@ export default [
         style: {
                 display:'block',
         },
-        input: { 
+        input: {
+            triggerText:{
+                type: 'string',
+                value: /* js */`Set click event handler `
+            } ,
             value: {
                 type: 'handler',
                 value: /* js */`

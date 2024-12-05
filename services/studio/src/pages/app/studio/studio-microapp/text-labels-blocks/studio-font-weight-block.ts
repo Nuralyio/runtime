@@ -14,26 +14,11 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-             'align-items':'center',
-             'justify-content':'space-between',
-             
-
-             "margin-top":'10px'
-        },
-        childrenIds: ["label_font_weight_radio_block","font_weight_handler_block"],
-    },
-    {
-        uuid: "label_font_weight_radio_block",
-        applicationId: "1",
-        name: "label font weight radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
             'align-items':'center',
-            'justify-content':'space-between'
+            'justify-content':'space-between',
+            "width": "290px",
         },
-        childrenIds: ["text_label_font_weight", "font_weight_content"],
+        childrenIds: ["text_label_font_weight", "font_weight_content", "font_weight_handler"],
     },
     {
         uuid: "text_label_font_weight",
@@ -49,8 +34,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Font weight';
-             return label;
+               return 'Font weight';
             `
             }
         },
@@ -66,7 +50,7 @@ export default [
         style: {           
             display:'block',
             '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'70px',
+            '--hybrid-button-width':'53px',
             '--hybrid-button-font-size':'11px'
         },
         input: {
@@ -85,7 +69,7 @@ export default [
                 defaultFontWeight = currentComponent.style['font-weight'] ||'normal';
                 const options =[{value:'normal',label: "Normal",disabled:isDisabled},
                                 {value:'bold',label: "Bold",disabled:isDisabled},
-                                {value:'900',label: "Extra bold",disabled:isDisabled}]
+                                {value:'900',label: "Ex.bold",disabled:isDisabled}]
                 const radioType='button';
                 const result =[options,defaultFontWeight,radioType];
                return  result;           
@@ -109,20 +93,7 @@ export default [
       `
         },
     },
-    {
-        uuid: "font_weight_handler_block",
-        applicationId: "1",
-        name: "font weight handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["font_weight_handler"],
-    },
+
     {
         uuid: "font_weight_handler",
         applicationId: "1",

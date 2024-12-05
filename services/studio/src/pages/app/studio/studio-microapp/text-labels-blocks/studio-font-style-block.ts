@@ -12,27 +12,14 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-            
-            display: 'flex',
-            "justify-content":'space-between',
-            "align-items":'center',
-            "margin-top": "10px"
-        },
-        childrenIds: ["label_fontstyle_radio_block","font_style_handler_block"],
-    },
-    {
-        uuid: "label_fontstyle_radio_block",
-        applicationId: "1",
-        name: "label fontstyle radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
             display:'flex',
             'align-items':'center',
-            'justify-content':'space-between'
+            'justify-content':'space-between',
+            "width": "290px",
         },
-        childrenIds: ["text_label_font_style", "font_style_values_block"],
+        childrenIds: ["text_label_font_style", "font_style_content", "font_style_handler"],
     },
+
     {
         uuid: "text_label_font_style",
         name: "text_label",
@@ -46,28 +33,10 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Font style';
-             return label;
+               return 'Font style';
             `
             }
         },
-    },
-    {
-        uuid: "font_style_values_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display: 'flex',
-            gap: "10px"
-        },
-        childrenIds: ["font_style_content"],
     },
     {
         uuid: "font_style_content",
@@ -77,7 +46,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style:{
             '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'50px',
+            '--hybrid-button-width':'53px',
             '--hybrid-button-font-size':'12px'
         },
         input: {
@@ -119,20 +88,7 @@ export default [
       `
         },
     },
-    {
-        uuid: "font_style_handler_block",
-        applicationId: "1",
-        name: "font style handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["font_style_handler"],
-    },
+
     {
         uuid: "font_style_handler",
         applicationId: "1",

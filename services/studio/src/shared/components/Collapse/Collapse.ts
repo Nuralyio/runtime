@@ -31,7 +31,7 @@ export class Collapse extends BaseElementBlock {
     $applicationComponents(this.component.applicationId).subscribe((components = []) => {
       this.componentsWithChildren = [...components];
       this.sections = this.generateSection().map((section, index) => {
-        section.open = this.openStates[index] ?? false;
+        section.open = this.openStates[index] ??  section.open;
         return section;
       });
     });
@@ -44,11 +44,13 @@ export class Collapse extends BaseElementBlock {
   }
 
   private generateSection() {
-    return (this.inputHandlersValue.components)?.map((section: { label: any; blockName: string; }) => {
+    return (this.inputHandlersValue.components)?.map((section: { label: any; blockName: string; open: boolean }) => {
         return {
           header: section.label,
           content: html`
-            <div>${this.generateComponent(section.blockName)}</div>`
+            <div>${this.generateComponent(section.blockName)}</div>`,
+          open : section.open,
+
         };
       }
     );

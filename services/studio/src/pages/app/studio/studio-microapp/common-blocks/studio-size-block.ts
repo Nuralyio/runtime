@@ -12,9 +12,7 @@ export default [
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
-            
-
-            "margin-top":'10px'
+            "width": "290px",
         },
 
         childrenIds: ["size_radio_block","size_handler_block"],
@@ -30,7 +28,7 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["size_label", "size_radio"],
+        childrenIds: ["size_label"],
     },
     
     {
@@ -43,13 +41,13 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Size';
-             return label;
+               return 'Size';
             `
             }
         },
         style: {
-            width:'90px'
+            width:'90px',
+            marginLeft: "5px"
 
         }
     },
@@ -57,8 +55,6 @@ export default [
         uuid: "size_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
         name: "size select",
         input: {
             value: {
@@ -100,7 +96,7 @@ export default [
         style: {
             display:'block',
             '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'50px',
+            '--hybrid-button-width':'51px',
             '--hybrid-button-font-size':'12px'
 
         },
@@ -128,13 +124,12 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center',
         },
         
-        childrenIds: ["size_handler"],
+        childrenIds: [ "size_radio","size_handler"],
     },
     {
         uuid: "size_handler",

@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
     {
         uuid: "button_type_block",
@@ -9,13 +10,11 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
-            'justif-content':'space-between',
             'align-items':'center',
-            
-
+            'justify-content':'space-between',
+            "width": "290px",
         },
-
-        childrenIds: ["button_type_radio_block","button_type_handler_block"],
+        childrenIds: ["button_type_radio_block", "button_type_handler_block"],
     },
     {
         uuid: "button_type_radio_block",
@@ -24,110 +23,100 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'space-between',
         },
-        childrenIds: ["button_type_label", "button_type_select"],
+        childrenIds: ["button_type_label", ],
     },
-    
     {
         uuid: "button_type_label",
         name: "button type label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
-                const typeLabel='Type';
+        input: {
+            value: {
+                type: 'handler',
+                value: /* js */`
+                const typeLabel = 'Type';
                 return typeLabel;
-                
                 `
             }
         },
         style: {
-            width:'90px'
-
+            width: '90px',
+            marginLeft: "5px"
         }
     },
     {
         uuid: "button_type_select",
         applicationId: "1",
-        component_type: ComponentType.RadioButton,
+        component_type: ComponentType.Select,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
         name: "button type select",
         input: {
+            placeholder: {
+                type: 'handler',
+                value: /* js */`
+                const placeholder = 'Type';
+                return placeholder;
+                `
+            },
             value: {
                 type: "handler",
-                value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let isDisabled = false;
-                let currentType =''
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers?.type) {
-                    isDisabled = true
+                value: /* js */ `
+                const selectedComponents = GetVar("selectedComponents") || [];
+                const selectedComponent = selectedComponents[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                let currentType = currentComponent?.style?.type || 'default';
+                console.log('currentType',currentType);
+                const options = [
+                    { label: "Primary", value: "primary" },
+                    { label: "Secondary", value: "secondary" },
+                    { label: "Danger", value: "danger" },
+                    { label: "Ghost", value: "ghost" },
+                    { label: "Default", value: "default" },
+                ];
+                const result = [options, [currentType]];
+                return result;
+                `
+            },
+            state: {
+                type: 'handler',
+                value: /* js */`
+                const selectedComponents = GetVar("selectedComponents") || [];
+                const selectedComponent = selectedComponents[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                let isDisabled = 'enabled';
+                if (currentComponent?.styleHandlers?.type) {
+                    isDisabled = 'disabled';
                 }
-                else
-                currentType = currentComponent?.style &&currentComponent.style['type'] || 'default'
-                const options = 
-                    [
-                    {
-                    label: "Primary",
-                    value: "primary",
-                    disabled:isDisabled
-                    }, 
-                    {
-                    label: "Secondary",
-                    value: "secondary",
-                    disabled:isDisabled
-
-                   },
-                    {
-                     label: "Danger",
-                     value: "danger",
-                     disabled:isDisabled
-                   },
-                   {
-                    label: "Ghost",
-                    value: "ghost",
-                    disabled:isDisabled
-                   },
-                   {
-                    label: "Default",
-                    value: "default",
-                    disabled:isDisabled
-                   },
-            ]   
-            const radioType ='button'
-            const result = [options,currentType,radioType];
-           return  result;
+                return isDisabled;
                 `
             }
         },
         style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'60px',
-            '--hybrid-button-font-size':'12px'
-        },
+            display: 'block',
+            "--hybrid-select-width": "150px",
+            'size': 'small'
+    },
         event: {
             changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const typeValue = EventData.value;
-                    updateStyle(currentComponent,'type',typeValue)
+            try {
+                const selectedComponents = GetVar("selectedComponents") || [];
+                if (selectedComponents.length) {
+                    const selectedComponent = selectedComponents[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                    const typeValue = EventData.value || 'default';
+                    console.log(EventData);
+                    updateStyle(currentComponent, "type", typeValue);
                 }
-            }catch(error){
+            } catch (error) {
                 console.log(error);
-            }  
-      `
+            }
+            `
         },
     },
     {
@@ -137,13 +126,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
+            'align-items':'center',
         },
-        
-        childrenIds: ["button_type_handler"],
+        childrenIds: ["button_type_select", "button_type_handler"],
     },
     {
         uuid: "button_type_handler",
@@ -151,45 +138,45 @@ export default [
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "type  handler",
+        name: "type handler",
         style: {
-                display:'block',
+            display: 'block',
+            "--hybrid-button-width": "120px",
+
         },
-        input: { 
+        input: {
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='type';
-                let typeHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    typeHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['type'] || ''  
+                const parameter = 'type';
+                let typeHandler = '';
+                try {
+                    const selectedComponents = GetVar("selectedComponents") || [];
+                    if (selectedComponents.length) {
+                        const selectedComponent = selectedComponents[0];
+                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                        typeHandler = currentComponent?.styleHandlers?.type || '';
                     }
-                }catch(error){
+                } catch (error) {
                     console.log(error);
                 }
-                return [parameter,typeHandler];
-            `
+                return [parameter, typeHandler];
+                `
             }
         },
-        
         event: {
             codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'type',EventData.value)
+            try {
+                const selectedComponents = GetVar("selectedComponents") || [];
+                if (selectedComponents.length) {
+                    const selectedComponent = selectedComponents[0];
+                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                    updateStyleHandlers(currentComponent, 'type', EventData.value);
                 }
-            }catch(error){
+            } catch (error) {
                 console.log(error);
             }
-      `
+            `
         },
     },
-
-]
+];

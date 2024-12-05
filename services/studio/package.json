@@ -10,7 +10,7 @@
     "server": "HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs",
     "astro": "astro",
     "update": "ncu --color --cacheClear \"/^@nuralyui.*$/\" -u",
-    "link": "npm link @nuralyui/button @nuralyui/color-picker  @nuralyui/icon @nuralyui/dropdown @nuralyui/input @nuralyui/menu @nuralyui/radio @nuralyui/select @nuralyui/tabs @nuralyui/slider-input @nuralyui/checkbox @nuralyui/table  @nuralyui/modal @nuralyui/collapse"
+    "link": "node -e \"const fs = require('fs'); const pkgs = fs.readdirSync('node_modules/@nuralyui').map(p => '@nuralyui/' + p).join(' '); require('child_process').execSync('npm link ' + pkgs, { stdio: 'inherit' });\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -30,6 +30,7 @@
     "@nanostores/logger": "^0.3.0",
     "@nanostores/persistent": "^0.10.2",
     "@nuralyui/button": "^0.0.5",
+    "@nuralyui/canvas": "^0.0.1",
     "@nuralyui/checkbox": "^0.0.1",
     "@nuralyui/collapse": "^0.0.4",
     "@nuralyui/color-picker": "^0.0.1",
@@ -47,6 +48,7 @@
     "@nuralyui/slider-input": "^0.0.1",
     "@nuralyui/table": "^0.0.1",
     "@nuralyui/tabs": "^0.0.5",
+    "@nuralyui/tooltips": "^0.0.1",
     "@rollup/pluginutils": "^5.1.0",
     "@sentry/astro": "^7.98.0",
     "@types/react": "^18.2.48",
@@ -57,7 +59,7 @@
     "acorn-walk": "^8.3.4",
     "astro": "^4.16.14",
     "astrojs-service-worker": "^2.0.0",
-    "dayjs": "^1.11.12",
+    "dayjs": "^1.11.13",
     "esbuild": "^0.23.0",
     "escodegen": "^2.1.0",
     "esprima": "^4.0.1",

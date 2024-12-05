@@ -12,8 +12,7 @@ export default [
              display:'flex',
              'align-items':'center',
              'justify-content':'space-between',
-             
-             "margin-top":'10px'
+             "width": "290px",
         },
 
         childrenIds: ["label_text_input_block","label_handler_block"],
@@ -29,7 +28,7 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["label_text_label", "label_text_input"],
+        childrenIds: ["label_text_label"],
     },
     {
         uuid: "label_text_label",
@@ -38,14 +37,14 @@ export default [
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
         style:{
-            'width':'90px'
+            'width':'90px',
+          marginLeft: "5px"
         },
         input: {
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Label';
-             return label;
+               return 'Label';
             `
             }
         },
@@ -58,7 +57,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             size:"small",
-            width:'120px'
+            width:'155px'
         },
         event: {
             valueChange:/* js */ `
@@ -132,12 +131,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["label_handler"],
+        childrenIds: [ "label_text_input","label_handler"],
     },
     {
         uuid: "label_handler",

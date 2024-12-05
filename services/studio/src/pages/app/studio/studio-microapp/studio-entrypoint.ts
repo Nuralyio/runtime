@@ -1,16 +1,16 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "./helper/common_attributes.ts";
-import studioFontColorBlock from './text-labels-blocks/studio-font-color-block.ts';
-import studioAlignementBlock from './text-labels-blocks/studio-alignement-block.ts';
-import studioVerticalAlignementBlock from './text-labels-blocks/studio-vertical-alignement-block.ts'
-import studioFontWeightBlock from './text-labels-blocks/studio-font-weight-block.ts';
-import studioFontStyleBlock from './text-labels-blocks/studio-font-style-block.ts';
-import studioTextDecorationBlock from './text-labels-blocks/studio-text-decoration-block.ts';
-import studioBackgroundcolorBlock from './text-labels-blocks/studio-backgroundcolor-block.ts';
-import studioBoxShadowBlock from './text-labels-blocks/studio-box-shadow-block.ts';
-import studioBorderRadiusBlock from './text-labels-blocks/studio-border-radius-block.ts';
-import studioFontFamilyBlock from './text-labels-blocks/studio-font-family-block.ts';
-import studioFontSizeBlock from './text-labels-blocks/studio-font-size-block.ts';
+import studioFontColorBlock from "./text-labels-blocks/studio-font-color-block.ts";
+import studioAlignementBlock from "./text-labels-blocks/studio-alignement-block.ts";
+import studioVerticalAlignementBlock from "./text-labels-blocks/studio-vertical-alignement-block.ts";
+import studioFontWeightBlock from "./text-labels-blocks/studio-font-weight-block.ts";
+import studioFontStyleBlock from "./text-labels-blocks/studio-font-style-block.ts";
+import studioTextDecorationBlock from "./text-labels-blocks/studio-text-decoration-block.ts";
+import studioBackgroundcolorBlock from "./text-labels-blocks/studio-backgroundcolor-block.ts";
+import studioBoxShadowBlock from "./text-labels-blocks/studio-box-shadow-block.ts";
+import studioBorderRadiusBlock from "./text-labels-blocks/studio-border-radius-block.ts";
+import studioFontFamilyBlock from "./text-labels-blocks/studio-font-family-block.ts";
+import studioFontSizeBlock from "./text-labels-blocks/studio-font-size-block.ts";
 import studioLetterSpacingBlock from "./text-labels-blocks/studio-letter-spacing-block.ts";
 import studioLineHeightBlock from "./text-labels-blocks/studio-line-height-block.ts";
 import studioClickEvent from "./text-labels-blocks/studio-click-event.ts";
@@ -23,18 +23,20 @@ import studioStatusBlock from "./common-blocks/studio-status-block.ts";
 import studioSizeBlock from "./common-blocks/studio-size-block.ts";
 import studioPlaceholderBlock from "./common-blocks/studio-placeholder-block.ts";
 import studioValueBlock from "./common-blocks/studio-value-block.ts";
-import studioPositionBlock from './common-blocks/studio-position-block.ts'
-import studioWidthBlock from './common-blocks/studio-width-block.ts'
+import studioPositionBlock from "./common-blocks/studio-position-block.ts";
+import studioWidthBlock from "./common-blocks/studio-width-block.ts";
 import studioHeightBlock from "./common-blocks/studio-height-block.ts";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block.ts";
-import studioButtonIconPosition from './button-blocks/studio-button-icon-position-block.ts'
-import studioIconPickerBlock from './common-blocks/studio-icon-picker-block.ts'
+import studioButtonIconPosition from "./button-blocks/studio-button-icon-position-block.ts";
+import studioIconPickerBlock from "./common-blocks/studio-icon-picker-block.ts";
+import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
+import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
 import studioButtonThemeBlock from "./button-blocks/studio-button-theme-block.ts";
-import studioInputLabelColor from "./text-input-blocks/studio-input-label-color.ts"
-import studioInputLabelSize from './text-input-blocks/studio-input-label-size.ts'
-import studioInputHelperColor from './text-input-blocks/studio-input-helper-color.ts'
-import studioInputHelperSize from './text-input-blocks/studio-input-helper-size.ts'
+import studioInputLabelColor from "./text-input-blocks/studio-input-label-color.ts";
+import studioInputLabelSize from "./text-input-blocks/studio-input-label-size.ts";
+import studioInputHelperColor from "./text-input-blocks/studio-input-helper-color.ts";
+import studioInputHelperSize from "./text-input-blocks/studio-input-helper-size.ts";
 import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event.ts";
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event.ts";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event.ts";
@@ -49,78 +51,78 @@ import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-l
 import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block.ts";
 import studioDatepickerDateChangeEventBlock from "./datepicker-blocks/studio-datepicker-date-change-event-block.ts";
 import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block.ts";
-import studioSelectWidth from './select-blocks/studio-select-width-block.ts'
-import studioSelectHelperColor from './select-blocks/studio-select-helper-color-block.ts';
-import studioSelectHelperSize from './select-blocks/studio-select-helper-size-block.ts';
-import studioSelectLabelColor from './select-blocks/studio-select-label-color-block.ts';
-import studioSelectLabelSize from './select-blocks/studio-select-label-size-block.ts';
+import studioSelectWidth from "./select-blocks/studio-select-width-block.ts";
+import studioSelectHelperColor from "./select-blocks/studio-select-helper-color-block.ts";
+import studioSelectHelperSize from "./select-blocks/studio-select-helper-size-block.ts";
+import studioSelectLabelColor from "./select-blocks/studio-select-label-color-block.ts";
+import studioSelectLabelSize from "./select-blocks/studio-select-label-size-block.ts";
 import studioSelectTypeBlock from "./select-blocks/studio-select-type-block.ts";
 import studioSelectSelectionmodeBlock from "./select-blocks/studio-select-selectionmode-block.ts";
 import studioSelectChangedEventBlock from "./select-blocks/studio-select-changed-event-block.ts";
 import stduioTable from "./table-block/columns-block.ts";
-import tableSelectionModeBlock from './table-block/table-selectionmode-block.ts'
-import tableFilterBlock from './table-block/table-filter-block.ts'
-import studioIconWidthBlock from './icon-blocks/studio-icon-width-block.ts';
-import studioIconHeightBlock from './icon-blocks/studio-icon-height-block.ts';
-import studioIconColorBlock from './icon-blocks/studio-icon-color-block.ts';
-import  QuickActions from "../components/editor-micro-apps/quick-action.ts"
+import tableSelectionModeBlock from "./table-block/table-selectionmode-block.ts";
+import tableFilterBlock from "./table-block/table-filter-block.ts";
+import studioIconWidthBlock from "./icon-blocks/studio-icon-width-block.ts";
+import studioIconHeightBlock from "./icon-blocks/studio-icon-height-block.ts";
+import studioIconColorBlock from "./icon-blocks/studio-icon-color-block.ts";
+import QuickActions from "../components/editor-micro-apps/quick-action.ts";
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block.ts";
 import studioLabelBlock from "./common-blocks/studio-label-block.ts";
-import studioSelectValuesBlock from './select-blocks/studio-select-values-block.ts'
-import studioTableValuesBlock from './table-block/table-values-block.ts'
-import studioPageNameBlock from './page-blocks/studio-page-name-block.ts'
-import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts"
-import studioTableSelectEvent from './table-block/studio-table-select-event.ts'
-import studioTableSearchEvent from './table-block/studio-table-search-event.ts'
-import studioTableSortEvent from './table-block/studio-table-sort-event.ts'
-import studioTablePaginateEvent from './table-block/studio-table-paginate-event.ts'
+import studioBorderCollapse from "./common-blocks/studio-border-collapse.ts";
+import studioSelectValuesBlock from "./select-blocks/studio-select-values-block.ts";
+import studioTableValuesBlock from "./table-block/table-values-block.ts";
+import studioPageNameBlock from "./page-blocks/studio-page-name-block.ts";
+import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
+import studioTableSelectEvent from "./table-block/studio-table-select-event.ts";
+import studioTableSearchEvent from "./table-block/studio-table-search-event.ts";
+import studioTableSortEvent from "./table-block/studio-table-sort-event.ts";
+import studioTablePaginateEvent from "./table-block/studio-table-paginate-event.ts";
 import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks.ts";
 import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks.ts";
 import collectionContainerBlocks from "./collection-blocks/collection-blocks-container.ts";
 import collectionDataBlocks from "./collection-blocks/collection-blocks-data.ts";
-import TopBar from '../components/editor-micro-apps/top-bar.ts'
-import LeftPanel from '../components/editor-micro-apps/left-panel.ts'
+import TopBar from "../components/editor-micro-apps/top-bar.ts";
+import LeftPanel from "../components/editor-micro-apps/left-panel.ts";
 
 export default [
 
-    {
-        uuid: "divider",
-        name: "divider",
-        component_type: ComponentType.Divier,
-        applicationId: "1",
-        input:{
-        },
+  {
+    uuid: "divider",
+    name: "divider",
+    component_type: ComponentType.Divier,
+    applicationId: "1",
+    input: {}
+  },
+  {
+    uuid: "1",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    parameters: {
+      value: "Font Size"
     },
-    {
-        uuid: "1",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Font Size",
-        },
 
-        event: {
-            onClick: `
+    event: {
+      onClick: `
         console.log("Clicked 22" , Current.uuid);
       `
-        },
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        inputHandlers: {
-            value: ` GetContextVar("text_label_value");`
-        },
-
     },
-    {
-        uuid: "2",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.TextInput,
-        parameters: {
-            value: "22px",
-        },
-        event: {
-            valueChange: `
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    inputHandlers: {
+      value: ` GetContextVar("text_label_value");`
+    }
+
+  },
+  {
+    uuid: "2",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.TextInput,
+    parameters: {
+      value: "22px"
+    },
+    event: {
+      valueChange: `
             try{
             SetContextVar("text_label_value", EventData.value);
             updateStyle(app1.text_label, "color", EventData.value);
@@ -128,127 +130,224 @@ export default [
                 console.log(e);
             }
       `
-        },
-        ...COMMON_ATTRIBUTES
     },
-    {
-        uuid: "left_panel_tabs",
-        applicationId: "1",
-        name: "left_panel_tabs",
-        component_type: ComponentType.Tabs,
+    ...COMMON_ATTRIBUTES
+  },
+  {
+    uuid: "left_panel_tabs",
+    applicationId: "1",
+    name: "left_panel_tabs",
+    component_type: ComponentType.Tabs,
 
-        event: {
-            valueChange: `
+    event: {
+      valueChange: `
         updateStyle(app1.text_label, "color", EventData.value);
       `
 
-        },
-        ...COMMON_ATTRIBUTES,
-        style:{
-            width:"300px",
-            "--hybrid-menu-border" : "none",
-        },
-        input: {
-            tabs: {
-                type: "json",
-                value:
-                    [
-                        {
-                            label: {
-                                type: "text",
-                                value: "Pages"
-                            },
-                            childrends: {
-                                type: "componentIdArray",
-                                value: ["pages_panel"]
+    },
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "300px",
+      "--hybrid-menu-border": "none"
+    },
+    input: {
+      tabs: {
+        type: "json",
+        value:
+          [
+            {
+              label: {
+                type: "text",
+                value: "Pages"
+              },
+              childrends: {
+                type: "componentIdArray",
+                value: ["pages_panel"]
 
-                            }
-                        },
-                        {
-                            label: {
-                                type: "text",
-                                value: "Data Source"
-                            },
-                            childrends: {
-                                type: "componentIdArray",
-                                value: ["2"]
+              }
+            },
+            {
+              label: {
+                type: "text",
+                value: "Elements"
+              },
+              childrends: {
+                type: "componentIdArray",
+                value: ["2"]
 
-                            }
-                        },
-                    ]
+              }
             }
-        },
+          ]
+      }
+    }
+  },
+  {
+    uuid: "text_label_handlers_collpase_ontainer",
+    applicationId: "1",
+    name: "position collapse container",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      marginTop: "13px",
     },
-    {
-        uuid: "buttons_bocks",
-        applicationId: "1",
-        name: "Parent Color Container",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display: "flex",
-            "flex-direction": "column",
-            gap: "10px",
-        },
-        childrenIds: ['label_text_block',
-            "position_collapse_container",
-            'size_block',
-            'button_type_block',
-          "divider",
-            'icon_picker_block',
-            'state_block',
-            'divider',
-            'button_click_event_block',
-            'parent_color_container',
-            'display_block',
-            'button_icon_position_block',],
+    childrenIds: ["text_label_handlers_collpase"]
+  },
+  {
+    uuid: "text_label_handlers_collpase",
+    applicationId: "1",
+    name: " collapse",
+    component_type: ComponentType.Collapse,
+    style: {
+      "--hy-collapse-content-small-size-padding": "5px",
+      "--hy-collapse-font-weight": "normal",
+      "--hy-collapse-border-radius": "0px",
+      "--hy-collapse-width": "292px",
+      "--hy-collapse-border": "none",
+      '--hy-collapse-border-bottom': '1px solid #636363',
+      '--hy-collapse-local-header-background-color': '#3d3d3d'
     },
-    {
-        uuid: "right_panel_tabs",
-        applicationId: "1",
-        name: "right_panel_tabs",
-        component_type: ComponentType.Tabs,
-        event: {},
-        style:{
-            width : "100%",
-            height : "100%",
-            display: "grid",
-            "--hybrid-tabs-content-padding" : "0px",
-        },
-        input: {
-            tabs: {
-                type: "handler",
-                value: /* js */ `
+    input: {
+      size: {
+        type: 'string',
+        value: 'small'
+      },
+      components: {
+        type: 'handler',
+        value: /* js */ `
+                return [{ blockName: 'text_label_handlers', label: 'Triggers' , open : true}];
+                `
+      }
+    }
+  },
+  {
+    uuid: "text_label_handlers",
+    applicationId: "1",
+    name: "Parent hander Container",
+    component_type: ComponentType.Handlers,
+    input:{
+      allowedEvents:{
+        type: "handler",
+        value: /* js */`
+                return [
+                  {
+                      name: "onClick",
+                      label: "onClick"
+                  },
+                  {
+                      name: "onMouseEnter",
+                      label: "onMouseEnter"
+                  },
+                  { 
+                      name: "onMouseLeave",
+                      label: "onMouseLeave"
+                  },
+                  {
+                      name: "onDoubleClick",
+                      label: "onDoubleClick"
+                  }
+               ];
+                `
+      },
+     events:{
+       type : "handler",
+       value: /* js */`
+                const selectedComponents = GetVar("selectedComponents") || [];
+                const selectedComponent = selectedComponents[0];
+                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                return currentComponent.event ?? {}
+                `
+     }
+    }
+  },
+  {
+    uuid: "text_label_handler",
+    applicationId: "1",
+    name: "Parent hander Container",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column"
+    },
+    childrenIds: [
+      "text_label_handlers_collpase_ontainer",
+    ]
+  },
+  {
+    uuid: "text_label_bocks",
+    applicationId: "1",
+    name: "Parent Color Container",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column"
+    },
+    childrenIds: [
+      "value_text_block",
+      "display_block",
+      "typography_collapse_container",
+      "size_collapse_container",
+      "border_collapse_container",
+      // "font_color_block",
+
+    ]
+  },
+  {
+    uuid: "buttons_bocks",
+    applicationId: "1",
+    name: "Parent Color Container",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column"
+    },
+    childrenIds: ["label_text_block",
+      "position_collapse_container",
+      "size_block",
+      "button_type_block",
+      "divider",
+      "icon_picker_block",
+      "state_block",
+      "divider",
+      "button_click_event_block",
+      "parent_color_container",
+      "display_block",
+      "button_icon_position_block"]
+  },
+  {
+    uuid: "right_panel_tabs",
+    applicationId: "1",
+    name: "right_panel_tabs",
+    component_type: ComponentType.Tabs,
+    event: {},
+    style: {
+      width: "100%",
+      height: "100%",
+      display: "grid",
+      "--hybrid-tabs-content-padding": "0px"
+    },
+    input: {
+      tabs: {
+        type: "handler",
+        value: /* js */ `
                 const selectedComponents = GetVar("selectedComponents") || [];
                 const currentPageId = GetVar("currentPage");
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                let parameters;
+                let parameters = [];
+                let handlers = [];
+                let themes = [];
                 if(selectedComponents.length)
                     { 
                         const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
                     switch(component.component_type){
                         case "text_label":
                             parameters=[
-                                "value_text_block",
-                                "font_size_vertical_container",
-                                "font_color_block",
-                                "font_family_block",
-                                "text_alignement_block",
-                                "text_vertical_alignement_block",
-                                "position_collapse_container",
-                                "width_vertical_container",
-                                "height_vertical_container",
-                                "font_weight_block",
-                                "font_style_block",
-                                "text_decoration_block",
-                                "box_shadow_block",
-                                "border_radius_vertical_container",
-                                "letter_spacing_block", 
-                                "line_height_block",
-                                "display_block",
-                                "click_event_block",
-                                "mouse_enter_event_block",
-                                "mouse_leave_event_block"
+                               "text_label_bocks"
+                            ];
+                            handlers=[
+                                "text_label_handler"
                             ];
                             break;
                         case "text_input":
@@ -381,6 +480,7 @@ export default [
                         ]
                 }
                 return [
+                 
                     {
                         label: {
                             type: "text",
@@ -393,118 +493,135 @@ export default [
                                 : ["select_component_text"]
                         }
                     },
-                    {
+                   {
                         label: {
                             type: "text",
-                            value: "Advanced"
+                            value: "Handlers"
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value: []
+                            value:  selectedComponents.length|| currentPageId
+                                ? handlers
+                                : []
+                        }
+                    },
+                    {
+                        label: {
+                            type: "text",
+                            value: "Theme"
+                        },
+                        childrends: {
+                            type: "componentIdArray",
+                            value:  selectedComponents.length|| currentPageId
+                                ? themes
+                                : []
                         }
                     }
                 ];
                 `
-            }
-        }
-    },
-    
-    {
-        uuid: "select_component_text",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        ...COMMON_ATTRIBUTES,
-        applicationId: "1",
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
+      }
+    }
+  },
+
+  {
+    uuid: "select_component_text",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    ...COMMON_ATTRIBUTES,
+    applicationId: "1",
+    input: {
+      value: {
+        type: "handler",
+        value:/* js */`
                 const selectComponentText=' ';
                 return selectComponentText;
                 
                 `
-            }
-        },
-    },
+      }
+    }
+  },
 
-    ...studioPageNameBlock,
-    ...studioPageUrlBlock,
-    ...studioTableValuesBlock,
-    ...stduioTable,
-    ...tableSelectionModeBlock,
-    ...tableFilterBlock,
-    ...studioValueBlock,
-    ...studioDatepickerLocaleBlock,
-    ...studioDatepickerFormatBlock,
-    ...studioFontSizeBlock,
-    ...studioFontColorBlock,
-    ...studioFontFamilyBlock,
-    ...studioBackgroundcolorBlock,
-    ...studioAlignementBlock,
-    ...studioVerticalAlignementBlock,
-    ...studioWidthBlock,
-    ...studioHeightBlock,
-    ...studioFontWeightBlock,
-    ...studioFontStyleBlock,
-    ...studioTextDecorationBlock,
-    ...studioBoxShadowBlock,
-    ...studioBorderRadiusBlock,
-    ...studioLetterSpacingBlock,
-    ...studioLineHeightBlock,
-    ...studioDisplayBlock,
-    ...studioPlaceholderBlock,
-    ...studioHelperTextBlock,
-    ...studioInputHelperColor,
-    ...studioSelectHelperColor, 
-    ...studioInputHelperSize, 
-    ...studioSelectHelperSize, 
-    ...studioLabelBlock,
-    ...studioSelectLabelColor,
-    ...studioInputLabelColor,
-    ...studioInputLabelSize,
-    ...studioSelectWidth,
-    ...studioSelectLabelSize,
-    ...studioSelectValuesBlock,
-    ...studioStatusBlock,
-    ...studioSizeBlock,
-    ...studioInputTypeBlock,
-    ...studioStateBlock,
-    ...studioButtonTypeBlock,
-    ...studioIconPickerBlock,
-    ...studioPositionBlock,
-    ...studioButtonIconPosition,
-    ...studioClickEvent,
-    ...studioMouseEnterEvent,
-    ...studioMouseLeaveEvent,
-    ...studioIconWidthBlock,
-    ...studioIconHeightBlock,
-    ...studioIconColorBlock,
-    ...studioInputBlurEvent,
-    ...studioInputClearEvent,
-    ...studioInputValuechangeEvent,
-    ...studioInputFocusEvent,
-    ...studioButtonClickEventBlock,
-    ...studioCheckboxCheckedBlock,
-    ...studioImageWidthBlock,
-    ...studioImageHeightBlock,
-    ...studioImageAltBlock,
-    ...studioImageSrcBlock,
-    ...studioImageFallbackBlock,
-    ...studioDatepickerDateChangeEventBlock,
-    ...studioCheckboxChangedEventBlock,
-    ...studioSelectTypeBlock,
-    ...studioSelectSelectionmodeBlock,
-    ...studioSelectChangedEventBlock,
-    ...studioTableSelectEvent,
-    ...studioTableSearchEvent,
-    ...studioTableSortEvent,
-    ...studioTablePaginateEvent,
-    ...QuickActions,
-    ...microAppSelectionBlocks,
-    ...microAppContainerBlocks,
-    ...collectionContainerBlocks,
-    ...collectionDataBlocks,
-    ...TopBar,
-    ...LeftPanel,
+  ...studioPageNameBlock,
+  ...studioPageUrlBlock,
+  ...studioTableValuesBlock,
+  ...stduioTable,
+  ...tableSelectionModeBlock,
+  ...tableFilterBlock,
+  ...studioValueBlock,
+  ...studioDatepickerLocaleBlock,
+  ...studioDatepickerFormatBlock,
+  ...studioFontSizeBlock,
+  ...studioFontColorBlock,
+  ...studioFontFamilyBlock,
+  ...studioBackgroundcolorBlock,
+  ...studioAlignementBlock,
+  ...studioVerticalAlignementBlock,
+  ...studioWidthBlock,
+  ...studioHeightBlock,
+  ...studioFontWeightBlock,
+  ...studioFontStyleBlock,
+  ...studioTextDecorationBlock,
+  ...studioBoxShadowBlock,
+  ...studioBorderRadiusBlock,
+  ...studioLetterSpacingBlock,
+  ...studioLineHeightBlock,
+  ...studioDisplayBlock,
+  ...studioPlaceholderBlock,
+  ...studioHelperTextBlock,
+  ...studioInputHelperColor,
+  ...studioSelectHelperColor,
+  ...studioInputHelperSize,
+  ...studioSelectHelperSize,
+  ...studioLabelBlock,
+  ...studioBorderCollapse,
+  ...studioSelectLabelColor,
+  ...studioInputLabelColor,
+  ...studioInputLabelSize,
+  ...studioSelectWidth,
+  ...studioSelectLabelSize,
+  ...studioSelectValuesBlock,
+  ...studioStatusBlock,
+  ...studioSizeBlock,
+  ...studioInputTypeBlock,
+  ...studioStateBlock,
+  ...studioButtonTypeBlock,
+  ...studioIconPickerBlock,
+  ...studioTypographyCollapseBlock,
+  ...studioPositionBlock,
+  ...studioButtonIconPosition,
+  ...studioClickEvent,
+  ...studioMouseEnterEvent,
+  ...studioMouseLeaveEvent,
+  ...studioIconWidthBlock,
+  ...studioIconHeightBlock,
+  ...studioIconColorBlock,
+  ...studioInputBlurEvent,
+  ...studioInputClearEvent,
+  ...studioInputValuechangeEvent,
+  ...studioInputFocusEvent,
+  ...studioButtonClickEventBlock,
+  ...studioCheckboxCheckedBlock,
+  ...studioImageWidthBlock,
+  ...studioImageHeightBlock,
+  ...studioImageAltBlock,
+  ...studioImageSrcBlock,
+  ...studioImageFallbackBlock,
+  ...studioDatepickerDateChangeEventBlock,
+  ...studioCheckboxChangedEventBlock,
+  ...studioSelectTypeBlock,
+  ...studioSelectSelectionmodeBlock,
+  ...studioSelectChangedEventBlock,
+  ...studioTableSelectEvent,
+  ...studioTableSearchEvent,
+  ...studioTableSortEvent,
+  ...studioTablePaginateEvent,
+  ...studioSizeCollpaseBlock,
+  ...QuickActions,
+  ...microAppSelectionBlocks,
+  ...microAppContainerBlocks,
+  ...collectionContainerBlocks,
+  ...collectionDataBlocks,
+  ...TopBar,
+  ...LeftPanel,
   ...studioButtonThemeBlock
-]
+];

@@ -10,29 +10,14 @@ export default [
         input: {
             direction: "vertical",
         },
-
-        ...COMMON_ATTRIBUTES,
-        style: {
-            
-            display: 'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            'margin-top': '10px',
-        },
-        childrenIds: ["letter_spacing_input_block","letter_spacing_handler_block"],
-    },
-    {
-        uuid: "letter_spacing_input_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'align-items':'center',
-            'justify-content':'space-between'
+            'justify-content':'space-between',
+            "width": "290px",
         },
-        childrenIds: ["text_label_letter_spacing", "letter_spacing_input"],
+        childrenIds: ["text_label_letter_spacing", "letter_spacing_input", "letter_spacing_handler"],
     },
     {
         uuid: "text_label_letter_spacing",
@@ -48,8 +33,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Letter spacing';
-             return label;
+              return 'Letter spacing';
             `
             }
         },
@@ -61,7 +45,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style:{
             size:'small',
-            'width':'120px',
+            'width':'155px',
         },
         styleHandlers: {},
         name: "Left panel",
@@ -123,19 +107,7 @@ export default [
       `    
         },
     },
-    {
-        uuid: "letter_spacing_handler_block",
-        applicationId: "1",
-        name: "letter spacing handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["letter_spacing_handler"],
-    },
+
     {
         uuid: "letter_spacing_handler",
         applicationId: "1",

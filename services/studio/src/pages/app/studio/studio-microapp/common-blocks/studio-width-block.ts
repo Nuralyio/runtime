@@ -8,26 +8,14 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            
-            "margin-top":'10px',
-            'align-items':'center',
-            'justify-content':'space-between',
-        },
-        childrenIds: ["width_block","auto_width_block","width_handler_block"],
-    },
-    {
-        uuid: "width_block",
-        applicationId: "1",
-        name: "width block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
+            "width": "290px",
         },
-        childrenIds: ["width_label", "width_container"],
+        childrenIds: ["width_label", "width_container","auto_width_block","width_handler_block", "width_handler"],
     },
+
     {
         uuid: "width_container",
         name: "width container",
@@ -70,7 +58,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'block',
-            width: "120px",
+            width: "100px",
             size:'small',
         },
         event: {
@@ -136,6 +124,8 @@ export default [
         component_type: ComponentType.Checkbox,
         ...COMMON_ATTRIBUTES,
         style: {
+            size:'small',
+
         },
         
         input: {
@@ -200,20 +190,7 @@ export default [
                 }`
         },
     },
-    {
-        uuid: "width_handler_block",
-        applicationId: "1",
-        name: "width handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["width_handler"],
-    },
+
     {
         uuid: "width_handler",
         applicationId: "1",

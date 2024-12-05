@@ -30,7 +30,7 @@ console.log($applications.get())
 <div>
   <div>
     {error && <div>Something seriously bad happened</div>}
-    {!error && <ApplicationList client:idle />}
+    {!error && <ApplicationList client:only="lit" />}
   </div>
 </div>
 

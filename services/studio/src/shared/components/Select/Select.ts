@@ -1,6 +1,7 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/select";
+import "@nuralyui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";

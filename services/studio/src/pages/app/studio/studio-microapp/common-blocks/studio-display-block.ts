@@ -1,65 +1,52 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "display_block",
-        applicationId: "1",
-        name: "display block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            
 
-        },
-        childrenIds: ["display_divider","display_radio_block","display_handler_block"],
+export default [
+  {
+    uuid: "display_block",
+    applicationId: "1",
+    name: "display block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "display_radio_block",
-        applicationId: "1",
-        name: "display radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["display_label", "display_radio"],
-    },
-    {
-        uuid: "display_label",
-        name: "display label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
+    childrenIds: ["display_label", "display_radio", "display_handler"]
+  },
+  {
+    uuid: "display_label",
+    name: "display label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value:/* js */`
                 const displayLabel='Display';
                 return displayLabel;
                 `
-            }
-        },
-        style: {
-            'width':'90px'
-
-        }
+      }
     },
-    {
-        uuid: "display_radio",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "display radio",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {
+      "width": "90px"
+
+    }
+  },
+  {
+    uuid: "display_radio",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "display radio",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -88,15 +75,15 @@ export default [
             const result = [options,currentDisplay,radioType];
            return  result;
                 `
-            }
-        },
-        style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'30px',
-                },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      display: "block",
+      "--hybrid-button-height": "30px",
+      "--hybrid-button-width": "77px"
+    },
+    event: {
+      changed: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -109,37 +96,22 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+ {
+    uuid: "display_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "display handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "display_handler_block",
-        applicationId: "1",
-        name: "display handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["display_handler"],
-    },
-    {
-        uuid: "display_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "display handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='display';
                 let displayHandler=''
                 try{
@@ -156,11 +128,11 @@ export default [
                 }
                 return [parameter,displayHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -173,15 +145,15 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-    {
-        uuid: "@",
-        name: "divider",
-        component_type: ComponentType.Divier,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
+    }
+  },
+  {
+    uuid: "display_divider",
+    name: "divider",
+    component_type: ComponentType.Divier,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES
 
-    },
+  }
 
-]
+];

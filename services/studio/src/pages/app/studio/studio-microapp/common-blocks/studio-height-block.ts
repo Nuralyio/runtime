@@ -8,40 +8,18 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            
-            "margin-top":'10px',
-            'align-items':'center',
-            'justify-content':'space-between',
-        },
-        childrenIds: ["height_block","auto_height_block","height_handler_block"],
-    },
-    {
-        uuid: "height_block",
-        applicationId: "1",
-        name: "height block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
+            "width": "290px",
         },
-        childrenIds: ["height_label", "height_container"],
+        childrenIds: [
+            "height_label",
+            "height_input",
+            "auto_height_checkbox",
+            "height_handler_block",
+        "height_handler"],
     },
-    {
-        uuid: "height_container",
-        name: "height container",
-        component_type: ComponentType.VerticalContainer,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            display:'flex',
-            "align-items":'center'
-        },
-        childrenIds: ["height_input","auto_height_checkbox"],
-
-    },
-
     {
         uuid: "height_label",
         name: "height label",
@@ -55,8 +33,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='Height';
-              return label;
+                return 'Height';
             `
             }
         },
@@ -70,7 +47,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style: {
             display:'block',
-            width: "120px",
+            width: "100px",
             size:'small',
         },
         event: {
@@ -138,15 +115,14 @@ export default [
         component_type: ComponentType.Checkbox,
         ...COMMON_ATTRIBUTES,
         style: {
-            
+            size : 'small'
         },
-        
         input: {
+
             label: {
                 type: 'handler',
                 value: /* js */`
-              const checkboxLabel ='auto';
-              return checkboxLabel;
+              return 'auto';
             `
             },
             checked: {
@@ -203,20 +179,7 @@ export default [
                 }`
         },
     },
-    {
-        uuid: "height_handler_block",
-        applicationId: "1",
-        name: "height handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["height_handler"],
-    },
+
     {
         uuid: "height_handler",
         applicationId: "1",

@@ -52,19 +52,18 @@ export default [
                 type: 'handler',
                 value: /* js */`
                 const event ='mouseenter';
+                let eventCode="";
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(!currentComponent.event){
-                            currentComponent= {...currentComponent,event:{mouseEnter:{}}}
-                        }
+                        eventCode = currentComponent.event['mouseEnter'] ?? "";
                     }
                 }catch(error){
                     console.log(error);
                 }
-                event;
+                return [event, eventCode];
             `
             }
         },
