@@ -2,8 +2,6 @@ import {html, LitElement, nothing} from 'lit';
 import {styles} from './carousel.style.js';
 import {customElement, property, queryAssignedElements, state} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
-import '../button/hy-button.component.js';
-import '../icon/icon.component.js';
 
 @customElement('hy-carousel')
 export class CarouselComponent extends LitElement {

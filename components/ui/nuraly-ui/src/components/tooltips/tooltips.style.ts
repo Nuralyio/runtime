@@ -9,6 +9,8 @@ const tooltipStyles = css`
     padding: 5px;
     text-align: center;
     opacity: 0;
+      font-size: 14px;
+      z-index: 9999;
     border-radius: 4px;
     animation-name: show-animation;
     animation-duration: 0.4s;

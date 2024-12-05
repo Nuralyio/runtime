@@ -4,12 +4,12 @@ export const styleVariables = css`
   :host {
     --hybrid-input-local-background-color: #f4f4f4;
     --hybrid-input-local-text-color: #000000;
-    --hybrid-input-local-font-family: IBM Plex Sans;
+    --hybrid-input-local-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-input-local-font-size:13px;
     --hybrid-input-local-label-color: #525252;
     --hybrid-input-local-placeholder-color: #a8a8a8;
-    --hybrid-input-local-border-bottom: 1px solid #a8a8a8;
-    --hybrid-input-local-border-top: 3px solid transparent;
+    --hybrid-input-local-border-bottom: 2px solid #a8a8a8;
+    --hybrid-input-local-border-top: 2px solid transparent;
     --hybrid-input-local-border-left: 2px solid transparent;
     --hybrid-input-local-border-right: 2px solid transparent;
     --hybrid-input-local-disabled-border-bottom: none;

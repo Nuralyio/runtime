@@ -1,7 +1,6 @@
 import {LitElement, html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {styles} from './table-actions.style.js';
-import '../../button/hy-button.component.js';
 import {Sizes} from '../table.types.js';
 
 @customElement('hy-table-actions')

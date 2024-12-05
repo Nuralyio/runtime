@@ -126,7 +126,7 @@ export const styles = css`
     --hybrid-radio-button-border-top-right-radius: 4px;
     --hybrid-radio-button-border-bottom-left-radius: 4px;
     --hybrid-radio-button-border-bottom-right-radius: 4px;
-    --hybrid-radio-button-font-family: IBM Plex Sans;
+    --hybrid-radio-button-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-radio-button-size: 14px;
     --hybrid-radio-button-dot-size: 3px;
     --hybrid-radio-button-dot-color: black;

@@ -16,6 +16,11 @@ const collapseStyles = css`
     margin-top:1px;
     width:var(--hy-collapse-width,var(--hy-collapse-local-width));
     border: var(--hy-collapse-border,var(--hy-collapse-local-border));
+      border: var(--hy-collapse-border, none);
+      border-top: var(--hy-collapse-border-top, var(--hy-collapse-border, var(--hy-collapse-local-border-top, none)));
+      border-right: var(--hy-collapse-border-right, var(--hy-collapse-border, var(--hy-collapse-local-border-right, none)));
+      border-bottom: var(--hy-collapse-border-bottom, var(--hy-collapse-border, var(--hy-collapse-local-border-bottom, none)));
+      border-left: var(--hy-collapse-border-left, var(--hy-collapse-border, var(--hy-collapse-local-border-left, none)));
     border-radius:var(--hy-collapse-border-radius,var(--hy-collapse-local-border-radius));
   }
 

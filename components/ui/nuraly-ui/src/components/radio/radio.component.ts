@@ -4,7 +4,6 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {styles} from './radio.style.js';
 import {RadioButtonType, RadioButtonOption, RadioButtonPosition, RadioButtonDirection} from './radio.type.js';
 import {choose} from 'lit/directives/choose.js';
-import '../button/hy-button.component.js';
 import {classMap} from 'lit/directives/class-map.js';
 @customElement('hy-radio-input')
 export class HyRadioComponent extends LitElement {

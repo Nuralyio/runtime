@@ -2,7 +2,6 @@
 import {html, LitElement, nothing, PropertyValueMap} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {styles} from './tooltips.style.js';
-import '../button/hy-button.component.js';
 import {EMPTY_STRING, TooltipAlignment, TooltipPosition} from './tooltips.constant.js';
 @customElement('hy-tooltip')
 export class TooltipElement extends LitElement {
@@ -33,7 +32,15 @@ export class TooltipElement extends LitElement {
   verticalOffset = 10;
   override connectedCallback(): void {
     super.connectedCallback();
-    this.target = this.previousElementSibling!;
+
+    // Assign the target to a previous sibling or expect it to be set via property.
+    this.target = this.target || this.previousElementSibling;
+
+    if (!this.target) {
+      console.error('Tooltip target is not defined or found. Ensure target is explicitly set or precedes the tooltip.');
+      return;
+    }
+
     if (!this.isPopConfirm) {
       this.target.addEventListener('mouseover', this.onMouseOver);
       this.target.addEventListener('mouseleave', this.onMouseLeave);
