@@ -9,12 +9,12 @@ export default [
             component_type: ComponentType.VerticalContainer,
             ...COMMON_ATTRIBUTES,
             style: {
-                width: "250px",
-                display:'flex',
-                'align-items':'center'
-
+              display: "flex",
+              "align-items": "center",
+              "justify-content": "space-between",
+              "width": "290px"
             },
-            childrenIds: ["border_radius_label","border_radius_block","label_border_radius_handler_block"],
+            childrenIds: ["border_radius_label","border_radius_block","label_border_radius_handler"],
         
     },
     {
@@ -34,7 +34,7 @@ export default [
             }
         },
        style:{
-        display:true
+         "width": "90px",
        }
     },
     {
@@ -43,6 +43,9 @@ export default [
         applicationId: "1",
         component_type: ComponentType.BorderRadius,
         ...COMMON_ATTRIBUTES,
+      style: {
+          width : "50px"
+      },
         event: {
             borderRadiusChanged:  /* js */ `
                     try{
@@ -117,20 +120,7 @@ export default [
 
         }
     },
-    {
-        uuid: "label_border_radius_handler_block",
-        applicationId: "1",
-        name: "label border radius handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "220px",
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["label_border_radius_handler"],
-    },
+
     {
         uuid: "label_border_radius_handler",
         applicationId: "1",

@@ -1,94 +1,62 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "text_decoration_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            
-
-            'margin-top': '10px',
-        },
-        childrenIds: ["label_text_decoration_radio_block","text_decoration_handler_block"],
+  {
+    uuid: "text_decoration_block",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    styleHandlers: {},
+    input: {
+      direction: "vertical"
     },
-    {
-        uuid: "label_text_decoration_radio_block",
-        applicationId: "1",
-        name: "label text decoration radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["text_label_text_decoration", "text_decoration_values_block"],
+
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "text_label_text_decoration",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        parameters: {
-            value: "Text decoration",
-        },
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
-                const label ='Text decoration';
-                return label;
+    childrenIds: ["text_label_text_decoration", "text_decoration_content", "text_decoration_handler"]
+  },
+  {
+    uuid: "text_label_text_decoration",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    parameters: {
+      value: "Text decoration"
+    },
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
+                return 'Text decoration';
                 `
-            }
-        },
-        style:{
-        width:'90px'
-        }
+      }
     },
-    {
-        uuid: "text_decoration_values_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display: 'flex',
-            gap: "10px"
-        },
-        childrenIds: ["text_decoration_content"],
+    style: {
+      width: "90px"
+    }
+  },
+  {
+    uuid: "text_decoration_content",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    styleHandlers: {},
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "--hybrid-button-height": "30px",
+      "--hybrid-button-width": "32px"
     },
-    {
-        uuid: "text_decoration_content",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        style:{
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'30px',
-        },
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -111,10 +79,10 @@ export default [
                 const result =[options,defaultTextDecoration,radioType];
                return  result;           
                 `
-            }
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    event: {
+      changed: /* js */ `
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -127,36 +95,23 @@ export default [
                 console.log(error);
             }   
       `
-        },
+    }
+  },
+  {
+    uuid: "text_decoration_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "text decoration handler",
+    style: {
+      display: "block",
+      width: "250px"
     },
-    {
-        uuid: "text_decoration_handler_block",
-        applicationId: "1",
-        name: "text decoration handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["text_decoration_handler"],
-    },
-    {
-        uuid: "text_decoration_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "text decoration handler",
-        style: {
-                display:'block',
-                width: "250px", 
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='textDecoration';
                 let textDecorationHandler =''
                 try{
@@ -171,11 +126,11 @@ export default [
                 }
                 return [parameter,textDecorationHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -187,6 +142,6 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-]
+    }
+  }
+];

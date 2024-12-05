@@ -172,7 +172,6 @@ export default [{
     style:{
     "--hybrid-menu-border" : "none",
     "--hybrid-menu-font-size":"14px",
-    "--hybrid-menu-font-family":"serif",
     "--hybrid-sub-menu-padding-y":"4px",
     "--hybrid-menu-link-padding-y":"4px"
     },

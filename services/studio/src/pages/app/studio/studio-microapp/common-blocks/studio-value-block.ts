@@ -7,31 +7,17 @@ export default [
         applicationId: "1",
         name: "value text block",
         component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-             display:'flex',
-             'align-items':'center',
-             "justify-content":'space-between',
-             
-
-             "margin-top":'10px'
-        },
-
-        childrenIds: ["value_input_block","value_handler_block"],
-    },
-    {
-        uuid: "value_input_block",
-        applicationId: "1",
-        name: "value input block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'align-items':'center',
-            'justify-content':'space-between'
+            'justify-content':'space-between',
+            "width": "290px",
+            "margin-top":'10px'
         },
-        childrenIds: ["value_text_label", "value_text_input"],
+
+        childrenIds: ["value_text_label", "value_text_input", "value_handler"],
     },
+
     {
         uuid: "value_text_label",
         name: "value text label",
@@ -46,8 +32,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Value';
-               return label;
+               return 'Value';
             `
             }
         },
@@ -60,8 +45,8 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            width:'120px',
             size:"small",
+            width:'155px'
         },
         event: {
             valueChange:  /* js */ `
@@ -128,20 +113,7 @@ export default [
             }
         }
     },
-    {
-        uuid: "value_handler_block",
-        applicationId: "1",
-        name: "value handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["value_handler"],
-    },
+
     {
         uuid: "value_handler",
         applicationId: "1",

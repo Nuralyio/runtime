@@ -6,28 +6,13 @@ export default [
         applicationId: "1",
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            
-            display: 'flex',
-            'justify-content': 'space-between',
-            'align-items':'center',
-            'margin-top': '10px',
-        },
-        childrenIds: ["line_height_input_block","line_height_handler_block"],
-    },
-    {
-        uuid: "line_height_input_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
         style: {
             display:'flex',
             'align-items':'center',
-            'justify-content':'space-between'
+            'justify-content':'space-between',
+            "width": "290px",
         },
-        childrenIds: ["text_label_line_height", "line_height_input"],
+        childrenIds: ["text_label_line_height", "line_height_input", "line_height_handler"],
     },
     {
         uuid: "text_label_line_height",
@@ -43,8 +28,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Line height';
-             return label;
+              return 'Line height';
             `
             }
         },
@@ -56,7 +40,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style:{
             size:'small',
-            width:'120px',
+            width:'155px',
         },
         styleHandlers: {},
         name: "Left panel",
@@ -119,19 +103,7 @@ export default [
             
         },
     },
-    {
-        uuid: "line_height_handler_block",
-        applicationId: "1",
-        name: "line height handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["line_height_handler"],
-    },
+
     {
         uuid: "line_height_handler",
         applicationId: "1",

@@ -43,7 +43,6 @@ class RectangleSelection extends LitElement {
       height:93vh;
       border: 1px solid #ccc;
       position: relative; 
-      overflow-y:scroll;
       overflow-x:hidden;
     }
     .rectangle {

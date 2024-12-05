@@ -11,46 +11,10 @@ export default [
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
-            
-
-            'margin-top': '10px',
-
+            "width": "290px",
         },
 
-        childrenIds: ["text_alignmenet_radio_block","horizontal_alignement_handler_block"],
-    },
-    {
-        uuid: "text_alignmenet_radio_block",
-        applicationId: "1",
-        name: "text alignement radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["alignement_label_container", "alignement_content_container"],
-    },
-    {
-        uuid: "alignement_label_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        childrenIds: ["text_label_alignement"],
-    },
-    {
-        uuid: "alignement_content_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display: 'flex',
-            'justify-content': 'space-between'
-        },
-        childrenIds: ["text-align-content"],
+        childrenIds: ["text_label_alignement", "text-align-content", "horizontal_alignement_handler"],
     },
     {
         uuid: "text_label_alignement",
@@ -65,8 +29,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Horizontal alignement';
-             return label;
+               return 'Horizontal alignment';
             `
             }
         },
@@ -79,7 +42,7 @@ export default [
         ...COMMON_ATTRIBUTES,
         style:{
             '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'30px',
+            '--hybrid-button-width':'52px',
         },
 
         input: {
@@ -127,20 +90,7 @@ export default [
       `
         },
     },
-    {
-        uuid: "horizontal_alignement_handler_block",
-        applicationId: "1",
-        name: "horizontal alignement handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["horizontal_alignement_handler"],
-    },
+
     {
         uuid: "horizontal_alignement_handler",
         applicationId: "1",

@@ -12,9 +12,6 @@ export default [
             display:'flex',
             'align-items':'center',
             'justify-content':'space-between',
-            
-
-            "margin-top":'10px'
         },
 
         childrenIds: ["status_radios_block","status_handler_block"],

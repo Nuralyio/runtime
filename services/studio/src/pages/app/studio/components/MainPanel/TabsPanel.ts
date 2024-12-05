@@ -1,4 +1,5 @@
 import "../Page/Page.ts";
+import "../Flow/Flow.ts"
 import "./EditorInteractivePanel.ts";
 import { $editorState } from "$store/apps.ts";
 import { LitElement, css, html } from "lit";
@@ -28,11 +29,23 @@ export class TabsPanel extends LitElement {
 	editableTabs = [
 		{
 			id: '1',
-			label: 'Page name',
+			label: 'Page',
 			content: html`
   	  <editor-interactive-panel >
           <content-page></content-page>
         </editor-interactive-panel>
+  	`,
+			editable: {
+				canDeleteTab: false,
+			}
+		},
+		{
+			id: '1',
+			label: 'Flow',
+			content: html`
+				<editor-interactive-panel >
+					<flow-page></flow-page>
+				</editor-interactive-panel>
   	`,
 			editable: {
 				canDeleteTab: false,

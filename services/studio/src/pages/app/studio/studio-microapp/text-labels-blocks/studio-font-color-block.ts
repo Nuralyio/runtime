@@ -8,27 +8,12 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        
-        display: 'flex',
-        'justify-content':'space-between',
+        display:'flex',
         'align-items':'center',
-        'margin-top': '10px',
-
+        'justify-content':'space-between',
+        "width": "290px",
     },
-    childrenIds: ["font_color_input_block","font_color_handler_block"]
-    },
-    {
-        uuid: "font_color_input_block",
-        applicationId: "1",
-        name: "font color input block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["font_color_label", "font_color_input_2"],
+    childrenIds: ["font_color_label", "font_color_input_2", "font_color_handler"]
     },
     {
         uuid: "font_color_label",
@@ -71,9 +56,8 @@ export default [
         
   `
     },
-    ...COMMON_ATTRIBUTES,
    style:{
-    width:"120px",
+    width:"155px",
     display:'block'
    },
     input: {
@@ -116,20 +100,7 @@ export default [
         }
     }
 },
-{
-    uuid: "font_color_handler_block",
-    applicationId: "1",
-    name: "font color handler block",
-    component_type: ComponentType.VerticalContainer,
-    ...COMMON_ATTRIBUTES,
-    style: {
-        width: "50px",
-        display:'flex',
-        'justify-content':'space-between',
-    },
-    
-    childrenIds: ["font_color_handler"],
-},
+
 {
     uuid: "font_color_handler",
     applicationId: "1",

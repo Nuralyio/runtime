@@ -6,6 +6,8 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
+import { setVar } from "$store/context.ts";
 @customElement("button-block")
 export class ButtonBlock extends BaseElementBlock {
   @property({ type: Object })
@@ -28,6 +30,15 @@ export class ButtonBlock extends BaseElementBlock {
     this.registerCallback('value', () => {
       this.requestUpdate();
     })
+    setTimeout(() => {
+      if(this.component.uuid == "b58665e5-1728-44e0-94f9-0357f0cecd2b"){
+        setVar("global", "selectedComponents", ["95946a08-bf75-467c-a558-0e949d1573d4"]);
+        this.requestUpdate()
+
+
+
+      }
+    },100);
   }
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);

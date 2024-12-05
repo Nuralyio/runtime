@@ -17,6 +17,7 @@ export class ParametersPanel extends LitElement {
       /* ===============================
          Micro-App Styles
          =============================== */
+
       micro-app {
           /* Input Styles */
           --hybrid-input-border-radius: 5px;
@@ -24,21 +25,18 @@ export class ParametersPanel extends LitElement {
           --hybrid-input-border-top: 1px solid #a8a8a8;
           --hybrid-input-border-left: 1px solid #a8a8a8;
           --hybrid-input-border-right: 1px solid #a8a8a8;*/
-          --hybrid-input-focus-border: 1px solid gray;
+          --hybrid-input-border-bottom: 2px solid transparent;
           --hybrid-input-number-icons-container-width: 48px;
           --hybrid-input-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
-          --hybrid-input-small-padding-top: 0px;
-          --hybrid-input-border-bottom: none;
-          --hybrid-input-font-size: 11px;
+          --hybrid-input-font-size: 12px;
 
           /* Select Styles */
-          --hybrid-select-small-height: 28px;
           --hybrid-select-icon-width: 11px;
           --hybrid-select-border-bottom: 1px solid #a8a8a8;
           --hybrid-select-border-top: 1px solid #a8a8a8;
           --hybrid-select-border-left: 1px solid #a8a8a8;
           --hybrid-select-border-right: 1px solid #a8a8a8;
-          --hybrid-select-border-radius: 7px;
+          --hybrid-select-border-radius: 5px;
           --hybrid-select-focus-border: 1px solid gray;
 
           /* Button Styles */
@@ -59,9 +57,14 @@ export class ParametersPanel extends LitElement {
       @media (prefers-color-scheme: dark) {
           micro-app {
               /* Input Styles (Dark Mode) */
-              --hybrid-input-focus-border: 1px solid #ffffff;
 
               /* Select Styles (Dark Mode) */
+              --hybrid-input-border-bottom: 1px solid transparent;
+              --hybrid-input-border-top: 1px solid transparent;
+              --hybrid-input-border-left: 1px solid transparent;
+              --hybrid-input-border-right: 1px solid transparent;
+              --hybrid-input-focus-border: 1px solid #a8a8a8;
+
               --hybrid-select-focus-border: 1px solid #ffffff;
 
               /* Button Styles (Dark Mode) */
@@ -69,13 +72,18 @@ export class ParametersPanel extends LitElement {
               --hybrid-button-border-right: 1px solid #a8a8a8;
               --hybrid-button-border-top: 1px solid #a8a8a8;
               --hybrid-button-border-bottom: 1px solid #a8a8a8;
-              --hybrid-button-background-color: #000000;
+              --hybrid-button-background-color: #212121;
               --hybrid-button-text-color: #ffffff;
-
+              --hybrid-button-primary-background-color: #6d6c6c;
+              --hybrid-button-primary-border-color: #a8a8a8;
+              --hybrid-button-primary-hover-border-color: #a8a8a8;
+              --hybrid-button-primary-hover-background-color: #494949;
               /* Collapse Styles (Dark Mode) */
               --hy-collapse-border: 1px solid #a8a8a8;
               --hy-collapse-header-hover-background-color: #3a3a3a;
               --hy-collapse-header-collapsed-background-color: #3a3a3a;
+
+              --hybrid-select-options-background-color: #0a0a0a;
           }
       }
   `;
