@@ -164,7 +164,7 @@ export class TabsComponent extends LitElement {
           @dragstart=${(e: any) => this.handleDragStart(e)}
           @drop=${(event: Event) => this.handleDrop(event)}
           class=${tabIndex === this.activeTab ? 'tab-label active' : 'tab-label'}
-          @click=${(e: Event) => this.setActiveTab(tabIndex, children[tabIndex], e)}
+          @mousedown=${(e: Event) => this.setActiveTab(tabIndex, children[tabIndex], e)}
         >
           <hy-label
             contenteditable=${this.editable?.canEditTabTitle ? true : nothing}

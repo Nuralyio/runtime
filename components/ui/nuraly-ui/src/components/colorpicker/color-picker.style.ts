@@ -42,7 +42,7 @@ export default css`
   :host([show]) .dropdown-container{
     display: block;
     position: fixed;
-    max-width: 250px;
+    width: 180px;
     z-index: 1;
     padding: 5px;
     background-color: var(--hybrid-colorpicker-background-color);

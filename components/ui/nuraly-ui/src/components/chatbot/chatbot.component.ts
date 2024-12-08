@@ -1,14 +1,40 @@
-import { html, css, LitElement } from 'lit';
+import {html, css, LitElement, nothing} from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import {classMap} from 'lit/directives/class-map.js';
 
 @customElement('nr-chatbot')
 export class NrChatbot extends LitElement {
-  @state() private messages: { sender: string; text: string }[] = [];
+  @state() private messages: { sender: string; text: string; timestamp: string }[] = [
+    { sender: 'bot', text: 'Welcome! How can I assist you today?', timestamp: new Date().toLocaleTimeString() }
+  ];
   @state() private currentInput: string = '';
   @state() private isBotTyping: boolean = false;
+  @state() private suggestions: { en: string; ar?: string }[] = [
+    {
+      en: 'Search document',
+      ar: 'البحث في المستند'
+    },
+    {
+      en: 'Filter results',
+      ar: 'تصفية النتائج'
+    },
+    {
+      en: 'Highlight matches',
+      ar: 'تمييز التطابقات'
+    },
+    {
+      en: 'Sort by relevance',
+      ar: 'الترتيب حسب الأهمية'
+    }
+  ];
+  @state() private chatStarted: boolean = false;
+  @state() private isRTL: boolean = false;
 
-  @property({ type: String }) loadingIndicator: string = 'dots'; // 'text' or 'dots'
+  @property({ type: String }) loadingIndicator: string = 'dots';
   @property({ type: String }) loadingText: string = 'Bot is typing...';
+  @property({ type: Boolean }) set direction(value: boolean) {
+    this.isRTL = value;
+  }
 
   static override styles = css`
       :host {
@@ -37,7 +63,35 @@ export class NrChatbot extends LitElement {
           flex-direction: column;
           gap: 12px;
           background: linear-gradient(135deg, #f3f4f6, #ffffff);
-          max-height: calc(100% - 60px); /* Keeps the messages area responsive */
+          max-height: calc(100% - 60px);
+      }
+
+      .suggestion-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 12px;
+      }
+
+      :host([dir="rtl"]) .suggestion-container {
+          flex-direction: row-reverse;
+      }
+
+      .suggestion {
+          display: inline-flex;
+          align-items: center;
+          background-color: #2663eb1a;
+          padding: 8px 12px;
+          border-radius: 16px;
+          cursor: pointer;
+          font-size: 14px;
+          color: #333333;
+          white-space: nowrap;
+          transition: background-color 0.3s ease;
+      }
+
+      .suggestion:hover {
+          background-color: #d5d8f1;
       }
 
       .message {
@@ -64,23 +118,47 @@ export class NrChatbot extends LitElement {
           color: #333333;
       }
 
+      :host([dir="ltr"]) .user {
+          align-self: flex-end;
+          border-radius: 16px 16px 0 16px;
+      }
+
+      :host([dir="ltr"]) .bot {
+          align-self: flex-start;
+          border-radius: 16px 16px 16px 0;
+      }
+
+      :host([dir="rtl"]) .user {
+          align-self: flex-start;
+          border-radius: 16px 16px 16px 0;
+      }
+
+      :host([dir="rtl"]) .bot {
+          align-self: flex-end;
+          border-radius: 16px 0 16px 16px;
+      }
+
       .loading {
           display: flex;
           align-items: center;
           justify-content: center;
           background-color: #eef1f6;
-          align-self: flex-start;
           border-radius: 16px;
           padding: 10px;
           color: #888888;
           font-style: italic;
       }
+      .loading.dots {
+          width: 50px;
+          display: flex;
+          justify-content: space-between;
+      }
 
       .dots span {
           display: inline-block;
-          width: 8px;
-          height: 8px;
-          margin: 0 2px;
+          width: 6px;
+          height: 6px;
+          margin: 0 1px;
           background-color: #888888;
           border-radius: 50%;
           animation: bounce 1.2s infinite;
@@ -107,6 +185,11 @@ export class NrChatbot extends LitElement {
           display: flex;
           border-top: 1px solid #ddd;
           background-color: #f9fafb;
+          flex-direction: row;
+      }
+
+      :host([dir="rtl"]) .input-box {
+          flex-direction: row-reverse;
       }
 
       input {
@@ -117,7 +200,12 @@ export class NrChatbot extends LitElement {
           outline: none;
           background-color: #f9fafb;
           border-top-left-radius: 16px;
+          border-top-right-radius: 16px;
           max-width: 100%;
+      }
+
+      :host([dir="rtl"]) input {
+          text-align: right;
       }
 
       button {
@@ -131,25 +219,80 @@ export class NrChatbot extends LitElement {
           border-bottom-right-radius: 4px;
       }
 
+      :host([dir="rtl"]) button {
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 0;
+      }
+
       button:hover {
           background-color: #1d4ed8;
       }
-  `;
+
+      .suggestion-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          margin-bottom: 12px;
+      }
+
+      :host([dir="rtl"]) .suggestion-container {
+          flex-direction: row-reverse;
+      }
+
+      .suggestion {
+          display: inline-block;
+          background-color: #2663eb1a;
+          padding: 8px 12px;
+          border-radius: 16px;
+          cursor: pointer;
+          font-size: 14px;
+          color: #333333;
+          white-space: nowrap;
+      }
+
+      .suggestion:hover {
+          background-color: #d5d8f1;
+      }
+
+      .timestamp {
+          font-size: 10px;
+          color: #888888;
+          margin-top: 4px;
+      }  `;
 
   override render() {
     return html`
-      <div class="chatbox">
+      <div class="chatbox" dir=${this.isRTL ? 'rtl' : 'ltr'}>
         <div class="messages">
           ${this.messages.map(
             (message) => html`
               <div class="message ${message.sender}">
                 <div>${message.text}</div>
+                <div class="timestamp">${message.timestamp}</div>
               </div>
             `
           )}
+          ${!this.chatStarted ? html`
+            <div class="suggestion-container">
+              ${this.suggestions.map(
+                (suggestion) => html`
+                  <div
+                    class="suggestion"
+                    @click=${() => this.handleSuggestionClick(this.isRTL ? suggestion.ar || suggestion.en : suggestion.en)}
+                  >
+                    ${this.isRTL ? (suggestion.ar || suggestion.en) : suggestion.en}
+                  </div>
+                `
+              )}
+            </div>
+          `: nothing}
           ${this.isBotTyping
             ? html`
-              <div class="message loading">
+              <div class=${classMap({
+                "message" : true,
+                "loading" : true,
+                dots : this.loadingIndicator === 'dots'
+              })}>
                 ${this.loadingIndicator === 'text'
                   ? this.loadingText
                   : html`
@@ -169,9 +312,10 @@ export class NrChatbot extends LitElement {
             .value=${this.currentInput}
             @input=${this.handleInputChange}
             @keydown=${this.handleKeyDown}
-            placeholder="Type your message..."
+            placeholder=${this.isRTL ? 'اكتب رسالتك...' : 'Type your message...'}
+            dir=${this.isRTL ? 'rtl' : 'ltr'}
           />
-          <button @click=${this.handleSendMessage}>Send</button>
+          <button @click=${this.handleSendMessage}>${this.isRTL ? 'إرسال' : 'Send'}</button>
         </div>
       </div>
     `;
@@ -190,11 +334,25 @@ export class NrChatbot extends LitElement {
   private handleSendMessage() {
     if (!this.currentInput.trim()) return;
 
-    const userMessage = { sender: 'user', text: this.currentInput.trim() };
+    const userMessage = { sender: 'user', text: this.currentInput.trim(), timestamp: new Date().toLocaleTimeString() };
     this.messages = [...this.messages, userMessage];
     this.currentInput = '';
 
+    if (!this.chatStarted) {
+      this.chatStarted = true;
+    }
+
     this.startBotResponse();
+  }
+
+  private handleSuggestionClick(suggestion: string) {
+    this.currentInput = suggestion;
+    this.suggestions = this.suggestions.filter(s =>
+      this.isRTL
+        ? (s.ar !== suggestion && s.en !== suggestion)
+        : (s.en !== suggestion)
+    );
+    this.handleSendMessage();
   }
 
   private async startBotResponse() {
@@ -202,7 +360,7 @@ export class NrChatbot extends LitElement {
 
     setTimeout(async () => {
       const botMessageIndex = this.messages.length;
-      this.messages = [...this.messages, { sender: 'bot', text: '' }];
+      this.messages = [...this.messages, { sender: 'bot', text: '', timestamp: new Date().toLocaleTimeString() }];
       this.isBotTyping = false;
 
       const simulatedStream = this.mockLLMStream();

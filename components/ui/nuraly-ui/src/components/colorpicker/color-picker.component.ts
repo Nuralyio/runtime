@@ -56,21 +56,35 @@ export class ColorPicker extends LitElement {
         this.show =false
   };
   private calculateDropDownPosition = () => {
-    if (this.show) {
-      const verticalOffSet = 5;
-      const dropdownContainer = this.shadowRoot?.querySelector('.dropdown-container') as HTMLElement;
-      const dropdownContainerRect = dropdownContainer?.getBoundingClientRect();
-      const colorHolder = this.shadowRoot!.querySelector('.color-holder')!.getBoundingClientRect();
-      const availableTopSpace = colorHolder?.top;
-      const availableBottomSpace = window.visualViewport!.height - colorHolder!.bottom;
-      dropdownContainer.style.removeProperty('top');
-      if (dropdownContainerRect!.height > availableBottomSpace && availableTopSpace > dropdownContainerRect!.height) {
-        dropdownContainer.style.top = `${availableTopSpace - dropdownContainerRect.height - verticalOffSet}px`;
+    const dropdownContainer = this.shadowRoot?.querySelector('.dropdown-container') as HTMLElement;
+    const colorHolder = this.shadowRoot?.querySelector('.color-holder')  as HTMLElement;
+
+    if (dropdownContainer && colorHolder) {
+      const dropdownRect = dropdownContainer.getBoundingClientRect();
+      const colorHolderRect = colorHolder.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+
+      // Check if the dropdown is going out of the viewport vertically
+      if (colorHolderRect.bottom + dropdownRect.height > viewportHeight) {
+        // Move the dropdown upwards if it goes out of the viewport
+        dropdownContainer.style.top = `${colorHolderRect.top - dropdownRect.height}px`;
       } else {
-        dropdownContainer.style.top = `${colorHolder.bottom + verticalOffSet}px`;
+        // Otherwise, position it below the color holder
+        dropdownContainer.style.top = `${colorHolderRect.bottom}px`;
+      }
+
+      // Check if the dropdown is going out of the viewport horizontally
+      if (colorHolderRect.right + dropdownRect.width > viewportWidth) {
+        // Move the dropdown to the left if it goes out of the viewport
+        dropdownContainer.style.left = `${viewportWidth - dropdownRect.width}px`;
+      } else {
+        // Otherwise, position it to the right of the color holder
+        dropdownContainer.style.left = `${colorHolderRect.left}px`;
       }
     }
   };
+
   private handleColorChanged(colorChangedEvent: CustomEvent) {
     if(this.color !=colorChangedEvent.detail.value){
       this.color = colorChangedEvent.detail.value;
