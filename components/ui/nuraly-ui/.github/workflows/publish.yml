@@ -68,5 +68,6 @@ jobs:
           cd ../label && publish-if-not-published -- --access=public
           cd ../divider && publish-if-not-published -- --access=public
           cd ../canvas && publish-if-not-published -- --access=public
+          cd ../chatbot && publish-if-not-published -- --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
