@@ -1,15 +1,15 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { ChatService } from './chat-service';
+import { customElement, state, property } from 'lit/decorators.js';
+import { ChatService } from './chat.service';
 
 @customElement('chatbot-agent')
 export class ChatbotContainer extends LitElement {
   @state() private messages: {sender: string; text: string; timestamp: string}[] = [
     {sender: 'bot', text: 'Welcome! How can I assist you today?', timestamp: new Date().toLocaleTimeString()},
   ];
-
-  @state() private currentInput: string = '';
-  @state() private isBotTyping: boolean = false;
+  @property({type: Boolean}) direction = false;
+  @state() private currentInput = '';
+  @state() private isBotTyping = false;
   @state() private suggestions: string[] = [
     'Tell me about your services',
     'How can I get started?',
@@ -25,9 +25,10 @@ export class ChatbotContainer extends LitElement {
     }
   `;
 
-  render() {
+  override render() {
     return html`
       <nr-chatbot
+        .isRTL=${this.direction}
         .messages=${this.messages}
         .currentInput=${this.currentInput}
         .isBotTyping=${this.isBotTyping}
@@ -68,16 +69,18 @@ export class ChatbotContainer extends LitElement {
     try {
       const responseGenerator = ChatService.streamResponse(userMessage.text);
 
-      this.messages = [
-        ...this.messages,
-        {
-          sender: 'bot',
-          text: '',
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ];
-
       for await (const chunk of responseGenerator) {
+        if (this.isBotTyping) {
+          this.isBotTyping = false;
+          this.messages = [
+            ...this.messages,
+            {
+              sender: 'bot',
+              text: '',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ];
+        }
         this.messages = this.messages.map((msg, index) =>
           index === this.messages.length - 1 ? {...msg, text: msg.text + chunk} : msg
         );
