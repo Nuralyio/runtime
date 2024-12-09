@@ -1,6 +1,5 @@
 export class ChatService {
-  static async *streamResponse(message: string): AsyncGenerator<string> {
-    ChatService._message = message;
+  static async *streamResponse(_message: string): AsyncGenerator<string> {
     const chunks = [
       'This ',
       'is ',
