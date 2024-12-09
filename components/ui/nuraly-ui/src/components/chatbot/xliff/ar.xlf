@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<file target-language="ar" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+<body>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>إعادة المحاولة</target>
+</trans-unit>
+<trans-unit id="s29aa7ed001f47bcf">
+  <source>Sorry, there was an error processing your message.</source>
+  <target>عذرًا، حدث خطأ أثناء معالجة رسالتك.</target>
+</trans-unit>
+<trans-unit id="s4f2dde37d5c374e1">
+  <source>Bot is typing...</source>
+  <target>الروبوت يكتب...</target>
+</trans-unit>
+<trans-unit id="s5eaee60bc1bf5897">
+  <source>Type your message...</source>
+  <target>اكتب رسالتك...</target>
+</trans-unit>
+<trans-unit id="s57adf424d57c8a0f">
+  <source>Send</source>
+  <target>إرسال</target>
+</trans-unit>
+<trans-unit id="sa6a375c8e43a2f37">
+  <source>Welcome! How can I assist you today?</source>
+  <target>مرحبًا! كيف يمكنني مساعدتك اليوم؟</target>
+</trans-unit>
+</body>
+</file>
+</xliff>

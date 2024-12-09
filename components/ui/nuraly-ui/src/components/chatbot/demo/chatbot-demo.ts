@@ -1,6 +1,8 @@
 import { html, LitElement, css } from 'lit';
 import '../chatbot-container.component';
+import "./locale-picker";
 import { customElement, property, state } from 'lit/decorators.js';
+import {setLocaleFromUrl} from '../localization';
 
 @customElement('chatbot-demo')
 export class CarouselDemo extends LitElement {
@@ -58,10 +60,17 @@ export class CarouselDemo extends LitElement {
 
   private switchLanguage() {
     this.currentLanguage = this.currentLanguage === 'en' ? 'ar' : 'en';
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('locale', this.currentLanguage);
+    window.history.pushState(null, '', url.toString());
+    setLocaleFromUrl();
   }
 
   override render() {
     return html`
+      <locale-picker></locale-picker>
+
       <div class="button-container">
         <button @click="${this.switchLanguage}">
           Switch to ${this.currentLanguage === 'en' ? 'Arabic' : 'English'}
