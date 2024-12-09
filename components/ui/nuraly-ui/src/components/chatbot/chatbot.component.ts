@@ -9,23 +9,8 @@ export class NrChatbot extends LitElement {
   ];
   @state() private currentInput: string = '';
   @state() private isBotTyping: boolean = false;
-  @state() private suggestions: { en: string; ar?: string }[] = [
-    {
-      en: 'Search document',
-      ar: 'البحث في المستند'
-    },
-    {
-      en: 'Filter results',
-      ar: 'تصفية النتائج'
-    },
-    {
-      en: 'Highlight matches',
-      ar: 'تمييز التطابقات'
-    },
-    {
-      en: 'Sort by relevance',
-      ar: 'الترتيب حسب الأهمية'
-    }
+  @property() private suggestions: [] = [
+
   ];
   @state() private chatStarted: boolean = false;
   @state() private isRTL: boolean = false;
@@ -278,9 +263,9 @@ export class NrChatbot extends LitElement {
                 (suggestion) => html`
                   <div
                     class="suggestion"
-                    @click=${() => this.handleSuggestionClick(this.isRTL ? suggestion.ar || suggestion.en : suggestion.en)}
+                    @click=${() => this.handleSuggestionClick(suggestion)}
                   >
-                    ${this.isRTL ? (suggestion.ar || suggestion.en) : suggestion.en}
+                    ${suggestion}
                   </div>
                 `
               )}
