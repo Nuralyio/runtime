@@ -169,7 +169,7 @@ export class NrChatbotContainer extends LitElement {
               </svg>
             </button>
           </div>
-          <nr-chatbot .direction="${this.isRTL}"></nr-chatbot>
+         <slot></slot>
         </div>
       </div>
     `;

@@ -1,0 +1,99 @@
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { ChatService } from './chat-service';
+
+@customElement('chatbot-agent')
+export class ChatbotContainer extends LitElement {
+  @state() private messages: {sender: string; text: string; timestamp: string}[] = [
+    {sender: 'bot', text: 'Welcome! How can I assist you today?', timestamp: new Date().toLocaleTimeString()},
+  ];
+
+  @state() private currentInput: string = '';
+  @state() private isBotTyping: boolean = false;
+  @state() private suggestions: string[] = [
+    'Tell me about your services',
+    'How can I get started?',
+    'What are your pricing options?',
+  ];
+  @state() private chatStarted: boolean = false;
+
+  static override styles = css`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  `;
+
+  render() {
+    return html`
+      <nr-chatbot
+        .messages=${this.messages}
+        .currentInput=${this.currentInput}
+        .isBotTyping=${this.isBotTyping}
+        .suggestions=${this.suggestions}
+        .chatStarted=${this.chatStarted}
+        @input-change=${this.handleInputChange}
+        @send-message=${this.handleSendMessage}
+        @suggestion-click=${this.handleSuggestionClick}
+      ></nr-chatbot>
+    `;
+  }
+
+  private handleInputChange(e: CustomEvent<string>) {
+    this.currentInput = e.detail;
+  }
+
+  private handleSuggestionClick(e: CustomEvent<string>) {
+    const suggestion = e.detail;
+    this.currentInput = suggestion;
+    this.suggestions = this.suggestions.filter((s) => s !== suggestion);
+    this.handleSendMessage();
+  }
+
+  private async handleSendMessage() {
+    if (!this.currentInput.trim()) return;
+
+    const userMessage = {
+      sender: 'user',
+      text: this.currentInput.trim(),
+      timestamp: new Date().toLocaleTimeString(),
+    };
+
+    this.messages = [...this.messages, userMessage];
+    this.currentInput = '';
+    this.chatStarted = true;
+    this.isBotTyping = true;
+
+    try {
+      const responseGenerator = ChatService.streamResponse(userMessage.text);
+
+      this.messages = [
+        ...this.messages,
+        {
+          sender: 'bot',
+          text: '',
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ];
+
+      for await (const chunk of responseGenerator) {
+        this.messages = this.messages.map((msg, index) =>
+          index === this.messages.length - 1 ? {...msg, text: msg.text + chunk} : msg
+        );
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      this.messages = [
+        ...this.messages,
+        {
+          sender: 'bot',
+          text: 'Sorry, there was an error processing your message.',
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ];
+    } finally {
+      this.isBotTyping = false;
+    }
+  }
+}

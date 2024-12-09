@@ -1,16 +1,32 @@
 import { html, LitElement, css } from 'lit';
 import '../chatbot-container.component';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 
 @customElement('chatbot-demo')
 export class CarouselDemo extends LitElement {
-  @property({type: Boolean}) direction: boolean = false;
+  @property({ type: Boolean }) direction: boolean = false;
+  @property({ type: String }) currentLanguage: string = 'en'; // Default language
+
+  @state() suggestions :any = {
+    en: [
+      'Search document',
+      'Filter results',
+      'Highlight matches',
+      'Sort by relevance'
+    ],
+    ar: [
+      'البحث في المستند',
+      'تصفية النتائج',
+      'تمييز التطابقات',
+      'الترتيب حسب الأهمية'
+    ]
+  };
 
   static override styles = css`
     .button-container {
       display: flex;
       justify-content: flex-end;
-      margin-bottom: 10px; /* Adds space between button and content */
+      margin-bottom: 10px;
     }
 
     button {
@@ -38,21 +54,33 @@ export class CarouselDemo extends LitElement {
     }
   `;
 
-  private toggleDirection() {
-    this.direction = !this.direction;
+
+
+  private switchLanguage() {
+    this.currentLanguage = this.currentLanguage === 'en' ? 'ar' : 'en';
   }
 
   override render() {
     return html`
       <div class="button-container">
-        <button @click="${this.toggleDirection}">Toggle Direction</button>
+        <button @click="${this.switchLanguage}">
+          Switch to ${this.currentLanguage === 'en' ? 'Arabic' : 'English'}
+        </button>
       </div>
 
       <div style="height: 400px; width: 60%">
-        <nr-chatbot .direction="${this.direction}"></nr-chatbot>
+        <nr-chatbot
+          .direction="${this.currentLanguage !== 'en'}"
+          .suggestions="${this.suggestions[this.currentLanguage]}"
+        ></nr-chatbot>
       </div>
 
-      <nr-chatbot-container .direction="${this.direction}"></nr-chatbot-container>
+      <nr-chatbot-container .direction="${this.currentLanguage !== 'en'}">
+        <nr-chatbot
+          .direction="${this.currentLanguage !== 'en'}"
+          .suggestions="${this.suggestions[this.currentLanguage]}"
+        ></nr-chatbot>
+      </nr-chatbot-container>
     `;
   }
 }
