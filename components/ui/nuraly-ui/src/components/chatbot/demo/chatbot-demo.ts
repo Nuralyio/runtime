@@ -79,15 +79,17 @@ export class CarouselDemo extends LitElement {
 
       <div style="height: 400px; width: 60%">
         <chatbot-agent
+          suggestionCategory="${this.currentLanguage !== 'en' ? '2' : '4'}"
           .direction="${this.currentLanguage !== 'en'}"
-          .suggestions="${this.suggestions[this.currentLanguage]}"
+          .suggestions="${this.suggestions}"
         ></chatbot-agent>
       </div>
 
       <nr-chatbot-container .direction="${this.currentLanguage !== 'en'}">
         <chatbot-agent
+          suggestionCategory="${this.currentLanguage !== 'en' ? '2' : '4'}"
           .direction="${this.currentLanguage !== 'en'}"
-          .suggestions="${this.suggestions[this.currentLanguage]}"
+          .suggestions="${this.suggestions}"
         ></chatbot-agent>
       </nr-chatbot-container>
     `;

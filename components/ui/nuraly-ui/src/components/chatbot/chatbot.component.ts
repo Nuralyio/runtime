@@ -68,6 +68,7 @@ export class NrChatbot extends LitElement {
           color: #333333;
           white-space: nowrap;
           transition: background-color 0.3s ease;
+          text-wrap: auto;
       }
 
       .suggestion:hover {
@@ -103,6 +104,10 @@ export class NrChatbot extends LitElement {
           color: #d93025;
           border: 1px solid #d93025;
           position: relative;
+      }
+      
+      .introduction{
+          font-size: 16px;
       }
 
       .error .retry {
@@ -225,9 +230,9 @@ export class NrChatbot extends LitElement {
         <div class="messages">
           ${this.messages.map(
             (message) => html`
-              <div class="message ${classMap({ error: !!message.error, [message.sender]: true })}">
+              <div class="message ${classMap({ error: !!message.error, introduction: !!message.introduction,[message.sender]: true })}">
                 <div>${message.text}</div>
-                <div class="timestamp">${message.timestamp}</div>
+                <!--div class="timestamp">${message.timestamp}</div-->
                 ${message.error
                   ? html`<div class="retry" @click=${() => this.handleRetry(message)}>${msg("Retry")}</div>`
                   : nothing}
