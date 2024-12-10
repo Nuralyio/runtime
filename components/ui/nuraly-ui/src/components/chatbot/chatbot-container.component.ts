@@ -4,8 +4,8 @@ import { property } from 'lit/decorators.js';
 
 @customElement('nr-chatbot-container')
 export class NrChatbotContainer extends LitElement {
-  @state() private isChatbotOpen: boolean = false;
-  @state() private isRTL: boolean = false;
+  @state() private isChatbotOpen = false;
+  @state() private isRTL = false;
 
   @property({ type: Boolean }) set direction(value: boolean) {
     this.isRTL = value;
@@ -69,12 +69,11 @@ export class NrChatbotContainer extends LitElement {
 
       .chatbox-container {
           position: fixed;
-          bottom: 95px;
+          bottom: 145px;
           width: 400px;
-          height: 550px;
+          height: 500px;
           box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
           z-index: 9998;
-          display: flex;
           flex-direction: column;
           background-color: white;
           border-radius: 8px;
