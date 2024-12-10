@@ -1,14 +1,13 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, state, property } from 'lit/decorators.js';
-import { ChatService } from './chat.service';
+import {css, html, LitElement} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
+import {chatServiceInstance} from './chat.service';
 import {msg} from '@lit/localize';
 
 @customElement('chatbot-agent')
 export class ChatbotContainer extends LitElement {
-  @state() private messages: {sender: string; text: string; timestamp: string; error?: boolean}[] = [
-    {sender: 'bot', text: msg('Welcome! How can I assist you today?'), timestamp: new Date().toLocaleTimeString()},
-  ];
+  @state() private messages: {sender: string; text: string; timestamp: string; error?: boolean, introduction?: boolean}[] = [];
   @property({type: Boolean}) direction = false;
+  @property({type: Number}) suggestionCategory = 0;
   @state() private currentInput = '';
   @state() private isBotTyping = false;
   @state() private suggestions: string[] = [
@@ -18,13 +17,42 @@ export class ChatbotContainer extends LitElement {
   ];
   @state() private chatStarted = false;
 
+  chatService = chatServiceInstance;
+
   static override styles = css`
-      :host {
-          display: block;
-          width: 100%;
-          height: 100%;
-      }
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   `;
+
+  override async connectedCallback() {
+    super.connectedCallback();
+    this.messages = [
+      {sender: 'bot', text: msg('Welcome! How can I assist you today?'), timestamp: new Date().toLocaleTimeString()},
+    ];
+  }
+
+  async loadSuggestions() {
+    this.suggestions = [];
+    this.suggestions = await chatServiceInstance.loadSuggestions(this.suggestionCategory);
+  }
+
+  override async updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('suggestionCategory')) {
+      await this.loadSuggestions();
+      this.messages = [
+        {
+          sender: 'bot',
+          text: msg('Welcome! How can I assist you today?'),
+          timestamp: new Date().toLocaleTimeString(),
+          introduction: true,
+        },
+      ];
+    }
+  }
 
   override render() {
     return html`
@@ -59,7 +87,7 @@ export class ChatbotContainer extends LitElement {
     const lastUserMessage = this.messages
       .slice()
       .reverse()
-      .find(msg => msg.sender === 'user');
+      .find((msg) => msg.sender === 'user');
 
     if (lastUserMessage) {
       this.currentInput = lastUserMessage.text;
@@ -82,7 +110,7 @@ export class ChatbotContainer extends LitElement {
     this.isBotTyping = true;
 
     try {
-      const responseGenerator = ChatService.streamResponse(userMessage.text);
+      const responseGenerator = chatServiceInstance.streamResponse(userMessage.text);
 
       for await (const chunk of responseGenerator) {
         if (this.isBotTyping) {
