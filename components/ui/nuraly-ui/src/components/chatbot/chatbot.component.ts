@@ -6,7 +6,7 @@ import { localized, msg } from '@lit/localize';
 @localized()
 @customElement('nr-chatbot')
 export class NrChatbot extends LitElement {
-  @property({ type: Array }) messages: { sender: string; text: string; timestamp: string; error?: boolean }[] = [];
+  @property({ type: Array }) messages: { sender: string; text: string; timestamp: string; error?: boolean ; introduction?: boolean }[] = [];
   @property() currentInput = '';
   @property() isBotTyping = false;
   @property({ type: Array }) suggestions: string[] = [];
@@ -105,7 +105,7 @@ export class NrChatbot extends LitElement {
           border: 1px solid #d93025;
           position: relative;
       }
-      
+
       .introduction{
           font-size: 16px;
       }
@@ -232,7 +232,7 @@ export class NrChatbot extends LitElement {
             (message) => html`
               <div class="message ${classMap({ error: !!message.error, introduction: !!message.introduction,[message.sender]: true })}">
                 <div>${message.text}</div>
-                <!--div class="timestamp">${message.timestamp}</div-->
+                  <!--div class="timestamp">${message.timestamp}</div-->
                 ${message.error
                   ? html`<div class="retry" @click=${() => this.handleRetry(message)}>${msg("Retry")}</div>`
                   : nothing}
@@ -279,6 +279,21 @@ export class NrChatbot extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  // Scroll to bottom after the messages are updated
+  override updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('messages')) {
+      this.scrollToBottom();
+    }
+  }
+
+  private scrollToBottom() {
+    const messagesContainer = this.shadowRoot?.querySelector('.messages');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
 
   private handleInputChange(e: Event) {
