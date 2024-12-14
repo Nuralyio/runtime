@@ -35,12 +35,11 @@ export class Collapse extends BaseElementBlock {
         return section;
       });
     });
-    console.log(this.sections )
   }
 
   private generateComponent(_children: string) {
     const children = this.componentsWithChildren.filter(component => _children == component.uuid);
-    return html`${renderComponent(children, null, true)}`;
+    return renderComponent(children, null, true);
   }
 
   private generateSection() {
@@ -60,7 +59,8 @@ export class Collapse extends BaseElementBlock {
     return html`
       <hy-collapse
         style=${styleMap({
-          ...this.component.style })}
+          ...this.component.style
+        })}
         .sections=${this.sections ?? nothing}
         .size=${this.inputHandlersValue?.size ?? nothing}
         @section-toggled=${(e: CustomEvent) => {

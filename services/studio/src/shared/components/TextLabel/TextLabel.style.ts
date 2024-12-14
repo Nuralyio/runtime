@@ -3,7 +3,6 @@ import { css } from "lit";
 const textLabelStyles= css`
 label{
     color:var(--text-label-color);
-    display:block;
     user-select: none
 }
 

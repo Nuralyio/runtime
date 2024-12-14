@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, InputTextLabelTheme } from "../../utils/common-editor-theme.ts";
 export default [
 
   {
@@ -9,10 +10,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-             display:'flex',
-             'align-items':'center',
-             'justify-content':'space-between',
-             "width": "290px",
+          ...InputBlockContainerTheme
         },
 
         childrenIds: ["label_text_input_block","label_handler_block"],
@@ -37,8 +35,7 @@ export default [
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
         style:{
-            'width':'90px',
-          marginLeft: "5px"
+          ...InputTextLabelTheme
         },
         input: {
             value: {

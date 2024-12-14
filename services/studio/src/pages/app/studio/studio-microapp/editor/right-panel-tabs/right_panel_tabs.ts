@@ -1,0 +1,216 @@
+import { ComponentType } from "$store/component/interface.ts";
+
+export default {
+  uuid: "right_panel_tabs",
+    applicationId: "1",
+  name: "right_panel_tabs",
+  component_type: ComponentType.Tabs,
+  event: {},
+  style: {
+    width: "100%",
+      height: "100%",
+      display: "grid",
+      "--hybrid-tabs-content-padding": "0px"
+  },
+  input: {
+    tabs: {
+      type: "handler",
+        value: /* js */ `
+                const selectedComponents = GetVar("selectedComponents") || [];
+                const currentPageId = GetVar("currentPage");
+                const currentEditingApplication = GetVar("currentEditingApplication");
+                let parameters = [];
+                let handlers = [];
+                let themes = [];
+                if(selectedComponents.length)
+                    { 
+                        const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
+                    switch(component.component_type){
+                        case "text_label":
+                            parameters=[
+                               "text_label_bocks"
+                            ];
+                            handlers=[
+                                "text_label_handler"
+                            ];
+                            themes=[
+                            "parent_color_container"];
+                            break;
+                        case "text_input":
+                            parameters=[
+                                "value_text_block",
+                                "helper_text_block",
+                                "label_text_block",
+                                "input_label_color_block",
+                                "input_label_font_size_vertical_container",
+                                "input_helper_color_block",
+                                "input_helper_font_size_vertical_container",
+                                "placeholder_text_block",
+                                "position_collapse_container",
+                                "width_vertical_container",
+                                "size_block",
+                                "input_type_block",
+                                "status_block",
+                                "state_block",
+                                "input_blur_event_block",
+                                "input_valuechange_event_block",
+                                "input_focus_event_block"
+                            ];
+                            break;
+                        case "button_input":
+                            parameters=[
+                                'buttons_bocks'
+                            ];
+                            handlers=[
+                                "studio_button_handler"
+                            ];
+                            themes =[
+                              "studio_button_theme_container"
+                            ];
+                            break;
+                        case "checkbox":
+                            parameters=[
+                                'label_text_block',
+                                'checkbox_checked_block',
+                                'position_collapse_container',
+                                'state_block',
+                                'size_block',
+                                "checkbox_changed_event_block",
+                                "display_block"
+                                ];
+                                break;
+                        case "Image":
+                            parameters=[
+                                'image_width_vertical_container',
+                                'image_height_vertical_container',
+                                'position_collapse_container',
+                                'image_alt_text_block',
+                                'image_src_text_block',
+                                'image_fallback_text_block'
+                                        ];
+                                        break;
+                        case "DatePicker":
+                            parameters=[
+                                "value_text_block",
+                                'datepicker_locale_block',
+                                'size_block',
+                                'position_collapse_container',
+                                'width_vertical_container',
+                                'status_block',
+                                'state_block',
+                                "helper_text_block",
+                                "label_text_block",
+                                "datepicker_format_block",
+                                "datepicker_date_change_event_block",
+                                        ];
+                                        break;
+                        case "select":
+                            parameters=[
+                                'placeholder_text_block',
+                                "helper_text_block",
+                                "select_helper_color_block",
+                                "select_helper_font_size_vertical_container",
+                                "select_label_color_block",
+                                "select_label_font_size_vertical_container",
+                                'select_values_handler_block',
+                                'position_collapse_container',
+                                'select_width_vertical_container',
+                                "label_text_block",
+                                'status_block',
+                                'state_block',
+                                'size_block',
+                                'select_type_block',
+                                'select_selectionmode_block',
+                                'select_changed_event_block'
+                            ]
+                            break;
+                        
+                        case "Table":
+                            parameters=[
+                                'table_values_handler_block',
+                                "box_shadow_block", 
+                                "font_family_block", 
+                                "font_size_vertical_container",
+                                'position_collapse_container',
+                                'width_vertical_container',
+                                'table_selectionmode_block',
+                                'table_filter_block',
+                                "table_select_event_block",
+                                "table_search_event_block",
+                                "table_sort_event_block",
+                                "table_paginate_event_block"
+                            ];
+                            break;
+                        case "Icon":
+                            parameters=[
+                                'icon_picker_block',
+                                'icon_width_vertical_container',
+                                'icon_height_vertical_container',
+                                'position_collapse_container',
+                                'icon_color_block'
+                            ];
+                            break;
+                        case "vertical-container-block":
+                            parameters=[
+                                "position_collapse_container",
+                                "width_vertical_container",
+                                "height_vertical_container", 
+                            ]
+                            break;
+
+                        case "Collection":
+                            parameters=[
+                                "collection_data",
+                            ]
+                            break;
+                    }
+                }
+                else if(currentPageId) {
+                        parameters=[
+                            "page_name_block", 
+                            "page_url_block"    
+                        ]
+                }
+                return [
+                 
+                    {
+                        label: {
+                            type: "text",
+                            value: "Design"
+                        },
+                        childrends: {
+                            type: "componentIdArray",
+                            value: selectedComponents.length|| currentPageId
+                                ? parameters
+                                : ["select_component_text"]
+                        }
+                    },
+                   {
+                        label: {
+                            type: "text",
+                            value: "Handlers"
+                        },
+                        childrends: {
+                            type: "componentIdArray",
+                            value:  selectedComponents.length|| currentPageId
+                                ? handlers
+                                : []
+                        }
+                    },
+                    {
+                        label: {
+                            type: "text",
+                            value: "Theme"
+                        },
+                        childrends: {
+                            type: "componentIdArray",
+                            value:  selectedComponents.length|| currentPageId
+                                ? themes
+                                : []
+                        }
+                    }
+                ];
+                `
+    }
+  }
+};

@@ -11,8 +11,8 @@ export function updateComponentAttributes(
   updatedAttributes: any,
   save = true
 ) {
-  console.time("updateComponentAttributesExecutionTime"); // Start the timer
-  console.log("updateComponentAttributes", applicationId, componentId, updateType, updatedAttributes, save);
+  //console.time("updateComponentAttributesExecutionTime"); // Start the timer
+  //console.log("updateComponentAttributes", applicationId, componentId, updateType, updatedAttributes, save);
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
   const componentIndex = applicationComponents.findIndex(
@@ -50,5 +50,5 @@ export function updateComponentAttributes(
     }
   }
 
-  console.timeEnd("updateComponentAttributesExecutionTime"); // End the timer and log the execution time
+ // console.timeEnd("updateComponentAttributesExecutionTime"); // End the timer and log the execution time
 }

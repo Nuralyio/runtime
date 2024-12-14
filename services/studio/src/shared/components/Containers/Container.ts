@@ -79,6 +79,7 @@ export class VerticalContainer extends BaseElementBlock {
   renderView() {
     return html`
       <div
+        data-component-uuid=${this.component?.uuid}
         style=${styleMap({
      
       "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
@@ -111,6 +112,7 @@ export class VerticalContainer extends BaseElementBlock {
             .hoveredComponent=${{ ...this.hoveredComponent }}
           >
             <div
+              data-component-uuid=${this.component?.uuid}
               @mouseenter="${() => {
                 this.dragOverSituation = true;
                 setHoveredComponentIdAction(this.component?.uuid);

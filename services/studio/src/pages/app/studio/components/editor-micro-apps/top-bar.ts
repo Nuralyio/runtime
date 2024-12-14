@@ -98,10 +98,12 @@ export default [{
                 {
                   label: "MicroApp",
                   value: "MicroApp",
+                  icon: "cube"
                 },
                 {
                   label: "Collections",
                   value: "Collection",
+                  icon: "layer-group"
                 },
                 {
                   label: "Text Input",
