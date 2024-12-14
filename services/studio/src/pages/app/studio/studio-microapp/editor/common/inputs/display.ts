@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, InputTextLabelTheme } from "../../utils/common-editor-theme.ts";
 
 export default [
   {
@@ -9,12 +10,9 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-      display: "flex",
-      "align-items": "center",
-      "justify-content": "space-between",
-      "width": "290px"
+      ...InputBlockContainerTheme
     },
-    childrenIds: ["display_label", "display_radio", "display_handler"]
+    childrenIds: ["display_label", "display_handler_block"]
   },
   {
     uuid: "display_label",
@@ -32,7 +30,7 @@ export default [
       }
     },
     style: {
-      "width": "90px"
+      ...InputTextLabelTheme
 
     }
   },
@@ -80,7 +78,8 @@ export default [
     style: {
       display: "block",
       "--hybrid-button-height": "30px",
-      "--hybrid-button-width": "77px"
+      "--hybrid-button-width": "76px",
+      '--hybrid-button-font-size':'12px'
     },
     event: {
       changed: /* js */ `
@@ -97,6 +96,21 @@ export default [
             }  
       `
     }
+  },
+  {
+    uuid: "display_handler_block",
+    applicationId: "1",
+    name: "icon position handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+
+      'margin-top': '10px',
+      display:'flex',
+      'justify-content':'space-between',
+    },
+
+    childrenIds: ["display_radio","display_handler"],
   },
  {
     uuid: "display_handler",

@@ -39,9 +39,7 @@ export class TextLabelBlock extends BaseElementBlock {
   hoveredComponent: ComponentElement;
   override async connectedCallback() {
     await super.connectedCallback();
-    this.registerCallback("value", () => {
-      this.requestUpdate();
-    });
+   
   }
 
   renderView() {

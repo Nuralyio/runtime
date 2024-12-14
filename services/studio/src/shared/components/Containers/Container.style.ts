@@ -1,7 +1,10 @@
 import { css } from "lit";
 
 export default css`
-  .container {
+  :host{
+      display: inline-block;
+  }
+    .container {
     display: flex;
     width: fit-content;
     min-height: 300px;

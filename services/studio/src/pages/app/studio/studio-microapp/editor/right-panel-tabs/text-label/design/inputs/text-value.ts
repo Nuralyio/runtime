@@ -1,20 +1,16 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, InputTextLabelTheme } from "../../../../utils/common-editor-theme.ts";
 
-export default [
+export const StudioTextValueInput = [
     {
         uuid: "value_text_block",
         applicationId: "1",
         name: "value text block",
         component_type: ComponentType.VerticalContainer,
         style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-            "margin-top":'10px'
+          ...InputBlockContainerTheme,
         },
-
         childrenIds: ["value_text_label", "value_text_input", "value_handler"],
     },
 
@@ -22,11 +18,9 @@ export default [
         uuid: "value_text_label",
         name: "value text label",
         component_type: ComponentType.TextLabel,
-        
         applicationId: "1",
-        ...COMMON_ATTRIBUTES,
         style:{
-            width:'90px'
+            ...InputTextLabelTheme
         },
         input: {
             value: {
@@ -40,7 +34,7 @@ export default [
     },
     {
         uuid: "value_text_input",
-        name: "vlaue text input",
+        name: "value text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,

@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
         uuid: "button_icon_position_block",
@@ -8,11 +9,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            
-
+            ...InputBlockContainerTheme,
         },
 
         childrenIds: ["icon_position_radio_block","icon_position_handler_block"],
@@ -28,9 +25,9 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["icon_position_label", "icon_position_radio"],
+        childrenIds: ["icon_position_label"],
     },
-    
+
     {
         uuid: "icon_position_label",
         name: "icon position label",
@@ -95,8 +92,8 @@ export default [
         },
         style: {
             display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'50px',
+            '--hybrid-button-height':'28px',
+            '--hybrid-button-width':'76px',
             '--hybrid-button-font-size':'12px'
         },
         event: {
@@ -122,13 +119,13 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
+
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
         },
-        
-        childrenIds: ["icon_position_handler"],
+
+        childrenIds: ["icon_position_radio","icon_position_handler"],
     },
     {
         uuid: "icon_position_handler",
@@ -139,9 +136,9 @@ export default [
         name: "icon position handler",
         style: {
                 display:'block',
-
+            width: "50px",
         },
-        input: { 
+        input: {
             value: {
                 type: 'handler',
                 value: /* js */`
@@ -163,7 +160,7 @@ export default [
             `
             }
         },
-        
+
         event: {
             codeChange: /* js */ `
             try{
