@@ -1,64 +1,64 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "state_block",
-        applicationId: "1",
-        name: "state block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-        },
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
 
-        childrenIds: ["state_radio_block","state_handler_block"],
+export const StudioButtonStateInput = [
+  {
+    uuid: "state_block",
+    applicationId: "1",
+    name: "state block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...InputBlockContainerTheme
     },
-    {
-        uuid: "state_radio_block",
-        applicationId: "1",
-        name: "state radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["state_label", "state_radio"],
+
+    childrenIds: ["state_radio_block", "state_handler_block"]
+  },
+  {
+    uuid: "state_radio_block",
+    applicationId: "1",
+    name: "state radio block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "state_label",
-        name: "state label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
+    childrenIds: ["state_label"]
+  },
+  {
+    uuid: "state_label",
+    name: "state label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value:/* js */`
                 const stateLabel='State';
                 return stateLabel;
                 
                 `
-            }
-        },
-        style: {
-            width:'90px',
-        }
+      }
     },
-    {
-        uuid: "state_radio",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "state radio",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {
+      width: "90px"
+    }
+  },
+  {
+    uuid: "state_radio",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "state radio",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -88,16 +88,13 @@ export default [
             const result = [options,currentState,radioType];
            return  result;
                 `
-            }
-        },
-        style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'60px',
-            '--hybrid-button-font-size':'12px'
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      ...RadioButtonWithTwoOptionsTheme
+    },
+    event: {
+      changed: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -110,36 +107,37 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+  {
+    uuid: "state_handler_block",
+    applicationId: "1",
+    name: "state handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+
+      display: "flex",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "state_handler_block",
-        applicationId: "1",
-        name: "state handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["state_handler"],
+
+    childrenIds: ["state_radio", "state_handler"]
+  },
+  {
+    uuid: "state_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "state handler",
+    style: {
+      display: "block",
+      width: "50px"
     },
-    {
-        uuid: "state_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "state handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='state';
                 let stateHandler=''
                 try{
@@ -156,11 +154,11 @@ export default [
                 }
                 return [parameter,stateHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -173,7 +171,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

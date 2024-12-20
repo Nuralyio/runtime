@@ -32,7 +32,7 @@ export class ButtonBlock extends BaseElementBlock {
     })
     setTimeout(() => {
       if(this.component.uuid == "b58665e5-1728-44e0-94f9-0357f0cecd2b"){
-        setVar("global", "selectedComponents", ["b58665e5-1728-44e0-94f9-0357f0cecd2b"]);
+        setVar("global", "selectedComponents", ["c17f6c14-1288-44ba-a00e-efb78cafaaf1"]);
         this.requestUpdate()
       }
     },100);

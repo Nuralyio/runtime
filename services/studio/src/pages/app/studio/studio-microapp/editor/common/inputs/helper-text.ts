@@ -1,25 +1,28 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
-import { InputBlockContainerTheme, InputTextLabelTheme, TextInputTheme } from "../../utils/common-editor-theme.ts";
+import { InputBlockContainerTheme, TextInputTheme } from "../../utils/common-editor-theme.ts";
 
 export default [
-
   {
-    uuid: "label_text_block",
+    uuid: "helper_text_block",
     applicationId: "1",
-    name: "label text block",
+    name: "helper text block",
     component_type: ComponentType.VerticalContainer,
+    styleHandlers: {},
+    input: {
+      direction: "vertical"
+    },
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
 
-    childrenIds: ["label_text_input_block", "label_handler_block"]
+    childrenIds: ["helper_input_block", "helper_handler_block"]
   },
   {
-    uuid: "label_text_input_block",
+    uuid: "helper_input_block",
     applicationId: "1",
-    name: "label input block",
+    name: "placeholder block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -27,44 +30,46 @@ export default [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["label_text_label"]
+    childrenIds: ["helper_text_label"]
   },
   {
-    uuid: "label_text_label",
-    name: "label text label",
+    uuid: "helper_text_label",
+    name: "helper text label",
     component_type: ComponentType.TextLabel,
     applicationId: "1",
     ...COMMON_ATTRIBUTES,
-    style: {
-      ...InputTextLabelTheme
-    },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-               return 'Label';
-            `
+                const label ='Helper text';
+              return label;`
       }
+
+    },
+    style: {
+      "width": "90px"
     }
   },
   {
-    uuid: "label_text_input",
-    name: "label text input",
+    uuid: "helper_text_input",
+    name: "helper text input",
     applicationId: "1",
     component_type: ComponentType.TextInput,
+    styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
     },
     event: {
-      valueChange:/* js */ `
+      valueChange:  /* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const newLabelText = EventData.value;
-                        updateInput(currentComponent,'label','value',newLabelText);
+                        const newHelperText = EventData.value;
+                        updateInput(currentComponent,'helper','value',newHelperText);
                     }
                 }catch(error){
                     console.log(error);
@@ -80,10 +85,9 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                console.log('current component label ',currentComponent)
-                if(currentComponent.input?.label?.type=="value"){
-                const currentLabel=currentComponent.input?.label?.value??'';
-                return currentLabel;
+                if(currentComponent.input?.helper?.type=="value"){
+                 const currentHelperText=  currentComponent.input?.helper?.value??'';
+                 return currentHelperText;
                 }
             }
 
@@ -101,30 +105,31 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 let state = "unabled";
-                if(currentComponent.input?.label?.type =="handler" && currentComponent.input?.label?.value){
+                if(currentComponent.input?.helper?.type =="handler"&&currentComponent.input?.helper?.value){
                    state = "disabled"
                }
-               return state;
+              return state;
             }
 
         }catch(e){
             console.log(e);
         }
             `
-      },
+      }
+      ,
       placeholder: {
         type: "handler",
         value: /* js */`
-                const inputPlaceHolder ="label";
-             return  inputPlaceHolder;
+                const inputPlaceHolder ="helper text";
+                return inputPlaceHolder;
             `
       }
     }
   },
   {
-    uuid: "label_handler_block",
+    uuid: "helper_handler_block",
     applicationId: "1",
-    name: "label handler block",
+    name: "helper handler block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -132,15 +137,15 @@ export default [
       "justify-content": "space-between"
     },
 
-    childrenIds: ["label_text_input", "label_handler"]
+    childrenIds: ["helper_text_input", "helper_handler"]
   },
   {
-    uuid: "label_handler",
+    uuid: "helper_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
-    name: "label handler",
+    name: "helper handler",
     style: {
       display: "block"
     },
@@ -148,21 +153,21 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='label';
-                let labelHandler=''
+                const parameter ='helper';
+                let helperHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.label?.type =='handler' && currentComponent?.input?.label?.value){
-                            labelHandler = currentComponent?.input?.label?.value
+                        if(currentComponent?.input?.helper?.type =='handler' && currentComponent?.input?.helper?.value){
+                           helperHandler = currentComponent?.input?.helper?.value
                         }
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,labelHandler];
+                return [parameter,helperHandler];
             `
       }
     },
@@ -174,8 +179,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.label?.value)
-                    updateInput(currentComponent,'label','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.helper?.value != EventData.value )
+                    updateInput(currentComponent,'helper','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);
@@ -183,5 +188,4 @@ export default [
       `
     }
   }
-
 ];

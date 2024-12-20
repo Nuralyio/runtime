@@ -17,17 +17,16 @@ import studioClickEvent from "./text-labels-blocks/studio-click-event.ts";
 import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event.ts";
 import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event.ts";
 import studioDisplayBlock from "./editor/common/inputs/display.ts";
-import studioHelperTextBlock from "./common-blocks/studio-helper-block.ts";
-import studioStateBlock from "./common-blocks/studio-state-block.ts";
+import studioHelperTextBlock from "./editor/common/inputs/helper-text.ts";
 import studioStatusBlock from "./common-blocks/studio-status-block.ts";
 import studioSizeBlock from "./common-blocks/studio-size-block.ts";
-import studioPlaceholderBlock from "./common-blocks/studio-placeholder-block.ts";
+import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
 import studioPositionBlock from "./common-blocks/studio-position-block.ts";
 import studioWidthBlock from "./common-blocks/studio-width-block.ts";
 import studioHeightBlock from "./common-blocks/studio-height-block.ts";
 import studioButtonTypeBlock from "./button-blocks/studio-button-type-block.ts";
 import studioButtonIconPosition from "./editor/right-panel-tabs/button/inputs/icon-position.ts";
-import studioIconPickerBlock from "./common-blocks/studio-icon-picker-block.ts";
+import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
@@ -39,35 +38,29 @@ import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event.ts
 import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event.ts";
 import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event.ts";
 import studioInputFocusEvent from "./text-input-blocks/studio-input-focus-event.ts";
-import studioCheckboxCheckedBlock from "./checkbox-blocks/studio-checkbox-checked-block.ts";
+import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/inputs/checked.ts";
 import studioImageWidthBlock from "./image-blocks/studio-image-width-block.ts";
 import studioImageHeightBlock from "./image-blocks/studio-image-height-block.ts";
 import studioImageAltBlock from "./image-blocks/studio-image-alt-block.ts";
 import studioImageSrcBlock from "./image-blocks/studio-image-src-block.ts";
 import studioImageFallbackBlock from "./image-blocks/studio-image-fallback-block.ts";
-import studioDatepickerLocaleBlock from "./datepicker-blocks/studio-datepicker-locale-block.ts";
-import studioDatepickerFormatBlock from "./datepicker-blocks/studio-datepicker-format-block.ts";
-import studioDatepickerDateChangeEventBlock from "./datepicker-blocks/studio-datepicker-date-change-event-block.ts";
+import studioDatepickerLocaleBlock from "./editor/right-panel-tabs/datepicker/inputs/locale.ts";
+import studioDatepickerFormatBlock from "./editor/right-panel-tabs/datepicker/inputs/format.ts";
 import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block.ts";
-import studioSelectWidth from "./select-blocks/studio-select-width-block.ts";
-import studioSelectHelperColor from "./select-blocks/studio-select-helper-color-block.ts";
-import studioSelectHelperSize from "./select-blocks/studio-select-helper-size-block.ts";
-import studioSelectLabelColor from "./select-blocks/studio-select-label-color-block.ts";
-import studioSelectLabelSize from "./select-blocks/studio-select-label-size-block.ts";
-import studioSelectTypeBlock from "./select-blocks/studio-select-type-block.ts";
-import studioSelectSelectionmodeBlock from "./select-blocks/studio-select-selectionmode-block.ts";
-import studioSelectChangedEventBlock from "./select-blocks/studio-select-changed-event-block.ts";
+import studioSelectLabelSize from "./editor/right-panel-tabs/select/inputs/label-fontsize.ts";
+import studioSelectTypeBlock from "./editor/right-panel-tabs/select/inputs/select-type.ts";
+import studioSelectSelectionmodeBlock from "./editor/right-panel-tabs/select/inputs/selection_mode.ts";
 import stduioTable from "./table-block/columns-block.ts";
 import tableSelectionModeBlock from "./table-block/table-selectionmode-block.ts";
 import tableFilterBlock from "./table-block/table-filter-block.ts";
 import studioIconWidthBlock from "./icon-blocks/studio-icon-width-block.ts";
 import studioIconHeightBlock from "./icon-blocks/studio-icon-height-block.ts";
-import studioIconColorBlock from "./icon-blocks/studio-icon-color-block.ts";
+import studioIconColorBlock from "./editor/right-panel-tabs/icon/inputs/color.ts";
 import QuickActions from "../components/editor-micro-apps/quick-action.ts";
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block.ts";
 import studioLabelBlock from "./editor/common/inputs/label.ts";
 import studioBorderCollapse from "./common-blocks/studio-border-collapse.ts";
-import studioSelectValuesBlock from "./select-blocks/studio-select-values-block.ts";
+import studioSelectValuesBlock from "./editor/right-panel-tabs/select/inputs/studio-select-values-block.ts";
 import studioTableValuesBlock from "./table-block/table-values-block.ts";
 import studioPageNameBlock from "./page-blocks/studio-page-name-block.ts";
 import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
@@ -86,6 +79,11 @@ import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
 
 import { StudioButton } from "./editor/right-panel-tabs/button";
 import { StudioTextLabel } from "./editor/right-panel-tabs/text-label";
+import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
+import { StudioIcon } from "./editor/right-panel-tabs/icon";
+import { StudioSelect } from "./editor/right-panel-tabs/select";
+import { StudioDatepicker } from "./editor/right-panel-tabs/datepicker";
+import { StudioImage } from "./editor/right-panel-tabs/image";
 
 
 
@@ -274,21 +272,17 @@ export default [
   ...studioPlaceholderBlock,
   ...studioHelperTextBlock,
   ...studioInputHelperColor,
-  ...studioSelectHelperColor,
+  //...studioSelectHelperColor,
   ...studioInputHelperSize,
-  ...studioSelectHelperSize,
   ...studioLabelBlock,
   ...studioBorderCollapse,
-  ...studioSelectLabelColor,
   ...studioInputLabelColor,
   ...studioInputLabelSize,
-  ...studioSelectWidth,
   ...studioSelectLabelSize,
   ...studioSelectValuesBlock,
   ...studioStatusBlock,
   ...studioSizeBlock,
   ...studioInputTypeBlock,
-  ...studioStateBlock,
   ...studioButtonTypeBlock,
   ...studioIconPickerBlock,
   ...studioTypographyCollapseBlock,
@@ -311,11 +305,9 @@ export default [
   ...studioImageAltBlock,
   ...studioImageSrcBlock,
   ...studioImageFallbackBlock,
-  ...studioDatepickerDateChangeEventBlock,
   ...studioCheckboxChangedEventBlock,
   ...studioSelectTypeBlock,
   ...studioSelectSelectionmodeBlock,
-  ...studioSelectChangedEventBlock,
   ...studioTableSelectEvent,
   ...studioTableSearchEvent,
   ...studioTableSortEvent,
@@ -329,4 +321,9 @@ export default [
   ...TopBar,
   ...LeftPanel,
   ...StudioButton,
+  ...StudioCheckbox,
+  ...StudioIcon,
+  ...StudioSelect,
+  ...StudioDatepicker,
+  ...StudioImage
 ];

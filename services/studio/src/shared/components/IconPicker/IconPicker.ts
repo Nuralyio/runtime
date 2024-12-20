@@ -2,23 +2,36 @@ import type { ComponentElement } from "$store/component/interface.ts";
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { BaseElementBlock } from "../BaseElement.ts";
-import "@nuralyui/icon";
-import * as solidIcons from "@fortawesome/free-solid-svg-icons";
 import { styles } from "./IconPicker.style.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
+import * as solidIcons from "@fortawesome/free-solid-svg-icons";
+import "@lit-labs/virtualizer";
+import { grid } from "@lit-labs/virtualizer/layouts/grid.js";
+import { styleMap } from "lit/directives/style-map.js";
+import { ButtonTheme } from "../../../pages/app/studio/studio-microapp/editor/utils/common-editor-theme.ts";
 
 @customElement("icon-picker-block")
 export class IconPicker extends BaseElementBlock {
+  icons = Array.from(
+    new Set(
+      [...Object.keys(solidIcons)]
+        .filter((key) => key.startsWith("fa"))
+        .map((key) => solidIcons[key].iconName)
+        .filter((iconName) => iconName)
+    )
+  );
 
-  icons = Array.from(new Set([...Object.keys(solidIcons).filter((key) => key.startsWith("fa")).map((key) => solidIcons[key].iconName).filter((iconName) => iconName)]));
   @state()
   filteredIcons = this.icons;
+
   @state()
   selectedIcon = EMPTY_STRING;
+
   @state()
   dropdownOpen = false;
+
   @property()
   component: ComponentElement;
 
@@ -29,34 +42,30 @@ export class IconPicker extends BaseElementBlock {
     document.addEventListener("click", this.onClickOutside);
   }
 
-  toggleDropDown() {
-    this.dropdownOpen = !this.dropdownOpen;
-    this.filteredIcons = this.icons;
-  }
-
   handleIconSelect(icon: string) {
-    this.selectedIcon = icon == this.selectedIcon ? EMPTY_STRING : icon;
-    this.dropdownOpen = false;
+    this.selectedIcon = icon === this.selectedIcon ? EMPTY_STRING : icon;
+    this.requestUpdate()
     this.dispatchEvent(new CustomEvent("icon-selected", { detail: icon }));
+
     if (this.component.event?.iconChanged) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.iconChanged`), {
-        value: this.selectedIcon
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.iconChanged`), {
+        value: this.selectedIcon,
       });
     }
+    this.dropdownOpen = false;
+    this.requestUpdate();
   }
 
-  handleIconChange = (e: Event) => {
-    const searchString = (e.target as HTMLInputElement).value;
-    if (searchString) {
-      this.filteredIcons = this.icons.filter((icon) => icon.includes(searchString));
-    } else
-      this.filteredIcons = this.icons;
+  handleIconChange = (e: CustomEvent) => {
+    const searchString = e.detail.value;
+    this.filteredIcons = searchString
+      ? this.icons.filter((icon) => icon.includes(searchString))
+      : this.icons;
   };
 
-  private onClickOutside = (onClickEvent: Event) => {
-    const outsideClick = !onClickEvent.composedPath().includes(this);
-    if (outsideClick)
-      this.dropdownOpen = false;
+  private onClickOutside = (event: Event) => {
+    const outsideClick = !event.composedPath().includes(this);
+    if (outsideClick) this.dropdownOpen = false;
   };
 
   override disconnectedCallback(): void {
@@ -68,30 +77,58 @@ export class IconPicker extends BaseElementBlock {
     this.selectedIcon = this.inputHandlersValue.value ?? EMPTY_STRING;
     const isDisabled = this.inputHandlersValue?.disable || false;
     return html`
-      <div class="input-container ${isDisabled ? "disable" : EMPTY_STRING}"
-           @click=${!isDisabled && this.toggleDropDown}>
-        <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>
-      </div>
-      ${
-        this.dropdownOpen ? html`
-          <div class="dropdown">
+      <hy-dropdown
+        style="--hybrid-dropdown-width: 215px;"
+        .show=${this.dropdownOpen}
+        .template=${html`
+          <style>
+            .icon-item .selected {
+              border: red;
+            }
+          </style>
+          <div class="dropdown-icon">
             <div class="search-container">
-              <input .placeholder=${!this.selectedIcon ? this.inputHandlersValue.placeholder : nothing}
-                     @input=${this.handleIconChange}/>
+              <hy-input
+                .autocmplete="off"
+                placeholder=${this.inputHandlersValue.placeholder || "Search icons..."}
+                @valueChange=${this.handleIconChange}
+              ></hy-input>
             </div>
-            ${this.filteredIcons.map((icon) => html`
-              <div
-                class="icon-item ${icon == this.selectedIcon ? "selected" : EMPTY_STRING}"
-                @click=${() => this.handleIconSelect(icon)}
-              >
-                <hy-icon .name=${icon}></hy-icon>
-              </div>
-
-            `)}
-
+            <div style="height: 200px; overflow: auto; display: flex; background: var(--hybrid-input-background-color)" class="hello">
+            <lit-virtualizer
+              .items=${this.filteredIcons}
+              .layout=${grid({
+               itemSize: "30px",
+              })}
+              .renderItem=${(icon: string) => html`
+                <div
+                  class="icon-item ${icon === this.selectedIcon ? "selected" : EMPTY_STRING}"
+                  @click=${() => this.handleIconSelect(icon)}
+                >
+                  <hy-icon .name=${icon}></hy-icon>
+                </div>
+              `}
+            ></lit-virtualizer>
+            </div>
           </div>
-        ` : nothing
-      }
+        `}
+      >
+
+
+        <hy-button 
+          .disabled=${isDisabled}
+          style=${
+          styleMap({
+            ...ButtonTheme,
+            "--hybrid-button-width": isDisabled ? "auto" : "35px",
+          })
+        }>  
+          ${
+      isDisabled ? html`Dynamic` : html` <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>`
+    }
+        </hy-button>
+      
+      </hy-dropdown>
     `;
   }
 }

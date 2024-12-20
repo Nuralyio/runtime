@@ -1,26 +1,24 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
-import { StudioSelectInputs } from "./inputs";
+import { StudioInputCollapseContainer } from "./inputs/collapse-container.ts";
 
-export const StudioSelectDesign = [
+export const StudioDatepickerDesign = [
   {
-    uuid: "select_blocks",
+    uuid: "datepicker_block",
     applicationId: "1",
-    name: "Parent Select Container",
+    name: "Parent Color Container",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
-      "flex-direction": "column",
-      "align-items": "center",
-      "justify-content": "center",
+      "flex-direction": "column"
     },
     childrenIds: [
-      "select_collapse_container",
+      "datepicker_input_collapse_container",
       "typography_collapse_container",
       "size_collapse_container",
       "border_collapse_container",
-    ],
+    ]
   },
-  ...StudioSelectInputs,
-];
+  ...StudioInputCollapseContainer
+]

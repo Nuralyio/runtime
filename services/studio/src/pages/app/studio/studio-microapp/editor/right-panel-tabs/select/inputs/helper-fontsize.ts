@@ -1,25 +1,22 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-editor-theme.ts";
+export const StudioSelectHelperFontSize = [
+    
     {
-        uuid: "select_label_font_size_vertical_container",
+        uuid: "select_helper_font_size_vertical_container",
         applicationId: "1",
         name: "Left panel",
         component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
         style: {
-            
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            "margin-top":'10px'
+            ...InputBlockContainerTheme
         },
-        childrenIds: ["select_label_size_input_block","label_size_handler_block"],
+        childrenIds: ["helper_size_block","helper_size_handler_block"],
     },
     {
-        uuid: "select_label_size_input_block",
+        uuid: "helper_size_block",
         applicationId: "1",
-        name: "select label size input block",
+        name: "placeholder block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -27,23 +24,23 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["select_text_label_font_size", "select_font_size_label_input"],
+        childrenIds: ["select_text_label_helper_font_size"],
     },
 
     {
-        uuid: "select_text_label_font_size",
+        uuid: "select_text_label_helper_font_size",
         name: "text_label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
         style:{
-            width:'90px'
+        width:'90px'
         },
         input: {
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='Label size';
+                const label ='Helper size';
                 return label;
             `
             }
@@ -51,7 +48,7 @@ export default [
       
     },
     {
-        uuid: "select_font_size_label_input",
+        uuid: "select_font_size_helper_input",
         name: "name",
         applicationId: "1",
         component_type: ComponentType.NumberInput,
@@ -60,18 +57,17 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "120px",
-            size:'small',
+           ...TextInputTheme
         },
         event: {
-            valueChange: /* js */ `
+            valueChange:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                             const unity = EventData.unity || "px"
-                            updateStyle(currentComponent, "--hybrid-select-label-font-size", EventData.value+unity);
+                            updateStyle(currentComponent, "--hybrid-select-helper-text-font-size", EventData.value+unity);
                         
                         }
                     }catch(error){
@@ -88,7 +84,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-label-font-size']?.split('')
+                const fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-helper-text-font-size']?.split('')
                 if(fontSize) 
                     {
                         let unity='';
@@ -104,7 +100,7 @@ export default [
                         return [+value,unity]
                     }
                     else 
-                       return [0,'px']
+                      return [0,'px']
             }
 
         }catch(e){
@@ -121,7 +117,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-label-font-size']){
+                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-helper-text-font-size']){
                          state='disabled'
                         }
                         return state
@@ -136,25 +132,24 @@ export default [
         }
     },
     {
-        uuid: "label_size_handler_block",
+        uuid: "helper_size_handler_block",
         applicationId: "1",
-        name: "label size handler block",
+        name: "helper size handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         }, 
-        childrenIds: ["label_size_handler"],
+        childrenIds: ["select_font_size_helper_input", "helper_size_handler"],
     },
     {
-        uuid: "label_size_handler",
+        uuid: "helper_size_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "label size handler",
+        name: "helper size handler",
         style: {
                 display:'block',
         },
@@ -162,19 +157,19 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='labelSize';
-                let labelSizeHandler =''
+                const parameter ='helperSize';
+                let helperSizeHandler =''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    labelSizeHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-label-font-size'] || ''  
+                    helperSizeHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,labelSizeHandler];
+                return [parameter,helperSizeHandler];
             `
             }
         },
@@ -186,7 +181,7 @@ export default [
                 if(selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'--hybrid-select-label-font-size',EventData.value)
+                    updateStyleHandlers(currentComponent,'--hybrid-select-helper-text-font-size',EventData.value)
                 }
             }catch(error){
                 console.log(error);
@@ -194,5 +189,6 @@ export default [
       `
         },
     },
+
 
 ]

@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 
 export default [
     {
@@ -9,9 +10,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: { 
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
+            ...InputBlockContainerTheme
         },
 
         childrenIds: ["status_radios_block","status_handler_block"],
@@ -27,7 +26,7 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["status_label", "status_radio"],
+        childrenIds: ["status_label", ],
     },
     
     {
@@ -56,8 +55,7 @@ export default [
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         style:{
-           '--hybrid-button-height':'30px',
-           '--hybrid-button-width':'30px'
+        ...RadioButtonWithThreeOptionsTheme
         },
         styleHandlers: {},
         name: "status radio",
@@ -124,12 +122,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["status_handler"],
+        childrenIds: ["status_radio", "status_handler"],
     },
     {
         uuid: "status_handler",

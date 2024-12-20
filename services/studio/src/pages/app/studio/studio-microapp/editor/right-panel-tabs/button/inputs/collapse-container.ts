@@ -1,6 +1,4 @@
 
-
-// Example usage
 import { generateDynamicContainer } from "../../../utils/input-collapse-container-generator.ts";
 
 export const StudioInputCollapseContainer = generateDynamicContainer("button_input_collapse_container", [

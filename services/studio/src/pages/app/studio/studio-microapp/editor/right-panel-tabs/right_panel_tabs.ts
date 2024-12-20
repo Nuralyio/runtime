@@ -70,14 +70,11 @@ export default {
                             break;
                         case "checkbox":
                             parameters=[
-                                'label_text_block',
-                                'checkbox_checked_block',
-                                'position_collapse_container',
-                                'state_block',
-                                'size_block',
-                                "checkbox_changed_event_block",
-                                "display_block"
-                                ];
+                              "checkbox_blocks"
+                            ];
+                            handlers=[
+                              "studio_checkbox_handler"
+                            ];
                                 break;
                         case "Image":
                             parameters=[
@@ -91,39 +88,22 @@ export default {
                                         break;
                         case "DatePicker":
                             parameters=[
-                                "value_text_block",
-                                'datepicker_locale_block',
-                                'size_block',
-                                'position_collapse_container',
-                                'width_vertical_container',
-                                'status_block',
-                                'state_block',
-                                "helper_text_block",
-                                "label_text_block",
-                                "datepicker_format_block",
-                                "datepicker_date_change_event_block",
+                                "datepicker_block",
+                                        ];
+                                        handlers=[
+                                            "studio_datepicker_handler"
                                         ];
                                         break;
+                                        
                         case "select":
                             parameters=[
-                                'placeholder_text_block',
-                                "helper_text_block",
-                                "select_helper_color_block",
-                                "select_helper_font_size_vertical_container",
-                                "select_label_color_block",
-                                "select_label_font_size_vertical_container",
-                                'select_values_handler_block',
-                                'position_collapse_container',
-                                'select_width_vertical_container',
-                                "label_text_block",
-                                'status_block',
-                                'state_block',
-                                'size_block',
-                                'select_type_block',
-                                'select_selectionmode_block',
-                                'select_changed_event_block'
+                                "select_blocks"
                             ]
+                             handlers=[
+                              "studio_select_handler"
+                            ];
                             break;
+                           
                         
                         case "Table":
                             parameters=[
@@ -143,11 +123,10 @@ export default {
                             break;
                         case "Icon":
                             parameters=[
-                                'icon_picker_block',
-                                'icon_width_vertical_container',
-                                'icon_height_vertical_container',
-                                'position_collapse_container',
-                                'icon_color_block'
+                                "icon_blocks"
+                            ];
+                            handlers=[
+                            "studio_icon_handler"
                             ];
                             break;
                         case "vertical-container-block":

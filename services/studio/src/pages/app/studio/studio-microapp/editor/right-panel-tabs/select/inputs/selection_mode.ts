@@ -1,19 +1,15 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
-        uuid: "select_selectionmode_block",
+        uuid: "select_selection_mode_block",
         applicationId: "1",
         name: "select selection mode block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            
-
-            "margin-top":'10px'
+            ...InputBlockContainerTheme
         },
 
         childrenIds: ["select_selectionmode_radio_block","selectionmode_handler_block"],
@@ -29,7 +25,7 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["select_selectionmode_label", "select_selectionmode_radio"],
+        childrenIds: ["select_selectionmode_label", ],
     },
     
     {
@@ -95,10 +91,7 @@ export default [
             }
         },
         style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'50px',
-            '--hybrid-button-font-size':'12px'
+            ...RadioButtonWithTwoOptionsTheme
         },
         event: {
             changed: /* js */ `
@@ -124,12 +117,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["selectionmode_handler"],
+        childrenIds: ["select_selectionmode_radio", "selectionmode_handler"],
     },
     {
         uuid: "selectionmode_handler",

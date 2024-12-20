@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
         uuid: "datepicker_format_block",
@@ -12,11 +13,7 @@ export default [
         },
         ...COMMON_ATTRIBUTES,
         style: {
-            
-
-            "display":'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
+          ...InputBlockContainerTheme
         },
 
         childrenIds: ["datepicker_input_block","format_handler_block"],
@@ -32,23 +29,9 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["datepicker_format_label_container", "datepicker_format_content_container"],
+        childrenIds: ["datepicker_format_label", "datepicker_format_content_container"],
     },
-    {
-        uuid: "datepicker_format_label_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
 
-        ...COMMON_ATTRIBUTES,
-        style: {
-        },
-        childrenIds: ["datepicker_format_label"],
-    },
     {
         uuid: "datepicker_format_label",
         name: "text_label",
@@ -68,21 +51,7 @@ export default [
             }
         }
     },
-    {
-        uuid: "datepicker_format_content_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
 
-        ...COMMON_ATTRIBUTES,
-        style: {
-        },
-        childrenIds: ["datepicker_format_select"],
-    },
     {
         uuid: "datepicker_format_select",
         applicationId: "1",
@@ -143,9 +112,7 @@ export default [
             },
         },
         style: {
-            display:'block',
-            "--hybrid-select-width":"120px",
-            'size':'small'
+           ...SelectTheme
         },
         event: {
             changed: /* js */ `
@@ -173,13 +140,12 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
             'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["format_handler"],
+        childrenIds: ["datepicker_format_select", "format_handler"],
     },
     {
         uuid: "format_handler",

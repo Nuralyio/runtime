@@ -1,25 +1,22 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
-    uuid: "select_label_color_block",
+    uuid: "icon_color_block",
     applicationId: "1",
-    name: "select label color block",
+    name: "icon color block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        
-        display: 'flex',
-        'justify-content':'space-between',
-        'align-items':'center',
-        "margin-top":'10px'
+        ...InputBlockContainerTheme
     },
-    childrenIds: ["select_label_color_input_block","select_label_color_handler_block"]
+    childrenIds: ["icon_input_block","icon_color_handler_block"]
     },
     {
-        uuid: "select_label_color_input_block",
+        uuid: "icon_input_block",
         applicationId: "1",
-        name: "select label color input block",
+        name: "placeholder block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -27,11 +24,11 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["select_label_color_label", "select_label_color_input"],
+        childrenIds: ["icon_color_label",],
     },
     {
-        uuid: "select_label_color_label",
-        name: "select label color label",
+        uuid: "icon_color_label",
+        name: "icon color label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -39,20 +36,17 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='Label color';
-                return label;
-                
-                `
+                const label ='Color';
+              return label;`
             }
         },
         style: {
-            display:'block',
-            width:"90px",
+            width:'90px'
         },
     },
 {
-    uuid: "select_label_color_input",
-    name: "select label color input",
+    uuid: "icon_color_input",
+    name: "name",
     applicationId: "1",
     component_type: ComponentType.ColorPicker,
     event: {
@@ -63,7 +57,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "--hybrid-select-label-text-color", EventData.value);
+                updateStyle(currentComponent, "--hybrid-icon-color", EventData.value);
             
             }
         }catch(error){
@@ -73,10 +67,6 @@ export default [
   `
     },
     ...COMMON_ATTRIBUTES,
-   style:{
-    width:"50px",
-    display:'block'
-   },
     input: {
         value: {
             type: "handler",
@@ -86,8 +76,8 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.style)
-                        return currentComponent.style['--hybrid-select-label-text-color'];
+                        const currentColor = currentComponent?.style&&currentComponent.style['--hybrid-icon-color']||"" ;
+                        return currentColor;
                     }
 
                 }catch(e){
@@ -104,12 +94,11 @@ export default [
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     let state='enabled';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-label-text-color']){
+                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-icon-color']){
                         state='disabled'
-                        return state;
                     }
+                    return state;
                 }
-
             }catch(e){
                 console.log(e);
             }
@@ -119,46 +108,44 @@ export default [
     }
 },
 {
-    uuid: "select_label_color_handler_block",
+    uuid: "icon_color_handler_block",
     applicationId: "1",
-    name: "select label color handler block",
+    name: "icon color handler block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "50px",
-        display:'flex',
-        'justify-content':'space-between',
     },
     
-    childrenIds: ["select_label_color_handler"],
+    childrenIds: [ "icon_color_input","icon_color_handler"],
 },
 {
-    uuid: "select_label_color_handler",
+    uuid: "icon_color_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
-    name: "label color handler",
+    name: "icon color handler",
     style: {
             display:'block',
+        width: "50px",
     },
     input: { 
         value: {
             type: 'handler',
             value: /* js */`
-            const parameter ='labelColor';
-            let labelColorHandler=''
+            const parameter ='iconColor';
+            let iconColorHandler=''
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                labelColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-label-text-color'] || ''  
+                iconColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-icon-color'] || ''  
                 }
             }catch(error){
                 console.log(error);
             }
-            return [parameter,labelColorHandler];
+            return [parameter,iconColorHandler];
         `
         }
     },
@@ -170,7 +157,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'--hybrid-select-label-text-color',EventData.value)
+                updateStyleHandlers(currentComponent,'--hybrid-icon-color',EventData.value)
             }
         }catch(error){
             console.log(error);
