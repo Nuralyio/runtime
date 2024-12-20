@@ -1,40 +1,33 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, TextInputTheme } from "../../utils/common-editor-theme.ts";
 export default [
     {
-        uuid: "helper_text_block",
+        uuid: "placeholder_text_block",
         applicationId: "1",
-        name: "helper text block",
+        name: "placeholder text block",
         component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
         ...COMMON_ATTRIBUTES,
         style: {
-             display:'flex',
-             'align-items':'center',
-             'justify-content':'space-between',
+             ...InputBlockContainerTheme
         },
 
-        childrenIds: ["helper_input_block","helper_handler_block"],
+        childrenIds: ["placeholder_input_block","placeholder_handler_block"],
     },
     {
-        uuid: "helper_input_block",
+        uuid: "placeholder_input_block",
         applicationId: "1",
         name: "placeholder block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
+
         },
-        childrenIds: ["helper_text_label", "helper_text_input"],
+        childrenIds: ["placeholder_text_label", ],
     },
     {
-        uuid: "helper_text_label",
-        name: "helper text label",
+        uuid: "placeholder_text_label",
+        name: "placeholder text label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -42,7 +35,7 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const label ='Helper text';
+                const label ='Placeholder';
               return label;`
             },
             
@@ -52,15 +45,13 @@ export default [
         },
     },
     {
-        uuid: "helper_text_input",
-        name: "helper text input",
+        uuid: "placeholder_text_input",
+        name: "placeholder text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
-        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            size:'small',
-            width:'120px'
+            ...TextInputTheme
         },
         event: {
             valueChange:  /* js */ `
@@ -69,8 +60,8 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const newHelperText = EventData.value;
-                        updateInput(currentComponent,'helper','value',newHelperText);
+                        const newPlaceholderText = EventData.value;
+                        updateInput(currentComponent,'placeholder','value',newPlaceholderText);
                     }
                 }catch(error){
                     console.log(error);
@@ -86,10 +77,11 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.helper?.type=="value"){
-                 const currentHelperText=  currentComponent.input?.helper?.value??'';
-                 return currentHelperText;
-                }
+                if(currentComponent.input?.placeholder?.type=="value"){
+                const currentPlaceholderText=currentComponent.input?.placeholder?.value??'';
+                return currentPlaceholderText;
+                } 
+                return ''
             }
 
         }catch(e){
@@ -106,48 +98,47 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 let state = "unabled";
-                if(currentComponent.input?.helper?.type =="handler"&&currentComponent.input?.helper?.value){
+                if(currentComponent.input?.placeholder?.type =="handler" && currentComponent.input?.placeholder?.value){
                    state = "disabled"
                }
-              return state;
+               return state;
             }
 
         }catch(e){
             console.log(e);
         }
             `, 
-            }
-            ,
+            },
             placeholder: {
                 type: 'handler',
                 value: /* js */`
-                const inputPlaceHolder ="helper text";
-                return inputPlaceHolder;
+                const inputPlaceHolder ="placeholder";
+             return  inputPlaceHolder;
             `
             }
         }
     },
     {
-        uuid: "helper_handler_block",
+        uuid: "placeholder_handler_block",
         applicationId: "1",
-        name: "helper handler block",
+        name: "placeholder handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
+
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["helper_handler"],
+        childrenIds: ["placeholder_text_input","placeholder_handler"],
     },
     {
-        uuid: "helper_handler",
+        uuid: "placeholder_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "helper handler",
+        name: "placeholder handler",
         style: {
                 display:'block',
         },
@@ -155,21 +146,21 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='helper';
-                let helperHandler=''
+                const parameter ='placeholder';
+                let placeholderHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.helper?.type =='handler' && currentComponent?.input?.helper?.value){
-                           helperHandler = currentComponent?.input?.helper?.value
+                        if(currentComponent?.input?.placeholder?.type =='handler' && currentComponent?.input?.placeholder?.value){
+                            placeholderHandler = currentComponent?.input?.placeholder?.value
                         }
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,helperHandler];
+                return [parameter,placeholderHandler];
             `
             }
         },
@@ -181,8 +172,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.helper?.value != EventData.value )
-                    updateInput(currentComponent,'helper','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.placeholder?.value)
+                    updateInput(currentComponent,'placeholder','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);
@@ -190,4 +181,5 @@ export default [
       `
         },
     },
+
 ]

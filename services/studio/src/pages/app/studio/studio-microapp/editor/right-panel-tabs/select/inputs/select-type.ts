@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
         uuid: "select_type_block",
@@ -8,12 +9,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'align-items':'center',
-            "justify-content":'space-between',
-            
-
-            "margin-top":'10px'
+           ...InputBlockContainerTheme
         },
 
         childrenIds: ["select_radio_block","type_handler_block"],
@@ -29,7 +25,7 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["select_type_label", "select_type_radio"],
+        childrenIds: ["select_type_label"],
     },
     
     {
@@ -94,10 +90,7 @@ export default [
             }
         },
         style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'50px',
-            '--hybrid-button-font-size':'12px'
+            ...RadioButtonWithTwoOptionsTheme
         },
         event: {
             changed: /* js */ `
@@ -122,12 +115,11 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["type_handler"],
+        childrenIds: ["select_type_radio","type_handler"],
     },
     {
         uuid: "type_handler",

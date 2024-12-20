@@ -1,49 +1,60 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../../../../../helper/common_attributes.ts";
-import { InputBlockContainerTheme, InputTextLabelTheme } from "../../../../utils/common-editor-theme.ts";
+import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, InputTextLabelTheme, TextInputTheme } from "../../utils/common-editor-theme.ts";
 
 export const StudioTextValueInput = [
-    {
-        uuid: "value_text_block",
-        applicationId: "1",
-        name: "value text block",
-        component_type: ComponentType.VerticalContainer,
-        style: {
-          ...InputBlockContainerTheme,
-        },
-        childrenIds: ["value_text_label", "value_text_input", "value_handler"],
+  {
+    uuid: "value_text_block",
+    applicationId: "1",
+    name: "value text block",
+    component_type: ComponentType.VerticalContainer,
+    style: {
+      ...InputBlockContainerTheme
+    },
+    childrenIds: ["value_text_label", "value_handler_block"]
+  },
+  {
+    uuid: "value_handler_block",
+    applicationId: "1",
+    name: "icon picker handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display:'flex',
+      'justify-content':'space-between',
     },
 
-    {
-        uuid: "value_text_label",
-        name: "value text label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        style:{
-            ...InputTextLabelTheme
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["value_text_input", "value_handler"],
+  },
+  {
+    uuid: "value_text_label",
+    name: "value text label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    style: {
+      ...InputTextLabelTheme
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                return 'Value';
             `
-            }
-        },
-        
+      }
+    }
+
+  },
+  {
+    uuid: "value_text_input",
+    name: "value text input",
+    applicationId: "1",
+    component_type: ComponentType.TextInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+     ...TextInputTheme
     },
-    {
-        uuid: "value_text_input",
-        name: "value text input",
-        applicationId: "1",
-        component_type: ComponentType.TextInput,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            size:"small",
-            width:'155px'
-        },
-        event: {
-            valueChange:  /* js */ `
+    event: {
+      valueChange:  /* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -54,11 +65,11 @@ export const StudioTextValueInput = [
                 }catch(error){
                     console.log(error);
                 }`
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -74,12 +85,12 @@ export const StudioTextValueInput = [
         }catch(e){
             console.log(e);
         }
-            `, 
-            
-            },
-            state: {
-                type: 'handler',
-                value: /* js */`
+            `
+
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -95,33 +106,33 @@ export const StudioTextValueInput = [
         }catch(e){
             console.log(e);
         }
-            `, 
-            }
-            ,
-            placeholder: {
-                type: 'handler',
-                value: /* js */`
+            `
+      }
+      ,
+      placeholder: {
+        type: "handler",
+        value: /* js */`
                 const inputPlaceHolder ="value";
                 return inputPlaceHolder;
             `
-            }
-        }
-    },
+      }
+    }
+  },
 
-    {
-        uuid: "value_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "value handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+  {
+    uuid: "value_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "value handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='value';
                 let valueHandler=''
                 try{
@@ -138,11 +149,11 @@ export const StudioTextValueInput = [
                 }
                 return [parameter,valueHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -156,7 +167,7 @@ export const StudioTextValueInput = [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

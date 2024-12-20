@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 
 export default [
     {
@@ -94,11 +95,7 @@ export default [
             },
         },
         style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'51px',
-            '--hybrid-button-font-size':'12px'
-
+            ...RadioButtonWithThreeOptionsTheme
         },
         event: {
             changed: /* js */ `

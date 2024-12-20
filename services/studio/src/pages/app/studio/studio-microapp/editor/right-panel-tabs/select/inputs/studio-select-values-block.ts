@@ -1,73 +1,73 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
 
 export default [
     {
-        uuid: "select_changed_event_block",
+        uuid: "select_values_handler_block",
         applicationId: "1",
-        name: "Select changed event block",
+        name: "value handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center'
+            ...InputBlockContainerTheme
         },
         
-        childrenIds: ["text_label_select_changed_event_block", "select_changed_event_value"],
+        childrenIds: ["select_values_label","select_values_handler"],
     },
     {
-        uuid: "text_label_select_changed_event_block",
-        name: "text label select changed event block",
+        uuid: "select_values_label",
+        name: "select values label",
         component_type: ComponentType.TextLabel,
-        
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
+        style:{
+          width:'90px'
+        },
         input: {
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Change';
-             return label;
+               const label ='Data';
+               return label;
             `
             }
         },
     },
     {
-        uuid: "select_changed_event_value",
+        uuid: "select_values_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "select changed event value",
+        name: "value handler",
         style: {
                 display:'block',
-                width: "250px", 
+                width: "50px", 
         },
         input: { 
             value: {
                 type: 'handler',
                 value: /* js */`
-                const event ='changed';
-                let currentEventValue =''
+                const parameter ='value';
+                let valueHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
+                    if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent.event?.changed){
-                            currentEventValue= currentComponent.event.changed;
-                        } 
+                        if(currentComponent?.input?.options?.type =='handler' && currentComponent?.input?.options?.value){
+                           valueHandler = currentComponent?.input?.options?.value
+                        }
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [event,currentEventValue];
+                return [parameter,valueHandler];
             `
             }
         },
+        
         event: {
             codeChange: /* js */ `
             try{
@@ -75,7 +75,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateEvent(currentComponent, "changed",EventData.value )
+                    if(EventData.value != currentComponent?.input?.value?.value != EventData.value )
+                    updateInput(currentComponent,'options','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);
@@ -83,4 +84,5 @@ export default [
       `
         },
     },
-] 
+
+]

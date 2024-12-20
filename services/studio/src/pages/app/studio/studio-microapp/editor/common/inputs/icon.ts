@@ -1,26 +1,23 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme } from "../../utils/common-editor-theme.ts";
 export default [
     {
-        uuid: "checkbox_checked_block",
+        uuid: "icon_picker_block",
         applicationId: "1",
-        name: "checkbox checked block",
+        name: "icon picker block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-             'justify-content':'space-between',
-             'align-items':'center',
-             
-
+            ...InputBlockContainerTheme
         },
 
-        childrenIds: ["checkbox_checked_radio_block","checkbox_handler_block"],
+        childrenIds: ["icon_picker_input_block","icon_picker_handler_block"],
     },
     {
-        uuid: "checkbox_checked_radio_block",
+        uuid: "icon_picker_input_block",
         applicationId: "1",
-        name: "checkbox checked radio block",
+        name: "placeholder block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -28,12 +25,12 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["checkbox_checked_label", "checkbox_checked_radio"],
+        childrenIds: ["icon_picker_label"],
     },
     
     {
-        uuid: "checkbox_checked_label",
-        name: "checkbox checked label",
+        uuid: "icon_picker_label",
+        name: "icon picker label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -41,8 +38,8 @@ export default [
             value:{
                 type:'handler',
                 value:/* js */`
-                const checkedLabel='Checked';
-                return checkedLabel;
+                const iconLabel='Icon';
+                return iconLabel;
                 
                 `
             }
@@ -53,12 +50,12 @@ export default [
         }
     },
     {
-        uuid: "checkbox_checked_radio",
+        uuid: "icon_picker_content",
         applicationId: "1",
-        component_type: ComponentType.RadioButton,
+        component_type: ComponentType.IconPicker,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "checkbox checked radio",
+        name: "icon picker content",
         input: {
             value: {
                 type: "handler",
@@ -66,52 +63,41 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentCheck=""
-                let isDisabled=false;
-                if(currentComponent.input?.checked.type =='handler' && currentComponent.input?.checked?.value)
-                { 
-                    isDisabled=true
-                }
-                else 
-                currentCheck = currentComponent.input?.checked?.value || 'uncheck';
-                const options = 
-                    [
-                    {
-                    icon: "check",
-                    value: "check",
-                    disabled:isDisabled
-                    }, 
-                    {
-                    icon: "xmark",
-                    value: "uncheck",
-                    disabled:isDisabled
-                    },
-                    {
-                    icon:'bars',
-                    value:'indeterminate',
-                    disabled:isDisabled
-                    }
-            ]   
-            const radioType ='button'
-            const result = [options,currentCheck,radioType];
-           return  result;
+                const currentIcon = currentComponent.input?.icon?.value;
+                return currentIcon;
                 `
+            },
+            placeholder: {
+                type: "handler",
+                value: /* js */ ` 
+                const placeholder ='choose an icon';
+                return placeholder;
+                `
+            },
+            disable:{
+                type: "handler",
+                value: /* js */ ` 
+                const selectedComponens =  GetVar( "selectedComponents")||[];
+                const selectedComponent = selectedComponens[0];
+                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                let disable = false;
+                if(currentComponent.input?.icon?.type=="handler" && currentComponent.input?.icon?.value)
+                    disable=true;
+                return disable;
+                `
+
             }
         },
-        style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'30px',
-        },
+       
         event: {
-            changed: /* js */ `
+            iconChanged: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const checkedValue = EventData.value;
-                    updateInput(currentComponent,'checked','string',EventData.value)
+                    const iconValue = EventData.value;
+                    updateInput(currentComponent,'icon','string',iconValue)
                 }
             }catch(error){
                 console.log(error);
@@ -120,49 +106,48 @@ export default [
         },
     },
     {
-        uuid: "checkbox_handler_block",
+        uuid: "icon_picker_handler_block",
         applicationId: "1",
-        name: "checkbox handler block",
+        name: "icon picker handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            'margin-top': '10px',
             display:'flex',
             'justify-content':'space-between',
         },
         
-        childrenIds: ["checkbox_handler"],
+        childrenIds: ["icon_picker_content", "icon_picker_handler"],
     },
     {
-        uuid: "checkbox_handler",
+        uuid: "icon_picker_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "checkbox handler",
+        name: "icon picker handler",
         style: {
                 display:'block',
+            width: "50px",
         },
         input: { 
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='checkbox';
-                let checkboxHandler=''
+                const parameter ='iconPicker';
+                let iconPickerHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.checked?.type =='handler' && currentComponent?.input?.checked?.value){
-                            checkboxHandler = currentComponent?.input?.checked?.value
+                        if(currentComponent?.input?.icon?.type =='handler' && currentComponent?.input?.icon?.value){
+                            iconPickerHandler= currentComponent?.input?.icon?.value
                         }
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,checkboxHandler];
+                return [parameter,iconPickerHandler];
             `
             }
         },
@@ -174,8 +159,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.checked?.value)
-                    updateInput(currentComponent,'checked','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.icon?.value)
+                    updateInput(currentComponent,'icon','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);

@@ -1,24 +1,23 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
-        uuid: "icon_picker_block",
+        uuid: "checkbox_checked_block",
         applicationId: "1",
-        name: "icon picker block",
+        name: "checkbox checked block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
+            ...InputBlockContainerTheme
         },
 
-        childrenIds: ["icon_picker_input_block","icon_picker_handler_block"],
+        childrenIds: ["checkbox_checked_radio_block","checkbox_handler_block"],
     },
     {
-        uuid: "icon_picker_input_block",
+        uuid: "checkbox_checked_radio_block",
         applicationId: "1",
-        name: "placeholder block",
+        name: "checkbox checked radio block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -26,12 +25,12 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["icon_picker_label", "icon_picker_content"],
+        childrenIds: ["checkbox_checked_label"],
     },
     
     {
-        uuid: "icon_picker_label",
-        name: "icon picker label",
+        uuid: "checkbox_checked_label",
+        name: "checkbox checked label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -39,8 +38,8 @@ export default [
             value:{
                 type:'handler',
                 value:/* js */`
-                const iconLabel='Icon';
-                return iconLabel;
+                const checkedLabel='Checked';
+                return checkedLabel;
                 
                 `
             }
@@ -51,12 +50,12 @@ export default [
         }
     },
     {
-        uuid: "icon_picker_content",
+        uuid: "checkbox_checked_radio",
         applicationId: "1",
-        component_type: ComponentType.IconPicker,
+        component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "icon picker content",
+        name: "checkbox checked radio",
         input: {
             value: {
                 type: "handler",
@@ -64,41 +63,50 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const currentIcon = currentComponent.input?.icon?.value;
-                return currentIcon;
+                let currentCheck=""
+                let isDisabled=false;
+                if(currentComponent?.input?.checked?.type =='handler' && currentComponent.input?.checked?.value)
+                { 
+                    isDisabled=true
+                }
+                else 
+                currentCheck = currentComponent.input?.checked?.value || 'uncheck';
+                const options = 
+                    [
+                    {
+                    icon: "check",
+                    value: "check",
+                    disabled:isDisabled
+                    }, 
+                    {
+                    icon: "xmark",
+                    value: "uncheck",
+                    disabled:isDisabled
+                    },
+                    {
+                    icon:'bars',
+                    value:'indeterminate',
+                    disabled:isDisabled
+                    }
+            ]   
+            const radioType ='button'
+            const result = [options,currentCheck,radioType];
+           return  result;
                 `
-            },
-            placeholder: {
-                type: "handler",
-                value: /* js */ ` 
-                const placeholder ='choose an icon';
-                return placeholder;
-                `
-            },
-            disable:{
-                type: "handler",
-                value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let disable = false;
-                if(currentComponent.input?.icon?.type=="handler" && currentComponent.input?.icon?.value)
-                    disable=true;
-                return disable;
-                `
-
             }
         },
-       
+        style: {
+            ...RadioButtonWithThreeOptionsTheme
+        },
         event: {
-            iconChanged: /* js */ `
+            changed: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const iconValue = EventData.value;
-                    updateInput(currentComponent,'icon','string',iconValue)
+                    const checkedValue = EventData.value;
+                    updateInput(currentComponent,'checked','string',EventData.value)
                 }
             }catch(error){
                 console.log(error);
@@ -107,48 +115,48 @@ export default [
         },
     },
     {
-        uuid: "icon_picker_handler_block",
+        uuid: "checkbox_handler_block",
         applicationId: "1",
-        name: "icon picker handler block",
+        name: "checkbox handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
+
         },
         
-        childrenIds: ["icon_picker_handler"],
+        childrenIds: ["checkbox_checked_radio", "checkbox_handler"],
     },
     {
-        uuid: "icon_picker_handler",
+        uuid: "checkbox_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "icon picker handler",
+        name: "checkbox handler",
         style: {
                 display:'block',
+            width: "50px",
+
         },
         input: { 
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='iconPicker';
-                let iconPickerHandler=''
+                const parameter ='checkbox';
+                let checkboxHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.icon?.type =='handler' && currentComponent?.input?.icon?.value){
-                            iconPickerHandler= currentComponent?.input?.icon?.value
+                        if(currentComponent?.input?.checked?.type =='handler' && currentComponent?.input?.checked?.value){
+                            checkboxHandler = currentComponent?.input?.checked?.value
                         }
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,iconPickerHandler];
+                return [parameter,checkboxHandler];
             `
             }
         },
@@ -160,8 +168,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.icon?.value)
-                    updateInput(currentComponent,'icon','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.checked?.value)
+                    updateInput(currentComponent,'checked','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);

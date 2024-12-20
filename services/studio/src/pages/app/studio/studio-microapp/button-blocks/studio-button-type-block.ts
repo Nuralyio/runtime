@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { SelectTheme } from "../editor/utils/common-editor-theme.ts";
 
 export default [
     {
@@ -99,8 +100,7 @@ export default [
         },
         style: {
             display: 'block',
-            "--hybrid-select-width": "150px",
-            'size': 'small'
+           ...SelectTheme
     },
         event: {
             changed: /* js */ `

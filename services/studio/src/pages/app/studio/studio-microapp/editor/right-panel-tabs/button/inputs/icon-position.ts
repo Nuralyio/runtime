@@ -1,6 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
-import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
+import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
         uuid: "button_icon_position_block",
@@ -91,10 +91,7 @@ export default [
             }
         },
         style: {
-            display:'block',
-            '--hybrid-button-height':'28px',
-            '--hybrid-button-width':'76px',
-            '--hybrid-button-font-size':'12px'
+            ...RadioButtonWithTwoOptionsTheme
         },
         event: {
             changed: /* js */ `
