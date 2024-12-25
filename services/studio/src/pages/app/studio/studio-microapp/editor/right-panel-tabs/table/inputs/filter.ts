@@ -1,27 +1,23 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
-        uuid: "table_selectionmode_block",
+        uuid: "table_filter_block",
         applicationId: "1",
-        name: "table selection mode block",
+        name: "table filter block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            
-
-            'margin-top': '10px',
+          ...InputBlockContainerTheme
         },
 
-        childrenIds: ["table_selectionmode_radio_block","table_selectionmode_handler_block"],
+        childrenIds: ["table_filter_radio_block","table_filter_handler_block"],
     },
     {
-        uuid: "table_selectionmode_radio_block",
+        uuid: "table_filter_radio_block",
         applicationId: "1",
-        name: "table selection mode radio block",
+        name: "table filter radio block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -29,12 +25,12 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["table_selectionmode_label", "table_selectionmode_radio"],
+        childrenIds: ["table_filter_label", ],
     },
     
     {
-        uuid: "table_selectionmode_label",
-        name: "table selection mode label",
+        uuid: "table_filter_label",
+        name: "table filter label",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
@@ -42,24 +38,23 @@ export default [
             value:{
                 type:'handler',
                 value:/* js */`
-                const selectionModeLabel='Selection mode';
-                return selectionModeLabel;
+                const filterLabel='Filter';
+                return filterLabel;
                 
                 `
             }
         },
         style: {
             width:'90px'
-
         }
     },
     {
-        uuid: "table_selectionmode_radio",
+        uuid: "table_filter_radio",
         applicationId: "1",
         component_type: ComponentType.RadioButton,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "selection mode radio",
+        name: "table filter radio",
         input: {
             value: {
                 type: "handler",
@@ -67,42 +62,34 @@ export default [
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentSelectionMode =""
-                let isDisabled=false;
-                if(currentComponent.input?.selectionMode?.type =='handler'&&currentComponent.input?.selectionMode?.value){
-                       isDisabled =true
+                let currentFilter="";
+                let isDisabled =false;
+                if(currentComponent.input?.filter?.type =="handler" && currentComponent.input?.filter?.value){
+                    isDisabled =true
                 }
                 else 
-                currentSelectionMode = currentComponent.input?.selectionMode?.value || 'none';
+                currentFilter = currentComponent.input?.filter?.value || 'none';
                 const options = 
                     [
                     {
-                    label: "Single",
-                    value: "single",
+                    icon: "filter",
+                    value: "filter",
                     disabled:isDisabled
                     }, 
                     {
-                    label: "Multiple",
-                    value: "multiple",
+                    icon: "xmark",
+                    value: "none",
                     disabled:isDisabled
-                    },
-                    {
-                     label:'None',
-                     value:'none',
-                     disabled:isDisabled
-                    }
+                   }
             ]   
             const radioType ='button'
-            const result = [options,currentSelectionMode,radioType];
+            const result = [options,currentFilter,radioType];
            return  result;
                 `
             }
         },
         style: {
-            display:'block',
-           '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'50px',
-            '--hybrid-button-font-size':'12px'
+            ...RadioButtonWithTwoOptionsTheme
         },
         event: {
             changed: /* js */ `
@@ -111,8 +98,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const selectionModeValue = EventData.value;
-                    updateInput(currentComponent,'selectionMode','string',EventData.value)
+                    const filterValue = EventData.value;
+                    updateInput(currentComponent,'filter','string',EventData.value)
                 }
             }catch(error){
                 console.log(error);
@@ -121,26 +108,24 @@ export default [
         },
     },
     {
-        uuid: "table_selectionmode_handler_block",
+        uuid: "table_filter_handler_block",
         applicationId: "1",
-        name: "table selection mode handler block",
+        name: "table filter handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
+
         },
         
-        childrenIds: ["table_selectionmode_handler"],
+        childrenIds: ["table_filter_radio", "table_filter_handler"],
     },
     {
-        uuid: "table_selectionmode_handler",
+        uuid: "table_filter_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "selection mode handler",
+        name: "filter handler",
         style: {
                 display:'block',
         },
@@ -148,21 +133,21 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='selectionMode';
-                let selectionModeHandler=''
+                const parameter ='filter';
+                let filterHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.selectionMode?.type =='handler' && currentComponent?.input?.selectionMode?.value){
-                            selectionModeHandler = currentComponent?.input?.selectionMode?.value
+                        if(currentComponent?.input?.filter?.type =='handler' && currentComponent?.input?.filter?.value){
+                            filterHandler = currentComponent?.input?.filter?.value
                         }
                     }
                 }catch(error){
                     console.log(error);
                 }
-               return  [parameter,selectionModeHandler];
+                return [parameter,filterHandler];
             `
             }
         },
@@ -174,8 +159,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.selectionMode?.value)
-                    updateInput(currentComponent,'selectionMode','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.filter?.value)
+                    updateInput(currentComponent,'filter','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);

@@ -102,18 +102,10 @@ export default {
                         
                         case "Table":
                             parameters=[
-                                'table_values_handler_block',
-                                "box_shadow_block", 
-                                "font_family_block", 
-                                "font_size_vertical_container",
-                                'position_collapse_container',
-                                'width_vertical_container',
-                                'table_selectionmode_block',
-                                'table_filter_block',
-                                "table_select_event_block",
-                                "table_search_event_block",
-                                "table_sort_event_block",
-                                "table_paginate_event_block"
+                                "table_blocks"
+                            ];
+                            handlers=[
+                            "studio_table_handler"
                             ];
                             break;
                         case "Icon":

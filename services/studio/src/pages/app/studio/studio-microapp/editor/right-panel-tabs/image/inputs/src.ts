@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
         uuid: "image_src_text_block",
@@ -8,12 +9,7 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-             display:'flex',
-             'align-items':'center',
-             'justify-content':'space-between',
-             
-
-
+         ...InputBlockContainerTheme
         },
         childrenIds: ["src_input_block","src_handler_block"],
     },
@@ -28,7 +24,7 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["label_image_src", "src_text_input"],
+        childrenIds: ["label_image_src"],
     },
     {
         uuid: "label_image_src",
@@ -56,8 +52,7 @@ export default [
         component_type: ComponentType.TextInput,
         ...COMMON_ATTRIBUTES,
         style: {
-            width:'120px',
-            size:"small",
+            ...TextInputTheme
         },
         event: {
             valueChange:/* js */ `
@@ -130,13 +125,10 @@ export default [
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
+
         },
         
-        childrenIds: ["src_handler"],
+        childrenIds: ["src_text_input", "src_handler"],
     },
     {
         uuid: "src_handler",
