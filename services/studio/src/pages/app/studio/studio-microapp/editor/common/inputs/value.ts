@@ -7,7 +7,7 @@ export const StudioTextValueInput = [
     uuid: "value_text_block",
     applicationId: "1",
     name: "value text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       ...InputBlockContainerTheme
     },
@@ -17,7 +17,7 @@ export const StudioTextValueInput = [
     uuid: "value_handler_block",
     applicationId: "1",
     name: "icon picker handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

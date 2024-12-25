@@ -1,37 +1,34 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-import { SelectTheme } from "../editor/utils/common-editor-theme.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-editor-theme.ts";
 
-export default [
+export const StudioInputAlignmentDirection = [
   {
-    uuid: "button_type_block",
+    uuid: "container_alignment_block",
     applicationId: "1",
     name: "button type block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      display: "flex",
-      "align-items": "center",
-      "justify-content": "space-between",
-      "width": "290px"
+      ...InputBlockContainerTheme
     },
-    childrenIds: ["button_type_radio_block", "button_type_handler_block"]
+    childrenIds: ["container_alignment_radio_block", "container_alignment_handler_block"]
   },
   {
-    uuid: "button_type_radio_block",
+    uuid: "container_alignment_radio_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["button_type_label"]
+    childrenIds: ["container_alignment_label"]
   },
   {
-    uuid: "button_type_label",
+    uuid: "container_alignment_label",
     name: "button type label",
     component_type: ComponentType.TextLabel,
     applicationId: "1",
@@ -40,18 +37,17 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const typeLabel = 'Type';
+              const typeLabel = 'Alignment';
                 return typeLabel;
                 `
       }
     },
     style: {
       width: "90px",
-      marginLeft: "5px"
     }
   },
   {
-    uuid: "button_type_select",
+    uuid: "container_alignment_select",
     applicationId: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
@@ -61,7 +57,7 @@ export default [
       placeholder: {
         type: "handler",
         value: /* js */`
-                const placeholder = 'Type';
+                const placeholder = 'Direction';
                 return placeholder;
                 `
       },
@@ -71,14 +67,12 @@ export default [
                 const selectedComponents = GetVar("selectedComponents") || [];
                 const selectedComponent = selectedComponents[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.style?.type || 'default';
+                let currentType = currentComponent?.input?.direction?.value || 'default';
                 console.log('currentType',currentType);
                 const options = [
-                    { label: "Primary", value: "primary" },
-                    { label: "Secondary", value: "secondary" },
-                    { label: "Danger", value: "danger" },
-                    { label: "Ghost", value: "ghost" },
-                    { label: "Default", value: "default" },
+                    { label: "Start", value: "flex-start" },
+                    { label: "End", value: "flex-end" },
+                    { label: "Center", value: "center" },
                 ];
                 const result = [options, [currentType]];
                 return result;
@@ -111,7 +105,8 @@ export default [
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
                     const typeValue = EventData.value || 'default';
                     console.log(EventData);
-                    updateStyle(currentComponent, "type", typeValue);
+                    updateStyle(currentComponent,'justify-content',typeValue)
+
                 }
             } catch (error) {
                 console.log(error);
@@ -120,20 +115,20 @@ export default [
     }
   },
   {
-    uuid: "button_type_handler_block",
+    uuid: "container_alignment_handler_block",
     applicationId: "1",
     name: "button type handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between",
       "align-items": "center"
     },
-    childrenIds: ["button_type_select", "button_type_handler"]
+    childrenIds: ["container_alignment_select", "container_alignment_handler"]
   },
   {
-    uuid: "button_type_handler",
+    uuid: "container_alignment_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
@@ -171,7 +166,7 @@ export default [
                 if (selectedComponents.length) {
                     const selectedComponent = selectedComponents[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'type', EventData.value);
+                    updateStyleHandlers(currentComponent, 'justify-content', EventData.value);
                 }
             } catch (error) {
                 console.log(error);

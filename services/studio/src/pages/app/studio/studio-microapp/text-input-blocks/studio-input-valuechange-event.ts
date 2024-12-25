@@ -6,7 +6,7 @@ export default [
     uuid: "input_valuechange_event_block",
     applicationId: "1",
     name: "Input valuechange event",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 

@@ -7,7 +7,7 @@ export default [
     uuid: "helper_text_block",
     applicationId: "1",
     name: "helper text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"
@@ -23,7 +23,7 @@ export default [
     uuid: "helper_input_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -130,7 +130,7 @@ export default [
     uuid: "helper_handler_block",
     applicationId: "1",
     name: "helper handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

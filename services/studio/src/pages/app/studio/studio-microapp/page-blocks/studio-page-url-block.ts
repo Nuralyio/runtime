@@ -6,7 +6,7 @@ export default [
     uuid: "page_url_block",
     applicationId: "1",
     name: "page url block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

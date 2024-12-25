@@ -4,7 +4,7 @@ export default [{
   uuid: "331",
   applicationId: "1",
   name: "Left panel",
-  component_type: ComponentType.VerticalContainer,
+  component_type: ComponentType.Container,
   input: {
     direction: "vertical"
   },
@@ -22,7 +22,7 @@ export default [{
     uuid: "pages_panel",
     applicationId: "1",
     name: "Pages panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     input: {
       direction: "vertical"
     },
@@ -36,7 +36,7 @@ export default [{
   {
     uuid: "menu_header",
     name: "menu header",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "gap": "5px",
       "align-items": "center",
@@ -62,7 +62,7 @@ export default [{
   {
     uuid: "menu_tools",
     name: "menu tools",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "gap": "5px",
       "align-items": "center",

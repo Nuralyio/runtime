@@ -5,7 +5,7 @@ export const enum ComponentType {
   Menu = "menu",
   Button = "button_input",
   Collection = "Collection",
-  VerticalContainer = "vertical-container-block",
+  Container = "vertical-container-block",
   ColorPicker = "color_picker",
   NumberInput = "number_input",
   IconButton = "icon_button",
@@ -26,7 +26,7 @@ export const enum ComponentType {
   Collapse = "Collapse",
   Handlers = "Handlers",
   AI = "AI",
-  Divier = "Divider",
+  Divider = "Divider",
 }
 
 export interface DraggingComponentInfo {

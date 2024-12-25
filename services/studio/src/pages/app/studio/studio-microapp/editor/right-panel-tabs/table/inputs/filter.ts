@@ -7,7 +7,7 @@ export default [
     uuid: "table_filter_block",
     applicationId: "1",
     name: "table filter block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "table_filter_radio_block",
     applicationId: "1",
     name: "table filter radio block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -112,7 +112,7 @@ export default [
     uuid: "table_filter_handler_block",
     applicationId: "1",
     name: "table filter handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
 

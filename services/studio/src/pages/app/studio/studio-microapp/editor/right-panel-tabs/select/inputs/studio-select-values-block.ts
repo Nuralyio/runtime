@@ -7,7 +7,7 @@ export default [
     uuid: "select_values_handler_block",
     applicationId: "1",
     name: "value handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme

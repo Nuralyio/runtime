@@ -7,7 +7,7 @@ export default [
     uuid: "checkbox_checked_block",
     applicationId: "1",
     name: "checkbox checked block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "checkbox_checked_radio_block",
     applicationId: "1",
     name: "checkbox checked radio block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -119,7 +119,7 @@ export default [
     uuid: "checkbox_handler_block",
     applicationId: "1",
     name: "checkbox handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
 

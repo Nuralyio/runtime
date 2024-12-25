@@ -14,7 +14,7 @@ export function generateDynamicContainer(
       uuid: mainUuid,
       applicationId: "1",
       name: "position collapse container",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         marginTop: "15px"
@@ -50,7 +50,7 @@ export function generateDynamicContainer(
       uuid: `${collapseUuid}_children`,
       applicationId: "1",
       name: "Left panel",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       style: {},
       childrenIds: [...childrenIds] // Pass the dynamic children here
     }

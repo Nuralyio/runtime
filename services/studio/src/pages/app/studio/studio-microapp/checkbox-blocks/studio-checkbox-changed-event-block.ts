@@ -6,7 +6,7 @@ export default [
     uuid: "checkbox_changed_event_block",
     applicationId: "1",
     name: "Checkbox changed event block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 

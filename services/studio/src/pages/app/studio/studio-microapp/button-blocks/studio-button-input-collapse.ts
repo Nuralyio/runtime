@@ -6,7 +6,7 @@ export default [
     uuid: "button_collapse_container",
     applicationId: "1",
     name: "position collapse container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       marginTop: "15px"
@@ -46,7 +46,7 @@ export default [
     uuid: "button_collapse_container_childrens",
     applicationId: "1",
     name: "Button panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
     childrenIds: ["button_type_block", "button_icon_position_block"]

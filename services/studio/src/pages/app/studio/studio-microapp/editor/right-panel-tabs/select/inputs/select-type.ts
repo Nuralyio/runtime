@@ -7,7 +7,7 @@ export default [
     uuid: "select_type_block",
     applicationId: "1",
     name: "select type block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "select_radio_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -113,7 +113,7 @@ export default [
     uuid: "type_handler_block",
     applicationId: "1",
     name: "type handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

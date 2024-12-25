@@ -1,16 +1,16 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
 
 export default [
   {
     uuid: "collection_data",
     applicationId: "1",
     name: "collection_handler_blocks",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      display: "flex",
-      "flex-direction": "column"
+      ...InputBlockContainerTheme
     },
     childrenIds: ["collection_handler_label", "collection_event_handler"]
   },
@@ -24,7 +24,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-               return "Collection handler"
+               return "Data"
             `
       }
     }
@@ -38,7 +38,6 @@ export default [
     name: "label handler",
     style: {
       display: "block",
-      width: "250px"
     },
     input: {
       value: {

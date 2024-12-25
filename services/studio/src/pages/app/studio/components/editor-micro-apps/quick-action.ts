@@ -6,7 +6,7 @@ export default [
     uuid: "quick-action-wrapper",
     applicationId: "1",
     name: "helper text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "horizontal"

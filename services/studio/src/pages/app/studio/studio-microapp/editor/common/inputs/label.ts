@@ -8,7 +8,7 @@ export default [
     uuid: "label_text_block",
     applicationId: "1",
     name: "label text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -20,7 +20,7 @@ export default [
     uuid: "label_text_input_block",
     applicationId: "1",
     name: "label input block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -125,7 +125,7 @@ export default [
     uuid: "label_handler_block",
     applicationId: "1",
     name: "label handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

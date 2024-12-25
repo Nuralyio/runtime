@@ -14,7 +14,7 @@ export const createHandlersFromEvents = (
       uuid: collapseContainerUUID,
       applicationId: "1",
       name: "position collapse container",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         marginTop: "13px"
@@ -71,7 +71,7 @@ export const createHandlersFromEvents = (
       uuid: containerUUID,
       applicationId: "1",
       name: "Dynamic Event Handler Container",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",

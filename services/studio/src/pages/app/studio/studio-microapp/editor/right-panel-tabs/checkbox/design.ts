@@ -7,7 +7,7 @@ export const StudioCheckboxDesign = [
     uuid: "checkbox_blocks",
     applicationId: "1",
     name: "Parent Checkbox Container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

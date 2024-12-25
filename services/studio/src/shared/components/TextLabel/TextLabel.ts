@@ -33,9 +33,21 @@ export class TextLabelBlock extends BaseElementBlock {
 
   @state()
   hoveredComponent: ComponentElement;
-
+  constructor() {
+    super();
+    this.registerCallback("innerAlignment", (value: any) => {
+      if(this.inputHandlersValue?.innerAlignment === "end") {
+        this.closestGenericComponentWrapper.style.marginLeft = "auto";
+      }else{
+        this.closestGenericComponentWrapper.style.marginLeft = "unset";
+      }
+    } );
+  }
   override async connectedCallback() {
     await super.connectedCallback();
+    const labelStyleHandlers = this.component?.styleHandlers
+      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
+      : {};
 
   }
 

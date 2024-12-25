@@ -7,7 +7,7 @@ export default [
     uuid: "icon_color_block",
     applicationId: "1",
     name: "icon color block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -18,7 +18,7 @@ export default [
     uuid: "icon_input_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -112,7 +112,7 @@ export default [
     uuid: "icon_color_handler_block",
     applicationId: "1",
     name: "icon color handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
 

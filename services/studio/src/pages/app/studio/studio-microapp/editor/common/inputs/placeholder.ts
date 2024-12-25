@@ -7,7 +7,7 @@ export default [
     uuid: "placeholder_text_block",
     applicationId: "1",
     name: "placeholder text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "placeholder_input_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
     childrenIds: ["placeholder_text_label"]
@@ -121,7 +121,7 @@ export default [
     uuid: "placeholder_handler_block",
     applicationId: "1",
     name: "placeholder handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 

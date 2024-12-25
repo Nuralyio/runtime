@@ -130,7 +130,7 @@ export class VerticalContainer extends BaseElementBlock {
             })}
             class=${classMap({
               container: true,
-              vertical: this.component?.input?.direction === "vertical",
+              vertical: this.inputHandlersValue.direction === "vertical",
               "drag-over": this.dragOverSituation
             })}
             @dragenter=${(e: DragEvent) => {
@@ -160,11 +160,6 @@ export class VerticalContainer extends BaseElementBlock {
               this.dragOverSituation = false;
             }}
           >
-            <component-title
-              .component=${{ ...this.component }}
-              .selectedComponent=${{ ...this.selectedComponent }}
-            ></component-title>
-
             ${this.component?.childrenIds?.length
               ? renderComponent(
                 this.component.childrenIds.map((id) =>

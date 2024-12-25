@@ -6,7 +6,7 @@ export default [
     uuid: "border_collapse_container",
     applicationId: "1",
     name: "position collapse container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       marginTop: "13px"
@@ -47,7 +47,7 @@ export default [
     uuid: "border_collapse_container_childrens",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
     childrenIds: ["border_radius_vertical_container", "box_shadow_block"]

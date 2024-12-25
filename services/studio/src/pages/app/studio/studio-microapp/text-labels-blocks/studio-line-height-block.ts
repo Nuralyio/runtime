@@ -6,7 +6,7 @@ export default [
     uuid: "line_height_block",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       display: "flex",
       "align-items": "center",

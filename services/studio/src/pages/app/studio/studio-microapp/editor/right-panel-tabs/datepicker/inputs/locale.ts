@@ -7,7 +7,7 @@ export default [
     uuid: "datepicker_locale_block",
     applicationId: "1",
     name: "datepicker locale  block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"
@@ -23,7 +23,7 @@ export default [
     uuid: "datepicker_local_input_block",
     applicationId: "1",
     name: "datepicker local input block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -36,7 +36,7 @@ export default [
     uuid: "datepicker_locale_label_container",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"
@@ -160,7 +160,7 @@ export default [
     uuid: "locale_handler_block",
     applicationId: "1",
     name: "locale handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
 

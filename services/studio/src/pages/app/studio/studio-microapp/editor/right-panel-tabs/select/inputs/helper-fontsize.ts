@@ -8,7 +8,7 @@ export const StudioSelectHelperFontSize = [
     uuid: "select_helper_font_size_vertical_container",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       ...InputBlockContainerTheme
     },
@@ -18,7 +18,7 @@ export const StudioSelectHelperFontSize = [
     uuid: "helper_size_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -136,7 +136,7 @@ export const StudioSelectHelperFontSize = [
     uuid: "helper_size_handler_block",
     applicationId: "1",
     name: "helper size handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

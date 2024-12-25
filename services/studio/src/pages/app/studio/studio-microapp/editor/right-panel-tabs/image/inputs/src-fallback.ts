@@ -7,7 +7,7 @@ export default [
     uuid: "image_fallback_text_block",
     applicationId: "1",
     name: "image fallback text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "image_fallback_input_block",
     applicationId: "1",
     name: "image fallback block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -124,7 +124,7 @@ export default [
     uuid: "fallback_handler_block",
     applicationId: "1",
     name: "fallback handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
 

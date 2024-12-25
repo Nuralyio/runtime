@@ -1,0 +1,5 @@
+import { generateDynamicContainer } from "../../../utils/input-collapse-container-generator.ts";
+
+export const StudioCollectionCollapseContainer = generateDynamicContainer("collection_collapse_container", [
+  "collection_data"
+]);

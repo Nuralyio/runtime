@@ -20,7 +20,7 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
     applicationId: currentApplicatinId
 
   } as ComponentElement;
-  if (!currentComponentId || (currentComponent?.component_type != ComponentType.VerticalContainer && currentComponent?.component_type != ComponentType.Collection)) {
+  if (!currentComponentId || (currentComponent?.component_type != ComponentType.Container && currentComponent?.component_type != ComponentType.Collection)) {
     newComponent.root = true;
   }
 
@@ -34,7 +34,7 @@ export const addComponentAction = (component: AddComponentAction, uuid: string/*
 
 
   if (currentComponentId) {
-    if (currentComponent?.component_type === ComponentType.VerticalContainer || currentComponent?.component_type === ComponentType.Collection) {
+    if (currentComponent?.component_type === ComponentType.Container || currentComponent?.component_type === ComponentType.Collection) {
       addComponentAsChildOf(componentId, currentComponentId, currentApplicatinId);
     } else {
       addComponentToCurrentPageAction(componentId);

@@ -6,7 +6,7 @@ export default [
     uuid: "box_shadow_block",
     name: "name",
     applicationId: "1",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
@@ -124,7 +124,7 @@ export default [
     uuid: "box_shadow_handler_block",
     applicationId: "1",
     name: "box shadow handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       width: "220px",

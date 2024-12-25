@@ -6,7 +6,7 @@ export default [
     uuid: "typography_collapse_container",
     applicationId: "1",
     name: "position collapse container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
     childrenIds: ["typography_collapse"]
@@ -45,7 +45,7 @@ export default [
     uuid: "typography_collapse_container_childrens",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
     childrenIds: [

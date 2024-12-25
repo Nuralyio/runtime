@@ -6,7 +6,7 @@ export default [
     uuid: "input_type_block",
     applicationId: "1",
     name: "input type block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -23,7 +23,7 @@ export default [
     uuid: "input_stype_radio_block",
     applicationId: "1",
     name: "input type radio block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -124,7 +124,7 @@ export default [
     uuid: "input_type_handler_block",
     applicationId: "1",
     name: "input type handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       width: "50px",
