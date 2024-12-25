@@ -17,8 +17,9 @@ import "../Layout/ThemeContainer";
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
     :host {
-      height: 100vh;
+      height: calc(100vh - 110px);
       display: block;
+        width: calc(100vw - 650px);
     }
     .page-container {
       width: 100%;

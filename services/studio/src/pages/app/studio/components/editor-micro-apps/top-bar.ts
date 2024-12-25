@@ -226,6 +226,11 @@ export default [{
       "--hybrid-input-number-icons-container-width": "48px",
       "width": "100px"
     },
+    event: {
+      valueChange: /* js */`
+        SetVar('editor_panel_zoom',EventData.value);
+        `
+    },
     input: {
       placeholder: {
         type: "handler",
@@ -249,11 +254,26 @@ export default [{
             return min;
             `
       },
+      step: {
+        type: "handler",
+        value: /* js */`
+            const min = '25'
+            return min;
+            `
+      },
       max: {
         type: "handler",
         value: /* js */`
             const max = '1600'
             return max;
+            `
+      },
+      value :{
+        type: "handler",
+        value: /* js */`
+            const zoom = GetVar('editor_panel_zoom') || 100;
+            console.log(zoom)
+            return zoom;
             `
       }
     }

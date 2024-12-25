@@ -81,6 +81,7 @@ export class TextInputBlock extends BaseElementBlock {
       .type=${this.inputHandlersValue.type ?? nothing}
       .disabled=${(this.inputHandlersValue.state == "disabled")}
       placeholder=${this.inputHandlersValue.placeholder ?? "Text input"}
+      .step=${this.inputHandlersValue?.step ?? nothing}
       .min=${this.inputHandlersValue?.min ?? nothing}
       .max=${this.inputHandlersValue?.max ?? nothing}
     >

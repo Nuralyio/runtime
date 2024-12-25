@@ -44,6 +44,7 @@ export class NumberInputBlock extends BaseElementBlock {
           .size=${this.component.style.size ?? nothing}
           @valueChange=${this.handleValueChange}
           value=${parseInt(this.inputHandlersValue.value)}
+          .step=${this.inputHandlersValue?.step ?? nothing}
           min="0"
           type="number"
           .disabled=${(this.inputHandlersValue.state == "disabled")}
