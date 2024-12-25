@@ -1,5 +1,5 @@
 import { css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
@@ -11,23 +11,15 @@ import { EMPTY_STRING } from "@utils/constants.ts";
 
 @customElement("color-picker-block")
 export class ColorPickerBlock extends BaseElementBlock {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @property({ type: Object })
-  item: any;
-
   static styles = [
     css`:host {
         width: fit-content
     }`
   ];
-
-  constructor() {
-    super();
-    this.registerCallback("value", this.handleValueChange);
-  }
-
+  @property({ type: Object })
+  component: ComponentElement;
+  @property({ type: Object })
+  item: any;
   handleValueChange = debounce((event: { detail: { value: any; }; }) => {
     if (this.component.event.valueChange) {
       event?.detail?.value && executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
@@ -36,10 +28,15 @@ export class ColorPickerBlock extends BaseElementBlock {
     }
   });
 
+  constructor() {
+    super();
+    this.registerCallback("value", this.handleValueChange);
+  }
+
   render() {
     return html`
         <hy-color-picker
-          style=${styleMap({ width : "28px", height:"28px",  ...this.component.style })}
+          style=${styleMap({ width: "28px", height: "28px", ...this.component.style })}
           @color-changed=${this.handleValueChange}
           .color=${this.inputHandlersValue.value ?? EMPTY_STRING}
           .disabled=${(this.inputHandlersValue?.state == "disabled")}

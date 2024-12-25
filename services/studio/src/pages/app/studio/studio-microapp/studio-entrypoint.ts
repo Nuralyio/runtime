@@ -79,8 +79,6 @@ import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
 
 
-
-
 export default [
 
   {
@@ -185,7 +183,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-      marginTop: "13px",
+      marginTop: "13px"
     },
     childrenIds: ["text_label_handlers_collpase"]
   },
@@ -200,16 +198,16 @@ export default [
       "--hy-collapse-border-radius": "0px",
       "--hy-collapse-width": "292px",
       "--hy-collapse-border": "none",
-      '--hy-collapse-border-bottom': '1px solid #636363',
-      '--hy-collapse-local-header-background-color': '#3d3d3d'
+      "--hy-collapse-border-bottom": "1px solid #636363",
+      "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
     input: {
       size: {
-        type: 'string',
-        value: 'small'
+        type: "string",
+        value: "small"
       },
       components: {
-        type: 'handler',
+        type: "handler",
         value: /* js */ `
                 return [{ blockName: 'text_label_handlers', label: 'Triggers' , open : true}];
                 `

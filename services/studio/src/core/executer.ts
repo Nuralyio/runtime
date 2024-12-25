@@ -7,7 +7,6 @@ import { $context, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
 import { eventDispatcher } from "utils/change-detection";
 import { isServer } from "utils/envirement";
-import { VariableNotFoundException } from "../exceptions/VariableNotFoundException.ts";
 import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 
@@ -215,7 +214,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     if (context && context[contentId] && context[contentId][symbol] && "value" in context[contentId][symbol]) {
       return context[contentId][symbol].value;
     } else {
-      console.warn("Variable not found or invalid structure." + symbol, );
+      console.warn("Variable not found or invalid structure." + symbol);
     }
   }
 
@@ -228,7 +227,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
     } else {
-      console.warn("Variable not found or invalid structure."+ symbol);
+      console.warn("Variable not found or invalid structure." + symbol);
     }
   }
 

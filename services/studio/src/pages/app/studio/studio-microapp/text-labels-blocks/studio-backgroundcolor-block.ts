@@ -1,49 +1,50 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-     
-    {
-        uuid: "background_color_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
 
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "250px",
-            display: 'flex',
-            'flex-direction': 'column',
-            "margin-top": "10px"
-        },
-        childrenIds: ["text_label_background_color", "background_color_value"],
+export default [
+
+  {
+    uuid: "background_color_block",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    styleHandlers: {},
+    input: {
+      direction: "vertical"
     },
-    {
-        uuid: "text_label_background_color",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "250px",
+      display: "flex",
+      "flex-direction": "column",
+      "margin-top": "10px"
+    },
+    childrenIds: ["text_label_background_color", "background_color_value"]
+  },
+  {
+    uuid: "text_label_background_color",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                const label ='Background Color';
              return label;
             `
-            }
-        },
-    },
-    {
-        uuid: "background_color_value",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.ColorPicker,
-        event: {
-            valueChange: /* js */ `
+      }
+    }
+  },
+  {
+    uuid: "background_color_value",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.ColorPicker,
+    event: {
+      valueChange: /* js */ `
            
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -58,12 +59,12 @@ export default [
             }
             
       `
-        },
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */`
+    },
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -76,7 +77,7 @@ export default [
                         console.log(e);
                     }
                 `
-            }
-        }
-    },
-]
+      }
+    }
+  }
+];

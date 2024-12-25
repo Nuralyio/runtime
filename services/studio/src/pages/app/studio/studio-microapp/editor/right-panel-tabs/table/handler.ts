@@ -11,7 +11,7 @@ export const StudioTableHandler = createHandlersFromEvents
     label: "onSearch"
   },
   {
-    name :"onPaginate",
+    name: "onPaginate",
     label: "onPaginate"
   },
   {

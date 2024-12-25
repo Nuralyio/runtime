@@ -1,65 +1,66 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
-export default [
-    {
-        uuid: "select_type_block",
-        applicationId: "1",
-        name: "select type block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-           ...InputBlockContainerTheme
-        },
 
-        childrenIds: ["select_radio_block","type_handler_block"],
+export default [
+  {
+    uuid: "select_type_block",
+    applicationId: "1",
+    name: "select type block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...InputBlockContainerTheme
     },
-    {
-        uuid: "select_radio_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["select_type_label"],
+
+    childrenIds: ["select_radio_block", "type_handler_block"]
+  },
+  {
+    uuid: "select_radio_block",
+    applicationId: "1",
+    name: "placeholder block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    
-    {
-        uuid: "select_type_label",
-        name: "select type label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
+    childrenIds: ["select_type_label"]
+  },
+
+  {
+    uuid: "select_type_label",
+    name: "select type label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value:/* js */`
                 const typeLabel='Type';
                 return typeLabel;
                 
                 `
-            }
-        },
-        style: {
-            width:'90px'
-
-        }
+      }
     },
-    {
-        uuid: "select_type_radio",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "select type radio",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {
+      width: "90px"
+
+    }
+  },
+  {
+    uuid: "select_type_radio",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "select type radio",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -87,13 +88,13 @@ export default [
             const result = [options,currentType,radioType];
            return  result;
                 `
-            }
-        },
-        style: {
-            ...RadioButtonWithTwoOptionsTheme
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      ...RadioButtonWithTwoOptionsTheme
+    },
+    event: {
+      changed: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -106,35 +107,35 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+  {
+    uuid: "type_handler_block",
+    applicationId: "1",
+    name: "type handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "type_handler_block",
-        applicationId: "1",
-        name: "type handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["select_type_radio","type_handler"],
+
+    childrenIds: ["select_type_radio", "type_handler"]
+  },
+  {
+    uuid: "type_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "type handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "type_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "type handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='type';
                 let typeHandler=''
                 try{
@@ -151,11 +152,11 @@ export default [
                 }
                 return [parameter,typeHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -168,7 +169,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

@@ -1,47 +1,48 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "box_shadow_block",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        style:{
-            "margin-top":'10px'
-        },
-        childrenIds: ["box_shadow_label","box_shadow_values","box_shadow_handler_block"],
+  {
+    uuid: "box_shadow_block",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.VerticalContainer,
+    styleHandlers: {},
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "margin-top": "10px"
     },
-    {
-        uuid: "box_shadow_label",
-        name: "box shadow label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["box_shadow_label", "box_shadow_values", "box_shadow_handler_block"]
+  },
+  {
+    uuid: "box_shadow_label",
+    name: "box shadow label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Box shadow';
                 return label;`
-            }
-        },
-        style: {
-            width:"100px",
-            display:'block',
-            'margin-bottom':'5px'
-        },
+      }
     },
-    {
-        uuid: "box_shadow_values",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.ShadowBox,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        event: {
-            boxShadowChanged:  /* js */ `
+    style: {
+      width: "100px",
+      display: "block",
+      "margin-bottom": "5px"
+    }
+  },
+  {
+    uuid: "box_shadow_values",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.ShadowBox,
+    styleHandlers: {},
+    ...COMMON_ATTRIBUTES,
+    event: {
+      boxShadowChanged:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -54,11 +55,11 @@ export default [
                         console.log(error);
                     }      
   `
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -94,10 +95,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state:{
-                type:'handler',
-                value:/* js */`
+      },
+      state: {
+        type: "handler",
+        value:/* js */`
 
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -116,38 +117,38 @@ export default [
                 }
                 
                 `
-            }
-        },
+      }
+    }
+  },
+  {
+    uuid: "box_shadow_handler_block",
+    applicationId: "1",
+    name: "box shadow handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "220px",
+      "margin-top": "10px",
+      display: "flex",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "box_shadow_handler_block",
-        applicationId: "1",
-        name: "box shadow handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "220px",
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["box_shadow_handler"],
+    childrenIds: ["box_shadow_handler"]
+  },
+  {
+    uuid: "box_shadow_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "box shadow handler",
+    style: {
+      display: "block",
+      width: "250px"
     },
-    {
-        uuid: "box_shadow_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "box shadow handler",
-        style: {
-                display:'block',
-                width: "250px", 
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='boxShadow';
                 let boxShadowHandler =''
                 try{
@@ -162,11 +163,11 @@ export default [
                 }
                 return [parameter,boxShadowHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -178,7 +179,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

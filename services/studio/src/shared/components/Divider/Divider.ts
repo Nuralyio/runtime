@@ -5,30 +5,28 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/executer.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
-import "@nuralyui/divider"
+import "@nuralyui/divider";
+
 @customElement("divider-block")
 export class DividerBlock extends BaseElementBlock {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @property({ type: Object })
-  item: any;
-
   static styles = [
     css`
     :host { 
         width: 100%;
     }
-    `,
+    `
   ];
-
+  @property({ type: Object })
+  component: ComponentElement;
+  @property({ type: Object })
+  item: any;
   unsubscribe: () => void;
 
   override async connectedCallback() {
     await super.connectedCallback();
-    this.registerCallback('value', () => {
+    this.registerCallback("value", () => {
       this.requestUpdate();
-    })
+    });
   }
 
   override disconnectedCallback() {
@@ -41,9 +39,9 @@ export class DividerBlock extends BaseElementBlock {
       executeCodeWithClosure(
         this.component,
         getNestedAttribute(this.component, `event.dividerInteracted`)
-      )
+      );
     }
-  }
+  };
 
   render() {
     const dividerStyles = this.component?.style || {};
@@ -51,18 +49,18 @@ export class DividerBlock extends BaseElementBlock {
     const dividerAutoHeight = this.inputHandlersValue?.height;
 
     return html`
-    ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == 'show' ?
+    ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show" ?
       html`
       <hy-divider
         style=${styleMap({
         ...dividerStyles,
-        width: dividerAutoWidth ? '100%' : dividerStyles.width,
-        height: dividerAutoHeight ? 'auto' : dividerStyles.height
+        width: dividerAutoWidth ? "100%" : dividerStyles.width,
+        height: dividerAutoHeight ? "auto" : dividerStyles.height
       })}
         .color=${dividerStyles.color ?? nothing}
         .darkColor=${dividerStyles.darkColor ?? nothing}
         .lightColor=${dividerStyles.lightColor ?? nothing}
-        .orientation=${this.inputHandlersValue?.orientation ?? 'horizontal'}
+        .orientation=${this.inputHandlersValue?.orientation ?? "horizontal"}
         .thickness=${dividerStyles.thickness ?? 1}
         @divider-interacted=${this.handleDividerEvent}
       ></hy-divider>

@@ -5,9 +5,9 @@ import { persistentAtom } from "@nanostores/persistent";
 
 export const $providers = atom<Provider[]>([]);
 
-export const $activeTables = persistentAtom<{ [providerId: string]: string }>("$activeTables", {} , {
+export const $activeTables = persistentAtom<{ [providerId: string]: string }>("$activeTables", {}, {
   encode: JSON.stringify,
-  decode: JSON.parse,
+  decode: JSON.parse
 });
 
 // Define a function to set the active table for a provider

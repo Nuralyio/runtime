@@ -20,11 +20,11 @@ export const StudioTextValueInput = [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-      display:'flex',
-      'justify-content':'space-between',
+      display: "flex",
+      "justify-content": "space-between"
     },
 
-    childrenIds: ["value_text_input", "value_handler"],
+    childrenIds: ["value_text_input", "value_handler"]
   },
   {
     uuid: "value_text_label",
@@ -51,7 +51,7 @@ export const StudioTextValueInput = [
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
-     ...TextInputTheme
+      ...TextInputTheme
     },
     event: {
       valueChange:  /* js */ `

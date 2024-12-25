@@ -1,68 +1,69 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "width_vertical_container",
-        applicationId: "1",
-        name: "width vertical container",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
-        childrenIds: ["width_label", "width_container","auto_width_block","width_handler_block", "width_handler"],
+  {
+    uuid: "width_vertical_container",
+    applicationId: "1",
+    name: "width vertical container",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
+    childrenIds: ["width_label", "width_container", "auto_width_block", "width_handler_block", "width_handler"]
+  },
 
-    {
-        uuid: "width_container",
-        name: "width container",
-        component_type: ComponentType.VerticalContainer,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            display:'flex',
-            "align-items":'center'
-        },
-        childrenIds: ["width_input","auto_width_checkbox"],
-
+  {
+    uuid: "width_container",
+    name: "width container",
+    component_type: ComponentType.VerticalContainer,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center"
     },
+    childrenIds: ["width_input", "auto_width_checkbox"]
 
-    {
-        uuid: "width_label",
-        name: "width label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            'width':'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+  },
+
+  {
+    uuid: "width_label",
+    name: "width label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "width": "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Width';
               return label;
             `
-            }
-        },
-      
+      }
+    }
+
+  },
+  {
+    uuid: "width_input",
+    name: "width input",
+    applicationId: "1",
+    component_type: ComponentType.NumberInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "block",
+      width: "100px",
+      size: "small"
     },
-    {
-        uuid: "width_input",
-        name: "width input",
-        applicationId: "1",
-        component_type: ComponentType.NumberInput,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'block',
-            width: "100px",
-            size:'small',
-        },
-        event: {
-            valueChange: /* js */ `
+    event: {
+      valueChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -73,11 +74,11 @@ export default [
             }catch(error){
                 console.log(error);
             }         `
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -92,10 +93,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state: {
-                type: 'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -113,32 +114,32 @@ export default [
             console.log(e);
         }
             `
-            }
-        },
+      }
+    }
+  },
+
+  {
+    uuid: "auto_width_checkbox",
+    name: "auto width checkbox",
+    applicationId: "1",
+    component_type: ComponentType.Checkbox,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      size: "small"
+
     },
 
-    {
-        uuid: "auto_width_checkbox",
-        name: "auto width checkbox",
-        applicationId: "1",
-        component_type: ComponentType.Checkbox,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            size:'small',
-
-        },
-        
-        input: {
-            label: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      label: {
+        type: "handler",
+        value: /* js */`
               const checkboxLabel ='auto';
               return checkboxLabel;
             `
-            },
-            checked: {
-                type: 'handler',
-                value: /* js */`
+      },
+      checked: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -152,10 +153,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state:{
-                    type: 'handler',
-                    value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if(selectedComponens.length) {
@@ -173,10 +174,10 @@ export default [
                     }
                     
                     `
-            }
-        },
-        event: {
-            checkboxChanged:  /* js */ `
+      }
+    },
+    event: {
+      checkboxChanged:  /* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -188,23 +189,23 @@ export default [
                 }catch(error){
                     console.log(error);
                 }`
-        },
-    },
+    }
+  },
 
-    {
-        uuid: "width_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "width handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+  {
+    uuid: "width_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "width handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='width';
                 let widthHandler=''
                 try{
@@ -219,11 +220,11 @@ export default [
                 }
                 return [parameter,widthHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -235,8 +236,8 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
 
-]
+];

@@ -1,58 +1,59 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "letter_spacing_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
-        childrenIds: ["text_label_letter_spacing", "letter_spacing_input", "letter_spacing_handler"],
+  {
+    uuid: "letter_spacing_block",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    styleHandlers: {},
+    input: {
+      direction: "vertical"
     },
-    {
-        uuid: "text_label_letter_spacing",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-          width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
+    },
+    childrenIds: ["text_label_letter_spacing", "letter_spacing_input", "letter_spacing_handler"]
+  },
+  {
+    uuid: "text_label_letter_spacing",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
               return 'Letter spacing';
             `
-            }
-        },
+      }
+    }
+  },
+  {
+    uuid: "letter_spacing_input",
+    applicationId: "1",
+    component_type: ComponentType.NumberInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      size: "small",
+      "width": "155px"
     },
-    {
-        uuid: "letter_spacing_input",
-        applicationId: "1",
-        component_type: ComponentType.NumberInput,
-        ...COMMON_ATTRIBUTES,
-        style:{
-            size:'small',
-            'width':'155px',
-        },
-        styleHandlers: {},
-        name: "Left panel",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `    
+    styleHandlers: {},
+    name: "Left panel",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `    
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -69,10 +70,10 @@ export default [
                     console.log(e);
                 }                
                 `
-            },
-            state:{
-                type:'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if(selectedComponens.length) {
@@ -90,10 +91,10 @@ export default [
                 }      
                 
                 `
-            }
-        },
-        event: {
-            valueChange:  /* js */ `
+      }
+    },
+    event: {
+      valueChange:  /* js */ `
                   try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -104,24 +105,24 @@ export default [
             }catch(error){
                 console.log(error);
             }     
-      `    
-        },
-    },
+      `
+    }
+  },
 
-    {
-        uuid: "letter_spacing_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "letter spacing handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+  {
+    uuid: "letter_spacing_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "letter spacing handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='letterSpacing';
                 let letterSpacingHandler =''
                 try{
@@ -136,11 +137,11 @@ export default [
                 }
                 return [parameter,letterSpacingHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -152,6 +153,6 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-] 
+    }
+  }
+];

@@ -1,44 +1,45 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "micro_app_selection_blocks",
-        applicationId: "1",
-        name: "micro_app_selection_blocks",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-             display:'flex',
-            'flex-direction':'column'
-        },
-        childrenIds: ["micro_app_selection_label", "micro_app_selection_select"],
+  {
+    uuid: "micro_app_selection_blocks",
+    applicationId: "1",
+    name: "micro_app_selection_blocks",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column"
     },
-    {
-        uuid: "micro_app_selection_label",
-        name: "label image src",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["micro_app_selection_label", "micro_app_selection_select"]
+  },
+  {
+    uuid: "micro_app_selection_label",
+    name: "label image src",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                return "Select Micro Application"
             `
-            }
-        },
-    },
-    {
-        uuid: "micro_app_selection_select",
-        applicationId: "1",
-        component_type: ComponentType.Select,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "label font family select",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+      }
+    }
+  },
+  {
+    uuid: "micro_app_selection_select",
+    applicationId: "1",
+    component_type: ComponentType.Select,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "label font family select",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
 
                 let options = [];
                 let selectedMicroApplication;
@@ -69,14 +70,14 @@ export default [
             })
           
                 `
-            }
-        },
-        style: {
-            display:'block',
-            width: "350px",
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      display: "block",
+      width: "350px"
+    },
+    event: {
+      changed: /* js */ `
 
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -91,7 +92,7 @@ export default [
             }
             
       `
-        },
     }
+  }
 
-]
+];

@@ -17,7 +17,7 @@ export class RadioButtonBlock extends BaseElementBlock {
   @property({ type: Object })
   item: any;
 
-  handleChange = (customEvent:CustomEvent) => {
+  handleChange = (customEvent: CustomEvent) => {
     if (this.component.event.changed) {
       const { value } = customEvent.detail;
       executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.changed`), { value });

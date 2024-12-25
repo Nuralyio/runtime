@@ -17,7 +17,7 @@ export const StudioCheckboxDesign = [
       "checkbox_input_collapse_container",
       "typography_collapse_container",
       "size_collapse_container",
-      "border_collapse_container",
+      "border_collapse_container"
     ]
   },
   ...StudioCheckboxInputs

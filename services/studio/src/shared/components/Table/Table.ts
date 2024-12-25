@@ -10,16 +10,13 @@ import { getNestedAttribute } from "@utils/object.utils.ts";
 
 @customElement("table-block")
 export class TextInputBlock extends BaseElementBlock {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @property({ type: Object })
-  item: any;
-
   static styles = [
     css``
   ];
-
+  @property({ type: Object })
+  component: ComponentElement;
+  @property({ type: Object })
+  item: any;
   @state()
   headers = [
     {

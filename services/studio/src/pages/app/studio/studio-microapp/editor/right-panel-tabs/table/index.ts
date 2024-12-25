@@ -6,4 +6,4 @@ export const StudioTable = [
   ...StudioTableDesign,
   ...StudioTableInputs,
   ...StudioTableHandler
-]
+];

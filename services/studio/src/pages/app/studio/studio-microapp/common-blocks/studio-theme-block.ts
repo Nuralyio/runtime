@@ -1,6 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-import cssVariables from "../editor/right-panel-tabs/button/theme/css-vars.ts";
 import { v4 as uuidv4 } from "uuid";
 
 // Function to generate components
@@ -16,7 +15,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
-      "flex-direction": "column",
+      "flex-direction": "column"
     },
     childrenIds: []
   };
@@ -47,10 +46,10 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
         },
         components: {
           type: "array",
-          value:  [{
+          value: [{
             blockName: `${modeCollapseUuid}_vertical_container`,
             label: mode.name.toUpperCase(),
-            open : !!mode.open
+            open: !!mode.open
           }]
         }
       },
@@ -80,7 +79,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
           "--hy-collapse-border": "none",
           "--hy-collapse-border-bottom": "none",
           "--hy-collapse-local-header-background-color": "none",
-          "--hy-collapse-header-collapsed-background-color": "none",
+          "--hy-collapse-header-collapsed-background-color": "none"
         },
         input: {
           size: {
@@ -92,7 +91,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
             value: [{
               blockName: `${categoryCollapseUuid}_vertical_container`,
               label: category.name.toUpperCase(),
-              open : !!category.open
+              open: !!category.open
             }]
           }
         }
@@ -109,19 +108,19 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
         ...COMMON_ATTRIBUTES,
         style: {
           display: "flex",
-          "flex-direction": "column",
+          "flex-direction": "column"
         },
         childrenIds: []
       };
 
       // Generate blocks for each item in the category
       const generatedBlocks = category.items.map((item) => {
-        const blockUuid =  uuidv4();
-        const inputBlockUuid =  uuidv4();
-        const handlerBlockUuid =  uuidv4();
-        const labelUuid =  uuidv4();
-        const inputUuid =  uuidv4();
-        const handlerUuid =  uuidv4();
+        const blockUuid = uuidv4();
+        const inputBlockUuid = uuidv4();
+        const handlerBlockUuid = uuidv4();
+        const labelUuid = uuidv4();
+        const inputUuid = uuidv4();
+        const handlerUuid = uuidv4();
 
         const blockComponents = [
           {
@@ -190,8 +189,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
             name: `${item.label} input`,
             component_type: ComponentType.ColorPicker,
             ...COMMON_ATTRIBUTES,
-            style: {
-            },
+            style: {},
             event: {
               valueChange: /* js */ `
         try {
@@ -220,9 +218,9 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
           } catch (e) {
             console.log(e);
           }
-        `,
-              },
-            },
+        `
+              }
+            }
           },
           {
             uuid: handlerUuid,
@@ -287,7 +285,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
-        "flex-direction": "column",
+        "flex-direction": "column"
       },
       childrenIds: categoryContainerChildrenIds
     };

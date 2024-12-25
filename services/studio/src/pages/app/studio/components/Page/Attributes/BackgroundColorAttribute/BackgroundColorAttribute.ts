@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
@@ -9,23 +9,21 @@ import { updatePageStyleAttributes } from "$store/actions/page/updatePageStyleAt
 
 @customElement("attribute-page-background-color")
 export class AttributeColor extends LitElement {
+  static styles = styles;
   @property({ type: Object })
   page: PageElement;
-
-
   @property({ type: Boolean })
   slim: boolean = false;
 
-
-  static styles = styles;
   changeHandler(event: CustomEvent) {
     updatePageStyleAttributes(this.page.uuid, {
-      backgroundColor: event.detail.value,
+      backgroundColor: event.detail.value
     });
   }
+
   render() {
     return html`<div class="container">
-      ${this.slim ? nothing : html`<attribute-background-color-label class="first_column"></attribute-background-color-label>` }
+      ${this.slim ? nothing : html`<attribute-background-color-label class="first_column"></attribute-background-color-label>`}
       <attribute-backgroundcolor-value-handler
         @attributeUpdate=${this.changeHandler}
         .page=${{ ...this.page }}

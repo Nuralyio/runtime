@@ -15,30 +15,17 @@ import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts"
 @customElement("collection-viewer")
 export class CollectionViwer extends BaseElementBlock {
 
-  constructor() {
-    super();
-
-    this.registerCallback("data", (data) => {
-      console.log(data);
-    });
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
-    });
-  }
-
+  static override styles = styles;
   @property({ type: Object })
   component: ComponentElement;
   @property({ type: Boolean }) isViewMode = false;
   mode: ViewMode;
-
-  static override styles = styles;
   @state()
   hoveredComponent: Readonly<ComponentElement>;
   @state()
   currentEditingApplication: any;
   @state()
   draggingComponentInfo: DraggingComponentInfo;
-
   @state()
   dropDragPalceHolderStyle = {
     display: "none",
@@ -50,66 +37,74 @@ export class CollectionViwer extends BaseElementBlock {
     borderRadius: " 2px"
   };
   selectedComponent: Readonly<ComponentElement>;
-
-
   @state()
   components: ComponentElement[];
+  @state()
+  containerRef: Ref<HTMLInputElement> = createRef();
 
+  constructor() {
+    super();
+
+    this.registerCallback("data", (data) => {
+      console.log(data);
+    });
+    $environment.subscribe((environment: Environment) => {
+      this.mode = environment.mode;
+    });
+  }
 
   override async connectedCallback() {
     await super.connectedCallback();
     this.currentEditingApplication = getVar("global", "currentEditingApplication").value;
 
   }
+
   // todo: move this to a util class
   isPreviewMode() {
     return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
   }
-
-  @state()
-  containerRef: Ref<HTMLInputElement> = createRef();
 
   renderRow(item: any) {
     return html`
 
       <div class="collection" ${ref(this.containerRef)}
            @click="${(e: any) => {
-             setContextMenuEvent(null);
-             if (!$resizing.get()) {
-               setCurrentComponentIdAction(this.component?.uuid);
-               e.preventDefault();
-               e.stopPropagation();
-               if (e.target.classList.contains("collection")) {
-                 setCurrentComponentIdAction(this.component?.uuid);
-                 e.preventDefault();
-                 e.stopPropagation();
-               }
-             }
-           }}"
+      setContextMenuEvent(null);
+      if (!$resizing.get()) {
+        setCurrentComponentIdAction(this.component?.uuid);
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.target.classList.contains("collection")) {
+          setCurrentComponentIdAction(this.component?.uuid);
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    }}"
 
       >
         ${this.component?.childrenIds?.length
-          ? html`
+      ? html`
             ${renderComponent(
-              this.component.childrenIds?.map(
-                (uuid) => {
-                  return {
-                    ...$components.get()[this.currentEditingApplication.uuid].find((component) => component.uuid === uuid),
-                    item
-                  } as ComponentElement;
-                }
-              ),
-              JSON.parse(JSON.stringify(item)),
-              false
-            )}
+        this.component.childrenIds?.map(
+          (uuid) => {
+            return {
+              ...$components.get()[this.currentEditingApplication.uuid].find((component) => component.uuid === uuid),
+              item
+            } as ComponentElement;
+          }
+        ),
+        JSON.parse(JSON.stringify(item)),
+        false
+      )}
           `
-          : html`
+      : html`
             <div
 
               class="empty-message"
               @click="${(e: any) => {
-                // setCurrentComponentIdAction(this.component?.uuid);
-              }}"
+        // setCurrentComponentIdAction(this.component?.uuid);
+      }}"
             >
               Add or Drag an item into this collection
             </div>`}
@@ -125,8 +120,8 @@ export class CollectionViwer extends BaseElementBlock {
       >
         <div class="collection_viewer">
           ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data : [{}, {}, {}])?.map((item: any, index) => {
-            return html`${this.renderRow({ ...item, index })}`;
-          })}
+      return html`${this.renderRow({ ...item, index })}`;
+    })}
         </div>
 
       </resize-wrapper>

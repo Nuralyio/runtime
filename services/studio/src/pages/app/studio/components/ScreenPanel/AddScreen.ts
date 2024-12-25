@@ -1,6 +1,5 @@
-import { LitElement, html } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { v4 as uuidv4 } from "uuid";
 
 import "@nuralyui/menu";
 import "@nuralyui/button";
@@ -14,23 +13,27 @@ import { addPageAction } from "$store/actions/page/addPageAction.ts";
 export class AddScreen extends LitElement {
   @state()
   pageLength = 0;
+  pageSubject: any;
+
   constructor() {
     super();
-    
+
   }
-  pageSubject: any;
+
   override connectedCallback() {
     super.connectedCallback();
-    this.pageSubject= $pages.subscribe((pages: PageElement[] = []) => {
+    this.pageSubject = $pages.subscribe((pages: PageElement[] = []) => {
       this.pageLength = pages.length;
     });
   }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
-    if(this.pageSubject){
+    if (this.pageSubject) {
       this.pageSubject.unsubscribe();
     }
   }
+
   addPage() {
     addPageAction({
       name: "Page_" + (this.pageLength + 1),
@@ -38,6 +41,7 @@ export class AddScreen extends LitElement {
       url: ("Page_" + (this.pageLength + 1)).toLowerCase()
     });
   }
+
   render() {
     return html` <hy-button @click=${this.addPage}>New Screen</hy-button> `;
   }

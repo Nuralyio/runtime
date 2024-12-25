@@ -1,7 +1,7 @@
 import "../ScreenPanel/ScreenStructure";
-import { $environment, ViewMode, type Environment } from "$store/environment";
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { $environment, type Environment, ViewMode } from "$store/environment";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 
 @customElement("left-panel")
 export class LeftPanel extends LitElement {
@@ -24,7 +24,7 @@ export class LeftPanel extends LitElement {
       aside.visible {
         display: flex;
       }
-    `,
+    `
   ];
 
   @state()
@@ -32,19 +32,21 @@ export class LeftPanel extends LitElement {
 
   constructor() {
     super();
-   
+
   }
+
   override connectedCallback() {
     super.connectedCallback();
     $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode
-      this.requestUpdate(); 
+      this.mode = environment.mode;
+      this.requestUpdate();
     });
   }
+
   render() {
     return html`
       <aside
-        class="flex flex-col ${this.mode === ViewMode.Edit ? 'visible' : ''}"
+        class="flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
         style="height: 100%;width : 300px;"
       >
         <div class="w-full text-center">

@@ -8,8 +8,7 @@ export default [
     name: "position collapse container",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
-    style: {
-    },
+    style: {},
     childrenIds: ["typography_collapse"]
   },
   {

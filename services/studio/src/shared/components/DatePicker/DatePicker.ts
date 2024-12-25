@@ -29,10 +29,10 @@ export class SelectBlock extends BaseElementBlock {
     const datepickerAutoWidth = this.inputHandlersValue?.width;
     return html`
       <span style=${styleMap({
-        ...datepickerStyle,
-        width: datepickerAutoWidth ? "auto" : datepickerStyle.width,
-        display: "block"
-      })}> 
+      ...datepickerStyle,
+      width: datepickerAutoWidth ? "auto" : datepickerStyle.width,
+      display: "block"
+    })}> 
         <hy-datepicker
           .helper=${this.inputHandlersValue.helper ?? nothing}
           .label=${this.inputHandlersValue.label ?? nothing}

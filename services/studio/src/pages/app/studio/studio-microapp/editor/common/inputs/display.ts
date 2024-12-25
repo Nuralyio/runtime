@@ -79,7 +79,7 @@ export default [
       display: "block",
       "--hybrid-button-height": "30px",
       "--hybrid-button-width": "76px",
-      '--hybrid-button-font-size':'12px'
+      "--hybrid-button-font-size": "12px"
     },
     event: {
       changed: /* js */ `
@@ -105,14 +105,14 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
 
-      'margin-top': '10px',
-      display:'flex',
-      'justify-content':'space-between',
+      "margin-top": "10px",
+      display: "flex",
+      "justify-content": "space-between"
     },
 
-    childrenIds: ["display_radio","display_handler"],
+    childrenIds: ["display_radio", "display_handler"]
   },
- {
+  {
     uuid: "display_handler",
     applicationId: "1",
     component_type: ComponentType.Event,

@@ -1,5 +1,5 @@
 import { css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
@@ -10,15 +10,8 @@ import { $microAppCurrentPage } from "$store/page.ts";
 import { debounce } from "@utils/time.ts";
 
 
-
 @customElement("micro-app-block")
 export class MicroAppBlock extends BaseElementBlock {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @property({ type: Object })
-  item: any;
-
   static styles = [
     css`
       .no-app-selected {
@@ -31,9 +24,12 @@ export class MicroAppBlock extends BaseElementBlock {
         color: gray;
         text-align: center;
       }
-    `,
+    `
   ];
-
+  @property({ type: Object })
+  component: ComponentElement;
+  @property({ type: Object })
+  item: any;
   unsubscribe: () => void;
   mode: ViewMode;
 
@@ -43,19 +39,19 @@ export class MicroAppBlock extends BaseElementBlock {
 
   override async connectedCallback(): Promise<void> {
     await super.connectedCallback();
-    const pageUUID =  $microAppCurrentPage.get()["8639f6d5-9171-41e4-a21c-447c8c1b62c2"];
-    this.registerCallback('appUUID', debounce((appUUID: string) => {
+    const pageUUID = $microAppCurrentPage.get()["8639f6d5-9171-41e4-a21c-447c8c1b62c2"];
+    this.registerCallback("appUUID", debounce((appUUID: string) => {
       if (appUUID) {
         const appLoaded = $components.get()[appUUID];
         if (appLoaded === undefined) {
-          fetch('/api/components/application/' + appUUID)
+          fetch("/api/components/application/" + appUUID)
             .then((response) => response.json())
             .then((data) => {
               return data.map((component) => component.component);
             })
             .then((data) => {
-              if(pageUUID)
-              data = data.filter((component) => component.pageId === pageUUID);
+              if (pageUUID)
+                data = data.filter((component) => component.pageId === pageUUID);
               $components.setKey(appUUID, data);
               this.requestUpdate();
             });
@@ -70,7 +66,7 @@ export class MicroAppBlock extends BaseElementBlock {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    this.unregisterCallback('appUUID');
+    this.unregisterCallback("appUUID");
     if (this.unsubscribe) {
       this.unsubscribe();
     }
@@ -78,7 +74,7 @@ export class MicroAppBlock extends BaseElementBlock {
 
   updated(changedProperties: any): void {
     super.updated(changedProperties);
-    if (changedProperties.has('component')) {
+    if (changedProperties.has("component")) {
       this.requestUpdate();
     }
   }
@@ -88,15 +84,15 @@ export class MicroAppBlock extends BaseElementBlock {
 
     return html`
       ${this.inputHandlersValue.appUUID
-        ? html`
+      ? html`
           <micro-app
             uuid=${this.inputHandlersValue.appUUID}
             style=${styleMap({
-              pointerEvents: isPreviewMode ? "auto" : "none",
-            })}
+        pointerEvents: isPreviewMode ? "auto" : "none"
+      })}
           ></micro-app>
         `
-        : html`
+      : html`
           <div class="no-app-selected">
             No micro-app selected
           </div>

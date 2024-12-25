@@ -1,53 +1,54 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "line_height_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
-        childrenIds: ["text_label_line_height", "line_height_input", "line_height_handler"],
+  {
+    uuid: "line_height_block",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "text_label_line_height",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["text_label_line_height", "line_height_input", "line_height_handler"]
+  },
+  {
+    uuid: "text_label_line_height",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
               return 'Line height';
             `
-            }
-        },
+      }
+    }
+  },
+  {
+    uuid: "line_height_input",
+    applicationId: "1",
+    component_type: ComponentType.NumberInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      size: "small",
+      width: "155px"
     },
-    {
-        uuid: "line_height_input",
-        applicationId: "1",
-        component_type: ComponentType.NumberInput,
-        ...COMMON_ATTRIBUTES,
-        style:{
-            size:'small',
-            width:'155px',
-        },
-        styleHandlers: {},
-        name: "Left panel",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `    
+    styleHandlers: {},
+    name: "Left panel",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `    
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -64,10 +65,10 @@ export default [
                     console.log(e);
                 }                
                 `
-            },
-            state:{
-                type:'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if(selectedComponens.length) {
@@ -85,10 +86,10 @@ export default [
                 }      
                 
                 `
-            }
-        },
-        event: {
-            valueChange:  /* js */ `
+      }
+    },
+    event: {
+      valueChange:  /* js */ `
                   try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -100,24 +101,24 @@ export default [
                 console.log(error);
             }     
       `
-            
-        },
-    },
 
-    {
-        uuid: "line_height_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "line height handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    }
+  },
+
+  {
+    uuid: "line_height_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "line height handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='lineHeight';
                 let lineHeightHandler =''
                 try{
@@ -132,11 +133,11 @@ export default [
                 }
                 return [parameter,lineHeightHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -148,6 +149,6 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-] 
+    }
+  }
+];

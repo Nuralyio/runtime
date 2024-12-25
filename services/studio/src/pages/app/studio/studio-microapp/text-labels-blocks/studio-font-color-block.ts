@@ -1,46 +1,47 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
+  {
     uuid: "font_color_block",
     applicationId: "1",
     name: "font color block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        display:'flex',
-        'align-items':'center',
-        'justify-content':'space-between',
-        "width": "290px",
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
     childrenIds: ["font_color_label", "font_color_input_2", "font_color_handler"]
-    },
-    {
-        uuid: "font_color_label",
-        name: "font color label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+  },
+  {
+    uuid: "font_color_label",
+    name: "font color label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Color';
               return label;`
-            }
-        },
-        style: {
-            width:"90px",
-            display:'block'
-        },
+      }
     },
-{
+    style: {
+      width: "90px",
+      display: "block"
+    }
+  },
+  {
     uuid: "font_color_input_2",
     name: "name",
     applicationId: "1",
     component_type: ComponentType.ColorPicker,
     event: {
-        valueChange: /* js */ `
+      valueChange: /* js */ `
        
        try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -56,14 +57,14 @@ export default [
         
   `
     },
-   style:{
-    width:"155px",
-    display:'block'
-   },
+    style: {
+      width: "155px",
+      display: "block"
+    },
     input: {
-        value: {
-            type: "handler",
-            value: /* js */`
+      value: {
+        type: "handler",
+        value: /* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -76,10 +77,10 @@ export default [
                     console.log(e);
                 }
             `
-        },
-        state:{
-            type:"handler",
-            value:/* js */ `
+      },
+      state: {
+        type: "handler",
+        value:/* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -97,11 +98,11 @@ export default [
             }
             
             `
-        }
+      }
     }
-},
+  },
 
-{
+  {
     uuid: "font_color_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
@@ -109,12 +110,12 @@ export default [
     styleHandlers: {},
     name: "font color handler",
     style: {
-            display:'block',
+      display: "block"
     },
-    input: { 
-        value: {
-            type: 'handler',
-            value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             const parameter ='fontColor';
             let fontColorHandler=''
             try{
@@ -129,11 +130,11 @@ export default [
             }
             return [parameter,fontColorHandler];
         `
-        }
+      }
     },
-    
+
     event: {
-        codeChange: /* js */ `
+      codeChange: /* js */ `
         try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -145,7 +146,7 @@ export default [
             console.log(error);
         }
   `
-    },
-},
+    }
+  }
 
-] 
+];

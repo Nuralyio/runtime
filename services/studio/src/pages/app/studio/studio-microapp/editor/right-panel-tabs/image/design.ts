@@ -15,7 +15,7 @@ export const StudioImageDesign = [
     childrenIds: [
       "image_input_collapse_container",
       "size_collapse_container",
-      "border_collapse_container",
+      "border_collapse_container"
     ]
-  },
-]
+  }
+];

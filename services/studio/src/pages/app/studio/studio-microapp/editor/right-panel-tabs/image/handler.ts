@@ -1,3 +1,1 @@
-export const StudioImageHandler = [
-
-];
+export const StudioImageHandler = [];

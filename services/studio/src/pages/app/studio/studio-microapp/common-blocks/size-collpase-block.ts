@@ -9,7 +9,7 @@ export default [
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-      marginTop: "13px",
+      marginTop: "13px"
     },
     childrenIds: ["size_collapse"]
   },
@@ -24,19 +24,19 @@ export default [
       "--hy-collapse-border-radius": "0px",
       "--hy-collapse-width": "292px",
       "--hy-collapse-border": "none",
-      '--hy-collapse-border-bottom': '1px solid #ccc',
-      '--hy-collapse-local-header-background-color': '#3d3d3d'
+      "--hy-collapse-border-bottom": "1px solid #ccc",
+      "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
     input: {
       size: {
-        type: 'handler',
+        type: "handler",
         value: /* js */ `
                 const size = 'small';
                 return size;
                 `
       },
       components: {
-        type: 'handler',
+        type: "handler",
         value: /* js */ `
                 return [{ blockName: 'size_collapse_container_childrens', label: 'size' , open : true}];
                 `
@@ -49,9 +49,7 @@ export default [
     name: "Left panel",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
-    style: {
-
-    },
-    childrenIds: ["height_vertical_container", "width_vertical_container", "position_block"],
-  },
-]
+    style: {},
+    childrenIds: ["height_vertical_container", "width_vertical_container", "position_block"]
+  }
+];

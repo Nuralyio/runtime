@@ -1,4 +1,4 @@
-export interface AddComponentAction{
-    name: string;
-    component_type: string;
+export interface AddComponentAction {
+  name: string;
+  component_type: string;
 }

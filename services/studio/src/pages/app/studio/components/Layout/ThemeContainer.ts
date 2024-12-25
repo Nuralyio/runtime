@@ -1,7 +1,7 @@
 import "../ScreenPanel/ScreenStructure.ts";
-import { $environment, ViewMode, type Environment } from "$store/environment.ts";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { $environment, type Environment, ViewMode } from "$store/environment.ts";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 
 @customElement("theme-contaienr")
 export class LeftPanel extends LitElement {
@@ -19,7 +19,7 @@ export class LeftPanel extends LitElement {
         color:#f8fafc;
       }
     }
-    `,
+    `
   ];
 
   @state()

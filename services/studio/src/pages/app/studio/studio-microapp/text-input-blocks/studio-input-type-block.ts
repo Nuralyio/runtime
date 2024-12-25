@@ -2,68 +2,68 @@ import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
-    {
-        uuid: "input_type_block",
-        applicationId: "1",
-        name: "input type block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: { 
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            
+  {
+    uuid: "input_type_block",
+    applicationId: "1",
+    name: "input type block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
 
-            'margin-top': '10px',
-        },
 
-        childrenIds: ["input_stype_radio_block","input_type_handler_block"],
+      "margin-top": "10px"
     },
-    {
-        uuid: "input_stype_radio_block",
-        applicationId: "1",
-        name: "input type radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["input_type_label", "input_type_radio"],
+
+    childrenIds: ["input_stype_radio_block", "input_type_handler_block"]
+  },
+  {
+    uuid: "input_stype_radio_block",
+    applicationId: "1",
+    name: "input type radio block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    
-    {
-        uuid: "input_type_label",
-        name: "input type label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["input_type_label", "input_type_radio"]
+  },
+
+  {
+    uuid: "input_type_label",
+    name: "input type label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                const label ='Type';
              return label;
             `
-            }
-        },
-        style: {
-            width:'90px'
-
-        }
+      }
     },
-    {
-        uuid: "input_type_radio",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "input type radio",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {
+      width: "90px"
+
+    }
+  },
+  {
+    uuid: "input_type_radio",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "input type radio",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -96,15 +96,15 @@ export default [
             const result =[options,currentType,radioType];
            return  result;
                 `
-            }
-        },
-        style: {
-            display:'block',
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'30px',
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      display: "block",
+      "--hybrid-button-height": "30px",
+      "--hybrid-button-width": "30px"
+    },
+    event: {
+      changed: /* js */ `
 
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -118,36 +118,36 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+  {
+    uuid: "input_type_handler_block",
+    applicationId: "1",
+    name: "input type handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "50px",
+      display: "flex",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "input_type_handler_block",
-        applicationId: "1",
-        name: "input type handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["input_type_handler"],
+
+    childrenIds: ["input_type_handler"]
+  },
+  {
+    uuid: "input_type_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "type handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "input_type_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "type handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='type';
                 let typeHandler=''
                 try{
@@ -164,11 +164,11 @@ export default [
                 }
                 return [parameter,typeHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -181,7 +181,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

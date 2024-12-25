@@ -19,7 +19,9 @@ import { $context, getVar, setVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
 import { $environment, type Environment, ViewMode } from "$store/environment";
-import { moveDraggedComponentIntoCurrentPageRoot } from "$store/actions/component/moveDraggedComponentIntoCurrentPageRoot.ts";
+import {
+  moveDraggedComponentIntoCurrentPageRoot
+} from "$store/actions/component/moveDraggedComponentIntoCurrentPageRoot.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction.ts";
 import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
@@ -44,10 +46,10 @@ export class PageContent extends LitElement {
     $values.listen(() => this.refreshComponent());
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
-      this.refreshComponent()
+      this.refreshComponent();
     });
     eventDispatcher.on("component:refresh", () => {
-      this.refreshComponent()
+      this.refreshComponent();
     });
 
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
@@ -65,7 +67,7 @@ export class PageContent extends LitElement {
 
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
       const components = $applicationComponents(currentAppUuid).get();
-      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root );
+      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root);
 
     }
     this.requestUpdate();
@@ -78,44 +80,45 @@ export class PageContent extends LitElement {
       requestAnimationFrame(() => {
       });
     });
-    
 
-    const pageContainer = this.shadowRoot!.querySelector('.page-container');
+
+    const pageContainer = this.shadowRoot!.querySelector(".page-container");
     this.updatePageInfo(pageContainer?.clientWidth);
 
     window.onresize = () => {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
     const currentPage = getVar("global", "currentPage");
-    if(!currentPage) {
-      setVar( "global" , "currentPage" , $applicationPages($currentApplication.get().uuid).get()[0]?.uuid );
+    if (!currentPage) {
+      setVar("global", "currentPage", $applicationPages($currentApplication.get().uuid).get()[0]?.uuid);
     }
-    window.addEventListener('keydown', this.handleEscapeKey.bind(this));
+    window.addEventListener("keydown", this.handleEscapeKey.bind(this));
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('keydown', this.handleEscapeKey.bind(this));
+    window.removeEventListener("keydown", this.handleEscapeKey.bind(this));
   }
+
   handleEscapeKey(e) {
     switch (e.key) {
-      case 'Escape':
+      case "Escape":
         this.clearSelectedComponents();
         break;
-      case 'Enter':
+      case "Enter":
         this.handleEnterKey(e);
         break;
-      case 'Delete':
+      case "Delete":
         this.confirmDelete();
         break;
-      case 'Backspace':
+      case "Backspace":
         if (e.metaKey) {
           this.confirmDelete();
         }
         break;
     }
   }
-  
+
   clearSelectedComponents() {
     try {
       setVar("global", "selectedComponents", []);
@@ -123,7 +126,7 @@ export class PageContent extends LitElement {
       console.error("Error clearing selected components:", error);
     }
   }
-  
+
   handleEnterKey(e) {
     try {
       const selectedComponents = getVar("global", "selectedComponents").value ?? [];
@@ -135,9 +138,8 @@ export class PageContent extends LitElement {
       console.error("Error handling Enter key:", error);
     }
   }
-  
-  
-  
+
+
   confirmDelete() {
     const selectedComponents = getVar("global", "selectedComponents").value ?? [];
     if (selectedComponents.length > 0) {
@@ -147,6 +149,7 @@ export class PageContent extends LitElement {
       }
     }
   }
+
   handleDeleteKey() {
     const selectedComponents = getVar("global", "selectedComponents").value ?? [];
     selectedComponents.forEach((componentId: string) => {
@@ -159,11 +162,11 @@ export class PageContent extends LitElement {
   }
 
   updatePageInfo(containerWidth: number) {
-    const pageContainer = this.shadowRoot!.querySelector('.page-container');
+    const pageContainer = this.shadowRoot!.querySelector(".page-container");
     updatePageInfo({
       windowWidth: containerWidth || pageContainer?.clientWidth,
       windowHeight: window.innerHeight,
-      viewPort: this.determineViewportType(containerWidth || pageContainer?.clientWidth),
+      viewPort: this.determineViewportType(containerWidth || pageContainer?.clientWidth)
     });
   }
 
@@ -174,7 +177,7 @@ export class PageContent extends LitElement {
     return "unknown";
   }
 
-  isPreviewMode(){
+  isPreviewMode() {
     return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
   }
 
@@ -182,7 +185,7 @@ export class PageContent extends LitElement {
     return html`
        <rectangle-selection>
       <div
-        class="page-container ${this.isPreviewMode() ? 'viewer' : ''}"
+        class="page-container ${this.isPreviewMode() ? "viewer" : ""}"
         style=${styleMap(this.currentPage?.style || {})}
         @click=${this.handlePageClick}
         @dragend=${this.preventDefault}
@@ -192,8 +195,8 @@ export class PageContent extends LitElement {
         @drop=${this.handleDrop}
       >
         ${this.components.length
-          ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
-          : html`<div class="page-empty-message-container">
+      ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
+      : html`<div class="page-empty-message-container">
                 <p class="page-empty-message">Add an item from the insert panel</p>
               </div>`}
       </div>

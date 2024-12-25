@@ -2,10 +2,8 @@ import { $environment, type Environment, ViewMode } from "$store/environment.ts"
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-@customElement('selectable-element')
+@customElement("selectable-element")
 class SelectableElement extends LitElement {
-  @property({ type: Boolean, reflect: true, attribute: 'highlighted' }) highlighted = false;
-
   static styles = css`
     :host {
       position: absolute;
@@ -19,24 +17,15 @@ class SelectableElement extends LitElement {
       background: #007bff; 
     }
   `;
+  @property({ type: Boolean, reflect: true, attribute: "highlighted" }) highlighted = false;
 
   render() {
     return html`<slot></slot>`;
   }
 }
 
-@customElement('rectangle-selection')
+@customElement("rectangle-selection")
 class RectangleSelection extends LitElement {
-  @property({ type: Object }) selectionStart = null;
-  @property({ type: Object }) selectionRect = null;
-  mode: ViewMode;
-  constructor(){
-    super();
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
-      this.requestUpdate();
-    });
-  }
   static styles = css`
     :host {
       display: block;
@@ -61,18 +50,28 @@ class RectangleSelection extends LitElement {
       }
     }
   `;
-
+  @property({ type: Object }) selectionStart = null;
+  @property({ type: Object }) selectionRect = null;
+  mode: ViewMode;
   selectableElements: NodeListOf<Element>;
+
+  constructor() {
+    super();
+    $environment.subscribe((environment: Environment) => {
+      this.mode = environment.mode;
+      this.requestUpdate();
+    });
+  }
 
   render() {
     return html`<slot></slot>`;
   }
 
   firstUpdated() {
-    if(this.mode === ViewMode.Preview) return;
-    this.addEventListener('mousedown', this.startSelection.bind(this));
-    this.addEventListener('mousemove', this.updateSelection.bind(this));
-    this.addEventListener('mouseup', this.endSelection.bind(this));
+    if (this.mode === ViewMode.Preview) return;
+    this.addEventListener("mousedown", this.startSelection.bind(this));
+    this.addEventListener("mousemove", this.updateSelection.bind(this));
+    this.addEventListener("mouseup", this.endSelection.bind(this));
 
     const observer = new MutationObserver(() => {
       this.updateSelectableElements();
@@ -83,15 +82,15 @@ class RectangleSelection extends LitElement {
   }
 
   updateSelectableElements() {
-    this.selectableElements = this.querySelectorAll('generik-component-wrapper');
-    console.log('Updated selectable elements:', this.selectableElements);
+    this.selectableElements = this.querySelectorAll("generik-component-wrapper");
+    console.log("Updated selectable elements:", this.selectableElements);
   }
 
   startSelection(event) {
     this.selectionStart = { x: event.offsetX, y: event.offsetY };
 
-    this.selectionRect = document.createElement('div');
-    this.selectionRect.classList.add('rectangle');
+    this.selectionRect = document.createElement("div");
+    this.selectionRect.classList.add("rectangle");
     this.selectionRect.style.left = `${this.selectionStart.x}px`;
     this.selectionRect.style.top = `${this.selectionStart.y}px`;
 
@@ -99,7 +98,7 @@ class RectangleSelection extends LitElement {
   }
 
   updateSelection(event) {
-    if(this.mode === ViewMode.Preview) return;
+    if (this.mode === ViewMode.Preview) return;
     if (!this.selectionRect) return;
 
     requestAnimationFrame(() => {
@@ -133,8 +132,8 @@ class RectangleSelection extends LitElement {
         rect.top <= elementRect.bottom &&
         rect.bottom >= elementRect.top
       );
-      console.log('Element:', element, 'isSelected:', isSelected);
-      element.highlighted = isSelected; 
+      console.log("Element:", element, "isSelected:", isSelected);
+      element.highlighted = isSelected;
     });
 
     this.shadowRoot.removeChild(this.selectionRect);

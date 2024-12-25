@@ -13,14 +13,14 @@ export const StudioIconDesign = [
       display: "flex",
       "flex-direction": "column",
       "align-items": "center",
-      "justify-content": "center",
+      "justify-content": "center"
     },
     childrenIds: [
       "icon_collapse_container",
       "typography_collapse_container",
       "size_collapse_container",
       "border_collapse_container"
-    ],
+    ]
   },
-  ...StudioIconInputs,
+  ...StudioIconInputs
 ];

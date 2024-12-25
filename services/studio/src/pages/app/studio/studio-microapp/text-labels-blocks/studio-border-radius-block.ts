@@ -1,53 +1,54 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-    
-            uuid: "border_radius_vertical_container",
-            applicationId: "1",
-            name: "Left panel",
-            component_type: ComponentType.VerticalContainer,
-            ...COMMON_ATTRIBUTES,
-            style: {
-              display: "flex",
-              "align-items": "center",
-              "justify-content": "space-between",
-              "width": "290px"
-            },
-            childrenIds: ["border_radius_label","border_radius_block","label_border_radius_handler"],
-        
+  {
+
+    uuid: "border_radius_vertical_container",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "border_radius_label",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["border_radius_label", "border_radius_block", "label_border_radius_handler"]
+
+  },
+  {
+    uuid: "border_radius_label",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                const label ='Border radius';
              return label;
             `
-            }
-        },
-       style:{
-         "width": "90px",
-       }
+      }
     },
-    {
-        uuid: "border_radius_block",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.BorderRadius,
-        ...COMMON_ATTRIBUTES,
-      style: {
-          width : "50px"
-      },
-        event: {
-            borderRadiusChanged:  /* js */ `
+    style: {
+      "width": "90px"
+    }
+  },
+  {
+    uuid: "border_radius_block",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.BorderRadius,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "50px"
+    },
+    event: {
+      borderRadiusChanged:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -59,11 +60,11 @@ export default [
                         console.log(error);
                     }      
   `
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -92,10 +93,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state:{
-            type:'handler',
-            value:/* js */`
+      },
+      state: {
+        type: "handler",
+        value:/* js */`
             
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -116,26 +117,26 @@ export default [
             
             `
 
-            }
+      }
 
-        }
+    }
+  },
+
+  {
+    uuid: "label_border_radius_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "label border radius handler",
+    style: {
+      display: "block",
+      width: "250px"
     },
-
-    {
-        uuid: "label_border_radius_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "label border radius handler",
-        style: {
-                display:'block',
-                width: "250px", 
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='borderRadius';
                 let borderRadiusHandler =''
                 try{
@@ -150,11 +151,11 @@ export default [
                 }
                 return [parameter,borderRadiusHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -166,6 +167,6 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-]
+    }
+  }
+];

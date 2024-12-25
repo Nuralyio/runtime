@@ -1,10 +1,10 @@
-import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators.js";
 
-@customElement('editpanel-attribute-container')
+@customElement("editpanel-attribute-container")
 export class EditPanelAttributeContainer extends LitElement {
-    static override styles = [
-        css`
+  static override styles = [
+    css`
        
             .container {
                 display: flex;
@@ -21,10 +21,10 @@ export class EditPanelAttributeContainer extends LitElement {
             }
 
         `
-    ];
+  ];
 
-    override render() {
-        return html`
+  override render() {
+    return html`
             <div class="container">
                 <div class="first_column">
                     <slot name="firstColumn"></slot>
@@ -34,5 +34,5 @@ export class EditPanelAttributeContainer extends LitElement {
                 </div>
             </div>
        `;
-    }
+  }
 }

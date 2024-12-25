@@ -1,16 +1,17 @@
-import { LitElement, html, css, nothing } from 'lit';
-import { property, state } from 'lit/decorators.js';
-import "@nuralyui/modal"
-import "@nuralyui/button"
+import { css, html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators.js";
+import "@nuralyui/modal";
+import "@nuralyui/button";
 import "@nuralyui/icon";
 
-import { Validations } from '@nuralyui/input';
-import { $showCreateApplicationModal } from '$store/apps.ts';
-import { createApplicationAction } from '$store/handlers/applications/handler.ts';
+import { Validations } from "@nuralyui/input";
+import { $showCreateApplicationModal } from "$store/apps.ts";
+import { createApplicationAction } from "$store/handlers/applications/handler.ts";
 import { closeCreateApplicationModalAction } from "$store/actions/editor/closeCreateApplicationModalAction.ts";
+
 export class ApplicationAdd extends LitElement {
-	static override styles = [
-		css`
+  static override styles = [
+    css`
             :host {
                 display: block;
             }
@@ -21,104 +22,105 @@ export class ApplicationAdd extends LitElement {
            		color : red;
            	}
         `
-	];
-	@property({ type: Boolean })
-	displayModal;
+  ];
+  @property({ type: Boolean })
+  displayModal;
 
-	@state()
-	errorMessage: any[] = [];
+  @state()
+  errorMessage: any[] = [];
 
-	@state()
-	createProviderFormSubmitted: boolean = false;
+  @state()
+  createProviderFormSubmitted: boolean = false;
 
-	@state()
-	providerIsValid: boolean = false;
+  @state()
+  providerIsValid: boolean = false;
 
-	@state()
-	createProviderForm = {
-		name: {
-			type: 'text',
-			value: '',
-			placeholder: 'Name',
-			validataions: [
-				{
-					errorMessage: 'name is required',
-					test: Validations.NOT_EMPTY
-				},
-			]
+  @state()
+  createProviderForm = {
+    name: {
+      type: "text",
+      value: "",
+      placeholder: "Name",
+      validataions: [
+        {
+          errorMessage: "name is required",
+          test: Validations.NOT_EMPTY
+        }
+      ]
 
-		},
-	}
+    }
+  };
 
-	constructor() {
-		super();
-		$showCreateApplicationModal.subscribe((displayModal) => this.displayModal = displayModal)
-	}
-	submitForm() {
-		this.createProviderFormSubmitted = true;
-		this.errorMessage = [];
-		Object.keys(this.createProviderForm).forEach((key) => {
-			this.createProviderForm[key].validataions?.forEach((validation) => {
-				if (!validation.test.test(this.createProviderForm[key].value)) {
-					console?.log(validation.errorMessage);
-					this.errorMessage[key] = validation.errorMessage;
-				}
-			})
-		})
-		this.requestUpdate()
-		if (this.errorMessage.length === 0) {
-			createApplicationAction({
-				name: this.createProviderForm.name.value,
-			});
-		}
-	}
+  constructor() {
+    super();
+    $showCreateApplicationModal.subscribe((displayModal) => this.displayModal = displayModal);
+  }
 
-	override render() {
-		return html`
+  submitForm() {
+    this.createProviderFormSubmitted = true;
+    this.errorMessage = [];
+    Object.keys(this.createProviderForm).forEach((key) => {
+      this.createProviderForm[key].validataions?.forEach((validation) => {
+        if (!validation.test.test(this.createProviderForm[key].value)) {
+          console?.log(validation.errorMessage);
+          this.errorMessage[key] = validation.errorMessage;
+        }
+      });
+    });
+    this.requestUpdate();
+    if (this.errorMessage.length === 0) {
+      createApplicationAction({
+        name: this.createProviderForm.name.value
+      });
+    }
+  }
+
+  override render() {
+    return html`
          <modal-component label="Create Application" ?isOpen=${this.displayModal}
 	       @close=${() => {
-				closeCreateApplicationModalAction()
-			}}>
+      closeCreateApplicationModalAction();
+    }}>
 
 	       ${Object.keys(this.createProviderForm).map((key) => {
-				return html`
+      return html`
     		<hy-input
     		.placeholder=${this.createProviderForm[key].placeholder}
     		.type=${this.createProviderForm[key].type}
     		.value=${this.createProviderForm[key].value}
     		@valueChange=${(e: CustomEvent) => {
-						this.createProviderForm[key].value = e.detail.value;
-						if (this.createProviderFormSubmitted) {
-							//this.submitForm();
-						}	
-						this.requestUpdate()
-					}
-					}
+        this.createProviderForm[key].value = e.detail.value;
+        if (this.createProviderFormSubmitted) {
+          //this.submitForm();
+        }
+        this.requestUpdate();
+      }
+      }
 
     		></hy-input>
     		<div class="error-message">
     		${this.errorMessage[key] ? this.errorMessage[key] : nothing}
     		</div>
-    		`
-			})}
+    		`;
+    })}
 
         <div slot="footer"
           style="float: right"
         >
          <hy-button
           danger
-          .icon=${['cancel']}
+          .icon=${["cancel"]}
             @click=${() => {
-				closeCreateApplicationModalAction()
-			}}
+      closeCreateApplicationModalAction();
+    }}
           >
             Cancel
           </hy-button>
           <hy-button
-          .icon=${['plus']}
+          .icon=${["plus"]}
             @click=${() => {
-				this.submitForm();
-			}}
+      this.submitForm();
+    }}
           >
             Create
           </hy-button>
@@ -126,8 +128,9 @@ export class ApplicationAdd extends LitElement {
         </div>
 	  </modal-component>
 	  `;
-	}
+  }
 }
-customElements.define('application-add', ApplicationAdd);
+
+customElements.define("application-add", ApplicationAdd);
 
 

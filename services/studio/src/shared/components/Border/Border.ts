@@ -8,26 +8,17 @@ import { getNestedAttribute } from "../../../utils/object.utils.ts";
 
 // Debounce function
 function debounce(func: Function, wait: number) {
-	let timeout: number;
-	return function (...args: any[]) {
-		clearTimeout(timeout);
-		timeout = window.setTimeout(() => func.apply(this, args), wait);
-	};
+  let timeout: number;
+  return function(...args: any[]) {
+    clearTimeout(timeout);
+    timeout = window.setTimeout(() => func.apply(this, args), wait);
+  };
 }
 
-@customElement('attribute-border-value')
+@customElement("attribute-border-value")
 export class AttributeBorderValue extends BaseElementBlock {
-	@property()
-	component: ComponentElement;
-
-	@state()
-	borderRadius = 0;
-
-	@state()
-	unity = '';
-
-	static override styles = [
-		css`
+  static override styles = [
+    css`
       :host {
         display: block;
       }
@@ -52,22 +43,28 @@ export class AttributeBorderValue extends BaseElementBlock {
       .second-row {
         flex: 20%;
       }
-    `,
-	];
+    `
+  ];
+  @property()
+  component: ComponentElement;
+  @state()
+  borderRadius = 0;
+  @state()
+  unity = "";
+  // Debounced changed event handler
+  debouncedChanged = debounce((e: Event) => {
+    if (this.component.event.borderRadiusChanged) {
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.borderRadiusChanged`), {
+        value: (e as CustomEvent).detail.value, unity: this.unity
+      });
+    }
+  }, 100); // Adjust the debounce delay as needed
 
-	// Debounced changed event handler
-	debouncedChanged = debounce((e: Event) => {
-		if (this.component.event.borderRadiusChanged) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.borderRadiusChanged`),{
-        value: (e as CustomEvent).detail.value, unity: this.unity });
-		}
-	}, 100); // Adjust the debounce delay as needed
-
-	override render() {
-    this.borderRadius = this.inputHandlersValue.value?this.inputHandlersValue.value[0]:0;
-		this.unity = this.inputHandlersValue.value?this.inputHandlersValue.value[1]:'px';
-    const isDisabled = this.inputHandlersValue.state =='disabled'?true:false;
-		return html`
+  override render() {
+    this.borderRadius = this.inputHandlersValue.value ? this.inputHandlersValue.value[0] : 0;
+    this.unity = this.inputHandlersValue.value ? this.inputHandlersValue.value[1] : "px";
+    const isDisabled = this.inputHandlersValue.state == "disabled" ? true : false;
+    return html`
       <div style="display: flex">
         <div class="first-row">
           <hy-icon name="expand"></hy-icon>
@@ -89,5 +86,5 @@ export class AttributeBorderValue extends BaseElementBlock {
         </div>
       </div>
     `;
-	}
+  }
 }

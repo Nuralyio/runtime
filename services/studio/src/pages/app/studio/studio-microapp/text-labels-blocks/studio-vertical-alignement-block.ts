@@ -1,54 +1,55 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "text_vertical_alignement_block",
-        applicationId: "1",
-        name: "text vertical alignement block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
 
-        childrenIds: ["text_label_vertical_alignement", "text_vertical_align_content", "vertical_alignement_handler"],
+export default [
+  {
+    uuid: "text_vertical_alignement_block",
+    applicationId: "1",
+    name: "text vertical alignement block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "text_label_vertical_alignement",
-        name: "text_label vertical alignement",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            'width':'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    childrenIds: ["text_label_vertical_alignement", "text_vertical_align_content", "vertical_alignement_handler"]
+  },
+  {
+    uuid: "text_label_vertical_alignement",
+    name: "text_label vertical alignement",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "width": "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                return 'Vertical alignment';
             `
-            }
-        },
-    },
-    {
-        uuid: "text_vertical_align_content",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        style:{
+      }
+    }
+  },
+  {
+    uuid: "text_vertical_align_content",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    style: {
 
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'52px',
-        },
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `
+      "--hybrid-button-height": "30px",
+      "--hybrid-button-width": "52px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -68,10 +69,10 @@ export default [
                 const result =[options,defaultVerticalAlign,radioType];
                 return  result;           
                 `
-            }
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    event: {
+      changed: /* js */ `
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -88,22 +89,22 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+  {
+    uuid: "vertical_alignement_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "vertical alignement handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "vertical_alignement_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "vertical alignement handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='verticalAlignement';
                 let verticalAlignementHandler=''
                 try{
@@ -118,11 +119,11 @@ export default [
                 }
                 return [parameter,verticalAlignementHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -139,6 +140,6 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-] 
+    }
+  }
+];

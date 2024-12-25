@@ -1,107 +1,107 @@
 import { ComponentType } from "$store/component/interface.ts";
 
 export default [{
-    uuid: "331",
-    applicationId: "1",
-    name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
-    input: {
-        direction: "vertical",
-    },
-    style:{
-        width: "100%",
-        height: "100%",
-        display: "grid"
-    },
-    childrenIds: ["left_panel_tabs"],
+  uuid: "331",
+  applicationId: "1",
+  name: "Left panel",
+  component_type: ComponentType.VerticalContainer,
+  input: {
+    direction: "vertical"
+  },
+  style: {
+    width: "100%",
+    height: "100%",
+    display: "grid"
+  },
+  childrenIds: ["left_panel_tabs"]
 },
 
 
 // pages component 
-{
+  {
     uuid: "pages_panel",
     applicationId: "1",
     name: "Pages panel",
     component_type: ComponentType.VerticalContainer,
     input: {
-        direction: "vertical",
+      direction: "vertical"
     },
 
     style: {
-        width: "255px",
-        height : "100%"
+      width: "255px",
+      height: "100%"
     },
-    childrenIds: ["menu_header", "menu_1"],
-},
-{
+    childrenIds: ["menu_header", "menu_1"]
+  },
+  {
     uuid: "menu_header",
     name: "menu header",
     component_type: ComponentType.VerticalContainer,
-    style:{
-        'gap':'5px',
-        'align-items':'center',
-        'justify-content':'space-between',
-        'width':'100%'
-     },
-    childrenIds:['menu_title','menu_tools']
-},
-{
+    style: {
+      "gap": "5px",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "100%"
+    },
+    childrenIds: ["menu_title", "menu_tools"]
+  },
+  {
     uuid: "menu_title",
     name: "menu title",
     component_type: ComponentType.TextLabel,
     input: {
-        value: {
-            type: 'handler',
-            value: /* js */`
+      value: {
+        type: "handler",
+        value: /* js */`
             const menuTitle ='Pages'
             return menuTitle;
             `
-        }
-    },   
-},
-{
+      }
+    }
+  },
+  {
     uuid: "menu_tools",
     name: "menu tools",
     component_type: ComponentType.VerticalContainer,
-    style:{
-        'gap':'5px',
-        'align-items':'center',
-        'justify-content':'space-between',
-     },
-    childrenIds:['remove_page','add_page']
-},
-{
+    style: {
+      "gap": "5px",
+      "align-items": "center",
+      "justify-content": "space-between"
+    },
+    childrenIds: ["remove_page", "add_page"]
+  },
+  {
     uuid: "add_page",
     name: "add page",
     component_type: ComponentType.Button,
-    style:{
-        "--hybrid-button-padding-y": '2px',
-        "--hybrid-button-padding-x": '2px',
-        'type':'ghost',
-        "--hybrid-button-ghost-border-color":'transparent',
-        "--hybrid-button-ghost-background-color":'transparent'
+    style: {
+      "--hybrid-button-padding-y": "2px",
+      "--hybrid-button-padding-x": "2px",
+      "type": "ghost",
+      "--hybrid-button-ghost-border-color": "transparent",
+      "--hybrid-button-ghost-background-color": "transparent"
     },
     input: {
-        label: {
-            type: 'handler',
-            value: /* js */`
+      label: {
+        type: "handler",
+        value: /* js */`
             const addPageLabelBtn='';
             return addPageLabelBtn;
         `
-        },
-        icon: {
-            type: 'handler',
-            value: /* js */`
+      },
+      icon: {
+        type: "handler",
+        value: /* js */`
             const addBtnIcon='plus';
             return addBtnIcon;
         `
-        },
+      }
 
     },
 
     event: {
-        /* js */
-        onClick: `
+      /* js */
+      onClick: `
         try {
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
@@ -119,66 +119,66 @@ export default [{
              console.log(e);
          }
          `
-        /* end */
+      /* end */
     },
-    applicationId: "1",
-},
-{
+    applicationId: "1"
+  },
+  {
     uuid: "remove_page",
     name: "remove page",
     component_type: ComponentType.Button,
-    style:{
-    "--hybrid-button-padding-y": '2px',
-    "--hybrid-button-padding-x": '2px',
-    'type':'ghost',
-    "--hybrid-button-ghost-border-color":'transparent',
-    "--hybrid-button-ghost-background-color":'transparent'
+    style: {
+      "--hybrid-button-padding-y": "2px",
+      "--hybrid-button-padding-x": "2px",
+      "type": "ghost",
+      "--hybrid-button-ghost-border-color": "transparent",
+      "--hybrid-button-ghost-background-color": "transparent"
 
     },
     input: {
-        label: {
-            type: 'handler',
-            value: /* js */`
+      label: {
+        type: "handler",
+        value: /* js */`
             const removePageLabelBtn='';
             return removePageLabelBtn;
         `
-        },
-        icon: {
-            type: 'handler',
-            value: /* js */`
+      },
+      icon: {
+        type: "handler",
+        value: /* js */`
             const removePageIcon='trash';
             return removePageIcon;
         `
-        }
+      }
     },
 
     event: {
-        /* js */
-        onClick: `
+      /* js */
+      onClick: `
         try {
            
          } catch(e) {
              console.log(e);
          }
          `
-        /* end */
+      /* end */
     },
-    applicationId: "1",
-},
-{
+    applicationId: "1"
+  },
+  {
     uuid: "menu_1",
     name: "menu",
     component_type: ComponentType.Menu,
-    style:{
-    "--hybrid-menu-border" : "none",
-    "--hybrid-menu-font-size":"14px",
-    "--hybrid-sub-menu-padding-y":"4px",
-    "--hybrid-menu-link-padding-y":"4px"
+    style: {
+      "--hybrid-menu-border": "none",
+      "--hybrid-menu-font-size": "14px",
+      "--hybrid-sub-menu-padding-y": "4px",
+      "--hybrid-menu-link-padding-y": "4px"
     },
     input: {
-        options: {
-            type: "handler",
-            value: /* js */ `
+      options: {
+        type: "handler",
+        value: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
             const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
@@ -263,10 +263,10 @@ export default [{
             });
 
             `
-        },
+      }
     },
     event: {
-        onSelect: /* js */ `
+      onSelect: /* js */ `
         if(EventData.type === "page"){
                 SetVar("currentPage" , EventData.id)
                 SetVar("selectedComponents",[])
@@ -279,9 +279,9 @@ export default [{
                 SetVar("selectedComponents",[EventData.id]);
             }
         `,
-        /* js */
-        
-        actionClick: `
+      /* js */
+
+      actionClick: `
         try {
            
             
@@ -289,7 +289,7 @@ export default [{
              console.log(e);
          }
          `
-       
+
     },
-    applicationId: "1",
-}]
+    applicationId: "1"
+  }];

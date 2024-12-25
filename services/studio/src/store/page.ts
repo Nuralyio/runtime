@@ -1,4 +1,4 @@
-import { atom, computed, deepMap, keepMount, onMount } from "nanostores";
+import { atom, computed, deepMap, onMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
 import { type PageElement } from "./handlers/pages/interfaces/interface";
 import { setVar } from "$store/context";
@@ -6,11 +6,11 @@ import { setVar } from "$store/context";
 /**
  * Pages stores
  */
-const isServer = typeof window === 'undefined';
-const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
+const isServer = typeof window === "undefined";
+const initialAppState = isServer ? [] : JSON.parse(window["__INITIAL_CURRENT_APPLICATION_STATE__"] ?? null);
 const initialState = {};
 if (initialAppState && !isServer) {
-  initialState[initialAppState.uuid] = JSON.parse(window['__INITIAL_PAGE_STATE__'] ?? []);
+  initialState[initialAppState.uuid] = JSON.parse(window["__INITIAL_PAGE_STATE__"] ?? []);
 }
 
 
@@ -20,11 +20,11 @@ interface PageStore {
 }
 
 
-
 export const $pages = atom<PageStore>(initialState);
 export const $microAppCurrentPage = deepMap<any>({});
 
-export const $resetPageStore = () => { };
+export const $resetPageStore = () => {
+};
 
 // Persistent atom for currentPageId per application
 export const $currentPageId = ($applicationId: string) => persistentAtom<string>(
@@ -32,30 +32,30 @@ export const $currentPageId = ($applicationId: string) => persistentAtom<string>
   null,
   {
     encode: JSON.stringify,
-    decode: JSON.parse,
+    decode: JSON.parse
   }
 );
 
 export const $currentPageViewPort = persistentAtom<string>("current_page_view_port", "", {
   encode: JSON.stringify,
-  decode: JSON.parse,
+  decode: JSON.parse
 });
 
-export const $pageZoom = atom<string>( "99");
+export const $pageZoom = atom<string>("99");
 
 export const $pageSize = persistentAtom<any>("page_info", {}, {
   encode: JSON.stringify,
-  decode: JSON.parse,
+  decode: JSON.parse
 });
 
 export const $showBorder = persistentAtom<boolean>("show_border", false, {
   encode: JSON.stringify,
-  decode: JSON.parse,
+  decode: JSON.parse
 });
 
 export const $contextMenuEvent = persistentAtom<object>("context_menu_event", {}, {
   encode: JSON.stringify,
-  decode: JSON.parse,
+  decode: JSON.parse
 });
 
 /**
@@ -88,7 +88,7 @@ onMount($pages, () => {
   $pages.subscribe((pagesStore) => {
     Object.keys(pagesStore).forEach((key) => {
       setVar(key, `${key}.appPages`, pagesStore[key]);
-    })
+    });
   });
 
   return () => {

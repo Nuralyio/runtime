@@ -3,50 +3,50 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
 
-   {
-        uuid: "position_block",
-        applicationId: "1",
-        name: "position block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
-        childrenIds: ["position_label", "position_select", "position_handler"],
+  {
+    uuid: "position_block",
+    applicationId: "1",
+    name: "position block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "position_label",
-        name: "position label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */ `
+    childrenIds: ["position_label", "position_select", "position_handler"]
+  },
+  {
+    uuid: "position_label",
+    name: "position label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
                 const positionLabel = 'Position';
                 return positionLabel;
                 `
-            }
-        },
-        style: {
-            width: "90px"
-        }
+      }
     },
-    {
-        uuid: "position_select",
-        applicationId: "1",
-        component_type: ComponentType.Select,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "position select",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `
+    style: {
+      width: "90px"
+    }
+  },
+  {
+    uuid: "position_select",
+    applicationId: "1",
+    component_type: ComponentType.Select,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "position select",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
                 const selectedComponents = GetVar("selectedComponents") || [];
                 const selectedComponent = selectedComponents[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
@@ -68,15 +68,15 @@ export default [
                 ];
                 return [options,[currentPosition? currentPosition : ""]]
                 `
-            }
-        },
-        style: {
-            display: 'block',
-            '--hybrid-select-width': '155px',
-            'size':'small'
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      display: "block",
+      "--hybrid-select-width": "155px",
+      "size": "small"
+    },
+    event: {
+      changed: /* js */ `
             try {
                 const selectedComponents = GetVar("selectedComponents") || [];
                 if (selectedComponents.length) {
@@ -89,23 +89,23 @@ export default [
                 console.log(error);
             }
             `
-        }
+    }
+  },
+  {
+    uuid: "position_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "position handler",
+    style: {
+      display: "block",
+      width: "250px"
     },
-    {
-        uuid: "position_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "position handler",
-        style: {
-            display: 'block',
-            width: "250px",
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */ `
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
                 const parameter = 'position';
                 let positionHandler = '';
                 try {
@@ -120,10 +120,10 @@ export default [
                 }
                 return [parameter, positionHandler];
                 `
-            }
-        },
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+    event: {
+      codeChange: /* js */ `
             try {
                 const selectedComponents = GetVar("selectedComponents") || [];
                 if (selectedComponents.length) {
@@ -135,7 +135,7 @@ export default [
                 console.log(error);
             }
             `
-        }
-    },
-    // Additional components (e.g., "top_block", "left_block") remain unchanged
+    }
+  }
+  // Additional components (e.g., "top_block", "left_block") remain unchanged
 ];

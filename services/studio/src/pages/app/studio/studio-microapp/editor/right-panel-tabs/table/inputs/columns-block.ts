@@ -1,53 +1,52 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "table_columns_block",
-        applicationId: "1",
-        name: "table columns block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'flex-direction':'column'
-        },
 
-        childrenIds: ["table_column_label", "table_columns_select", "font_family_block", "font_size_vertical_container"],
+export default [
+  {
+    uuid: "table_columns_block",
+    applicationId: "1",
+    name: "table columns block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column"
     },
-    
-    {
-        uuid: "table_column_label",
-        name: "button type label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
+
+    childrenIds: ["table_column_label", "table_columns_select", "font_family_block", "font_size_vertical_container"]
+  },
+
+  {
+    uuid: "table_column_label",
+    name: "button type label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value:/* js */`
                 const typeLabel='Columns';
                 return typeLabel;
                 
                 `
-            }
-        },
-        style: {
-
-        }
+      }
     },
-    {
-        uuid: "table_columns_select",
-        applicationId: "1",
-        component_type: ComponentType.Select,
-        name: "Columns",
-        input: {
-            type : {
-                type : "string",
-                value : "multiple",
-            },
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {}
+  },
+  {
+    uuid: "table_columns_select",
+    applicationId: "1",
+    component_type: ComponentType.Select,
+    name: "Columns",
+    input: {
+      type: {
+        type: "string",
+        value: "multiple"
+      },
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -81,14 +80,14 @@ export default [
             const result =[options,[]]
            return  result;  
                 `
-            }
-        },
-        style: {
-            display:'block',
-            width: "350px",
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      display: "block",
+      width: "350px"
+    },
+    event: {
+      changed: /* js */ `
 
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -104,7 +103,7 @@ export default [
             }
             
       `
-        },
     }
+  }
 
-]
+];

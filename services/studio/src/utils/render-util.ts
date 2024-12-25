@@ -1,6 +1,6 @@
 import { type ComponentElement, ComponentType } from "$store/component/interface";
 import { html, type TemplateResult } from "lit";
-import "@nuralyui/tooltips"
+import "@nuralyui/tooltips";
 import "@shared/components/Tabs/Tabs";
 import "@shared/components/Menu/Menu";
 import "@shared/components/ColorPicker/colorpicker";
@@ -56,6 +56,7 @@ const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.ite
 const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item} .component=${props.component}></collapse-block>`;
 const dividerTemplate = (props: any) => html`<divider-block .item=${props.item} .component=${props.component}></divider-block>`;
 const handlersTemplate = (props: any) => html`<handler-block .item=${props.item} .component=${props.component}></handler-block>`;
+
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
 
@@ -117,11 +118,11 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
     case ComponentType.MicroApp:
       return microAppTemplate(commonProps);
     case ComponentType.UsersDropdown:
-        return usersDropdownTemplate(commonProps);
+      return usersDropdownTemplate(commonProps);
     case ComponentType.InsertDropdown:
-        return insertDropdownTemplate(commonProps);
+      return insertDropdownTemplate(commonProps);
     case ComponentType.Collapse:
-        return collapseTemplate(commonProps);
+      return collapseTemplate(commonProps);
     case ComponentType.Handlers:
       return handlersTemplate(commonProps);
 
@@ -135,8 +136,8 @@ export function renderComponent(components: ComponentElement[], item?: any, isVi
 
   return html`
     ${components.map((component: ComponentElement) => {
-      const commonProps = { item: { ...item }, component };
-      return renderComponentElement(component, commonProps, isViewMode);
-    })}
+    const commonProps = { item: { ...item }, component };
+    return renderComponentElement(component, commonProps, isViewMode);
+  })}
   `;
 }

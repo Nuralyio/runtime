@@ -12,17 +12,13 @@ import { setHoveredComponentIdAction } from "$store/actions/component/setHovered
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
+  static styles = styles;
   @property({ type: Object })
   component: ComponentElement;
-
   @state()
   currentPageViewPort: string;
-
   @state()
   viewPortStyles: any;
-
-  static styles = styles;
-
   @state()
   components: ComponentElement[];
 
@@ -37,9 +33,10 @@ export class TextLabelBlock extends BaseElementBlock {
 
   @state()
   hoveredComponent: ComponentElement;
+
   override async connectedCallback() {
     await super.connectedCallback();
-   
+
   }
 
   renderView() {
@@ -54,7 +51,7 @@ export class TextLabelBlock extends BaseElementBlock {
       ...labelStyles,
       width: labelAutoWidth ? "auto" : labelStyles.width,
       height: labelAutoHeight ? "auto" : labelStyles.height,
-      ...labelStyleHandlers,
+      ...labelStyleHandlers
     };
 
     return html`
@@ -85,8 +82,8 @@ export class TextLabelBlock extends BaseElementBlock {
         updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
           value: {
             type: "value",
-            value,
-          },
+            value
+          }
         });
       }}
             @dblclick=${(e) => {
@@ -107,11 +104,11 @@ export class TextLabelBlock extends BaseElementBlock {
           <resize-wrapper
             .component=${this.component}
             @mouseenter="${() => {
-              setHoveredComponentIdAction(this.component?.uuid);
-            }}"
+        setHoveredComponentIdAction(this.component?.uuid);
+      }}"
             @mouseleave="${() => {
-              setHoveredComponentIdAction(null);
-            }}"
+        setHoveredComponentIdAction(null);
+      }}"
           >
             ${this.renderView()}
           </resize-wrapper>

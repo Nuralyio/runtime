@@ -1,61 +1,62 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-editor-theme.ts";
+
 export default [
-    {
-        uuid: "image_src_text_block",
-        applicationId: "1",
-        name: "image src text block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-         ...InputBlockContainerTheme
-        },
-        childrenIds: ["src_input_block","src_handler_block"],
+  {
+    uuid: "image_src_text_block",
+    applicationId: "1",
+    name: "image src text block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...InputBlockContainerTheme
     },
-    {
-        uuid: "src_input_block",
-        applicationId: "1",
-        name: "src block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["label_image_src"],
+    childrenIds: ["src_input_block", "src_handler_block"]
+  },
+  {
+    uuid: "src_input_block",
+    applicationId: "1",
+    name: "src block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "label_image_src",
-        name: "label image src",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-          width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["label_image_src"]
+  },
+  {
+    uuid: "label_image_src",
+    name: "label image src",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                const label ='Src';
              return label;
             `
-            }
-        },
+      }
+    }
+  },
+  {
+    uuid: "src_text_input",
+    name: "src text input",
+    applicationId: "1",
+    component_type: ComponentType.TextInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...TextInputTheme
     },
-    {
-        uuid: "src_text_input",
-        name: "src text input",
-        applicationId: "1",
-        component_type: ComponentType.TextInput,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            ...TextInputTheme
-        },
-        event: {
-            valueChange:/* js */ `
+    event: {
+      valueChange:/* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -67,12 +68,12 @@ export default [
                 }catch(error){
                     console.log(error);
                 } 
-  `    
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+  `
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -88,10 +89,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state: {
-                type: 'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -107,43 +108,41 @@ export default [
         }catch(e){
             console.log(e);
         }
-            `, 
-            },
-            placeholder: {
-                type: 'handler',
-                value: /* js */`
+            `
+      },
+      placeholder: {
+        type: "handler",
+        value: /* js */`
                 const inputPlaceHolder ="src";
              return  inputPlaceHolder;
             `
-            }
-        }
-    },
-    {
-        uuid: "src_handler_block",
-        applicationId: "1",
-        name: "src handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
+      }
+    }
+  },
+  {
+    uuid: "src_handler_block",
+    applicationId: "1",
+    name: "src handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {},
 
-        },
-        
-        childrenIds: ["src_text_input", "src_handler"],
+    childrenIds: ["src_text_input", "src_handler"]
+  },
+  {
+    uuid: "src_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "src handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "src_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "src handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='src';
                 let srcHandler=''
                 try{
@@ -160,11 +159,11 @@ export default [
                 }
                 return [parameter,srcHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -177,8 +176,8 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
 
-]
+];

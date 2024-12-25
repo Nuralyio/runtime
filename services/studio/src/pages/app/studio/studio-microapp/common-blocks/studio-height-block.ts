@@ -1,58 +1,59 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
-        uuid: "height_vertical_container",
-        applicationId: "1",
-        name: "height vertical container",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
-        childrenIds: [
-            "height_label",
-            "height_input",
-            "auto_height_checkbox",
-            "height_handler_block",
-        "height_handler"],
+  {
+    uuid: "height_vertical_container",
+    applicationId: "1",
+    name: "height vertical container",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "height_label",
-        name: "height label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-        width:"90px"
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: [
+      "height_label",
+      "height_input",
+      "auto_height_checkbox",
+      "height_handler_block",
+      "height_handler"]
+  },
+  {
+    uuid: "height_label",
+    name: "height label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 return 'Height';
             `
-            }
-        },
-      
+      }
+    }
+
+  },
+  {
+    uuid: "height_input",
+    name: "height input",
+    applicationId: "1",
+    component_type: ComponentType.NumberInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "block",
+      width: "100px",
+      size: "small"
     },
-    {
-        uuid: "height_input",
-        name: "height input",
-        applicationId: "1",
-        component_type: ComponentType.NumberInput,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'block',
-            width: "100px",
-            size:'small',
-        },
-        event: {
-            valueChange: 
-             /* js */ `
+    event: {
+      valueChange:
+      /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -63,12 +64,12 @@ export default [
                     }catch(error){
                         console.log(error);
                     }         `
-            
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -84,10 +85,10 @@ export default [
              console.log(e);
           }
             `
-            },
-            state: {
-                type: 'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -104,30 +105,30 @@ export default [
             console.log(e);
         }
             `
-            }
-        }
+      }
+    }
+  },
+
+  {
+    uuid: "auto_height_checkbox",
+    name: "auto height checkbox",
+    applicationId: "1",
+    component_type: ComponentType.Checkbox,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      size: "small"
     },
+    input: {
 
-    {
-        uuid: "auto_height_checkbox",
-        name: "auto height checkbox",
-        applicationId: "1",
-        component_type: ComponentType.Checkbox,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            size : 'small'
-        },
-        input: {
-
-            label: {
-                type: 'handler',
-                value: /* js */`
+      label: {
+        type: "handler",
+        value: /* js */`
               return 'auto';
             `
-            },
-            checked: {
-                type: 'handler',
-                value: /* js */`
+      },
+      checked: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -141,10 +142,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state:{
-                type: 'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if(selectedComponens.length) {
@@ -162,10 +163,10 @@ export default [
                 }
                 
                 `
-        }
-        },
-        event: {
-            checkboxChanged:  /* js */ `
+      }
+    },
+    event: {
+      checkboxChanged:  /* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -177,23 +178,23 @@ export default [
                 }catch(error){
                     console.log(error);
                 }`
-        },
-    },
+    }
+  },
 
-    {
-        uuid: "height_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "height handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+  {
+    uuid: "height_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "height handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='height';
                 let heightHandler=''
                 try{
@@ -208,11 +209,11 @@ export default [
                 }
                 return [parameter,heightHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -224,8 +225,8 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
 
-]
+];

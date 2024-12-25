@@ -1,11 +1,11 @@
-import { $currentPageViewPort } from '$store/page.ts';
-import { LitElement, html, css } from 'lit';
-import { state } from 'lit/decorators.js';
+import { $currentPageViewPort } from "$store/page.ts";
+import { css, html, LitElement } from "lit";
+import { state } from "lit/decorators.js";
 import { setCurrentPageViewPort } from "$store/actions/page/setCurrentPageViewPort.ts";
 
 export class ResponsiveSelection extends LitElement {
-    static override styles = [
-        css`
+  static override styles = [
+    css`
             :host {
                 display: block;
             }
@@ -14,70 +14,69 @@ export class ResponsiveSelection extends LitElement {
               --hybrid-button-font-size : 15px;
             }
         `
-    ];
+  ];
 
 
   @state()
   label = "laptop";
+  @state()
+  options = [
+    {
+      label: "Laptop",
+      value: "laptop",
+      button: {
+        icon: "laptop"
+      }
+    },
+    {
+      label: "Tablet",
+      value: "tablet",
+      button: {
+        icon: "tablet"
+      }
+    },
+    {
+      label: "Mobile",
+      value: "mobile",
+      button: {
+        icon: "mobile"
+      }
 
-    handleValueChange(event: CustomEvent) {
+    }
+  ];
+
+  constructor() {
+    super();
+    $currentPageViewPort.subscribe((viewPort) => {
+        this.label = viewPort;
+      }
+    );
+  }
+
+  handleValueChange(event: CustomEvent) {
     const {
-      detail: { value },
+      detail: { value }
     } = event;
     let customEvent = new CustomEvent("parametersUpdate", {
       detail: {
-        value: value.value,
-      },
+        value: value.value
+      }
     });
     this.label = value.value;
     this.dispatchEvent(customEvent);
   }
 
-    @state()
-	  options = [
-	  	{ 
-	  		label :"Laptop",
-	  		value : "laptop",
-         button: {
-          icon: "laptop",
-        },
-	  	},
-	  	{
-	  		label :"Tablet",
-	  		value : "tablet",
-         button: {
-          icon: "tablet",
-        },
-	  	},
-	  	{
-	  		label :"Mobile",
-	  		value : "mobile",
-         button: {
-          icon: "mobile",
-        },
-
-	  	},
-	  ];
-
-    constructor(){
-      super();
-      $currentPageViewPort.subscribe((viewPort) => {
-        this.label = viewPort;
-      }
-      );
-    }
-
-
-    override render() {
-        return html`
+  override render() {
+    return html`
         <hy-radio-input
       display="button"
       .selectedOption=${this.label}
-      @change=${ e => setCurrentPageViewPort(e.detail.value)}
+      @change=${e => setCurrentPageViewPort(e.detail.value)}
       .options=${this.options}
     ></hy-radio-input>
        
         `;
-    }
+  }
 }
-customElements.define('responsive-selectionl-parameter-value', ResponsiveSelection);
+
+customElements.define("responsive-selectionl-parameter-value", ResponsiveSelection);

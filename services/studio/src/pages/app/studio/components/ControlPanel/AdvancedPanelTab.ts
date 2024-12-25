@@ -1,12 +1,12 @@
 import { type ComponentElement } from "$store/component/interface.ts";
-import { LitElement, html, css } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
 
 @customElement("advanced-panel")
 export class AdvancedPanel extends LitElement {
+  static styles = [css``];
   @property({ type: Object })
   component: ComponentElement;
-  static styles = [css``];
 
   render() {
     return html`${Object.keys(this.component.style || []).map(
@@ -15,9 +15,9 @@ export class AdvancedPanel extends LitElement {
           ${attributeName} Value :
           <smart-attribute-handler
             .containerStyle=${{
-              height: "30px",
-              border: "solid 1px gray",
-            }}
+          height: "30px",
+          border: "solid 1px gray"
+        }}
             .component=${{ ...this.component }}
             .attributeName=${attributeName}
             .handlerScope=${"styleHandlers"}

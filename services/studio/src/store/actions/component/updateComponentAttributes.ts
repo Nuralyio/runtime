@@ -50,5 +50,5 @@ export function updateComponentAttributes(
     }
   }
 
- // console.timeEnd("updateComponentAttributesExecutionTime"); // End the timer and log the execution time
+  // console.timeEnd("updateComponentAttributesExecutionTime"); // End the timer and log the execution time
 }

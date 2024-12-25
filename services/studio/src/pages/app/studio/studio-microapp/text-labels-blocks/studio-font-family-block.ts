@@ -1,56 +1,57 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "font_family_block",
-        applicationId: "1",
-        name: "label family block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
 
-        childrenIds: ["font_family_label", "font_family_select", "font_family_handler"],
+export default [
+  {
+    uuid: "font_family_block",
+    applicationId: "1",
+    name: "label family block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "font_family_label",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-        width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    childrenIds: ["font_family_label", "font_family_select", "font_family_handler"]
+  },
+  {
+    uuid: "font_family_label",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                return 'Font family';
             `
-            }
-        }
-    },
+      }
+    }
+  },
 
-    {
-        uuid: "font_family_select",
-        applicationId: "1",
-        component_type: ComponentType.Select,
-        styleHandlers: {},
-        name: "label font family select",
-        input: {
-            placeholder:{
-                type:'handler',
-                value: /* js*/`
+  {
+    uuid: "font_family_select",
+    applicationId: "1",
+    component_type: ComponentType.Select,
+    styleHandlers: {},
+    name: "label font family select",
+    input: {
+      placeholder: {
+        type: "handler",
+        value: /* js*/`
                  return 'Font';
                 `
-            },
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+      },
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -86,10 +87,10 @@ export default [
             const result =[options,[selectedFontFamily? selectedFontFamily.value : ""]]
             return  result;  
                 `
-            },
-            state:{
-                type:'handler',
-                 value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -100,15 +101,15 @@ export default [
                 return isDisabled
                  
                  `
-            }
-        },
-        style: {
-            display:'block',
-            "--hybrid-select-width":"155px",
-            'size':'small'
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      display: "block",
+      "--hybrid-select-width": "155px",
+      "size": "small"
+    },
+    event: {
+      changed: /* js */ `
 
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -124,23 +125,23 @@ export default [
             }
             
       `
-        },
-    },
+    }
+  },
 
-    {
-        uuid: "font_family_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "font family handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+  {
+    uuid: "font_family_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "font family handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='fontFamily';
                 let fontFamilyHandler=''
                 try{
@@ -155,11 +156,11 @@ export default [
                 }
                 return [parameter,fontFamilyHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -171,7 +172,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

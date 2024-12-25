@@ -3,64 +3,64 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 import { RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 
 export default [
-    {
-        uuid: "size_block",
-        applicationId: "1",
-        name: "size block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
+  {
+    uuid: "size_block",
+    applicationId: "1",
+    name: "size block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
+    },
 
-        childrenIds: ["size_radio_block","size_handler_block"],
+    childrenIds: ["size_radio_block", "size_handler_block"]
+  },
+  {
+    uuid: "size_radio_block",
+    applicationId: "1",
+    name: "placeholder block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "size_radio_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["size_label"],
-    },
-    
-    {
-        uuid: "size_label",
-        name: "size label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["size_label"]
+  },
+
+  {
+    uuid: "size_label",
+    name: "size label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                return 'Size';
             `
-            }
-        },
-        style: {
-            width:'90px',
-            marginLeft: "5px"
-
-        }
+      }
     },
-    {
-        uuid: "size_radio",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        name: "size select",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {
+      width: "90px",
+      marginLeft: "5px"
+
+    }
+  },
+  {
+    uuid: "size_radio",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    name: "size select",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -92,13 +92,13 @@ export default [
             const result = [options,currentSize,radioType];
            return  result;
                 `
-            },
-        },
-        style: {
-            ...RadioButtonWithThreeOptionsTheme
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      ...RadioButtonWithThreeOptionsTheme
+    },
+    event: {
+      changed: /* js */ `
 
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -112,36 +112,36 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+  {
+    uuid: "size_handler_block",
+    applicationId: "1",
+    name: "status handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "justify-content": "space-between",
+      "align-items": "center"
     },
-    {
-        uuid: "size_handler_block",
-        applicationId: "1",
-        name: "status handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-        },
-        
-        childrenIds: [ "size_radio","size_handler"],
+
+    childrenIds: ["size_radio", "size_handler"]
+  },
+  {
+    uuid: "size_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "size handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "size_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "size handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='size';
                 let sizeHandler=''
                 try{
@@ -156,11 +156,11 @@ export default [
                 }
                 return [parameter,sizeHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -172,7 +172,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];
