@@ -6,7 +6,7 @@ export default [
     uuid: "input_display_block",
     applicationId: "1",
     name: "input display block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
@@ -37,7 +37,7 @@ export default [
   {
     uuid: "input_display_content",
     applicationId: "1",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "input display content",

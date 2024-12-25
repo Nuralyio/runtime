@@ -118,15 +118,13 @@ export default {
                             break;
                         case "vertical-container-block":
                             parameters=[
-                                "position_collapse_container",
-                                "width_vertical_container",
-                                "height_vertical_container", 
+                                "container_blocks"
                             ]
                             break;
 
                         case "Collection":
                             parameters=[
-                                "collection_data",
+                                "collection_blocks",
                             ]
                             break;
                     }

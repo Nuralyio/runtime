@@ -7,7 +7,7 @@ export default [
     uuid: "button_icon_position_block",
     applicationId: "1",
     name: "button icon position block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "icon_position_radio_block",
     applicationId: "1",
     name: "icon position radio block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -114,7 +114,7 @@ export default [
     uuid: "icon_position_handler_block",
     applicationId: "1",
     name: "icon position handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 

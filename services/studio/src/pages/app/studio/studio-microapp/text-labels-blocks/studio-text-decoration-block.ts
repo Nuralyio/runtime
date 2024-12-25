@@ -6,7 +6,7 @@ export default [
     uuid: "text_decoration_block",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"

@@ -6,7 +6,7 @@ export default [
     uuid: "input_label_color_block",
     applicationId: "1",
     name: "input label color block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 
@@ -21,7 +21,7 @@ export default [
     uuid: "label_input_block",
     applicationId: "1",
     name: "label input block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -119,7 +119,7 @@ export default [
     uuid: "input_label_color_handler_block",
     applicationId: "1",
     name: "input label color handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       width: "50px",

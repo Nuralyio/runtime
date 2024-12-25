@@ -7,7 +7,7 @@ export default [
     uuid: "datepicker_format_block",
     applicationId: "1",
     name: "datepicker format block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"
@@ -23,7 +23,7 @@ export default [
     uuid: "datepicker_input_block",
     applicationId: "1",
     name: "datepicker input block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -138,7 +138,7 @@ export default [
     uuid: "format_handler_block",
     applicationId: "1",
     name: "format handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       "margin-top": "10px",

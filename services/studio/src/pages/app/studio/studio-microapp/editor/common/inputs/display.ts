@@ -7,7 +7,7 @@ export default [
     uuid: "display_block",
     applicationId: "1",
     name: "display block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -101,7 +101,7 @@ export default [
     uuid: "display_handler_block",
     applicationId: "1",
     name: "icon position handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 
@@ -164,7 +164,7 @@ export default [
   {
     uuid: "display_divider",
     name: "divider",
-    component_type: ComponentType.Divier,
+    component_type: ComponentType.Divider,
     applicationId: "1",
     ...COMMON_ATTRIBUTES
 

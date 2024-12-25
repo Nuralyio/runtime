@@ -6,7 +6,7 @@ export default [
     uuid: "collection_container_blocks",
     applicationId: "1",
     name: "collection_container_blocks",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

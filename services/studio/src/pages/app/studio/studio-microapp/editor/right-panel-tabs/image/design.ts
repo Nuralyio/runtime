@@ -6,7 +6,7 @@ export const StudioImageDesign = [
     uuid: "image_blocks",
     applicationId: "1",
     name: "Parent Color Container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

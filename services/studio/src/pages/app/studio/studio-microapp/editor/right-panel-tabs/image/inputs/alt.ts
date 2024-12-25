@@ -7,7 +7,7 @@ export default [
     uuid: "image_alt_text_block",
     applicationId: "1",
     name: "image alt text block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"
@@ -23,7 +23,7 @@ export default [
     uuid: "alt_input_block",
     applicationId: "1",
     name: "placeholder block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -130,7 +130,7 @@ export default [
     uuid: "alt_handler_block",
     applicationId: "1",
     name: "alt handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
 

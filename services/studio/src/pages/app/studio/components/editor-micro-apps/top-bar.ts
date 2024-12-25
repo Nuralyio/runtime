@@ -4,7 +4,7 @@ export default [{
   uuid: "top-bar",
   applicationId: "1",
   name: "top bar",
-  component_type: ComponentType.VerticalContainer,
+  component_type: ComponentType.Container,
 
   style: {
     width: "100vw",
@@ -15,7 +15,7 @@ export default [{
   {
     uuid: "info-top-bar",
     name: "info top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       width: "50vw",
       display: "flex",
@@ -27,7 +27,7 @@ export default [{
   {
     uuid: "app_details_top_bar",
     name: "details top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "align-items": "center",
       "gap": "5px"
@@ -194,7 +194,7 @@ export default [{
   {
     uuid: "settings-top-bar",
     name: "settings top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       width: "50vw",
       "justify-content": "flex-end",
@@ -206,7 +206,7 @@ export default [{
   {
     uuid: "zoom_top_bar",
     name: "zoom top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "min-height": "40px",
       "align-items": "center",
@@ -261,7 +261,7 @@ export default [{
   {
     uuid: "app_users_top_bar",
     name: "app users top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "min-height": "40px",
       "margin-right": "4px",
@@ -310,7 +310,7 @@ export default [{
   {
     uuid: "platform_top_bar",
     name: "platform top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "min-height": "40px",
       "margin-right": "4px",
@@ -323,7 +323,7 @@ export default [{
   {
     uuid: "primary_platform_container",
     name: "primary platform container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "flex-direction": "column",
       "align-items": "center"
@@ -379,7 +379,7 @@ export default [{
   {
     uuid: "tablet_platform_container",
     name: "tablet platform container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "flex-direction": "column",
       "align-items": "center"
@@ -435,7 +435,7 @@ export default [{
   {
     uuid: "mobile_platform_container",
     name: "mobile platform container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "flex-direction": "column",
       "align-items": "center"
@@ -491,7 +491,7 @@ export default [{
   {
     uuid: "prev_next_top_bar",
     name: "prev next top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "gap": "5px",
       "margin-right": "4px",
@@ -565,7 +565,7 @@ export default [{
   {
     uuid: "app_preview_publish_top_bar",
     name: "app preview publish top bar",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     style: {
       "gap": "5px",
       "height": "55px",

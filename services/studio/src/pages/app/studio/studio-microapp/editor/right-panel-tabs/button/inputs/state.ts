@@ -7,7 +7,7 @@ export const StudioButtonStateInput = [
     uuid: "state_block",
     applicationId: "1",
     name: "state block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export const StudioButtonStateInput = [
     uuid: "state_radio_block",
     applicationId: "1",
     name: "state radio block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -113,7 +113,7 @@ export const StudioButtonStateInput = [
     uuid: "state_handler_block",
     applicationId: "1",
     name: "state handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 

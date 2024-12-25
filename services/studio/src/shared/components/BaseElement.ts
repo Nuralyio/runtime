@@ -34,6 +34,9 @@ export class BaseElementBlock extends LitElement {
   @state()
   isEditable = false;
 
+  @state()
+  closestGenericComponentWrapper: HTMLElement;
+
   registerCallback(inputName: string, callback: any) {
     this.callbacks[inputName] = callback;
   }
@@ -150,7 +153,7 @@ export class BaseElementBlock extends LitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
-
+    this.closestGenericComponentWrapper =  this.closest('generik-component-wrapper');
     eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
       if (key === "Enter") {
         if (selectedComponents.length == 1 && this.component.uuid === selectedComponents[0]) {

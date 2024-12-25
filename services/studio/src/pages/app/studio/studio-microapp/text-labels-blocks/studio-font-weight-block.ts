@@ -6,7 +6,7 @@ export default [
     uuid: "font_weight_block",
     applicationId: "1",
     name: "label font weight block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     input: {
       direction: "vertical"

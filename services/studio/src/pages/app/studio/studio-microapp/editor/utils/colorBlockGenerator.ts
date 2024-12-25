@@ -8,7 +8,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}`,
       applicationId: "1",
       name: "select helper color block",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         ...InputBlockContainerTheme
@@ -22,7 +22,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_input_block`,
       applicationId: "1",
       name: "select helper color input block",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -116,7 +116,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_handler_block`,
       applicationId: "1",
       name: "select helper color handler block",
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",

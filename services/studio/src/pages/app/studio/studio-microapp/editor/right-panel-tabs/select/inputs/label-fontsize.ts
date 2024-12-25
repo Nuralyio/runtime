@@ -7,7 +7,7 @@ export default [
     uuid: "select_label_font_size_vertical_container",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -18,7 +18,7 @@ export default [
     uuid: "select_label_size_input_block",
     applicationId: "1",
     name: "select label size input block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -136,7 +136,7 @@ export default [
     uuid: "label_size_handler_block",
     applicationId: "1",
     name: "label size handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

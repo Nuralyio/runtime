@@ -113,8 +113,24 @@ export class GenerikComponentWrapper extends LitElement {
     setContextMenuEvent(e);
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    // Find the closest parent "generik-component-wrapper"
+    const closestWrapper = this.closest("generik-component-wrapper");
+    if (closestWrapper) {
+      console.log("Closest generik-component-wrapper found:", closestWrapper);
+    } else {
+      console.log("No generik-component-wrapper found in the parent hierarchy.");
+    }
+  }
+
   render() {
     return html`
+      <style>
+        :host {
+
+        }
+      </style>
       <resize-wrapper
         .isSelected=${this.currentSelection.includes(this.component.uuid)}
         .component=${{ ...this.component }}
@@ -130,7 +146,7 @@ export class GenerikComponentWrapper extends LitElement {
             draggable=${this.isDragInitiator}
             class=${classMap({ isDraggable: this.isDragInitiator })}
             @dragend=${() => this.requestUpdate()}
-            @mousedown=${(e) => this.handleMouseDown(e)}
+            @mousedown=${this.handleMouseDown}
             @mouseenter=${() => setHoveredComponentIdAction(this.component?.uuid)}
             @mouseleave=${() => setHoveredComponentIdAction(null)}
           >
@@ -147,11 +163,11 @@ export class GenerikComponentWrapper extends LitElement {
                 ${ref(this.resizerRef)}
                 class="left-resizer"
                 style=${styleMap({
-      width: `${safeParseInt(this.component?.style?.marginLeft) + 10}px`,
-      zIndex: 1000,
-      height: `${this.inputRef?.value?.offsetHeight}px`,
-      cursor: "ew-resize"
-    })}
+                  width: `${safeParseInt(this.component?.style?.marginLeft) + 10}px`,
+                  zIndex: 1000,
+                  height: `${this.inputRef?.value?.offsetHeight}px`,
+                  cursor: "ew-resize"
+                })}
                 @mousedown=${this.startResizing}
               >
                 <span class="text">${safeParseInt(this.component?.style?.marginLeft)}px</span>

@@ -24,7 +24,7 @@ import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
 import studioPositionBlock from "./common-blocks/studio-position-block.ts";
 import studioWidthBlock from "./common-blocks/studio-width-block.ts";
 import studioHeightBlock from "./common-blocks/studio-height-block.ts";
-import studioButtonTypeBlock from "./button-blocks/studio-button-type-block.ts";
+import studioButtonTypeBlock from "./editor/right-panel-tabs/button/inputs/type.ts";
 import studioButtonIconPosition from "./editor/right-panel-tabs/button/inputs/icon-position.ts";
 import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
@@ -63,7 +63,7 @@ import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
 import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks.ts";
 import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks.ts";
 import collectionContainerBlocks from "./collection-blocks/collection-blocks-container.ts";
-import collectionDataBlocks from "./collection-blocks/collection-blocks-data.ts";
+import collectionDataBlocks from "./editor/right-panel-tabs/collection/inputs/data.ts";
 import TopBar from "../components/editor-micro-apps/top-bar.ts";
 import LeftPanel from "../components/editor-micro-apps/left-panel.ts";
 import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
@@ -77,6 +77,9 @@ import { StudioSelect } from "./editor/right-panel-tabs/select";
 import { StudioDatepicker } from "./editor/right-panel-tabs/datepicker";
 import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
+import { StudioContainer } from "./editor/right-panel-tabs/container";
+import { StudioCommonInputs } from "./editor/common/inputs";
+import { StudioCollection } from "./editor/right-panel-tabs/collection";
 
 
 export default [
@@ -84,7 +87,7 @@ export default [
   {
     uuid: "divider",
     name: "divider",
-    component_type: ComponentType.Divier,
+    component_type: ComponentType.Divider,
     applicationId: "1",
     input: {}
   },
@@ -180,7 +183,7 @@ export default [
     uuid: "text_label_handlers_collapse_container",
     applicationId: "1",
     name: "position collapse container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       marginTop: "13px"
@@ -309,5 +312,8 @@ export default [
   ...StudioSelect,
   ...StudioDatepicker,
   ...StudioImage,
-  ...StudioTable
+  ...StudioTable,
+  ...StudioContainer,
+  ...StudioCommonInputs,
+  ...StudioCollection
 ];

@@ -6,7 +6,7 @@ export const StudioTableDesign = [
     uuid: "table_blocks",
     applicationId: "1",
     name: "Parent Select Container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

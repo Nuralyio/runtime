@@ -6,7 +6,7 @@ export default [
     uuid: "button_click_event_block",
     applicationId: "1",
     name: "Button click event",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {

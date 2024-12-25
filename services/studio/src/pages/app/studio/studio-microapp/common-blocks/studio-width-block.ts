@@ -6,7 +6,7 @@ export default [
     uuid: "width_vertical_container",
     applicationId: "1",
     name: "width vertical container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -20,7 +20,7 @@ export default [
   {
     uuid: "width_container",
     name: "width container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     applicationId: "1",
     ...COMMON_ATTRIBUTES,
     style: {

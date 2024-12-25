@@ -6,7 +6,7 @@ export default [
     uuid: "table_columns_block",
     applicationId: "1",
     name: "table columns block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

@@ -95,7 +95,7 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return menuTemplate(commonProps);
     case ComponentType.Table:
       return tableTemplate(commonProps);
-    case ComponentType.VerticalContainer:
+    case ComponentType.Container:
       return verticalContainerTemplate(commonProps, isViewMode);
     case ComponentType.Collection:
       return collectionViewerTemplate(commonProps, isViewMode);
@@ -103,7 +103,7 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return checkboxTemplate(commonProps);
     case ComponentType.DatePicker:
       return datePickerTemplate(commonProps);
-    case ComponentType.Divier:
+    case ComponentType.Divider:
       return dividerTemplate(commonProps);
     case ComponentType.Icon:
       return iconTemplate(commonProps);

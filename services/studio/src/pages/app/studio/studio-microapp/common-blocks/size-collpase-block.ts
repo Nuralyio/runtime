@@ -6,7 +6,7 @@ export default [
     uuid: "size_collapse_container",
     applicationId: "1",
     name: "position collapse container",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       marginTop: "13px"
@@ -47,9 +47,9 @@ export default [
     uuid: "size_collapse_container_childrens",
     applicationId: "1",
     name: "Left panel",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
-    childrenIds: ["height_vertical_container", "width_vertical_container", "position_block"]
+    childrenIds: ["height_vertical_container", "width_vertical_container", "position_block","inner_container_alignement_block"]
   }
 ];

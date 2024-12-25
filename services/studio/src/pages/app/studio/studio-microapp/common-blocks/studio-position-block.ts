@@ -7,7 +7,7 @@ export default [
     uuid: "position_block",
     applicationId: "1",
     name: "position block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

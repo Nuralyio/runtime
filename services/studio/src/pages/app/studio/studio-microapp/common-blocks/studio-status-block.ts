@@ -7,7 +7,7 @@ export default [
     uuid: "status_block",
     applicationId: "1",
     name: "status block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +19,7 @@ export default [
     uuid: "status_radios_block",
     applicationId: "1",
     name: "status input block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -119,7 +119,7 @@ export default [
     uuid: "status_handler_block",
     applicationId: "1",
     name: "status handler block",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

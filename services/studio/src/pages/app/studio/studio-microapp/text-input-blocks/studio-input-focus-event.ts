@@ -6,7 +6,7 @@ export default [
     uuid: "input_focus_event_block",
     applicationId: "1",
     name: "Input focus event",
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {

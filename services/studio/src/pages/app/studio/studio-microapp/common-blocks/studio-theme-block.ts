@@ -11,7 +11,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
     uuid: mainContainerName,
     applicationId: "1",
     name: mainContainerName,
-    component_type: ComponentType.VerticalContainer,
+    component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -104,7 +104,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
         uuid: `${categoryCollapseUuid}_vertical_container`,
         applicationId: "1",
         name: `${category.name} Vertical Container`,
-        component_type: ComponentType.VerticalContainer,
+        component_type: ComponentType.Container,
         ...COMMON_ATTRIBUTES,
         style: {
           display: "flex",
@@ -127,7 +127,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
             uuid: blockUuid,
             applicationId: "1",
             name: `${item.label} block`,
-            component_type: ComponentType.VerticalContainer,
+            component_type: ComponentType.Container,
             ...COMMON_ATTRIBUTES,
             style: {
               display: "flex",
@@ -141,7 +141,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
             uuid: inputBlockUuid,
             applicationId: "1",
             name: `${item.label} input block`,
-            component_type: ComponentType.VerticalContainer,
+            component_type: ComponentType.Container,
             ...COMMON_ATTRIBUTES,
             style: {
               display: "flex",
@@ -154,7 +154,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
             uuid: handlerBlockUuid,
             applicationId: "1",
             name: `${item.label} handler block`,
-            component_type: ComponentType.VerticalContainer,
+            component_type: ComponentType.Container,
             ...COMMON_ATTRIBUTES,
             style: {
               display: "flex",
@@ -281,7 +281,7 @@ export const generateComponents = (colorVariables2, mainContainerName) => {
       uuid: categoryContainerUuid,
       applicationId: "1",
       name: `${mode.name} Vertical Container`,
-      component_type: ComponentType.VerticalContainer,
+      component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
