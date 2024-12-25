@@ -1,26 +1,27 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-editor-theme.ts";
 export default [
     {
-        uuid: "image_fallback_text_block",
+        uuid: "image_alt_text_block",
         applicationId: "1",
-        name: "image fallback text block",
+        name: "image alt text block",
         component_type: ComponentType.VerticalContainer,
+        styleHandlers: {},
+        input: {
+            direction: "vertical",
+        },
         ...COMMON_ATTRIBUTES,
         style: {
-             display:'flex',
-             'align-items':'center',
-             'justify-content':'space-between',
-             
-
+           ...InputBlockContainerTheme
         },
 
-        childrenIds: ["image_fallback_input_block","fallback_handler_block"],
+        childrenIds: ["alt_input_block","alt_handler_block"],
     },
     {
-        uuid: "image_fallback_input_block",
+        uuid: "alt_input_block",
         applicationId: "1",
-        name: "image fallback block",
+        name: "placeholder block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
@@ -28,36 +29,36 @@ export default [
             'align-items':'center',
             'justify-content':'space-between'
         },
-        childrenIds: ["label_image_fallback", "fallback_text_input"],
+        childrenIds: ["label_image_alt"],
     },
     {
-        uuid: "label_image_fallback",
-        name: "label image fallback",
+        uuid: "label_image_alt",
+        name: "label image alt",
         component_type: ComponentType.TextLabel,
         applicationId: "1",
         ...COMMON_ATTRIBUTES,
         style:{
-           width:'90px'
+           'width':'90px'
         },
         input: {
             value: {
                 type: 'handler',
                 value: /* js */`
-               const label ='Fallback';
+               const label ='Alt';
              return label;
             `
             }
         },
     },
     {
-        uuid: "fallback_text_input",
-        name: "fallback text input",
+        uuid: "alt_text_input",
+        name: "alt text input",
         applicationId: "1",
         component_type: ComponentType.TextInput,
+        styleHandlers: {},
         ...COMMON_ATTRIBUTES,
         style: {
-            width:'120px',
-            size:"small",
+           ...TextInputTheme
         },
         event: {
             valueChange:/* js */ `
@@ -66,8 +67,8 @@ export default [
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const newFallBack = EventData.value;
-                        updateInput(currentComponent,'fallback','string',newFallBack);
+                        const newAltText = EventData.value;
+                        updateInput(currentComponent,'alt','string',newAltText);
                     }
                 }catch(error){
                     console.log(error);
@@ -83,9 +84,9 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.fallback?.type=="string"){
-                const currentFallback=  currentComponent.input?.fallback?.value??'';
-                currentFallback;
+                if(currentComponent.input?.alt?.type=="value"){
+                const currentAlt=currentComponent.input?.alt?.value??'';
+                return currentAlt;
                 }
             }
 
@@ -103,7 +104,7 @@ export default [
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
                 let state = "unabled";
-                if(currentComponent.input?.fallback?.type =="handler"&&currentComponent.input?.fallback?.value){
+                if(currentComponent.input?.alt?.type =="handler"&&currentComponent.input?.alt?.value){
                    state = "disabled"
                }
                return state;
@@ -117,34 +118,31 @@ export default [
             placeholder: {
                 type: 'handler',
                 value: /* js */`
-                const inputPlaceHolder ="fallback";
+                const inputPlaceHolder ="alt";
              return  inputPlaceHolder;
             `
             }
+
         }
     },
     {
-        uuid: "fallback_handler_block",
+        uuid: "alt_handler_block",
         applicationId: "1",
-        name: "fallback handler block",
+        name: "alt handler block",
         component_type: ComponentType.VerticalContainer,
         ...COMMON_ATTRIBUTES,
         style: {
-            width: "50px",
-            'margin-top': '10px',
-            display:'flex',
-            'justify-content':'space-between',
         },
         
-        childrenIds: ["fallback_handler"],
+        childrenIds: [ "alt_text_input", "alt_handler"],
     },
     {
-        uuid: "fallback_handler",
+        uuid: "alt_handler",
         applicationId: "1",
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
         styleHandlers: {},
-        name: "fallback handler",
+        name: "alt handler",
         style: {
                 display:'block',
         },
@@ -152,21 +150,21 @@ export default [
             value: {
                 type: 'handler',
                 value: /* js */`
-                const parameter ='fallback';
-                let fallbackHandler=''
+                const parameter ='alt';
+                let altHandler=''
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
                         const selectedComponent = selectedComponens[0];
                         let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.fallback?.type =='handler' && currentComponent?.input?.fallback?.value){
-                           fallbackHandler = currentComponent?.input?.fallback?.value
+                        if(currentComponent?.input?.alt?.type =='handler' && currentComponent?.input?.alt?.value){
+                           altHandler = currentComponent?.input?.alt?.value
                         }
                     }
                 }catch(error){
                     console.log(error);
                 }
-                return [parameter,fallbackHandler];
+                return [parameter,altHandler];
             `
             }
         },
@@ -178,8 +176,8 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.fallback?.value != EventData.value )
-                    updateInput(currentComponent,'fallback','handler',EventData.value);
+                    if(EventData.value != currentComponent?.input?.alt?.value != EventData.value )
+                    updateInput(currentComponent,'alt','handler',EventData.value);
                 }
             }catch(error){
                 console.log(error);
