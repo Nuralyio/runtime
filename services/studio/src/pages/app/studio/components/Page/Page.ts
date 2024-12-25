@@ -36,6 +36,7 @@ export class PageContent extends LitElement {
 
   @property({ type: Boolean }) isViewMode = false;
   mode: ViewMode;
+  @state() zoomLevel = 100;
 
   constructor() {
     super();
@@ -75,6 +76,10 @@ export class PageContent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    $context.subscribe(() => {
+      console.log( getVar("global", "editor_panel_zoom"))
+      this.zoomLevel = getVar("global", "editor_panel_zoom")?.value || 100;
+    });
 
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
@@ -183,6 +188,11 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
+      <style>
+        :host{
+          zoom: ${this.zoomLevel}%;
+        }
+      </style>
        <rectangle-selection>
       <div
         class="page-container ${this.isPreviewMode() ? "viewer" : ""}"

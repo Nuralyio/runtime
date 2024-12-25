@@ -29,7 +29,6 @@ class RectangleSelection extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height:93vh;
       border: 1px solid #ccc;
       position: relative; 
       overflow-x:hidden;
