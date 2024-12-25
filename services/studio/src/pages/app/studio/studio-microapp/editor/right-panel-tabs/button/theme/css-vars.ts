@@ -1,7 +1,7 @@
-export default  [
+export default [
   {
     name: "Dark Mode",
-    open : true,
+    open: true,
     items: [
       {
         name: "General",
@@ -9,7 +9,7 @@ export default  [
           { label: "Background Color", cssVar: "--hybrid-button-background-color" },
           { label: "Text Color", cssVar: "--hybrid-button-text-color" }
         ],
-        open : true
+        open: true
       },
       {
         name: "Hover",
@@ -17,7 +17,7 @@ export default  [
           { label: "Hover Border Color", cssVar: "--hybrid-button-hover-border-color" },
           { label: "Hover Color", cssVar: "--hybrid-button-hover-color" }
         ],
-        open : false
+        open: false
       },
       {
         name: "Active",
@@ -25,7 +25,7 @@ export default  [
           { label: "Active Border Color", cssVar: "--hybrid-button-active-border-color" },
           { label: "Active Color", cssVar: "--hybrid-button-active-color" }
         ],
-        open : false
+        open: false
       },
       {
         name: "Disabled",
@@ -34,7 +34,7 @@ export default  [
           { label: "Disabled Text Color", cssVar: "--hybrid-button-disabled-text-color" },
           { label: "Disabled Border Color", cssVar: "--hybrid-button-disabled-border-color" }
         ],
-        open : false
+        open: false
       },
       {
         name: "Danger",
@@ -44,7 +44,7 @@ export default  [
           { label: "Danger Border Color", cssVar: "--hybrid-button-danger-border-color" },
           { label: "Danger Dashed Border Color", cssVar: "--hybrid-button-danger-dashed-border-color" }
         ],
-        open : false
+        open: false
       },
       {
         name: "Danger Disabled",

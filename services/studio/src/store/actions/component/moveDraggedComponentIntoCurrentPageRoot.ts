@@ -1,8 +1,3 @@
-import type { ComponentElement } from "$store/component/interface.ts";
-import { $components, type ComponentStore } from "$store/component/store.ts";
-
-import { addComponentToCurrentPageAction } from "$store/actions/component/addComponentToCurrentPageAction.ts";
-
 export function moveDraggedComponentIntoCurrentPageRoot(
   draggedComponentId: string
 ) {

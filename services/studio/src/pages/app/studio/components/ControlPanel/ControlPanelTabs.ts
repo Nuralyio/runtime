@@ -1,5 +1,5 @@
-import { LitElement, css, html } from "lit";
-import { state, customElement } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import { $applicationComponents } from "$store/component/store.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { $currentApplication } from "$store/apps.ts";

@@ -5,23 +5,21 @@ import "@shared/components/CodeEditor/CodeEditor";
 
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {
-  @property()
-  value: string;
-
   static styles = [
     css`
       :host {
         display: block;
       }
-    `,
+    `
   ];
-
+  @property()
+  value: string;
   @property({ type: Object })
   containerStyle: any = {
     width: "700px",
-    marginLeft : '-400px',
+    marginLeft: "-400px",
     height: "250px",
-    border: "solid 1px gray",
+    border: "solid 1px gray"
   };
 
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -39,11 +37,30 @@ export class SmartAttributeCodeeditor extends LitElement {
     }
   }
 
+  render() {
+    return html`
+      <div style=${styleMap(this.containerStyle)}>
+        <code-editor
+          theme="vs"
+          @change=${(event: CustomEvent) => {
+      const {
+        detail: { value }
+      } = event;
+      this.debounce(() => this.handleCodeEditorChange(value), 1000); // Call the debounce function
+    }}
+          .code=${this.value}
+          language="javascript"
+        >
+        </code-editor>
+      </div>
+    `;
+  }
+
   private handleCodeEditorChange(value: string) {
     const submitEvent = new CustomEvent("change", {
       detail: { value },
       bubbles: true,
-      composed: true,
+      composed: true
     });
     this.dispatchEvent(submitEvent);
   }
@@ -56,24 +73,5 @@ export class SmartAttributeCodeeditor extends LitElement {
       this.debounceTimeout = null;
       callback();
     }, delay);
-  }
-
-  render() {
-    return html`
-      <div style=${styleMap(this.containerStyle)}>
-        <code-editor
-          theme="vs"
-          @change=${(event: CustomEvent) => {
-            const {
-              detail: { value },
-            } = event;
-            this.debounce(() => this.handleCodeEditorChange(value), 1000); // Call the debounce function
-          }}
-          .code=${this.value}
-          language="javascript"
-        >
-        </code-editor>
-      </div>
-    `;
   }
 }

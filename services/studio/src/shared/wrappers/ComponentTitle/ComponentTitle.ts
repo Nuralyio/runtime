@@ -7,15 +7,6 @@ import { setDraggingComponentInfo } from "$store/actions/component/setDraggingCo
 
 @customElement("component-title")
 export class ComponentTitle extends LitElement {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @state()
-  selectedComponents: string[] = [];
-
-  @state()
-  isDragInitiator = false;
-
   static styles = css`
     .component-name {
       position: absolute;
@@ -31,6 +22,12 @@ export class ComponentTitle extends LitElement {
       margin-top: -20px;
     }
   `;
+  @property({ type: Object })
+  component: ComponentElement;
+  @state()
+  selectedComponents: string[] = [];
+  @state()
+  isDragInitiator = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -47,7 +44,7 @@ export class ComponentTitle extends LitElement {
     const submitEvent = new CustomEvent("dragInit", {
       detail: { value },
       bubbles: true,
-      composed: true,
+      composed: true
     });
     this.dispatchEvent(submitEvent);
   }
@@ -74,8 +71,8 @@ export class ComponentTitle extends LitElement {
       componentId: this.component?.uuid,
       blockInfo: {
         height: this.component.style.height,
-        width: this.component.style.width,
-      },
+        width: this.component.style.width
+      }
     });
   }
 

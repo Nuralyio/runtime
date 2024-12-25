@@ -1,5 +1,5 @@
 import { StudioCheckboxInputCollapseContainer } from "./collapse-container.ts";
 
-export const StudioCheckboxInputs  = [
+export const StudioCheckboxInputs = [
   ...StudioCheckboxInputCollapseContainer
-  ]
+];

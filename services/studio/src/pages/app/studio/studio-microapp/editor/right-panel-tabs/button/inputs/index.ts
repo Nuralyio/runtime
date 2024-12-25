@@ -1,5 +1,5 @@
 import { StudioInputCollapseContainer } from "./collapse-container.ts";
 
-export const StudioButtonInputs  = [
+export const StudioButtonInputs = [
   ...StudioInputCollapseContainer
-  ]
+];

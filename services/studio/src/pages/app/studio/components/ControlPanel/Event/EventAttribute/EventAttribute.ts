@@ -1,16 +1,17 @@
-import {  type  ComponentElement } from "$store/component/interface.ts";
-import { LitElement, html, css } from "lit";
+import { type  ComponentElement } from "$store/component/interface.ts";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "../EventLabel/EventLabel.ts";
 import "../EventValue/EventValue.ts";
 import styles from "./EventAttribute.style.ts";
+
 @customElement("parameter-event")
 export class ParameterEvent extends LitElement {
+  static styles = styles;
   @property({ type: Object })
   component: ComponentElement;
   @property()
   eventName: string;
-  static styles = styles;
 
   render() {
     return html` <div class="container">

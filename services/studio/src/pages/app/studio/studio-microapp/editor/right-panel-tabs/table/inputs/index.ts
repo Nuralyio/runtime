@@ -1,5 +1,5 @@
 import { StudioTableCollapseContainer } from "./collapse-container.ts";
 
-export const  StudioTableInputs = [
+export const StudioTableInputs = [
   ...StudioTableCollapseContainer
-]
+];

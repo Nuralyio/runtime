@@ -1,59 +1,60 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+
 export default [
-    {
+  {
     uuid: "input_helper_color_block",
     applicationId: "1",
     name: "input helper color block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        
-        display: 'flex',
-        'align-items':'center',
-        'justify-content':'space-between',
-        'margin-top': '10px',
+
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "margin-top": "10px"
     },
-    childrenIds: ["input_helper_input_block","input_helper_color_handler_block"]
+    childrenIds: ["input_helper_input_block", "input_helper_color_handler_block"]
+  },
+  {
+    uuid: "input_helper_input_block",
+    applicationId: "1",
+    name: "placeholder block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "input_helper_input_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["input_helper_color_label", "helper_color_input"],
+    childrenIds: ["input_helper_color_label", "helper_color_input"]
+  },
+  {
+    uuid: "input_helper_color_label",
+    name: "input helper color label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
     },
-    {
-        uuid: "input_helper_color_label",
-        name: "input helper color label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-        width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Helper color';
                 return label;`
-            }
-        },
-    },
-{
+      }
+    }
+  },
+  {
     uuid: "helper_color_input",
     name: "name",
     applicationId: "1",
     component_type: ComponentType.ColorPicker,
     event: {
-        valueChange: /* js */ `
+      valueChange: /* js */ `
        
        try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -70,14 +71,14 @@ export default [
   `
     },
     ...COMMON_ATTRIBUTES,
-   style:{
-    width:"50px",
-    display:'block'
-   },
+    style: {
+      width: "50px",
+      display: "block"
+    },
     input: {
-        value: {
-            type: "handler",
-            value: /* js */`
+      value: {
+        type: "handler",
+        value: /* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -91,10 +92,10 @@ export default [
                     console.log(e);
                 }
             `
-        },
-        state:{
-            type:"handler",
-            value:/* js */ `
+      },
+      state: {
+        type: "handler",
+        value:/* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -111,24 +112,24 @@ export default [
                 console.log(e);
             }
             `
-        }
+      }
     }
-},
-{
+  },
+  {
     uuid: "input_helper_color_handler_block",
     applicationId: "1",
     name: "input helper color handler block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        width: "50px",
-        display:'flex',
-        'justify-content':'space-between',
+      width: "50px",
+      display: "flex",
+      "justify-content": "space-between"
     },
-    
-    childrenIds: ["input_helper_color_handler"],
-},
-{
+
+    childrenIds: ["input_helper_color_handler"]
+  },
+  {
     uuid: "input_helper_color_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
@@ -136,12 +137,12 @@ export default [
     styleHandlers: {},
     name: "helper color handler",
     style: {
-            display:'block',
+      display: "block"
     },
-    input: { 
-        value: {
-            type: 'handler',
-            value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             const parameter ='helperColor';
             let helperColorHandler=''
             try{
@@ -156,11 +157,11 @@ export default [
             }
             return [parameter,helperColorHandler];
         `
-        }
+      }
     },
-    
+
     event: {
-        codeChange: /* js */ `
+      codeChange: /* js */ `
         try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -172,6 +173,6 @@ export default [
             console.log(error);
         }
   `
-    },
-},
-] 
+    }
+  }
+];

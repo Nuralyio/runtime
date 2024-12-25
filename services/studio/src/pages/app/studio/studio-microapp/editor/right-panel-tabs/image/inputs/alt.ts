@@ -1,67 +1,68 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-editor-theme.ts";
-export default [
-    {
-        uuid: "image_alt_text_block",
-        applicationId: "1",
-        name: "image alt text block",
-        component_type: ComponentType.VerticalContainer,
-        styleHandlers: {},
-        input: {
-            direction: "vertical",
-        },
-        ...COMMON_ATTRIBUTES,
-        style: {
-           ...InputBlockContainerTheme
-        },
 
-        childrenIds: ["alt_input_block","alt_handler_block"],
+export default [
+  {
+    uuid: "image_alt_text_block",
+    applicationId: "1",
+    name: "image alt text block",
+    component_type: ComponentType.VerticalContainer,
+    styleHandlers: {},
+    input: {
+      direction: "vertical"
     },
-    {
-        uuid: "alt_input_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["label_image_alt"],
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...InputBlockContainerTheme
     },
-    {
-        uuid: "label_image_alt",
-        name: "label image alt",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-           'width':'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    childrenIds: ["alt_input_block", "alt_handler_block"]
+  },
+  {
+    uuid: "alt_input_block",
+    applicationId: "1",
+    name: "placeholder block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
+    },
+    childrenIds: ["label_image_alt"]
+  },
+  {
+    uuid: "label_image_alt",
+    name: "label image alt",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "width": "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                const label ='Alt';
              return label;
             `
-            }
-        },
+      }
+    }
+  },
+  {
+    uuid: "alt_text_input",
+    name: "alt text input",
+    applicationId: "1",
+    component_type: ComponentType.TextInput,
+    styleHandlers: {},
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...TextInputTheme
     },
-    {
-        uuid: "alt_text_input",
-        name: "alt text input",
-        applicationId: "1",
-        component_type: ComponentType.TextInput,
-        styleHandlers: {},
-        ...COMMON_ATTRIBUTES,
-        style: {
-           ...TextInputTheme
-        },
-        event: {
-            valueChange:/* js */ `
+    event: {
+      valueChange:/* js */ `
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -73,12 +74,12 @@ export default [
                 }catch(error){
                     console.log(error);
                 } 
-  `    
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+  `
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -94,10 +95,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state: {
-                type: 'handler',
-                value: /* js */`
+      },
+      state: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -113,43 +114,42 @@ export default [
         }catch(e){
             console.log(e);
         }
-            `, 
-            },
-            placeholder: {
-                type: 'handler',
-                value: /* js */`
+            `
+      },
+      placeholder: {
+        type: "handler",
+        value: /* js */`
                 const inputPlaceHolder ="alt";
              return  inputPlaceHolder;
             `
-            }
+      }
 
-        }
+    }
+  },
+  {
+    uuid: "alt_handler_block",
+    applicationId: "1",
+    name: "alt handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {},
+
+    childrenIds: ["alt_text_input", "alt_handler"]
+  },
+  {
+    uuid: "alt_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "alt handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "alt_handler_block",
-        applicationId: "1",
-        name: "alt handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-        },
-        
-        childrenIds: [ "alt_text_input", "alt_handler"],
-    },
-    {
-        uuid: "alt_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "alt handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='alt';
                 let altHandler=''
                 try{
@@ -166,11 +166,11 @@ export default [
                 }
                 return [parameter,altHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -183,7 +183,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

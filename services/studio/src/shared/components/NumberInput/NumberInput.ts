@@ -10,16 +10,13 @@ import { debounce } from "@utils/time.ts";
 
 @customElement("number-input-block")
 export class NumberInputBlock extends BaseElementBlock {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @property({ type: Object })
-  item: any;
-
   static styles = [
     css``
   ];
-
+  @property({ type: Object })
+  component: ComponentElement;
+  @property({ type: Object })
+  item: any;
   @state()
   thisvalue: any;
 

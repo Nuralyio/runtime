@@ -1,20 +1,20 @@
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
-import { LitElement, html, css } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 @customElement("attribute-backgroundcolor-value-handler")
 export class AttributeColorValue extends LitElement {
-  @property({ type: Object })
-  page: PageElement;
-  @state()
-  color = "#000000";
   static styles = [
     css`
       :host {
         display: block;
       }
-    `,
+    `
   ];
+  @property({ type: Object })
+  page: PageElement;
+  @state()
+  color = "#000000";
 
   handleColorChange(event) {
     const { value } = event.target;
@@ -25,8 +25,8 @@ export class AttributeColorValue extends LitElement {
   emitCustomEvent() {
     let customEvent = new CustomEvent("attributeUpdate", {
       detail: {
-        value: `${this.color}`,
-      },
+        value: `${this.color}`
+      }
     });
     this.dispatchEvent(customEvent);
   }
@@ -43,6 +43,7 @@ export class AttributeColorValue extends LitElement {
     super.connectedCallback();
     this.initValues();
   }
+
   initValues() {
     this.color = this.page.style?.backgroundColor ?? "#ffffff";
     this.requestUpdate();

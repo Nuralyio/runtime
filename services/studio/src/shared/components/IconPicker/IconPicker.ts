@@ -1,5 +1,5 @@
 import type { ComponentElement } from "$store/component/interface.ts";
-import { html, nothing } from "lit";
+import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./IconPicker.style.ts";
@@ -14,6 +14,7 @@ import { ButtonTheme } from "../../../pages/app/studio/studio-microapp/editor/ut
 
 @customElement("icon-picker-block")
 export class IconPicker extends BaseElementBlock {
+  static override styles = styles;
   icons = Array.from(
     new Set(
       [...Object.keys(solidIcons)]
@@ -22,20 +23,14 @@ export class IconPicker extends BaseElementBlock {
         .filter((iconName) => iconName)
     )
   );
-
   @state()
   filteredIcons = this.icons;
-
   @state()
   selectedIcon = EMPTY_STRING;
-
   @state()
   dropdownOpen = false;
-
   @property()
   component: ComponentElement;
-
-  static override styles = styles;
 
   constructor() {
     super();
@@ -44,12 +39,12 @@ export class IconPicker extends BaseElementBlock {
 
   handleIconSelect(icon: string) {
     this.selectedIcon = icon === this.selectedIcon ? EMPTY_STRING : icon;
-    this.requestUpdate()
+    this.requestUpdate();
     this.dispatchEvent(new CustomEvent("icon-selected", { detail: icon }));
 
     if (this.component.event?.iconChanged) {
       executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.iconChanged`), {
-        value: this.selectedIcon,
+        value: this.selectedIcon
       });
     }
     this.dropdownOpen = false;
@@ -61,11 +56,6 @@ export class IconPicker extends BaseElementBlock {
     this.filteredIcons = searchString
       ? this.icons.filter((icon) => icon.includes(searchString))
       : this.icons;
-  };
-
-  private onClickOutside = (event: Event) => {
-    const outsideClick = !event.composedPath().includes(this);
-    if (outsideClick) this.dropdownOpen = false;
   };
 
   override disconnectedCallback(): void {
@@ -98,8 +88,8 @@ export class IconPicker extends BaseElementBlock {
             <lit-virtualizer
               .items=${this.filteredIcons}
               .layout=${grid({
-               itemSize: "30px",
-              })}
+          itemSize: "30px"
+        })}
               .renderItem=${(icon: string) => html`
                 <div
                   class="icon-item ${icon === this.selectedIcon ? "selected" : EMPTY_STRING}"
@@ -115,20 +105,25 @@ export class IconPicker extends BaseElementBlock {
       >
 
 
-        <hy-button 
+        <hy-button
           .disabled=${isDisabled}
           style=${
-          styleMap({
-            ...ButtonTheme,
-            "--hybrid-button-width": isDisabled ? "auto" : "35px",
-          })
-        }>  
+            styleMap({
+              ...ButtonTheme,
+              "--hybrid-button-width": isDisabled ? "auto" : "35px"
+            })
+          }>
           ${
-      isDisabled ? html`Dynamic` : html` <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>`
-    }
+            isDisabled ? html`Dynamic` : html` <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>`
+          }
         </hy-button>
-      
+
       </hy-dropdown>
     `;
   }
+
+  private onClickOutside = (event: Event) => {
+    const outsideClick = !event.composedPath().includes(this);
+    if (outsideClick) this.dropdownOpen = false;
+  };
 }

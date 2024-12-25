@@ -3,17 +3,14 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import styles from "./QuickActionWrapper.style.ts";
 
-@customElement('quick-action-wrapper')
+@customElement("quick-action-wrapper")
 export class QuickActionWrapper extends LitElement {
+  static styles = styles;
   @property({ type: Object })
   component: ComponentElement;
-
   @state()
   showQuickAction = false;
-
   private clickOutsideListener: EventListener | null = null;
-
-  static styles = styles
 
   connectedCallback() {
     super.connectedCallback();
@@ -24,17 +21,17 @@ export class QuickActionWrapper extends LitElement {
     super.disconnectedCallback();
   }
 
- 
- 
+
   emitQuickActionStatusEvent() {
-    const customEvent = new CustomEvent('displayQuickActionChanged', {
+    const customEvent = new CustomEvent("displayQuickActionChanged", {
       detail: {
-        showQuickAction: this.showQuickAction,
-      },
+        showQuickAction: this.showQuickAction
+      }
     });
     this.dispatchEvent(customEvent);
 
   }
+
   render() {
     return html`
         <div class="quick-action">

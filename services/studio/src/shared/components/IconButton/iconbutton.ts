@@ -1,5 +1,5 @@
 import { css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import type { ComponentElement } from "$store/component/interface.ts";
@@ -8,13 +8,11 @@ import { getNestedAttribute } from "@utils/object.utils.ts";
 
 @customElement("icon-button-block")
 export class IconButtonBlock extends BaseElementBlock {
+  static styles = css``;
   @property({ type: Object })
   component: ComponentElement;
-
   @property({ type: Object })
   item: any;
-
-  static styles = css``;
 
   handleClick = () => {
     setTimeout(() => {
@@ -22,13 +20,13 @@ export class IconButtonBlock extends BaseElementBlock {
         const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.click`));
       }
     }, 0);
-  }
+  };
 
   render() {
     const { style } = this.component ?? {};
     const { icon } = this.component?.parameters ?? {};
     const color = this.thisvalue ?? this.item?.value ?? "";
-    const type=this.inputHandlersValue.value??'default'
+    const type = this.inputHandlersValue.value ?? "default";
 
     return html`
       <span style=${styleMap(style)}>

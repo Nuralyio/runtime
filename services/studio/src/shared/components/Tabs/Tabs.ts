@@ -9,47 +9,22 @@ import { EMPTY_STRING } from "@utils/constants.ts";
 
 @customElement("tabs-block")
 export class TabsBlock extends BaseElementBlock {
-  @property({ type: Object, reflect: false })
-  component: ComponentElement;
-
-  @state()
-  private editableTabs = [];
-
-  @state()
-  private componentsWithChildren: ComponentElement[] = [];
-
-
   static override styles = css`
       :host {
           display: block;
           height: 100%;
       }
   `;
-
-  private generateComponent(childrensIds: string[]) {
-    const childrens = this.componentsWithChildren.filter(component => childrensIds?.includes(component.uuid));
-    return html`${renderComponent(childrens, null, true)}`;
-  }
-
-  private generateTabs() {
-    return (this.inputHandlersValue.tabs)?.map(tab => ({
-      label: tab.label.value,
-      content: html`
-        <div>${this.generateComponent(tab.childrends.value)}</div>`
-    }));
-  }
+  @property({ type: Object, reflect: false })
+  component: ComponentElement;
+  @state()
+  private editableTabs = [];
+  @state()
+  private componentsWithChildren: ComponentElement[] = [];
 
   override async connectedCallback() {
     await super.connectedCallback();
     await this.traitInputsHandlers();
-  }
-
-  private updateComponents() {
-    $applicationComponents(this.component.applicationId).subscribe((components = []) => {
-      this.componentsWithChildren = [...components];
-      this.editableTabs = this.generateTabs();
-    });
-    this.requestUpdate();
   }
 
   override updated(changedProperties: Map<string | number | symbol, unknown>) {
@@ -66,18 +41,39 @@ export class TabsBlock extends BaseElementBlock {
         <hy-tabs
           style=${styleMap({
 
-            ...this.component.style
-          })}
+      ...this.component.style
+    })}
           .activeTab=${0}
           .tabs=${this.editableTabs}
           .editable=${{
-            canDeleteTab: false,
-            canEditTabTitle: false,
-            canAddTab: false,
-            canMove: false
-          }}
+      canDeleteTab: false,
+      canEditTabTitle: false,
+      canAddTab: false,
+      canMove: false
+    }}
         ></hy-tabs>
       ` : EMPTY_STRING}
     `;
+  }
+
+  private generateComponent(childrensIds: string[]) {
+    const childrens = this.componentsWithChildren.filter(component => childrensIds?.includes(component.uuid));
+    return html`${renderComponent(childrens, null, true)}`;
+  }
+
+  private generateTabs() {
+    return (this.inputHandlersValue.tabs)?.map(tab => ({
+      label: tab.label.value,
+      content: html`
+        <div>${this.generateComponent(tab.childrends.value)}</div>`
+    }));
+  }
+
+  private updateComponents() {
+    $applicationComponents(this.component.applicationId).subscribe((components = []) => {
+      this.componentsWithChildren = [...components];
+      this.editableTabs = this.generateTabs();
+    });
+    this.requestUpdate();
   }
 }

@@ -1,65 +1,66 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../../utils/common-editor-theme.ts";
-export default [
-    {
-        uuid: "select_selection_mode_block",
-        applicationId: "1",
-        name: "select selection mode block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            ...InputBlockContainerTheme
-        },
 
-        childrenIds: ["select_selectionmode_radio_block","selectionmode_handler_block"],
+export default [
+  {
+    uuid: "select_selection_mode_block",
+    applicationId: "1",
+    name: "select selection mode block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      ...InputBlockContainerTheme
     },
-    {
-        uuid: "select_selectionmode_radio_block",
-        applicationId: "1",
-        name: "select radio block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["select_selectionmode_label", ],
+
+    childrenIds: ["select_selectionmode_radio_block", "selectionmode_handler_block"]
+  },
+  {
+    uuid: "select_selectionmode_radio_block",
+    applicationId: "1",
+    name: "select radio block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    
-    {
-        uuid: "select_selectionmode_label",
-        name: "select selection mode label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input:{
-            value:{
-                type:'handler',
-                value:/* js */`
+    childrenIds: ["select_selectionmode_label"]
+  },
+
+  {
+    uuid: "select_selectionmode_label",
+    name: "select selection mode label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value:/* js */`
                 const selectionModeLabel='Selection mode';
                 return selectionModeLabel;
                 
                 `
-            }
-        },
-        style: {
-            width:'90px;'
-
-        }
+      }
     },
-    {
-        uuid: "select_selectionmode_radio",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "select selection mode radio",
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ ` 
+    style: {
+      width: "90px;"
+
+    }
+  },
+  {
+    uuid: "select_selectionmode_radio",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "select selection mode radio",
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ ` 
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -88,13 +89,13 @@ export default [
             const result = [options,currentSelectionMode,radioType];
            return  result;
                 `
-            }
-        },
-        style: {
-            ...RadioButtonWithTwoOptionsTheme
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    style: {
+      ...RadioButtonWithTwoOptionsTheme
+    },
+    event: {
+      changed: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -107,36 +108,36 @@ export default [
                 console.log(error);
             }  
       `
-        },
+    }
+  },
+
+  {
+    uuid: "selectionmode_handler_block",
+    applicationId: "1",
+    name: "selectionmode handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "justify-content": "space-between"
     },
 
-    {
-        uuid: "selectionmode_handler_block",
-        applicationId: "1",
-        name: "selectionmode handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'justify-content':'space-between',
-        },
-        
-        childrenIds: ["select_selectionmode_radio", "selectionmode_handler"],
+    childrenIds: ["select_selectionmode_radio", "selectionmode_handler"]
+  },
+  {
+    uuid: "selectionmode_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "selection mode handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "selectionmode_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "selection mode handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='selectionmode';
                 let selectionModeHandler=''
                 try{
@@ -153,11 +154,11 @@ export default [
                 }
                 return [parameter,selectionModeHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -170,8 +171,8 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
 
-]
+];

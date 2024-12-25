@@ -10,13 +10,13 @@ export interface ComponentStore {
   [key: string]: ComponentElement[];
 }
 
-const isServer = typeof window === 'undefined';
+const isServer = typeof window === "undefined";
 
-const initialStates = isServer ? [] : JSON.parse(window['__INITIAL_COMPONENT_STATE__'] ?? '[]');
+const initialStates = isServer ? [] : JSON.parse(window["__INITIAL_COMPONENT_STATE__"] ?? "[]");
 
 const initialState: ComponentStore = isServer ? {} : {
   "1": studioComponents as any,
-  "landing": landingComponents as any,
+  "landing": landingComponents as any
 };
 
 if (currentLoadedApplication) {
@@ -30,7 +30,7 @@ export const $currentComponentId = persistentAtom<string>(
   null,
   {
     encode: JSON.stringify,
-    decode: JSON.parse,
+    decode: JSON.parse
   }
 );
 
@@ -41,7 +41,7 @@ export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
   null,
   {
     encode: JSON.stringify,
-    decode: JSON.parse,
+    decode: JSON.parse
   }
 );
 

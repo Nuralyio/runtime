@@ -3,9 +3,9 @@ import { StudioTextLabelHandler } from "./handler.ts";
 import { StudioTextTheme } from "./theme.ts";
 import { TextLabelInputs } from "./design/inputs";
 
-export const StudioTextLabel =[
+export const StudioTextLabel = [
   ...StudioTextLabelDesign,
   ...StudioTextLabelHandler,
   ...StudioTextTheme,
-  ...TextLabelInputs,
-]
+  ...TextLabelInputs
+];

@@ -14,23 +14,16 @@ import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
 // @ts-ignore
 self.MonacoEnvironment = {
   getWorker(_: any, label: string) {
- 
+
     if (label === "typescript" || label === "javascript") {
       return new tsWorker();
     }
     return new editorWorker();
-  },
+  }
 };
 
 @customElement("code-editor")
 export class CodeEditor extends LitElement {
-  private container: Ref<HTMLElement> = createRef();
-  editor?: monaco.editor.IStandaloneCodeEditor;
-  @property({ type: Boolean, attribute: "readonly" }) readOnly?: boolean;
-  @property() theme?: string;
-  @property() language?: string;
-  @property() code?: string;
-
   static styles = css`
     :host {
       --editor-width: 100%;
@@ -41,17 +34,13 @@ export class CodeEditor extends LitElement {
       height: var(--editor-height);
     }
   `;
+  editor?: monaco.editor.IStandaloneCodeEditor;
+  @property({ type: Boolean, attribute: "readonly" }) readOnly?: boolean;
+  @property() theme?: string;
+  @property() language?: string;
+  @property() code?: string;
+  private container: Ref<HTMLElement> = createRef();
 
-  protected override updated(_changedProperties: PropertyValues): void {
-    if(_changedProperties.has('code')&& this.code != _changedProperties.get('code')){
-      const cursorPosition =this.editor.getPosition()
-      if(this.code != this.getValue()){
-        this.editor.setValue(this.code);
-        this.editor.setPosition(cursorPosition)
-        this.requestUpdate()
-      }
-    }
-  }
   render() {
     return html`
       <style>
@@ -59,6 +48,58 @@ export class CodeEditor extends LitElement {
       </style>
       <main ${ref(this.container)}></main>
     `;
+  }
+
+  getValue() {
+    return this.editor!.getValue();
+  }
+
+  setOptions(value: monaco.editor.IStandaloneEditorConstructionOptions) {
+    this.editor!.updateOptions(value);
+  }
+
+  override firstUpdated() {
+    monaco.languages.register({ id: "mylang" });
+    monaco.languages.setMonarchTokensProvider("mylang", {
+      tokenizer: {
+        root: [
+          [/#.*$/, "comment"],
+          [/\b(begin|end|if|else|while)\b/, "keyword"],
+          [/[=+\-*/]/, "operator"],
+          [/\d+/, "number"]
+        ]
+      }
+    });
+
+    this.editor = monaco.editor.create(this.container.value!, {
+      value: this.getCode(),
+      language: this.getLang(),
+      theme: this.getTheme(),
+      fontSize: 13,
+      automaticLayout: true,
+      readOnly: this.readOnly ?? false
+    });
+    this.editor.getModel()!.onDidChangeContent(() => {
+      this.dispatchEvent(
+        new CustomEvent("change", { detail: { value: this.getValue() } })
+      );
+    });
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", () => {
+        monaco.editor.setTheme(this.getTheme());
+      });
+  }
+
+  protected override updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has("code") && this.code != _changedProperties.get("code")) {
+      const cursorPosition = this.editor.getPosition();
+      if (this.code != this.getValue()) {
+        this.editor.setValue(this.code);
+        this.editor.setPosition(cursorPosition);
+        this.requestUpdate();
+      }
+    }
   }
 
   private getFile() {
@@ -93,44 +134,5 @@ export class CodeEditor extends LitElement {
       window.matchMedia("(prefers-color-scheme: dark)").matches
     );
   }
-  getValue() {
-    return this.editor!.getValue();
-  }
-  setOptions(value: monaco.editor.IStandaloneEditorConstructionOptions) {
-    this.editor!.updateOptions(value);
-  }
 
-  override firstUpdated() {
-      monaco.languages.register({ id: "mylang" });
-      monaco.languages.setMonarchTokensProvider("mylang", {
-        tokenizer: {
-          root: [
-            [/#.*$/, "comment"],
-            [/\b(begin|end|if|else|while)\b/, "keyword"],
-            [/[=+\-*/]/, "operator"],
-            [/\d+/, "number"],
-          ],
-        },
-      });
-  
-      this.editor = monaco.editor.create(this.container.value!, {
-        value: this.getCode(),
-        language: this.getLang(),
-        theme: this.getTheme(),
-        fontSize: 13,
-        automaticLayout: true,
-        readOnly: this.readOnly ?? false,
-      });
-      this.editor.getModel()!.onDidChangeContent(() => {
-        this.dispatchEvent(
-          new CustomEvent("change", { detail: { value: this.getValue() } })
-        );
-      });
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", () => {
-          monaco.editor.setTheme(this.getTheme());
-        });
-    }
-    
 }

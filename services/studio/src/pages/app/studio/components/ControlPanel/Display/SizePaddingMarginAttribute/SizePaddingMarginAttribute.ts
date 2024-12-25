@@ -1,30 +1,30 @@
-import { type  ComponentElement } from '$store/component/interface.ts';
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js'
+import { type  ComponentElement } from "$store/component/interface.ts";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import "./SizePaddingMarginValue/SizePaddingMarginValue.ts";
 
-@customElement('size-padding-margin-attribute')
+@customElement("size-padding-margin-attribute")
 export class SIzePAddingMArginATtribute extends LitElement {
-    @property({ type: Object })
-    component: ComponentElement;
-    static styles = [
-        css`
+  static styles = [
+    css`
           .container {
               border: 1px solid #bcbcbc;
               border-radius: 3px;
           }
         `
-    ];
+  ];
+  @property({ type: Object })
+  component: ComponentElement;
 
-    render() {
-        return html`
+  render() {
+    return html`
         <div>
         <span>Position</span>
         <size-padding-margin-value 
         @attributeUpdate=${(event: CustomEvent) => {
-           // todo: implment this
-        }} .component=${{...this.component}}></size-padding-margin-value>
+      // todo: implment this
+    }} .component=${{ ...this.component }}></size-padding-margin-value>
         </div>
         `;
-    }
+  }
 }

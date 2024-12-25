@@ -1,9 +1,10 @@
-import { LitElement, html, css, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 
 import "../ControlPanel/ControlPanelTabs.ts";
-import { $context, getVar, setVar } from "$store/context.ts";
+import { $context, getVar } from "$store/context.ts";
+
 @customElement("right-panel")
 export class RightPanel extends LitElement {
   static styles = [css`
@@ -25,18 +26,17 @@ export class RightPanel extends LitElement {
     });
     $context.listen(() => {
       this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
-      console.log( this.showSecondsRow)
+      console.log(this.showSecondsRow);
       this.requestUpdate();
     });
   }
 
- 
 
   render() {
     return html`
 
       <aside
-        class=" sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col ${this.mode === ViewMode.Edit ? 'visible' : ''}"
+        class=" sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
         style="height: 100%;">
         <div class="my-4 w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"></span>

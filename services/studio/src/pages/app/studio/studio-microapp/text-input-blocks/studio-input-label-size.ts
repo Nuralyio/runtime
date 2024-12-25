@@ -1,70 +1,71 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "input_label_font_size_vertical_container",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center',
-            'margin-top': '10px',
-        },
-        childrenIds: ["input_label_font_size_block","input_label_size_handler_block"],
-    },
-    {
-        uuid: "input_label_font_size_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'justify-content':'space-between',
-            'align-items':'center'
-        },
-        childrenIds: ["text_label_label_font_size", "font_size_input"],
-    },
 
-    {
-        uuid: "text_label_label_font_size",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+export default [
+  {
+    uuid: "input_label_font_size_vertical_container",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+
+      display: "flex",
+      "justify-content": "space-between",
+      "align-items": "center",
+      "margin-top": "10px"
+    },
+    childrenIds: ["input_label_font_size_block", "input_label_size_handler_block"]
+  },
+  {
+    uuid: "input_label_font_size_block",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "justify-content": "space-between",
+      "align-items": "center"
+    },
+    childrenIds: ["text_label_label_font_size", "font_size_input"]
+  },
+
+  {
+    uuid: "text_label_label_font_size",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Label size';
                 return label;
             `
-            }
-        },
-      
+      }
+    }
+
+  },
+  {
+    uuid: "font_size_input",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.NumberInput,
+    parameters: {
+      value: "22px"
     },
-    {
-        uuid: "font_size_input",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.NumberInput,
-        parameters: {
-            value: "22px",
-        },
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "120px",
-            size:'small',
-        },
-        event: {
-            valueChange:  /* js */ `
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "120px",
+      size: "small"
+    },
+    event: {
+      valueChange:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
                         if( selectedComponens.length) {
@@ -78,11 +79,11 @@ export default [
                         console.log(error);
                     }                 
   `
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
@@ -111,10 +112,10 @@ export default [
             console.log(e);
         }
             `
-            },
-            state:{
-                type:'handler',
-                value:/* js */`
+      },
+      state: {
+        type: "handler",
+        value:/* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if(selectedComponens.length) {
@@ -132,36 +133,36 @@ export default [
                 } 
                 
                 `
-            }
-        }
+      }
+    }
+  },
+  {
+    uuid: "input_label_size_handler_block",
+    applicationId: "1",
+    name: "input label size handler block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "50px",
+      display: "flex",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "input_label_size_handler_block",
-        applicationId: "1",
-        name: "input label size handler block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            width: "50px",
-            display:'flex',
-            'justify-content':'space-between',
-        }, 
-        childrenIds: ["input_label_size_handler"],
+    childrenIds: ["input_label_size_handler"]
+  },
+  {
+    uuid: "input_label_size_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "input label size handler",
+    style: {
+      display: "block"
     },
-    {
-        uuid: "input_label_size_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "input label size handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='labelSize';
                 let labelSizeHandler =''
                 try{
@@ -176,11 +177,11 @@ export default [
                 }
                 return [parameter,labelSizeHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -192,7 +193,7 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
+    }
+  }
 
-]
+];

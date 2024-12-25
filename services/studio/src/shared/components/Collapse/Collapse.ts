@@ -31,10 +31,26 @@ export class Collapse extends BaseElementBlock {
     $applicationComponents(this.component.applicationId).subscribe((components = []) => {
       this.componentsWithChildren = [...components];
       this.sections = this.generateSection().map((section, index) => {
-        section.open = this.openStates[index] ??  section.open;
+        section.open = this.openStates[index] ?? section.open;
         return section;
       });
     });
+  }
+
+  override render() {
+    return html`
+      <hy-collapse
+        style=${styleMap({
+      ...this.component.style
+    })}
+        .sections=${this.sections ?? nothing}
+        .size=${this.inputHandlersValue?.size ?? nothing}
+        @section-toggled=${(e: CustomEvent) => {
+      this.openStates[e.detail.index] = !this.openStates[e.detail.index];
+    }}
+      >
+      </hy-collapse>
+    `;
   }
 
   private generateComponent(_children: string) {
@@ -48,26 +64,10 @@ export class Collapse extends BaseElementBlock {
           header: section.label,
           content: html`
             <div>${this.generateComponent(section.blockName)}</div>`,
-          open : section.open,
+          open: section.open
 
         };
       }
     );
-  }
-
-  override render() {
-    return html`
-      <hy-collapse
-        style=${styleMap({
-          ...this.component.style
-        })}
-        .sections=${this.sections ?? nothing}
-        .size=${this.inputHandlersValue?.size ?? nothing}
-        @section-toggled=${(e: CustomEvent) => {
-          this.openStates[e.detail.index] = !this.openStates[e.detail.index];
-        }}
-      >
-      </hy-collapse>
-    `;
   }
 }

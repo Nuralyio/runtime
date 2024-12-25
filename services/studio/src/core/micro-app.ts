@@ -99,7 +99,7 @@ export class MicroApp extends LitElement {
 
   override render() {
     return html`
-        
+
       ${this.uuid && this.components.length ? html`
         ${this.componentToRenderUUID ?
           renderComponent([...this.components.filter((component: any) => component.uuid === this.componentToRenderUUID)], null, this.isPreviewMode())

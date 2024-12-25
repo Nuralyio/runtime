@@ -14,7 +14,7 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     style: {
-       ...InputBlockContainerTheme
+      ...InputBlockContainerTheme
     },
 
     childrenIds: ["datepicker_local_input_block", "locale_handler_block"]
@@ -30,7 +30,7 @@ export default [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["datepicker_locale_label_container", ]
+    childrenIds: ["datepicker_locale_label_container"]
   },
   {
     uuid: "datepicker_locale_label_container",
@@ -162,8 +162,7 @@ export default [
     name: "locale handler block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
-    style: {
-    },
+    style: {},
 
     childrenIds: ["locale_select", "locale_handler"]
   },

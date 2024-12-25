@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorHandler/BackgroundColorHandler.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
@@ -7,14 +7,16 @@ import { updateComponentAttributes } from "$store/actions/component/updateCompon
 
 @customElement("attribute-background-color")
 export class AttributeBackgroundColor extends LitElement {
+  static styles = styles;
   @property({ type: Object })
   component: ComponentElement;
-  static styles = styles;
+
   changeHandler(event: CustomEvent) {
     updateComponentAttributes(this.component.uuid, {
-      backgroundColor: event.detail.value,
+      backgroundColor: event.detail.value
     });
   }
+
   render() {
     return html`
     <editpanel-attribute-container>

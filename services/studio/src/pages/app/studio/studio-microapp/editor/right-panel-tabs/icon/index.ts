@@ -4,4 +4,4 @@ import { StudioIconDesign } from "./design.ts";
 export const StudioIcon = [
   ...StudioIconDesign,
   ...StudioIconHandler
-]
+];

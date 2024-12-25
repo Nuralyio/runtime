@@ -8,6 +8,15 @@ import { executeCodeWithClosure } from "../../../core/executer.ts";
 
 @customElement("handler-block")
 export class HandlerBlock extends BaseElementBlock {
+  static styles = [
+    css`   
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    `
+  ];
   @property({ type: Object })
   component: ComponentElement;
 
@@ -67,8 +76,7 @@ export class HandlerBlock extends BaseElementBlock {
         }catch(error){
             console.log(error);
         }
-        `, {
-      });
+        `, {});
   };
 
   renderCodeEditorTemplate(eventName, eventValue) {
@@ -89,23 +97,23 @@ export class HandlerBlock extends BaseElementBlock {
       <hy-dropdown
         placeholder="Select an option"
         @closed=${() => {
-        }}
+    }}
         .template=${this.renderCodeEditorTemplate(eventName, eventValue)}
       >
         <hy-button
 
           style=${styleMap(
-            {
-              "--hybrid-button-text-color": "#b8b8b8",
-              "--hybrid-button-height": "39px",
-              "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
-              "--hybrid-button-background-color": "transparent",
-              "--hybrid-button-border-left": "none",
-              "--hybrid-button-border-right": "none",
-              "--hybrid-button-border-top": "none",
-              "--hybrid-button-border-bottom": "none"
+      {
+        "--hybrid-button-text-color": "#b8b8b8",
+        "--hybrid-button-height": "39px",
+        "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+        "--hybrid-button-background-color": "transparent",
+        "--hybrid-button-border-left": "none",
+        "--hybrid-button-border-right": "none",
+        "--hybrid-button-border-top": "none",
+        "--hybrid-button-border-bottom": "none"
 
-            })}
+      })}
           .icon=${["code"]}
           class="unit"
           iconPosition=${!this.inputHandlersValue?.triggerText ? "left" : "right"}
@@ -119,64 +127,56 @@ export class HandlerBlock extends BaseElementBlock {
     `;
   }
 
-  static styles = [
-    css`   
-        .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    `
-  ];
-
   render() {
     const eventsHandlers = this.inputHandlersValue?.events ?? {};
     return html`
-      <hy-label style="text-align:center; margin-top : 15px">Click + above to add user trigger actions (such as on hover or click).</hy-label>
+      <hy-label style="text-align:center; margin-top : 15px">Click + above to add user trigger actions (such as on hover
+        or click).
+      </hy-label>
 
       <hy-dropdown
         style=${
           styleMap({
             "--hybrid-dropdown-padding": "5px",
-            "--hybrid-dropdown-border-radius":"5px"
+            "--hybrid-dropdown-border-radius": "5px"
           })
         }
         @click-item=${(e: CustomEvent) => {
-          this.createHandleCodeChange(e.detail.value)
+          this.createHandleCodeChange(e.detail.value);
         }}
-      .options=${
-        (this.inputHandlersValue.allowedEvents ?? []).filter(
-          event=>this.inputHandlersValue?.events[event.name]===undefined || this.inputHandlersValue?.events[event.name] === null
-        ).map((event) => {
-          return {label: event.label, value: event.name}
-        })
-      }>
-         <hy-button
+        .options=${
+          (this.inputHandlersValue.allowedEvents ?? []).filter(
+            event => this.inputHandlersValue?.events[event.name] === undefined || this.inputHandlersValue?.events[event.name] === null
+          ).map((event) => {
+            return { label: event.label, value: event.name };
+          })
+        }>
+        <hy-button
 
-                  style=${styleMap(
-      {
-        "--hybrid-button-text-color": "#b8b8b8",
-        "--hybrid-button-height": "39px",
-        "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
-        "--hybrid-button-background-color": "transparent",
-        "--hybrid-button-border-left": "none",
-        "--hybrid-button-border-right": "none",
-        "--hybrid-button-border-top": "none",
-        "--hybrid-button-border-bottom": "none"
-      })}
-                  .icon=${["plus"]}
-                  class="unit"
-                >${this.inputHandlersValue?.triggerText ?? ""}
-                </hy-button>
-                <hy-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
-                  add trigger
-                </hy-tooltip>
+          style=${styleMap(
+            {
+              "--hybrid-button-text-color": "#b8b8b8",
+              "--hybrid-button-height": "39px",
+              "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+              "--hybrid-button-background-color": "transparent",
+              "--hybrid-button-border-left": "none",
+              "--hybrid-button-border-right": "none",
+              "--hybrid-button-border-top": "none",
+              "--hybrid-button-border-bottom": "none"
+            })}
+          .icon=${["plus"]}
+          class="unit"
+        >${this.inputHandlersValue?.triggerText ?? ""}
+        </hy-button>
+        <hy-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
+          add trigger
+        </hy-tooltip>
       </hy-dropdown>
       <div>
         ${Object.keys(eventsHandlers).map((eventName) => {
-          if(this.inputHandlersValue?.events[eventName] === null)
-            return 
-          
+          if (this.inputHandlersValue?.events[eventName] === null)
+            return;
+
           return html`
             <div class="container">
               <hy-label>${eventName}</hy-label>
@@ -184,19 +184,19 @@ export class HandlerBlock extends BaseElementBlock {
                 <hy-button
 
                   style=${styleMap(
-                    {
-                      "--hybrid-button-text-color": "#b8b8b8",
-                      "--hybrid-button-height": "39px",
-                      "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
-                      "--hybrid-button-background-color": "transparent",
-                      "--hybrid-button-border-left": "none",
-                      "--hybrid-button-border-right": "none",
-                      "--hybrid-button-border-top": "none",
-                      "--hybrid-button-border-bottom": "none"
-                    })}
+            {
+              "--hybrid-button-text-color": "#b8b8b8",
+              "--hybrid-button-height": "39px",
+              "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+              "--hybrid-button-background-color": "transparent",
+              "--hybrid-button-border-left": "none",
+              "--hybrid-button-border-right": "none",
+              "--hybrid-button-border-top": "none",
+              "--hybrid-button-border-bottom": "none"
+            })}
                   .icon=${["remove"]}
                   class="unit"
-                  @click=${()=>this.removeHandler(eventName)}
+                  @click=${() => this.removeHandler(eventName)}
                 >${this.inputHandlersValue?.triggerText ?? ""}
                 </hy-button>
                 <hy-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>

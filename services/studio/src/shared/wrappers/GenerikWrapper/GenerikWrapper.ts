@@ -27,9 +27,9 @@ function safeParseInt(value) {
 
 @customElement("generik-component-wrapper")
 export class GenerikComponentWrapper extends LitElement {
+  static styles = styles;
   @property({ type: Object }) component: ComponentElement;
   @property({ type: Boolean }) highlighted: boolean;
-
   @state() selectedComponent: ComponentElement;
   @state() hoveredComponent: ComponentElement;
   @state() displayTitle = true;
@@ -43,12 +43,8 @@ export class GenerikComponentWrapper extends LitElement {
   @state() showQuickAction = true;
   @state() currentSelection = [];
   @state() dropDragPlaceholderStyle: any = {};
-
   inputRef: Ref<HTMLInputElement> = createRef();
   resizerRef: Ref<HTMLDivElement> = createRef();
-
-  static styles = styles;
-
   private isResizing = false;
   private startX = 0;
   private startMarginLeft = 0;
@@ -79,7 +75,7 @@ export class GenerikComponentWrapper extends LitElement {
             this.draggingComponentInfo.blockInfo.width = `${rect.width}px`;
             setDraggingComponentInfo({
               componentId: this.draggingComponentInfo?.componentId,
-              blockInfo: { ...this.draggingComponentInfo.blockInfo },
+              blockInfo: { ...this.draggingComponentInfo.blockInfo }
             });
           }
         }
@@ -117,54 +113,6 @@ export class GenerikComponentWrapper extends LitElement {
     setContextMenuEvent(e);
   }
 
-  private handleMouseDown(e: MouseEvent) {
-    e.stopPropagation();
-    let currentSelection = getVar("global", "selectedComponents")?.value || [];
-    if (e.metaKey) {
-      currentSelection.push(this.component.uuid);
-    } else if (e.shiftKey) {
-      currentSelection = currentSelection.filter((uuid) => uuid !== this.component.uuid);
-    } else {
-      currentSelection = [this.component.uuid];
-    }
-    setVar("global", "selectedComponents", [...currentSelection]);
-  }
-
-  private startResizing(e: MouseEvent) {
-    this.isResizing = true;
-    this.startX = e.clientX;
-    this.startMarginLeft = safeParseInt(this.component?.style?.marginLeft) || 0;
-    document.addEventListener("mousemove", this.resize);
-    document.addEventListener("mouseup", this.stopResizing);
-  }
-
-  private updateComponentMarginLeft(newMarginLeft: number) {
-    const updatedStyle = {
-      ...this.component.style,
-      marginLeft: `${newMarginLeft}px`,
-    };
-    this.component = { ...this.component, style: updatedStyle };
-    updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", updatedStyle);
-    this.requestUpdate();
-  }
-
-  private resize = (e: MouseEvent) => {
-    if (this.isResizing) {
-      const deltaX = e.clientX - this.startX;
-      const newMarginLeft = this.startMarginLeft + deltaX;
-      this.updateComponentMarginLeft(newMarginLeft);
-    }
-  }
-
-  private stopResizing = () => {
-    this.isResizing = false;
-    document.removeEventListener("mousemove", this.resize.bind(this));
-    document.removeEventListener("mouseup", this.stopResizing.bind(this));
-    requestAnimationFrame(() => {
-      this.requestUpdate();
-    })
-  }
-
   render() {
     return html`
       <resize-wrapper
@@ -199,11 +147,11 @@ export class GenerikComponentWrapper extends LitElement {
                 ${ref(this.resizerRef)}
                 class="left-resizer"
                 style=${styleMap({
-                  width: `${safeParseInt(this.component?.style?.marginLeft) + 10}px`,
-                  zIndex: 1000,
-                  height: `${this.inputRef?.value?.offsetHeight}px`,
-                  cursor: "ew-resize",
-                })}
+      width: `${safeParseInt(this.component?.style?.marginLeft) + 10}px`,
+      zIndex: 1000,
+      height: `${this.inputRef?.value?.offsetHeight}px`,
+      cursor: "ew-resize"
+    })}
                 @mousedown=${this.startResizing}
               >
                 <span class="text">${safeParseInt(this.component?.style?.marginLeft)}px</span>
@@ -215,4 +163,52 @@ export class GenerikComponentWrapper extends LitElement {
       </resize-wrapper>
     `;
   }
+
+  private handleMouseDown(e: MouseEvent) {
+    e.stopPropagation();
+    let currentSelection = getVar("global", "selectedComponents")?.value || [];
+    if (e.metaKey) {
+      currentSelection.push(this.component.uuid);
+    } else if (e.shiftKey) {
+      currentSelection = currentSelection.filter((uuid) => uuid !== this.component.uuid);
+    } else {
+      currentSelection = [this.component.uuid];
+    }
+    setVar("global", "selectedComponents", [...currentSelection]);
+  }
+
+  private startResizing(e: MouseEvent) {
+    this.isResizing = true;
+    this.startX = e.clientX;
+    this.startMarginLeft = safeParseInt(this.component?.style?.marginLeft) || 0;
+    document.addEventListener("mousemove", this.resize);
+    document.addEventListener("mouseup", this.stopResizing);
+  }
+
+  private updateComponentMarginLeft(newMarginLeft: number) {
+    const updatedStyle = {
+      ...this.component.style,
+      marginLeft: `${newMarginLeft}px`
+    };
+    this.component = { ...this.component, style: updatedStyle };
+    updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", updatedStyle);
+    this.requestUpdate();
+  }
+
+  private resize = (e: MouseEvent) => {
+    if (this.isResizing) {
+      const deltaX = e.clientX - this.startX;
+      const newMarginLeft = this.startMarginLeft + deltaX;
+      this.updateComponentMarginLeft(newMarginLeft);
+    }
+  };
+
+  private stopResizing = () => {
+    this.isResizing = false;
+    document.removeEventListener("mousemove", this.resize.bind(this));
+    document.removeEventListener("mouseup", this.stopResizing.bind(this));
+    requestAnimationFrame(() => {
+      this.requestUpdate();
+    });
+  };
 }

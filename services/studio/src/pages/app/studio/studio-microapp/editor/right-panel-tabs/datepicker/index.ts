@@ -4,4 +4,4 @@ import { StudioDateHandler } from "./handler.ts";
 export const StudioDatepicker = [
   ...StudioDatepickerDesign,
   ...StudioDateHandler
-]
+];

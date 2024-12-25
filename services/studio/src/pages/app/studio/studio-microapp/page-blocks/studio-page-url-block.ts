@@ -1,52 +1,53 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "page_url_block",
-        applicationId: "1",
-        name: "page url block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-             display:'flex',
-             'align-items':'center',
-             'justify-content':'space-between',
-             width:'250px'
-        },
 
-        childrenIds: ["page_url_text_label", "page_url_text_input"],
+export default [
+  {
+    uuid: "page_url_block",
+    applicationId: "1",
+    name: "page url block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      width: "250px"
     },
-    {
-        uuid: "page_url_text_label",
-        name: "page url text label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    childrenIds: ["page_url_text_label", "page_url_text_input"]
+  },
+  {
+    uuid: "page_url_text_label",
+    name: "page url text label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Page url';
                 return label;`
-            },
-            
-        },
-        style: {
-            width:'90px'
-        },
+      }
+
     },
-    {
-        uuid: "page_url_text_input",
-        name: "page url text input",
-        applicationId: "1",
-        component_type: ComponentType.TextInput,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            size:'small',
-            width:'120px'
-        },
-        event: {
-            valueChange:  /* js */ `
+    style: {
+      width: "90px"
+    }
+  },
+  {
+    uuid: "page_url_text_input",
+    name: "page url text input",
+    applicationId: "1",
+    component_type: ComponentType.TextInput,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      size: "small",
+      width: "120px"
+    },
+    event: {
+      valueChange:  /* js */ `
             try{
                 const currentPageId =  GetVar("currentPage");
                 if(currentPageId){
@@ -67,11 +68,11 @@ export default [
             } 
                
   `
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             try{
             const currentPageId =  GetVar("currentPage");
             if(currentPageId) {
@@ -85,15 +86,15 @@ export default [
             console.log(e);
         }
             `
-            },
-            placeholder: {
-                type: 'handler',
-                value: /* js */`
+      },
+      placeholder: {
+        type: "handler",
+        value: /* js */`
                 const inputPlaceHolder ="page url";
                 return inputPlaceHolder;
             `
-            }
-        }
-    },
+      }
+    }
+  }
 
-]
+];

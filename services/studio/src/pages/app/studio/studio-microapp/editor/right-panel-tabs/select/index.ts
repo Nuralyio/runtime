@@ -3,5 +3,5 @@ import { StudioSelectHandler } from "./handler.ts";
 
 export const StudioSelect = [
   ...StudioSelectDesign,
-  ...StudioSelectHandler,
+  ...StudioSelectHandler
 ];

@@ -1,5 +1,5 @@
+const worker = undefined;
 
-const worker = undefined; ;
 
 export function getWorkerInstance(): Worker {
   return worker;

@@ -1,5 +1,5 @@
-import { LitElement, html, css } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators.js";
 
 @customElement("attribute-background-color-label")
 export class AttributeBackgroundColorValueLabel extends LitElement {
@@ -8,7 +8,7 @@ export class AttributeBackgroundColorValueLabel extends LitElement {
       :host {
         display: block;
       }
-    `,
+    `
   ];
 
   render() {

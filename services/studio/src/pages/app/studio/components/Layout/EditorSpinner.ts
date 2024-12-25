@@ -1,22 +1,11 @@
-import { css, html, LitElement, nothing, type PropertyValues } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 
 @customElement("editor-spinner")
-export class EditorSpinner extends LitElement{
+export class EditorSpinner extends LitElement {
 
-  @property() data=null
-
-  @state()
-  loading=true;
-  protected updated(_changedProperties: PropertyValues): void {
-    if(this.data){
-      this.loading =false;
-    }
-  }
-   
- 
-    static styles = [
-        css`
+  static styles = [
+    css`
     .spinner {
         border: 4px solid rgba(0, 0, 0, 0.1); /* Light gray */
         border-top: 4px solid #8f8f8f;        /* Blue */
@@ -52,19 +41,25 @@ export class EditorSpinner extends LitElement{
         transform: translateX(-50%); /* Center horizontally */
       }
     
-    `]
-   
+    `];
+  @property() data = null;
+  @state()
+  loading = true;
 
-
-
-    render(){
-     return html` 
-     ${this.loading?
-     html`  
+  render() {
+    return html` 
+     ${this.loading ?
+      html`  
      <div class="spinner"></div>
        <p class="loading-text">Loading editor...</p>
-       `:nothing
-      }`
-       
+       ` : nothing
+    }`;
+
+  }
+
+  protected updated(_changedProperties: PropertyValues): void {
+    if (this.data) {
+      this.loading = false;
     }
+  }
 }

@@ -2,20 +2,20 @@ import { ComponentType } from "$store/component/interface.ts";
 
 export default {
   uuid: "right_panel_tabs",
-    applicationId: "1",
+  applicationId: "1",
   name: "right_panel_tabs",
   component_type: ComponentType.Tabs,
   event: {},
   style: {
     width: "100%",
-      height: "100%",
-      display: "grid",
-      "--hybrid-tabs-content-padding": "0px"
+    height: "100%",
+    display: "grid",
+    "--hybrid-tabs-content-padding": "0px"
   },
   input: {
     tabs: {
       type: "handler",
-        value: /* js */ `
+      value: /* js */ `
                 const selectedComponents = GetVar("selectedComponents") || [];
                 const currentPageId = GetVar("currentPage");
                 const currentEditingApplication = GetVar("currentEditingApplication");

@@ -1,56 +1,57 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
+
 export default [
-    {
+  {
     uuid: "icon_color_block",
     applicationId: "1",
     name: "icon color block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
     style: {
-        ...InputBlockContainerTheme
+      ...InputBlockContainerTheme
     },
-    childrenIds: ["icon_input_block","icon_color_handler_block"]
+    childrenIds: ["icon_input_block", "icon_color_handler_block"]
+  },
+  {
+    uuid: "icon_input_block",
+    applicationId: "1",
+    name: "placeholder block",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between"
     },
-    {
-        uuid: "icon_input_block",
-        applicationId: "1",
-        name: "placeholder block",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between'
-        },
-        childrenIds: ["icon_color_label",],
-    },
-    {
-        uuid: "icon_color_label",
-        name: "icon color label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+    childrenIds: ["icon_color_label"]
+  },
+  {
+    uuid: "icon_color_label",
+    name: "icon color label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const label ='Color';
               return label;`
-            }
-        },
-        style: {
-            width:'90px'
-        },
+      }
     },
-{
+    style: {
+      width: "90px"
+    }
+  },
+  {
     uuid: "icon_color_input",
     name: "name",
     applicationId: "1",
     component_type: ComponentType.ColorPicker,
     event: {
-        valueChange: /* js */ `
+      valueChange: /* js */ `
        
        try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -68,9 +69,9 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     input: {
-        value: {
-            type: "handler",
-            value: /* js */`
+      value: {
+        type: "handler",
+        value: /* js */`
                 try{
                     const selectedComponens =  GetVar( "selectedComponents")||[];
                     if( selectedComponens.length) {
@@ -84,10 +85,10 @@ export default [
                     console.log(e);
                 }
             `
-        },
-        state:{
-            type:"handler",
-            value:/* js */ `
+      },
+      state: {
+        type: "handler",
+        value:/* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -104,21 +105,20 @@ export default [
             }
             
             `
-        }
+      }
     }
-},
-{
+  },
+  {
     uuid: "icon_color_handler_block",
     applicationId: "1",
     name: "icon color handler block",
     component_type: ComponentType.VerticalContainer,
     ...COMMON_ATTRIBUTES,
-    style: {
-    },
-    
-    childrenIds: [ "icon_color_input","icon_color_handler"],
-},
-{
+    style: {},
+
+    childrenIds: ["icon_color_input", "icon_color_handler"]
+  },
+  {
     uuid: "icon_color_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
@@ -126,13 +126,13 @@ export default [
     styleHandlers: {},
     name: "icon color handler",
     style: {
-            display:'block',
-        width: "50px",
+      display: "block",
+      width: "50px"
     },
-    input: { 
-        value: {
-            type: 'handler',
-            value: /* js */`
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
             const parameter ='iconColor';
             let iconColorHandler=''
             try{
@@ -147,11 +147,11 @@ export default [
             }
             return [parameter,iconColorHandler];
         `
-        }
+      }
     },
-    
+
     event: {
-        codeChange: /* js */ `
+      codeChange: /* js */ `
         try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if(selectedComponens.length) {
@@ -163,6 +163,6 @@ export default [
             console.log(error);
         }
   `
-    },
-},
-] 
+    }
+  }
+];

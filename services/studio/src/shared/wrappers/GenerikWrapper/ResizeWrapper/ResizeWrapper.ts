@@ -11,12 +11,10 @@ import { setResizing } from "$store/actions/page/setResizing.ts";
 
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {
-  inputRef: Ref<HTMLInputElement> = createRef();
-  onlyWidthResizableComponents= [ComponentType.TextInput,ComponentType.Select,ComponentType.DatePicker,ComponentType.Button,ComponentType.Checkbox]
-  notResizableComponents = [ComponentType.Checkbox,ComponentType.TextLabel]
-
   static styles = styles;
-
+  inputRef: Ref<HTMLInputElement> = createRef();
+  onlyWidthResizableComponents = [ComponentType.TextInput, ComponentType.Select, ComponentType.DatePicker, ComponentType.Button, ComponentType.Checkbox];
+  notResizableComponents = [ComponentType.Checkbox, ComponentType.TextLabel];
   @property({ type: Object })
   component: ComponentElement;
 
@@ -34,7 +32,7 @@ export class ResizeWrapper extends LitElement {
       top: { width: "0" },
       bottom: { width: "0", marginTop: "0" },
       left: { width: "0", marginTop: "0" },
-      right: { height: "0", marginLeft: "0" },
+      right: { height: "0", marginLeft: "0" }
     },
     points: {
       leftTop: {},
@@ -42,8 +40,8 @@ export class ResizeWrapper extends LitElement {
       middleTop: {},
       leftBottom: {},
       rightBottom: {},
-      middleBottom: {},
-    },
+      middleBottom: {}
+    }
   };
 
   minimum_size = 20;
@@ -68,6 +66,15 @@ export class ResizeWrapper extends LitElement {
 
   @state()
   zoomLevel;
+  @state()
+  showBorder = false;
+
+  constructor() {
+    super();
+    $showBorder.subscribe((showBorder) => {
+      this.showBorder = showBorder;
+    });
+  }
 
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
@@ -78,11 +85,11 @@ export class ResizeWrapper extends LitElement {
   }
 
   emitResizingEvent(isResising) {
-   
+
     let customEvent = new CustomEvent("isResising", {
       detail: {
-        value: isResising,
-      },
+        value: isResising
+      }
     });
     this.dispatchEvent(customEvent);
 
@@ -90,7 +97,7 @@ export class ResizeWrapper extends LitElement {
 
   resize = (e) => {
     e.preventDefault();
-    e.stopPropagation();  
+    e.stopPropagation();
     if (this.currentResizer.classList.contains("resizer-point-right-bottom")) {
       this.inputRef.value.style.width =
         e.pageX - this.inputRef.value.getBoundingClientRect().left + "px";
@@ -101,8 +108,8 @@ export class ResizeWrapper extends LitElement {
       if (width > this.minimum_size) {
         this.inputRef.value.style.width = width + "px";
       }
-      if (height > this.minimum_size && 
-        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      if (height > this.minimum_size &&
+        !this.onlyWidthResizableComponents.includes(this.component.component_type)
       ) {
         this.inputRef.value.style.height = height + "px";
       }
@@ -112,8 +119,8 @@ export class ResizeWrapper extends LitElement {
 
       const height = this.original_height + (e.pageY - this.original_mouse_y);
       const width = this.original_width - (e.pageX - this.original_mouse_x);
-      if (height > this.minimum_size && 
-        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      if (height > this.minimum_size &&
+        !this.onlyWidthResizableComponents.includes(this.component.component_type)
       ) {
         this.inputRef.value.style.height = height + "px";
       }
@@ -129,8 +136,8 @@ export class ResizeWrapper extends LitElement {
     ) {
       const height = this.original_height + (e.pageY - this.original_mouse_y);
       const width = this.original_width - (e.pageX - this.original_mouse_x);
-      if (height > this.minimum_size && 
-        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      if (height > this.minimum_size &&
+        !this.onlyWidthResizableComponents.includes(this.component.component_type)
       ) {
         this.inputRef.value.style.height = height + "px";
       }
@@ -144,8 +151,8 @@ export class ResizeWrapper extends LitElement {
         this.inputRef.value.style.left =
           this.original_x + (e.pageX - this.original_mouse_x) + "px";
       }
-      if (height > this.minimum_size &&         
-        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      if (height > this.minimum_size &&
+        !this.onlyWidthResizableComponents.includes(this.component.component_type)
       ) {
         this.inputRef.value.style.height = height + "px";
         this.inputRef.value.style.top =
@@ -159,47 +166,39 @@ export class ResizeWrapper extends LitElement {
       if (width > this.minimum_size) {
         this.inputRef.value.style.width = width + "px";
       }
-      if (height > this.minimum_size &&         
-        !this.onlyWidthResizableComponents.includes(this.component.component_type )  
+      if (height > this.minimum_size &&
+        !this.onlyWidthResizableComponents.includes(this.component.component_type)
       ) {
         this.inputRef.value.style.height = height + "px";
         this.inputRef.value.style.top =
           this.original_y + (e.pageY - this.original_mouse_y) + "px";
       }
     }
-   
+
     setTimeout(() => {
       this.firstUpdated();
     });
     setTimeout(() => {
-      this.applyResize()
+      this.applyResize();
     }, 1000);
   };
 
-  @state()
-  showBorder = false;
-
-  constructor() {
-    super();
-    $showBorder.subscribe((showBorder) => {
-      this.showBorder = showBorder;
-    })
-  }
   connectedCallback(): void {
     super.connectedCallback();
     window.removeEventListener("resize", this.firstUpdated);
-    window.addEventListener('mouseup',this.stopResize)
+    window.addEventListener("mouseup", this.stopResize);
     $pageZoom.subscribe((pageZoom: string) => {
       this.zoomLevel = Number(pageZoom);
       this.firstUpdated();
     });
   }
+
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener('mouseup',this.stopResize);
-    if(
+    window.removeEventListener("mouseup", this.stopResize);
+    if (
       !this.notResizableComponents.includes(this.component.component_type)
-    ){
+    ) {
       window.removeEventListener("mousemove", this.resize);
     }
   }
@@ -226,91 +225,89 @@ export class ResizeWrapper extends LitElement {
         this.styles = {
           lines: {
             top: {
-              width: widthPixel,
+              width: widthPixel
             },
             bottom: {
               width: widthPixel,
-              marginTop: heightPixel,
+              marginTop: heightPixel
             },
             right: {
               height: heightPixel,
-              marginLeft: widthPixel,
+              marginLeft: widthPixel
             },
             left: {
-              height: heightPixel,
-            },
+              height: heightPixel
+            }
           },
           points: {
             leftTop: {
-              marginLeft: "-1px",
+              marginLeft: "-1px"
             },
             rightTop: {
-              marginLeft: `${width - 3}px`,
+              marginLeft: `${width - 3}px`
             },
             middleTop: {
-              marginLeft: `${width / 2 - 3}px`,
+              marginLeft: `${width / 2 - 3}px`
             },
             leftBottom: {
               marginTop: `${height - 2}px`,
-              marginLeft: `${-1}px`,
+              marginLeft: `${-1}px`
             },
             rightBottom: {
               marginLeft: `${width - 3}px`,
-              marginTop: `${height - 2}px`,
+              marginTop: `${height - 2}px`
             },
             middleBottom: {
               marginLeft: `${width / 2 - 3}px`,
-              marginTop: `${height - 2}px`,
-            },
-          },
+              marginTop: `${height - 2}px`
+            }
+          }
         };
         this.requestUpdate();
       });
     });
   }
 
-  stopResize = ()=>{
+  stopResize = () => {
     window.removeEventListener("mousemove", this.resize);
-    setTimeout(()=>{ setResizing(false);})
-  }
+    setTimeout(() => {
+      setResizing(false);
+    });
+  };
   applyResize = () => {
-    if(this.component.component_type == ComponentType.Button){
-      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
-        '--hybrid-button-width':this.inputRef.value.style.width,
+    if (this.component.component_type == ComponentType.Button) {
+      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+        "--hybrid-button-width": this.inputRef.value.style.width
       });
-    }
-    else if(this.component.component_type == ComponentType.Icon){
-      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
-        '--hybrid-icon-width':this.inputRef.value.style.width,
-        '--hybrid-icon-height':this.inputRef.value.style.height
-      });
-
-    }
-    else if(this.component.component_type == ComponentType.Select){
-      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
-        '--hybrid-select-width':this.inputRef.value.style.width,
+    } else if (this.component.component_type == ComponentType.Icon) {
+      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+        "--hybrid-icon-width": this.inputRef.value.style.width,
+        "--hybrid-icon-height": this.inputRef.value.style.height
       });
 
-    }
-    else if(
-      this.component.component_type == ComponentType.TextInput 
+    } else if (this.component.component_type == ComponentType.Select) {
+      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+        "--hybrid-select-width": this.inputRef.value.style.width
+      });
+
+    } else if (
+      this.component.component_type == ComponentType.TextInput
       || this.component.component_type == ComponentType.DatePicker
-    ){
-      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
-        width:this.inputRef.value.style.width,
+    ) {
+      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+        width: this.inputRef.value.style.width
       });
 
-    } 
-    else {
-      updateComponentAttributes(this.component.applicationId,this.component.uuid, "style", {
+    } else {
+      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
         width: this.inputRef.value.style.width,
-        height: this.inputRef.value.style.height,
+        height: this.inputRef.value.style.height
       });
     }
   };
 
-  
-    mouseDown = (e: MouseEvent) => {
+
+  mouseDown = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setResizing(true);
@@ -322,9 +319,9 @@ export class ResizeWrapper extends LitElement {
     this.original_mouse_x = e.pageX;
     this.original_mouse_y = e.pageY;
 
-    if(
+    if (
       !this.notResizableComponents.includes(this.component.component_type)
-    ){
+    ) {
       window.addEventListener("mousemove", this.resize);
     }
   };
@@ -334,15 +331,15 @@ export class ResizeWrapper extends LitElement {
       <!-- Points -->
       <div
         class=${classMap({
-          element: true,
-          selected:
-            this.isSelected ||
-            this.hoveredComponent?.uuid === this.component.uuid,
-          hovered:
-            this.hoveredComponent?.uuid === this.component.uuid &&
-            this.selectedComponent?.uuid !== this.component.uuid,
-            bordered : this.showBorder
-        })}
+      element: true,
+      selected:
+        this.isSelected ||
+        this.hoveredComponent?.uuid === this.component.uuid,
+      hovered:
+        this.hoveredComponent?.uuid === this.component.uuid &&
+        this.selectedComponent?.uuid !== this.component.uuid,
+      bordered: this.showBorder
+    })}
         ${ref(this.inputRef)}
       >
         <div
@@ -396,7 +393,8 @@ export class ResizeWrapper extends LitElement {
         ></div>
         <!-- End Lines -->
 
-        <slot @slotchange="${(e) => {}}"></slot>
+        <slot @slotchange="${(e) => {
+    }}"></slot>
       </div>
     `;
   }

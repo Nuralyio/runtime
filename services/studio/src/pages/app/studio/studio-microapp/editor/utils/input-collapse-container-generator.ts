@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid"; // Import UUID package
 export function generateDynamicContainer(
   mainUuid: string,
   childrenIds: string[],
-  collapseUuid: string = uuidv4(),
+  collapseUuid: string = uuidv4()
 ) {
   return [
     {
@@ -17,9 +17,9 @@ export function generateDynamicContainer(
       component_type: ComponentType.VerticalContainer,
       ...COMMON_ATTRIBUTES,
       style: {
-        marginTop: "15px",
+        marginTop: "15px"
       },
-      childrenIds: [collapseUuid], // Attach the collapse container as the child
+      childrenIds: [collapseUuid] // Attach the collapse container as the child
     },
     {
       uuid: collapseUuid,
@@ -27,12 +27,12 @@ export function generateDynamicContainer(
       name: collapseUuid,
       component_type: ComponentType.Collapse,
       style: {
-        ...CollapseContainerTheme,
+        ...CollapseContainerTheme
       },
       input: {
         size: {
           type: "handler",
-          value: /* js */ `return 'small';`,
+          value: /* js */ `return 'small';`
         },
         components: {
           type: "array",
@@ -40,11 +40,11 @@ export function generateDynamicContainer(
             {
               blockName: `${collapseUuid}_children`,
               label: "Inputs",
-              open: true,
-            },
-          ],
-        },
-      },
+              open: true
+            }
+          ]
+        }
+      }
     },
     {
       uuid: `${collapseUuid}_children`,
@@ -52,8 +52,8 @@ export function generateDynamicContainer(
       name: "Left panel",
       component_type: ComponentType.VerticalContainer,
       style: {},
-      childrenIds: [...childrenIds], // Pass the dynamic children here
-    },
+      childrenIds: [...childrenIds] // Pass the dynamic children here
+    }
   ];
 }
 

@@ -1,6 +1,6 @@
 import { css } from "lit";
 
-const textLabelStyles= css`
+const textLabelStyles = css`
 label{
     color:var(--text-label-color);
     user-select: none
@@ -18,6 +18,6 @@ label{
       }
  }
 
-`
+`;
 
-export const styles =[textLabelStyles];
+export const styles = [textLabelStyles];

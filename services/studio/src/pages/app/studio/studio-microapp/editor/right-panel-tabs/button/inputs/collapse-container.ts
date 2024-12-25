@@ -1,4 +1,3 @@
-
 import { generateDynamicContainer } from "../../../utils/input-collapse-container-generator.ts";
 
 export const StudioInputCollapseContainer = generateDynamicContainer("button_input_collapse_container", [
@@ -11,5 +10,5 @@ export const StudioInputCollapseContainer = generateDynamicContainer("button_inp
   "button_icon_position_block",
   "divider",
   "state_block",
-  "divider",
+  "divider"
 ]);

@@ -1,54 +1,55 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
-export default [
-    {
-        uuid: "text_alignement_block",
-        applicationId: "1",
-        name: "Left panel",
-        component_type: ComponentType.VerticalContainer,
-        ...COMMON_ATTRIBUTES,
-        style: {
-            display:'flex',
-            'align-items':'center',
-            'justify-content':'space-between',
-            "width": "290px",
-        },
 
-        childrenIds: ["text_label_alignement", "text-align-content", "horizontal_alignement_handler"],
+export default [
+  {
+    uuid: "text_alignement_block",
+    applicationId: "1",
+    name: "Left panel",
+    component_type: ComponentType.VerticalContainer,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "space-between",
+      "width": "290px"
     },
-    {
-        uuid: "text_label_alignement",
-        name: "text_label",
-        component_type: ComponentType.TextLabel,
-        applicationId: "1",
-        ...COMMON_ATTRIBUTES,
-        style:{
-            width:'90px'
-        },
-        input: {
-            value: {
-                type: 'handler',
-                value: /* js */`
+
+    childrenIds: ["text_label_alignement", "text-align-content", "horizontal_alignement_handler"]
+  },
+  {
+    uuid: "text_label_alignement",
+    name: "text_label",
+    component_type: ComponentType.TextLabel,
+    applicationId: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "90px"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                return 'Horizontal alignment';
             `
-            }
-        },
+      }
+    }
+  },
+  {
+    uuid: "text-align-content",
+    name: "name",
+    applicationId: "1",
+    component_type: ComponentType.RadioButton,
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "--hybrid-button-height": "30px",
+      "--hybrid-button-width": "52px"
     },
-    {
-        uuid: "text-align-content",
-        name: "name",
-        applicationId: "1",
-        component_type: ComponentType.RadioButton,
-        ...COMMON_ATTRIBUTES,
-        style:{
-            '--hybrid-button-height':'30px',
-            '--hybrid-button-width':'52px',
-        },
 
-        input: {
-            value: {
-                type: "handler",
-                value: /* js */ `
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
@@ -68,10 +69,10 @@ export default [
                 const result =[options,defaultTextAlign,radioType];
                 return  result;           
                 `
-            }
-        },
-        event: {
-            changed: /* js */ `
+      }
+    },
+    event: {
+      changed: /* js */ `
            try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
@@ -88,23 +89,23 @@ export default [
                 console.log(error);
             }  
       `
-        },
-    },
+    }
+  },
 
-    {
-        uuid: "horizontal_alignement_handler",
-        applicationId: "1",
-        component_type: ComponentType.Event,
-        ...COMMON_ATTRIBUTES,
-        styleHandlers: {},
-        name: "horizontal alignement handler",
-        style: {
-                display:'block',
-        },
-        input: { 
-            value: {
-                type: 'handler',
-                value: /* js */`
+  {
+    uuid: "horizontal_alignement_handler",
+    applicationId: "1",
+    component_type: ComponentType.Event,
+    ...COMMON_ATTRIBUTES,
+    styleHandlers: {},
+    name: "horizontal alignement handler",
+    style: {
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
                 const parameter ='horizontalAlignement';
                 let horizontalAlignementHandler=''
                 try{
@@ -119,11 +120,11 @@ export default [
                 }
                 return [parameter,horizontalAlignementHandler];
             `
-            }
-        },
-        
-        event: {
-            codeChange: /* js */ `
+      }
+    },
+
+    event: {
+      codeChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if(selectedComponens.length) {
@@ -140,6 +141,6 @@ export default [
                 console.log(error);
             }
       `
-        },
-    },
-] 
+    }
+  }
+];
