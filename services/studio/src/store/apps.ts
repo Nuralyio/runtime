@@ -1,35 +1,32 @@
-import { atom, keepMount } from "nanostores";
-import { logger } from "@nanostores/logger";
+import { atom, deepMap, keepMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
-import { deepMap } from "nanostores";
 
-import { getVar, setVar } from "./context";
-import { $pages } from "./page";
-import { eventDispatcher } from "utils/change-detection";
-const isServer = typeof window === 'undefined';
+import { setVar } from "./context";
 
-if(!isServer){
-  if(!window['__INITIAL_APPLICATION_STATE__']){
-    window['__INITIAL_APPLICATION_STATE__'] = JSON.stringify([]);
+const isServer = typeof window === "undefined";
+
+if (!isServer) {
+  if (!window["__INITIAL_APPLICATION_STATE__"]) {
+    window["__INITIAL_APPLICATION_STATE__"] = JSON.stringify([]);
   }
 }
 
 const coreApplications = [{
   uuid: "1",
-  name: "app1",
+  name: "app1"
 },
-{
-  uuid: "2",
-  name: "app2",
-},
-{
-  uuid: "landing",
-  name: "landing",
-},
-]
-const initialState = isServer ? [] : JSON.parse(window['__INITIAL_APPLICATION_STATE__'] ?? []);
+  {
+    uuid: "2",
+    name: "app2"
+  },
+  {
+    uuid: "landing",
+    name: "landing"
+  }
+];
+const initialState = isServer ? [] : JSON.parse(window["__INITIAL_APPLICATION_STATE__"] ?? []);
 
-const initialAppState = isServer ? [] : JSON.parse(window['__INITIAL_CURRENT_APPLICATION_STATE__'] ?? null);
+const initialAppState = isServer ? [] : JSON.parse(window["__INITIAL_CURRENT_APPLICATION_STATE__"] ?? null);
 export const $applications = atom<any>([...initialState, ...coreApplications]);
 export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
@@ -44,20 +41,20 @@ export function setValue(componentId, key, value) {
   // Perform a deep comparison of the current and new values
   if (!deepEqual(componentValues[key], value)) {
     $values.setKey(componentId, { ...componentValues, [key]: value });
-    
+
     // Emit the refresh event only if the value has changed
   }
 }
 
 export const $resizing = atom<Boolean>(false);
 
-export const $permissionsState = atom<any>({ message : ""});
+export const $permissionsState = atom<any>({ message: "" });
 
 interface Tab {
   id: string;
   name: string;
   type?: string;
-  detail ? : any;
+  detail?: any;
 }
 
 export const $editorState = persistentAtom<{ currentTab: any, tabs: Tab[] }>("$editorState", {
@@ -69,7 +66,7 @@ export const $editorState = persistentAtom<{ currentTab: any, tabs: Tab[] }>("$e
   }]
 }, {
   encode: JSON.stringify,
-  decode: JSON.parse,
+  decode: JSON.parse
 });
 
 
@@ -77,14 +74,10 @@ export const $showCreateApplicationModal = atom<Boolean>(false);
 export const $showShareApplicationModal = atom<boolean>(false);
 
 
-keepMount($resizing)
+keepMount($resizing);
 
 
 if (!isServer) {
-    const currentApplication = $currentApplication.get();
-    setVar('global', `currentEditingApplication`, currentApplication);
-    setTimeout(() => {
-      // setVar('global', `currentEditingApplication`, currentApplication);
-    },10)
-   
+  const currentApplication = $currentApplication.get();
+  setVar("global", `currentEditingApplication`, currentApplication);
 }

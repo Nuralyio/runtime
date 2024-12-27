@@ -1,28 +1,31 @@
 import { type ComponentElement, ComponentType } from "$store/component/interface";
 import { html, type TemplateResult } from "lit";
-import '../components/shared/blocks/components/Tabs/Tabs';
-import '../components/shared/blocks/components/Menu/Menu';
-import '../components/shared/blocks/components/ColorPicker/colorpicker';
-import '../components/shared/blocks/components/NumberInput/NumberInput';
-import '../components/shared/blocks/components/TextInput/TextInput';
-import '../components/shared/blocks/wrappers/GenerikWrapper/GenerikWrapper';
-import '../components/shared/blocks/components/IconButton/iconbutton';
-import '../components/shared/blocks/components/Select/Select';
-import '../components/pages/studio/ControlPanel/Event/EventValue/EventValue';
-import '../components/shared/blocks/components/Border/Border';
-import '../components/shared/blocks/components/BoxShadow/BoxShadow';
-import '../components/shared/blocks/components/Table/Table';
-import '../components/shared/blocks/components/Checkbox/Checkbox';
-import '../components/shared/blocks/components/DatePicker/DatePicker';
-import '../components/shared/blocks/components/Icon/Icon';
-import '../components/shared/blocks/components/Image/Image';
-import '../components/shared/blocks/components/RadioButton/Radio-button';
-import '../components/shared/blocks/components/AIChat/AIChat';
-import '../components/shared/blocks/components/IconPicker/IconPicker';
-import '../components/shared/blocks/components/MicroApp/MicroApp';
-import '../components/shared/blocks/components/UsersDropdown/UsersDropdown'
-import '../components/shared/blocks/components/InsertDropdown/InsertDropdown'
-import '../components/shared/blocks/components/Collapse/Collapse'
+import "@nuralyui/tooltips";
+import "@shared/components/Tabs/Tabs";
+import "@shared/components/Menu/Menu";
+import "@shared/components/ColorPicker/colorpicker";
+import "@shared/components/NumberInput/NumberInput";
+import "@shared/components/TextInput/TextInput";
+import "@shared/wrappers/GenerikWrapper/GenerikWrapper";
+import "@shared/components/IconButton/iconbutton";
+import "@shared/components/Select/Select";
+import "../pages/app/studio/components/ControlPanel/Event/EventValue/EventValue";
+import "@shared/components/Border/Border";
+import "@shared/components/BoxShadow/BoxShadow";
+import "@shared/components/Table/Table";
+import "@shared/components/Checkbox/Checkbox";
+import "@shared/components/DatePicker/DatePicker";
+import "@shared/components/Icon/Icon";
+import "@shared/components/Image/Image";
+import "@shared/components/RadioButton/Radio-button";
+import "@shared/components/AIChat/AIChat";
+import "@shared/components/IconPicker/IconPicker";
+import "@shared/components/MicroApp/MicroApp";
+import "@shared/components/UsersDropdown/UsersDropdown";
+import "@shared/components/InsertDropdown/InsertDropdown";
+import "@shared/components/Collapse/Collapse";
+import "@shared/components/Divider/Divider";
+import "@shared/components/Handlers/Handlers";
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -51,6 +54,8 @@ const usersDropdownTemplate = (props: any) => html`<users-dropdown-block .item=$
 const insertDropdownTemplate = (props: any) => html`<insert-dropdown-block .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
 const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
 const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item} .component=${props.component}></collapse-block>`;
+const dividerTemplate = (props: any) => html`<divider-block .item=${props.item} .component=${props.component}></divider-block>`;
+const handlersTemplate = (props: any) => html`<handler-block .item=${props.item} .component=${props.component}></handler-block>`;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -90,7 +95,7 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return menuTemplate(commonProps);
     case ComponentType.Table:
       return tableTemplate(commonProps);
-    case ComponentType.VerticalContainer:
+    case ComponentType.Container:
       return verticalContainerTemplate(commonProps, isViewMode);
     case ComponentType.Collection:
       return collectionViewerTemplate(commonProps, isViewMode);
@@ -98,6 +103,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return checkboxTemplate(commonProps);
     case ComponentType.DatePicker:
       return datePickerTemplate(commonProps);
+    case ComponentType.Divider:
+      return dividerTemplate(commonProps);
     case ComponentType.Icon:
       return iconTemplate(commonProps);
     case ComponentType.Image:
@@ -111,11 +118,14 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
     case ComponentType.MicroApp:
       return microAppTemplate(commonProps);
     case ComponentType.UsersDropdown:
-        return usersDropdownTemplate(commonProps);
+      return usersDropdownTemplate(commonProps);
     case ComponentType.InsertDropdown:
-        return insertDropdownTemplate(commonProps);
+      return insertDropdownTemplate(commonProps);
     case ComponentType.Collapse:
-        return collapseTemplate(commonProps);
+      return collapseTemplate(commonProps);
+    case ComponentType.Handlers:
+      return handlersTemplate(commonProps);
+
     default:
       return html``;
   }
@@ -126,8 +136,8 @@ export function renderComponent(components: ComponentElement[], item?: any, isVi
 
   return html`
     ${components.map((component: ComponentElement) => {
-      const commonProps = { item: { ...item }, component };
-      return renderComponentElement(component, commonProps, isViewMode);
-    })}
+    const commonProps = { item: { ...item }, component };
+    return renderComponentElement(component, commonProps, isViewMode);
+  })}
   `;
 }

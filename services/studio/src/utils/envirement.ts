@@ -1,2 +1,2 @@
 export const isServer = typeof window === "undefined";
-export const isVerbose = false
+export const isVerbose = false;
