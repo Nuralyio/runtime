@@ -5,7 +5,6 @@ import com.nuraly.functions.service.FunctionService;
 import com.nuraly.functions.exception.FunctionNotFoundException;
 
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
 
-@Path("/api/v3/functions")
+@Path("/api/v1/functions")
 @OpenAPIDefinition(
         info = @Info(title = "Function API", version = "1.0"),
         tags = {

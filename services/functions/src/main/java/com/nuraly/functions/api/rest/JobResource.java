@@ -1,4 +1,4 @@
-package com.nuraly.functions.rest.api;
+package com.nuraly.functions.api.rest;
 
 public class JobResource {
 }
