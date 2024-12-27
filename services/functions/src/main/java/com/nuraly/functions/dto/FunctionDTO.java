@@ -1,4 +1,19 @@
-package com.nuraly.functions.dto.mapper;
+package com.nuraly.functions.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.util.UUID;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FunctionDTO {
+
+    private String label;
+    private String description;
+    private String template;
+    private String runtime;
+    private String handler;
 }
