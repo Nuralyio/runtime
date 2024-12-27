@@ -2,6 +2,7 @@ import type { ComponentElement } from "$store/component/interface";
 
 export interface Extrats {
   event?: Event | CustomEvent | MouseEvent | KeyboardEvent | InputEvent;
+
   [key: string]: any;
 }
 

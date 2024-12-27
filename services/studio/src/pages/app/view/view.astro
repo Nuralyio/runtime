@@ -1,19 +1,19 @@
 ---
-import "../../../components/pages/studio/MainPanel/EditorInteractivePanel";
-import { TabsPanel } from "../../../components/pages/studio/MainPanel/TabsPanel";
+import "../studio/components/MainPanel/EditorInteractivePanel";
+import { TabsPanel } from "../studio/components/MainPanel/TabsPanel";
 import "@nuralyui/button";
-import { TopbarPanelWrapper } from "../../../components/pages/studio/TopBar/TopbarWrapper/TopbarWrapper";
-import { LeftPanel } from "../../../components/pages/studio/Layout/LeftPanel";
-import { RightPanel } from "../../../components/pages/studio/Layout/RightPanel";
+import { TopbarPanelWrapper } from "../studio/components/TopBar/TopbarWrapper/TopbarWrapper";
+import { LeftPanel } from "../studio/components/Layout/LeftPanel";
+import { RightPanel } from "../studio/components/Layout/RightPanel";
 import { $pages, $currentPageId , $currentPageViewPort} from "../../../store/page";
 import { allTasks } from "nanostores";
-import { $componentWithChildrens, $components } from "$store/component/component-sotre";
-import "../../../components/pages/studio/Page/Page";
-import { PageContent } from "../../../components/pages/studio/Page/Page";
+import { $componentWithChildren, $components } from "../../../store/component/store";
+import "../studio/components/Page/Page";
+import { PageContent } from "../studio/components/Page/Page";
 import { processHeaders } from "utils/api-calls-utils";
-import { fetchApplicationPagesById } from "$services/page.service";
-import { fetchApplicationComponentById } from "$services/component.service";
-import { fetchAllApplications } from "$services/applications.service";
+import { fetchApplicationPagesById } from "@services/page.service";
+import { fetchApplicationComponentById } from "@services/component.service";
+import { fetchAllApplications } from "@services/applications.service";
 import { $applications } from "$store/apps";
 // TODO: handle error
 const { app } = Astro.props;

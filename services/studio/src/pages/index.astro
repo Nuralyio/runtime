@@ -1,15 +1,16 @@
 ---
-import Layout from './layouts/LandingLayout.astro';
-import "../components/micro-app";
-import { MicroApp } from '../components/micro-app';
+import Layout from './_layouts/LandingLayout.astro';
+import "../core/micro-app";
+import { MicroApp } from '../core/micro-app';
 import { processHeaders } from 'utils/api-calls-utils';
-import { fetchApplicationPagesById } from '$services/page.service';
+import { fetchApplicationPagesById } from '@services/page.service';
 const { page_url } = Astro.props;
 const processedHeaders = processHeaders(Astro.request.headers);
 
 let pageData = [];
 
 try {
+  // todo: make the default app dynamic
   const pageRequest = await fetchApplicationPagesById(processedHeaders, '8639f6d5-9171-41e4-a21c-447c8c1b62c2');
   pageData = pageRequest.data;
 } catch (error) {
@@ -18,12 +19,12 @@ try {
 const page = pageData.find((page) => page.url === page_url);
 ---
 <Layout title="Welcome to Astrolus.">
-  <MicroApp
+  <!--MicroApp
   client:load
   mode="preview"
   uuid="landing"
   page_uuid={page?.uuid}
- ></MicroApp>
+ ></MicroApp-->
  <a href="/dashboard"> Login</a>
 </Layout>
 <style>

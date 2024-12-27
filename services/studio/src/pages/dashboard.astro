@@ -1,6 +1,6 @@
 ---
-import { ApplicationList } from "../components/pages/applications/ApplicationList";
-import { fetchAllApplications } from "$services/applications.service";
+import { ApplicationList } from "./applications/ApplicationList";
+import { fetchAllApplications } from "@services/applications.service";
 import { processHeaders } from "utils/api-calls-utils";
 import { $applications } from "$store/apps";
 
@@ -30,7 +30,7 @@ console.log($applications.get())
 <div>
   <div>
     {error && <div>Something seriously bad happened</div>}
-    {!error && <ApplicationList client:idle />}
+    {!error && <ApplicationList client:only="lit" />}
   </div>
 </div>
 

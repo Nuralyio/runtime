@@ -1,15 +1,15 @@
 import { $applications } from "$store/apps";
-import { $components } from "$store/component/component-sotre";
+import { $components } from "$store/component/store.ts";
 import { $pages } from "$store/page";
 import { $providers } from "$store/provider";
 import { defineMiddleware } from "astro:middleware";
 
 // `context` and `next` are automatically typed
 export const onRequest = defineMiddleware((context, next) => {
-    console.debug('re -initing stores');
-    $applications.set([]);
-    $providers.set([]);
-    $pages.set({});
-    $components.set({});
-    next()
+  console.debug("re -initing stores");
+  $applications.set([]);
+  $providers.set([]);
+  $pages.set({});
+  $components.set({});
+  next();
 });

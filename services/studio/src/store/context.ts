@@ -1,14 +1,12 @@
-import { atom, onMount } from "nanostores";
-import { logger } from "@nanostores/logger";
+import { atom } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
-import { registerContextInServiceWorker } from "core/helper";
-import { $pages } from "$store/page";
 
-const isServer = typeof window === 'undefined';
+
+const isServer = typeof window === "undefined";
 
 if (!isServer) {
-  if (!window['__INITIAL_APPLICATION_STATE__']) {
-    window['__INITIAL_APPLICATION_STATE__'] = JSON.stringify([]);
+  if (!window["__INITIAL_APPLICATION_STATE__"]) {
+    window["__INITIAL_APPLICATION_STATE__"] = JSON.stringify([]);
   }
 }
 
@@ -31,7 +29,7 @@ export const $context = atom<ContextVarStore>({
     }
   },
   global: {
-    showSecondsRow :  {
+    showSecondsRow: {
       type: "boolean",
       value: false
     }
@@ -51,7 +49,7 @@ function deepEqual(a: any, b: any): boolean {
 
   if (typeof a !== typeof b) return false; // Check for type mismatch
 
-  if (typeof a === 'object') {
+  if (typeof a === "object") {
     if (a === null || b === null) return false; // Check for null values
 
     const keysA = Object.keys(a);
@@ -74,11 +72,11 @@ function deepEqual(a: any, b: any): boolean {
 export function setVar(contextId: string, varName: string, varValue: any) {
   const varType = getType(varValue);
   const currentContext = $context.get();
-  
+
   // Check if the value has changed
   const currentVar = currentContext[contextId]?.[varName]?.value;
   if (deepEqual(currentVar, varValue)) {
-    console.log('No need to update if the value is the same')
+    console.log("No need to update if the value is the same");
     // No need to update if the value is the same
     return;
   }
@@ -96,6 +94,7 @@ export function setVar(contextId: string, varName: string, varValue: any) {
 
   $context.set(updatedContext);
 }
+
 // Action to read a variable from a specific application or globally
 export function getVar(contextId: string, varName: string): Var | undefined {
   const currentContext = $context.get();
@@ -119,7 +118,7 @@ export function getVarType(contextId: string, varName: string): string | undefin
 }
 
 // Persistent atom for storing specific variables in localStorage
-export const persistentContext = persistentAtom<ContextVarStore>('persistentContext', {
+export const persistentContext = persistentAtom<ContextVarStore>("persistentContext", {
   global: {}
 }, {
   encode: JSON.stringify,

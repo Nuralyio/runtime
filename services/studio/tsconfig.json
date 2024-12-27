@@ -10,8 +10,14 @@
       "$store/*": [
         "store/*"
       ],
-      "$services/*": [
+      "@shared/*": [
+        "shared/*"
+      ],
+      "@services/*": [
         "services/*"
+      ],
+      "@utils/*": [
+        "utils/*"
       ]
     },
     "target": "esnext",

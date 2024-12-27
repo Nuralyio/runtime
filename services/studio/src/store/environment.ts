@@ -1,5 +1,4 @@
 import { logger } from "@nanostores/logger";
-import { persistentAtom } from "@nanostores/persistent";
 import { atom, keepMount } from "nanostores";
 
 export enum ViewMode {
@@ -13,13 +12,12 @@ export interface Environment {
 
 export const $environment = atom<Environment>(
   {
-    mode: ViewMode.Edit,
-  },
-  
+    mode: ViewMode.Edit
+  }
 );
 
 keepMount($environment);
 
 logger({
-  environment: $environment,
+  environment: $environment
 });
