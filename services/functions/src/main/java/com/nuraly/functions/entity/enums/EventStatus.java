@@ -3,5 +3,7 @@ package com.nuraly.functions.entity.enums;
 public enum EventStatus {
     PENDING,
     PROCESSED,
-    FAILED
+    FAILED,
+    FAILURE,
+    SUCCESS,
 }

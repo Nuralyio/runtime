@@ -6,17 +6,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.UUID;
-
 @Entity
-@Table(name = "categories")
+@Table(name = "functions")
 @Getter
 @Setter
-public class FunctionEntity  extends PanacheEntity {
+public class FunctionEntity extends PanacheEntity {
     public String label;
     public String description;
     public String template;
     public String runtime;
-    public String handler;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    public String handler;
 }

@@ -1,0 +1,13 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ${functionName}  # Placeholder for function name
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+        - image: ${image}:latest  # Placeholder for image name
+          env:
+            - name: TARGET
+              value: "lol"
