@@ -2,6 +2,7 @@ import prisma from '../../../prisma/prisma'
 import { IApplicationRepository } from '../interfaces/application.interface';
 import { Application } from '../models/application';
 import { singleton } from 'tsyringe';
+import {ApplicationNotFound} from "../../exceptions/ApplicationNotFound";
 
 @singleton()
 export class ApplicationRepository implements IApplicationRepository {
@@ -30,6 +31,9 @@ export class ApplicationRepository implements IApplicationRepository {
     const application = await prisma.applications.findFirst({
       where: { uuid }
     });
+    if(!application) {
+      throw new ApplicationNotFound("Application not found");
+    }
     return new Application(application!.published ?? false, application!.name, application!.uuid, application!.user_id);
   }
 

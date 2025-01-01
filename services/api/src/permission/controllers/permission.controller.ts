@@ -29,6 +29,19 @@ export class PermissionController extends Controller {
     return await this.permissionService.create(userId, resourceId, resourceType, publicState, permissionType, ownerId, allowed);
   }
 
+  @Post("/has")
+    public async searchPermission(
+      @Body() requestBody: {
+        userId: string,
+        resourceId: string,
+        resourceType: string,
+        permissionType: string,
+      }
+    ): Promise<Permission> {
+      const { userId, resourceId, resourceType, permissionType } = requestBody;
+        return await this.permissionService.findPermission(resourceType, resourceId, permissionType, userId);
+    }
+
 
   @Get("{permissionType}")
   public async findPermissionByType(

@@ -72,6 +72,22 @@ export class PermissionRepository implements IPermissionRepository {
             permission.allowed
         ) ;
     }
+
+    public async findPermission(resourceType: string, resourceId: string, permissionType: string, userId: string): Promise<Permission> {
+        const permission = await prisma.permission.findFirst({
+            where: { resourceType, resourceId, permissionType, userId }
+        });
+        if(!permission)  throw new NotFoundException('No permission found');
+        return  new Permission(
+            permission.userId,
+            permission.resourceId,
+            permission.resourceType,
+            permission.publicState,
+            permission.permissionType,
+            permission.ownerId,
+            permission.allowed
+        ) ;
+    }
     public async delete(id: number): Promise<Permission> {
         const deletePermission = await prisma.permission.delete({
             where: { id }
