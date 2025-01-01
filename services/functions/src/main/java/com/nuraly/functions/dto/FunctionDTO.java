@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FunctionDTO {
-
+    private Long id;
     private String label;
     private String description;
     private String template;
