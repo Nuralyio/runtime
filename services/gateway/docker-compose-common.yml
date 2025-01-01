@@ -62,5 +62,14 @@ services:
       - postgres
     volumes: 
       - infinispan_data:/opt/keycloak/cache
+  rabbitmq:
+    image: "rabbitmq:management"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "15672:15672"  # RabbitMQ Management UI
+      - "5672:5672"    # RabbitMQ AMQP protocol
+    restart: unless-stopped
 volumes:
   pgadmin-data:
