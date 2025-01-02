@@ -12,11 +12,15 @@ export class IconBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
-  override async connectedCallback() {
-    await super.connectedCallback();
-    this.registerCallback("value", () => {
+  constructor() {
+    super();
+    this.registerCallback("icon", () => {
       this.requestUpdate();
     });
+  }
+  override async connectedCallback() {
+    await super.connectedCallback();
+
   }
 
 

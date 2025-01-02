@@ -119,7 +119,14 @@ export class CollectionViwer extends BaseElementBlock {
         .hoveredComponent=${{ ...this.hoveredComponent }}
       >
         <div class="collection_viewer">
-          ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data : [{}, {}, {}])?.map((item: any, index) => {
+          ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data : [{
+      title: "Function 1",
+          }, {
+            title: "Function 2",
+            
+          }, {
+            title: "Function 3",
+          }])?.map((item: any, index) => {
       return html`${this.renderRow({ ...item, index })}`;
     })}
         </div>
