@@ -35,6 +35,16 @@ public class PermissionInterceptor implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        Method resourceMethod = resourceInfo.getResourceMethod();
+        if (resourceMethod == null) {
+            return; // No resource method means this is not a JAX-RS endpoint
+        }
+
+        // Check if the method has the @RequiresPermission annotation
+        RequiresPermission permissionAnno = resourceMethod.getAnnotation(RequiresPermission.class);
+        if (permissionAnno == null) {
+            return; // No @RequiresPermission annotation; skip further checks
+        }
         String user = requestContext.getHeaderString("X-USER");
         if (user == null || user.isEmpty()) {
             throw new PermissionDeniedException("Missing or empty X-USER header");
@@ -44,25 +54,17 @@ public class PermissionInterceptor implements ContainerRequestFilter {
 
         JsonNode userNode = new ObjectMapper().readTree(user);
 
-        Method resourceMethod = resourceInfo.getResourceMethod();
-        if (resourceMethod == null) {
-            return;
-        }
 
-        RequiresPermission permissionAnno = resourceMethod.getAnnotation(RequiresPermission.class);
+        // Extract parameters from the annotation
+        Map<String, Object> params = extractAnnotationParams(permissionAnno, requestContext);
 
-        if (permissionAnno != null) {
-            // Extract parameters from the annotation
-            Map<String, Object> params = extractAnnotationParams(permissionAnno, requestContext);
+        // Add user dynamically
+        params.put("userId", userNode.get("uuid").asText());
 
-            // Add user dynamically
-            params.put("userId", userNode.get("uuid").asText());
-
-            // Perform the permission check
-            boolean hasPermission = userHasPermission(params);
-            if (!hasPermission) {
-                throw new PermissionDeniedException("Permission denied for permissionType: " + permissionAnno.permissionType());
-            }
+        // Perform the permission check
+        boolean hasPermission = userHasPermission(params);
+        if (!hasPermission) {
+            throw new PermissionDeniedException("Permission denied for permissionType: " + permissionAnno.permissionType());
         }
     }
 
