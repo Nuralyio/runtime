@@ -146,7 +146,7 @@ const instance = Executor.getInstance();
  * @param {any} [item={}] - Optional. Item data to pass to the closure function.
  * @returns {any} The result of executing the closure function.
  */
-export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
+export async function  executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
 
   if (isServer) {
     return;

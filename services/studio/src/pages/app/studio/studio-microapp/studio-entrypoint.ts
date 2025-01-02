@@ -174,6 +174,17 @@ export default [
                 value: ["2"]
 
               }
+            },
+            {
+              label: {
+                type: "text",
+                value: "Functions"
+              },
+              childrends: {
+                type: "componentIdArray",
+                value: ["2"]
+
+              }
             }
           ]
       }

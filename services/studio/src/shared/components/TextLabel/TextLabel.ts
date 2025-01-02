@@ -23,7 +23,7 @@ export class TextLabelBlock extends BaseElementBlock {
   components: ComponentElement[];
 
   @property({ type: Boolean })
-  isViewMode = false;
+  isViewMode = true;
 
   @property({ type: Object })
   item: any;
@@ -35,12 +35,16 @@ export class TextLabelBlock extends BaseElementBlock {
   hoveredComponent: ComponentElement;
   constructor() {
     super();
+    this.registerCallback("value", (value: any) => {
+      //this.requestUpdate();
+    });
     this.registerCallback("innerAlignment", (value: any) => {
+      if(this.closestGenericComponentWrapper){
       if(this.inputHandlersValue?.innerAlignment === "end") {
         this.closestGenericComponentWrapper.style.marginLeft = "auto";
       }else{
         this.closestGenericComponentWrapper.style.marginLeft = "unset";
-      }
+      }}
     } );
   }
   override async connectedCallback() {
@@ -75,7 +79,7 @@ export class TextLabelBlock extends BaseElementBlock {
             style=${styleMap(combinedStyles)}
             @click=${() => {
         if (this.component.event?.onClick) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
+          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item );
         }
       }}
             @mouseenter=${() => {
@@ -116,11 +120,11 @@ export class TextLabelBlock extends BaseElementBlock {
           <resize-wrapper
             .component=${this.component}
             @mouseenter="${() => {
-        setHoveredComponentIdAction(this.component?.uuid);
-      }}"
+              setHoveredComponentIdAction(this.component?.uuid);
+            }}"
             @mouseleave="${() => {
-        setHoveredComponentIdAction(null);
-      }}"
+              setHoveredComponentIdAction(null);
+            }}"
           >
             ${this.renderView()}
           </resize-wrapper>
