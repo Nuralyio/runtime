@@ -51,8 +51,8 @@ export class BaseElementBlock extends LitElement {
     }
     if (input) {
       if (input?.type === "handler") {
-        return new Promise((resolve, reject) => {
-          const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value, undefined, this.item);
+        return new Promise(  async (resolve, reject) => {
+          const fn =  await executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value, undefined, this.item);
           if (isPromise(fn)) {
             fn.then((result: any) => {
               this.inputHandlersValue[inputName] = result;

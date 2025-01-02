@@ -257,7 +257,7 @@ export default [{
       step: {
         type: "handler",
         value: /* js */`
-            const min = '25'
+            const min = '10'
             return min;
             `
       },

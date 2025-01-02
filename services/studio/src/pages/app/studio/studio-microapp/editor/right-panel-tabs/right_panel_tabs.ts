@@ -80,6 +80,9 @@ export default {
                             parameters=[
                                       'image_blocks'
                                         ];
+                                        handlers=[
+                                            "studio_image_handler"
+                                        ];
                                         break;
                         case "DatePicker":
                             parameters=[
@@ -120,6 +123,9 @@ export default {
                             parameters=[
                                 "container_blocks"
                             ]
+                            handlers=[
+                                "studio_container_handler"
+                            ];
                             break;
 
                         case "Collection":
