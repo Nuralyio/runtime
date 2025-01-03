@@ -118,9 +118,7 @@ export class GenerikComponentWrapper extends LitElement {
     // Find the closest parent "generik-component-wrapper"
     const closestWrapper = this.closest("generik-component-wrapper");
     if (closestWrapper) {
-      console.log("Closest generik-component-wrapper found:", closestWrapper);
     } else {
-      console.log("No generik-component-wrapper found in the parent hierarchy.");
     }
   }
 

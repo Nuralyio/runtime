@@ -27,10 +27,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-              return 'Line height';
-            `
+        type: "string",
+        value: 'Line height'
       }
     }
   },

@@ -1,8 +1,8 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { $applicationComponents } from "$store/component/store.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
-import { $currentApplication } from "$store/apps.ts";
+import { $currentApplication, $editorState } from "$store/apps.ts";
 import { $context, getVar } from "$store/context.ts";
 
 /**
@@ -93,6 +93,7 @@ export class ParametersPanel extends LitElement {
    */
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];
+  @state() currentTab = {  };
 
   /**
    * Constructor
@@ -122,6 +123,13 @@ export class ParametersPanel extends LitElement {
         this.selectedComponent = selectedComponents.length ? { ...selectedComponents[0] } : null;
       });
     });
+
+    $editorState.subscribe((editorState) => {
+      setTimeout(() => {
+        this.currentTab = editorState.currentTab;
+        this.requestUpdate()
+      }, 0);
+    });
   }
 
   /**
@@ -129,7 +137,13 @@ export class ParametersPanel extends LitElement {
    */
   render() {
     return html`
+      ${this.currentTab.type}
+      ${this.currentTab && this.currentTab.type === "page" ? html`
       <micro-app uuid="1" componentToRenderUUID="right_panel_tabs"></micro-app>
+      ` : nothing}
+      ${this.currentTab && this.currentTab.type === "function" ? html`
+      <micro-app uuid="1" componentToRenderUUID="right_panel_function_tabs"></micro-app>
+      ` : nothing}
     `;
   }
 }

@@ -28,10 +28,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Font family';
-            `
+        type: "string",
+        value: 'Font family'
       }
     }
   },

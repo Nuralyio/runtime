@@ -36,12 +36,8 @@ export const StudioButtonStateInput = [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const stateLabel='State';
-                return stateLabel;
-                
-                `
+        type: "string",
+        value:'State'
       }
     },
     style: {

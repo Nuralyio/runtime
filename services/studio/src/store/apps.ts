@@ -57,16 +57,18 @@ interface Tab {
   detail?: any;
 }
 
-export const $editorState = persistentAtom<{ currentTab: any, tabs: Tab[] }>("$editorState", {
-  currentTab: {},
+export const $editorState = atom<{ currentTab: any, tabs: Tab[] }>( {
+  currentTab:{
+    id: "0",
+    label: "Page editor",
+    type: "page"
+  },
   tabs: [{
     id: "0",
-    name: "pages",
+    label: "Page editor",
     type: "page"
-  }]
-}, {
-  encode: JSON.stringify,
-  decode: JSON.parse
+  },
+   ]
 });
 
 

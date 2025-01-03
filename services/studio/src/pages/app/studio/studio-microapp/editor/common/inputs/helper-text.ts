@@ -40,10 +40,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Helper text';
-              return label;`
+        type: "string",
+        value: 'Helper text'
       }
 
     },

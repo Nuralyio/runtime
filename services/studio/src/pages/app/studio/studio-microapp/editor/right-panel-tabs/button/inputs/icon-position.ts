@@ -37,12 +37,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const iconPositionLabel='Icon position';
-                return iconPositionLabel;
-                
-                `
+        type: "string",
+        value:'Icon position'
       }
     },
     style: {

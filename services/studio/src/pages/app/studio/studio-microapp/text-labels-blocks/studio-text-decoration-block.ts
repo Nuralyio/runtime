@@ -32,10 +32,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                return 'Text decoration';
-                `
+        type: "string",
+        value:'Text decoration'
       }
     },
     style: {

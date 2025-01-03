@@ -23,7 +23,7 @@ export class TextLabelBlock extends BaseElementBlock {
   components: ComponentElement[];
 
   @property({ type: Boolean })
-  isViewMode = true;
+  isViewMode = false;
 
   @property({ type: Object })
   item: any;
@@ -36,7 +36,7 @@ export class TextLabelBlock extends BaseElementBlock {
   constructor() {
     super();
     this.registerCallback("value", (value: any) => {
-      //this.requestUpdate();
+      this.requestUpdate();
     });
     this.registerCallback("innerAlignment", (value: any) => {
       if(this.closestGenericComponentWrapper){

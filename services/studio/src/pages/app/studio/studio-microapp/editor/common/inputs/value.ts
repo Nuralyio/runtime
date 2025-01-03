@@ -36,10 +36,8 @@ export const StudioTextValueInput = [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Value';
-            `
+        type: "string",
+        value: 'Value'
       }
     }
 
@@ -110,11 +108,8 @@ export const StudioTextValueInput = [
       }
       ,
       placeholder: {
-        type: "handler",
-        value: /* js */`
-                const inputPlaceHolder ="value";
-                return inputPlaceHolder;
-            `
+        type: "string",
+        value:"value"
       }
     }
   },

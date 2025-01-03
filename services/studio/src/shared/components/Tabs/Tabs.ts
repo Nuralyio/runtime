@@ -43,7 +43,7 @@ export class TabsBlock extends BaseElementBlock {
 
       ...this.component.style
     })}
-          .activeTab=${0}
+          .activeTab=${this.inputHandlersValue.index ?? 0}
           .tabs=${this.editableTabs}
           .editable=${{
       canDeleteTab: false,

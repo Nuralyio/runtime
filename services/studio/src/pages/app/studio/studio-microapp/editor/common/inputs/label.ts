@@ -40,10 +40,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Label';
-            `
+        type: "string",
+        value: 'Label'
       }
     }
   },

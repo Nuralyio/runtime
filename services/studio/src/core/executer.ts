@@ -9,6 +9,8 @@ import { eventDispatcher } from "utils/change-detection";
 import { isServer } from "utils/envirement";
 import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import { openEditorTab } from "$store/actions/editor/openEditorTab.ts";
+import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
 
 /**
  * The Executor class manages the context and applications for a system.
@@ -120,6 +122,8 @@ class Executor {
         "updateStyleHandlers",
         "EventData",
         "updateStyle",
+        "openEditorTab",
+        "setCurrentEditorTab",
         `return (function() { ${code} }).apply(this);`
       );
     }
@@ -146,7 +150,7 @@ const instance = Executor.getInstance();
  * @param {any} [item={}] - Optional. Item data to pass to the closure function.
  * @returns {any} The result of executing the closure function.
  */
-export async function  executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
+export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
 
   if (isServer) {
     return;
@@ -214,7 +218,7 @@ export async function  executeCodeWithClosure(component: any, code: string, Even
     if (context && context[contentId] && context[contentId][symbol] && "value" in context[contentId][symbol]) {
       return context[contentId][symbol].value;
     } else {
-      console.warn("Variable not found or invalid structure." + symbol);
+      //console.warn("Variable not found or invalid structure." + symbol);
     }
   }
 
@@ -227,7 +231,7 @@ export async function  executeCodeWithClosure(component: any, code: string, Even
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
     } else {
-      console.warn("Variable not found or invalid structure." + symbol);
+      //console.warn("Variable not found or invalid structure." + symbol);
     }
   }
 
@@ -327,6 +331,8 @@ export async function  executeCodeWithClosure(component: any, code: string, Even
     updateEvent,
     updateStyleHandlers,
     EventData,
-    updateStyle
+    updateStyle,
+    openEditorTab,
+    setCurrentEditorTab
   );
 }

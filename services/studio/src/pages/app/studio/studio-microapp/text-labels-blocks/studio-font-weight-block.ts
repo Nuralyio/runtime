@@ -33,10 +33,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Font weight';
-            `
+        type: "string",
+        value: 'Font weight'
       }
     }
   },

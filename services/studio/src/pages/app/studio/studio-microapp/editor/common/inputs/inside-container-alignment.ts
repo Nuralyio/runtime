@@ -35,11 +35,8 @@ export const StudioInnerContainerInputAlignment = [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const typeLabel = 'Inner Container alignment';
-                return typeLabel;
-                `
+        type: "string",
+        value:'Inner Container alignment'
       }
     },
     style: {
@@ -55,11 +52,8 @@ export const StudioInnerContainerInputAlignment = [
     name: "button type select",
     input: {
       placeholder: {
-        type: "handler",
-        value: /* js */`
-                const placeholder = 'Direction';
-                return placeholder;
-                `
+        type: "string",
+        value: 'Direction'
       },
       value: {
         type: "handler",

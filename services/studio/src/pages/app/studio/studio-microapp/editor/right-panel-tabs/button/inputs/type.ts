@@ -38,11 +38,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const typeLabel = 'Type';
-                return typeLabel;
-                `
+        type: "string",
+        value: 'Type'
       }
     },
     style: {

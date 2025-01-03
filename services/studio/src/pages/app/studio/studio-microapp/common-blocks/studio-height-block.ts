@@ -32,10 +32,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                return 'Height';
-            `
+        type: "string",
+        value: 'Height'
       }
     }
 

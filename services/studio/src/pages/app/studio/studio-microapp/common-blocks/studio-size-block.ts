@@ -40,10 +40,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Size';
-            `
+        type: "string",
+        value: 'Size'
       }
     },
     style: {

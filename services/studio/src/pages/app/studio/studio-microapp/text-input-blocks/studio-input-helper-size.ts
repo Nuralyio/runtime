@@ -42,11 +42,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Helper size';
-                return label;
-            `
+        type: "string",
+        value: 'Helper size'
       }
     }
 

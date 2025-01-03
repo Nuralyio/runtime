@@ -30,11 +30,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               const label ='Background Color';
-             return label;
-            `
+        type: "string",
+        value: 'Background Color'
       }
     }
   },

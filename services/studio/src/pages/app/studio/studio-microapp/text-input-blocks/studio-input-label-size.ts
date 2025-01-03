@@ -42,11 +42,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Label size';
-                return label;
-            `
+        type: "string",
+        value: 'Label size'
       }
     }
 

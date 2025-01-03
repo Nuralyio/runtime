@@ -51,11 +51,8 @@ export default [{
     component_type: ComponentType.TextLabel,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-            const menuTitle ='Pages'
-            return menuTitle;
-            `
+        type: "string",
+        value: 'Pages'
       }
     }
   },

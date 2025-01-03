@@ -82,7 +82,6 @@ class RectangleSelection extends LitElement {
 
   updateSelectableElements() {
     this.selectableElements = this.querySelectorAll("generik-component-wrapper");
-    console.log("Updated selectable elements:", this.selectableElements);
   }
 
   startSelection(event) {
