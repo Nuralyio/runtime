@@ -37,12 +37,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const selectionModeLabel='Selection mode';
-                return selectionModeLabel;
-                
-                `
+        type: "string",
+        value:'Selection mode'
       }
     },
     style: {

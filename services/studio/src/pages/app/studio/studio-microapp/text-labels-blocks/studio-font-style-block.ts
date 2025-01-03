@@ -32,10 +32,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Font style';
-            `
+        type: "string",
+        value: 'Font style'
       }
     }
   },

@@ -38,11 +38,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               const label ='Src';
-             return label;
-            `
+        type: "string",
+        value:'Src'
       }
     }
   },

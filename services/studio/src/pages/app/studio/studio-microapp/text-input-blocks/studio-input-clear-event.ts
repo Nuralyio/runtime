@@ -27,11 +27,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const event ='Clear';
-                event;
-            `
+        type: "string",
+        value: 'Clear'
       }
     }
   },

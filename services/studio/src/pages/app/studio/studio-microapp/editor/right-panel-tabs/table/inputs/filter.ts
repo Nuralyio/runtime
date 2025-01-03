@@ -37,12 +37,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const filterLabel='Filter';
-                return filterLabel;
-                
-                `
+        type: "string",
+        value:'Filter'
       }
     },
     style: {

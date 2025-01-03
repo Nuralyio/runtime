@@ -28,10 +28,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Horizontal alignment';
-            `
+        type: "string",
+        value: 'Horizontal alignment'
       }
     }
   },

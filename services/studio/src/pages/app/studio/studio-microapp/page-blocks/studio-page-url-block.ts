@@ -25,10 +25,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Page url';
-                return label;`
+        type: "string",
+        value: 'Page url'
       }
 
     },

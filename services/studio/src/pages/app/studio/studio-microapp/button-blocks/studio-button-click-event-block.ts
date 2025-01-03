@@ -28,11 +28,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               const label ='Click';
-             return label;
-            `
+        type: "string",
+        value: 'Click'
       }
     }
   },

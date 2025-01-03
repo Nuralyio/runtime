@@ -42,11 +42,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Width';
-              return label;
-            `
+        type: "string",
+        value: 'Width'
       }
     }
 

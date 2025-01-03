@@ -25,11 +25,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */ `
-                const positionLabel = 'Position';
-                return positionLabel;
-                `
+        type: "string",
+        value: 'Position'
       }
     },
     style: {

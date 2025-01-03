@@ -22,10 +22,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Box shadow';
-                return label;`
+        type: "string",
+        value: 'Box shadow'
       }
     },
     style: {

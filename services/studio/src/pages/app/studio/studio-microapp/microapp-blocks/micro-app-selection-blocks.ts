@@ -22,10 +22,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return "Select Micro Application"
-            `
+        type: "string",
+        value: "Select Micro Application"
       }
     }
   },

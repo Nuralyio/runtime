@@ -55,11 +55,8 @@ export const StudioContainerInputDirection = [
     name: "button type select",
     input: {
       placeholder: {
-        type: "handler",
-        value: /* js */`
-                const placeholder = 'Direction';
-                return placeholder;
-                `
+        type: "string",
+        value: 'Direction'
       },
       value: {
         type: "handler",

@@ -22,11 +22,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const displayLabel='Display';
-                return displayLabel;
-                `
+        type: "string",
+        value:'Display'
       }
     },
     style: {

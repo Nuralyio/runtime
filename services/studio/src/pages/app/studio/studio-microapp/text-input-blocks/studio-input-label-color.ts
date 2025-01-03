@@ -41,10 +41,8 @@ export default [
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Label color';
-                return label;`
+        type: "string",
+        value: 'Label color'
       }
     }
   },

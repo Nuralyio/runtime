@@ -26,6 +26,7 @@ import "@shared/components/InsertDropdown/InsertDropdown";
 import "@shared/components/Collapse/Collapse";
 import "@shared/components/Divider/Divider";
 import "@shared/components/Handlers/Handlers";
+import "@shared/components/Function/InvokeFunction.ts"
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -46,16 +47,21 @@ const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<coll
 const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item} .component=${props.component}></checkbox-block>`;
 const datePickerTemplate = (props: any) => html`<date-picker-block .item=${props.item} .component=${props.component}></date-picker-block>`;
 const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .component=${props.component}></icon-block>`;
-const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`; // Add this template
+const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`;
 const radioButtonTemplate = (props: any) => html`<radio-button-block .item=${props.item} .component=${props.component}></radio-button-block>`;
-const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`; // Add this template
+const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`;
 const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`;
 const usersDropdownTemplate = (props: any) => html`<users-dropdown-block .item=${props.item} .component=${props.component}></users-dropdown-block>`;
 const insertDropdownTemplate = (props: any) => html`<insert-dropdown-block .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
-const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`; // Add this template
+const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`;
 const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item} .component=${props.component}></collapse-block>`;
 const dividerTemplate = (props: any) => html`<divider-block .item=${props.item} .component=${props.component}></divider-block>`;
 const handlersTemplate = (props: any) => html`<handler-block .item=${props.item} .component=${props.component}></handler-block>`;
+
+// **New Template for InvokeFunction**
+const invokeFunctionTemplate = (props: any) => html`
+  <invoke-function-block .item=${props.item} .component=${props.component}></invoke-function-block>
+`;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -125,7 +131,9 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return collapseTemplate(commonProps);
     case ComponentType.Handlers:
       return handlersTemplate(commonProps);
-
+    // **New Case for InvokeFunction**
+    case ComponentType.InvokeFunction:
+      return invokeFunctionTemplate(commonProps);
     default:
       return html``;
   }

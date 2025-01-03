@@ -67,6 +67,7 @@ import collectionDataBlocks from "./editor/right-panel-tabs/collection/inputs/da
 import TopBar from "../components/editor-micro-apps/top-bar.ts";
 import LeftPanel from "../components/editor-micro-apps/left-panel.ts";
 import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
+import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
 
 
 import { StudioButton } from "./editor/right-panel-tabs/button";
@@ -80,6 +81,7 @@ import { StudioTable } from "./editor/right-panel-tabs/table";
 import { StudioContainer } from "./editor/right-panel-tabs/container";
 import { StudioCommonInputs } from "./editor/common/inputs";
 import { StudioCollection } from "./editor/right-panel-tabs/collection";
+import { StudioFunction } from "./editor/left-panel-tabs/functions";
 
 
 export default [
@@ -149,6 +151,10 @@ export default [
       "--hybrid-menu-border": "none"
     },
     input: {
+      index:{
+        type: "number",
+        value: 2
+      },
       tabs: {
         type: "json",
         value:
@@ -182,7 +188,7 @@ export default [
               },
               childrends: {
                 type: "componentIdArray",
-                value: ["2"]
+                value: ["function_micro_app"]
 
               }
             }
@@ -326,5 +332,7 @@ export default [
   ...StudioTable,
   ...StudioContainer,
   ...StudioCommonInputs,
-  ...StudioCollection
+  ...StudioCollection,
+  ...StudioFunction,
+  ...RightPanelFunctionTab
 ];

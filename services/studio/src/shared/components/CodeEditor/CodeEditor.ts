@@ -10,6 +10,7 @@ import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 // @ts-ignore
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 
 // @ts-ignore
 self.MonacoEnvironment = {
@@ -18,6 +19,9 @@ self.MonacoEnvironment = {
     if (label === "typescript" || label === "javascript") {
       return new tsWorker();
     }
+    if(label === "json") {
+      return new jsonWorker();
+    }
     return new editorWorker();
   }
 };
@@ -25,14 +29,14 @@ self.MonacoEnvironment = {
 @customElement("code-editor")
 export class CodeEditor extends LitElement {
   static styles = css`
-    :host {
-      --editor-width: 100%;
-      --editor-height: 100%;
-    }
-    main {
-      width: var(--editor-width);
-      height: var(--editor-height);
-    }
+      :host {
+          --editor-width: 100%;
+          --editor-height: 100%;
+      }
+      main {
+          width: var(--editor-width);
+          height: var(--editor-height);
+      }
   `;
   editor?: monaco.editor.IStandaloneCodeEditor;
   @property({ type: Boolean, attribute: "readonly" }) readOnly?: boolean;

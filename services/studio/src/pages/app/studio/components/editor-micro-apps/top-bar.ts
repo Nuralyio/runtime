@@ -388,11 +388,8 @@ export default [{
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-            const label = 'Primary';
-            return label;
-            `
+        type: "string",
+        value: 'Primary'
       }
     }
   },
@@ -444,11 +441,8 @@ export default [{
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-            const label = 'Tablet';
-            return label;
-            `
+        type: "string",
+        value: 'Tablet'
       }
     }
   },
@@ -500,11 +494,8 @@ export default [{
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-            const label = 'Mobile';
-            return label;
-            `
+        type: "string",
+        value: 'Mobile'
       }
     }
   },

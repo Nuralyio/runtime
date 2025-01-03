@@ -47,6 +47,7 @@ export class CollectionViwer extends BaseElementBlock {
 
     this.registerCallback("data", (data) => {
       console.log(data);
+      this.requestUpdate()
     });
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
@@ -55,7 +56,6 @@ export class CollectionViwer extends BaseElementBlock {
 
   override async connectedCallback() {
     await super.connectedCallback();
-    this.currentEditingApplication = getVar("global", "currentEditingApplication").value;
 
   }
 
@@ -66,7 +66,6 @@ export class CollectionViwer extends BaseElementBlock {
 
   renderRow(item: any) {
     return html`
-
       <div class="collection" ${ref(this.containerRef)}
            @click="${(e: any) => {
       setContextMenuEvent(null);
@@ -89,13 +88,13 @@ export class CollectionViwer extends BaseElementBlock {
         this.component.childrenIds?.map(
           (uuid) => {
             return {
-              ...$components.get()[this.currentEditingApplication.uuid].find((component) => component.uuid === uuid),
+              ...$components.get()[this.component?.applicationId]?.find((component) => component.uuid === uuid),
               item
             } as ComponentElement;
           }
         ),
         JSON.parse(JSON.stringify(item)),
-        false
+        this.isPreviewMode()
       )}
           `
       : html`
@@ -119,7 +118,11 @@ export class CollectionViwer extends BaseElementBlock {
         .hoveredComponent=${{ ...this.hoveredComponent }}
       >
         <div class="collection_viewer">
-          ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data : [{
+          ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data :
+
+            this.component.input?.data ? [] : [
+            
+            {
       title: "Function 1",
           }, {
             title: "Function 2",
