@@ -1,4 +1,4 @@
-import { API_URLS, MAIN_PROMPT_ID } from './api-constant';
+import { API_URLS, MAIN_PROMPT_ID } from '../../api-constant';
 
 export class ChatService {
   private currentConversationId = 0;

@@ -51,13 +51,13 @@ export class HyDropdownComponent extends LitElement {
     const dropDownWidth = this.dropDownContainer?.clientWidth;
     const dropDownHeight = this.dropDownContainer?.clientHeight;
     const availableBottomSpace = window.visualViewport!.height - triggerClientRect.bottom;
-    const availableRightSpace = window.visualViewport!.width - triggerClientRect.left;
+    const availableRightSpace = window.visualViewport!.width - triggerClientRect.left - triggerClientRect.width;
     const availableLeftSpace = triggerClientRect.right;
     this.dropDownContainer.style.position = 'fixed';
     if (dropDownHeight > availableBottomSpace) {
       this.dropDownContainer.style.top = `${triggerClientRect.top - dropDownHeight}px`;
     } else {
-      this.dropDownContainer.style.top = `${triggerClientRect.top +triggerClientRect.height}px`;
+      //this.dropDownContainer.style.top = `${triggerClientRect.top +triggerClientRect.height+8}px`;
     }
     if (dropDownWidth > availableRightSpace && dropDownWidth < availableLeftSpace) {
       this.dropDownContainer.style.right = `${availableRightSpace}px`;
