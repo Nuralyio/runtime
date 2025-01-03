@@ -1,8 +1,8 @@
 import { html, LitElement, css } from 'lit';
-import '../chatbot-container.component';
+import '../chatbot-fab-container/chatbot-fab-container.component';
 import "./locale-picker";
 import { customElement, property, state } from 'lit/decorators.js';
-import {setLocaleFromUrl} from '../localization';
+import {setLocaleFromUrl} from '../shared/services/localization';
 
 @customElement('chatbot-demo')
 export class CarouselDemo extends LitElement {

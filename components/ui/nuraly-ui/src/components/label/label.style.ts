@@ -29,7 +29,7 @@ export default css`
     }
 
     label {
-        /* Apply resolved styles */
+        /* Apply resolved styles 
         color: var(--resolved-text-label-color);
         font-size: var(--resolved-text-label-font-size);
         font-weight: var(--resolved-text-label-font-weight);
@@ -37,7 +37,8 @@ export default css`
         padding: var(--resolved-text-label-padding);
         margin: var(--resolved-text-label-margin);
         display: block;
-        user-select: none;
+        user-select: none;*/
+        color: var(--resolved-text-label-color);
     }
 
     @media (prefers-color-scheme: dark) {

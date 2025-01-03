@@ -42,6 +42,9 @@ export class HyInputElement extends LitElement {
   @property({type: String})
   placeholder = EMPTY_STRING;
 
+  @property({type: String})
+  autocomplete = 'off';
+
   @property()
   withCopy = false;
 
@@ -50,9 +53,9 @@ export class HyInputElement extends LitElement {
 
   @query('#input')
   input!: HTMLInputElement;
-  
+
   override willUpdate(_changedProperties: PropertyValues): void {
-    if(_changedProperties.has('type')){
+    if (_changedProperties.has('type')) {
       this.inputType = this.type;
       if (this.inputType == INPUT_TYPE.NUMBER) if (this.min && !this.value) this.value = this.min;
     }
@@ -73,7 +76,6 @@ export class HyInputElement extends LitElement {
         detail: this.input,
       })
     );
-
   }
 
   private _valueChange(e: Event) {
@@ -83,8 +85,8 @@ export class HyInputElement extends LitElement {
       })
     );
   }
-  private handleKeyDown(keyDownEvent:KeyboardEvent){
-    if(keyDownEvent.key ==='Enter'){
+  private handleKeyDown(keyDownEvent: KeyboardEvent) {
+    if (keyDownEvent.key === 'Enter') {
       this.dispatchEvent(
         new CustomEvent('enter-pressed', {
           detail: keyDownEvent.target,
@@ -124,17 +126,18 @@ export class HyInputElement extends LitElement {
           .min=${this.min ? this.min : nothing}
           .max=${this.max ? this.max : nothing}
           .type="${this.inputType}"
+          .autocomplete=${this.autocomplete}
           @input=${this._valueChange}
           @focus=${this._focusEvent}
           @keydown=${this.handleKeyDown}
         />
         ${this.withCopy
           ? html`<hy-icon
-              name="copy"
-              type="regular"
-              id="copy-icon"
-              @click=${!this.disabled ? this.onCopy : nothing}
-            ></hy-icon>`
+            name="copy"
+            type="regular"
+            id="copy-icon"
+            @click=${!this.disabled ? this.onCopy : nothing}
+          ></hy-icon>`
           : nothing}
         ${choose(this.state, [
           [INPUT_STATE.Default, () => undefined],
@@ -146,29 +149,29 @@ export class HyInputElement extends LitElement {
           : nothing}
         ${this.type == INPUT_TYPE.PASSWORD
           ? choose(this.inputType, [
-              [
-                INPUT_TYPE.TEXT,
-                () =>
-                  html`<hy-icon
-                    name="eye-slash"
-                    type="regular"
-                    id="password-icon"
-                    @click=${!this.disabled ? this._togglePasswordIcon : nothing}
-                  ></hy-icon>`,
-              ],
-              [
-                INPUT_TYPE.PASSWORD,
-                () =>
-                  html`<hy-icon
-                    name="eye"
-                    type="regular"
-                    id="password-icon"
-                    @click=${!this.disabled ? this._togglePasswordIcon : nothing}
-                  ></hy-icon>`,
-              ],
-            ])
+            [
+              INPUT_TYPE.TEXT,
+              () =>
+                html`<hy-icon
+                  name="eye-slash"
+                  type="regular"
+                  id="password-icon"
+                  @click=${!this.disabled ? this._togglePasswordIcon : nothing}
+                ></hy-icon>`,
+            ],
+            [
+              INPUT_TYPE.PASSWORD,
+              () =>
+                html`<hy-icon
+                  name="eye"
+                  type="regular"
+                  id="password-icon"
+                  @click=${!this.disabled ? this._togglePasswordIcon : nothing}
+                ></hy-icon>`,
+            ],
+          ])
           : this.type == INPUT_TYPE.NUMBER
-          ? html`
+            ? html`
               <div id="number-icons">
                 ${this.state != INPUT_STATE.Default ? html`<span id="icons-separator">|</span>` : nothing}
                 <hy-icon name="minus" @click=${!this.disabled ? this._decrement : nothing}></hy-icon>
@@ -176,7 +179,7 @@ export class HyInputElement extends LitElement {
                 <hy-icon name="plus" @click=${!this.disabled ? this._increment : nothing}></hy-icon>
               </div>
             `
-          : nothing}
+            : nothing}
       </div>
       <slot name="helper-text"></slot>
     `;

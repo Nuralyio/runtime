@@ -37,6 +37,7 @@ const buttonStyles = css`
     font-weight: var(--hybrid-button-font-weight,var(--hybrid-button-local-font-weight));
     text-transform: var(--hybrid-button-text-transform,var(--hybrid-button-local-text-transform));
     padding-top: var(--hybrid-button-padding-y,var(--hybrid-button-local-padding-y));
+      margin-top: var(--hybrid-button-margin-y,var(--hybrid-button-local-margin-y));
     padding-bottom: var(--hybrid-button-padding-y,var(--hybrid-button-local-padding-y));
     padding-right: var(--hybrid-button-padding-x,var(--hybrid-button-local-padding-x));
     padding-left: var(--hybrid-button-padding-x,var(--hybrid-button-local-padding-x));

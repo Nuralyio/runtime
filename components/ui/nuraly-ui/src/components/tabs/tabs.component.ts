@@ -237,11 +237,11 @@ export class TabsComponent extends LitElement {
   private setActiveTab(index: number, _element: Element, event: Event) {
     event.preventDefault();
     this.activeTab = index;
-    /*element?.dispatchEvent(
+    this.dispatchEvent(
       new CustomEvent(TabEvent.tabTilteClick, {
-        detail: event,
+        detail: {index},
       })
-    );*/
+    );
   }
 }
 
