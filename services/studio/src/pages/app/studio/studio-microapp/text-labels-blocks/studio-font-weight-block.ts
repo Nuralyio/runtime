@@ -56,22 +56,52 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultFontWeight='';
-                let isDisabled = false;
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['font-weight']) {
-                    isDisabled = true
-                }
-                else
-                defaultFontWeight = currentComponent.style['font-weight'] ||'normal';
-                const options =[{value:'normal',label: "Normal",disabled:isDisabled},
-                                {value:'bold',label: "Bold",disabled:isDisabled},
-                                {value:'900',label: "Ex.bold",disabled:isDisabled}]
-                const radioType='button';
-                const result =[options,defaultFontWeight,radioType];
-               return  result;           
+             const selectedComponents = GetVar("selectedComponents") || [];
+              const selectedComponent = selectedComponents[0];
+          
+              if (!selectedComponent) {
+                  // Return default values if no component is selected
+                  return [
+                      [
+                          { value: 'normal', label: "Normal", disabled: false },
+                          { value: 'bold', label: "Bold", disabled: false },
+                          { value: '900', label: "Ex. bold", disabled: false }
+                      ],
+                      'normal',
+                      'button'
+                  ];
+              }
+          
+              const currentEditingApplication = GetVar("currentEditingApplication");
+              const currentComponent = GetComponent(selectedComponent, currentEditingApplication?.uuid);
+          
+              if (!currentComponent) {
+                  // Return default values if the current component is not found
+                  return [
+                      [
+                          { value: 'normal', label: "Normal", disabled: false },
+                          { value: 'bold', label: "Bold", disabled: false },
+                          { value: '900', label: "Ex. bold", disabled: false }
+                      ],
+                      'normal',
+                      'button'
+                  ];
+              }
+          
+              const hasFontWeightHandler = currentComponent.styleHandlers?.['font-weight'];
+              const defaultFontWeight = hasFontWeightHandler
+                  ? ''
+                  : currentComponent.style?.['font-weight'] || 'normal';
+          
+              const options = [
+                  { value: 'normal', label: "Normal", disabled: !!hasFontWeightHandler },
+                  { value: 'bold', label: "Bold", disabled: !!hasFontWeightHandler },
+                  { value: '900', label: "Ex. bold", disabled: !!hasFontWeightHandler }
+              ];
+          
+              const radioType = 'button';
+          
+              return [options, defaultFontWeight, radioType];         
                 `
       }
     },

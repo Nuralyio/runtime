@@ -1,10 +1,9 @@
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@nuralyui/color-picker";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { debounce } from "@utils/time.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";

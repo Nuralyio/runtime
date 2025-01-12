@@ -92,6 +92,7 @@ export function setVar(contextId: string, varName: string, varValue: any) {
     }
   };
 
+
   $context.set(updatedContext);
 }
 

@@ -52,22 +52,52 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let isDisabled = false;
-                let defaultFontStyle =''
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['font-style']) {
-                    isDisabled = true
+                const selectedComponents = GetVar("selectedComponents") || [];
+                const selectedComponent = selectedComponents[0];
+            
+                if (!selectedComponent) {
+                    // Return default values if no component is selected
+                    return [
+                        [
+                            { value: 'normal', label: "Normal", disabled: false },
+                            { value: 'italic', label: "Italic", disabled: false },
+                            { value: 'oblique', label: "Oblique", disabled: false }
+                        ],
+                        'normal',
+                        'button'
+                    ];
                 }
-                else
-                defaultFontStyle = currentComponent.style['font-style'] ||'normal';
-                const options =[{value:'normal',label: "Normal",disabled:isDisabled},
-                                {value:'italic',label: "Italic",disabled:isDisabled},
-                                {value:'oblique',label: "Oblique",disabled:isDisabled}]
-                const radioType='button';
-                const result =[options,defaultFontStyle,radioType];
-                return  result;           
+            
+                const currentEditingApplication = GetVar("currentEditingApplication");
+                const currentComponent = GetComponent(selectedComponent, currentEditingApplication?.uuid);
+            
+                if (!currentComponent) {
+                    // Return default values if the current component is not found
+                    return [
+                        [
+                            { value: 'normal', label: "Normal", disabled: false },
+                            { value: 'italic', label: "Italic", disabled: false },
+                            { value: 'oblique', label: "Oblique", disabled: false }
+                        ],
+                        'normal',
+                        'button'
+                    ];
+                }
+            
+                const hasFontStyleHandler = currentComponent.styleHandlers?.['font-style'];
+                const defaultFontStyle = hasFontStyleHandler
+                    ? ''
+                    : currentComponent.style?.['font-style'] || 'normal';
+            
+                const options = [
+                    { value: 'normal', label: "Normal", disabled: !!hasFontStyleHandler },
+                    { value: 'italic', label: "Italic", disabled: !!hasFontStyleHandler },
+                    { value: 'oblique', label: "Oblique", disabled: !!hasFontStyleHandler }
+                ];
+            
+                const radioType = 'button';
+            
+                return [options, defaultFontStyle, radioType];         
                 `
       }
     },

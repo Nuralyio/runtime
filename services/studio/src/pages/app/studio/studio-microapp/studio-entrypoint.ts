@@ -153,7 +153,7 @@ export default [
     input: {
       index:{
         type: "number",
-        value: 2
+        value: 0
       },
       tabs: {
         type: "json",

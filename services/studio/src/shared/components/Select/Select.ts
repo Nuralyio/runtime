@@ -6,7 +6,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { $environment, ViewMode } from "$store/environment.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
 

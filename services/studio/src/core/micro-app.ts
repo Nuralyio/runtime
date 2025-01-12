@@ -15,7 +15,7 @@ import { merge, Observable } from "rxjs";
 export class MicroApp extends LitElement {
   static override styles = [css`
       :host *:not(style) {
-          display: inline-block;
+         
       }
   `];
 

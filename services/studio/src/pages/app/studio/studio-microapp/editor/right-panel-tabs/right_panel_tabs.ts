@@ -25,7 +25,7 @@ export default {
                 if(selectedComponents.length)
                     { 
                         const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
-                    switch(component.component_type){
+                    switch(component?.component_type){
                         case "text_label":
                             parameters=[
                                "text_label_bocks"

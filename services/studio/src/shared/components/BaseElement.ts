@@ -2,7 +2,7 @@ import { LitElement, type PropertyValueMap } from "lit";
 import { property, state } from "lit/decorators.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../utils/change-detection.ts";
-import { executeCodeWithClosure } from "../../core/executer.ts";
+import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
@@ -37,6 +37,8 @@ export class BaseElementBlock extends LitElement {
   @state()
   closestGenericComponentWrapper: HTMLElement;
 
+  ExecuteInstance: any;
+
   registerCallback(inputName: string, callback: any) {
     this.callbacks[inputName] = callback;
   }
@@ -44,10 +46,17 @@ export class BaseElementBlock extends LitElement {
   unregisterCallback(inputName: string) {
     delete this.callbacks[inputName];
   }
+  constructor() {
+    super();
+    this.ExecuteInstance = ExecuteInstance;
+  }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
     if (isServer) {
       return;
+    }
+    if(!this.ExecuteInstance.PropertiesProxy[this.component.name]){
+      this.ExecuteInstance.PropertiesProxy[this.component.name] = {}
     }
     if (input) {
       if (input?.type === "handler") {
@@ -55,8 +64,14 @@ export class BaseElementBlock extends LitElement {
           const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value, undefined, this.item);
           if (isPromise(fn)) {
             fn.then((result: any) => {
+              if(this.inputHandlersValue[inputName] !== result){
+                this.inputHandlersValue[inputName] = result;
+              this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = result;
+
+              }
               this.inputHandlersValue[inputName] = result;
               setValue(this.component.name, inputName, result);
+
               if (this?.callbacks[inputName]) {
                 this.callbacks[inputName](result);
               }
@@ -74,14 +89,23 @@ export class BaseElementBlock extends LitElement {
         });
       } else {
         this.inputHandlersValue[inputName] = input.value;
+        if(this.inputHandlersValue[inputName]!==input.value){
+          this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
+
+        }
         setValue(this.component.name, inputName, input.value);
         if (this?.callbacks[inputName]) {
           this.callbacks[inputName](input.value);
         }
       }
       if (this.inputHandlersValue[inputName]) {
-        if (this.inputHandlersValue[inputName] !== this.component.values?.[inputName]) {
-          updateComponentAttributes(
+        if (this.inputHandlersValue[inputName] !== input.value) {
+          this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
+          //setValue(this.component.name, inputName, input.value);
+          if (this?.callbacks[inputName]) {
+            this.callbacks[inputName](input.value);
+          }
+          /*updateComponentAttributes(
             this.component.applicationId,
             this.component.uuid,
             "values",
@@ -89,7 +113,7 @@ export class BaseElementBlock extends LitElement {
               [inputName]: this.inputHandlersValue[inputName]
             },
             false
-          );
+          );*/
         }
       }
     }
@@ -101,7 +125,7 @@ export class BaseElementBlock extends LitElement {
       for (const [inputName, input] of Object.entries(this.component?.input)) {
         handlerPromises.push(this.traitInputHandler(input, inputName));
       }
-      await Promise.all(handlerPromises);
+       Promise.all(handlerPromises);
     }
   }
 
@@ -145,7 +169,10 @@ export class BaseElementBlock extends LitElement {
   override updated(changedProperties: any[] | PropertyValueMap<any>) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
-        this.traitInputsHandlers();
+        const excludedTypes = ["text_label", "text_input" ];
+        if (!excludedTypes.includes(this.component.component_type)) {
+
+        }this.traitInputsHandlers();
         this.traitStylesHandlers();
       }
     });
@@ -154,14 +181,15 @@ export class BaseElementBlock extends LitElement {
   override async connectedCallback() {
     super.connectedCallback();
     this.closestGenericComponentWrapper =  this.closest('generik-component-wrapper');
+    if(this.component.component_type === "text_label"||this.component.component_type === "Collapse"){
+      
+      this.traitInputsHandlers();
+    }
     eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
       if (key === "Enter") {
         if (selectedComponents.length == 1 && this.component.uuid === selectedComponents[0]) {
           this.isEditable = true;
           this.requestUpdate();
-          requestAnimationFrame(() => {
-            // todo: implement this
-          });
         }
       }
     });
@@ -171,6 +199,6 @@ export class BaseElementBlock extends LitElement {
     super.disconnectedCallback();
     eventDispatcher.off("component:refresh", this.traitInputsHandlers);
     eventDispatcher.off("component:refresh", this.traitStylesHandlers);
-    eventDispatcher.off("keydown", this.isEditable);
+    //eventDispatcher.off("keydown", this.isEditable);
   }
 }

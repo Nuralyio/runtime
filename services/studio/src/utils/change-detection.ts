@@ -1,12 +1,24 @@
 class EventDispatcher {
-  events: {};
+  private static instance: EventDispatcher;
+  private events: { [key: string]: Function[] };
 
-  constructor() {
+  // Private constructor to prevent direct instantiation
+  private constructor() {
     this.events = {};
+    console.log('constructor')
+  }
+
+  // Static method to get the single instance
+  public static getInstance(): EventDispatcher {
+    if (!EventDispatcher.instance) {
+      EventDispatcher.instance = new EventDispatcher();
+    }
+    return EventDispatcher.instance;
   }
 
   // Subscribe to an event
-  on(event, listener) {
+  public on(event: string, listener: Function): void {
+  //console.log('onevent::on', event);
     if (!this.events[event]) {
       this.events[event] = [];
     }
@@ -14,19 +26,22 @@ class EventDispatcher {
   }
 
   // Unsubscribe from an event
-  off(event, listener) {
+  public off(event: string, listener: Function): void {
     if (!this.events[event]) return;
 
     this.events[event] = this.events[event].filter(l => l !== listener);
   }
 
   // Emit an event
-  emit(event, data?) {
+  public emit(event: string, data?: any): void {
+    //console.log('event::', event, data);
+    //console.log('event::',this.events,event);
+
     if (!this.events[event]) return;
 
     this.events[event].forEach(listener => listener(data));
   }
 }
 
-
-export const eventDispatcher = new EventDispatcher();
+// Export the singleton instance
+export const eventDispatcher = EventDispatcher.getInstance();

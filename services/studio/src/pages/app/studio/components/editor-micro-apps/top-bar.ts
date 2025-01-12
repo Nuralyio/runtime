@@ -272,7 +272,6 @@ export default [{
         type: "handler",
         value: /* js */`
             const zoom = GetVar('editor_panel_zoom') || 100;
-            console.log(zoom)
             return zoom;
             `
       }

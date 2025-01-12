@@ -4,7 +4,7 @@ import type { ComponentElement } from "$store/component/interface.ts";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import "@nuralyui/radio";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
 

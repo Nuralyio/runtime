@@ -2,7 +2,7 @@ import { type ComponentElement } from "$store/component/interface";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "utils/envirement";
-import { executeCodeWithClosure } from "core/executer";
+import { executeCodeWithClosure } from "../../../../../../../core/Kernel.ts";
 import { getNestedAttribute } from "utils/object.utils";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "@shared/components/BaseElement.ts";

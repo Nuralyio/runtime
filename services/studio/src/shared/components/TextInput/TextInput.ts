@@ -1,13 +1,14 @@
-import { css, html, nothing } from "lit";
+import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/input";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { debounce } from "@utils/time.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 
 @customElement("text-input-block")
@@ -21,13 +22,25 @@ export class TextInputBlock extends BaseElementBlock {
   item: any;
   unsubscribe: () => void;
   handleValueChange = debounce((customEvent: CustomEvent) => {
-    setValue(this.component.name, "value", customEvent.detail.value);
+    if(!this.ExecuteInstance.PropertiesProxy[this.component.name]){
+      this.ExecuteInstance.PropertiesProxy[this.component.name] = {}
+    }
+    this.ExecuteInstance.PropertiesProxy[this.component.name].value = customEvent.detail.value;
     if (this.component?.event?.valueChange) {
       executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.valueChange`), {
         value: customEvent.detail.value
       });
     }
   }, 0);
+
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    super.firstUpdated(_changedProperties);
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
+      //console.log('data', data)
+      this.traitInputsHandlers();
+      this.requestUpdate()
+    });
+  }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
