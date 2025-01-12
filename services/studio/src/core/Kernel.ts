@@ -14,6 +14,8 @@ import { openEditorTab } from "$store/actions/editor/openEditorTab.ts";
 import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
 import { eventDispatcher } from "@utils/change-detection";
 
+const DEBUG = false;
+
 /**
  * The Executor class manages the context and applications for a system.
  * It provides methods to register context and applications, flatten components,
@@ -26,10 +28,10 @@ class Executor {
   Apps: Record<string, any> = {};
   Values: Record<string, any> = {};
   Properties: Record<string, any> = {};
-  Vars: Record<string, any> = {}; // Add Vars property
+  Vars: Record<string, any> = {};
   PropertiesProxy: Record<string, any> = {};
-  VarsProxy: Record<string, any> = {}; // Add VarsProxy property
-  Current: Record<string, any> = {}; // Add Current property
+  VarsProxy: Record<string, any> = {};
+  Current: Record<string, any> = {};
   private functionCache: Record<string, Function> = {};
 
   Component: any = {};
@@ -39,25 +41,31 @@ class Executor {
 
   private constructor() {
     this.PropertiesProxy = this.createProxy(this.Properties);
-    this.VarsProxy = this.createProxy(this.Vars); // Initialize VarsProxy
+    this.VarsProxy = this.createProxy(this.Vars);
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
     $values.subscribe((values) => {
       // this.Values = values;
     });
+
+    if (DEBUG) {
+      console.log("Executor initialized with debug mode enabled.");
+    }
   }
 
   private createProxy(target: any): any {
     const self = this;
 
-    if (typeof target !== 'object' || target === null) {
+    if (typeof target !== "object" || target === null) {
       return target;
     }
 
     return new Proxy(target, {
       get(target, prop, receiver) {
-        console.log('prop', prop);
+        if (DEBUG) {
+          console.log(`[DEBUG] Accessing property '${String(prop)}'`);
+        }
         const value = Reflect.get(target, prop, receiver);
         if (!self.listeners[String(prop)]) {
           self.listeners[String(prop)] = new Set<string>();
@@ -67,7 +75,7 @@ class Executor {
           self.listeners[String(prop)].add(self.Current.name);
         }
 
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === "object" && value !== null) {
           if (self.proxyCache.has(value)) {
             return self.proxyCache.get(value);
           }
@@ -76,6 +84,12 @@ class Executor {
             set(targetNested, propNested, valueNested, receiverNested) {
               const oldValue = targetNested[propNested as string];
               const result = Reflect.set(targetNested, propNested, valueNested, receiverNested);
+
+              if (DEBUG) {
+                console.log(
+                  `[DEBUG] Updated nested property '${String(propNested)}' from '${oldValue}' to '${valueNested}'`
+                );
+              }
 
               if (oldValue !== valueNested) {
                 self.listeners[String(prop)].forEach((componentName: string) => {
@@ -86,6 +100,9 @@ class Executor {
               return result;
             },
             deleteProperty(targetNested, propNested) {
+              if (DEBUG) {
+                console.log(`[DEBUG] Deleting nested property '${String(propNested)}'`);
+              }
               const result = Reflect.deleteProperty(targetNested, propNested);
               if (result) {
                 self.listeners[String(prop)].forEach((componentName: string) => {
@@ -105,6 +122,10 @@ class Executor {
         const oldValue = target[prop as string];
         const result = Reflect.set(target, prop, value, receiver);
 
+        if (DEBUG) {
+          console.log(`[DEBUG] Set property '${String(prop)}' from '${oldValue}' to '${value}'`);
+        }
+
         if (oldValue !== value) {
           self.listeners[String(prop)].forEach((componentName: string) => {
             eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
@@ -114,9 +135,11 @@ class Executor {
         return result;
       },
       deleteProperty(target, prop) {
+        if (DEBUG) {
+          console.log(`[DEBUG] Deleting property '${String(prop)}'`);
+        }
         const result = Reflect.deleteProperty(target, prop);
         if (result) {
-
           self.listeners[String(prop)].forEach((componentName: string) => {
             eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
           });
@@ -180,7 +203,7 @@ class Executor {
         "Current",
         "Values",
         "Apps",
-        "Vars", // Pass Vars to closure
+        "Vars",
         "SetVar",
         "GetContextVar",
         "GetVar",
@@ -221,7 +244,8 @@ export const ExecuteInstance = Executor.getInstance();
  * @returns {any} The result of executing the closure function.
  */
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
-  ExecuteInstance.Current = component; // Set Current to the component
+  ExecuteInstance.Current = component;
+
   if (isServer) {
     return;
   }
@@ -231,15 +255,15 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   const Apps = ExecuteInstance.Apps;
   const Values = ExecuteInstance.Values;
   const PropertiesProxy = ExecuteInstance.PropertiesProxy;
-  const VarsProxy = ExecuteInstance.VarsProxy; // Include VarsProxy
-  const Current = ExecuteInstance.Current; // Include Current
+  const VarsProxy = ExecuteInstance.VarsProxy;
+  const Current = ExecuteInstance.Current;
 
   function SetVar(symbol: string, value: any): void {
     setVar("global", symbol, value);
   }
 
   function AddPage(page: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       addPageHandler(page, (page: any) => {
         resolve(page);
       });
@@ -247,7 +271,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   }
 
   function updatePage(page: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       updatePageHandler(page, (page) => {
         resolve(page);
       });
@@ -310,10 +334,10 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   return closureFunction(
     PropertiesProxy,
     JSON.parse(JSON.stringify(item ?? {})),
-    Current, // Pass Current to the closure function
+    Current,
     Values,
     Apps,
-    VarsProxy, // Pass VarsProxy to the closure function
+    VarsProxy,
     SetVar,
     GetContextVar,
     GetVar,
