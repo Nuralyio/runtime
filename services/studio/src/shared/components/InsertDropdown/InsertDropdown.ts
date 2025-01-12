@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/button";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 

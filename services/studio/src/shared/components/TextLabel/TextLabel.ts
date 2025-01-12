@@ -1,14 +1,15 @@
 import { type ComponentElement } from "$store/component/interface.ts";
-import { html, nothing } from "lit";
+import { html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import "@nuralyui/label";
 import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
@@ -33,9 +34,16 @@ export class TextLabelBlock extends BaseElementBlock {
 
   @state()
   hoveredComponent: ComponentElement;
+
+  @state()
+  va;
   constructor() {
     super();
+       
+    
     this.registerCallback("value", (value: any) => {
+      if(value)
+      this.va = value;
       this.requestUpdate();
     });
     this.registerCallback("innerAlignment", (value: any) => {
@@ -52,7 +60,16 @@ export class TextLabelBlock extends BaseElementBlock {
     const labelStyleHandlers = this.component?.styleHandlers
       ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
       : {};
+   
+   
 
+  }
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
+      //console.log('data', data)
+     this.traitInputsHandlers();
+      this.requestUpdate()
+    });
   }
 
   renderView() {
@@ -92,21 +109,12 @@ export class TextLabelBlock extends BaseElementBlock {
           executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseLeave`));
         }
       }}
-            @blur=${(e: Event) => {
-        this.isEditable = false;
-        const value = (e.target as HTMLElement).innerText;
-        updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
-          value: {
-            type: "value",
-            value
-          }
-        });
-      }}
+      
             @dblclick=${(e) => {
         e.preventDefault();
         this.isEditable = true;
       }}
-          >${this.inputHandlersValue.value || "Text label"}</hy-label>
+          >${this.va || "Text label"} </hy-label>
         `
       : nothing}
     `;

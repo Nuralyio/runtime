@@ -3,7 +3,6 @@ import { css } from "lit";
 const ComponentWrapperStyle = css`
     
     :host {
-        display: inline-block;
     }
   .resizer-line-top,
   .resizer-line-bottom,

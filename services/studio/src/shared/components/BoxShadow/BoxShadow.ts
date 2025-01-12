@@ -4,7 +4,7 @@ import { property, state } from "lit/decorators.js";
 import "@nuralyui/checkbox";
 import "@nuralyui/slider-input";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 
 function debounce(func, wait = 100) {

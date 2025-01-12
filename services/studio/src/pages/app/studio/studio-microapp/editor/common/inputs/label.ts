@@ -78,7 +78,6 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                console.log('current component label ',currentComponent)
                 if(currentComponent.input?.label?.type=="value"){
                 const currentLabel=currentComponent.input?.label?.value??'';
                 return currentLabel;

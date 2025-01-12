@@ -4,7 +4,7 @@ import "@nuralyui/select";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 
 @customElement("handler-block")
 export class HandlerBlock extends BaseElementBlock {

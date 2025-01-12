@@ -48,24 +48,52 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultTextAlign='';
-                let isDisabled = false;
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['justify-content']) {
-                    isDisabled = true
-                }
-                else 
-                defaultTextAlign = currentComponent.style['justify-content'] ||'start';
-
-                const options =[{value:'start',icon: "align-left",disabled:isDisabled},
-                                {value:'center',icon: "align-center",disabled:isDisabled},
-                                 {value:'end',icon: "align-right",disabled:isDisabled},
-                              ]
-                const radioType='button';
-                const result =[options,defaultTextAlign,radioType];
-                return  result;           
+            const selectedComponents = GetVar("selectedComponents") || [];
+            const selectedComponent = selectedComponents[0];
+        
+            if (!selectedComponent) {
+                // Return default values if no component is selected
+                return [
+                    [
+                        { value: 'start', icon: "align-left", disabled: false },
+                        { value: 'center', icon: "align-center", disabled: false },
+                        { value: 'end', icon: "align-right", disabled: false }
+                    ],
+                    'start',
+                    'button'
+                ];
+            }
+        
+            const currentEditingApplication = GetVar("currentEditingApplication");
+            const currentComponent = GetComponent(selectedComponent, currentEditingApplication?.uuid);
+        
+            if (!currentComponent) {
+                // Return default values if the current component is not found
+                return [
+                    [
+                        { value: 'start', icon: "align-left", disabled: false },
+                        { value: 'center', icon: "align-center", disabled: false },
+                        { value: 'end', icon: "align-right", disabled: false }
+                    ],
+                    'start',
+                    'button'
+                ];
+            }
+        
+            const hasJustifyContentHandler = currentComponent.styleHandlers?.['justify-content'];
+            const defaultTextAlign = hasJustifyContentHandler
+                ? ''
+                : currentComponent.style?.['justify-content'] || 'start';
+        
+            const options = [
+                { value: 'start', icon: "align-left", disabled: !!hasJustifyContentHandler },
+                { value: 'center', icon: "align-center", disabled: !!hasJustifyContentHandler },
+                { value: 'end', icon: "align-right", disabled: !!hasJustifyContentHandler }
+            ];
+        
+            const radioType = 'button';
+        
+            return [options, defaultTextAlign, radioType];
                 `
       }
     },

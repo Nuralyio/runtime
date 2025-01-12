@@ -3,7 +3,7 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/slider-input";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 
 // Debounce function

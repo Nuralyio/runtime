@@ -1,6 +1,6 @@
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { createRef, type  Ref, ref } from "lit/directives/ref.js";
+import { createRef, type Ref, ref } from "lit/directives/ref.js";
 
 // -- Monaco Editor Imports --
 import * as monaco from "monaco-editor";
@@ -12,18 +12,17 @@ import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 
-// @ts-ignore
-self.MonacoEnvironment = {
+// Make sure Monaco uses the right workers:
+(self as any).MonacoEnvironment = {
   getWorker(_: any, label: string) {
-
     if (label === "typescript" || label === "javascript") {
       return new tsWorker();
     }
-    if(label === "json") {
+    if (label === "json") {
       return new jsonWorker();
     }
     return new editorWorker();
-  }
+  },
 };
 
 @customElement("code-editor")
@@ -38,11 +37,14 @@ export class CodeEditor extends LitElement {
           height: var(--editor-height);
       }
   `;
+
   editor?: monaco.editor.IStandaloneCodeEditor;
+
   @property({ type: Boolean, attribute: "readonly" }) readOnly?: boolean;
   @property() theme?: string;
   @property() language?: string;
   @property() code?: string;
+
   private container: Ref<HTMLElement> = createRef();
 
   render() {
@@ -54,15 +56,25 @@ export class CodeEditor extends LitElement {
     `;
   }
 
+  /**
+   * Returns the current code contents
+   */
   getValue() {
-    return this.editor!.getValue();
+    return this.editor?.getValue() ?? "";
   }
 
+  /**
+   * Allows external code to update various Monaco editor options
+   */
   setOptions(value: monaco.editor.IStandaloneEditorConstructionOptions) {
-    this.editor!.updateOptions(value);
+    this.editor?.updateOptions(value);
   }
 
-  override firstUpdated() {
+  /**
+   * Create the Monaco editor once the element has rendered
+   */
+  firstUpdated() {
+    // For demonstration, registering a custom language
     monaco.languages.register({ id: "mylang" });
     monaco.languages.setMonarchTokensProvider("mylang", {
       tokenizer: {
@@ -70,24 +82,29 @@ export class CodeEditor extends LitElement {
           [/#.*$/, "comment"],
           [/\b(begin|end|if|else|while)\b/, "keyword"],
           [/[=+\-*/]/, "operator"],
-          [/\d+/, "number"]
-        ]
-      }
+          [/\d+/, "number"],
+        ],
+      },
     });
 
+    // Create the editor:
     this.editor = monaco.editor.create(this.container.value!, {
       value: this.getCode(),
       language: this.getLang(),
       theme: this.getTheme(),
       fontSize: 13,
       automaticLayout: true,
-      readOnly: this.readOnly ?? false
+      readOnly: this.readOnly ?? false,
     });
-    this.editor.getModel()!.onDidChangeContent(() => {
+
+    // Listen for content changes and re-dispatch an event:
+    this.editor.getModel()?.onDidChangeContent(() => {
       this.dispatchEvent(
         new CustomEvent("change", { detail: { value: this.getValue() } })
       );
     });
+
+    // Re-apply the theme if the user changes OS-level dark/light preferences
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
@@ -95,41 +112,70 @@ export class CodeEditor extends LitElement {
       });
   }
 
-  protected override updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has("code") && this.code != _changedProperties.get("code")) {
-      const cursorPosition = this.editor.getPosition();
-      if (this.code != this.getValue()) {
-        this.editor.setValue(this.code);
-        this.editor.setPosition(cursorPosition);
-        this.requestUpdate();
+  /**
+   * Dispose of the editor and its model when the element is removed
+   * from the DOM. This prevents stale listeners from piling up.
+   */
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this.editor) {
+      const model = this.editor.getModel();
+      this.editor.dispose();
+      model?.dispose();
+      this.editor = undefined;
+    }
+  }
+
+  /**
+   * Whenever the `code` property changes, update the editor’s text if needed
+   */
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
+    if (
+      changedProperties.has("code") &&
+      this.code !== changedProperties.get("code")
+    ) {
+      const cursorPosition = this.editor?.getPosition();
+      // Only set the editor value if there's a real change
+      if (this.code !== this.getValue() && this.editor) {
+        this.editor.setValue(this.code ?? "");
+        if (cursorPosition) {
+          this.editor.setPosition(cursorPosition);
+        }
       }
     }
   }
 
-  private getFile() {
-    if (this.children.length > 0) return this.children[0];
-    return null;
-  }
-
+  /**
+   * If the user hasn’t passed any `code`, we look for a <script> child
+   * or fallback to an empty string
+   */
   private getCode() {
     if (this.code) return this.code;
     const file = this.getFile();
-    if (!file) return;
-    return file.innerHTML.trim();
+    return file ? file.innerHTML.trim() : "";
   }
 
+  /**
+   * If the user hasn’t passed any `language`, we look for a <script> child
+   * or fallback to "plaintext"
+   */
   private getLang() {
     if (this.language) return this.language;
     const file = this.getFile();
-    if (!file) return;
-    const type = file.getAttribute("type")!;
-    return type.split("/").pop()!;
+    if (!file) return "plaintext";
+    const type = file.getAttribute("type") || "text/plain";
+    return type.split("/").pop() || "plaintext";
   }
 
+  /**
+   * Figure out which theme Monaco should use
+   */
   private getTheme() {
     if (this.theme) return this.theme;
-    if (this.isDark()) return "vs-dark";
-    return "vs-light";
+    // If OS prefers dark mode, use vs-dark theme; else use vs-light
+    return this.isDark() ? "vs-dark" : "vs-light";
   }
 
   private isDark() {
@@ -139,4 +185,11 @@ export class CodeEditor extends LitElement {
     );
   }
 
+  /**
+   * If we have a <script> child, return it (this is just a convenience to allow:
+   * <code-editor><script type="text/javascript">const x=1;</script></code-editor>)
+   */
+  private getFile() {
+    return this.children.length > 0 ? this.children[0] : null;
+  }
 }

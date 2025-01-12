@@ -1,3 +1,5 @@
+// Executor.ts
+
 import { GenerateName } from "utils/naming-generator";
 
 import { $applications, $values } from "$store/apps";
@@ -5,12 +7,12 @@ import { $components } from "$store/component/store.ts";
 import type { ComponentElement, ComponentType } from "$store/component/interface";
 import { $context, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
-import { eventDispatcher } from "utils/change-detection";
 import { isServer } from "utils/envirement";
 import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import { openEditorTab } from "$store/actions/editor/openEditorTab.ts";
 import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
+import { eventDispatcher } from "@utils/change-detection";
 
 /**
  * The Executor class manages the context and applications for a system.
@@ -23,25 +25,107 @@ class Executor {
   applications: Record<string, any> = {};
   Apps: Record<string, any> = {};
   Values: Record<string, any> = {};
+  Properties: Record<string, any> = {};
+  Vars: Record<string, any> = {}; // Add Vars property
+  PropertiesProxy: Record<string, any> = {};
+  VarsProxy: Record<string, any> = {}; // Add VarsProxy property
+  Current: Record<string, any> = {}; // Add Current property
   private functionCache: Record<string, Function> = {};
 
-  /**
-   * Private constructor to ensure singleton pattern.
-   */
+  Component: any = {};
+  listner: any = {};
+  private listeners: Record<string, Set<string>> = {};
+  private proxyCache: WeakMap<object, any> = new WeakMap();
+
   private constructor() {
+    this.PropertiesProxy = this.createProxy(this.Properties);
+    this.VarsProxy = this.createProxy(this.Vars); // Initialize VarsProxy
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
-    eventDispatcher.on("component:refresh", () => this.registerApplications());
     $values.subscribe((values) => {
-      this.Values = values;
+      // this.Values = values;
     });
   }
 
-  /**
-   * Returns the singleton instance of the Executor class.
-   * @returns {Executor} The singleton instance.
-   */
+  private createProxy(target: any): any {
+    const self = this;
+
+    if (typeof target !== 'object' || target === null) {
+      return target;
+    }
+
+    return new Proxy(target, {
+      get(target, prop, receiver) {
+        console.log('prop', prop);
+        const value = Reflect.get(target, prop, receiver);
+        if (!self.listeners[String(prop)]) {
+          self.listeners[String(prop)] = new Set<string>();
+        }
+
+        if (self.Current.name) {
+          self.listeners[String(prop)].add(self.Current.name);
+        }
+
+        if (typeof value === 'object' && value !== null) {
+          if (self.proxyCache.has(value)) {
+            return self.proxyCache.get(value);
+          }
+
+          const nestedProxy = new Proxy(value, {
+            set(targetNested, propNested, valueNested, receiverNested) {
+              const oldValue = targetNested[propNested as string];
+              const result = Reflect.set(targetNested, propNested, valueNested, receiverNested);
+
+              if (oldValue !== valueNested) {
+                self.listeners[String(prop)].forEach((componentName: string) => {
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested });
+                });
+              }
+
+              return result;
+            },
+            deleteProperty(targetNested, propNested) {
+              const result = Reflect.deleteProperty(targetNested, propNested);
+              if (result) {
+                self.listeners[String(prop)].forEach((componentName: string) => {
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
+                });
+              }
+              return result;
+            },
+          });
+
+          self.proxyCache.set(value, nestedProxy);
+          return nestedProxy;
+        }
+        return value;
+      },
+      set(target, prop, value, receiver) {
+        const oldValue = target[prop as string];
+        const result = Reflect.set(target, prop, value, receiver);
+
+        if (oldValue !== value) {
+          self.listeners[String(prop)].forEach((componentName: string) => {
+            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
+          });
+        }
+
+        return result;
+      },
+      deleteProperty(target, prop) {
+        const result = Reflect.deleteProperty(target, prop);
+        if (result) {
+
+          self.listeners[String(prop)].forEach((componentName: string) => {
+            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
+          });
+        }
+        return result;
+      },
+    });
+  }
+
   static getInstance(): Executor {
     if (!Executor.instance) {
       Executor.instance = new Executor();
@@ -49,25 +133,19 @@ class Executor {
     return Executor.instance;
   }
 
-  /**
-   * Listens to the context and updates the internal context record.
-   */
   registerContext() {
     $context.listen((context: any) => {
       Object.assign(this.context, context);
     });
   }
 
-  /**
-   * Registers applications and components, updating the internal context and applications records.
-   */
   registerApplications() {
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
-    let loadedApplication = $applications.get();
-    let loadedApplicationObj = {};
+    const loadedApplications = $applications.get();
+    const loadedApplicationObj: Record<string, string> = {};
 
-    loadedApplication.map((app: any) => {
+    loadedApplications.forEach((app: any) => {
       loadedApplicationObj[app.uuid] = app.name;
     });
 
@@ -94,18 +172,15 @@ class Executor {
     });
   }
 
-  /**
-   * Prepares a closure function from the given code string and caches it.
-   * @param {string} code - The code string to prepare.
-   * @returns {Function} The prepared closure function.
-   */
   prepareClosureFunction(code: string): Function {
     if (!this.functionCache[code]) {
       this.functionCache[code] = new Function(
+        "Components",
         "Item",
         "Current",
         "Values",
         "Apps",
+        "Vars", // Pass Vars to closure
         "SetVar",
         "GetContextVar",
         "GetVar",
@@ -130,17 +205,12 @@ class Executor {
     return this.functionCache[code];
   }
 
-  /**
-   * Flattens the components store and filters out components with a parent.
-   * @param {any} componentsStore - The components store.
-   * @returns {any[]} The flattened components list.
-   */
   private flattenedComponents(componentsStore: any): any[] {
     return Object.values(componentsStore).flat().filter((component: any) => !component.parent);
   }
 }
 
-const instance = Executor.getInstance();
+export const ExecuteInstance = Executor.getInstance();
 
 /**
  * Executes the given code within a closure, providing access to various context and application data.
@@ -151,43 +221,31 @@ const instance = Executor.getInstance();
  * @returns {any} The result of executing the closure function.
  */
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
-
+  ExecuteInstance.Current = component; // Set Current to the component
   if (isServer) {
     return;
   }
-  const context = instance.context;
-  const applications = instance.applications;
-  const Apps = instance.Apps;
-  const Values = instance.Values;
 
-  /**
-   * Sets a global variable.
-   * @param {string} symbol - The variable symbol.
-   * @param {any} value - The value to set.
-   */
+  const context = ExecuteInstance.context;
+  const applications = ExecuteInstance.applications;
+  const Apps = ExecuteInstance.Apps;
+  const Values = ExecuteInstance.Values;
+  const PropertiesProxy = ExecuteInstance.PropertiesProxy;
+  const VarsProxy = ExecuteInstance.VarsProxy; // Include VarsProxy
+  const Current = ExecuteInstance.Current; // Include Current
+
   function SetVar(symbol: string, value: any): void {
     setVar("global", symbol, value);
   }
 
-  /**
-   * Adds a page to the application.
-   * @param {any} page - The page to add.
-   * @returns {Promise<any>} A promise that resolves with the added page.
-   */
   function AddPage(page: any): Promise<any> {
     return new Promise((resolve, reject) => {
       addPageHandler(page, (page: any) => {
         resolve(page);
       });
-
     });
   }
 
-  /**
-   * Updates a page in the application.
-   * @param {any} page - The page to update.
-   * @returns {Promise<any>} A promise that resolves with the updated page.
-   */
   function updatePage(page: any): Promise<any> {
     return new Promise((resolve, reject) => {
       updatePageHandler(page, (page) => {
@@ -196,126 +254,66 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     });
   }
 
-  /**
-   * Updates the style handlers of a component.
-   * @param {ComponentElement} component - The component to update.
-   * @param {string} symbol - The style handler symbol.
-   * @param {any} value - The value to set.
-   */
   function updateStyleHandlers(component: ComponentElement, symbol: string, value: any) {
     updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", { [symbol]: value });
   }
 
-  /**
-   * Gets a context variable.
-   * @param {string} symbol - The variable symbol.
-   * @param {string | null} customContentId - The custom content ID.
-   * @param {any} component - The component.
-   * @returns {any} The value of the context variable.
-   */
   function GetContextVar(symbol: string, customContentId: string | null, component: any): any {
     const contentId = customContentId || component.applicationId;
     if (context && context[contentId] && context[contentId][symbol] && "value" in context[contentId][symbol]) {
-      return context[contentId][symbol].value;
-    } else {
-      //console.warn("Variable not found or invalid structure." + symbol);
+      return context[contentId][symbol].value
+
+        ;
     }
   }
 
-  /**
-   * Gets a global variable.
-   * @param {string} symbol - The variable symbol.
-   * @returns {any} The value of the global variable.
-   */
   function GetVar(symbol: string): any {
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
-    } else {
-      //console.warn("Variable not found or invalid structure." + symbol);
     }
   }
 
-  /**
-   * Gets a component by its UUID.
-   * @param {string} componentUuid - The component UUID.
-   * @param {string} applicationId - The application ID.
-   * @returns {any} The component.
-   */
   function GetComponent(componentUuid: string, applicationId: string): any {
     return Object.values(applications[applicationId] || {}).find((c: ComponentElement) => c.uuid === componentUuid);
   }
 
-  /**
-   * Adds a component to the application.
-   * @param {string} applicationId - The application ID.
-   * @param {string} pageId - The page ID.
-   * @param {ComponentType} componentType - The component type.
-   */
   function AddComponent(applicationId: string, pageId: string, componentType: ComponentType): any {
     const generatedName = GenerateName(componentType);
     addComponentAction({ name: generatedName, component_type: componentType }, pageId, applicationId);
   }
 
-  /**
-   * Gets components by their IDs.
-   * @param {string[]} componentIds - The component IDs.
-   * @returns {any[]} The components.
-   */
   function GetComponents(componentIds: string[]): any[] {
     return Object.values(applications).flat().filter((c: any) => componentIds.includes(c.uuid));
   }
 
-  /**
-   * Sets a context variable.
-   * @param {string} symbol - The variable symbol.
-   * @param {any} value - The value to set.
-   * @param {any} component - The component.
-   */
   function SetContextVar(symbol: string, value: any, component: any) {
     setVar(component.applicationId, symbol, value);
   }
 
-  /**
-   * Updates the input of a component.
-   * @param {ComponentElement} component - The component to update.
-   * @param {string} inputName - The input name.
-   * @param {string} handlerType - The handler type.
-   * @param {any} handlerValue - The handler value.
-   */
   function updateInput(component: ComponentElement, inputName: string, handlerType: string, handlerValue: any) {
     const eventData = { [inputName]: { type: handlerType, value: handlerValue } };
     updateComponentAttributes(component.applicationId, component.uuid, "input", eventData);
   }
 
-  /**
-   * Updates the event of a component.
-   * @param {ComponentElement} component - The component to update.
-   * @param {string} symbol - The event symbol.
-   * @param {any} value - The value to set.
-   */
   function updateEvent(component: ComponentElement, symbol: string, value: any) {
     const eventData = { [symbol]: value };
     updateComponentAttributes(component.applicationId, component.uuid, "event", eventData);
   }
 
-  /**
-   * Updates the style of a component.
-   * @param {ComponentElement} component - The component to update.
-   * @param {string} symbol - The style symbol.
-   * @param {any} value - The value to set.
-   */
   function updateStyle(component: ComponentElement, symbol: string, value: any) {
     const eventData = { [symbol]: value };
     updateComponentAttributes(component.applicationId, component.uuid, "style", eventData);
   }
 
-  const closureFunction = instance.prepareClosureFunction(code);
+  const closureFunction = ExecuteInstance.prepareClosureFunction(code);
 
   return closureFunction(
+    PropertiesProxy,
     JSON.parse(JSON.stringify(item ?? {})),
-    component,
+    Current, // Pass Current to the closure function
     Values,
     Apps,
+    VarsProxy, // Pass VarsProxy to the closure function
     SetVar,
     GetContextVar,
     GetVar,
