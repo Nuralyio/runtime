@@ -27,6 +27,7 @@ import "@shared/components/Collapse/Collapse";
 import "@shared/components/Divider/Divider";
 import "@shared/components/Handlers/Handlers";
 import "@shared/components/Function/InvokeFunction.ts"
+import "@shared/components/Export-Import/Export-Import.ts"
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -58,9 +59,13 @@ const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item
 const dividerTemplate = (props: any) => html`<divider-block .item=${props.item} .component=${props.component}></divider-block>`;
 const handlersTemplate = (props: any) => html`<handler-block .item=${props.item} .component=${props.component}></handler-block>`;
 
-// **New Template for InvokeFunction**
 const invokeFunctionTemplate = (props: any) => html`
   <invoke-function-block .item=${props.item} .component=${props.component}></invoke-function-block>
+`;
+
+
+const importExportTemplate = (props: any) => html`
+  <export-import-block .item=${props.item} .component=${props.component}></export-import-block>
 `;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
@@ -131,7 +136,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return collapseTemplate(commonProps);
     case ComponentType.Handlers:
       return handlersTemplate(commonProps);
-    // **New Case for InvokeFunction**
+   case ComponentType.ExportImport:
+      return importExportTemplate(commonProps);
     case ComponentType.InvokeFunction:
       return invokeFunctionTemplate(commonProps);
     default:
