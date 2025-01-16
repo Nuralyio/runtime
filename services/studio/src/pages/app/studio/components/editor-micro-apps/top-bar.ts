@@ -347,7 +347,7 @@ export default [{
       "flex-direction": "column",
       "align-items": "center"
     },
-    childrenIds: ["primary_platform_button", "primary_platform_text"]
+    childrenIds: ["primary_platform_button"]
 
   },
   {
@@ -400,7 +400,7 @@ export default [{
       "flex-direction": "column",
       "align-items": "center"
     },
-    childrenIds: ["tablet_platform_button", "tablet_platform_text"]
+    childrenIds: ["tablet_platform_button",]
 
   },
   {
@@ -453,7 +453,7 @@ export default [{
       "flex-direction": "column",
       "align-items": "center"
     },
-    childrenIds: ["mobile_platform_button", "mobile_platform_text"]
+    childrenIds: ["mobile_platform_button"]
 
   },
   {
