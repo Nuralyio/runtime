@@ -2,8 +2,10 @@
 import Layout from './_layouts/LandingLayout.astro';
 import "../core/micro-app";
 import { MicroApp } from '../core/micro-app';
-const homeAppUUID = import.meta.env.HOME_APP_UUID;
-const homeAppPageUUID = import.meta.env.HOME_PAGE_UUID;
+import 'dotenv/config'
+
+const homeAppUUID = process.env.HOME_APP_UUID;
+const homeAppPageUUID = process.env.HOME_PAGE_UUID;
 
 ---
 <Layout title="Welcome to Astrolus.">
