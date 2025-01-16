@@ -71,3 +71,9 @@ export const $selectedComponent = ($applicationId: string) => computed(
   (components: ComponentElement[], currentComponentId) =>
     components.find(component => component.uuid === currentComponentId) || null
 );
+
+export const $componentsByUUIDs = ($applicationId: string, uuids: string[]) => computed(
+  [$applicationComponents($applicationId)],
+  (components: ComponentElement[]) =>
+    components.filter(component => uuids.includes(component.uuid))
+);
