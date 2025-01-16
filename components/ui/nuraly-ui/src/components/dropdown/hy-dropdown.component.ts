@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, TemplateResult, html} from 'lit';
+import {LitElement, TemplateResult, html, nothing} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {styles} from './hy-dropdown.style.js';
 import {DropDownDirection, IOption, TriggerMode} from './dropdown.types';
@@ -142,7 +142,7 @@ export class HyDropdownComponent extends LitElement {
     return html`
       <slot></slot>
       <div class="dropdown-container" @click-item=${this.onOptionClick}>
-      ${this.template?html`${this.template}`: this.display(this.options)}
+      ${this.template?html`${this.show ? this.template : nothing}`: this.display(this.options)}
       </div>
     `;
   }

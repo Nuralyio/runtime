@@ -36,7 +36,10 @@ export class ColorPicker extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    document.addEventListener('scroll', this.calculateDropDownPosition);
+    // Mark the scroll listener as passive:
+    document.addEventListener('scroll', this.calculateDropDownPosition, {
+      passive: true,
+    });
     document.addEventListener('click', this.onClickOutside);
   }
 
