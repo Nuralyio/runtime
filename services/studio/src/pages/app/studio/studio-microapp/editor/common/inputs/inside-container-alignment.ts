@@ -62,7 +62,6 @@ export const StudioInnerContainerInputAlignment = [
                 const selectedComponent = selectedComponents[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
                 let currentType = currentComponent?.style?.type || 'default';
-                console.log('currentType',currentType);
                 const options = [
                     { label: "Start", value: "start" },
                     { label: "End", value: "end" },

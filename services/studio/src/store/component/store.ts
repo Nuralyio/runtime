@@ -35,6 +35,7 @@ export const $currentComponentId = persistentAtom<string>(
 );
 
 export const $hoveredComponentId = atom<string>(null);
+export const $hoveredComponent = atom<Object>(null);
 
 export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
   "draggingComponentInfo",

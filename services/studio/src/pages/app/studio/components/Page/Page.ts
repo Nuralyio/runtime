@@ -67,12 +67,31 @@ export class PageContent extends LitElement {
       const currentAppUuid = currentEditingApplication.value.uuid;
 
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
-      const components = $applicationComponents(currentAppUuid).get();
-      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root);
 
+      const components = $applicationComponents(currentAppUuid).get();
+      // Filter for components that belong to the current page and are root.
+      const pageComponents = components.filter(
+        component =>
+          component.pageId &&
+          currentPage.value &&
+          component.pageId === currentPage.value &&
+          component.root
+      );
+
+      // Sort the components based on their position in this.currentPage.component_ids
+      if (this.currentPage?.component_ids) {
+        pageComponents.sort((a, b) => {
+          const idxA = this.currentPage.component_ids.indexOf(a.uuid);
+          const idxB = this.currentPage.component_ids.indexOf(b.uuid);
+          return idxA - idxB;
+        });
+      }
+
+      this.components = pageComponents;
     }
     this.requestUpdate();
   }
+
 
   connectedCallback() {
     super.connectedCallback();

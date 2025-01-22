@@ -7,6 +7,7 @@ import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import { $context } from "$store/context.ts";
 
 function isPromise(value) {
   return Boolean(value && typeof value.then === "function");
@@ -55,7 +56,7 @@ export class BaseElementBlock extends LitElement {
     if (isServer) {
       return;
     }
-    if(!this.ExecuteInstance.PropertiesProxy[this.component.name]){
+    if (!this.ExecuteInstance.PropertiesProxy[this.component.name]) {
       this.ExecuteInstance.PropertiesProxy[this.component.name] = {}
     }
     if (input) {
@@ -64,9 +65,9 @@ export class BaseElementBlock extends LitElement {
           const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value, undefined, this.item);
           if (isPromise(fn)) {
             fn.then((result: any) => {
-              if(this.inputHandlersValue[inputName] !== result){
+              if (this.inputHandlersValue[inputName] !== result) {
                 this.inputHandlersValue[inputName] = result;
-              this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = result;
+                this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = result;
 
               }
               this.inputHandlersValue[inputName] = result;
@@ -89,7 +90,7 @@ export class BaseElementBlock extends LitElement {
         });
       } else {
         this.inputHandlersValue[inputName] = input.value;
-        if(this.inputHandlersValue[inputName]!==input.value){
+        if (this.inputHandlersValue[inputName] !== input.value) {
           this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
 
         }
@@ -125,7 +126,7 @@ export class BaseElementBlock extends LitElement {
       for (const [inputName, input] of Object.entries(this.component?.input)) {
         handlerPromises.push(this.traitInputHandler(input, inputName));
       }
-       Promise.all(handlerPromises);
+      Promise.all(handlerPromises);
     }
   }
 
@@ -167,12 +168,13 @@ export class BaseElementBlock extends LitElement {
   }
 
   override updated(changedProperties: any[] | PropertyValueMap<any>) {
-    changedProperties.forEach((_oldValue, propName) => {
+    changedProperties.forEach(async (_oldValue, propName) => {
       if (propName === "component") {
-        const excludedTypes = ["text_label", "text_input" ];
+        const excludedTypes = ["text_label", "text_input"];
         if (!excludedTypes.includes(this.component.component_type)) {
 
-        }this.traitInputsHandlers();
+        } 
+        this.traitInputsHandlers();
         this.traitStylesHandlers();
       }
     });
@@ -180,11 +182,18 @@ export class BaseElementBlock extends LitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
-    this.closestGenericComponentWrapper =  this.closest('generik-component-wrapper');
-    if(this.component.component_type === "text_label"||this.component.component_type === "Collapse"){
-      
-      this.traitInputsHandlers();
+    this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
+    eventDispatcher.on('component:refresh' , async ()=>{
+      await this.traitInputsHandlers();
+      await this.traitStylesHandlers();
+    })
+    const excludedTypes = ["text_label", "text_input"];
+    if (!excludedTypes.includes(this.component.component_type)) {
+
     }
+    await this.traitInputsHandlers();
+    await this.traitStylesHandlers();
+
     eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
       if (key === "Enter") {
         if (selectedComponents.length == 1 && this.component.uuid === selectedComponents[0]) {
@@ -199,6 +208,5 @@ export class BaseElementBlock extends LitElement {
     super.disconnectedCallback();
     eventDispatcher.off("component:refresh", this.traitInputsHandlers);
     eventDispatcher.off("component:refresh", this.traitStylesHandlers);
-    //eventDispatcher.off("keydown", this.isEditable);
   }
 }

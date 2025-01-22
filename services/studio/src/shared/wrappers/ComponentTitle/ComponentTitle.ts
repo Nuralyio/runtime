@@ -70,8 +70,8 @@ export class ComponentTitle extends LitElement {
     setDraggingComponentInfo({
       componentId: this.component?.uuid,
       blockInfo: {
-        height: this.component.style.height,
-        width: this.component.style.width
+        height: this.component.style?.height,
+        width: this.component.style?.width
       }
     });
   }

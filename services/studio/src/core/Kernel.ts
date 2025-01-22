@@ -13,6 +13,7 @@ import { updateComponentAttributes } from "$store/actions/component/updateCompon
 import { openEditorTab } from "$store/actions/editor/openEditorTab.ts";
 import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
 import { eventDispatcher } from "@utils/change-detection";
+import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler";
 
 const DEBUG = false;
 
@@ -45,9 +46,11 @@ class Executor {
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
-    $values.subscribe((values) => {
-      // this.Values = values;
+    $context.subscribe(()=>{
+      console.log("context updated")
+      this.registerApplications()
     });
+    eventDispatcher.on("component:refresh", () => this.registerApplications())
 
     if (DEBUG) {
       console.log("Executor initialized with debug mode enabled.");
@@ -222,6 +225,7 @@ class Executor {
         "updateStyle",
         "openEditorTab",
         "setCurrentEditorTab",
+        "InvokeFunction",
         `return (function() { ${code} }).apply(this);`
       );
     }
@@ -329,6 +333,30 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     updateComponentAttributes(component.applicationId, component.uuid, "style", eventData);
   }
 
+  async function InvokeFunction(id: string, payload: any={}) {
+    try {
+      const result = await invokeFunctionHandler(id, {
+        payload: {
+          data : payload
+        }
+      });
+  
+      const contentType = result.headers?.get("Content-Type") || "";
+  
+      if (contentType.includes("application/json")) {
+        const jsonData = await result.json();
+        console.log("JSON Response:", jsonData);
+        return jsonData;
+      } else {
+        const textData = await result.text();
+        console.log("Text Response:", textData);
+        return textData;
+
+      }
+    } catch (error) {
+      console.error("Error in InvokeFunctionHandler:", error);
+    }
+  }
   const closureFunction = ExecuteInstance.prepareClosureFunction(code);
 
   return closureFunction(
@@ -355,6 +383,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     EventData,
     updateStyle,
     openEditorTab,
-    setCurrentEditorTab
+    setCurrentEditorTab,
+    InvokeFunction
   );
 }

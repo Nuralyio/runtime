@@ -56,7 +56,7 @@ export default [
                 if(currentComponent.styleHandlers && currentComponent?.styleHandlers['align-items']) {
                     isDisabled = true
                 }
-                else 
+                else if ( currentComponent.style)
                 defaultVerticalAlign = currentComponent.style['align-items'] ||'start';
                 const options =[
                                 {value:'start',icon: "arrow-up",disabled:isDisabled},

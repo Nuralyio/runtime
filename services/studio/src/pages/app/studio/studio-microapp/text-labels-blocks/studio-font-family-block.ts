@@ -59,30 +59,30 @@ export default [
                     [
                     {
                     label: "Arial",
-                    value: "arial",
+                    value: "Arial",
                     }, 
                     {
                     label: "Tahoma",
-                    value: "tahoma",
+                    value: "Tahoma",
                    },
                     {
                      label: "Verdana",
-                     value: "verdana",
+                     value: "Verdana",
                    },
                    {
                     label:'Georgia',
-                    value:'georgia',
+                    value:'Georgia',
                   },
                   {
                     label:'Courier New',
-                    value:'courier new',
+                    value:'Courier New',
                  }
             
             ]
             if(fontFamily){
                 selectedFontFamily = options.find((option)=> option.value == fontFamily);   
             }
-            const result =[options,[selectedFontFamily? selectedFontFamily.value : ""]]
+            const result =[options,[[selectedFontFamily? selectedFontFamily.value : ""]]]
             return  result;  
                 `
       },

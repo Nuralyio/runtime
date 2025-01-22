@@ -11,7 +11,10 @@ import { getNestedAttribute } from "../../../utils/object.utils.ts";
 @customElement("checkbox-block")
 export class TextInputBlock extends BaseElementBlock {
   static styles = [
-    css``
+    css`
+    :host {
+        pointer-events: none;
+    }`
   ];
   @property({ type: Object })
   component: ComponentElement;
@@ -49,7 +52,8 @@ export class TextInputBlock extends BaseElementBlock {
     style=${styleMap({
         ...checkBoxStyles,
         width: checkboxAutoWidth ? "auto" : checkBoxStyles.width,
-        height: checkboxAutoHeight ? "auto" : checkBoxStyles.height
+        height: checkboxAutoHeight ? "auto" : checkBoxStyles.height,
+      "user-select": "none"
       })}
     .checked=${(this.inputHandlersValue?.checked == "check")}
     .indeterminate=${(this.inputHandlersValue?.checked == "indeterminate")}

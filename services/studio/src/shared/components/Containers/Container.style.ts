@@ -10,7 +10,6 @@ export default css`
     flex-wrap: wrap;
   }
   .drag-over {
-    border: 1px dashed #c439ff;
   }
 
   .drop-zone {

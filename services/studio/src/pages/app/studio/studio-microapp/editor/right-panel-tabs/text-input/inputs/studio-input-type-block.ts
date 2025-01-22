@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../../../utils/common-editor-theme.ts";
 
 export default [
   {
@@ -9,14 +10,8 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      display: "flex",
-      "align-items": "center",
-      "justify-content": "space-between",
-
-
-      "margin-top": "10px"
+      ...InputBlockContainerTheme
     },
-
     childrenIds: ["input_stype_radio_block", "input_type_handler_block"]
   },
   {
@@ -30,7 +25,7 @@ export default [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["input_type_label", "input_type_radio"]
+    childrenIds: ["input_type_label"]
   },
 
   {
@@ -96,9 +91,7 @@ export default [
       }
     },
     style: {
-      display: "block",
-      "--hybrid-button-height": "30px",
-      "--hybrid-button-width": "30px"
+      ...RadioButtonWithThreeOptionsTheme
     },
     event: {
       changed: /* js */ `
@@ -124,12 +117,11 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      width: "50px",
       display: "flex",
       "justify-content": "space-between"
     },
 
-    childrenIds: ["input_type_handler"]
+    childrenIds: ["input_type_radio","input_type_handler"]
   },
   {
     uuid: "input_type_handler",

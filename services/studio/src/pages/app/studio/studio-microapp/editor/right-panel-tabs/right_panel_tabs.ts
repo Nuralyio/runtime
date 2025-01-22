@@ -38,23 +38,10 @@ export default {
                             break;
                         case "text_input":
                             parameters=[
-                                "value_text_block",
-                                "helper_text_block",
-                                "label_text_block",
-                                "input_label_color_block",
-                                "input_label_font_size_vertical_container",
-                                "input_helper_color_block",
-                                "input_helper_font_size_vertical_container",
-                                "placeholder_text_block",
-                                "position_collapse_container",
-                                "width_vertical_container",
-                                "size_block",
-                                "input_type_block",
-                                "status_block",
-                                "state_block",
-                                "input_blur_event_block",
-                                "input_valuechange_event_block",
-                                "input_focus_event_block"
+                                'text_input_blocks'
+                            ];
+                            handlers=[
+                                "studio_text_input_handler"
                             ];
                             break;
                         case "button_input":

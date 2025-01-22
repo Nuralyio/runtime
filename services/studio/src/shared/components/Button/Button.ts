@@ -29,6 +29,12 @@ export class ButtonBlock extends BaseElementBlock {
     this.registerCallback("value", () => {
       this.requestUpdate();
     });
+    setTimeout(() => {
+      if(this.component.uuid == "355ef391-d9fe-44e5-b553-46b81c828d11"){
+        setVar("global", "selectedComponents", ["a40800b4-930f-46bf-8ecc-ada07d233682"]);
+        this.requestUpdate()
+      }
+    },100);
   }
 
   override updated(changedProperties: PropertyValues) {

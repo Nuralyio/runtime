@@ -23,7 +23,7 @@ export const InputTextLabelTheme = {
 
 export const RadioButtonWithTwoOptionsTheme = {
   "--hybrid-button-height": "28px",
-  "--hybrid-button-width": "76px",
+  "--hybrid-button-width": "80px",
   "--hybrid-button-font-size": "12px"
 };
 
