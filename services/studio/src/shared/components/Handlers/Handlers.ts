@@ -1,4 +1,4 @@
-import { css, html, nothing } from "lit";
+import { css, html, nothing, type PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/select";
 import { type ComponentElement } from "$store/component/interface.ts";
@@ -19,13 +19,17 @@ export class HandlerBlock extends BaseElementBlock {
   ];
   @property({ type: Object })
   component: ComponentElement;
-
+constructor() {
+  super();
+  this.registerCallback('events' , ()=>{
+    console.log('events');
+    this.requestUpdate();
+  })
+}
   override async connectedCallback() {
     await super.connectedCallback();
-    this.registerCallback("value", () => {
-      this.requestUpdate();
-    });
   }
+
 
   handleCodeChange = (e: CustomEvent, eventName: string) => {
     executeCodeWithClosure(this.component,

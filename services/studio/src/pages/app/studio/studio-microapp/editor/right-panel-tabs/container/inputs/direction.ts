@@ -64,13 +64,12 @@ export const StudioContainerInputDirection = [
                 const selectedComponents = GetVar("selectedComponents") || [];
                 const selectedComponent = selectedComponents[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.style?.type || 'default';
-                console.log('currentType',currentType);
+                let currentType = currentComponent?.input?.direction.value || 'default';
                 const options = [
-                    { label: "Vertical", value: "vertical" },
-                    { label: "Horizontal", value: "horizontal" },
+                    { label: "vertical", value: "vertical" },
+                    { label: "horizontal", value: "horizontal" },
                 ];
-                const result = [options, [currentType]];
+                const result = [options, [[currentType]]];
                 return result;
                 `
       },

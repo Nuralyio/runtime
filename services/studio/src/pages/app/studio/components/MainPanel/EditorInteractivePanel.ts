@@ -12,7 +12,7 @@ import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { $currentApplication } from "$store/apps";
 import "../Layout/ThemeContainer";
 
-
+import "./AI-Assistant.ts";
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
@@ -70,6 +70,7 @@ export class EditorInteractivePanel extends LitElement {
 
   render() {
     return html`
+    <ai-assistant-block> </ai-assistant-block>
     <theme-contaienr>
       <div>
         <quick-action-wrapper

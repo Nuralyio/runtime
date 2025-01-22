@@ -43,7 +43,7 @@ export class ExportImportBlock extends BaseElementBlock {
     return html`
       <hy-dropdown
         .template=${html`
-          <div style="width: 700px; padding: 8px; background: #2d2d2d; border-radius: 4px; height: 600px; resize: both">
+          <div style="width: 700px; padding: 8px; background: #2d2d2d; border-radius: 4px; height: 300px; resize: both">
             <code-editor
               theme="vs"
               @change=${(event: CustomEvent) => this.handleCodeChange(type, event)}
@@ -76,9 +76,11 @@ export class ExportImportBlock extends BaseElementBlock {
         const uuidSet = new Set<string>();
 
         const collectUUIDs = (comp: ComponentElement): void => {
-          const { uuid, childrens } = comp;
-          if (uuid) uuidSet.add(uuid);
-          if (childrens) childrens.forEach((child: ComponentElement) => collectUUIDs(child));
+          if(comp){
+            const { uuid, childrens } = comp;
+            if (uuid) uuidSet.add(uuid);
+            if (childrens) childrens.forEach((child: ComponentElement) => collectUUIDs(child));
+          }
         };
 
         collectUUIDs(component);

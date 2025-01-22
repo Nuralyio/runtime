@@ -28,7 +28,7 @@ export const addPageHandler = (page: PageElement, resolve?, reject ?) => {
 };
 
 
-export const updatePageHandler = (page: PageElement, callback: (page: any) => void) => {
+export const updatePageHandler = (page: PageElement, callback?: (page: any) => void) => {
   fetch("/api/pages/" + page.uuid, {
     method: "PUT",
     headers: {

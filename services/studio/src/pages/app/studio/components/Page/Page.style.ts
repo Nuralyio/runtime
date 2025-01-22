@@ -13,6 +13,7 @@ const pageStyle = css`
   }
   .page-container{
     margin-top:15px;
+    height: calc(100vh - 120px)
   }
 
   .page-container.viewer{

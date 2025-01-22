@@ -38,7 +38,7 @@ export function updateComponentAttributes(
       // Directly update the component in the store
       $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
 
-      eventDispatcher.emit("component:refresh");
+
 
       if (save) {
         setTimeout(() => {
@@ -49,6 +49,6 @@ export function updateComponentAttributes(
       // console.log('Attributes are the same, no update needed.', updatedAttributes);
     }
   }
-
+  eventDispatcher.emit("component:refresh");
   // console.timeEnd("updateComponentAttributesExecutionTime"); // End the timer and log the execution time
 }

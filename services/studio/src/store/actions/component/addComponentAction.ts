@@ -7,7 +7,8 @@ import { addComponentHandler } from "$store/handlers/components/add-component.ha
 
 import { addComponentAsChildOf } from "$store/actions/component/addComponentAsChildOf.ts";
 import { addComponentToCurrentPageAction } from "$store/actions/component/addComponentToCurrentPageAction.ts";
-import { updateComponentHandler } from "$store/handlers/components/update-component.handler.ts"; // Ensure this handler is imported
+import { updateComponentHandler } from "$store/handlers/components/update-component.handler.ts";
+import { eventDispatcher } from "@utils/change-detection.ts"; // Ensure this handler is imported
 
 /** Actions*/
 export const addComponentAction = (
@@ -43,9 +44,8 @@ export const addComponentAction = (
       currentComponent?.component_type === ComponentType.Collection
     ) {
       // Add as child of the current component
-      addComponentAsChildOf(componentId, currentComponentId, currentApplicationId);
-
-      // Update parent component's childrenIds
+      //addComponentAsChildOf(componentId, currentComponentId, currentApplicationId);
+        // Update parent component's childrenIds
       const parentComponent = components.find((comp) => comp.uuid === currentComponentId);
       if (parentComponent) {
         if (!parentComponent.childrenIds) {
@@ -80,4 +80,6 @@ export const addComponentAction = (
   setTimeout(() => {
     addComponentHandler({ component: newComponent }, currentApplicationId);
   }, 10);
+
+  eventDispatcher.emit("component:refresh");
 };

@@ -16,8 +16,7 @@ export default [
       display: "flex",
       "width": "380px"
     },
-
-    childrenIds: ["font_color_block", "font_family_block", "ask-ai", "export-import-block-wrapper"]
+    childrenIds: ["font_color_block", "font_family_block", "ask-ai", "export-import-block-wrapper", "app_insert_top_bar"]
   },
   {
     uuid: "ask-ai",
@@ -29,6 +28,6 @@ export default [
     uuid: "export-import-block-wrapper",
     applicationId: "1",
     name: "export-import-block-wrapper",
-    component_type: ComponentType.ExportImport,
-   }
+    component_type: ComponentType.ExportImport
+  }
 ];

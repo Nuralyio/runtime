@@ -79,7 +79,6 @@ export class ResizeWrapper extends LitElement {
   updated(changedProperties) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
-        this.firstUpdated();
       }
     });
   }

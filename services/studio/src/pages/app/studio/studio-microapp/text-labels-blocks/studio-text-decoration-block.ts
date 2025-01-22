@@ -64,7 +64,9 @@ export default [
                     isDisabled = true
                 }
                 else
-                defaultTextDecoration = currentComponent.style['text-decoration'] ||'none';
+                if(currentComponent.style){
+                  defaultTextDecoration = currentComponent.style['text-decoration'] ||'none';
+                }
 
                 const options =[{value:'overline',icon: "font-awesome",disabled:isDisabled},
                                 {value:'line-through',icon: "strikethrough",disabled:isDisabled},

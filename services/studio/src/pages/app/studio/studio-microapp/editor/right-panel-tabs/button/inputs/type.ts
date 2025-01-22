@@ -69,7 +69,6 @@ export default [
                 const selectedComponent = selectedComponents[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
                 let currentType = currentComponent?.style?.type || 'default';
-                console.log('currentType',currentType);
                 const options = [
                     { label: "Primary", value: "primary" },
                     { label: "Secondary", value: "secondary" },

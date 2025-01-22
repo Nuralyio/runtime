@@ -25,7 +25,7 @@ export function addComponentToCurrentPageAction(componentId: string) {
 
     // Set the updated pages to the store
     $pages.set(updatedPages);
-    updatePageHandler(updatedPage);
+    updatePageHandler(updatedPage, (page: any) => {});
     // Update the page in the handler
     //updatePageHandler(update  dPage);
   }

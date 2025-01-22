@@ -296,7 +296,7 @@ export default [{
       userImage: {
         type: "handler",
         value: /* js */`
-            const userImage = "https://picsum.photos/200";
+            const userImage = "https://e7.pngegg.com/pngimages/81/570/png-clipart-profile-logo-computer-icons-user-user-blue-heroes.png";
             return userImage;
             `
 
@@ -304,21 +304,21 @@ export default [{
       users: {
         type: "handler",
         value: /* js */`
-            const usersList = [{label:'hssan',value:'hssan'}]
+            const usersList = [{label:'Aymen',value:'Aymen'}]
             return usersList;
             `
       },
       imageWidth: {
         type: "handler",
         value: /* js */`
-            const imageWidth = '18px';
+            const imageWidth = '35px';
             return imageWidth;
             `
       },
       imageHeight: {
         type: "handler",
         value: /* js */`
-            const imageHeight = '18px';
+            const imageHeight = '25px';
             return imageHeight;
             `
       }
@@ -358,6 +358,8 @@ export default [{
       "type": "ghost",
       "--hybrid-button-padding-y": "2px",
       "--hybrid-button-padding-x": "2px",
+      "--hybrid-button-width": "30px",
+      "--hybrid-button-height": "40px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     },
@@ -411,6 +413,8 @@ export default [{
       "type": "ghost",
       "--hybrid-button-padding-y": "2px",
       "--hybrid-button-padding-x": "2px",
+      "--hybrid-button-width": "30px",
+      "--hybrid-button-height": "40px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     },
@@ -464,6 +468,8 @@ export default [{
       "type": "ghost",
       "--hybrid-button-padding-y": "2px",
       "--hybrid-button-padding-x": "2px",
+      "--hybrid-button-width": "30px",
+      "--hybrid-button-height": "40px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     },
@@ -588,7 +594,7 @@ export default [{
 
   },
   {
-    uuid: "preview_button",
+    uuid: "preview_buttona",
     name: "preview button",
     component_type: ComponentType.Button,
     style: {
@@ -610,7 +616,7 @@ export default [{
     }
   },
   {
-    uuid: "publish_button",
+    uuid: "publish_buttona",
     name: "preview button",
     component_type: ComponentType.Button,
     style: {

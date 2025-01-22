@@ -64,14 +64,13 @@ export const StudioInputAlignmentDirection = [
                 const selectedComponents = GetVar("selectedComponents") || [];
                 const selectedComponent = selectedComponents[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.input?.direction?.value || 'default';
-                console.log('currentType',currentType);
+                let currentType = currentComponent?.style['justify-content'] || 'default';
                 const options = [
-                    { label: "Start", value: "flex-start" },
-                    { label: "End", value: "flex-end" },
-                    { label: "Center", value: "center" },
+                    { label: "flex-start", value: "flex-start" },
+                    { label: "flex-end", value: "flex-end" },
+                    { label: "center", value: "center" },
                 ];
-                const result = [options, [currentType]];
+                const result = [options, [[currentType]]];
                 return result;
                 `
       },

@@ -8,6 +8,8 @@ import { getVar, setVar } from "$store/context.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler.ts";
 import { ButtonTheme } from "../../studio-microapp/editor/utils/common-editor-theme.ts";
+import { buildFunctionHandler } from "$store/handlers/functions/build-function-handler.ts";
+import { deployFunctionHandler } from "$store/handlers/functions/deploy-function-handler.ts";
 
 // debounce.ts
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
@@ -28,7 +30,7 @@ export class FunctionContent extends LitElement {
   private logPanel!: LogPanel;
 
   @state()
-  payload: string = {  };
+  payload: string = {};
 
   // Debounce delay in milliseconds
   private debounceDelay = 1000;
@@ -65,18 +67,27 @@ export class FunctionContent extends LitElement {
    * Handle button clicks to add log entries.
    * @param action The action performed.
    */
-  private handleAction(action: string) {
+  private async handleAction(action: string) {
     // Example: Adding a plain text log entry
     this.logPanel.addLogEntry(`${action} action triggered.`);
     setVar("global", "currentFunctionInvoke", true);
     // Example: Adding a rich HTML log entry
-    if (action === "Deploy") {
-      const richEntry: TemplateResult = html`
-        <strong>${action}</strong> action completed successfully.
-        <a href="https://example.com/details">View Details</a>
-      `;
-      this.logPanel.addLogEntry(richEntry);
+    switch (action) {
+      case "Deploy":
+        this.logPanel.addLogEntry("deployin function ...");
+        await deployFunctionHandler(this.detail.uuid);
+        this.logPanel.addLogEntry("deployed 🚀 ...");
+
+        break;
+      case "Build":
+        this.logPanel.addLogEntry("Building function ...");
+
+        await buildFunctionHandler(this.detail.uuid)
+        this.logPanel.addLogEntry("Function built ...");
+
+        break;
     }
+    
   }
 
   /**
@@ -135,53 +146,55 @@ export class FunctionContent extends LitElement {
           <hy-dropdown
             placeholder="Select an option"
 
-            .template=${html` <div style="width: 600px;
+            .template=${html`
+              <div style="width: 600px;
     height: 310px;
     padding: 8px;
     background: #2d2d2d;
     border-radius: 4px;
 padding-bottom: 50px;">
 
-              <code-editor
-                theme="vs"
-                @change=${(event: CustomEvent) => {
-              const {
-                detail: { value }
-              } = event;
-             this.payload = JSON.parse(value);
-            }}
-                .code=${`
+                <code-editor
+                  theme="vs"
+                  @change=${(event: CustomEvent) => {
+                    const {
+                      detail: { value }
+                    } = event;
+                    this.payload = JSON.parse(value);
+                  }}
+                  .code=${`
 {
   "payload" : {
     "data": "Hello World"
   }
 }
           `}
-              language="json"
-              >
-              </code-editor>
-              <hy-button 
-                style=${styleMap({
-              ...ButtonTheme,
-                  "--hybrid-button-margin-y" : "10px"
-            })}
-                .icon=${["bug"]}
-                         @click=${() => {
-              window.dispatchEvent(new CustomEvent("add-log", { detail: { result: "invoking function ..." } }));
-              invokeFunctionHandler(getVar("global", "currentFunction").value.id, { payload: { data: this.payload  } })
-                .then(async (result) => {
-                  const _result = await result.text();
-                  window.dispatchEvent(new CustomEvent("add-log", { detail: { result: _result } }));
-                });
-            }}>Submit</hy-button>
-           `}>
+                language="json"
+                >
+                </code-editor>
+                <hy-button
+                  style=${styleMap({
+                    ...ButtonTheme,
+                    "--hybrid-button-margin-y": "10px"
+                  })}
+                  .icon=${["bug"]}
+                  @click=${() => {
+                    window.dispatchEvent(new CustomEvent("add-log", { detail: { result: "invoking function ..." } }));
+                    invokeFunctionHandler(getVar("global", "currentFunction").value.id, { payload: { data: this.payload } })
+                      .then(async (result) => {
+                        const _result = await result.text();
+                        window.dispatchEvent(new CustomEvent("add-log", { detail: { result: _result } }));
+                      });
+                  }}>Submit
+                </hy-button>
+            `}>
             <hy-button
               style=${styleMap({
                 ...ButtonTheme
               })
               }
               .iconPosition="${"right"}" .icon="${["drafting-compass"]}"
-                       @click=${() => this.handleAction("Invoke")}>
+              @click=${() => this.handleAction("Invoke")}>
               Invoke
             </hy-button>
           </hy-dropdown>

@@ -11,6 +11,7 @@ import { getVar } from "$store/context.ts";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
+import { eventDispatcher } from "../../../utils/change-detection.ts";
 
 @customElement("collection-viewer")
 export class CollectionViwer extends BaseElementBlock {
@@ -53,6 +54,13 @@ export class CollectionViwer extends BaseElementBlock {
     });
   }
 
+  protected firstUpdated(_changedProperties: any): void {
+    this.traitInputsHandlers();
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, async(data) => {
+     //await this.traitInputsHandlers();
+      this.requestUpdate()
+    });
+  }
   override async connectedCallback() {
     await super.connectedCallback();
 

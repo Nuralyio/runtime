@@ -1,11 +1,11 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 
 export default [
   {
-    uuid: "input_label_color_block",
+    uuid: "input_helper_color_block",
     applicationId: "1",
-    name: "input label color block",
+    name: "input helper color block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -15,12 +15,12 @@ export default [
       "justify-content": "space-between",
       "margin-top": "10px"
     },
-    childrenIds: ["label_input_block", "input_label_color_handler_block"]
+    childrenIds: ["input_helper_input_block", "input_helper_color_handler_block"]
   },
   {
-    uuid: "label_input_block",
+    uuid: "input_helper_input_block",
     applicationId: "1",
-    name: "label input block",
+    name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -28,11 +28,11 @@ export default [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["input_label_color_label", "label_color_input"]
+    childrenIds: ["input_helper_color_label", "helper_color_input"]
   },
   {
-    uuid: "input_label_color_label",
-    name: "input label color label",
+    uuid: "input_helper_color_label",
+    name: "input helper color label",
     component_type: ComponentType.TextLabel,
     applicationId: "1",
     ...COMMON_ATTRIBUTES,
@@ -42,12 +42,12 @@ export default [
     input: {
       value: {
         type: "string",
-        value: 'Label color'
+        value:'Helper color'
       }
     }
   },
   {
-    uuid: "label_color_input",
+    uuid: "helper_color_input",
     name: "name",
     applicationId: "1",
     component_type: ComponentType.ColorPicker,
@@ -59,7 +59,7 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "--hybrid-input-label-color", EventData.value);
+                updateStyle(currentComponent, "--hybrid-input-helper-text-color", EventData.value);
             
             }
         }catch(error){
@@ -83,7 +83,7 @@ export default [
                         const selectedComponent = selectedComponens[0];
                         const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                         if(currentComponent?.style)
-                        return currentComponent.style['--hybrid-input-label-color'];
+                        return currentComponent.style['--hybrid-input-helper-text-color'];
                     }
 
                 }catch(e){
@@ -100,10 +100,10 @@ export default [
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
                     let state='enabled';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-label-color']){
+                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-helper-text-color']){
                         state='disabled'
                     }
-                    state;
+                    return state;
                 }
 
             }catch(e){
@@ -114,9 +114,9 @@ export default [
     }
   },
   {
-    uuid: "input_label_color_handler_block",
+    uuid: "input_helper_color_handler_block",
     applicationId: "1",
-    name: "input label color handler block",
+    name: "input helper color handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -125,15 +125,15 @@ export default [
       "justify-content": "space-between"
     },
 
-    childrenIds: ["input_label_color_handler"]
+    childrenIds: ["input_helper_color_handler"]
   },
   {
-    uuid: "input_label_color_handler",
+    uuid: "input_helper_color_handler",
     applicationId: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
-    name: "label color handler",
+    name: "helper color handler",
     style: {
       display: "block"
     },
@@ -141,19 +141,19 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            const parameter ='labelColor';
-            let labelColorHandler=''
+            const parameter ='helperColor';
+            let helperColorHandler=''
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];
                 if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                labelColorHandler=currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-input-label-color'] || ''  
+                helperColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-input-helper-text-color'] || ''  
                 }
             }catch(error){
                 console.log(error);
             }
-            return [parameter,labelColorHandler];
+            return [parameter,helperColorHandler];
         `
       }
     },
@@ -165,7 +165,7 @@ export default [
             if(selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'--hybrid-input-label-color',EventData.value)
+                updateStyleHandlers(currentComponent,'--hybrid-input-helper-text-color',EventData.value)
             }
         }catch(error){
             console.log(error);

@@ -3,11 +3,10 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import { $draggingComponentInfo } from "$store/component/store.ts";
+import { $components, $draggingComponentInfo, $hoveredComponent } from "$store/component/store.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 import { $context, getVar, setVar } from "$store/context.ts";
-
 import styles from "./GenerikWrapper.style.ts";
 
 import "./DragWrapper/DragWrapper.ts";
@@ -17,7 +16,7 @@ import "../ComponentTitle/ComponentTitle.ts";
 import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
-import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
+import { setHoveredComponentAction } from "$store/actions/component/setHoveredComponentAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 
 function safeParseInt(value) {
@@ -58,6 +57,10 @@ export class GenerikComponentWrapper extends LitElement {
       this.wrapperStyle =
         environment.mode === ViewMode.Edit ? { "pointer-events": "none" } : {};
     });
+    $hoveredComponent.subscribe((hoveredComponent: ComponentElement) => {
+      this.hoveredComponent = hoveredComponent;
+    }
+    );
     $context.subscribe(() => {
       this.currentSelection = getVar("global", "selectedComponents")?.value || [];
     });
@@ -145,8 +148,8 @@ export class GenerikComponentWrapper extends LitElement {
             class=${classMap({ isDraggable: this.isDragInitiator })}
             @dragend=${() => this.requestUpdate()}
             @mousedown=${this.handleMouseDown}
-            @mouseenter=${() => setHoveredComponentIdAction(this.component?.uuid)}
-            @mouseleave=${() => setHoveredComponentIdAction(null)}
+            @mouseenter=${() => setHoveredComponentAction(this.component)}
+            @mouseleave=${() => setHoveredComponentAction(null)}
           >
             <component-title
               @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}

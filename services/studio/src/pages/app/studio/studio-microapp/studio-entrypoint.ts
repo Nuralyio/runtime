@@ -30,21 +30,17 @@ import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
-import studioInputLabelColor from "./text-input-blocks/studio-input-label-color.ts";
-import studioInputLabelSize from "./text-input-blocks/studio-input-label-size.ts";
-import studioInputHelperColor from "./text-input-blocks/studio-input-helper-color.ts";
-import studioInputHelperSize from "./text-input-blocks/studio-input-helper-size.ts";
-import studioInputBlurEvent from "./text-input-blocks/studio-input-blur-event.ts";
-import studioInputClearEvent from "./text-input-blocks/studio-input-clear-event.ts";
-import studioInputValuechangeEvent from "./text-input-blocks/studio-input-valuechange-event.ts";
-import studioInputFocusEvent from "./text-input-blocks/studio-input-focus-event.ts";
+import studioInputLabelColor from "./editor/right-panel-tabs/text-input/inputs/studio-input-label-color.ts";
+import studioInputLabelSize from "./editor/right-panel-tabs/text-input/inputs/studio-input-label-size.ts";
+import studioInputHelperColor from "./editor/right-panel-tabs/text-input/inputs/studio-input-helper-color.ts";
+import studioInputHelperSize from "./editor/right-panel-tabs/text-input/inputs/studio-input-helper-size.ts";
 import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/inputs/checked.ts";
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
 import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
 import studioImageFallbackBlock from "./editor/right-panel-tabs/image/inputs/src-fallback.ts";
 import studioDatepickerLocaleBlock from "./editor/right-panel-tabs/datepicker/inputs/locale.ts";
 import studioDatepickerFormatBlock from "./editor/right-panel-tabs/datepicker/inputs/format.ts";
-import studioInputTypeBlock from "./text-input-blocks/studio-input-type-block.ts";
+import studioInputTypeBlock from "./editor/right-panel-tabs/text-input/inputs/studio-input-type-block.ts";
 import studioSelectLabelSize from "./editor/right-panel-tabs/select/inputs/label-fontsize.ts";
 import studioSelectTypeBlock from "./editor/right-panel-tabs/select/inputs/select-type.ts";
 import studioSelectSelectionmodeBlock from "./editor/right-panel-tabs/select/inputs/selection_mode.ts";
@@ -82,6 +78,7 @@ import { StudioContainer } from "./editor/right-panel-tabs/container";
 import { StudioCommonInputs } from "./editor/common/inputs";
 import { StudioCollection } from "./editor/right-panel-tabs/collection";
 import { StudioFunction } from "./editor/left-panel-tabs/functions";
+import { StudioTextInput } from "./editor/right-panel-tabs/text-input/index.ts";
 
 
 export default [
@@ -303,10 +300,6 @@ export default [
   ...studioMouseEnterEvent,
   ...studioMouseLeaveEvent,
   ...studioIconColorBlock,
-  ...studioInputBlurEvent,
-  ...studioInputClearEvent,
-  ...studioInputValuechangeEvent,
-  ...studioInputFocusEvent,
   ...studioButtonClickEventBlock,
   ...studioCheckboxCheckedBlock,
   ...studioImageAltBlock,
@@ -334,5 +327,6 @@ export default [
   ...StudioCommonInputs,
   ...StudioCollection,
   ...StudioFunction,
+  ...StudioTextInput,
   ...RightPanelFunctionTab
 ];

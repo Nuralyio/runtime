@@ -42,9 +42,12 @@ export class TextLabelBlock extends BaseElementBlock {
        
     
     this.registerCallback("value", (value: any) => {
-      if(value)
-      this.va = value;
-      this.requestUpdate();
+      if(value!==undefined)
+        if(this.va!==value){
+          this.requestUpdate();
+          this.va = value;
+
+        }
     });
     this.registerCallback("innerAlignment", (value: any) => {
       if(this.closestGenericComponentWrapper){

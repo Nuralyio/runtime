@@ -1,5 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
+import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
 
 export default [
   {
@@ -9,11 +10,7 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-
-      display: "flex",
-      "justify-content": "space-between",
-      "align-items": "center",
-      "margin-top": "10px"
+      ...InputBlockContainerTheme
     },
     childrenIds: ["input_label_font_size_block", "input_label_size_handler_block"]
   },
@@ -28,7 +25,7 @@ export default [
       "justify-content": "space-between",
       "align-items": "center"
     },
-    childrenIds: ["text_label_label_font_size", "font_size_input"]
+    childrenIds: ["text_label_label_font_size"]
   },
 
   {
@@ -58,7 +55,7 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     style: {
-      width: "120px",
+      width: "155px",
       size: "small"
     },
     event: {
@@ -102,7 +99,7 @@ export default [
                         return [+value,unity]
                     }
                     else 
-                       return [0,'px']
+                       return [13,'px']
             }
 
         }catch(e){
@@ -140,11 +137,10 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      width: "50px",
       display: "flex",
       "justify-content": "space-between"
     },
-    childrenIds: ["input_label_size_handler"]
+    childrenIds: [ "font_size_input","input_label_size_handler"]
   },
   {
     uuid: "input_label_size_handler",
