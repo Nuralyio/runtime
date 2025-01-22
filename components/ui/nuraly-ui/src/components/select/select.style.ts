@@ -13,6 +13,8 @@ const selectStyle = css`
     border-left: var(--hybrid-select-border-left,var(--hybrid-select-local-border-left));
     border-right: var(--hybrid-select-border-right,var(--hybrid-select-local-border-right));
     word-break:break-word;
+      font-family: var(--hybrid-select-font-family,var(--hybrid-select-local-font-family));
+
   }
 
   .select {
@@ -20,6 +22,7 @@ const selectStyle = css`
     flex-direction: column;
     cursor: pointer;
     font-size: var(--hybrid-select-medium-font-size,var(--hybrid-select-local-medium-font-size));
+
   }
 
   .select-trigger {
@@ -172,7 +175,6 @@ const selectStyle = css`
   }
   :host {
     --hybrid-select-local-width: 100%;
-    --hybrid-select-local-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
     --hybrid-select-local-background-color: #f4f4f4;
     --hybrid-select-local-hover-background-color: #e0e0e0;
     --hybrid-select-local-border-bottom: 1px solid #cccccc;
