@@ -119,6 +119,9 @@ export default {
                             parameters=[
                                 "collection_blocks",
                             ]
+                            handlers=[
+                                "studio_collection_handler"
+                            ];
                             break;
                     }
                 }

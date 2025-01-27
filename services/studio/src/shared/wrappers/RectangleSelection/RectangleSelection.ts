@@ -80,7 +80,7 @@ class RectangleSelection extends LitElement {
   }
 
   updateSelectableElements() {
-    this.selectableElements = this.querySelectorAll("generik-component-wrapper");
+    this.selectableElements = this.querySelectorAll("generiks-component-wrapper");
   }
 
   startSelection(event) {

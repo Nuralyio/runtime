@@ -3,7 +3,9 @@ import { ApplicationList } from "./applications/ApplicationList";
 import { fetchAllApplications } from "@services/applications.service";
 import { processHeaders } from "utils/api-calls-utils";
 import { $applications } from "$store/apps";
+import "../core/micro-app";
 
+import { MicroApp } from '../core/micro-app';
 const processedHeaders = processHeaders(Astro.request.headers);
 
 let applications = [];
@@ -32,8 +34,27 @@ console.log($applications.get())
     {error && <div>Something seriously bad happened</div>}
     {!error && <ApplicationList client:only="lit" />}
   </div>
+  <MicroApp
+  client:idle
+  mode="preview"
+  uuid={"1"}
+  page_uuid={"c81948a2-5816-4eb7-8f87-f429d0dc0562"}
+></MicroApp>
 </div>
 
 <script define:vars={{ applications }}>
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
 </script>
+<style>
+  html {
+    overflow: hidden;
+  }
+  @media (prefers-color-scheme: dark) {
+      html {
+        --hybrid-tabs-content-background-color: #313131;
+      background: #313131;
+
+        color:#f8fafc;
+      }
+    }
+</style>

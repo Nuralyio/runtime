@@ -13,7 +13,6 @@ export class TextInputBlock extends BaseElementBlock {
   static styles = [
     css`
     :host {
-        pointer-events: none;
     }`
   ];
   @property({ type: Object })

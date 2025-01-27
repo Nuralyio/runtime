@@ -52,17 +52,17 @@ export default [
                   isDisabled = true;
                 }
                 else
-                currentDisplay = currentComponent.input?.display?.value || 'show';
+                currentDisplay = currentComponent.input?.display?.value || true;
                 const options = 
                     [
                     {
                     icon: "eye",
-                    value: "show",
+                    value: true,
                     disabled:isDisabled
                     }, 
                     {
                     icon: "eye-slash",
-                    value: "none",
+                    value: false,
                     disabled:isDisabled
                    }
             ]   

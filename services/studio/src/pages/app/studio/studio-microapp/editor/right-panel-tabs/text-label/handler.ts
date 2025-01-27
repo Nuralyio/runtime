@@ -19,4 +19,3 @@ export const StudioTextLabelHandler = createHandlersFromEvents
     label: "onDoubleClick"
   }
 ], "text_label_handler");
-console.log(StudioTextLabelHandler);
