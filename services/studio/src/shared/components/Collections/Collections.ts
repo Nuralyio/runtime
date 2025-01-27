@@ -56,13 +56,6 @@ export class CollectionViwer extends BaseElementBlock {
     });
   }
 
-  protected firstUpdated(_changedProperties: any): void {
-    this.traitInputsHandlers();
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, async(data) => {
-     //await this.traitInputsHandlers();
-      this.requestUpdate()
-    });
-  }
   override async connectedCallback() {
     await super.connectedCallback();
     eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, () => {

@@ -22,9 +22,9 @@ export class TabsBlock extends BaseElementBlock {
   @state()
   private componentsWithChildren: ComponentElement[] = [];
 
-  override async connectedCallback() {
-    await super.connectedCallback();
-    await this.traitInputsHandlers();
+  override  connectedCallback() {
+     super.connectedCallback();
+     this.traitInputsHandlers();
   }
 
   override updated(changedProperties: Map<string | number | symbol, unknown>) {

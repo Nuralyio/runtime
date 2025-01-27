@@ -186,15 +186,15 @@ override updated(changedProperties: PropertyValueMap<any>) {
     super.connectedCallback();
     this.closestGenericComponentWrapper = this.closest('genedrik-component-wrapper');
     eventDispatcher.on('component:refresh' , async ()=>{
-      await this.traitInputsHandlers();
-      await this.traitStylesHandlers();
+       this.traitInputsHandlers();
+       this.traitStylesHandlers();
     })
     const excludedTypes = ["text_label", "text_input"];
     if (!excludedTypes.includes(this.component.component_type)) {
 
     }
-    await this.traitInputsHandlers();
-    await this.traitStylesHandlers();
+     this.traitInputsHandlers();
+     this.traitStylesHandlers();
 
     eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
       if (key === "Enter") {
