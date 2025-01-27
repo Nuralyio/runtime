@@ -3,6 +3,7 @@ import { ComponentType } from "$store/component/interface.ts";
 export default [{
   uuid: "top-bar",
   applicationId: "1",
+  application_id: "1",
   name: "top bar",
   component_type: ComponentType.Container,
 
@@ -15,6 +16,7 @@ export default [{
   {
     uuid: "info-top-bar",
     name: "info top bar",
+    applicationId: "1",
     component_type: ComponentType.Container,
     style: {
       width: "50vw",
@@ -27,6 +29,9 @@ export default [{
   {
     uuid: "app_details_top_bar",
     name: "details top bar",
+    applicationId: "1",
+
+
     component_type: ComponentType.Container,
     style: {
       "align-items": "center",
@@ -37,6 +42,8 @@ export default [{
   {
     uuid: "app_insert_top_bar",
     name: "app insert top bar",
+    applicationId: "1",
+
     component_type: ComponentType.InsertDropdown,
     input: {
       label: {
@@ -141,6 +148,8 @@ export default [{
   {
     uuid: "app_back_top_bar",
     name: "app name top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "margin-left": "5px",
@@ -175,6 +184,8 @@ export default [{
   {
     uuid: "app_name_top_bar",
     name: "app name top bar",
+    applicationId: "1",
+
     component_type: ComponentType.TextLabel,
     style: {
       "border-left": "1px solid grey",
@@ -194,6 +205,8 @@ export default [{
   {
     uuid: "settings-top-bar",
     name: "settings top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       width: "50vw",
@@ -206,6 +219,8 @@ export default [{
   {
     uuid: "zoom_top_bar",
     name: "zoom top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "min-height": "40px",
@@ -219,6 +234,8 @@ export default [{
   {
     uuid: "zoom_input",
     name: "zoom input",
+    applicationId: "1",
+
     component_type: ComponentType.TextInput,
     style: {
       "size": "small",
@@ -280,6 +297,8 @@ export default [{
   {
     uuid: "app_users_top_bar",
     name: "app users top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "min-height": "40px",
@@ -291,6 +310,8 @@ export default [{
   {
     uuid: "users_dropdown",
     name: "users dropdown",
+    applicationId: "1",
+
     component_type: ComponentType.UsersDropdown,
     input: {
       userImage: {
@@ -329,6 +350,8 @@ export default [{
   {
     uuid: "platform_top_bar",
     name: "platform top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "min-height": "40px",
@@ -342,6 +365,8 @@ export default [{
   {
     uuid: "primary_platform_container",
     name: "primary platform container",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "flex-direction": "column",
@@ -353,6 +378,8 @@ export default [{
   {
     uuid: "primary_platform_button",
     name: "primary platform button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -383,6 +410,8 @@ export default [{
   {
     uuid: "primary_platform_text",
     name: "app name top bar",
+    applicationId: "1",
+
     component_type: ComponentType.TextLabel,
     style: {
       "font-size": "10px"
@@ -397,6 +426,8 @@ export default [{
   {
     uuid: "tablet_platform_container",
     name: "tablet platform container",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "flex-direction": "column",
@@ -408,6 +439,8 @@ export default [{
   {
     uuid: "tablet_platform_button",
     name: "tablet platform button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -438,6 +471,8 @@ export default [{
   {
     uuid: "tablet_platform_text",
     name: "app name top bar",
+    applicationId: "1",
+
     component_type: ComponentType.TextLabel,
     style: {
       "font-size": "10px"
@@ -452,6 +487,8 @@ export default [{
   {
     uuid: "mobile_platform_container",
     name: "mobile platform container",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "flex-direction": "column",
@@ -463,6 +500,8 @@ export default [{
   {
     uuid: "mobile_platform_button",
     name: "mobile platform button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -493,6 +532,8 @@ export default [{
   {
     uuid: "mobile_platform_text",
     name: "app name top bar",
+    applicationId: "1",
+
     component_type: ComponentType.TextLabel,
     style: {
       "font-size": "10px"
@@ -507,6 +548,8 @@ export default [{
   {
     uuid: "prev_next_top_bar",
     name: "prev next top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "gap": "5px",
@@ -523,6 +566,8 @@ export default [{
   {
     uuid: "previous_button",
     name: "previous button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -552,6 +597,8 @@ export default [{
   {
     uuid: "next_button",
     name: "next button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -581,6 +628,8 @@ export default [{
   {
     uuid: "app_preview_publish_top_bar",
     name: "app preview publish top bar",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "gap": "5px",
@@ -596,6 +645,8 @@ export default [{
   {
     uuid: "preview_buttona",
     name: "preview button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -618,6 +669,8 @@ export default [{
   {
     uuid: "publish_buttona",
     name: "preview button",
+    applicationId: "1",
+
     component_type: ComponentType.Button,
     style: {
       "type": "ghost",
@@ -638,6 +691,8 @@ export default [{
   },
   {
     uuid: "app_logout_top_bar",
+    applicationId: "1",
+
     name: "logout",
     component_type: ComponentType.Button,
     style: {
@@ -674,6 +729,8 @@ export default [{
   {
     uuid: "app-page-top-bar",
     name: "app page top bar",
+    applicationId: "1",
+
     component_type: ComponentType.TextLabel,
     style: {
       "margin-left": "15px"

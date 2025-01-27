@@ -12,6 +12,8 @@ import { $environment, type Environment, ViewMode } from "$store/environment.ts"
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 import { eventDispatcher } from "../../../utils/change-detection.ts";
+import { executeCodeWithClosure } from "core/Kernel.ts";
+import { getNestedAttribute } from "@utils/object.utils.ts";
 
 @customElement("collection-viewer")
 export class CollectionViwer extends BaseElementBlock {
@@ -63,6 +65,16 @@ export class CollectionViwer extends BaseElementBlock {
   }
   override async connectedCallback() {
     await super.connectedCallback();
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, () => {
+      this.traitInputsHandlers();
+      this.requestUpdate();
+    });
+    if(this.component?.event?.onInit){
+      executeCodeWithClosure(
+        this.component,
+        getNestedAttribute(this.component, `event.onInit`)
+      );
+    }
 
   }
 

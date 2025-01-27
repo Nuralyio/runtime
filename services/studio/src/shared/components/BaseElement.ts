@@ -8,6 +8,7 @@ import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import { $context } from "$store/context.ts";
+import deepEqual from "fast-deep-equal";
 
 function isPromise(value) {
   return Boolean(value && typeof value.then === "function");
@@ -167,22 +168,23 @@ export class BaseElementBlock extends LitElement {
     }
   }
 
-  override updated(changedProperties: any[] | PropertyValueMap<any>) {
-    changedProperties.forEach(async (_oldValue, propName) => {
-      if (propName === "component") {
-        const excludedTypes = ["text_label", "text_input"];
-        if (!excludedTypes.includes(this.component.component_type)) {
+  
+override updated(changedProperties: PropertyValueMap<any>) {
+  changedProperties.forEach((_oldValue, propName) => {
+    if (propName === "component") {
+      const newValue = changedProperties.get("component");
 
-        } 
+      //if (!deepEqual(newValue, _oldValue) || newValue?.applicationId =="1") {
         this.traitInputsHandlers();
         this.traitStylesHandlers();
-      }
-    });
-  }
+      //}
+    }
+  });
+}
 
   override async connectedCallback() {
     super.connectedCallback();
-    this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
+    this.closestGenericComponentWrapper = this.closest('genedrik-component-wrapper');
     eventDispatcher.on('component:refresh' , async ()=>{
       await this.traitInputsHandlers();
       await this.traitStylesHandlers();
@@ -208,5 +210,13 @@ export class BaseElementBlock extends LitElement {
     super.disconnectedCallback();
     eventDispatcher.off("component:refresh", this.traitInputsHandlers);
     eventDispatcher.off("component:refresh", this.traitStylesHandlers);
+  }
+
+  protected get shouldDisplay(): boolean {
+    // The same logic you used before
+    return (
+      this.inputHandlersValue?.display === undefined ||
+      this.inputHandlersValue?.display
+    );
   }
 }

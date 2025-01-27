@@ -28,6 +28,9 @@ import "@shared/components/Divider/Divider";
 import "@shared/components/Handlers/Handlers";
 import "@shared/components/Function/InvokeFunction.ts"
 import "@shared/components/Export-Import/Export-Import.ts"
+import "@shared/components/Collections/Collections.ts"
+import "@shared/components/Button/Button.ts"
+import "@shared/components/TextLabel/TextLabel.ts"
 
 // Reusable templates for common components
 const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
@@ -72,7 +75,7 @@ function renderComponentElement(component: ComponentElement, commonProps: any, i
   const template = getComponentTemplate(component, commonProps, isViewMode);
 
   if (isViewMode) {
-    return template;
+    return html`${template}`;
   }
 
   return html`<generik-component-wrapper .component=${commonProps.component}>${template}</generik-component-wrapper>`;

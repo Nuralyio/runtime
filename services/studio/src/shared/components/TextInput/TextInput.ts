@@ -43,7 +43,7 @@ export class TextInputBlock extends BaseElementBlock {
 
     // Reset focus state after a delay of inactivity
     this.resetFocusAfterInactivity();
-  }, 0);
+  }, 0  );
 
   unsubscribe: () => void;
 

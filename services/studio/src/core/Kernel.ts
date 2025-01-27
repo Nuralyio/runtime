@@ -47,7 +47,6 @@ class Executor {
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
     $context.subscribe(()=>{
-      console.log("context updated")
       this.registerApplications()
     });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
@@ -95,7 +94,7 @@ class Executor {
               }
 
               if (oldValue !== valueNested) {
-                self.listeners[String(prop)].forEach((componentName: string) => {
+                self.listeners[String(prop)]?.forEach((componentName: string) => {
                   eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested });
                 });
               }
@@ -108,7 +107,7 @@ class Executor {
               }
               const result = Reflect.deleteProperty(targetNested, propNested);
               if (result) {
-                self.listeners[String(prop)].forEach((componentName: string) => {
+                self.listeners[String(prop)]?.forEach((componentName: string) => {
                   eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
                 });
               }
@@ -130,7 +129,7 @@ class Executor {
         }
 
         if (oldValue !== value) {
-          self.listeners[String(prop)].forEach((componentName: string) => {
+          self.listeners[String(prop)]?.forEach((componentName: string) => {
             eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
           });
         }
@@ -143,7 +142,7 @@ class Executor {
         }
         const result = Reflect.deleteProperty(target, prop);
         if (result) {
-          self.listeners[String(prop)].forEach((componentName: string) => {
+          self.listeners[String(prop)]?.forEach((componentName: string) => {
             eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
           });
         }

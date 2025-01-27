@@ -19,7 +19,7 @@ export class ApplicationList extends LitElement {
     super();
     this.unsubscribe = $applications.subscribe(applications => {
       this.applications = (Array.isArray(applications) ? Array.from(applications) : []).filter(application => !!application.user_id);
-      console.log(this.applications);
+      
     });
   }
 
@@ -34,7 +34,6 @@ export class ApplicationList extends LitElement {
   }
 
   override render() {
-    console.log("Rendering applications:", this.applications);
 
     return html`
       <div class="container">

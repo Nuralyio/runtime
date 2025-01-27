@@ -61,17 +61,26 @@ export const StudioInputAlignmentDirection = [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.style['justify-content'] || 'default';
-                const options = [
-                    { label: "flex-start", value: "flex-start" },
-                    { label: "flex-end", value: "flex-end" },
-                    { label: "center", value: "center" },
-                ];
-                const result = [options, [[currentType]]];
-                return result;
+              const selectedComponents = Array.isArray(GetVar("selectedComponents")) ? GetVar("selectedComponents") : [];
+              const selectedComponent = selectedComponents[0] || null;
+              
+              const editingApp = GetVar("currentEditingApplication") || {};
+              const editingAppUuid = editingApp.uuid || null;
+              
+              let currentComponent = null;
+              if (selectedComponent && editingAppUuid) {
+                currentComponent = GetComponent(selectedComponent, editingAppUuid) || null;
+              }
+              
+              const currentType = currentComponent?.style?.["justify-content"] ?? "default";
+              
+              const options = [
+                { label: "flex-start", value: "flex-start" },
+                { label: "flex-end", value: "flex-end" },
+                { label: "center", value: "center" },
+              ];
+              
+              return [options, [[currentType]]];
                 `
       },
       state: {
