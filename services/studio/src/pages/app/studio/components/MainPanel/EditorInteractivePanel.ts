@@ -18,7 +18,7 @@ export class EditorInteractivePanel extends LitElement {
     :host {
       height: calc(100vh - 110px);
       display: block;
-        width: calc(100vw - 650px);
+        /*width: calc(100vw - 650px);*/
     }
     .page-container {
       width: 100%;

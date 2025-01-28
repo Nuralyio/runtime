@@ -37,7 +37,7 @@ export default [{
       "align-items": "center",
       "gap": "5px"
     },
-    childrenIds: ["app_back_top_bar", "app_name_top_bar", "app_insert_top_bar"]
+    childrenIds: ["app_back_top_bar", "app_name_top_bar", "app_insert_top_bar", "prototype_ai_top_bar",]
   },
   {
     uuid: "app_insert_top_bar",
@@ -182,6 +182,25 @@ export default [{
     }
   },
   {
+    uuid: "platform_name_top_bar",
+    name: "app name top bar",
+    applicationId: "1",
+
+    component_type: ComponentType.TextLabel,
+    style: {
+      "border-left": "1px solid grey",
+      "padding-left": "8px",
+      "font-family": "Arial",
+      "font-weight": "bold",
+    },
+    input: {
+      value: {
+        type: "string",
+        value: "Nuraly"
+      }
+    }
+  },
+  {
     uuid: "app_name_top_bar",
     name: "app name top bar",
     applicationId: "1",
@@ -214,7 +233,7 @@ export default [{
       "align-items": "center"
 
     },
-    childrenIds: ["platform_top_bar", "zoom_top_bar", "prev_next_top_bar", "app_users_top_bar", "app_preview_publish_top_bar", "app_logout_top_bar"]
+    childrenIds: ["mode_topbar", "platform_top_bar", "zoom_top_bar", "prev_next_top_bar", "app_users_top_bar", "app_preview_publish_top_bar", "app_logout_top_bar"]
   },
   {
     uuid: "zoom_top_bar",
@@ -347,6 +366,173 @@ export default [{
 
     }
   },
+  
+  {
+    uuid: "mode_topbar",
+    name: "mode_topbar",
+    applicationId: "1",
+
+    component_type: ComponentType.Container,
+    style: {
+      "min-height": "40px",
+      "margin-right": "24px",
+      "justify-content": "space-between",
+      "align-items": "center",
+      "border-right": "1px solid grey",
+      "padding-right": "14px",
+    },
+    childrenIds: [ "edit_mode", "preview_mode"]
+
+  },
+  {
+    uuid: "edit_mode",
+    name: "edit_mode platform button",
+    applicationId: "1",
+
+    component_type: ComponentType.Button,
+    style: {
+      "type": "ghost",
+      "--hybrid-button-padding-y": "2px",
+      "--hybrid-button-padding-x": "2px",
+      "--hybrid-button-height": "40px",
+      "--hybrid-button-ghost-border-color": "transparent",
+      "--hybrid-button-ghost-background-color": "transparent"
+    },
+    event:{
+      onClick: /* js */`
+          SetVar("currentEditingMode" , "edit")
+        `
+    },
+    input: {
+      display : {
+        type: "handler",
+        value: /* js */`
+            const isEdit = GetVar("currentEditingMode") == "edit"
+            return !isEdit;
+            `
+      },
+      label: {
+        type: "handler",
+        value: /* js */`
+            const buttonLabel = 'Edit'
+            return buttonLabel;
+            `
+      },
+      iconPosition:{
+        type: "handler",
+        value: /* js */`
+            const iconPosition = 'left'
+            return iconPosition;
+            `
+      },
+      icon: {
+        type: "handler",
+        value: /* js */`
+            const iconName = 'edit'
+            return iconName;
+            `
+      }
+    }
+  },
+  {
+    uuid: "preview_mode",
+    name: "preview_mode platform button",
+    applicationId: "1",
+
+    component_type: ComponentType.Button,
+    style: {
+      "type": "ghost",
+      "--hybrid-button-padding-y": "2px",
+      "--hybrid-button-padding-x": "2px",
+      "--hybrid-button-height": "40px",
+      "--hybrid-button-ghost-border-color": "transparent",
+      "--hybrid-button-ghost-background-color": "transparent"
+    },
+    event:{
+      onClick: /* js */`
+          SetVar("currentEditingMode" , "preview")
+        `
+    },
+    input: {
+      display : {
+        type: "handler",
+        value: /* js */`
+            const isEdit = GetVar("currentEditingMode") == "edit"
+            return isEdit;
+            `
+      },
+      label: {
+        type: "handler",
+        value: /* js */`
+            const buttonLabel = 'Preview'
+            return buttonLabel;
+            `
+      },
+      iconPosition:{
+        type: "handler",
+        value: /* js */`
+            const iconPosition = 'left'
+            return iconPosition;
+            `
+      },
+      icon: {
+        type: "handler",
+        value: /* js */`
+            const iconName = 'play-circle'
+            return iconName;
+            `
+      }
+    }
+  },
+
+  {
+    uuid: "prototype_ai_top_bar",
+    name: "prototype_ai_top_bar",
+    applicationId: "1",
+
+    component_type: ComponentType.Button,
+    style: {
+      "type": "ghost",
+      "--hybrid-button-padding-y": "2px",
+      "--hybrid-button-padding-x": "2px",
+      "--hybrid-button-height": "40px",
+      "--hybrid-button-ghost-border-color": "transparent",
+      "--hybrid-button-ghost-background-color": "transparent",
+      "border-left": "1px solid grey",
+      "padding-left": "14px",
+    },
+    event:{
+      onClick: /* js */`
+          window.dispatchEvent(new Event('toggle-ai-assistant'));
+        `
+    },
+    input: {
+      
+      label: {
+        type: "handler",
+        value: /* js */`
+            const buttonLabel = 'Prototype with AI'
+            return buttonLabel;
+            `
+      },
+      iconPosition:{
+        type: "handler",
+        value: /* js */`
+            const iconPosition = 'left'
+            return iconPosition;
+            `
+      },
+      icon: {
+        type: "handler",
+        value: /* js */`
+            const iconName = 'feather-alt'
+            return iconName;
+            `
+      }
+    }
+  },
+
+
   {
     uuid: "platform_top_bar",
     name: "platform top bar",
@@ -529,6 +715,7 @@ export default [{
       }
     }
   },
+ 
   {
     uuid: "mobile_platform_text",
     name: "app name top bar",
