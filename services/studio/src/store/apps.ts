@@ -31,10 +31,8 @@ export const $applications = atom<any>([...initialState, ...coreApplications]);
 export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
 export const $values = deepMap<any>({});
+import deepEqual from "fast-deep-equal";
 
-function deepEqual(obj1, obj2) {
-  return JSON.stringify(obj1) === JSON.stringify(obj2);
-}
 
 export function setValue(componentId, key, value) {
   const componentValues = $values.get()[componentId] || {};

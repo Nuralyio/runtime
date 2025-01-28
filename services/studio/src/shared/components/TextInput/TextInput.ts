@@ -27,6 +27,7 @@ export class TextInputBlock extends BaseElementBlock {
 
   private _focusResetTimeout: NodeJS.Timeout | null = null;
 
+  
   handleValueChange = debounce((customEvent: CustomEvent) => {
     if (!this.ExecuteInstance.PropertiesProxy[this.component.name]) {
       this.ExecuteInstance.PropertiesProxy[this.component.name] = {};
@@ -40,7 +41,6 @@ export class TextInputBlock extends BaseElementBlock {
         { value: customEvent.detail.value }
       );
     }
-
     // Reset focus state after a delay of inactivity
     this.resetFocusAfterInactivity();
   }, 0  );
@@ -54,10 +54,11 @@ export class TextInputBlock extends BaseElementBlock {
   protected firstUpdated(_changedProperties: PropertyValues) {
     super.firstUpdated(_changedProperties);
 
-
+   
     this.registerCallback("value", (value) => {
       if (!this._isUserFocused && this.currentValue !== value) {
         this.currentValue = value ?? "";
+        this.requestUpdate();
       }
     });
   }
@@ -70,6 +71,10 @@ export class TextInputBlock extends BaseElementBlock {
 
   override async connectedCallback() {
     await super.connectedCallback();
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
+      //console.log('data', data)
+     this.traitInputsHandlers();
+    });
   }
 
   onFocus = () => {
