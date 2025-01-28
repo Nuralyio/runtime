@@ -1,4 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { CollapseHeaderTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
@@ -11,7 +12,22 @@ export default [
     style: {
       marginTop: "13px"
     },
-    childrenIds: ["border_collapse"]
+    childrenIds: ["divider","border_text_label_collapse", "border_collapse"]
+  },
+  {
+    uuid: "border_text_label_collapse",
+    name: "border_text_label_collapse",
+    applicationId: "1",
+    component_type: ComponentType.TextLabel,
+    style: {
+    ...CollapseHeaderTheme
+    },
+    input:{
+      value:{
+        type: "handler",
+        value: `return "Inputs"`
+      }
+    }
   },
   {
     uuid: "border_collapse",
@@ -19,15 +35,8 @@ export default [
     name: "border collapse",
     component_type: ComponentType.Container,
     style: {
-      "--hy-collapse-content-small-size-padding": "5px",
-      "--hy-collapse-font-weight": "normal",
-      "--hy-collapse-border-radius": "0px",
-      "--hy-collapse-width": "292px",
-      "--hy-collapse-border": "none",
-      "--hy-collapse-border-bottom": "1px solid #ccc",
-      "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
-    children_ids: ["border_collapse_container_childrens"]
+    childrenIds: ["border_collapse_container_childrens"]
   },
   {
     uuid: "border_collapse_container_childrens",
