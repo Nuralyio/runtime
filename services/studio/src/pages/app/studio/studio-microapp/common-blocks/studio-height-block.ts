@@ -42,7 +42,7 @@ export default [
     uuid: "height_input",
     name: "height input",
     applicationId: "1",
-    component_type: ComponentType.NumberInput,
+    component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "block",
@@ -57,7 +57,7 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "height",EventData.value+'px');
+                            updateStyle(currentComponent, "height",EventData.value);
                         }
                     }catch(error){
                         console.log(error);

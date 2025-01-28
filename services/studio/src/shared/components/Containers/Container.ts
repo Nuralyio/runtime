@@ -63,7 +63,26 @@ export class VerticalContainer extends BaseElementBlock {
       this.draggingComponentInfo = draggingComponentInfo || null;
     })
   }
+  protected updated(_changedProperties: PropertyValues): void {
+    super.updated(_changedProperties);
+    this.applyHostStyles();
+  }
 
+  private applyHostStyles(): void {
+    if (this.component?.style) {
+      const { width, height} = this.component.style;
+
+      // Dynamically apply styles to the :host element
+      Object.assign(this.style, {
+        width: width || "auto",
+        height: height || "auto",
+      });
+      if(this.closestGenericComponentWrapper) {
+        this.closestGenericComponentWrapper.style.width =  width || "auto"
+        this.closestGenericComponentWrapper.style.height =  height || "auto"
+      }
+    }
+  }
   onContextMenu(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();

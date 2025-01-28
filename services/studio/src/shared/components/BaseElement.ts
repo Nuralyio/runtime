@@ -181,7 +181,7 @@ override  update(changedProperties: PropertyValueMap<any>) {
 
   override async connectedCallback() {
     super.connectedCallback();
-    this.closestGenericComponentWrapper = this.closest('genedrik-component-wrapper');
+    this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
     eventDispatcher.on('component:refresh' , async ()=>{
        this.traitInputsHandlers();
        this.traitStylesHandlers();

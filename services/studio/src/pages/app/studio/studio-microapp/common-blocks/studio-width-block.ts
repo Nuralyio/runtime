@@ -52,7 +52,7 @@ export default [
     uuid: "width_input",
     name: "width input",
     applicationId: "1",
-    component_type: ComponentType.NumberInput,
+    component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
       display: "block",
@@ -66,7 +66,7 @@ export default [
                 if( selectedComponens.length) {
                     const selectedComponent = selectedComponens[0];
                     const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "width",EventData.value+'px');
+                    updateStyle(currentComponent, "width",EventData.value);
                 }
             }catch(error){
                 console.log(error);
