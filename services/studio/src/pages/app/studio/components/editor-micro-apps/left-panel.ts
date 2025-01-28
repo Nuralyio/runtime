@@ -36,6 +36,8 @@ export default [{
   {
     uuid: "menu_header",
     name: "menu header",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "gap": "5px",
@@ -48,6 +50,8 @@ export default [{
   {
     uuid: "menu_title",
     name: "menu title",
+    applicationId: "1",
+
     component_type: ComponentType.TextLabel,
     input: {
       value: {
@@ -59,6 +63,8 @@ export default [{
   {
     uuid: "menu_tools",
     name: "menu tools",
+    applicationId: "1",
+
     component_type: ComponentType.Container,
     style: {
       "gap": "5px",
@@ -164,7 +170,8 @@ export default [{
   },
   {
     uuid: "menu_1",
-    name: "menu",
+    name: "menu",    
+    applicationId: "1",
     component_type: ComponentType.Menu,
     style: {
       "--hybrid-menu-border": "none",
@@ -288,5 +295,4 @@ export default [{
          `
 
     },
-    applicationId: "1"
   }];

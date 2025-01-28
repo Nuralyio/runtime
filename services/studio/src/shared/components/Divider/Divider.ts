@@ -25,7 +25,6 @@ export class DividerBlock extends BaseElementBlock {
   override async connectedCallback() {
     await super.connectedCallback();
     this.registerCallback("value", () => {
-      this.requestUpdate();
     });
   }
 

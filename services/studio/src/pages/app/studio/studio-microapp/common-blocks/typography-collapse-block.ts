@@ -15,7 +15,7 @@ export default [
     uuid: "typography_collapse",
     applicationId: "1",
     name: "typography collapse",
-    component_type: ComponentType.Collapse,
+    component_type: ComponentType.Container,
     style: {
       "--hy-collapse-content-small-size-padding": "5px",
       "--hy-collapse-font-weight": "normal",
@@ -25,21 +25,7 @@ export default [
       "--hy-collapse-border-bottom": "1px solid #ccc",
       "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
-    input: {
-      size: {
-        type: "handler",
-        value: /* js */ `
-                const size = 'small';
-                return size;
-                `
-      },
-      components: {
-        type: "handler",
-        value: /* js */ `
-                return [{ blockName: 'typography_collapse_container_childrens', label: 'Typography' , open : true}];
-                `
-      }
-    }
+   childrenIds: ["typography_collapse_container_childrens"]
   },
   {
     uuid: "typography_collapse_container_childrens",

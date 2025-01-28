@@ -71,7 +71,6 @@ export class ExportImportBlock extends BaseElementBlock {
       >
         <hy-button @click=${() => {
       $selectedComponent($currentApplication.get().uuid).subscribe((component) => {
-        console.log("Selected Component:", component);
 
         const uuidSet = new Set<string>();
 

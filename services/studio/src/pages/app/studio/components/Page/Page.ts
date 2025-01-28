@@ -96,7 +96,6 @@ export class PageContent extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     $context.subscribe(() => {
-      console.log( getVar("global", "editor_panel_zoom"))
       this.zoomLevel = getVar("global", "editor_panel_zoom")?.value || 100;
     });
 

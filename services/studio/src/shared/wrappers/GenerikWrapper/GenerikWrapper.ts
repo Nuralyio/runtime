@@ -89,12 +89,9 @@ export class GenerikComponentWrapper extends LitElement {
     });
   }
 
-  override updated(changedProperties) {
-    super.updated(changedProperties);
+  override update(changedProperties) {
+    super.update(changedProperties);
 
-    if (changedProperties.has("component")) {
-      this.requestUpdate();
-    }
 
     if (changedProperties.has("highlighted")) {
       const currentSelection = getVar("global", "selectedComponents")?.value || [];
@@ -209,7 +206,6 @@ export class GenerikComponentWrapper extends LitElement {
     };
     this.component = { ...this.component, style: updatedStyle };
     updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", updatedStyle);
-    this.requestUpdate();
   }
 
   private resize = (e: MouseEvent) => {

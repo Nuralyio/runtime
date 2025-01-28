@@ -44,7 +44,6 @@ export class TextLabelBlock extends BaseElementBlock {
     this.registerCallback("value", (value: any) => {
       if(value!==undefined)
         if(this.va!==value){
-          this.requestUpdate();
           this.va = value;
 
         }
@@ -71,7 +70,6 @@ export class TextLabelBlock extends BaseElementBlock {
     eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
       //console.log('data', data)
      this.traitInputsHandlers();
-      this.requestUpdate()
     });
   }
 

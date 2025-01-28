@@ -20,7 +20,6 @@ export class IconBlock extends BaseElementBlock {
   constructor() {
     super();
     this.registerCallback("icon", () => {
-      this.requestUpdate();
     });
   }
   override async connectedCallback() {

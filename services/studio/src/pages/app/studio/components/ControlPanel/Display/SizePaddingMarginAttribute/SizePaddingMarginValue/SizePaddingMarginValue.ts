@@ -17,7 +17,8 @@ export class SizePaddingMarginValue extends LitElement {
     this.initValues();
   }
 
-  updated(changedProperties) {
+  update(changedProperties) {
+    super.update(changedProperties);
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
         this.initValues();
@@ -36,9 +37,6 @@ export class SizePaddingMarginValue extends LitElement {
       paddingTop: this.component?.style.paddingTop ?? 0,
       paddingBottom: this.component?.style.paddingBottom ?? 0
     };
-
-
-    this.requestUpdate();
   }
 
   updateAttribute(key, value) {

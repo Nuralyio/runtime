@@ -25,7 +25,6 @@ export class Collapse extends BaseElementBlock {
     super();
     this.registerCallback('components', ()=>{
       this.updateComponents();
-      this.requestUpdate
     });
   }
   override updated(changedProperties: Map<string | number | symbol, unknown>) {

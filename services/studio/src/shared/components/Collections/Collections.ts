@@ -49,7 +49,6 @@ export class CollectionViwer extends BaseElementBlock {
     super();
 
     this.registerCallback("data", (data) => {
-      this.requestUpdate()
     });
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;

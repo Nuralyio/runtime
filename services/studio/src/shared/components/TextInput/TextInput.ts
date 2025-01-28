@@ -54,10 +54,6 @@ export class TextInputBlock extends BaseElementBlock {
   protected firstUpdated(_changedProperties: PropertyValues) {
     super.firstUpdated(_changedProperties);
 
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, () => {
-      this.traitInputsHandlers();
-      this.requestUpdate();
-    });
 
     this.registerCallback("value", (value) => {
       if (!this._isUserFocused && this.currentValue !== value) {

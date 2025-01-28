@@ -129,8 +129,8 @@ export class CodeEditor extends LitElement {
   /**
    * Whenever the `code` property changes, update the editor’s text if needed
    */
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  protected update(changedProperties: PropertyValues) {
+    super.update(changedProperties);
 
     if (
       changedProperties.has("code") &&

@@ -23,7 +23,6 @@ constructor() {
   super();
   this.registerCallback('events' , ()=>{
     console.log('events');
-    this.requestUpdate();
   })
 }
   override async connectedCallback() {

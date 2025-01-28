@@ -25,7 +25,7 @@ export function generateDynamicContainer(
       uuid: collapseUuid,
       applicationId: "1",
       name: collapseUuid,
-      component_type: ComponentType.Collapse,
+      component_type: ComponentType.Container,
       style: {
         ...CollapseContainerTheme
       },
@@ -34,17 +34,11 @@ export function generateDynamicContainer(
           type: "handler",
           value: /* js */ `return 'small';`
         },
-        components: {
-          type: "array",
-          value: [
-            {
-              blockName: `${collapseUuid}_children`,
-              label: "Inputs",
-              open: true
-            }
-          ]
-        }
-      }
+       
+      },
+      childrenIds: [
+        `${collapseUuid}_children`
+      ]
     },
     {
       uuid: `${collapseUuid}_children`,
