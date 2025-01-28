@@ -99,11 +99,7 @@ export default [
       value: "Font Size"
     },
 
-    event: {
-      onClick: `
-        console.log("Clicked 22" , Current.uuid);
-      `
-    },
+    
     applicationId: "1",
     ...COMMON_ATTRIBUTES,
     inputHandlers: {

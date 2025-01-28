@@ -1,4 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { CollapseHeaderTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
@@ -27,7 +28,22 @@ export default [
       "--hy-collapse-border-bottom": "1px solid #ccc",
       "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
-    childrenIds: ["size_collapse_container_childrens"]
+    childrenIds: ["divider", "size_text_label_collapse", "size_collapse_container_childrens"]
+  },
+  {
+    uuid: "size_text_label_collapse",
+    name: "size_text_label_collapse",
+    applicationId: "1",
+    component_type: ComponentType.TextLabel,
+    style: {
+    ...CollapseHeaderTheme
+    },
+    input:{
+      value:{
+        type: "handler",
+        value: `return "Size"`
+      }
+    }
   },
   {
     uuid: "size_collapse_container_childrens",
