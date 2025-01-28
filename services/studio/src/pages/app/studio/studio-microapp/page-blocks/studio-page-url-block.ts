@@ -51,7 +51,7 @@ export default [
                 if(currentPageId){
             const newPageUrl = EventData.value;
             const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication.uuid);
             const currentPage = appPages.find((page)=>page.uuid == currentPageId);
             const newPage = {...currentPage,url:newPageUrl};
             UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
@@ -75,7 +75,7 @@ export default [
             const currentPageId =  GetVar("currentPage");
             if(currentPageId) {
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
+                const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication.uuid);
                 const currentPage = appPages.find((page)=>page.uuid == currentPageId);
                 return currentPage?.url || '';
             }

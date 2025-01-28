@@ -107,7 +107,7 @@ export default [{
       onClick: `
         try {
             const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication.uuid);
             const newPage = {
                 name: "Page_" + (appPages.length + 1),
                 url: ("Page_" + (appPages.length + 1)).toLowerCase(),
@@ -184,7 +184,7 @@ export default [{
         type: "handler",
         value: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication.uuid);
             const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
             const currentComponent= GetVar("selectedComponents");
             
