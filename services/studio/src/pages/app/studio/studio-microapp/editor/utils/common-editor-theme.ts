@@ -53,3 +53,9 @@ export const SelectTheme = {
   "--hybrid-select-small-height": "22px",
   "size": "small"
 };
+
+export const CollapseHeaderTheme = {
+  "font-size": "16px",
+  "font-weight": "bold", 
+  "margin-bottom": "10px"
+};
