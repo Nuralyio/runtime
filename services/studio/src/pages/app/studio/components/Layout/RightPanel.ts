@@ -27,7 +27,6 @@ export class RightPanel extends LitElement {
     $context.listen(() => {
       this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
       console.log(this.showSecondsRow);
-      this.requestUpdate();
     });
   }
 

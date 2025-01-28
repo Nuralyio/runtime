@@ -27,8 +27,8 @@ export class TabsBlock extends BaseElementBlock {
      this.traitInputsHandlers();
   }
 
-  override updated(changedProperties: Map<string | number | symbol, unknown>) {
-    super.updated(changedProperties);
+  override update(changedProperties: Map<string | number | symbol, unknown>) {
+    super.update(changedProperties);
     if (changedProperties.has("component")) {
       this.updateComponents();
       //this.editableTabs = this.memoizedGenerateTabs();
@@ -74,6 +74,5 @@ export class TabsBlock extends BaseElementBlock {
       this.componentsWithChildren = [...components];
       this.editableTabs = this.generateTabs();
     });
-    this.requestUpdate();
   }
 }

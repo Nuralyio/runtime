@@ -39,7 +39,6 @@ export class MicroApp extends LitElement {
       ? components.filter((component) => component.pageId === this.page_uuid && component.root === true)
       : components;
 
-    this.requestUpdate();
   }
 
   override connectedCallback(): void {

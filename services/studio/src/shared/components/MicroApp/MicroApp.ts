@@ -72,12 +72,7 @@ export class MicroAppBlock extends BaseElementBlock {
     }
   }
 
-  updated(changedProperties: any): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("component")) {
-      this.requestUpdate();
-    }
-  }
+  
 
   render() {
     const isPreviewMode = this.inputHandlersValue.mode === ViewMode.Preview || this.inputHandlersValue.mode === ViewMode.Preview;

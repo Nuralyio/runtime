@@ -17,7 +17,7 @@ export default [
     uuid: "size_collapse",
     applicationId: "1",
     name: "size collapse",
-    component_type: ComponentType.Collapse,
+    component_type: ComponentType.Container,
     style: {
       "--hy-collapse-content-small-size-padding": "5px",
       "--hy-collapse-font-weight": "normal",
@@ -27,21 +27,7 @@ export default [
       "--hy-collapse-border-bottom": "1px solid #ccc",
       "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
-    input: {
-      size: {
-        type: "handler",
-        value: /* js */ `
-                const size = 'small';
-                return size;
-                `
-      },
-      components: {
-        type: "handler",
-        value: /* js */ `
-                return [{ blockName: 'size_collapse_container_childrens', label: 'size' , open : true}];
-                `
-      }
-    }
+    childrenIds: ["size_collapse_container_childrens"]
   },
   {
     uuid: "size_collapse_container_childrens",

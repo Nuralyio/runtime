@@ -156,7 +156,6 @@ export class AIAssistantBlock extends LitElement {
         Array.from(currentComponentIds).includes(component.uuid)
       );
 
-      console.log("Selected Components:", selectedComponents);
 
       // Update the _selectedComponents state without modifying _chatMessages
       this._selectedComponents = selectedComponents;

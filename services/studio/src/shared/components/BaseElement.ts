@@ -72,7 +72,6 @@ export class BaseElementBlock extends LitElement {
 
               }
               this.inputHandlersValue[inputName] = result;
-              setValue(this.component.name, inputName, result);
 
               if (this?.callbacks[inputName]) {
                 this.callbacks[inputName](result);
@@ -103,7 +102,6 @@ export class BaseElementBlock extends LitElement {
       if (this.inputHandlersValue[inputName]) {
         if (this.inputHandlersValue[inputName] !== input.value) {
           this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
-          //setValue(this.component.name, inputName, input.value);
           if (this?.callbacks[inputName]) {
             this.callbacks[inputName](input.value);
           }
@@ -144,7 +142,6 @@ export class BaseElementBlock extends LitElement {
               if (this.stylesHandlersValue[styleName] !== fn) {
                 this.stylesHandlersValue[styleName] = fn;
               }
-              this.requestUpdate();
               resolve();
             });
           }
@@ -153,7 +150,6 @@ export class BaseElementBlock extends LitElement {
         }
       } else {
         this.stylesHandlersValue[styleName] = style;
-        this.requestUpdate();
       }
     }
   }
@@ -169,14 +165,15 @@ export class BaseElementBlock extends LitElement {
   }
 
   
-override updated(changedProperties: PropertyValueMap<any>) {
+override  update(changedProperties: PropertyValueMap<any>) {
+  super.update(changedProperties);
   changedProperties.forEach((_oldValue, propName) => {
     if (propName === "component") {
       const newValue = changedProperties.get("component");
 
       //if (!deepEqual(newValue, _oldValue) || newValue?.applicationId =="1") {
-        this.traitInputsHandlers();
-        this.traitStylesHandlers();
+         this.traitInputsHandlers();
+         this.traitStylesHandlers();
       //}
     }
   });
@@ -200,7 +197,6 @@ override updated(changedProperties: PropertyValueMap<any>) {
       if (key === "Enter") {
         if (selectedComponents.length == 1 && this.component.uuid === selectedComponents[0]) {
           this.isEditable = true;
-          this.requestUpdate();
         }
       }
     });

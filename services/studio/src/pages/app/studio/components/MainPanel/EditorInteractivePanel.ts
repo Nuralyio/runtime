@@ -1,7 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@nuralyui/tabs";
-import "@nuralyui/color-picker";
 import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { $environment, type Environment, ViewMode } from "$store/environment";
