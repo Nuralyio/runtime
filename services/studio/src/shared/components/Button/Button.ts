@@ -1,4 +1,4 @@
-import { css, html, nothing, type PropertyValues } from "lit";
+import { css, html, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
@@ -35,23 +35,16 @@ export class ButtonBlock extends BaseElementBlock {
     await super.connectedCallback();
     this.registerCallback("value", () => {});
     await loadHyButton();
-    setTimeout(() => {
-      if (this.component.uuid == "355ef391-d9fe-44e5-b553-46b81c828d11") {
-        setVar("global", "selectedComponents", ["a40800b4-930f-46bf-8ecc-ada07d233682"]);
-        this.requestUpdate();
-      }
-    }, 100);
   }
 
   render() {
+    if(!this.shouldDisplay) return nothing;
     const buttonStyles = this.component?.style || {};
     const buttonStyleHandlers = this.component?.styleHandlers
       ? Object.fromEntries(Object.entries(this.component.styleHandlers).filter(([key, value]) => value))
       : {};
 
     return html`
-      ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show"
-        ? html`
             <hy-button
               .size=${buttonStyleHandlers?.size
                 ? buttonStyleHandlers.size
@@ -75,8 +68,6 @@ export class ButtonBlock extends BaseElementBlock {
             >
               ${this.inputHandlersValue.label ?? "Button"}
             </hy-button>
-          `
-        : nothing}
     `;
   }
 }

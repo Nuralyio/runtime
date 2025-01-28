@@ -25,6 +25,7 @@ import {
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction.ts";
 import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
+import { setEnvirementMode } from "$store/actions/editor/setEnvirementMode";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -46,6 +47,9 @@ export class PageContent extends LitElement {
     $context.listen(() => this.refreshComponent());
     $values.listen(() => this.refreshComponent());
     $environment.subscribe((environment: Environment) => {
+      if(!getVar("global", "currentEditingMode")?.value) {
+        setVar("global", "currentEditingMode", environment.mode);
+      }
       this.mode = environment.mode;
       this.refreshComponent();
     });
@@ -97,6 +101,8 @@ export class PageContent extends LitElement {
     super.connectedCallback();
     $context.subscribe(() => {
       this.zoomLevel = getVar("global", "editor_panel_zoom")?.value || 100;
+      this.mode = getVar("global", "currentEditingMode")?.value || ViewMode.Edit;
+      setEnvirementMode(this.mode);
     });
 
     $currentPageViewPort.subscribe(() => {

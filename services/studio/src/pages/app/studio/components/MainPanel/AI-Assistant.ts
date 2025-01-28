@@ -133,6 +133,7 @@ export class AIAssistantBlock extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("keydown", this._onKeyDown);
+    window.addEventListener("toggle-ai-assistant", this._toggleVisibility.bind(this));
 
     this._isDarkMode = this._mediaQuery.matches;
     this._updateTheme();
@@ -164,6 +165,7 @@ export class AIAssistantBlock extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    window.removeEventListener("toggle-ai-assistant", this._toggleVisibility.bind(this));
     window.removeEventListener("keydown", this._onKeyDown);
     this._mediaQuery.removeEventListener("change", this._handleThemeChange);
 
