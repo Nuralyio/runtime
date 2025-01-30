@@ -39,7 +39,7 @@ export class HyDropdownMenu extends LitElement {
   }
 
   override render() {
-    return html`<div @click=${this.onClickMenu}>
+    return html`<div @mousedown=${this.onClickMenu}>
       ${this.icon ? html`<hy-icon name=${this.icon}></hy-icon>` : nothing}
       <span class="menu-label"> ${this.label}</span>
       <hy-icon

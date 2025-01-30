@@ -136,7 +136,7 @@ export class TabsComponent extends LitElement {
     // then render the delete icon
     if(!tab.editable && this.editable?.canDeleteTab){
       return html`<hy-icon
-      @click=${() => {
+      @mousedown=${() => {
         this.dispatchEvent(
           new CustomEvent(TabEvent.removeTab, {
             detail: {index: tab.index},
@@ -184,7 +184,7 @@ export class TabsComponent extends LitElement {
           >
           ${children[tabIndex].editable?.canDeleteTab ?? this.editable?.canDeleteTab
             ? html`<hy-icon
-                @click=${() => {
+                @mousedown=${() => {
                   this.dispatchEvent(
                     new CustomEvent(TabEvent.removeTab, {
                       detail: {index: tabIndex},
@@ -203,7 +203,7 @@ export class TabsComponent extends LitElement {
       const tab = html`
         <div
           class="tab-label add-tab-label"
-          @click=${() => {
+          @mousedown=${() => {
             this.dispatchEvent(new CustomEvent(TabEvent.addTab));
           }}
         >
