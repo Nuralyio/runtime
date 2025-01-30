@@ -137,7 +137,7 @@ export default [{
     event: {
       onClick: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication.uuid);
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
            if(currentPage){
             AddComponent(currentEditingApplication.uuid,currentPage,EventData.value)
@@ -956,7 +956,7 @@ export default [{
         type: "handler",
         value: /* js */`
             const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication.uuid);
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
             const currentPageName = appPages.find((page)=>page.uuid == currentPage).name
             return currentPageName;
