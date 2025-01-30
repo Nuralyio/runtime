@@ -7,9 +7,11 @@ import worker from "@astropub/worker"
 
 import node from "@astrojs/node";
 
+import compressor from "astro-compressor";
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), lit(), tailwind({}),  worker()],
+  integrations: [react(), lit(), tailwind({}), worker(), compressor()],
   output: "server",
   adapter: node({
     mode: "standalone"

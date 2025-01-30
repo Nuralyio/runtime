@@ -88,9 +88,13 @@ export default [{
       label: {
         type: "handler",
         value: /* js */`
-            const addPageLabelBtn='';
+            const addPageLabelBtn='Page';
             return addPageLabelBtn;
         `
+      },
+      iconPosition:{
+        type: "string",
+        value: "left"
       },
       icon: {
         type: "handler",
