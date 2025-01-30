@@ -59,6 +59,7 @@
     "acorn": "^8.12.1",
     "acorn-walk": "^8.3.4",
     "astro": "^4.16.14",
+    "astro-compressor": "^1.0.0",
     "astrojs-service-worker": "^2.0.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
