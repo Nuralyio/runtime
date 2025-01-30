@@ -75,7 +75,7 @@ export class HyMenuLink extends LitElement {
 
   override render() {
     return html`
-      <li tabindex="0" @click=${!this.disabled ? this._clickLink : nothing}>
+      <li tabindex="0" @mousedown=${!this.disabled ? this._clickLink : nothing}>
       <div class="icon-container" >
         ${this.icon
           ? html`${!this.text

@@ -63,7 +63,7 @@ export class HySubMenu extends LitElement {
   override render() {
     return html`
     <ul tabindex="0">
-        <div @click=${!this.disabled ? this._toggleMenu : nothing}>
+        <div @mousedown=${!this.disabled ? this._toggleMenu : nothing}>
           ${this.icon ? html`<hy-icon id="text-icon" name="${this.icon}"></hy-icon>` : nothing}
           <span>${this.text}</span>
           <div class="icons-container">
@@ -75,7 +75,7 @@ export class HySubMenu extends LitElement {
               <hy-icon name="${this.menu.icon}" class="action-icon"></hy-icon>
             </hy-dropdown>
             `:nothing}
-            <hy-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @click=${!this.disabled ? this.toggleIcon : nothing}></hy-icon>
+            <hy-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></hy-icon>
           </div>
         </div>
         <slot @select-menu=${this._handleSelectedChild} @selected-link=${this._handleSelectedChild} style="display:${this.isOpen ? nothing : 'none'};"></slot>
