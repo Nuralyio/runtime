@@ -164,7 +164,7 @@ export default [
 
               }
             },
-            {
+           /* {
               label: {
                 type: "text",
                 value: "Elements"
@@ -174,7 +174,7 @@ export default [
                 value: ["2"]
 
               }
-            },
+            },*/
             {
               label: {
                 type: "text",
