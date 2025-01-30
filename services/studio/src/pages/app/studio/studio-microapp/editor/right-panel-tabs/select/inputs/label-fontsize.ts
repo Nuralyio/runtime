@@ -85,7 +85,13 @@ export default [
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-label-font-size']?.split('')
+                let fontSize;
+                if(currentPlatform.platform !== "desktop"){
+                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]['--hybrid-select-label-font-size']?.split('')
+                }else{
+                    fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-label-font-size']?.split('')
+                }
+                console.log("fontSize",fontSize)
                 if(fontSize) 
                     {
                         let unity='';

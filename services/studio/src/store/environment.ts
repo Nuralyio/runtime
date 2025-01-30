@@ -18,6 +18,4 @@ export const $environment = atom<Environment>(
 
 keepMount($environment);
 
-logger({
-  environment: $environment
-});
+

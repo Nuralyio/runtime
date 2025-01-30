@@ -60,6 +60,81 @@ export default [
       size: "small"
     },
     event: {
+      onArrowUp: /* js */ `
+      try {
+        const selectedComponents = GetVar("selectedComponents") || [];
+        if (selectedComponents.length) {
+            const selectedComponent = selectedComponents[0];
+            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+    
+            if (!currentComponent || !currentComponent.style) {
+                return;
+            }
+    
+            let width = currentComponent.style['width'] || "0px";
+    
+            width = width.trim();
+            let numericPart = "";
+            let unitPart = "";
+    
+            for (let i = 0; i < width.length; i++) {
+                if (width[i] >= '0' && width[i] <= '9' || width[i] === '.') {
+                    numericPart += width[i]; // Capture numeric part
+                } else {
+                    unitPart = width.substring(i); // Capture the rest as unit
+                    break;
+                }
+            }
+    
+            let numericValue = parseFloat(numericPart) || 0;
+            let unit = unitPart.trim() || "px"; // Default unit to "px" if empty
+    
+    
+            // Increment width and apply update
+            numericValue += 1;
+            updateStyle(currentComponent, "width", numericValue + unit);
+        }
+    } catch (error) {
+    }
+  `,
+  onArrowDown: /* js */ `
+      try {
+        debugger;
+        const selectedComponents = GetVar("selectedComponents") || [];
+        if (selectedComponents.length) {
+            const selectedComponent = selectedComponents[0];
+            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+    
+            if (!currentComponent || !currentComponent.style) {
+                return;
+            }
+    
+            let width = currentComponent.style['width'] || "0px";
+    
+            width = width.trim();
+            let numericPart = "";
+            let unitPart = "";
+    
+            for (let i = 0; i < width.length; i++) {
+                if (width[i] >= '0' && width[i] <= '9' || width[i] === '.') {
+                    numericPart += width[i]; // Capture numeric part
+                } else {
+                    unitPart = width.substring(i); // Capture the rest as unit
+                    break;
+                }
+            }
+    
+            let numericValue = parseFloat(numericPart) || 0;
+            let unit = unitPart.trim() || "px"; // Default unit to "px" if empty
+    
+    
+            // Increment width and apply update
+            numericValue -= 1;
+            updateStyle(currentComponent, "width", numericValue + unit);
+        }
+    } catch (error) {
+    }
+  `,
       valueChange: /* js */ `
             try{
                 const selectedComponens =  GetVar( "selectedComponents")||[];

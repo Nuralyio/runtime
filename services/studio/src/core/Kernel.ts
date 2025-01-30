@@ -5,7 +5,7 @@ import { GenerateName } from "utils/naming-generator";
 import { $applications, $values } from "$store/apps";
 import { $components } from "$store/component/store.ts";
 import type { ComponentElement, ComponentType } from "$store/component/interface";
-import { $context, setVar } from "$store/context";
+import { $context, getVar, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
 import { isServer } from "utils/envirement";
 import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
@@ -34,6 +34,7 @@ class Executor {
   VarsProxy: Record<string, any> = {};
   Current: Record<string, any> = {};
   private functionCache: Record<string, Function> = {};
+  currentPlatform:any = {};
 
   Component: any = {};
   listner: any = {};
@@ -47,6 +48,10 @@ class Executor {
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
     $context.subscribe(()=>{
+      this.currentPlatform = getVar("global", "currentPlatform")?.value ?? {
+        platform: "desktop",
+        isMobile: false,
+      };
       this.registerApplications()
     });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
@@ -203,6 +208,7 @@ class Executor {
         "Components",
         "Item",
         "Current",
+        "currentPlatform",
         "Values",
         "Apps",
         "Vars",
@@ -260,7 +266,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   const PropertiesProxy = ExecuteInstance.PropertiesProxy;
   const VarsProxy = ExecuteInstance.VarsProxy;
   const Current = ExecuteInstance.Current;
-
+  const currentPlatform = ExecuteInstance.currentPlatform;
   function SetVar(symbol: string, value: any): void {
     setVar("global", symbol, value);
   }
@@ -362,6 +368,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     PropertiesProxy,
     JSON.parse(JSON.stringify(item ?? {})),
     Current,
+    currentPlatform,
     Values,
     Apps,
     VarsProxy,

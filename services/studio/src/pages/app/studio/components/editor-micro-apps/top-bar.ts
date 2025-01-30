@@ -576,6 +576,15 @@ export default [{
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     },
+    event:{
+      onClick: /* js */`
+          SetVar("currentPlatform" , {
+            platform: "desktop",
+            width: "100%",
+            height: "100%",
+          })
+        `
+    },
     input: {
       label: {
         type: "handler",
@@ -636,6 +645,16 @@ export default [{
       "--hybrid-button-height": "40px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
+    },
+    event:{
+      onClick: /* js */`
+      SetVar("currentPlatform" , {
+        platform: "tablet",
+        width: "1024px",
+        height: "768px",
+        isMobile: true
+      })
+        `
     },
     input: {
       label: {
@@ -698,6 +717,15 @@ export default [{
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     },
+    event:{
+      onClick: /* js */`
+      SetVar("currentPlatform" , {
+        platform: "mobile",
+        width: "375px",
+        isMobile: true
+      })
+        `
+    },
     input: {
       label: {
         type: "handler",
@@ -706,6 +734,7 @@ export default [{
             return buttonLabel;
             `
       },
+    
       icon: {
         type: "handler",
         value: /* js */`

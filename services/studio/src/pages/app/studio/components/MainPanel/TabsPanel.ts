@@ -7,6 +7,7 @@ import { css, html, LitElement } from "lit";
 import { state } from "lit/decorators.js";
 import { closeEditorTab } from "$store/actions/editor/closeEditorTab.ts";
 import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
+import { styleMap } from "lit/directives/style-map.js";
 
 export class TabsPanel extends LitElement {
   static override styles = [
@@ -98,6 +99,11 @@ export class TabsPanel extends LitElement {
           <content-page></content-page>
         </editor-interactive-panel>` : html`
         <hy-tabs
+        style=${
+          styleMap({
+            "--hybrid-tabs-content-padding": "0px",
+          })
+        }
           .activeTab=${this.activeTab}
           @removeTab=${(e: CustomEvent) => {
             this.activeTab = 0;

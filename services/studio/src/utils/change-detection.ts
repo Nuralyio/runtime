@@ -1,11 +1,12 @@
 class EventDispatcher {
   private static instance: EventDispatcher;
   private events: { [key: string]: Function[] };
+  private debounceTimers: { [key: string]: NodeJS.Timeout };
 
   // Private constructor to prevent direct instantiation
   private constructor() {
     this.events = {};
-    console.log('constructor')
+    this.debounceTimers = {};
   }
 
   // Static method to get the single instance
@@ -18,7 +19,6 @@ class EventDispatcher {
 
   // Subscribe to an event
   public on(event: string, listener: Function): void {
-  //console.log('onevent::on', event);
     if (!this.events[event]) {
       this.events[event] = [];
     }
@@ -28,18 +28,23 @@ class EventDispatcher {
   // Unsubscribe from an event
   public off(event: string, listener: Function): void {
     if (!this.events[event]) return;
-
     this.events[event] = this.events[event].filter(l => l !== listener);
   }
 
-  // Emit an event
-  public emit(event: string, data?: any): void {
-    //console.log('event::', event, data);
-    //console.log('event::',this.events,event);
-
+  // Emit an event with debounce
+  public emit(event: string, data?: any, debounceTime: number = 0): void {
     if (!this.events[event]) return;
 
-    this.events[event].forEach(listener => listener(data));
+    // Clear the previous debounce timer if exists
+    if (this.debounceTimers[event]) {
+      clearTimeout(this.debounceTimers[event]);
+    }
+
+    // Set a new debounce timer
+    this.debounceTimers[event] = setTimeout(() => {
+      this.events[event].forEach(listener => listener(data));
+      delete this.debounceTimers[event]; // Cleanup after execution
+    }, debounceTime);
   }
 }
 

@@ -70,7 +70,7 @@ export class VerticalContainer extends BaseElementBlock {
 
   private applyHostStyles(): void {
     if (this.component?.style) {
-      const { width, height} = this.component.style;
+      const { width, height} = this.calculatedStyles;
 
       // Dynamically apply styles to the :host element
       Object.assign(this.style, {
@@ -131,12 +131,11 @@ export class VerticalContainer extends BaseElementBlock {
   }
 
   render() {
-    const verticalContainerStyles = this.component?.style || {};
+    const verticalContainerStyles =this.calculatedStyles || {};
     const verticalContainerAutoWidth = this.inputHandlersValue?.width;
     const verticalContainerAutoHeight = this.inputHandlersValue?.height;
     if(!this.shouldDisplay) return nothing;
     return html`
-      
       ${this.isViewMode
       ? this.renderView()
       : html`
@@ -144,6 +143,10 @@ export class VerticalContainer extends BaseElementBlock {
           .component=${{ ...this.component }}
           .selectedComponent=${{ ...this.selectedComponent }}
           .hoveredComponent=${{ ...this.hoveredComponent }}
+          style=${styleMap({
+             width: verticalContainerAutoWidth ? "auto" : verticalContainerStyles.width,
+             height: verticalContainerAutoHeight ? "auto" : verticalContainerStyles.height,
+          })}
         >
           <div
             data-component-uuid=${this.component?.uuid}

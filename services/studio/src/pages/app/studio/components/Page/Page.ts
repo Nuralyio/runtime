@@ -38,6 +38,7 @@ export class PageContent extends LitElement {
   @property({ type: Boolean }) isViewMode = false;
   mode: ViewMode;
   @state() zoomLevel = 100;
+  @state() currentPlatform: any;
 
   constructor() {
     super();
@@ -63,6 +64,7 @@ export class PageContent extends LitElement {
   }
 
   refreshComponent() {
+    this.currentPlatform = getVar("global", "currentPlatform")?.value;
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
     const currentEditingApplication = getVar("global", "currentEditingApplication");
@@ -219,8 +221,11 @@ export class PageContent extends LitElement {
       </style>
        <rectangle-selection>
       <div
-        class="page-container ${this.isPreviewMode() ? "viewer" : ""}"
-        style=${styleMap(this.currentPage?.style || {})}
+        class="page-container ${this.currentPlatform?.isMobile  ? "mobile" : ""} ${this.isPreviewMode() ? "viewer" : ""}"
+        style=${styleMap({
+          "width": this.currentPlatform?.width || "auto",
+          "height": this.currentPlatform?.height || "",
+        })}
         @click=${this.handlePageClick}
         @dragend=${this.preventDefault}
         @dragenter=${this.preventDefault}

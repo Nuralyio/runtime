@@ -55,7 +55,7 @@ export class GenerikComponentWrapper extends LitElement {
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
       this.wrapperStyle =
-        environment.mode === ViewMode.Edit ? { "pointer-events": "none" } : {};
+        environment.mode === ViewMode.Edit ? {  } : {};
     });
     $hoveredComponent.subscribe((hoveredComponent: ComponentElement) => {
       this.hoveredComponent = hoveredComponent;

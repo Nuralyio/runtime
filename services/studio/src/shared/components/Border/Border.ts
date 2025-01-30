@@ -53,6 +53,7 @@ export class AttributeBorderValue extends BaseElementBlock {
   unity = "";
   // Debounced changed event handler
   debouncedChanged = debounce((e: Event) => {
+    return
     if (this.component.event.borderRadiusChanged) {
       const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.borderRadiusChanged`), {
         value: (e as CustomEvent).detail.value, unity: this.unity

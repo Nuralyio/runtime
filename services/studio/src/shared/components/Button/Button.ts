@@ -5,7 +5,7 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
-import { setVar } from "$store/context.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 let HyButton: any;
 const loadHyButton = async () => {
@@ -37,6 +37,13 @@ export class ButtonBlock extends BaseElementBlock {
     await loadHyButton();
   }
 
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
+     this.traitInputsHandlers();
+      this.requestUpdate()
+    });
+  }
   render() {
     if(!this.shouldDisplay) return nothing;
     const buttonStyles = this.component?.style || {};
@@ -59,7 +66,8 @@ export class ButtonBlock extends BaseElementBlock {
               .disabled=${this.inputHandlersValue.state == "disabled"}
               .icon="${this.inputHandlersValue.icon ? [this.inputHandlersValue.icon] : nothing}"
               .iconPosition=${this.inputHandlersValue.iconPosition ?? nothing}
-              @click=${() => {
+              @mousedown=${() => {
+
                 if (this.component.event?.onClick) {
                   executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
                 }

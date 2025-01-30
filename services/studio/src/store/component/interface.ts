@@ -47,11 +47,7 @@ export interface ComponentElement {
   name: string;
   component_type: ComponentType;
   style?: { [key: string]: string };
-  styleBreakPoints?: {
-    laptop: { [key: string]: string },
-    tablet: { [key: string]: string },
-    mobile: { [key: string]: string },
-  };
+  breakpoints?: any;
   styleHandlers: { [key: string]: string };
   inputHandlers: { [key: string]: string };
   parameters?: { [key: string]: string };

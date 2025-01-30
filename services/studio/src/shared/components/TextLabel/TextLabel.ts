@@ -74,7 +74,7 @@ export class TextLabelBlock extends BaseElementBlock {
   }
 
   renderView() {
-    const labelStyles = this.component?.style || {};
+    const labelStyles = this.calculatedStyles || {};
     const labelStyleHandlers = this.component?.styleHandlers
       ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
       : {};
@@ -87,10 +87,10 @@ export class TextLabelBlock extends BaseElementBlock {
       height: labelAutoHeight ? "auto" : labelStyles.height,
       ...labelStyleHandlers
     };
+    if(!this.shouldDisplay) return nothing;
 
     return html`
-      ${!this.inputHandlersValue?.display || (this.inputHandlersValue.value && this.inputHandlersValue.display === "show")
-      ? html`
+   
           <hy-label
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
@@ -117,8 +117,7 @@ export class TextLabelBlock extends BaseElementBlock {
       }}
           >${this.va || "Text label"} </hy-label>
         `
-      : nothing}
-    `;
+      
   }
 
   render() {
