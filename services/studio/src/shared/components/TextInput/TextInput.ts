@@ -26,8 +26,8 @@ export class TextInputBlock extends BaseElementBlock {
   private _isUserFocused = false;
 
   private _focusResetTimeout: NodeJS.Timeout | null = null;
+  private _inputElement: HTMLInputElement | null = null;
 
-  
   handleValueChange = debounce((customEvent: CustomEvent) => {
     if (!this.ExecuteInstance.PropertiesProxy[this.component.name]) {
       this.ExecuteInstance.PropertiesProxy[this.component.name] = {};
@@ -41,9 +41,8 @@ export class TextInputBlock extends BaseElementBlock {
         { value: customEvent.detail.value }
       );
     }
-    // Reset focus state after a delay of inactivity
     this.resetFocusAfterInactivity();
-  }, 0  );
+  }, 0);
 
   unsubscribe: () => void;
 
@@ -54,46 +53,58 @@ export class TextInputBlock extends BaseElementBlock {
   protected firstUpdated(_changedProperties: PropertyValues) {
     super.firstUpdated(_changedProperties);
 
-   
     this.registerCallback("value", (value) => {
       if (!this._isUserFocused && this.currentValue !== value) {
         this.currentValue = value ?? "";
         this.requestUpdate();
       }
     });
+
+    // Récupération de l'élément input
+    this._inputElement = this.renderRoot.querySelector("hy-input");
   }
+
+  private handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowUp" && this.component.event?.onArrowUp) {
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onArrowUp`));
+    }
+  };
+
+  private handleKeyUp = (event: KeyboardEvent) => {
+    if (event.key === "ArrowDown" && this.component.event?.onArrowDown) {
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onArrowDown`));
+    }
+  };
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.unsubscribe) this.unsubscribe();
     if (this._focusResetTimeout) clearTimeout(this._focusResetTimeout);
-  }
-
-  override async connectedCallback() {
-    await super.connectedCallback();
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
-      //console.log('data', data)
-     this.traitInputsHandlers();
-    });
+    if (this._inputElement) {
+      this._inputElement.removeEventListener("keydown", this.handleKeyDown);
+      this._inputElement.removeEventListener("keyup", this.handleKeyUp);
+    }
   }
 
   onFocus = () => {
     this._isUserFocused = true;
+    if (this._inputElement) {
+      this._inputElement.addEventListener("keydown", this.handleKeyDown);
+      this._inputElement.addEventListener("keyup", this.handleKeyUp);
+    }
     if (this.component?.event?.focus) {
-      executeCodeWithClosure(
-        this.component,
-        getNestedAttribute(this.component, `event.focus`)
-      );
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.focus`));
     }
   };
 
   onBlur = (e: Event) => {
     this._isUserFocused = false;
+    if (this._inputElement) {
+      this._inputElement.removeEventListener("keydown", this.handleKeyDown);
+      this._inputElement.removeEventListener("keyup", this.handleKeyUp);
+    }
     if (this.component?.event?.blur) {
-      executeCodeWithClosure(
-        this.component,
-        getNestedAttribute(this.component, `event.blur`)
-      );
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.blur`));
     }
   };
 
@@ -103,7 +114,7 @@ export class TextInputBlock extends BaseElementBlock {
     }
     this._focusResetTimeout = setTimeout(() => {
       this._isUserFocused = false;
-    }, 3000); // Adjust the timeout duration (in milliseconds) as needed
+    }, 3000);
   }
 
   render() {

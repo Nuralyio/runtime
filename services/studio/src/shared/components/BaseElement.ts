@@ -1,4 +1,4 @@
-import { LitElement, type PropertyValueMap } from "lit";
+import { LitElement, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../utils/change-detection.ts";
@@ -6,8 +6,7 @@ import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
-import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
-import { $context } from "$store/context.ts";
+import { $context, getVar } from "$store/context.ts";
 import deepEqual from "fast-deep-equal";
 
 function isPromise(value) {
@@ -40,6 +39,8 @@ export class BaseElementBlock extends LitElement {
   closestGenericComponentWrapper: HTMLElement;
 
   ExecuteInstance: any;
+  currentPlatform: any;
+  calculatedStyles: any = {};
 
   registerCallback(inputName: string, callback: any) {
     this.callbacks[inputName] = callback;
@@ -164,34 +165,67 @@ export class BaseElementBlock extends LitElement {
     }
   }
 
-  
-override  update(changedProperties: PropertyValueMap<any>) {
-  super.update(changedProperties);
-  changedProperties.forEach((_oldValue, propName) => {
-    if (propName === "component") {
-      const newValue = changedProperties.get("component");
 
-      //if (!deepEqual(newValue, _oldValue) || newValue?.applicationId =="1") {
-         this.traitInputsHandlers();
-         this.traitStylesHandlers();
-      //}
+  override  update(changedProperties: PropertyValueMap<any>) {
+    super.update(changedProperties);
+
+    if (this.currentPlatform?.platform !== "desktop") {
+      this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width];
+      if (this.component?.style) {
+        this.calculatedStyles = Object.assign(
+          {},
+          this.component?.style,
+          this.calculatedStyles
+        );
+      }
+    } else {
+      this.calculatedStyles = this.component?.style || {};
     }
-  });
-}
+    if (this.closestGenericComponentWrapper) {
+      if (this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width || this.closestGenericComponentWrapper!.style.height !== this.calculatedStyles.height) {
+        this.closestGenericComponentWrapper!.style.display = "block"
+        this.closestGenericComponentWrapper!.style.width = this.calculatedStyles.width || "auto";
+        this.closestGenericComponentWrapper!.style.height = this.calculatedStyles.height || "auto";
+        eventDispatcher.emit("refresh:resize" + this.component.uuid, {}, 0);
+      }
+
+    }
+
+    changedProperties.forEach((_oldValue, propName) => {
+      if (propName === "component") {
+        if(changedProperties.get("component")?.event?.onInit  !==
+      this.component?.event?.onInit ){
+       
+        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`),{}, this.item);
+      }
+        changedProperties.get("component");
+        this.traitInputsHandlers();
+        this.traitStylesHandlers();
+      }
+    });
+
+  }
+
 
   override async connectedCallback() {
+    $context.subscribe((context) => {
+      this.currentPlatform = getVar("global", "currentPlatform")?.value ?? {
+        platform: "desktop",
+        isMobile: false,
+      };
+    });
     super.connectedCallback();
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
-    eventDispatcher.on('component:refresh' , async ()=>{
-       this.traitInputsHandlers();
-       this.traitStylesHandlers();
+    eventDispatcher.on('component:refresh', async () => {
+      this.traitInputsHandlers();
+      this.traitStylesHandlers();
     })
     const excludedTypes = ["text_label", "text_input"];
     if (!excludedTypes.includes(this.component.component_type)) {
 
     }
-     this.traitInputsHandlers();
-     this.traitStylesHandlers();
+    this.traitInputsHandlers();
+    this.traitStylesHandlers();
 
     eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
       if (key === "Enter") {

@@ -8,6 +8,7 @@ import { classMap } from "lit/directives/class-map.js";
 import { $pageZoom, $showBorder } from "$store/page.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import { setResizing } from "$store/actions/page/setResizing.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {
@@ -184,6 +185,10 @@ export class ResizeWrapper extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    eventDispatcher.on("refresh:resize"+this.component.uuid, () => {
+      this.firstUpdated();
+    })
+
     window.removeEventListener("resize", this.firstUpdated);
     window.addEventListener("mouseup", this.stopResize);
     $pageZoom.subscribe((pageZoom: string) => {
@@ -203,20 +208,18 @@ export class ResizeWrapper extends LitElement {
   }
 
   firstUpdated() {
-    setTimeout(() => {
+    
       requestAnimationFrame(() => {
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
         const originalWidth = this.inputRef.value.offsetWidth;
         const originalHeight = this.inputRef.value.offsetHeight;
-
+        
         // Calculate the scaled dimensions
         const scaledWidth = originalWidth;
         const scaledHeight = originalHeight * this.zoomLevel;
 
         let { width, height }: any = this.slotDOMRect;
-        width = `${(width * 100) / this.zoomLevel}`;
-        height = `${(height * 100) / this.zoomLevel}`;
         width = originalWidth;
         height = originalHeight;
         const widthPixel = `${width}px`;
@@ -264,7 +267,6 @@ export class ResizeWrapper extends LitElement {
         };
         this.requestUpdate();
       });
-    });
   }
 
   stopResize = () => {
@@ -339,7 +341,7 @@ export class ResizeWrapper extends LitElement {
         this.selectedComponent?.uuid !== this.component.uuid,
       bordered: this.showBorder
     })}
-        ${ref(this.inputRef)}
+       ${ref(this.inputRef)}
       >
         <div
           @mousedown=${this.mouseDown}

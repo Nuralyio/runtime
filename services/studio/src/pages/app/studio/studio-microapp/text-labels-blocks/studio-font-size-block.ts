@@ -69,12 +69,16 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            try{
             const selectedComponens =  GetVar( "selectedComponents")||[];
             if( selectedComponens.length) {
                 const selectedComponent = selectedComponens[0];
                 const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent?.style && currentComponent.style['fontSize']?.split('')
+                let fontSize ;
+                if(currentPlatform.platform !== "desktop"){
+                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]?.fontSize?.split('') || currentComponent?.style && currentComponent?.style['fontSize']?.split('')
+                }else{
+                    fontSize =currentComponent?.style && currentComponent.style?.fontSize?.split('')
+                }
                 if(fontSize) 
                     {
                         let unity='';
@@ -93,9 +97,6 @@ export default [
                        return [13,'px']
             }
 
-        }catch(e){
-            console.log(e);
-        }
             `
       },
       state: {

@@ -72,18 +72,20 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
   @state()
   shadowBox = true;
   handleColorChange = debounce((e) => {
-    this.colorValue = e.detail.value;
-    this.boxShadow();
+	  this.colorValue = e.detail.value;
+	  if(e.detail.value!=this.colorValue){
+		this.boxShadow();
+	}
   });
 
   boxShadow() {
+	return
     const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
     if (this.component.event.boxShadowChanged) {
 
       const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.boxShadowChanged`), {
         value: shadowBox
       });
-      console.log(fn);
     }
   }
 
@@ -104,8 +106,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 		.disabled=${isDisabled}
 		.checked=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[4] : false} 
 		@checkbox-changed=${(e) => {
-      this.insetValue = e.detail.value;
-      this.boxShadow();
+			this.handleColorChange(e);
     }}
 		 >
 		${this.insetValue ? html`Disable` : html`Enable`} Shodow Box
