@@ -33,21 +33,7 @@ export function generateDynamicContainer(
         `${collapseUuid}_children`
       ]
     },
-    {
-      uuid: "input_text_label_collapse",
-      name: "input_text_label_collapse",
-      applicationId: "1",
-      component_type: ComponentType.TextLabel,
-      style: {
-      ...CollapseHeaderTheme
-      },
-      input:{
-        value:{
-          type: "handler",
-          value: `return "Inputs"`
-        }
-      }
-    },
+  
     {
       uuid: `${collapseUuid}_children`,
       applicationId: "1",
