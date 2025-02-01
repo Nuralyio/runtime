@@ -113,6 +113,9 @@ export default {
                             handlers=[
                                 "studio_container_handler"
                             ];
+                            themes=[
+                                "studio_container_theme_container"
+                            ];
                             break;
 
                         case "Collection":

@@ -64,7 +64,11 @@ export class PageContent extends LitElement {
   }
 
   refreshComponent() {
-    this.currentPlatform = getVar("global", "currentPlatform")?.value;
+    const currentPlatform = getVar("global", "currentPlatform")?.value;
+    if(currentPlatform?.platform !== this.currentPlatform?.platform) {
+      this.currentPlatform = getVar("global", "currentPlatform")?.value;
+      eventDispatcher.emit("component:refresh");
+    }
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
     const currentEditingApplication = getVar("global", "currentEditingApplication");
