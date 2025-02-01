@@ -4,10 +4,13 @@ export default css`
   :host{
   }
     .container {
+      --container-bg-color-local : var(--container-bg-color);
+
     display: flex;
     width: fit-content;
     min-height: 300px;
     flex-wrap: wrap;
+    background-color: var(--container-bg-color-local, var(--container-bg-color));
   }
   .drag-over {
   }
@@ -34,4 +37,11 @@ export default css`
     align-items: center;
     width: 100%;
   }
+
+  @media (prefers-color-scheme: dark) {
+    .container {
+    --container-bg-color-local: var(--container-dark-bg-color,  var(--container-bg-color));
+  }
+}
+
 `;

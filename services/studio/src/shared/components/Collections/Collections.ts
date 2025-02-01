@@ -14,6 +14,7 @@ import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts"
 import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { executeCodeWithClosure } from "core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
+import { classMap } from "lit/directives/class-map.js";
 
 @customElement("collection-viewer")
 export class CollectionViwer extends BaseElementBlock {
@@ -128,7 +129,11 @@ export class CollectionViwer extends BaseElementBlock {
         .selectedComponent=${{ ...this.selectedComponent }}
         .hoveredComponent=${{ ...this.hoveredComponent }}
       >
-        <div class="collection_viewer">
+        <div
+        class=${classMap({
+          collection_viewer: true,
+          vertical: this.inputHandlersValue.direction === "vertical",
+        })}>
           ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data :
 
             this.component.input?.data ? [] : [
@@ -149,3 +154,11 @@ export class CollectionViwer extends BaseElementBlock {
     `;
   }
 }
+/**
+
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+
+
+ */

@@ -400,7 +400,9 @@ export default [{
     },
     event:{
       onClick: /* js */`
-          SetVar("currentEditingMode" , "edit")
+          setTimeout(()=>{
+            SetVar("currentEditingMode" , "edit")
+          },0)
         `
     },
     input: {
@@ -581,7 +583,6 @@ export default [{
           SetVar("currentPlatform" , {
             platform: "desktop",
             width: "100%",
-            height: "100%",
           })
         `
     },

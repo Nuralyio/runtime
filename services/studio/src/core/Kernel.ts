@@ -14,7 +14,8 @@ import { openEditorTab } from "$store/actions/editor/openEditorTab.ts";
 import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
 import { eventDispatcher } from "@utils/change-detection";
 import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler";
-
+import { Utils } from "./Utils";
+import Editor from "./Editor"
 const DEBUG = false;
 
 /**
@@ -52,7 +53,9 @@ class Executor {
         platform: "desktop",
         isMobile: false,
       };
-      this.registerApplications()
+      this.registerApplications();
+      this.updateEditorContext()
+
     });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
 
@@ -61,6 +64,13 @@ class Executor {
     }
   }
 
+  updateEditorContext(){
+    const selectedComponensIds = getVar( "global", "selectedComponents")?.value || []
+    const currentEditingApplicationUUID = getVar("global", "currentEditingApplication")?.value?.uuid;
+    Editor.selectedComponents = Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid));
+    Editor.currentPlatform = this.currentPlatform;
+    
+  }
   private createProxy(target: any): any {
     const self = this;
 
@@ -200,12 +210,16 @@ class Executor {
 
       this.applications[applicationId][component.name] = { ...component };
     });
+    Editor.components = componentsList;
+    this.updateEditorContext()
+    
   }
 
   prepareClosureFunction(code: string): Function {
     if (!this.functionCache[code]) {
       this.functionCache[code] = new Function(
         "Components",
+        "Editor",
         "Item",
         "Current",
         "currentPlatform",
@@ -231,6 +245,7 @@ class Executor {
         "openEditorTab",
         "setCurrentEditorTab",
         "InvokeFunction",
+        "Utils",
         `return (function() { ${code} }).apply(this);`
       );
     }
@@ -366,6 +381,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
 
   return closureFunction(
     PropertiesProxy,
+    Editor,
     JSON.parse(JSON.stringify(item ?? {})),
     Current,
     currentPlatform,
@@ -390,6 +406,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     updateStyle,
     openEditorTab,
     setCurrentEditorTab,
-    InvokeFunction
+    InvokeFunction,
+    Utils
   );
 }

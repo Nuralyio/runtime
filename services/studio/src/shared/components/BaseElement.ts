@@ -42,6 +42,9 @@ export class BaseElementBlock extends LitElement {
   currentPlatform: any;
   calculatedStyles: any = {};
 
+  private traitInputsHandlerBound = this.traitInputsHandlers.bind(this);
+  private traitStylesHandlerBound = this.traitStylesHandlers.bind(this);
+
   registerCallback(inputName: string, callback: any) {
     this.callbacks[inputName] = callback;
   }
@@ -49,6 +52,7 @@ export class BaseElementBlock extends LitElement {
   unregisterCallback(inputName: string) {
     delete this.callbacks[inputName];
   }
+
   constructor() {
     super();
     this.ExecuteInstance = ExecuteInstance;
@@ -59,7 +63,7 @@ export class BaseElementBlock extends LitElement {
       return;
     }
     if (!this.ExecuteInstance.PropertiesProxy[this.component.name]) {
-      this.ExecuteInstance.PropertiesProxy[this.component.name] = {}
+      this.ExecuteInstance.PropertiesProxy[this.component.name] = {};
     }
     if (input) {
       if (input?.type === "handler") {
@@ -70,7 +74,6 @@ export class BaseElementBlock extends LitElement {
               if (this.inputHandlersValue[inputName] !== result) {
                 this.inputHandlersValue[inputName] = result;
                 this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = result;
-
               }
               this.inputHandlersValue[inputName] = result;
 
@@ -87,13 +90,11 @@ export class BaseElementBlock extends LitElement {
             }
             resolve();
           }
-
         });
       } else {
         this.inputHandlersValue[inputName] = input.value;
         if (this.inputHandlersValue[inputName] !== input.value) {
           this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
-
         }
         setValue(this.component.name, inputName, input.value);
         if (this?.callbacks[inputName]) {
@@ -106,15 +107,6 @@ export class BaseElementBlock extends LitElement {
           if (this?.callbacks[inputName]) {
             this.callbacks[inputName](input.value);
           }
-          /*updateComponentAttributes(
-            this.component.applicationId,
-            this.component.uuid,
-            "values",
-            {
-              [inputName]: this.inputHandlersValue[inputName]
-            },
-            false
-          );*/
         }
       }
     }
@@ -126,7 +118,7 @@ export class BaseElementBlock extends LitElement {
       for (const [inputName, input] of Object.entries(this.component?.input)) {
         handlerPromises.push(this.traitInputHandler(input, inputName));
       }
-      Promise.all(handlerPromises);
+      await Promise.all(handlerPromises);
     }
   }
 
@@ -165,8 +157,7 @@ export class BaseElementBlock extends LitElement {
     }
   }
 
-
-  override  update(changedProperties: PropertyValueMap<any>) {
+  override update(changedProperties: PropertyValueMap<any>) {
     super.update(changedProperties);
 
     if (this.currentPlatform?.platform !== "desktop") {
@@ -182,30 +173,27 @@ export class BaseElementBlock extends LitElement {
       this.calculatedStyles = this.component?.style || {};
     }
     if (this.closestGenericComponentWrapper) {
-      if (this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width || this.closestGenericComponentWrapper!.style.height !== this.calculatedStyles.height) {
-        this.closestGenericComponentWrapper!.style.display = "block"
+      if (
+        this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width ||
+        this.closestGenericComponentWrapper!.style.height !== this.calculatedStyles.height
+      ) {
+        this.closestGenericComponentWrapper!.style.display = "block";
         this.closestGenericComponentWrapper!.style.width = this.calculatedStyles.width || "auto";
         this.closestGenericComponentWrapper!.style.height = this.calculatedStyles.height || "auto";
         eventDispatcher.emit("refresh:resize" + this.component.uuid, {}, 0);
       }
-
     }
 
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
-        if(changedProperties.get("component")?.event?.onInit  !==
-      this.component?.event?.onInit ){
-       
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`),{}, this.item);
-      }
-        changedProperties.get("component");
+        if (changedProperties.get("component")?.event?.onInit !== this.component?.event?.onInit) {
+          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, this.item);
+        }
         this.traitInputsHandlers();
         this.traitStylesHandlers();
       }
     });
-
   }
-
 
   override async connectedCallback() {
     $context.subscribe((context) => {
@@ -216,20 +204,22 @@ export class BaseElementBlock extends LitElement {
     });
     super.connectedCallback();
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
-    eventDispatcher.on('component:refresh', async () => {
-      this.traitInputsHandlers();
-      this.traitStylesHandlers();
-    })
+
+    // Using the bound handlers
+    eventDispatcher.on('component:refresh', this.traitInputsHandlerBound);
+    eventDispatcher.on('component:refresh', this.traitStylesHandlerBound);
+
     const excludedTypes = ["text_label", "text_input"];
     if (!excludedTypes.includes(this.component.component_type)) {
-
+      // Additional logic if needed
     }
+
     this.traitInputsHandlers();
     this.traitStylesHandlers();
 
     eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
       if (key === "Enter") {
-        if (selectedComponents.length == 1 && this.component.uuid === selectedComponents[0]) {
+        if (selectedComponents.length === 1 && this.component.uuid === selectedComponents[0]) {
           this.isEditable = true;
         }
       }
@@ -238,12 +228,13 @@ export class BaseElementBlock extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    eventDispatcher.off("component:refresh", this.traitInputsHandlers);
-    eventDispatcher.off("component:refresh", this.traitStylesHandlers);
+
+    // Removing the event listeners
+    eventDispatcher.off('component:refresh', this.traitInputsHandlerBound);
+    eventDispatcher.off('component:refresh', this.traitStylesHandlerBound);
   }
 
   protected get shouldDisplay(): boolean {
-    // The same logic you used before
     return (
       this.inputHandlersValue?.display === undefined ||
       this.inputHandlersValue?.display
