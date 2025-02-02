@@ -25,7 +25,9 @@ const processedHeaders = processHeaders(Astro.request.headers);
 
 
   applications = applicationsRequest.data;
+  console.log("applications", applications)
   application = applications.find((application) => application.uuid === homeAppUUID);
+  console.log("application", application)
 
   componentData = componentResponse.data.map((component) => component.component);
 
