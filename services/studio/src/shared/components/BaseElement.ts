@@ -161,7 +161,7 @@ export class BaseElementBlock extends LitElement {
     super.update(changedProperties);
 
     if (this.currentPlatform?.platform !== "desktop") {
-      this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width];
+      this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width] ?? {};
       if (this.component?.style) {
         this.calculatedStyles = Object.assign(
           {},
@@ -172,7 +172,7 @@ export class BaseElementBlock extends LitElement {
     } else {
       this.calculatedStyles = this.component?.style || {};
     }
-    if (this.closestGenericComponentWrapper) {
+    if (this.closestGenericComponentWrapper && false) {
       if (
         this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width ||
         this.closestGenericComponentWrapper!.style.height !== this.calculatedStyles.height

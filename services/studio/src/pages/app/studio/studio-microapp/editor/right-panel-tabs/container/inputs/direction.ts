@@ -61,38 +61,22 @@ export const StudioContainerInputDirection = [
       value: {
         type: "handler",
         value: /* js */ `
-              const selectedComponents = Array.isArray(GetVar("selectedComponents")) 
-                ? GetVar("selectedComponents") 
-                : [];
-              const selectedComponent = selectedComponents[0] || null;
-              
-              const editingApp = GetVar("currentEditingApplication") || {};
-              const editingAppUuid = editingApp.uuid || null;
-              
-              let currentComponent = null;
-              if (selectedComponent && editingAppUuid) {
-                currentComponent = GetComponent(selectedComponent, editingAppUuid) || null;
-              }
-              
-              const currentType = currentComponent?.input?.direction?.value ?? "default";
-              
               const options = [
                 { label: "vertical", value: "vertical" },
                 { label: "horizontal", value: "horizontal" },
               ];
-              
-              const result = [options, [[currentType]]];
-              return result;
+              return [options, [[
+                Utils.first(Editor.selectedComponents)?.input?.direction?.value ?? "default"
+              ]]];
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                const selectedComponent = Utils.first(Editor.selectedComponents);
                 let isDisabled = 'enabled';
-                if (currentComponent?.styleHandlers?.type) {
+                if (selectedComponent?.input?.direction?.type === 'handler' &&
+                  selectedComponent?.input?.direction?.value ) {
                     isDisabled = 'disabled';
                 }
                 return isDisabled;
@@ -105,18 +89,9 @@ export const StudioContainerInputDirection = [
     },
     event: {
       changed: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    const typeValue = EventData.value || 'default';
-                    console.log(EventData);
-                    updateInput(currentComponent, "direction", 'string',typeValue);
-                }
-            } catch (error) {
-                console.log(error);
-            }
+              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const typeValue = EventData.value || 'default';
+              updateInput(selectedComponent, "direction", 'string',typeValue);
             `
     }
   },
@@ -149,34 +124,21 @@ export const StudioContainerInputDirection = [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter = 'type';
-                let typeHandler = '';
-                try {
-                    const selectedComponents = GetVar("selectedComponents") || [];
-                    if (selectedComponents.length) {
-                        const selectedComponent = selectedComponents[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                        typeHandler = currentComponent?.styleHandlers?.type || '';
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, typeHandler];
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const handlerValue = selectedComponent?.input?.direction?.type === 'handler'
+                ? selectedComponent.input.direction.value
+                : '';
+                return ['direction', handlerValue];
                 `
       }
     },
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'type', EventData.value);
-                }
-            } catch (error) {
-                console.log(error);
-            }
+
+      const selectedComponent = Utils.first(Editor.selectedComponents);
+        if (selectedComponent && EventData.value !== selectedComponent?.input?.direction?.value) {
+          updateInput(selectedComponent, 'direction', 'handler', EventData.value);
+        }
             `
     }
   }

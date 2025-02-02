@@ -12,7 +12,6 @@ export default [
     style: {
       ...InputBlockContainerTheme
     },
-
     childrenIds: ["checkbox_checked_radio_block", "checkbox_handler_block"]
   },
   {
@@ -28,7 +27,6 @@ export default [
     },
     childrenIds: ["checkbox_checked_label"]
   },
-
   {
     uuid: "checkbox_checked_label",
     name: "checkbox checked label",
@@ -41,13 +39,11 @@ export default [
         value:/* js */`
                 const checkedLabel='Checked';
                 return checkedLabel;
-                
                 `
       }
     },
     style: {
       width: "90px"
-
     }
   },
   {
@@ -61,38 +57,21 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentCheck=""
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                let currentCheck="";
                 let isDisabled=false;
-                if(currentComponent?.input?.checked?.type =='handler' && currentComponent.input?.checked?.value)
-                { 
-                    isDisabled=true
+                if(selectedComponent?.input?.checked?.type =='handler' && selectedComponent.input?.checked?.value) { 
+                    isDisabled=true;
+                } else {
+                    currentCheck = selectedComponent.input?.checked?.value || 'uncheck';
                 }
-                else 
-                currentCheck = currentComponent.input?.checked?.value || 'uncheck';
-                const options = 
-                    [
-                    {
-                    icon: "check",
-                    value: "check",
-                    disabled:isDisabled
-                    }, 
-                    {
-                    icon: "xmark",
-                    value: "uncheck",
-                    disabled:isDisabled
-                    },
-                    {
-                    icon:'bars',
-                    value:'indeterminate',
-                    disabled:isDisabled
-                    }
-            ]   
-            const radioType ='button'
-            const result = [options,currentCheck,radioType];
-           return  result;
+                const options = [
+                    { icon: "check", value: "check", disabled: isDisabled }, 
+                    { icon: "xmark", value: "uncheck", disabled: isDisabled },
+                    { icon:'bars', value:'indeterminate', disabled: isDisabled }
+                ];
+                const radioType ='button';
+                return [options, currentCheck, radioType];
                 `
       }
     },
@@ -101,17 +80,9 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                const selectedComponent = Utils.first(Editor.selectedComponents);
                     const checkedValue = EventData.value;
-                    updateInput(currentComponent,'checked','string',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateInput(selectedComponent, 'checked', 'string', checkedValue);
       `
     }
   },
@@ -122,7 +93,6 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
-
     childrenIds: ["checkbox_checked_radio", "checkbox_handler"]
   },
   {
@@ -135,46 +105,28 @@ export default [
     style: {
       display: "block",
       width: "50px"
-
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
                 const parameter ='checkbox';
-                let checkboxHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.checked?.type =='handler' && currentComponent?.input?.checked?.value){
-                            checkboxHandler = currentComponent?.input?.checked?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
+                let checkboxHandler='';
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if(selectedComponent?.input?.checked?.type =='handler' && selectedComponent?.input?.checked?.value) {
+                    checkboxHandler = selectedComponent?.input?.checked?.value;
                 }
-                return [parameter,checkboxHandler];
+                return [parameter, checkboxHandler];
             `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.checked?.value)
-                    updateInput(currentComponent,'checked','handler',EventData.value);
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if(selectedComponent && EventData.value != selectedComponent?.input?.checked?.value) {
+                    updateInput(selectedComponent, 'checked', 'handler', EventData.value);
                 }
-            }catch(error){
-                console.log(error);
-            }
       `
     }
   }
-
 ];

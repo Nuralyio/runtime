@@ -150,7 +150,6 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
 
 export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean): TemplateResult {
   if (!components || !components.length) return html``;
-
   return html`
     ${components.map((component: ComponentElement) => {
     const commonProps = { item: { ...item }, component };

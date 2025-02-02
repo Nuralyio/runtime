@@ -122,21 +122,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
   render() {
     return html`
-      ${this.isViewMode
-      ? this.renderView()
-      : html`
-          <resize-wrapper
-            .component=${this.component}
-            @mouseenter="${() => {
-              setHoveredComponentIdAction(this.component?.uuid);
-            }}"
-            @mouseleave="${() => {
-              setHoveredComponentIdAction(null);
-            }}"
-          >
-            ${this.renderView()}
-          </resize-wrapper>
-        `}
+      ${this.renderView()}
     `;
   }
 }

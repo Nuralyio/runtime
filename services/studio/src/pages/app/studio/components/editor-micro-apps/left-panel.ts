@@ -6,7 +6,10 @@ export default [{
   name: "Left panel",
   component_type: ComponentType.Container,
   input: {
-    direction: "vertical"
+    direction: {
+      type: "string",
+      value: "vertical"
+    }
   },
   style: {
     width: "100%",
@@ -24,7 +27,10 @@ export default [{
     name: "Pages panel",
     component_type: ComponentType.Container,
     input: {
-      direction: "vertical"
+      direction: {
+        type: "string",
+        value: "vertical"
+      }
     },
 
     style: {

@@ -12,7 +12,6 @@ export default [
     style: {
       ...InputBlockContainerTheme
     },
-
     childrenIds: ["placeholder_input_block", "placeholder_handler_block"]
   },
   {
@@ -33,9 +32,8 @@ export default [
     input: {
       value: {
         type: "string",
-        value:  'Placeholder'
+        value: 'Placeholder'
       }
-
     },
     style: {
       "width": "90px"
@@ -51,67 +49,34 @@ export default [
       ...TextInputTheme
     },
     event: {
-      valueChange:  /* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const newPlaceholderText = EventData.value;
-                        updateInput(currentComponent,'placeholder','value',newPlaceholderText);
-                    }
-                }catch(error){
-                    console.log(error);
-                } 
-  `
+      valueChange: /* js */ `
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        if (selectedComponent) {
+          updateInput(selectedComponent, 'placeholder', 'value', EventData.value);
+        }
+      `
     },
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.placeholder?.type=="value"){
-                const currentPlaceholderText=currentComponent.input?.placeholder?.value??'';
-                return currentPlaceholderText;
-                } 
-                return ''
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+        value: /* js */ `
+          const { input: { placeholder } = {} } = Utils.first(Editor.selectedComponents) || {};
+          return placeholder?.type === 'handler' ? '' : placeholder?.value || '';
+        `
       },
       state: {
         type: "handler",
-        value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                let state = "unabled";
-                if(currentComponent.input?.placeholder?.type =="handler" && currentComponent.input?.placeholder?.value){
-                   state = "disabled"
-               }
-               return state;
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          return selectedComponent?.input?.placeholder?.type === "handler" &&
+            selectedComponent?.input?.placeholder?.value
+            ? "disabled"
+            : "unabled";
+        `
       },
       placeholder: {
         type: "handler",
-        value: /* js */`
-                const inputPlaceHolder ="placeholder";
-             return  inputPlaceHolder;
-            `
+        value: /* js */ `return "placeholder";`
       }
     }
   },
@@ -122,11 +87,9 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-
       display: "flex",
       "justify-content": "space-between"
     },
-
     childrenIds: ["placeholder_text_input", "placeholder_handler"]
   },
   {
@@ -142,41 +105,22 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                const parameter ='placeholder';
-                let placeholderHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.placeholder?.type =='handler' && currentComponent?.input?.placeholder?.value){
-                            placeholderHandler = currentComponent?.input?.placeholder?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,placeholderHandler];
-            `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const handlerValue = selectedComponent?.input?.placeholder?.type === 'handler'
+            ? selectedComponent.input.placeholder.value
+            : '';
+          return ['placeholder', handlerValue];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.placeholder?.value)
-                    updateInput(currentComponent,'placeholder','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        if (selectedComponent && EventData.value !== selectedComponent?.input?.placeholder?.value) {
+          updateInput(selectedComponent, 'placeholder', 'handler', EventData.value);
+        }
       `
     }
   }
-
 ];

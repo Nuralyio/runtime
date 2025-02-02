@@ -36,7 +36,6 @@ export default [
         value: 'Height'
       }
     }
-
   },
   {
     uuid: "height_input",
@@ -52,61 +51,34 @@ export default [
     event: {
       valueChange:
       /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "height",EventData.value);
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }         `
-
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent) {
+            updateStyle(selectedComponent, "height", EventData.value);
+          }
+        } catch (error) {
+          console.log(error);
+        }`
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const height = currentComponent?.style&&currentComponent.style['height']||0;
-                return height;
-                
-            }
-
-        }
-         catch(e){
-             console.log(e);
-          }
-            `
+        return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'height') || 0;
+        `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let state ='enabled'
-                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['height']){
-                  state ='disabled'
-                }
-                return state;  
-            }
-
-        }catch(e){
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            return selectedComponent?.styleHandlers?.height ? 'disabled' : 'enabled';
+          } catch (e) {
             console.log(e);
-        }
-            `
+          }`
       }
     }
   },
-
   {
     uuid: "auto_height_checkbox",
     name: "auto height checkbox",
@@ -117,68 +89,44 @@ export default [
       size: "small"
     },
     input: {
-
       label: {
         type: "handler",
-        value: /* js */`
-              return 'auto';
-            `
+        value: /* js */` return 'auto'; `
       },
       checked: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const autoHeightChecked = !currentComponent?.style?.height||currentComponent?.input?.height?.value =='auto'?'check':''
-                return autoHeightChecked;  
-            }
-
-        }catch(e){
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            return !selectedComponent?.style?.height || selectedComponent?.input?.height?.value === 'auto' ? 'check' : '';
+          } catch (e) {
             console.log(e);
-        }
-            `
+          }`
       },
       state: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        let state ='enabled';
-                        if(currentComponent?.styleHandlers && currentComponent.styleHandlers['height']){
-                            state ='disabled'
-                        }
-                        return state;  
-                    }
-        
-                }catch(e){
-                    console.log(e);
-                }
-                
-                `
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            return selectedComponent?.styleHandlers?.height ? 'disabled' : 'enabled';
+          } catch (e) {
+            console.log(e);
+          }`
       }
     },
     event: {
       checkboxChanged:  /* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const autoHeight = EventData.value;
-                        updateInput(currentComponent,'height','string',autoHeight?'auto':'');
-                    }
-                }catch(error){
-                    console.log(error);
-                }`
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent) {
+            const autoHeight = EventData.value;
+            updateInput(selectedComponent, 'height', 'string', autoHeight ? 'auto' : '');
+          }
+        } catch (error) {
+          console.log(error);
+        }`
     }
   },
-
   {
     uuid: "height_handler",
     applicationId: "1",
@@ -193,38 +141,24 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='height';
-                let heightHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    heightHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['height'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,heightHandler];
-            `
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            return ['height', selectedComponent?.styleHandlers?.height || ''];
+          } catch (error) {
+            console.log(error);
+          }`
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'height',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
-      `
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent) {
+            updateStyleHandlers(selectedComponent, 'height', EventData.value);
+          }
+        } catch (error) {
+          console.log(error);
+        }`
     }
   }
-
-
 ];

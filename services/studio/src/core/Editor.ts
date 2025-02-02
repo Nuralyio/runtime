@@ -7,9 +7,9 @@ class Editor {
 
     getComponentStyle(component: any, attribute: string) {
         if (this.currentPlatform.platform !== "desktop") {
-            return {...component?.style, ...component.breakpoints[this.currentPlatform.width]}[attribute];
+            return {...component?.style, ...component.breakpoints?.[this.currentPlatform.width]}[attribute];
         } else {
-            return component?.style[attribute];
+            return component?.style?.[attribute];
         }
     }
 }

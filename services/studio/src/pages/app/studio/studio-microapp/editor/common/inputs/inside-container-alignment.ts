@@ -36,7 +36,7 @@ export const StudioInnerContainerInputAlignment = [
     input: {
       value: {
         type: "string",
-        value:'Inner Container alignment'
+        value: 'Inner Container alignment'
       }
     },
     style: {
@@ -58,30 +58,23 @@ export const StudioInnerContainerInputAlignment = [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.style?.type || 'default';
-                const options = [
-                    { label: "Start", value: "start" },
-                    { label: "End", value: "end" },
-                ];
-                const result = [options, [currentType]];
-                return result;
-                `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const currentType = Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'innerAlignment') || 'start';
+          const options = [
+            { label: "Start", value: "start" },
+            { label: "End", value: "end" },
+          ];
+          return [options, [currentType]];
+        `
       },
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let isDisabled = 'enabled';
-                if (currentComponent?.styleHandlers?.type) {
-                    isDisabled = 'disabled';
-                }
-                return isDisabled;
-                `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          return selectedComponent?.styleHandlers?.innerAlignment 
+            ? 'disabled' 
+            : 'enabled';
+        `
       }
     },
     style: {
@@ -89,18 +82,10 @@ export const StudioInnerContainerInputAlignment = [
     },
     event: {
       changed: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    const typeValue = EventData.value || 'start';
-                    updateInput(currentComponent, "innerAlignment", 'string',typeValue);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+          const typeValue = EventData.value || 'start';
+          updateInput(selectedComponent, "innerAlignment", 'string', typeValue);
+      `
     }
   },
   {
@@ -126,41 +111,25 @@ export const StudioInnerContainerInputAlignment = [
     style: {
       display: "block",
       "--hybrid-button-width": "120px"
-
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-                const parameter = 'type';
-                let typeHandler = '';
-                try {
-                    const selectedComponents = GetVar("selectedComponents") || [];
-                    if (selectedComponents.length) {
-                        const selectedComponent = selectedComponents[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                        typeHandler = currentComponent?.styleHandlers?.type || '';
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, typeHandler];
-                `
+          const parameter = 'innerAlignment';
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const handlerValue = selectedComponent?.styleHandlers?.innerAlignment || '';
+          return [parameter, handlerValue];
+        `
       }
     },
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'type', EventData.value);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        if (selectedComponent) {
+          updateStyleHandlers(selectedComponent, 'innerAlignment', EventData.value);
+        }
+      `
     }
   }
 ];

@@ -188,7 +188,6 @@ cassAttributes : any = {
         value: this.cassAttributes[attributeName],
       });
     }
-    console.log("debouncedChanged",  [attributeName], this.cassAttributes[attributeName],);
   }, 100); // Adjust the debounce delay as needed
 
   override render() {

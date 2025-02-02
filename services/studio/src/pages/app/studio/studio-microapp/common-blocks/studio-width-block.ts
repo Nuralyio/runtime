@@ -14,7 +14,13 @@ export default [
       "justify-content": "space-between",
       "width": "290px"
     },
-    childrenIds: ["width_label", "width_container", "auto_width_block", "width_handler_block", "width_handler"]
+    childrenIds: [
+      "width_label",
+      "width_container",
+      "auto_width_block",
+      "width_handler_block",
+      "width_handler"
+    ]
   },
 
   {
@@ -27,7 +33,10 @@ export default [
       display: "flex",
       "align-items": "center"
     },
-    childrenIds: ["width_input", "auto_width_checkbox"]
+    childrenIds: [
+      "width_input", 
+      "auto_width_checkbox"
+    ]
 
   },
 
@@ -62,130 +71,77 @@ export default [
     event: {
       onArrowUp: /* js */ `
       try {
-        const selectedComponents = GetVar("selectedComponents") || [];
-        if (selectedComponents.length) {
-            const selectedComponent = selectedComponents[0];
-            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-    
-            if (!currentComponent || !currentComponent.style) {
-                return;
-            }
-    
-            let width = currentComponent.style['width'] || "0px";
-    
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+          let width = Editor.getComponentStyle(selectedComponent, 'width') || "0px"
             width = width.trim();
             let numericPart = "";
             let unitPart = "";
     
             for (let i = 0; i < width.length; i++) {
                 if (width[i] >= '0' && width[i] <= '9' || width[i] === '.') {
-                    numericPart += width[i]; // Capture numeric part
+                    numericPart += width[i];
                 } else {
-                    unitPart = width.substring(i); // Capture the rest as unit
+                    unitPart = width.substring(i);
                     break;
                 }
             }
     
             let numericValue = parseFloat(numericPart) || 0;
-            let unit = unitPart.trim() || "px"; // Default unit to "px" if empty
+            let unit = unitPart.trim() || "px";
     
-    
-            // Increment width and apply update
             numericValue += 1;
-            updateStyle(currentComponent, "width", numericValue + unit);
-        }
-    } catch (error) {
-    }
+            updateStyle(selectedComponent, "width", numericValue + unit);
+    } catch (error) {}
   `,
-  onArrowDown: /* js */ `
+      onArrowDown: /* js */ `
       try {
-        debugger;
-        const selectedComponents = GetVar("selectedComponents") || [];
-        if (selectedComponents.length) {
-            const selectedComponent = selectedComponents[0];
-            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-    
-            if (!currentComponent || !currentComponent.style) {
-                return;
-            }
-    
-            let width = currentComponent.style['width'] || "0px";
-    
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        if (selectedComponent) {
+            let width = selectedComponent.style?.width || "0px";
             width = width.trim();
             let numericPart = "";
             let unitPart = "";
     
             for (let i = 0; i < width.length; i++) {
                 if (width[i] >= '0' && width[i] <= '9' || width[i] === '.') {
-                    numericPart += width[i]; // Capture numeric part
+                    numericPart += width[i];
                 } else {
-                    unitPart = width.substring(i); // Capture the rest as unit
+                    unitPart = width.substring(i);
                     break;
                 }
             }
     
             let numericValue = parseFloat(numericPart) || 0;
-            let unit = unitPart.trim() || "px"; // Default unit to "px" if empty
+            let unit = unitPart.trim() || "px";
     
-    
-            // Increment width and apply update
             numericValue -= 1;
-            updateStyle(currentComponent, "width", numericValue + unit);
+            updateStyle(selectedComponent, "width", numericValue + unit);
         }
-    } catch (error) {
-    }
+    } catch (error) {}
   `,
       valueChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "width",EventData.value);
+            try {
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (selectedComponent) {
+                    updateStyle(selectedComponent, "width", EventData.value);
                 }
-            }catch(error){
+            } catch (error) {
                 console.log(error);
-            }         `
+            }`
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const width = currentComponent?.style&&currentComponent.style['width']||0;
-                return width;
-                
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+          return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'width') || 0;
+        `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let state ='enabled'
-                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['width']){
-                  state ='disabled'
-                }
-                state;
-                
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          return selectedComponent?.styleHandlers?.['width'] ? 'disabled' : 'enabled';
+        `
       }
     }
   },
@@ -198,69 +154,51 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small"
-
     },
-
     input: {
       label: {
         type: "handler",
         value: /* js */`
-              const checkboxLabel ='auto';
-              return checkboxLabel;
-            `
+              return 'auto';
+        `
       },
       checked: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const autoWidthChecked = !currentComponent?.style?.width||currentComponent?.input?.width?.value =='auto'?'check':''
-                return autoWidthChecked;  
+            try {
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (selectedComponent) {
+                    return !selectedComponent?.style?.width || selectedComponent?.input?.width?.value == 'auto' ? 'check' : '';
+                }
+            } catch (e) {
+                console.log(e);
             }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+        `
       },
       state: {
         type: "handler",
         value: /* js */`
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if(selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            let state ='enabled';
-                            if(currentComponent?.styleHandlers && currentComponent.styleHandlers['width']){
-                                state ='disabled'
-                            }
-                            return state;  
-                        }
-            
-                    }catch(e){
-                        console.log(e);
-                    }
-                    
-                    `
+            try {
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (selectedComponent) {
+                    return selectedComponent?.styleHandlers?.['width'] ? 'disabled' : 'enabled';
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        `
       }
     },
     event: {
       checkboxChanged:  /* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const autoWidth = EventData.value;
-                        updateInput(currentComponent,'width','string',autoWidth?'auto':'');
-                    }
-                }catch(error){
-                    console.log(error);
-                }`
+            try {
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (selectedComponent) {
+                    updateInput(selectedComponent, 'width', 'string', EventData.value ? 'auto' : '');
+                }
+            } catch (error) {
+                console.log(error);
+            }`
     }
   },
 
@@ -278,38 +216,27 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='width';
-                let widthHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    widthHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['width'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,widthHandler];
-            `
+            try {
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                return ['width', selectedComponent?.styleHandlers?.['width'] || ''];
+            } catch (error) {
+                console.log(error);
+                return ['width', ''];
+            }
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'width',EventData.value)
+            try {
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (selectedComponent) {
+                    updateStyleHandlers(selectedComponent, 'width', EventData.value);
                 }
-            }catch(error){
+            } catch (error) {
                 console.log(error);
             }
       `
     }
   }
-
-
 ];

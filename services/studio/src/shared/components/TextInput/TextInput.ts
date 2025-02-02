@@ -118,7 +118,7 @@ export class TextInputBlock extends BaseElementBlock {
   }
 
   render() {
-    const inputStyles = this.component?.style || {};
+    const inputStyles = this.calculatedStyles || {};
     const inputAutoWidth = this.inputHandlersValue?.width;
     const inputAutoHeight = this.inputHandlersValue?.height;
 
