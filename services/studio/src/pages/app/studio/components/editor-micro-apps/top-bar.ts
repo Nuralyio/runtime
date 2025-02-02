@@ -723,6 +723,7 @@ export default [{
       SetVar("currentPlatform" , {
         platform: "mobile",
         width: "375px",
+        height: "767px",
         isMobile: true
       })
         `

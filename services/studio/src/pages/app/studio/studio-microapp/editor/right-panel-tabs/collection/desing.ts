@@ -14,6 +14,7 @@ export const StudioButtonDesign = [
     },
     childrenIds: [
       "collection_collapse_container",
+      "size_collapse_container",
     ]
   },
 ];

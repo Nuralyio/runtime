@@ -16,7 +16,6 @@ export default [
     style: {
       ...InputBlockContainerTheme
     },
-
     childrenIds: ["helper_input_block", "helper_handler_block"]
   },
   {
@@ -43,7 +42,6 @@ export default [
         type: "string",
         value: 'Helper text'
       }
-
     },
     style: {
       "width": "90px"
@@ -61,66 +59,55 @@ export default [
     },
     event: {
       valueChange:  /* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const newHelperText = EventData.value;
-                        updateInput(currentComponent,'helper','value',newHelperText);
-                    }
-                }catch(error){
-                    console.log(error);
-                } 
-  `
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent) {
+            const newHelperText = EventData.value;
+            updateInput(selectedComponent, 'helper', 'value', newHelperText);
+          }
+        } catch(error) {
+          console.log(error);
+        } 
+      `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.helper?.type=="value"){
-                 const currentHelperText=  currentComponent.input?.helper?.value??'';
-                 return currentHelperText;
-                }
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            if (selectedComponent?.input?.helper?.type == "value") {
+              return selectedComponent.input.helper.value ?? '';
             }
-
-        }catch(e){
+            return '';
+          } catch(e) {
             console.log(e);
-        }
-            `
+            return '';
+          }
+        `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                let state = "unabled";
-                if(currentComponent.input?.helper?.type =="handler"&&currentComponent.input?.helper?.value){
-                   state = "disabled"
-               }
-              return state;
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            let state = "unabled";
+            if (selectedComponent?.input?.helper?.type == "handler" && 
+                selectedComponent?.input?.helper?.value) {
+              state = "disabled";
             }
-
-        }catch(e){
+            return state;
+          } catch(e) {
             console.log(e);
-        }
-            `
-      }
-      ,
+            return "unabled";
+          }
+        `
+      },
       placeholder: {
         type: "handler",
         value: /* js */`
-                const inputPlaceHolder ="helper text";
-                return inputPlaceHolder;
-            `
+          return "helper text";
+        `
       }
     }
   },
@@ -134,7 +121,6 @@ export default [
       display: "flex",
       "justify-content": "space-between"
     },
-
     childrenIds: ["helper_text_input", "helper_handler"]
   },
   {
@@ -151,38 +137,27 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='helper';
-                let helperHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.helper?.type =='handler' && currentComponent?.input?.helper?.value){
-                           helperHandler = currentComponent?.input?.helper?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,helperHandler];
-            `
+            const parameter = 'helper';
+            let helperHandler = '';
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            if (selectedComponent?.input?.helper?.type == 'handler' && 
+                selectedComponent?.input?.helper?.value) {
+              helperHandler = selectedComponent.input.helper.value;
+            }
+            return [parameter, helperHandler];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.helper?.value != EventData.value )
-                    updateInput(currentComponent,'helper','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent && EventData.value !== selectedComponent?.input?.helper?.value) {
+            updateInput(selectedComponent, 'helper', 'handler', EventData.value);
+          }
+        } catch(error) {
+          console.log(error);
+        }
       `
     }
   }

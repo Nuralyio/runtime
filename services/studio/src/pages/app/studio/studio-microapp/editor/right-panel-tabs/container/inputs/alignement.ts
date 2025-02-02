@@ -36,10 +36,10 @@ export const StudioInputAlignmentDirection = [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-              const typeLabel = 'Alignment';
-                return typeLabel;
-                `
+        value: /* js */ `
+          const typeLabel = 'Alignment';
+          return typeLabel;
+        `
       }
     },
     style: {
@@ -61,40 +61,28 @@ export const StudioInputAlignmentDirection = [
       value: {
         type: "handler",
         value: /* js */ `
-              const selectedComponents = Array.isArray(GetVar("selectedComponents")) ? GetVar("selectedComponents") : [];
-              const selectedComponent = selectedComponents[0] || null;
-              
-              const editingApp = GetVar("currentEditingApplication") || {};
-              const editingAppUuid = editingApp.uuid || null;
-              
-              let currentComponent = null;
-              if (selectedComponent && editingAppUuid) {
-                currentComponent = GetComponent(selectedComponent, editingAppUuid) || null;
-              }
-              
-              const currentType = currentComponent?.style?.["justify-content"] ?? "default";
-              
-              const options = [
-                { label: "flex-start", value: "flex-start" },
-                { label: "flex-end", value: "flex-end" },
-                { label: "center", value: "center" },
-              ];
-              
-              return [options, [[currentType]]];
-                `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const currentType = Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'justify-content') ?? "default";
+
+          const options = [
+            { label: "flex-start", value: "flex-start" },
+            { label: "flex-end", value: "flex-end" },
+            { label: "center", value: "center" },
+          ];
+
+          return [options, [[currentType]]];
+        `
       },
       state: {
         type: "handler",
-        value: /* js */`
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let isDisabled = 'enabled';
-                if (currentComponent?.styleHandlers?.type) {
-                    isDisabled = 'disabled';
-                }
-                return isDisabled;
-                `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          let isDisabled = 'enabled';
+          if (selectedComponent?.styleHandlers?.['justify-content']) {
+            isDisabled = 'disabled';
+          }
+          return isDisabled;
+        `
       }
     },
     style: {
@@ -103,20 +91,10 @@ export const StudioInputAlignmentDirection = [
     },
     event: {
       changed: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    const typeValue = EventData.value || 'default';
-                    console.log(EventData);
-                    updateStyle(currentComponent,'justify-content',typeValue)
-
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const typeValue = EventData.value || 'default';
+        updateStyle(selectedComponent, 'justify-content', typeValue);
+      `
     }
   },
   {
@@ -142,41 +120,24 @@ export const StudioInputAlignmentDirection = [
     style: {
       display: "block",
       "--hybrid-button-width": "120px"
-
     },
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                const parameter = 'type';
-                let typeHandler = '';
-                try {
-                    const selectedComponents = GetVar("selectedComponents") || [];
-                    if (selectedComponents.length) {
-                        const selectedComponent = selectedComponents[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                        typeHandler = currentComponent?.styleHandlers?.type || '';
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, typeHandler];
-                `
+        value: /* js */ `
+          const parameter = 'justify-content';
+          let typeHandler = '';
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          typeHandler = selectedComponent?.styleHandlers?.['justify-content'] || '';
+          return [parameter, typeHandler];
+        `
       }
     },
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'justify-content', EventData.value);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        updateStyleHandlers(selectedComponent, 'justify-content', EventData.value);
+      `
     }
   }
 ];

@@ -51,7 +51,7 @@ export default [
                         if( selectedComponens.length) {
                             const selectedComponent = selectedComponens[0];
                             const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "border-radius",EventData.value+EventData.unity);
+                            updateStyle(currentComponent, EventData.attributeName,EventData.value);
                         }
                     }catch(error){
                         console.log(error);
@@ -62,33 +62,75 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                if (currentComponent?.style && currentComponent.style["border-radius"]) {
-                            let unity='';
-                            let value='';
-                            currentComponent.style["border-radius"].split('').forEach((char)=>
-                                {  
-                                if(char>='0' && char<='9')
-                                    value+=char 
-                                else 
-                                unity+=char
-                               }
-                            );
-                            return [value,unity]
-                          }
-                         else 
-                            return [0,'px']    
-                              
-                
-            }
-
-        }catch(e){
-            console.log(e);
-        }
+        try {
+          const selectedComponents = GetVar("selectedComponents") || [];
+          if (selectedComponents.length) {
+              const selectedComponent = selectedComponents[0];
+              const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
+              const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
+      
+              if (currentComponent?.style) {
+                  const propertiesToExtract = [
+                      "border-radius",
+                      "margin-left",
+                      "margin-top",
+                      "margin-bottom",
+                      "margin-right",
+                      "padding-left",
+                      "padding-right",
+                      "padding-top",
+                      "padding-bottom",
+                  ];
+      
+                  const extractedStyles = {};
+      
+                  propertiesToExtract.forEach((prop) => {
+                      const propValue = currentComponent.style[prop];
+                      if (propValue) {
+                          let value = '';
+                          let unit = '';
+                          
+                          propValue.split('').forEach((char) => {  
+                              if ((char >= '0' && char <= '9') || char === '.') {
+                                  value += char;
+                              } else {
+                                  unit += char;
+                              }
+                          });
+      
+                          const numericValue = parseFloat(value) || 0;
+                          const unitType = unit || 'px'; // Default to 'px' if unit is missing
+      
+                          extractedStyles[prop] = {
+                              value: numericValue,
+                              unit: unitType
+                          };
+                      } else {
+                          extractedStyles[prop] = {
+                              value: 0,
+                              unit: 'px'
+                          };
+                      }
+                  });
+      
+                  return extractedStyles;
+              } else {
+                  return {
+                      "border-radius": { value: 0, unit: 'px' },
+                      "margin-left": { value: 0, unit: 'px' },
+                      "margin-right": { value: 0, unit: 'px' },
+                      "padding-left": { value: 0, unit: 'px' },
+                      "padding-right": { value: 0, unit: 'px' },
+                      "margin-top": { value: 0, unit: 'px' },
+                      "margin-bottom": { value: 0, unit: 'px' },
+                      "padding-top": { value: 0, unit: 'px' },
+                      "padding-bottom": { value: 0, unit: 'px' },
+                  };
+              }
+          }
+      } catch (e) {
+          console.log(e);
+      }
             `
       },
       state: {

@@ -9,7 +9,7 @@ label{
 :host{
     --text-label-color:black;
     display: flex;
-    width:fit-content
+    width:fit-content;
 }
 
 @media (prefers-color-scheme: dark) {

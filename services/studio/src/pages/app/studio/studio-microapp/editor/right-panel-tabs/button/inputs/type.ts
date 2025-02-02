@@ -13,7 +13,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      width: "290px"
     },
     childrenIds: ["button_type_radio_block", "button_type_handler_block"]
   },
@@ -57,41 +57,30 @@ export default [
     input: {
       placeholder: {
         type: "handler",
-        value: /* js */`
-                const placeholder = 'Type';
-                return placeholder;
-                `
+        value: /* js */ `return 'Type';`
       },
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.style?.type || 'default';
-                const options = [
-                    { label: "Primary", value: "primary" },
-                    { label: "Secondary", value: "secondary" },
-                    { label: "Danger", value: "danger" },
-                    { label: "Ghost", value: "ghost" },
-                    { label: "Default", value: "default" },
-                ];
-                const result = [options, [currentType]];
-                return result;
-                `
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const currentType = selectedComponent?.style?.type || 'default';
+            const options = [
+              { label: "Primary", value: "primary" },
+              { label: "Secondary", value: "secondary" },
+              { label: "Danger", value: "danger" },
+              { label: "Ghost", value: "ghost" },
+              { label: "Default", value: "default" },
+            ];
+            
+            return [options, [currentType]];
+          `
       },
       state: {
         type: "handler",
-        value: /* js */`
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let isDisabled = 'enabled';
-                if (currentComponent?.styleHandlers?.type) {
-                    isDisabled = 'disabled';
-                }
-                return isDisabled;
-                `
+        value: /* js */ `
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            return selectedComponent?.styleHandlers?.type ? 'disabled' : 'enabled';
+          `
       }
     },
     style: {
@@ -100,19 +89,8 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    const typeValue = EventData.value || 'default';
-                    console.log(EventData);
-                    updateStyle(currentComponent, "type", typeValue);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+            updateStyle(Utils.first(Editor.selectedComponents), "type", EventData.value || 'default');
+        `
     }
   },
   {
@@ -138,41 +116,31 @@ export default [
     style: {
       display: "block",
       "--hybrid-button-width": "120px"
-
     },
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                const parameter = 'type';
-                let typeHandler = '';
-                try {
-                    const selectedComponents = GetVar("selectedComponents") || [];
-                    if (selectedComponents.length) {
-                        const selectedComponent = selectedComponents[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                        typeHandler = currentComponent?.styleHandlers?.type || '';
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, typeHandler];
-                `
+        value: /* js */ `
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            if (!selectedComponent) return ['type', ''];
+            
+            const currentComponent = GetComponent(
+              selectedComponent,
+              GetVar("currentEditingApplication").uuid
+            );
+            
+            return ['type', currentComponent?.styleHandlers?.type || ''];
+          } catch(error) {
+            console.error(error);
+            return ['type', ''];
+          }`
       }
     },
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'type', EventData.value);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+            updateStyleHandlers(Utils.first(Editor.selectedComponents), 'type', EventData.value);
+        `
     }
   }
 ];

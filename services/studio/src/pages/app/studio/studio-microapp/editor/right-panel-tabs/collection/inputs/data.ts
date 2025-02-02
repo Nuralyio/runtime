@@ -43,39 +43,25 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='data';
-                let labelHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        console.log(currentComponent)
-                        if(currentComponent?.input?.data?.type =='handler' && currentComponent?.input?.data?.value){
-                            labelHandler = currentComponent?.input?.data?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
+                const parameter = 'data';
+                let labelHandler = '';
+                
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (selectedComponent?.input?.data?.type === 'handler' && selectedComponent?.input?.data?.value) {
+                    labelHandler = selectedComponent.input.data.value;
                 }
-                return [parameter,labelHandler];
+                
+                return [parameter, labelHandler];
             `
       }
     },
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.data?.value)
-                    updateInput(currentComponent,'data','handler',EventData.value);
+                const selectedComponent = Utils.first(Editor.selectedComponents);
+                if (EventData.value !== selectedComponent?.input?.data?.value) {
+                    updateInput(selectedComponent, 'data', 'handler', EventData.value);
                 }
-            }catch(error){
-                console.log(error);
-            }
       `
     }
   }

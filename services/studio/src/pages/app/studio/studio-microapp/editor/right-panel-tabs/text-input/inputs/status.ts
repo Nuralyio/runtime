@@ -12,7 +12,6 @@ export const StatusInputBlock = [
     style: {
       ...InputBlockContainerTheme
     },
-
     childrenIds: ["component_status_radios_block", "component_status_handler_block"]
   },
   {
@@ -28,7 +27,6 @@ export const StatusInputBlock = [
     },
     childrenIds: ["component_status_label"]
   },
-
   {
     uuid: "component_status_label",
     name: "status label",
@@ -59,55 +57,34 @@ export const StatusInputBlock = [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let isDisabled = false;
-                let currentStatus = ''
-                if(currentComponent.input && currentComponent?.input?.status?.type=="handler" &&
-                currentComponent.input && currentComponent?.input?.status?.value!="") {
-                    isDisabled = true
-                }
-                else
-                currentStatus = currentComponent.input && currentComponent?.input?.status?.value || 'default'
-                
-                const options = 
-                [
-                    {
-                        value: "default",
-                        icon:'font-awesome',
-                        disabled:isDisabled
-                    }, 
-                    {
-                        value: "warning",
-                        icon:'triangle-exclamation',
-                        disabled:isDisabled
-                    },
-                    {
-                        value: "error",
-                        icon:'circle-exclamation',
-                        disabled:isDisabled
-                    }
-                ]  
-            const radioType='button' 
-            const result =[options,currentStatus,radioType];
-           return  result;
-                `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+
+          let isDisabled = false;
+          let currentStatus = '';
+          if (selectedComponent.input && selectedComponent?.input?.status?.type == "handler" &&
+            selectedComponent.input && selectedComponent?.input?.status?.value != "") {
+            isDisabled = true;
+          } else {
+            currentStatus = selectedComponent.input && selectedComponent?.input?.status?.value || 'default';
+          }
+
+          const options = [
+            { value: "default", icon: 'font-awesome', disabled: isDisabled },
+            { value: "warning", icon: 'triangle-exclamation', disabled: isDisabled },
+            { value: "error", icon: 'circle-exclamation', disabled: isDisabled }
+          ];
+
+          const radioType = 'button';
+          const result = [options, currentStatus, radioType];
+          return result;
+        `
       }
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const statusValue = EventData.value ? EventData.value : 'default';
-                    updateInput(currentComponent, 'status', 'string', statusValue)
-                }
-            } catch (error) {
-                console.log(error);
-            }  
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const statusValue = EventData.value ? EventData.value : 'default';
+        updateInput(selectedComponent, 'status', 'string', statusValue);
       `
     }
   },
@@ -121,7 +98,6 @@ export const StatusInputBlock = [
       display: "flex",
       "justify-content": "space-between"
     },
-
     childrenIds: ["component_status_radio", "component_status_handler"]
   },
   {
@@ -138,38 +114,19 @@ export const StatusInputBlock = [
       value: {
         type: "handler",
         value: /* js */ `
-                const parameter = 'status';
-                let statusHandler = ''
-                try {
-                    const selectedComponens = GetVar("selectedComponents") || [];
-                    if (selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                        if(currentComponent?.input && currentComponent?.input.status?.type =="handler" ){
-                        statusHandler = currentComponent?.input && currentComponent?.input.status?.value || ''  
-                        
-                        }
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, statusHandler];
-            `
+          const parameter = 'status';
+          let statusHandler = '';
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent?.input && selectedComponent?.input.status?.type == "handler") {
+            statusHandler = selectedComponent?.input && selectedComponent?.input.status?.value || '';
+          }
+          return [parameter, statusHandler];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponens = GetVar("selectedComponents") || [];
-                if (selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateInput(currentComponent, 'status', 'handler', EventData.value)
-                }
-            } catch (error) {
-                console.log(error);
-            }
+        updateInput(Utils.first(Editor.selectedComponents), 'status', 'handler', EventData.value);
       `
     }
   }

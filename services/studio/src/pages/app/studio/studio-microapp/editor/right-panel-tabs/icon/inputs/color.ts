@@ -36,7 +36,7 @@ export default [
     input: {
       value: {
         type: "string",
-        value:'Color'
+        value: 'Color'
       }
     },
     style: {
@@ -50,59 +50,30 @@ export default [
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `
-       
-       try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "--hybrid-icon-color", EventData.value);
-            
-            }
-        }catch(error){
-            console.log(error);
-        }
-        
-  `
+        updateStyle(Utils.first(Editor.selectedComponents), "--hybrid-icon-color", EventData.value);
+      `
     },
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const currentColor = currentComponent?.style&&currentComponent.style['--hybrid-icon-color']||"" ;
-                        return currentColor;
-                    }
-
-                }catch(e){
-                    console.log(e);
-                }
-            `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const currentColor = selectedComponent?.style && selectedComponent.style['--hybrid-icon-color'] || "";
+          return currentColor;
+        `
       },
       state: {
         type: "handler",
-        value:/* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='enabled';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-icon-color']){
-                        state='disabled'
-                    }
-                    return state;
-                }
-            }catch(e){
-                console.log(e);
-            }
-            
-            `
+        value: /* js */ `
+        
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          let state = 'enabled';
+          if (selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-icon-color']) {
+            state = 'disabled';
+          }
+          return state;
+        `
       }
     }
   },
@@ -113,7 +84,6 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
-
     childrenIds: ["icon_color_input", "icon_color_handler"]
   },
   {
@@ -130,37 +100,22 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-            const parameter ='iconColor';
-            let iconColorHandler=''
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                iconColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-icon-color'] || ''  
-                }
-            }catch(error){
-                console.log(error);
-            }
-            return [parameter,iconColorHandler];
+        value: /* js */ `
+          const parameter = 'iconColor';
+          let iconColorHandler = '';
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          if (selectedComponent) {
+            iconColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-icon-color'] || '';
+          }
+          return [parameter, iconColorHandler];
         `
       }
     },
-
     event: {
       codeChange: /* js */ `
-        try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'--hybrid-icon-color',EventData.value)
-            }
-        }catch(error){
-            console.log(error);
-        }
-  `
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        updateStyleHandlers(selectedComponent, '--hybrid-icon-color', EventData.value);
+      `
     }
   }
 ];

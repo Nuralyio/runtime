@@ -2,11 +2,10 @@ import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
-
   {
     uuid: "position_block",
     applicationId: "1",
-    name: "position block",
+    name: "Position Block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -19,14 +18,14 @@ export default [
   },
   {
     uuid: "position_label",
-    name: "position label",
-    component_type: ComponentType.TextLabel,
     applicationId: "1",
+    name: "Position Label",
+    component_type: ComponentType.TextLabel,
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
         type: "string",
-        value: 'Position'
+        value: "Position"
       }
     },
     style: {
@@ -36,35 +35,34 @@ export default [
   {
     uuid: "position_select",
     applicationId: "1",
+    name: "Position Select",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
-    name: "position select",
     input: {
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentPosition = "";
-                let isDisabled = false;
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          let currentPosition = "";
+          let isDisabled = false;
 
-                if (currentComponent.styleHandlers && currentComponent.styleHandlers?.position) {
-                    isDisabled = true;
-                } else {
-                    currentPosition = currentComponent?.style?.['position'] || 'static';
-                }
+          if (selectedComponent.styleHandlers?.position) {
+            isDisabled = true;
+          } else {
+            currentPosition = selectedComponent?.style?.['position'] || 'static';
+          }
 
-                const options = [
-                    { label: "Relative", value: "relative", disabled: isDisabled },
-                    { label: "Absolute", value: "absolute", disabled: isDisabled },
-                    { label: "Fixed", value: "fixed", disabled: isDisabled },
-                    { label: "Sticky", value: "sticky", disabled: isDisabled },
-                    { label: "Static", value: "static", disabled: isDisabled }
-                ];
-                return [options,[currentPosition? currentPosition : ""]]
-                `
+          const options = [
+            { label: "Relative", value: "relative", disabled: isDisabled },
+            { label: "Absolute", value: "absolute", disabled: isDisabled },
+            { label: "Fixed", value: "fixed", disabled: isDisabled },
+            { label: "Sticky", value: "sticky", disabled: isDisabled },
+            { label: "Static", value: "static", disabled: isDisabled }
+          ];
+
+          return [options, [currentPosition || ""]];
+        `
       }
     },
     style: {
@@ -74,27 +72,23 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    const positionValue = EventData.value;
-                    updateStyle(currentComponent, 'position', positionValue);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const positionValue = EventData.value;
+          updateStyle(selectedComponent, 'position', positionValue);
+        } catch (error) {
+          console.log(error);
+        }
+      `
     }
   },
   {
     uuid: "position_handler",
     applicationId: "1",
+    name: "Position Handler",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
-    name: "position handler",
     style: {
       display: "block",
       width: "250px"
@@ -103,36 +97,29 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const parameter = 'position';
-                let positionHandler = '';
-                try {
-                    const selectedComponents = GetVar("selectedComponents") || [];
-                    if (selectedComponents.length) {
-                        const selectedComponent = selectedComponents[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                        positionHandler = currentComponent?.styleHandlers?.['position'] || '';
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, positionHandler];
-                `
+          const parameter = 'position';
+          let positionHandler = '';
+          
+          try {
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            positionHandler = selectedComponent?.styleHandlers?.['position'] || '';
+          } catch (error) {
+            console.log(error);
+          }
+
+          return [parameter, positionHandler];
+        `
       }
     },
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'position', EventData.value);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-            `
+        try {
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          updateStyleHandlers(selectedComponent, 'position', EventData.value);
+        } catch (error) {
+          console.log(error);
+        }
+      `
     }
   }
-  // Additional components (e.g., "top_block", "left_block") remain unchanged
 ];

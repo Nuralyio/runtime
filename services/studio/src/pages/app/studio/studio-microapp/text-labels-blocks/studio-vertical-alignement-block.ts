@@ -48,16 +48,14 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+               const selectedComponent = Utils.first(Editor.selectedComponents);
                 let defaultVerticalAlign='';
                 let isDisabled = false;
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['align-items']) {
+                if(selectedComponent.styleHandlers && selectedComponent?.styleHandlers['align-items']) {
                     isDisabled = true
                 }
-                else if ( currentComponent.style)
-                defaultVerticalAlign = currentComponent.style['align-items'] ||'start';
+                else if ( selectedComponent.style)
+                defaultVerticalAlign = selectedComponent.style['align-items'] ||'start';
                 const options =[
                                 {value:'start',icon: "arrow-up",disabled:isDisabled},
                                 {value:'end',icon: "arrow-down",disabled:isDisabled},

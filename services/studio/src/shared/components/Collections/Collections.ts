@@ -15,6 +15,7 @@ import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { executeCodeWithClosure } from "core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { classMap } from "lit/directives/class-map.js";
+import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("collection-viewer")
 export class CollectionViwer extends BaseElementBlock {
@@ -124,15 +125,13 @@ export class CollectionViwer extends BaseElementBlock {
 
   override render() {
     return html`
-      <resize-wrapper
-        .component=${{ ...this.component }}
-        .selectedComponent=${{ ...this.selectedComponent }}
-        .hoveredComponent=${{ ...this.hoveredComponent }}
-      >
         <div
+        style=${styleMap({  
+          ...this.calculatedStyles,
+        })} 
         class=${classMap({
           collection_viewer: true,
-          vertical: this.inputHandlersValue.direction === "vertical",
+          vertical: this.inputHandlersValue.direction?.value === "vertical",
         })}>
           ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data :
 
@@ -150,7 +149,6 @@ export class CollectionViwer extends BaseElementBlock {
     })}
         </div>
 
-      </resize-wrapper>
     `;
   }
 }

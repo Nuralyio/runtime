@@ -23,12 +23,11 @@ export default [
     input: {
       value: {
         type: "string",
-        value:'Display'
+        value: 'Display'
       }
     },
     style: {
       ...InputTextLabelTheme
-
     }
   },
   {
@@ -41,35 +40,36 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let currentDisplay=""
-                let isDisabled=false;
-                if(currentComponent.input?.display?.type =='handler' && currentComponent.input?.display?.value)
-                {
-                  isDisabled = true;
-                }
-                else
-                currentDisplay = currentComponent.input?.display?.value || true;
-                const options = 
-                    [
-                    {
-                    icon: "eye",
-                    value: true,
-                    disabled:isDisabled
-                    }, 
-                    {
-                    icon: "eye-slash",
-                    value: false,
-                    disabled:isDisabled
-                   }
-            ]   
-            const radioType ='button'
-            const result = [options,currentDisplay,radioType];
-           return  result;
-                `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+
+          let currentDisplay = "";
+          let isDisabled = false;
+
+          if (selectedComponent.input?.display?.type == 'handler' && selectedComponent.input?.display?.value) {
+            isDisabled = true;
+          } else {
+            currentDisplay = selectedComponent.input?.display?.value || true;
+          }
+
+          const options = [
+            {
+              icon: "eye",
+              value: true,
+              disabled: isDisabled
+            },
+            {
+              icon: "eye-slash",
+              value: false,
+              disabled: isDisabled
+            }
+          ];
+
+          const radioType = 'button';
+          const result = [options, currentDisplay, radioType];
+
+          return result;
+        `
       }
     },
     style: {
@@ -80,17 +80,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const displayValue = EventData.value;
-                    updateInput(currentComponent,'display','string',displayValue)
-                }
-            }catch(error){
-                console.log(error);
-            }  
+        updateInput(Utils.first(Editor.selectedComponents), 'display', 'string', EventData.value);
       `
     }
   },
@@ -101,12 +91,10 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-
       "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between"
     },
-
     childrenIds: ["display_radio", "display_handler"]
   },
   {
@@ -122,39 +110,24 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                const parameter ='display';
-                let displayHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.display?.type =='handler' && currentComponent?.input?.display?.value){
-                            displayHandler = currentComponent?.input?.display?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,displayHandler];
-            `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+
+          const parameter = 'display';
+          let displayHandler = '';
+
+          if (selectedComponent?.input?.display?.type == 'handler' && selectedComponent?.input?.display?.value) {
+            displayHandler = selectedComponent?.input?.display?.value;
+          }
+
+          return [parameter, displayHandler];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.display?.value)
-                    updateInput(currentComponent,'display','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        updateInput(selectedComponent, 'display', 'handler', EventData.value);
       `
     }
   },
@@ -164,7 +137,5 @@ export default [
     component_type: ComponentType.Divider,
     applicationId: "1",
     ...COMMON_ATTRIBUTES
-
   }
-
 ];

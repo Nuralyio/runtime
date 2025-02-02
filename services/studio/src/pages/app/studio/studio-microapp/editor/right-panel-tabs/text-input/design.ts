@@ -16,6 +16,8 @@ export const StudioTextInputDesign = [
     },
     childrenIds: [
       "text_input_collapse_container",
+      "size_collapse_container",
+      "border_collapse_container",
 
     ]
   }

@@ -46,9 +46,9 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-               const label ='Format';
-             return label;
-            `
+          const label = 'Format';
+          return label;
+        `
       }
     }
   },
@@ -63,74 +63,44 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let format = currentComponent.input?.format?.value??'DD/MM/YYYY';
-                let selectedFormat;
-                const options = 
-                    [
-                    {
-                    label: "dd/mm/yyyy",
-                    value: "DD/MM/YYYY",
-                    }, 
-                    {
-                    label: "mm/dd/yyyyy",
-                    value: "MM/DD/YYYY"
-                   },
-                    {
-                     label: "yyyy/mm/dd",
-                     value: "YYYY/MM/DD"
-                   },            
-            ]
-            if(format){
-                selectedFormat = options.find((option)=> option.value == format);   
-            }
-            const result =[options,[selectedFormat? selectedFormat.label : ""]]
-           return  result;  
-                `
+        value: /* js */`
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+
+          let format = selectedComponent.input?.format?.value ?? 'DD/MM/YYYY';
+          let selectedFormat;
+          const options = [
+            { label: "dd/mm/yyyy", value: "DD/MM/YYYY" },
+            { label: "mm/dd/yyyyy", value: "MM/DD/YYYY" },
+            { label: "yyyy/mm/dd", value: "YYYY/MM/DD" }
+          ];
+
+          if (format) {
+            selectedFormat = options.find(option => option.value === format);   
+          }
+
+          const result = [options, [selectedFormat ? selectedFormat.label : ""]];
+          return result;  
+        `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                let state = "unabled";
-                if(currentComponent.input?.format?.type =="handler" && currentComponent.input?.format?.value){
-                   state = "disabled"
-               }
-               return state;
-             }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          let state = "unabled";
+          if (selectedComponent.input?.format?.type === "handler" && selectedComponent.input?.format?.value) {
+            state = "disabled";
+          }
+          return state;
+        `
       }
     },
     style: {
       ...SelectTheme
     },
     event: {
-      changed: /* js */ `
-
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const formatValue = EventData.value?EventData.value:'DD/MM/YYYY'
-                    updateInput(currentComponent, "format","string",formatValue);
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
+      changed: /* js */`
+        const formatValue = EventData.value ? EventData.value : 'DD/MM/YYYY';
+        updateInput(Utils.first(Editor.selectedComponents), "format", "string", formatValue);
       `
     }
   },
@@ -163,40 +133,26 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='format';
-                let formatHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.format?.type =='handler' && currentComponent?.input?.format?.value){
-                            formatHandler = currentComponent?.input?.format?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,formatHandler];
-            `
+          const parameter = 'format';
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          let formatHandler = '';
+
+          if (selectedComponent?.input?.format?.type === 'handler' && selectedComponent?.input?.format?.value) {
+            formatHandler = selectedComponent?.input?.format?.value;
+          }
+
+          return [parameter, formatHandler];
+        `
       }
     },
 
     event: {
-      codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.format?.value)
-                    updateInput(currentComponent,'format','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+      codeChange: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        if (EventData.value !== selectedComponent?.input?.format?.value) {
+          updateInput(selectedComponent, 'format', 'handler', EventData.value);
+        }
       `
     }
   }
-
 ];

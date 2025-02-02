@@ -33,7 +33,7 @@ export default [
     input: {
       value: {
         type: "string",
-        value:'Text decoration'
+        value: 'Text decoration'
       }
     },
     style: {
@@ -55,45 +55,34 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultTextDecoration=''
-                let isDisabled = false;
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['text-decoration']) {
-                    isDisabled = true
-                }
-                else
-                if(currentComponent.style){
-                  defaultTextDecoration = currentComponent.style['text-decoration'] ||'none';
-                }
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          let defaultTextDecoration = '';
+          let isDisabled = false;
+          if (selectedComponent.styleHandlers && selectedComponent?.styleHandlers['text-decoration']) {
+            isDisabled = true;
+          } else {
+            defaultTextDecoration = Editor.getComponentStyle(selectedComponent, 'text-decoration') || 'none';
+          }
 
-                const options =[{value:'overline',icon: "font-awesome",disabled:isDisabled},
-                                {value:'line-through',icon: "strikethrough",disabled:isDisabled},
-                                {value:'underline',icon: "underline",disabled:isDisabled},
-                                {value:'underline overline',icon: "grip-lines",disabled:isDisabled},
-                                {value:'none',icon: "xmark",disabled:isDisabled}]
+          const options = [
+            { value: 'overline', icon: "font-awesome", disabled: isDisabled },
+            { value: 'line-through', icon: "strikethrough", disabled: isDisabled },
+            { value: 'underline', icon: "underline", disabled: isDisabled },
+            { value: 'underline overline', icon: "grip-lines", disabled: isDisabled },
+            { value: 'none', icon: "xmark", disabled: isDisabled }
+          ];
 
-
-                const radioType='button';
-                const result =[options,defaultTextDecoration,radioType];
-               return  result;           
-                `
+          const radioType = 'button';
+          const result = [options, defaultTextDecoration, radioType];
+          return result;           
+        `
       }
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const textDecorationValue = EventData.value?EventData.value:'none'
-                    updateStyle(currentComponent, "text-decoration", textDecorationValue);
-                }
-            }catch(error){
-                console.log(error);
-            }   
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const textDecorationValue = EventData.value ? EventData.value : 'none';
+        updateStyle(selectedComponent, "text-decoration", textDecorationValue);
       `
     }
   },
@@ -111,36 +100,19 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                const parameter ='textDecoration';
-                let textDecorationHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    textDecorationHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['text-decoration'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,textDecorationHandler];
-            `
+        value: /* js */ `
+          const parameter = 'textDecoration';
+          let textDecorationHandler = '';
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          textDecorationHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['text-decoration'] || '';  
+          return [parameter, textDecorationHandler];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'text-decoration',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        updateStyleHandlers(selectedComponent, 'text-decoration', EventData.value);
       `
     }
   }
