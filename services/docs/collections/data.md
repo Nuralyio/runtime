@@ -1,5 +1,5 @@
 # Example using data
 
-``js
-data = []
-``
+```javascript
+let data = []
+```
