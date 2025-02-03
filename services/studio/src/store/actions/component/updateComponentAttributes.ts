@@ -20,7 +20,6 @@ export function updateComponentAttributes(
     platform: "desktop",
     isMobile: false,
   };
-  
   // Retrieve the global components store
   const componentsStore = $components.get();
   const applicationComponents = componentsStore[applicationId] || [];
@@ -35,66 +34,76 @@ export function updateComponentAttributes(
     let currentAttributes: Record<string, any> = {};
     let desktopAttributes: Record<string, any> = {};
 
-    if (updateType === "style") {
+    if (updateType === "style" || updateType === "input") {
       // Retrieve desktop attributes for comparison
-      desktopAttributes = componentToUpdate.style || {};
-
+      desktopAttributes = componentToUpdate[updateType] || {};
+  
       if (currentPlatform.platform !== "desktop") {
-        // Ensure breakpoints structure is properly set up
-        componentToUpdate.breakpoints = componentToUpdate.breakpoints || {};
-        componentToUpdate.breakpoints[currentPlatform.width] =
-          componentToUpdate.breakpoints[currentPlatform.width] || {};
-
-        // For style updates on non-desktop, we operate on the breakpoint attributes
-        currentAttributes = componentToUpdate.breakpoints[currentPlatform.width];
+          // Ensure breakpoints structure is properly set up
+          componentToUpdate.breakpoints = componentToUpdate.breakpoints || {};
+          componentToUpdate.breakpoints[currentPlatform.width] =
+              componentToUpdate.breakpoints[currentPlatform.width] || {};
+  
+          componentToUpdate.breakpoints[currentPlatform.width][updateType] =
+              componentToUpdate.breakpoints[currentPlatform.width][updateType] ?? {};
+  
+          // For style or input updates on non-desktop, operate on the breakpoint attributes
+          currentAttributes = componentToUpdate.breakpoints[currentPlatform.width][updateType];
       } else {
-        // For desktop, operate on the top-level style
-        currentAttributes = componentToUpdate.style || {};
+          // For desktop, operate on the top-level style or input
+          currentAttributes = componentToUpdate[updateType] || {};
       }
-    } else {
-      // For non-style updates, no breakpoint handling is assumed
+  } else {
+      // For non-style and non-input updates, no breakpoint handling is assumed
       currentAttributes = componentToUpdate[updateType] || {};
-    }
-
-    // Determine if an update is necessary by checking if any updatedAttribute differs
-    let needsUpdate = false;
-    for (const key of Object.keys(updatedAttributes)) {
+  }
+  
+  // Determine if an update is necessary by checking if any updatedAttribute differs
+  let needsUpdate = false;
+  for (const key of Object.keys(updatedAttributes)) {
       if (!deepEqual(currentAttributes[key], updatedAttributes[key])) {
-        needsUpdate = true;
-        break;
+          needsUpdate = true;
+          break;
       }
-    }
+  }
 
     if (needsUpdate) {
-      if (updateType === "style" && currentPlatform.platform !== "desktop") {
+      if ((updateType === "style" || (updateType === "input" && updatedAttributes.type !=="handler")) && currentPlatform.platform !== "desktop") {
         // Initialize breakpoints if not already
         componentToUpdate.breakpoints = componentToUpdate.breakpoints || {};
         componentToUpdate.breakpoints[currentPlatform.width] =
           componentToUpdate.breakpoints[currentPlatform.width] || {};
-
+      
         // Process each updated attribute
         for (const [key, value] of Object.entries(updatedAttributes)) {
           if (deepEqual(value, desktopAttributes[key])) {
             // If the updated attribute matches the desktop attribute, remove it from the breakpoint
-            delete componentToUpdate.breakpoints[currentPlatform.width][key];
+            delete componentToUpdate.breakpoints[currentPlatform.width][updateType][key];
           } else {
+            if(value.type === "handler"){
+              componentToUpdate[updateType][key] = value;
+            }else{
+              componentToUpdate.breakpoints[currentPlatform.width][updateType] =
+              componentToUpdate.breakpoints[currentPlatform.width][updateType] || {};
+            componentToUpdate.breakpoints[currentPlatform.width][updateType][key] = value;
+            }
             // Otherwise, set/update the attribute in the breakpoint
-            componentToUpdate.breakpoints[currentPlatform.width][key] = value;
+           
           }
         }
-
+      
         // After processing, check if the breakpoint has any attributes left
         const breakpointAttributes = componentToUpdate.breakpoints[currentPlatform.width];
-        if (Object.keys(breakpointAttributes).length === 0) {
+        if (Object.keys(breakpointAttributes).every(type => Object.keys(breakpointAttributes[type]).length === 0)) {
           delete componentToUpdate.breakpoints[currentPlatform.width];
         }
-
+      
         // If no breakpoints remain, optionally remove the breakpoints object
         if (Object.keys(componentToUpdate.breakpoints).length === 0) {
           delete componentToUpdate.breakpoints;
         }
       } else {
-        // For desktop or non-style updates, update the regular property
+        // For desktop or non-style/input updates, update the regular property
         componentToUpdate[updateType] = {
           ...currentAttributes,
           ...updatedAttributes,
