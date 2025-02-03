@@ -7,7 +7,7 @@ import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
 import { $context, getVar } from "$store/context.ts";
-import deepEqual from "fast-deep-equal";
+import Editor from "core/Editor.ts";
 
 function isPromise(value) {
   return Boolean(value && typeof value.then === "function");
@@ -116,7 +116,8 @@ export class BaseElementBlock extends LitElement {
     const handlerPromises = [];
     if (this.component?.input) {
       for (const [inputName, input] of Object.entries(this.component?.input)) {
-        handlerPromises.push(this.traitInputHandler(input, inputName));
+        const inputToTrait = Editor.getComponentBreakpointInput(this.component, inputName);
+        handlerPromises.push(this.traitInputHandler(inputToTrait, inputName));
       }
       await Promise.all(handlerPromises);
     }
@@ -161,7 +162,7 @@ export class BaseElementBlock extends LitElement {
     super.update(changedProperties);
 
     if (this.currentPlatform?.platform !== "desktop") {
-      this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width] ?? {};
+      this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width]?.style ?? {};
       if (this.component?.style) {
         this.calculatedStyles = Object.assign(
           {},

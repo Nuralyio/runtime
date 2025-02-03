@@ -49,7 +49,7 @@ export default [
           if (selectedComponent.input?.display?.type == 'handler' && selectedComponent.input?.display?.value) {
             isDisabled = true;
           } else {
-            currentDisplay = selectedComponent.input?.display?.value || true;
+            currentDisplay = Editor.getComponentBreakpointInput(selectedComponent, 'display')?.value ?? true;
           }
 
           const options = [
