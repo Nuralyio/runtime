@@ -1,0 +1,45 @@
+export const StudioTextLabelCssVar =  [
+    {
+      name: "Dark Mode",
+      open: true,
+      items: [
+        {
+          name: "General",
+          items: [
+            { label: "Text Label Color", cssVar: "--text-label-color" },
+            { label: "Text Label Dark Color", cssVar: "--text-label-local-dark-color" }
+          ],
+          open: true
+        },
+        {
+          name: "Resolved Color",
+          items: [
+            { label: "Resolved Text Label Color", cssVar: "--resolved-text-label-color" }
+          ],
+          open: false
+        }
+      ]
+    },
+    {
+      name: "Light Mode",
+      open: true,
+      items: [
+        {
+          name: "General",
+          items: [
+            { label: "Text Label Color", cssVar: "--text-label-color" },
+            { label: "Text Label Light Color", cssVar: "--text-label-local-light-color" }
+          ],
+          open: true
+        },
+        {
+          name: "Resolved Color",
+          items: [
+            { label: "Resolved Text Label Color", cssVar: "--resolved-text-label-color" }
+          ],
+          open: false
+        }
+      ]
+    }
+  ];
+  
