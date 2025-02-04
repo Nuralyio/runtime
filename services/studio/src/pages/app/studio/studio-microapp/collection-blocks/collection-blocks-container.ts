@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "collection_container_blocks",
-    applicationId: "1",
+    application_id: "1",
     name: "collection_container_blocks",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

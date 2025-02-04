@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../.
 export default [
   {
     uuid: "input_type_block",
-    applicationId: "1",
+    application_id: "1",
     name: "input type block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "input_stype_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "input type radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -32,7 +32,7 @@ export default [
     uuid: "input_type_label",
     name: "input type label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -47,7 +47,7 @@ export default [
   },
   {
     uuid: "input_type_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -112,7 +112,7 @@ export default [
   },
   {
     uuid: "input_type_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "input type handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -125,7 +125,7 @@ export default [
   },
   {
     uuid: "input_type_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-edi
 export const StudioInputAlignmentDirection = [
   {
     uuid: "container_alignment_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export const StudioInputAlignmentDirection = [
   },
   {
     uuid: "container_alignment_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export const StudioInputAlignmentDirection = [
     uuid: "container_alignment_label",
     name: "button type label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -48,7 +48,7 @@ export const StudioInputAlignmentDirection = [
   },
   {
     uuid: "container_alignment_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -99,7 +99,7 @@ export const StudioInputAlignmentDirection = [
   },
   {
     uuid: "container_alignment_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -112,7 +112,7 @@ export const StudioInputAlignmentDirection = [
   },
   {
     uuid: "container_alignment_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

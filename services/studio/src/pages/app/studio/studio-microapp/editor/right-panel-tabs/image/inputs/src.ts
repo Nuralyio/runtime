@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-
 export default [
   {
     uuid: "image_src_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "image src text block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "src_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "src block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "label_image_src",
     name: "label image src",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -46,7 +46,7 @@ export default [
   {
     uuid: "src_text_input",
     name: "src text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -118,7 +118,7 @@ export default [
   },
   {
     uuid: "src_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "src handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -128,7 +128,7 @@ export default [
   },
   {
     uuid: "src_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

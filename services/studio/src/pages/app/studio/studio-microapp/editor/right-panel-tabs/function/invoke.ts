@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
 export default [
     {
       uuid: "right_panel_function_invoke",
-      applicationId: "1",
+      application_id: "1",
       name: "Parent Color Container",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,

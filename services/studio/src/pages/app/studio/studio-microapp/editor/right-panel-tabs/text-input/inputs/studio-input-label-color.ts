@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 export default [
   {
     uuid: "input_label_color_block",
-    applicationId: "1",
+    application_id: "1",
     name: "input label color block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -19,7 +19,7 @@ export default [
   },
   {
     uuid: "label_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -34,7 +34,7 @@ export default [
     uuid: "input_label_color_label",
     name: "input label color label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -49,7 +49,7 @@ export default [
   {
     uuid: "label_color_input",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `
@@ -115,7 +115,7 @@ export default [
   },
   {
     uuid: "input_label_color_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "input label color handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -129,7 +129,7 @@ export default [
   },
   {
     uuid: "input_label_color_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

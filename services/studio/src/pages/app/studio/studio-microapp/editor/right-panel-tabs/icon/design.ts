@@ -5,7 +5,7 @@ import { StudioIconInputs } from "./inputs";
 export const StudioIconDesign = [
   {
     uuid: "icon_blocks",
-    applicationId: "1",
+    application_id: "1",
     name: "Parent Icon Container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

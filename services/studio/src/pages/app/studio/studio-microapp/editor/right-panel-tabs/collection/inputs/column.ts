@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "pages/app/studio/studio-microapp/helper/commo
 export const StudioCollectionColumnInput =  [
   {
     uuid: "column_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -21,7 +21,7 @@ export const StudioCollectionColumnInput =  [
     uuid: "text_label_column",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -37,7 +37,7 @@ export const StudioCollectionColumnInput =  [
   {
     uuid: "column_input_2",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     parameters: {
       value: "22px"
@@ -84,7 +84,7 @@ export const StudioCollectionColumnInput =  [
 
   {
     uuid: "label_fontsize_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

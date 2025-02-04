@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "width_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "width vertical container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -27,7 +27,7 @@ export default [
     uuid: "width_container",
     name: "width container",
     component_type: ComponentType.Container,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -44,7 +44,7 @@ export default [
     uuid: "width_label",
     name: "width label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       "width": "90px"
@@ -60,7 +60,7 @@ export default [
   {
     uuid: "width_input",
     name: "width input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -149,7 +149,7 @@ export default [
   {
     uuid: "auto_width_checkbox",
     name: "auto width checkbox",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Checkbox,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -204,7 +204,7 @@ export default [
 
   {
     uuid: "width_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

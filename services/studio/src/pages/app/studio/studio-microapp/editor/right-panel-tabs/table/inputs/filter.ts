@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../
 export default [
   {
     uuid: "table_filter_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table filter block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -17,7 +17,7 @@ export default [
   },
   {
     uuid: "table_filter_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table filter radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -33,7 +33,7 @@ export default [
     uuid: "table_filter_label",
     name: "table filter label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -47,7 +47,7 @@ export default [
   },
   {
     uuid: "table_filter_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -106,7 +106,7 @@ export default [
   },
   {
     uuid: "table_filter_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table filter handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -116,7 +116,7 @@ export default [
   },
   {
     uuid: "table_filter_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-
 export default [
   {
     uuid: "image_fallback_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "image fallback text block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -17,7 +17,7 @@ export default [
   },
   {
     uuid: "image_fallback_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "image fallback block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -32,7 +32,7 @@ export default [
     uuid: "label_image_fallback",
     name: "label image fallback",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -50,7 +50,7 @@ export default [
   {
     uuid: "fallback_text_input",
     name: "fallback text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -122,7 +122,7 @@ export default [
   },
   {
     uuid: "fallback_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "fallback handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -132,7 +132,7 @@ export default [
   },
   {
     uuid: "fallback_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

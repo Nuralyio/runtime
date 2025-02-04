@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, InputTextLabelTheme } from "../../utils/commo
 export default [
   {
     uuid: "display_block",
-    applicationId: "1",
+    application_id: "1",
     name: "display block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -18,7 +18,7 @@ export default [
     uuid: "display_label",
     name: "display label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -32,7 +32,7 @@ export default [
   },
   {
     uuid: "display_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -86,7 +86,7 @@ export default [
   },
   {
     uuid: "display_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon position handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -99,7 +99,7 @@ export default [
   },
   {
     uuid: "display_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -135,7 +135,7 @@ export default [
     uuid: "display_divider",
     name: "divider",
     component_type: ComponentType.Divider,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES
   }
 ];

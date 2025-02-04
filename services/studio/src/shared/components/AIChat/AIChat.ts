@@ -103,7 +103,7 @@ export class AiChat extends BaseElementBlock {
       const result = aiResponse.components ?? aiResponse;
       if (Array.isArray(result)) {
         this.structureComponent = result.map((component: any) => {
-          component.applicationId = this.chatUuid;
+          component.application_id = this.chatUuid;
           return component;
         });
       }

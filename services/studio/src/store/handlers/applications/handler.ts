@@ -29,9 +29,9 @@ export function createApplicationAction(application: any) {
 }
 
 
-export function deleteApplicationAction(applicationId: any) {
+export function deleteApplicationAction(application_id: any) {
 
-  fetch("/api/applications/" + applicationId, {
+  fetch("/api/applications/" + application_id, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json"

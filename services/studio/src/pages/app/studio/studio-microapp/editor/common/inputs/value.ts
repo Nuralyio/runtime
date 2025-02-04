@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, InputTextLabelTheme, TextInputTheme } from ".
 export const StudioTextValueInput = [
   {
     uuid: "value_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "value text block",
     component_type: ComponentType.Container,
     style: {
@@ -15,7 +15,7 @@ export const StudioTextValueInput = [
   },
   {
     uuid: "value_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon picker handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -29,7 +29,7 @@ export const StudioTextValueInput = [
     uuid: "value_text_label",
     name: "value text label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     style: {
       ...InputTextLabelTheme
     },
@@ -43,7 +43,7 @@ export const StudioTextValueInput = [
   {
     uuid: "value_text_input",
     name: "value text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -83,7 +83,7 @@ export const StudioTextValueInput = [
   },
   {
     uuid: "value_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

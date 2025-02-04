@@ -2,7 +2,7 @@ import { ComponentType } from "$store/component/interface.ts";
 
 export default [{
   uuid: "331",
-  applicationId: "1",
+  application_id: "1",
   name: "Left panel",
   component_type: ComponentType.Container,
   input: {
@@ -23,7 +23,7 @@ export default [{
 // pages component 
   {
     uuid: "pages_panel",
-    applicationId: "1",
+    application_id: "1",
     name: "Pages panel",
     component_type: ComponentType.Container,
     input: {
@@ -42,7 +42,7 @@ export default [{
   {
     uuid: "menu_header",
     name: "menu header",
-    applicationId: "1",
+    application_id: "1",
 
     component_type: ComponentType.Container,
     style: {
@@ -56,7 +56,7 @@ export default [{
   {
     uuid: "menu_title",
     name: "menu title",
-    applicationId: "1",
+    application_id: "1",
 
     component_type: ComponentType.TextLabel,
     input: {
@@ -69,7 +69,7 @@ export default [{
   {
     uuid: "menu_tools",
     name: "menu tools",
-    applicationId: "1",
+    application_id: "1",
 
     component_type: ComponentType.Container,
     style: {
@@ -134,7 +134,7 @@ export default [{
          `
       /* end */
     },
-    applicationId: "1"
+    application_id: "1"
   },
   {
     uuid: "remove_page",
@@ -176,12 +176,12 @@ export default [{
          `
       /* end */
     },
-    applicationId: "1"
+    application_id: "1"
   },
   {
     uuid: "menu_1",
     name: "menu",    
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Menu,
     style: {
       "--hybrid-menu-border": "none",

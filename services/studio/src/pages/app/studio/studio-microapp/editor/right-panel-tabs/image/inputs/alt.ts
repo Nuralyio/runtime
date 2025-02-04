@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-
 export default [
   {
     uuid: "image_alt_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "image alt text block",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -21,7 +21,7 @@ export default [
   },
   {
     uuid: "alt_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -36,7 +36,7 @@ export default [
     uuid: "label_image_alt",
     name: "label image alt",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       "width": "90px"
@@ -54,7 +54,7 @@ export default [
   {
     uuid: "alt_text_input",
     name: "alt text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
@@ -128,7 +128,7 @@ export default [
   },
   {
     uuid: "alt_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "alt handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -138,7 +138,7 @@ export default [
   },
   {
     uuid: "alt_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

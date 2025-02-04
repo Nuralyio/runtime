@@ -6,7 +6,7 @@ import { RadioButtonWithTwoOptionsTheme } from "../editor/utils/common-editor-th
 export default [
   {
     uuid: "font_weight_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label font weight block",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -28,7 +28,7 @@ export default [
     name: "label font weight",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       "width": "90px"
@@ -42,7 +42,7 @@ export default [
   },
   {
     uuid: "font_weight_content",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -121,7 +121,7 @@ export default [
 
   {
     uuid: "font_weight_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

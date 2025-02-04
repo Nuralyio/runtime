@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "text_decoration_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -28,7 +28,7 @@ export default [
     parameters: {
       value: "Text decoration"
     },
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -43,7 +43,7 @@ export default [
   {
     uuid: "text_decoration_content",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
@@ -88,7 +88,7 @@ export default [
   },
   {
     uuid: "text_decoration_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

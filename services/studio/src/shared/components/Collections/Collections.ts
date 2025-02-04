@@ -101,7 +101,7 @@ export class CollectionViwer extends BaseElementBlock {
         this.component.childrenIds?.map(
           (uuid) => {
             return {
-              ...$components.get()[this.component?.applicationId]?.find((component) => component.uuid === uuid),
+              ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === uuid),
               item
             } as ComponentElement;
           }

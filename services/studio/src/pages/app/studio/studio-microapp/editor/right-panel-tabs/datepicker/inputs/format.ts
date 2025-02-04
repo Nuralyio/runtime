@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-edi
 export default [
   {
     uuid: "datepicker_format_block",
-    applicationId: "1",
+    application_id: "1",
     name: "datepicker format block",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -21,7 +21,7 @@ export default [
   },
   {
     uuid: "datepicker_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "datepicker input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -37,7 +37,7 @@ export default [
     uuid: "datepicker_format_label",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -55,7 +55,7 @@ export default [
 
   {
     uuid: "datepicker_format_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -106,7 +106,7 @@ export default [
   },
   {
     uuid: "format_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "format handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -120,7 +120,7 @@ export default [
   },
   {
     uuid: "format_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
 export const StudioContainerDesign = [
   {
     uuid: "container_blocks",
-    applicationId: "1",
+    application_id: "1",
     name: "Parent Checkbox Container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

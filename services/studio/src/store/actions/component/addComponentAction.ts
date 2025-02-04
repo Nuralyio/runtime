@@ -26,7 +26,7 @@ export const addComponentAction = (
     ...component,
     uuid: componentId,
     pageId: uuid,
-    applicationId: currentApplicationId,
+    application_id: currentApplicationId,
     childrenIds: [], // Initialize childrenIds if necessary
   };
 

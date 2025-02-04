@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "height_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "height vertical container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -25,7 +25,7 @@ export default [
     uuid: "height_label",
     name: "height label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -40,7 +40,7 @@ export default [
   {
     uuid: "height_input",
     name: "height input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -82,7 +82,7 @@ export default [
   {
     uuid: "auto_height_checkbox",
     name: "auto height checkbox",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Checkbox,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -129,7 +129,7 @@ export default [
   },
   {
     uuid: "height_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

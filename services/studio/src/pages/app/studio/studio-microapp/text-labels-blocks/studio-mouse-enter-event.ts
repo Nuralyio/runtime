@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "mouse_enter_event_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -24,7 +24,7 @@ export default [
     name: "text_label",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -39,7 +39,7 @@ export default [
   },
   {
     uuid: "mouse_enter_event_value",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

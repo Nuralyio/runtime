@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-
 export default [
   {
     uuid: "select_label_font_size_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "select_label_size_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "select label size input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -32,7 +32,7 @@ export default [
     uuid: "select_text_label_font_size",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -51,7 +51,7 @@ export default [
   {
     uuid: "select_font_size_label_input",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     parameters: {
       value: "22px"
@@ -140,7 +140,7 @@ export default [
   },
   {
     uuid: "label_size_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label size handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -152,7 +152,7 @@ export default [
   },
   {
     uuid: "label_size_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

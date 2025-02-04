@@ -46,8 +46,8 @@ export class Collapse extends BaseElementBlock {
     );
 
     super.firstUpdated(_changedProperties);
-    const applicationId = this.component.applicationId;
-    this.componentsWithChildren = $applicationComponents(applicationId).get();
+    const application_id = this.component.application_id;
+    this.componentsWithChildren = $applicationComponents(application_id).get();
   }
 
   private updateComponents() {

@@ -5,7 +5,7 @@ import { InputBlockContainerTheme } from "../../utils/common-editor-theme.ts";
 export default [
   {
     uuid: "icon_picker_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon picker block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "icon_picker_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "icon_picker_label",
     name: "icon picker label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -45,7 +45,7 @@ export default [
   },
   {
     uuid: "icon_picker_content",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.IconPicker,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -84,7 +84,7 @@ export default [
   },
   {
     uuid: "icon_picker_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon picker handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -96,7 +96,7 @@ export default [
   },
   {
     uuid: "icon_picker_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

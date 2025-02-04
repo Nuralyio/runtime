@@ -5,7 +5,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "border_collapse_container",
-    applicationId: "1",
+    application_id: "1",
     name: "position collapse container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -17,7 +17,7 @@ export default [
   {
     uuid: "border_text_label_collapse",
     name: "border_text_label_collapse",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextLabel,
     style: {
     ...CollapseHeaderTheme
@@ -31,7 +31,7 @@ export default [
   },
   {
     uuid: "border_collapse",
-    applicationId: "1",
+    application_id: "1",
     name: "border collapse",
     component_type: ComponentType.Container,
     style: {
@@ -40,7 +40,7 @@ export default [
   },
   {
     uuid: "border_collapse_container_childrens",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

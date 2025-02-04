@@ -5,7 +5,7 @@ export default [
   {
 
     uuid: "border_radius_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -23,7 +23,7 @@ export default [
     name: "text_label",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -38,7 +38,7 @@ export default [
   {
     uuid: "border_radius_block",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.BorderRadius,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -163,7 +163,7 @@ export default [
 
   {
     uuid: "label_border_radius_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

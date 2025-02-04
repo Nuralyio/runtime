@@ -70,7 +70,7 @@ export class TabsBlock extends BaseElementBlock {
   }
 
   private updateComponents() {
-    $applicationComponents(this.component.applicationId).subscribe((components = []) => {
+    $applicationComponents(this.component.application_id).subscribe((components = []) => {
       this.componentsWithChildren = [...components];
       this.editableTabs = this.generateTabs();
     });

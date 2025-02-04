@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../
 export const StudioButtonStateInput = [
   {
     uuid: "state_block",
-    applicationId: "1",
+    application_id: "1",
     name: "state block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -14,7 +14,7 @@ export const StudioButtonStateInput = [
   },
   {
     uuid: "state_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "state radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -29,7 +29,7 @@ export const StudioButtonStateInput = [
     uuid: "state_label",
     name: "state label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: { type: "string", value: 'State' }
@@ -38,7 +38,7 @@ export const StudioButtonStateInput = [
   },
   {
     uuid: "state_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -77,7 +77,7 @@ export const StudioButtonStateInput = [
   },
   {
     uuid: "state_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "state handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -89,7 +89,7 @@ export const StudioButtonStateInput = [
   },
   {
     uuid: "state_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

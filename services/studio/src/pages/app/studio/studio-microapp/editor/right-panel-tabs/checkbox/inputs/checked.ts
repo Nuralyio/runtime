@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../.
 export default [
   {
     uuid: "checkbox_checked_block",
-    applicationId: "1",
+    application_id: "1",
     name: "checkbox checked block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "checkbox_checked_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "checkbox checked radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "checkbox_checked_label",
     name: "checkbox checked label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -48,7 +48,7 @@ export default [
   },
   {
     uuid: "checkbox_checked_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -88,7 +88,7 @@ export default [
   },
   {
     uuid: "checkbox_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "checkbox handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -97,7 +97,7 @@ export default [
   },
   {
     uuid: "checkbox_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

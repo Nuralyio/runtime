@@ -2,10 +2,10 @@ import type { PageElement } from "$store/handlers/pages/interfaces/interface.ts"
 import { $pages } from "$store/page.ts";
 import { setVar } from "$store/context.ts";
 
-export function updatePageAction(page: PageElement, applicationId: string) {
+export function updatePageAction(page: PageElement, application_id: string) {
   $pages.set({
     ...$pages.get(),
-    [applicationId]: [...($pages.get()[applicationId].map((oldPage) => {
+    [application_id]: [...($pages.get()[application_id].map((oldPage) => {
       if (oldPage.uuid == page.uuid) {
         return page;
       }
@@ -14,7 +14,7 @@ export function updatePageAction(page: PageElement, applicationId: string) {
     }) || [])]
   });
 
-  const pages = $pages.get()[applicationId];
-  setVar(applicationId, `${applicationId}.appPages`, pages);
+  const pages = $pages.get()[application_id];
+  setVar(application_id, `${application_id}.appPages`, pages);
 
 }

@@ -2,13 +2,13 @@ import type { PageElement } from "$store/handlers/pages/interfaces/interface.ts"
 import { $pages } from "$store/page.ts";
 import { setVar } from "$store/context.ts";
 
-export function addPageToApplicationAction(page: PageElement, applicationId: string) {
+export function addPageToApplicationAction(page: PageElement, application_id: string) {
   $pages.set({
     ...$pages.get(),
-    [applicationId]: [page, ...($pages.get()[applicationId] || [])]
+    [application_id]: [page, ...($pages.get()[application_id] || [])]
   });
 
-  const pages = $pages.get()[applicationId];
-  setVar(applicationId, `${applicationId}.appPages`, pages);
+  const pages = $pages.get()[application_id];
+  setVar(application_id, `${application_id}.appPages`, pages);
 
 }

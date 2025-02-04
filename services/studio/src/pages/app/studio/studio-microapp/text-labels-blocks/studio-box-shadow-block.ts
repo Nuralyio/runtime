@@ -5,7 +5,7 @@ export default [
   {
     uuid: "box_shadow_block",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Container,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
@@ -18,7 +18,7 @@ export default [
     uuid: "box_shadow_label",
     name: "box shadow label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -35,7 +35,7 @@ export default [
   {
     uuid: "box_shadow_values",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ShadowBox,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
@@ -120,7 +120,7 @@ export default [
   },
   {
     uuid: "box_shadow_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "box shadow handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -134,7 +134,7 @@ export default [
   },
   {
     uuid: "box_shadow_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

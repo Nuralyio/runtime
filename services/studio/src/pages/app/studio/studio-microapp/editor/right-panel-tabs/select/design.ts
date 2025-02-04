@@ -5,7 +5,7 @@ import { StudioSelectInputs } from "./inputs";
 export const StudioSelectDesign = [
   {
     uuid: "select_blocks",
-    applicationId: "1",
+    application_id: "1",
     name: "Parent Select Container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

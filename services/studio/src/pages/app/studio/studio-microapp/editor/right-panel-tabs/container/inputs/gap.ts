@@ -5,7 +5,7 @@ import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts"
 export const StudioContainerGapInput = [
   {
     uuid: "gap_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "gap vertical container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -19,7 +19,7 @@ export const StudioContainerGapInput = [
   },
   {
     uuid: "gap_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -34,7 +34,7 @@ export const StudioContainerGapInput = [
     uuid: "gap_label",
     name: "gap label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -51,7 +51,7 @@ export const StudioContainerGapInput = [
   {
     uuid: "gap_input",
     name: "gap input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -87,7 +87,7 @@ export const StudioContainerGapInput = [
   },
   {
     uuid: "gap_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

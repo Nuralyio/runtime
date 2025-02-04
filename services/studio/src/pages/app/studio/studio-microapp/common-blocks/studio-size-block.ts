@@ -5,7 +5,7 @@ import { RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-
 export default [
   {
     uuid: "size_block",
-    applicationId: "1",
+    application_id: "1",
     name: "size block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -19,7 +19,7 @@ export default [
   },
   {
     uuid: "size_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -34,7 +34,7 @@ export default [
     uuid: "size_label",
     name: "size label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -49,7 +49,7 @@ export default [
   },
   {
     uuid: "size_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     name: "size select",
     input: {
@@ -98,7 +98,7 @@ export default [
   },
   {
     uuid: "size_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "status handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -111,7 +111,7 @@ export default [
   },
   {
     uuid: "size_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

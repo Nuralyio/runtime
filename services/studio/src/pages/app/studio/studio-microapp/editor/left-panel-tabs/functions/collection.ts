@@ -38,7 +38,7 @@ export const StudioFunctionCollection = [
       "fb0e5b41-d71b-4a80-927f-bbb6095dd68c",
       "e68eacb2-5b8b-46f0-9189-a63a0d739dd9"
     ],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "vertical-container-block"
   },
@@ -81,7 +81,7 @@ export const StudioFunctionCollection = [
       }
     },
     "childrenIds": [],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "text_label"
   },
@@ -98,7 +98,7 @@ export const StudioFunctionCollection = [
       "770176d7-b582-4b20-bb61-7ca780510bdf",
       "3f07be1d-8be5-4a59-b46c-e805c926cab2"
     ],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "vertical-container-block"
   },
@@ -118,7 +118,7 @@ export const StudioFunctionCollection = [
     "childrenIds": [
       "46048d56-5520-4370-8b91-ff985c82b378"
     ],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "Collection"
   },
@@ -148,7 +148,7 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "text_input"
   },
@@ -173,7 +173,7 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "button_input"
   },
@@ -191,7 +191,7 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "text_label"
   },
@@ -210,7 +210,7 @@ export const StudioFunctionCollection = [
       "b67f4f2e-1232-4c31-beb9-f73c7c04802e",
       "f6d5d534-ba89-4f13-a0d8-f94c3b88bfa8"
     ],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "vertical-container-block"
   },
@@ -232,7 +232,7 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "button_input"
   },
@@ -253,7 +253,7 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "applicationId": "1",
+    "application_id": "1",
     "application_id": "1",
     "component_type": "button_input"
   }

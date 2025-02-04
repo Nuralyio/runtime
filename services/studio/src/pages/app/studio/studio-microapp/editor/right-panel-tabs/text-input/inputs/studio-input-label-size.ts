@@ -5,7 +5,7 @@ import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts"
 export default [
   {
     uuid: "input_label_font_size_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "input_label_font_size_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -32,7 +32,7 @@ export default [
     uuid: "text_label_label_font_size",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -48,7 +48,7 @@ export default [
   {
     uuid: "font_size_input",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     parameters: {
       value: "22px"
@@ -132,7 +132,7 @@ export default [
   },
   {
     uuid: "input_label_size_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "input label size handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -144,7 +144,7 @@ export default [
   },
   {
     uuid: "input_label_size_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
