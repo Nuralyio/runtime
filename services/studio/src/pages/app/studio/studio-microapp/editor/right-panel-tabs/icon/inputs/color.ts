@@ -5,7 +5,7 @@ import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts"
 export default [
   {
     uuid: "icon_color_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon color block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "icon_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "icon_color_label",
     name: "icon color label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -46,7 +46,7 @@ export default [
   {
     uuid: "icon_color_input",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `
@@ -79,7 +79,7 @@ export default [
   },
   {
     uuid: "icon_color_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon color handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -88,7 +88,7 @@ export default [
   },
   {
     uuid: "icon_color_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

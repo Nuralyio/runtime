@@ -9,7 +9,7 @@ import { getVar } from "$store/context.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 
 export function updateComponentAttributes(
-  applicationId: string,
+  application_id: string,
   componentId: string,
   updateType: UpdateType,
   updatedAttributes: Record<string, any>, // Define a more specific type
@@ -22,7 +22,7 @@ export function updateComponentAttributes(
   };
   // Retrieve the global components store
   const componentsStore = $components.get();
-  const applicationComponents = componentsStore[applicationId] || [];
+  const applicationComponents = componentsStore[application_id] || [];
   const componentIndex = applicationComponents.findIndex(
     (component: ComponentElement) => component.uuid === componentId,
   );
@@ -111,12 +111,12 @@ export function updateComponentAttributes(
       }
 
       // Directly update the component in the store
-      $components.setKey(`${applicationId}[${componentIndex}]`, componentToUpdate);
+      $components.setKey(`${application_id}[${componentIndex}]`, componentToUpdate);
 
       // Optionally save the update to persistent store / DB
       if (save) {
         setTimeout(() => {
-          updateComponentHandler(componentToUpdate, applicationId);
+          updateComponentHandler(componentToUpdate, application_id);
         }, 0);
       }
     } else {

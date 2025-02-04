@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../e
 export default [
   {
     uuid: "status_block",
-    applicationId: "1",
+    application_id: "1",
     name: "status block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "status_radios_block",
-    applicationId: "1",
+    application_id: "1",
     name: "status input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "status_label",
     name: "status label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -45,7 +45,7 @@ export default [
   },
   {
     uuid: "status_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -98,7 +98,7 @@ export default [
   },
   {
     uuid: "status_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "status handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -110,7 +110,7 @@ export default [
   },
   {
     uuid: "status_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

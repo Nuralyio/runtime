@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../utils/common-edi
 export default [
   {
     uuid: "placeholder_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder text block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "placeholder_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -27,7 +27,7 @@ export default [
     uuid: "placeholder_text_label",
     name: "placeholder text label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -42,7 +42,7 @@ export default [
   {
     uuid: "placeholder_text_input",
     name: "placeholder text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -82,7 +82,7 @@ export default [
   },
   {
     uuid: "placeholder_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -94,7 +94,7 @@ export default [
   },
   {
     uuid: "placeholder_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

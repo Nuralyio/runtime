@@ -26,7 +26,7 @@ export const StudioDashboard = [
         "1a1d1c02-2d49-4480-81df-6bdb075d96e2",
         "598c4fab-9504-4717-a07c-247ae7c78985"
       ],
-      "applicationId": "1",
+      "application_id": "1",
       "application_id": "1",
       "component_type": "vertical-container-block"
     },
@@ -47,7 +47,7 @@ export const StudioDashboard = [
         "6a56851f-51f5-4e0e-a087-a9ac89c06362",
         "54205cc0-e7fa-4045-aa40-26b178f2a029"
       ],
-      "applicationId": "1",
+      "application_id": "1",
       "application_id": "1",
       "component_type": "Collection"
     },
@@ -72,7 +72,7 @@ export const StudioDashboard = [
       "childrenIds": [
         "a0e8f605-e5ab-4a3a-a5e7-a783531ebb8e"
       ],
-      "applicationId": "1",
+      "application_id": "1",
       "application_id": "1",
       "component_type": "vertical-container-block"
     },
@@ -92,7 +92,7 @@ export const StudioDashboard = [
       },
       "pageId": "c81948a2-5816-4eb7-8f87-f429d0dc0562",
       "childrenIds": [],
-      "applicationId": "1",
+      "application_id": "1",
       "application_id": "1",
       "component_type": "text_label"
     },
@@ -113,7 +113,7 @@ export const StudioDashboard = [
       },
       "pageId": "c81948a2-5816-4eb7-8f87-f429d0dc0562",
       "childrenIds": [],
-      "applicationId": "1",
+      "application_id": "1",
       "application_id": "1",
       "component_type": "button_input"
     },
@@ -128,7 +128,7 @@ export const StudioDashboard = [
       },
       "pageId": "c81948a2-5816-4eb7-8f87-f429d0dc0562",
       "childrenIds": [],
-      "applicationId": "1",
+      "application_id": "1",
       "application_id": "1",
       "component_type": "text_label"
     }

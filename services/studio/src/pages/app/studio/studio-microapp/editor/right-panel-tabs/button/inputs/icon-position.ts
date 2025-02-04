@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../
 export default [
   {
     uuid: "button_icon_position_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button icon position block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "icon_position_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon position radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "icon_position_label",
     name: "icon position label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -45,7 +45,7 @@ export default [
   },
   {
     uuid: "icon_position_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -87,7 +87,7 @@ export default [
   },
   {
     uuid: "icon_position_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon position handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -100,7 +100,7 @@ export default [
   },
   {
     uuid: "icon_position_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

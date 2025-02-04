@@ -2,7 +2,7 @@ import { ComponentType } from "$store/component/interface.ts";
 
 export default {
   uuid: "right_panel_tabs",
-  applicationId: "1",
+  application_id: "1",
   name: "right_panel_tabs",
   component_type: ComponentType.Tabs,
   event: {},

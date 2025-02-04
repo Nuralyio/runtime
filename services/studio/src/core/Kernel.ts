@@ -190,25 +190,25 @@ class Executor {
     });
 
     componentsList.forEach((component: any) => {
-      const applicationId = component.applicationId || component.application_id;
+      const application_id = component.application_id || component.application_id;
 
-      if (!this.context[applicationId]) {
-        this.context[applicationId] = {};
+      if (!this.context[application_id]) {
+        this.context[application_id] = {};
       }
 
-      if (!this.context[applicationId][component.uuid]) {
-        this.context[applicationId][component.uuid] = { ...component };
+      if (!this.context[application_id][component.uuid]) {
+        this.context[application_id][component.uuid] = { ...component };
       }
 
-      if (!this.applications[applicationId]) {
-        this.applications[applicationId] = {};
+      if (!this.applications[application_id]) {
+        this.applications[application_id] = {};
       }
-      if (!this.Apps[loadedApplicationObj[applicationId]]) {
-        this.Apps[loadedApplicationObj[applicationId]] = {};
+      if (!this.Apps[loadedApplicationObj[application_id]]) {
+        this.Apps[loadedApplicationObj[application_id]] = {};
       }
-      this.Apps[loadedApplicationObj[applicationId]][component.name] = { ...component };
+      this.Apps[loadedApplicationObj[application_id]][component.name] = { ...component };
 
-      this.applications[applicationId][component.name] = { ...component };
+      this.applications[application_id][component.name] = { ...component };
     });
     Editor.components = componentsList;
     this.updateEditorContext()
@@ -303,11 +303,11 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   }
 
   function updateStyleHandlers(component: ComponentElement, symbol: string, value: any) {
-    updateComponentAttributes(component.applicationId, component.uuid, "styleHandlers", { [symbol]: value });
+    updateComponentAttributes(component.application_id, component.uuid, "styleHandlers", { [symbol]: value });
   }
 
   function GetContextVar(symbol: string, customContentId: string | null, component: any): any {
-    const contentId = customContentId || component.applicationId;
+    const contentId = customContentId || component.application_id;
     if (context && context[contentId] && context[contentId][symbol] && "value" in context[contentId][symbol]) {
       return context[contentId][symbol].value
 
@@ -321,13 +321,13 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     }
   }
 
-  function GetComponent(componentUuid: string, applicationId: string): any {
-    return Object.values(applications[applicationId] || {}).find((c: ComponentElement) => c.uuid === componentUuid);
+  function GetComponent(componentUuid: string, application_id: string): any {
+    return Object.values(applications[application_id] || {}).find((c: ComponentElement) => c.uuid === componentUuid);
   }
 
-  function AddComponent(applicationId: string, pageId: string, componentType: ComponentType): any {
+  function AddComponent(application_id: string, pageId: string, componentType: ComponentType): any {
     const generatedName = GenerateName(componentType);
-    addComponentAction({ name: generatedName, component_type: componentType }, pageId, applicationId);
+    addComponentAction({ name: generatedName, component_type: componentType }, pageId, application_id);
   }
 
   function GetComponents(componentIds: string[]): any[] {
@@ -335,22 +335,22 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   }
 
   function SetContextVar(symbol: string, value: any, component: any) {
-    setVar(component.applicationId, symbol, value);
+    setVar(component.application_id, symbol, value);
   }
 
   function updateInput(component: ComponentElement, inputName: string, handlerType: string, handlerValue: any) {
     const eventData = { [inputName]: { type: handlerType, value: handlerValue } };
-    updateComponentAttributes(component.applicationId, component.uuid, "input", eventData);
+    updateComponentAttributes(component.application_id, component.uuid, "input", eventData);
   }
 
   function updateEvent(component: ComponentElement, symbol: string, value: any) {
     const eventData = { [symbol]: value };
-    updateComponentAttributes(component.applicationId, component.uuid, "event", eventData);
+    updateComponentAttributes(component.application_id, component.uuid, "event", eventData);
   }
 
   function updateStyle(component: ComponentElement, symbol: string, value: any) {
     const eventData = { [symbol]: value };
-    updateComponentAttributes(component.applicationId, component.uuid, "style", eventData);
+    updateComponentAttributes(component.application_id, component.uuid, "style", eventData);
   }
 
   async function InvokeFunction(id: string, payload: any={}) {

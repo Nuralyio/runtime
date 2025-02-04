@@ -27,7 +27,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
   // Generate parent container
   const parentContainer = {
     uuid: mainContainerName,
-    applicationId: "1",
+    application_id: "1",
     name: mainContainerName,
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -44,7 +44,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     const categoryCollapseUuid = uuidv4();
     const categoryCollapse = {
       uuid: categoryCollapseUuid,
-      applicationId: "1",
+      application_id: "1",
       name: `${category.name} Collapse`,
       component_type: ComponentType.Collapse,
       style: {
@@ -83,7 +83,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     // Category vertical container
     const categoryVerticalContainer = {
       uuid: `${categoryCollapseUuid}_vertical_container`,
-      applicationId: "1",
+      application_id: "1",
       name: `${category.name} Vertical Container`,
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -119,7 +119,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     const blockComponents = [
       {
         uuid: blockUuid,
-        applicationId: "1",
+        application_id: "1",
         name: `${item.label} block`,
         component_type: ComponentType.Container,
         ...COMMON_ATTRIBUTES,
@@ -133,7 +133,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       },
       {
         uuid: inputBlockUuid,
-        applicationId: "1",
+        application_id: "1",
         name: `${item.label} input block`,
         component_type: ComponentType.Container,
         ...COMMON_ATTRIBUTES,
@@ -146,7 +146,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       },
       {
         uuid: handlerBlockUuid,
-        applicationId: "1",
+        application_id: "1",
         name: `${item.label} handler block`,
         component_type: ComponentType.Container,
         ...COMMON_ATTRIBUTES,
@@ -160,7 +160,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       },
       {
         uuid: labelUuid,
-        applicationId: "1",
+        application_id: "1",
         name: `${item.label} label`,
         component_type: ComponentType.TextLabel,
         ...COMMON_ATTRIBUTES,
@@ -179,7 +179,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       },
       {
         uuid: inputUuid,
-        applicationId: "1",
+        application_id: "1",
         name: `${item.label} input`,
         component_type: ComponentType.ColorPicker,
         ...COMMON_ATTRIBUTES,
@@ -202,7 +202,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       },
       {
         uuid: handlerUuid,
-        applicationId: "1",
+        application_id: "1",
         name: `${item.label} handler`,
         component_type: ComponentType.Event,
         ...COMMON_ATTRIBUTES,
@@ -242,7 +242,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     const modeCollapseUuid = uuidv4();
     const modeCollapse = {
       uuid: modeCollapseUuid,
-      applicationId: "1",
+      application_id: "1",
       name: `${mode.name} Collapse`,
       component_type: ComponentType.Collapse,
       style: {
@@ -277,7 +277,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     const modeVerticalContainerUuid = `${modeCollapseUuid}_vertical_container`;
     const modeVerticalContainer = {
       uuid: modeVerticalContainerUuid,
-      applicationId: "1",
+      application_id: "1",
       name: `${mode.name} Vertical Container`,
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,

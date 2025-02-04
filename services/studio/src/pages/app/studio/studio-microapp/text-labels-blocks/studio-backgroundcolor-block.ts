@@ -5,7 +5,7 @@ export default [
 
   {
     uuid: "background_color_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -26,7 +26,7 @@ export default [
     uuid: "text_label_background_color",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -38,7 +38,7 @@ export default [
   {
     uuid: "background_color_value",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `

@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "letter_spacing_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -25,7 +25,7 @@ export default [
     name: "text_label",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -39,7 +39,7 @@ export default [
   },
   {
     uuid: "letter_spacing_input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -109,7 +109,7 @@ export default [
 
   {
     uuid: "letter_spacing_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

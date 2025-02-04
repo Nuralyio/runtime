@@ -205,7 +205,7 @@ export class GenerikComponentWrapper extends LitElement {
       marginLeft: `${newMarginLeft}px`
     };
     this.component = { ...this.component, style: updatedStyle };
-    updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", updatedStyle);
+    updateComponentAttributes(this.component.application_id, this.component.uuid, "style", updatedStyle);
   }
 
   private resize = (e: MouseEvent) => {

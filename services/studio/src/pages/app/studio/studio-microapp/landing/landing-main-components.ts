@@ -17,7 +17,7 @@ export default [
         value: "preview"
       }
     },
-    applicationId: "landing"
+    application_id: "landing"
 
   }
 ];

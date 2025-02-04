@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../
 export default [
   {
     uuid: "select_selection_mode_block",
-    applicationId: "1",
+    application_id: "1",
     name: "select selection mode block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -17,7 +17,7 @@ export default [
   },
   {
     uuid: "select_selectionmode_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "select radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -33,7 +33,7 @@ export default [
     uuid: "select_selectionmode_label",
     name: "select selection mode label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -52,7 +52,7 @@ export default [
   },
   {
     uuid: "select_selectionmode_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -113,7 +113,7 @@ export default [
 
   {
     uuid: "selectionmode_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "selectionmode handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -126,7 +126,7 @@ export default [
   },
   {
     uuid: "selectionmode_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

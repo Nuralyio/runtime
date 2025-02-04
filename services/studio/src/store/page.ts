@@ -27,8 +27,8 @@ export const $resetPageStore = () => {
 };
 
 // Persistent atom for currentPageId per application
-export const $currentPageId = ($applicationId: string) => persistentAtom<string>(
-  `page_id_${$applicationId}`,
+export const $currentPageId = ($application_id: string) => persistentAtom<string>(
+  `page_id_${$application_id}`,
   null,
   {
     encode: JSON.stringify,
@@ -61,18 +61,18 @@ export const $contextMenuEvent = persistentAtom<object>("context_menu_event", {}
 /**
  * Selector for pages of a specific application
  */
-export const $applicationPages = ($applicationId: string) => computed(
+export const $applicationPages = ($application_id: string) => computed(
   [$pages],
   (pagesStore: PageStore) => {
-    return pagesStore[$applicationId] || [];
+    return pagesStore[$application_id] || [];
   }
 );
 
 /**
  * Computed store for the current page within a specific application
  */
-export const $currentPage = ($applicationId: string, currentPageId: string) => computed(
-  [$applicationPages($applicationId)],
+export const $currentPage = ($application_id: string, currentPageId: string) => computed(
+  [$applicationPages($application_id)],
   (pages) => {
     const currentPage = pages.find((page) => {
       return page.uuid === currentPageId;

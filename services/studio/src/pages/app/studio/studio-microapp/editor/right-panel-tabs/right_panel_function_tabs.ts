@@ -3,7 +3,7 @@ import { COMMON_ATTRIBUTES } from "../../helper/common_attributes.ts";
 import FunctionBlocks from './function/index.ts'
 export default [{
   uuid: "right_panel_function_tabs",
-  applicationId: "1",
+  application_id: "1",
   name: "right_panel_function_tabs",
   component_type: ComponentType.Tabs,
   event: {},
@@ -36,7 +36,7 @@ export default [{
 },
   {
     uuid: "right_panel_function_tabs_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Parent Color Container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

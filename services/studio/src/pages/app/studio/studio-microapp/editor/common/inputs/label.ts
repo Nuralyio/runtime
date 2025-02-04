@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, InputTextLabelTheme, TextInputTheme } from ".
 export default [
   {
     uuid: "label_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label text block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "label_text_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export default [
     uuid: "label_text_label",
     name: "label text label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputTextLabelTheme
@@ -46,7 +46,7 @@ export default [
   {
     uuid: "label_text_input",
     name: "label text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -86,7 +86,7 @@ export default [
   },
   {
     uuid: "label_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -98,7 +98,7 @@ export default [
   },
   {
     uuid: "label_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

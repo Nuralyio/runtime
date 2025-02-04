@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 export default [
   {
     uuid: "table_columns_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table columns block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -20,7 +20,7 @@ export default [
     uuid: "table_column_label",
     name: "button type label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -36,7 +36,7 @@ export default [
   },
   {
     uuid: "table_columns_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     name: "Columns",
     input: {

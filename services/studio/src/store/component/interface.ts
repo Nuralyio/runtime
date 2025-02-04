@@ -57,7 +57,7 @@ export interface ComponentElement {
   childrens?: ComponentElement[];
   childrenIds?: string[];
   pageId?: string;
-  applicationId?: string;
+  application_id?: string;
 }
 
 export default {};

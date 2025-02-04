@@ -88,7 +88,7 @@ export default [
     uuid: "divider",
     name: "divider",
     component_type: ComponentType.Divider,
-    applicationId: "1",
+    application_id: "1",
     input: {}
   },
   {
@@ -100,7 +100,7 @@ export default [
     },
 
     
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     inputHandlers: {
       value: ` GetContextVar("text_label_value");`
@@ -110,7 +110,7 @@ export default [
   {
     uuid: "2",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     parameters: {
       value: "22px"
@@ -129,7 +129,7 @@ export default [
   },
   {
     uuid: "left_panel_tabs",
-    applicationId: "1",
+    application_id: "1",
     name: "left_panel_tabs",
     component_type: ComponentType.Tabs,
 
@@ -192,7 +192,7 @@ export default [
   },
   {
     uuid: "text_label_handlers_collapse_container",
-    applicationId: "1",
+    application_id: "1",
     name: "position collapse container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -203,7 +203,7 @@ export default [
   },
   {
     uuid: "text_label_handlers_collpase",
-    applicationId: "1",
+    application_id: "1",
     name: " collapse",
     component_type: ComponentType.Collapse,
     style: {
@@ -237,7 +237,7 @@ export default [
     name: "text_label",
     component_type: ComponentType.TextLabel,
     ...COMMON_ATTRIBUTES,
-    applicationId: "1",
+    application_id: "1",
     input: {
       value: {
         type: "handler",

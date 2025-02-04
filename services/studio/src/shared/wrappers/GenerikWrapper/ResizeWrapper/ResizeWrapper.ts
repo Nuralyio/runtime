@@ -277,17 +277,17 @@ export class ResizeWrapper extends LitElement {
   };
   applyResize = () => {
     if (this.component.component_type == ComponentType.Button) {
-      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+      updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         "--hybrid-button-width": this.inputRef.value.style.width
       });
     } else if (this.component.component_type == ComponentType.Icon) {
-      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+      updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         "--hybrid-icon-width": this.inputRef.value.style.width,
         "--hybrid-icon-height": this.inputRef.value.style.height
       });
 
     } else if (this.component.component_type == ComponentType.Select) {
-      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+      updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         "--hybrid-select-width": this.inputRef.value.style.width
       });
 
@@ -295,12 +295,12 @@ export class ResizeWrapper extends LitElement {
       this.component.component_type == ComponentType.TextInput
       || this.component.component_type == ComponentType.DatePicker
     ) {
-      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+      updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         width: this.inputRef.value.style.width
       });
 
     } else {
-      updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", {
+      updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         width: this.inputRef.value.style.width,
         height: this.inputRef.value.style.height
       });

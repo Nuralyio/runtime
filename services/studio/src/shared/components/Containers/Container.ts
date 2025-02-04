@@ -110,7 +110,7 @@ export class VerticalContainer extends BaseElementBlock {
           ? renderComponent(
             this.component.childrenIds.map((id) =>
               ({
-                ...$components.get()[this.component?.applicationId]?.find((component) => component.uuid === id),
+                ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
                 item: this.item
               } as ComponentElement)
             )      , this.item, this.isViewMode)
@@ -191,7 +191,7 @@ export class VerticalContainer extends BaseElementBlock {
             ? renderComponent(
               this.component.childrenIds.map((id) =>
                 ({
-                  ...$components.get()[this.component?.applicationId]?.find((component) => component.uuid === id),
+                  ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
                   item: this.item
                 } as ComponentElement)
               ),

@@ -6,7 +6,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
   return [
     {
       uuid: `${containerUuid}`,
-      applicationId: "1",
+      application_id: "1",
       name: "select helper color block",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -20,7 +20,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     },
     {
       uuid: `${containerUuid}_input_block`,
-      applicationId: "1",
+      application_id: "1",
       name: "select helper color input block",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -35,7 +35,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_label`,
       name: "select helper color label",
       component_type: ComponentType.TextLabel,
-      applicationId: "1",
+      application_id: "1",
       ...COMMON_ATTRIBUTES,
       input: {
         value: {
@@ -53,7 +53,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     {
       uuid: `${containerUuid}_input`,
       name: "helper color input",
-      applicationId: "1",
+      application_id: "1",
       component_type: ComponentType.ColorPicker,
       event: {
         valueChange: /* js */ `
@@ -114,7 +114,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     },
     {
       uuid: `${containerUuid}_handler_block`,
-      applicationId: "1",
+      application_id: "1",
       name: "select helper color handler block",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -126,7 +126,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     },
     {
       uuid: `${containerUuid}_handler`,
-      applicationId: "1",
+      application_id: "1",
       component_type: ComponentType.Event,
       ...COMMON_ATTRIBUTES,
       styleHandlers: {},

@@ -12,7 +12,7 @@ export const createHandlersFromEvents = (
   return [
     {
       uuid: collapseContainerUUID,
-      applicationId: "1",
+      application_id: "1",
       name: "position collapse container",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -23,7 +23,7 @@ export const createHandlersFromEvents = (
     },
     {
       uuid: collapseUUID,
-      applicationId: "1",
+      application_id: "1",
       name: "collapse",
       component_type: ComponentType.Collapse,
       style: {
@@ -48,7 +48,7 @@ export const createHandlersFromEvents = (
     },
     {
       uuid: handlerUUID,
-      applicationId: "1",
+      application_id: "1",
       name: "Dynamic Event Handler Container",
       component_type: ComponentType.Handlers,
       input: {
@@ -69,7 +69,7 @@ export const createHandlersFromEvents = (
     },
     {
       uuid: containerUUID,
-      applicationId: "1",
+      application_id: "1",
       name: "Dynamic Event Handler Container",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,

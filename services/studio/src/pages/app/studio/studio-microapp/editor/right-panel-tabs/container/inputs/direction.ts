@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-edi
 export const StudioContainerInputDirection = [
   {
     uuid: "table_direction_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export const StudioContainerInputDirection = [
     uuid: "table_direction_label",
     name: "button type label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -48,7 +48,7 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -97,7 +97,7 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -110,7 +110,7 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

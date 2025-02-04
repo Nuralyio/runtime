@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "text_vertical_alignement_block",
-    applicationId: "1",
+    application_id: "1",
     name: "text vertical alignement block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -21,7 +21,7 @@ export default [
     uuid: "text_label_vertical_alignement",
     name: "text_label vertical alignement",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       "width": "90px"
@@ -36,7 +36,7 @@ export default [
   {
     uuid: "text_vertical_align_content",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -89,7 +89,7 @@ export default [
   },
   {
     uuid: "vertical_alignement_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

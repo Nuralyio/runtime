@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "micro_app_selection_blocks",
-    applicationId: "1",
+    application_id: "1",
     name: "micro_app_selection_blocks",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -18,7 +18,7 @@ export default [
     uuid: "micro_app_selection_label",
     name: "label image src",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -29,7 +29,7 @@ export default [
   },
   {
     uuid: "micro_app_selection_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

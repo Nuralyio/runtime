@@ -243,7 +243,7 @@ export class AIAssistantBlock extends LitElement {
                       Object.keys(response.components[0]?.input).forEach(
                         (key) => {
                           if (component.input && component.input[key]) {
-                            updateComponentAttributes(currentComponent.applicationId, currentComponent.uuid, 'input', { [key]: component.input[key] });
+                            updateComponentAttributes(currentComponent.application_id, currentComponent.uuid, 'input', { [key]: component.input[key] });
                           }
                         }
                       )
@@ -251,7 +251,7 @@ export class AIAssistantBlock extends LitElement {
                     Object.keys(response.components[0]?.event).forEach(
                       (key) => {
                         if (response.components[0]?.event && response.components[0]?.event[key]) {
-                          updateComponentAttributes(currentComponent.applicationId, currentComponent.uuid, 'event', { [key]: component.event[key] });
+                          updateComponentAttributes(currentComponent.application_id, currentComponent.uuid, 'event', { [key]: component.event[key] });
                         }
                       }
                     )

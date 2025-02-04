@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "page_url_block",
-    applicationId: "1",
+    application_id: "1",
     name: "page url block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -21,7 +21,7 @@ export default [
     uuid: "page_url_text_label",
     name: "page url text label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -37,7 +37,7 @@ export default [
   {
     uuid: "page_url_text_input",
     name: "page url text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {

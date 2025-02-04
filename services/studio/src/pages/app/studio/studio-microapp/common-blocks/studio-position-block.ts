@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "position_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Position Block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -18,7 +18,7 @@ export default [
   },
   {
     uuid: "position_label",
-    applicationId: "1",
+    application_id: "1",
     name: "Position Label",
     component_type: ComponentType.TextLabel,
     ...COMMON_ATTRIBUTES,
@@ -34,7 +34,7 @@ export default [
   },
   {
     uuid: "position_select",
-    applicationId: "1",
+    application_id: "1",
     name: "Position Select",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
@@ -84,7 +84,7 @@ export default [
   },
   {
     uuid: "position_handler",
-    applicationId: "1",
+    application_id: "1",
     name: "Position Handler",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,

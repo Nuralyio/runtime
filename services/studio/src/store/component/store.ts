@@ -46,14 +46,13 @@ export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
   }
 );
 
-export const $applicationComponents = ($applicationId: string) => computed(
+export const $applicationComponents = ($application_id: string) => computed(
   [$components],
   (componentsStore: ComponentStore) => {
-    const applicationComponents = Array.from(componentsStore[$applicationId] ?? [])?.map(component => ({
+    const applicationComponents = Array.from(componentsStore[$application_id] ?? [])?.map(component => ({
       ...component,
-      applicationId: $applicationId
     })) ?? [];
-    return fillApplicationComponents(applicationComponents);
+    return applicationComponents;
   }
 );
 
@@ -62,19 +61,19 @@ computed(
   (componentsStore: ComponentStore) => Object.values(componentsStore).flat().filter(component => !component.parent)
 );
 
-export const $componentWithChildren = ($applicationId: string) => computed(
-  [$applicationComponents($applicationId)],
+export const $componentWithChildren = ($application_id: string) => computed(
+  [$applicationComponents($application_id)],
   (components: ComponentElement[]) => fillApplicationComponents(components)
 );
 
-export const $selectedComponent = ($applicationId: string) => computed(
-  [$applicationComponents($applicationId), $currentComponentId],
+export const $selectedComponent = ($application_id: string) => computed(
+  [$applicationComponents($application_id), $currentComponentId],
   (components: ComponentElement[], currentComponentId) =>
     components.find(component => component.uuid === currentComponentId) || null
 );
 
-export const $componentsByUUIDs = ($applicationId: string, uuids: string[]) => computed(
-  [$applicationComponents($applicationId)],
+export const $componentsByUUIDs = ($application_id: string, uuids: string[]) => computed(
+  [$applicationComponents($application_id)],
   (components: ComponentElement[]) =>
     components.filter(component => uuids.includes(component.uuid))
 );

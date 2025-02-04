@@ -5,7 +5,7 @@ import { SelectTheme } from "../../../utils/common-editor-theme.ts";
 export default [
   {
     uuid: "button_type_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -19,7 +19,7 @@ export default [
   },
   {
     uuid: "button_type_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -34,7 +34,7 @@ export default [
     uuid: "button_type_label",
     name: "button type label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -49,7 +49,7 @@ export default [
   },
   {
     uuid: "button_type_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -95,7 +95,7 @@ export default [
   },
   {
     uuid: "button_type_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -108,7 +108,7 @@ export default [
   },
   {
     uuid: "button_type_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},

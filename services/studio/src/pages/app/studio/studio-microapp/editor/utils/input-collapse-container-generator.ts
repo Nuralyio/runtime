@@ -12,7 +12,7 @@ export function generateDynamicContainer(
   return [
     {
       uuid: mainUuid,
-      applicationId: "1",
+      application_id: "1",
       name: "position collapse container",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -23,7 +23,7 @@ export function generateDynamicContainer(
     },
     {
       uuid: collapseUuid,
-      applicationId: "1",
+      application_id: "1",
       name: collapseUuid,
       component_type: ComponentType.Container,
       style: {
@@ -36,7 +36,7 @@ export function generateDynamicContainer(
   
     {
       uuid: `${collapseUuid}_children`,
-      applicationId: "1",
+      application_id: "1",
       name: "Left panel",
       component_type: ComponentType.Container,
       style: {},
