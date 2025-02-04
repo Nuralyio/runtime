@@ -1,5 +1,5 @@
 import { generateComponents } from "../../../common-blocks/studio-theme-block.ts";
-import cssVariables from "../button/theme/css-vars.ts";
+import { StudioTextLabelCssVar } from "./design/css-var.ts";
 
 
-export const StudioTextTheme = generateComponents(cssVariables, "parent_color_container");
+export const StudioTextTheme = generateComponents(StudioTextLabelCssVar, "parent_color_container");

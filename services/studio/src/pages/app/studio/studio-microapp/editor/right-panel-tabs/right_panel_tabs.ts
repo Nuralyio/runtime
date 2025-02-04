@@ -43,6 +43,9 @@ export default {
                             handlers=[
                                 "studio_text_input_handler"
                             ];
+                            themes = [
+                                "text_input_icon_theme_container"
+                            ]
                             break;
                         case "button_input":
                             parameters=[
@@ -61,6 +64,9 @@ export default {
                             ];
                             handlers=[
                               "studio_checkbox_handler"
+                            ];
+                            themes =[
+                                "checkbox_button_theme_container",
                             ];
                                 break;
                         case "Image":
@@ -104,6 +110,9 @@ export default {
                             ];
                             handlers=[
                             "studio_icon_handler"
+                            ];
+                            themes=[
+                                "studio_icon_theme_container"
                             ];
                             break;
                         case "vertical-container-block":

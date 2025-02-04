@@ -7,7 +7,6 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/icon";
 import { executeCodeWithClosure } from "core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
-import { eventDispatcher } from "@utils/change-detection.ts";
 
 
 @customElement("icon-block")
@@ -28,7 +27,7 @@ export class IconBlock extends BaseElementBlock {
   }
 
   render() {
-    const iconStyles = this.component?.style || {};
+    const iconStyles = this.calculatedStyles || {};
     const iconStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
       Object.entries(this.component?.styleHandlers).filter(([, value]) => value)) : {};
 

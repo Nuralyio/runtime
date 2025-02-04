@@ -186,33 +186,17 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         style: {},
         event: {
           valueChange: /* js */ `
-            try {
-              const selectedComponents = GetVar("selectedComponents") || [];
-              if (selectedComponents.length) {
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                updateStyle(currentComponent, "${item.cssVar}", EventData.value);
-              }
-            } catch (error) {
-              console.log(error);
-            }
+            const selectedComponent = Utils.first(Editor.selectedComponents);
+            updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
           `
         },
         input: {
           value: {
             type: "handler",
             value: /* js */ `
-              try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                  const selectedComponent = selectedComponents[0];
-                  const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                  return currentComponent.style?.["${item.cssVar}"] || "black";
-                }
-              } catch (e) {
-                console.log(e);
-              }
-            `
+              const selectedComponent = Utils.first(Editor.selectedComponents);
+              return  Editor.getComponentStyle(Utils.first(Editor.selectedComponents), "${item.cssVar}") ?? "black";
+              `
           }
         }
       },
@@ -226,34 +210,17 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
           value: {
             type: "handler",
             value: /* js */ `
-              const parameter = "${item.cssVar}";
-              let handler = "";
-              try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                  const selectedComponent = selectedComponents[0];
-                  const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                  handler = currentComponent?.styleHandlers && currentComponent?.styleHandlers["${item.cssVar}"] || "";
-                }
-              } catch (error) {
-                console.log(error);
-              }
-              return [parameter, handler];
+              const cssVarValue = "${item.cssVar}";
+              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const handler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers[cssVarValue] || "";
+              return [cssVarValue, handler];
             `
           }
         },
         event: {
           codeChange: /* js */ `
-            try {
-              const selectedComponents = GetVar("selectedComponents") || [];
-              if (selectedComponents.length) {
-                const selectedComponent = selectedComponents[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                updateStyleHandlers(currentComponent, "${item.cssVar}", EventData.value);
-              }
-            } catch (error) {
-              console.log(error);
-            }
+              const selectedComponent = Utils.first(Editor.selectedComponents);
+              updateStyleHandlers(selectedComponent, "${item.cssVar}", EventData.value);
           `
         }
 
