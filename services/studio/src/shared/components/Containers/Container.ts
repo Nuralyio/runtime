@@ -62,23 +62,6 @@ export class VerticalContainer extends BaseElementBlock {
   }
   protected updated(_changedProperties: PropertyValues): void {
     super.updated(_changedProperties);
-    this.applyHostStyles();
-  }
-
-  private applyHostStyles(): void {
-    if (this.component?.style) {
-      const { width, height} = this.calculatedStyles;
-
-      // Dynamically apply styles to the :host element
-      Object.assign(this.style, {
-        width: width || "auto",
-        height: height || "auto",
-      });
-      // if(this.closestGenericComponentWrapper) {
-      //   this.closestGenericComponentWrapper.style.width =  width || "auto"
-      //   this.closestGenericComponentWrapper.style.height =  height || "auto"
-      // }
-    }
   }
   onContextMenu(e: MouseEvent) {
     e.preventDefault();
@@ -90,10 +73,8 @@ export class VerticalContainer extends BaseElementBlock {
       setContextMenuEvent(e);
     }
   }
-
   renderView() {
     return html`
-    
       <div
         data-component-uuid=${this.component?.uuid}
         style=${styleMap({
@@ -121,8 +102,7 @@ export class VerticalContainer extends BaseElementBlock {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
-      //console.log('data', data)
-     this.traitInputsHandlers();
+      this.traitInputsHandlers();
       this.requestUpdate()
     });
   }
@@ -131,6 +111,12 @@ export class VerticalContainer extends BaseElementBlock {
     const verticalContainerStyles =this.calculatedStyles || {};
     const verticalContainerAutoWidth = this.calculatedStyles?.width;
     const verticalContainerAutoHeight = this.calculatedStyles?.height;
+    if(this.isViewMode ){
+      this.style.width = this.calculatedStyles?.width;
+
+    }else{
+      this.closestGenericComponentWrapper!.style.width = this.calculatedStyles?.width;
+    }
     if(!this.shouldDisplay) return nothing;
     return html`
       ${this.isViewMode
