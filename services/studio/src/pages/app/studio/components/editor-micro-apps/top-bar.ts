@@ -3,7 +3,6 @@ import { ComponentType } from "$store/component/interface.ts";
 export default [{
   uuid: "top-bar",
   application_id: "1",
-  application_id: "1",
   name: "top bar",
   component_type: ComponentType.Container,
 
@@ -400,9 +399,7 @@ export default [{
     },
     event:{
       onClick: /* js */`
-          setTimeout(()=>{
             SetVar("currentEditingMode" , "edit")
-          },0)
         `
     },
     input: {
