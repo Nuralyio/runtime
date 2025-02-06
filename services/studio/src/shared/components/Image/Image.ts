@@ -12,7 +12,7 @@ export class ImageBlock extends BaseElementBlock {
 
 
   render() {
-    const imageStyles = this.component?.style || {};
+    const imageStyles = this.calculatedStyles || {};
     const imageStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
       Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
     return html`
