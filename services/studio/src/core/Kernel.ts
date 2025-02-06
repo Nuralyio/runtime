@@ -16,6 +16,7 @@ import { eventDispatcher } from "@utils/change-detection";
 import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler";
 import { Utils } from "./Utils";
 import Editor from "./Editor"
+import { Navigation } from "./Navigation";
 const DEBUG = false;
 
 /**
@@ -234,6 +235,7 @@ class Executor {
         "AddComponent",
         "SetContextVar",
         "AddPage",
+        "Navigation",
         "UpdatePage",
         "context",
         "applications",
@@ -396,6 +398,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     AddComponent,
     SetContextVar,
     AddPage,
+    Navigation,
     updatePage,
     context,
     applications,

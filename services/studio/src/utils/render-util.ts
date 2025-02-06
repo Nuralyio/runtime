@@ -33,42 +33,42 @@ import "@shared/components/Button/Button.ts"
 import "@shared/components/TextLabel/TextLabel.ts"
 
 // Reusable templates for common components
-const selectTemplate = (props: any) => html`<select-block .item=${props.item} .component=${props.component}></select-block>`;
-const iconButtonTemplate = (props: any) => html`<icon-button-block .item=${props.item} .component=${props.component}></icon-button-block>`;
-const colorPickerTemplate = (props: any) => html`<color-picker-block .item=${props.item} .component=${props.component}></color-picker-block>`;
-const numberInputTemplate = (props: any) => html`<number-input-block .item=${props.item} .component=${props.component}></number-input-block>`;
-const shadowBoxTemplate = (props: any) => html`<attribute-box-shadow-value .item=${props.item} .component=${props.component}></attribute-box-shadow-value>`;
-const borderRadiusTemplate = (props: any) => html`<attribute-border-value .item=${props.item} .component=${props.component}></attribute-border-value>`;
-const eventTemplate = (props: any) => html`<parameter-event-handler .item=${props.item} .component=${props.component}></parameter-event-handler>`;
-const tableTemplate = (props: any) => html`<table-block .item=${props.item} .component=${props.component}></table-block>`;
-const textInputTemplate = (props: any) => html`<text-input-block .item=${props.item} .component=${props.component}></text-input-block>`;
-const textLabelTemplate = (props: any) => html`<text-label-block .item=${props.item} .component=${props.component}></text-label-block>`;
-const buttonTemplate = (props: any) => html`<button-block .item=${props.item} .component=${props.component}></button-block>`;
-const tabsTemplate = (props: any) => html`<tabs-block .item=${props.item} .component=${props.component}></tabs-block>`;
-const menuTemplate = (props: any) => html`<menu-block .item=${props.item} .component=${props.component}></menu-block>`;
-const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<vertical-container-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></vertical-container-block>`;
+const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
+const iconButtonTemplate = (props: any, isViewMode: boolean)  => html`<icon-button-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></icon-button-block>`;
+const colorPickerTemplate = (props: any, isViewMode: boolean)  => html`<color-picker-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></color-picker-block>`;
+const numberInputTemplate = (props: any, isViewMode: boolean)  => html`<number-input-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></number-input-block>`;
+const shadowBoxTemplate = (props: any, isViewMode: boolean)  => html`<attribute-box-shadow-value .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></attribute-box-shadow-value>`;
+const borderRadiusTemplate = (props: any, isViewMode: boolean)  => html`<attribute-border-value .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></attribute-border-value>`;
+const eventTemplate = (props: any, isViewMode: boolean)  => html`<parameter-event-handler .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></parameter-event-handler>`;
+const tableTemplate = (props: any, isViewMode: boolean)  => html`<table-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></table-block>`;
+const textInputTemplate = (props: any, isViewMode: boolean)  => html`<text-input-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></text-input-block>`;
+const textLabelTemplate = (props: any, isViewMode: boolean)  => html`<text-label-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></text-label-block>`;
+const buttonTemplate = (props: any, isViewMode: boolean)  => html`<button-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></button-block>`;
+const tabsTemplate = (props: any, isViewMode: boolean)  => html`<tabs-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></tabs-block>`;
+const menuTemplate = (props: any, isViewMode: boolean)  => html`<menu-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></menu-block>`;
+const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<vertical-container-block .isViewMode=${isViewMode}  .item=${props.item} .component=${props.component}></vertical-container-block>`;
 const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<collection-viewer .isViewMode=${isViewMode} .component=${props.component}></collection-viewer>`;
-const checkboxTemplate = (props: any) => html`<checkbox-block .item=${props.item} .component=${props.component}></checkbox-block>`;
-const datePickerTemplate = (props: any) => html`<date-picker-block .item=${props.item} .component=${props.component}></date-picker-block>`;
-const iconTemplate = (props: any) => html`<icon-block .item=${props.item} .component=${props.component}></icon-block>`;
-const imageTemplate = (props: any) => html`<image-block .item=${props.item} .component=${props.component}></image-block>`;
-const radioButtonTemplate = (props: any) => html`<radio-button-block .item=${props.item} .component=${props.component}></radio-button-block>`;
-const aiTemplate = (props: any) => html`<ai-chat-block .item=${props.item} .component=${props.component}></ai-chat-block>`;
-const iconPickerTemplate = (props: any) => html`<icon-picker-block .item=${props.item} .component=${props.component}></icon-picker-block>`;
-const usersDropdownTemplate = (props: any) => html`<users-dropdown-block .item=${props.item} .component=${props.component}></users-dropdown-block>`;
-const insertDropdownTemplate = (props: any) => html`<insert-dropdown-block .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
-const microAppTemplate = (props: any) => html`<micro-app-block .item=${props.item} .component=${props.component}></micro-app-block>`;
-const collapseTemplate = (props: any) => html`<collapse-block .item=${props.item} .component=${props.component}></collapse-block>`;
-const dividerTemplate = (props: any) => html`<divider-block .item=${props.item} .component=${props.component}></divider-block>`;
-const handlersTemplate = (props: any) => html`<handler-block .item=${props.item} .component=${props.component}></handler-block>`;
+const checkboxTemplate = (props: any, isViewMode: boolean)  => html`<checkbox-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></checkbox-block>`;
+const datePickerTemplate = (props: any, isViewMode: boolean)  => html`<date-picker-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></date-picker-block>`;
+const iconTemplate = (props: any, isViewMode: boolean)  => html`<icon-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></icon-block>`;
+const imageTemplate = (props: any, isViewMode: boolean)  => html`<image-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></image-block>`;
+const radioButtonTemplate = (props: any, isViewMode: boolean)  => html`<radio-button-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></radio-button-block>`;
+const aiTemplate = (props: any, isViewMode: boolean)  => html`<ai-chat-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></ai-chat-block>`;
+const iconPickerTemplate = (props: any, isViewMode: boolean)  => html`<icon-picker-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></icon-picker-block>`;
+const usersDropdownTemplate = (props: any, isViewMode: boolean)  => html`<users-dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></users-dropdown-block>`;
+const insertDropdownTemplate = (props: any, isViewMode: boolean)  => html`<insert-dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
+const microAppTemplate = (props: any, isViewMode: boolean)  => html`<micro-app-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></micro-app-block>`;
+const collapseTemplate = (props: any, isViewMode: boolean)  => html`<collapse-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></collapse-block>`;
+const dividerTemplate = (props: any, isViewMode: boolean)  => html`<divider-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></divider-block>`;
+const handlersTemplate = (props: any, isViewMode: boolean)  => html`<handler-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></handler-block>`;
 
-const invokeFunctionTemplate = (props: any) => html`
-  <invoke-function-block .item=${props.item} .component=${props.component}></invoke-function-block>
+const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
+  <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
 
 
-const importExportTemplate = (props: any) => html`
-  <export-import-block .item=${props.item} .component=${props.component}></export-import-block>
+const importExportTemplate = (props: any, isViewMode: boolean)  => html`
+  <export-import-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></export-import-block>
 `;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
@@ -84,65 +84,65 @@ function renderComponentElement(component: ComponentElement, commonProps: any, i
 function getComponentTemplate(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   switch (component?.component_type) {
     case ComponentType.Event:
-      return eventTemplate(commonProps);
+      return eventTemplate(commonProps, isViewMode);
     case ComponentType.BorderRadius:
-      return borderRadiusTemplate(commonProps);
+      return borderRadiusTemplate(commonProps, isViewMode);
     case ComponentType.ShadowBox:
-      return shadowBoxTemplate(commonProps);
+      return shadowBoxTemplate(commonProps, isViewMode);
     case ComponentType.Select:
-      return selectTemplate(commonProps);
+      return selectTemplate(commonProps, isViewMode);
     case ComponentType.IconButton:
-      return iconButtonTemplate(commonProps);
+      return iconButtonTemplate(commonProps, isViewMode);
     case ComponentType.ColorPicker:
-      return colorPickerTemplate(commonProps);
+      return colorPickerTemplate(commonProps, isViewMode);
     case ComponentType.NumberInput:
-      return numberInputTemplate(commonProps);
+      return numberInputTemplate(commonProps, isViewMode);
     case ComponentType.TextInput:
-      return textInputTemplate(commonProps);
+      return textInputTemplate(commonProps, isViewMode);
     case ComponentType.TextLabel:
-      return textLabelTemplate(commonProps);
+      return textLabelTemplate(commonProps, isViewMode);
     case ComponentType.Button:
-      return buttonTemplate(commonProps);
+      return buttonTemplate(commonProps, isViewMode);
     case ComponentType.Tabs:
-      return tabsTemplate(commonProps);
+      return tabsTemplate(commonProps, isViewMode);
     case ComponentType.Menu:
-      return menuTemplate(commonProps);
+      return menuTemplate(commonProps, isViewMode);
     case ComponentType.Table:
-      return tableTemplate(commonProps);
+      return tableTemplate(commonProps, isViewMode);
     case ComponentType.Container:
       return verticalContainerTemplate(commonProps, isViewMode);
     case ComponentType.Collection:
       return collectionViewerTemplate(commonProps, isViewMode);
     case ComponentType.Checkbox:
-      return checkboxTemplate(commonProps);
+      return checkboxTemplate(commonProps, isViewMode);
     case ComponentType.DatePicker:
-      return datePickerTemplate(commonProps);
+      return datePickerTemplate(commonProps, isViewMode);
     case ComponentType.Divider:
-      return dividerTemplate(commonProps);
+      return dividerTemplate(commonProps, isViewMode);
     case ComponentType.Icon:
-      return iconTemplate(commonProps);
+      return iconTemplate(commonProps, isViewMode);
     case ComponentType.Image:
-      return imageTemplate(commonProps);
+      return imageTemplate(commonProps, isViewMode);
     case ComponentType.RadioButton:
-      return radioButtonTemplate(commonProps);
+      return radioButtonTemplate(commonProps, isViewMode);
     case ComponentType.AI:
-      return aiTemplate(commonProps);
+      return aiTemplate(commonProps, isViewMode);
     case ComponentType.IconPicker:
-      return iconPickerTemplate(commonProps);
+      return iconPickerTemplate(commonProps, isViewMode);
     case ComponentType.MicroApp:
-      return microAppTemplate(commonProps);
+      return microAppTemplate(commonProps, isViewMode);
     case ComponentType.UsersDropdown:
-      return usersDropdownTemplate(commonProps);
+      return usersDropdownTemplate(commonProps, isViewMode);
     case ComponentType.InsertDropdown:
-      return insertDropdownTemplate(commonProps);
+      return insertDropdownTemplate(commonProps, isViewMode);
     case ComponentType.Collapse:
-      return collapseTemplate(commonProps);
+      return collapseTemplate(commonProps, isViewMode);
     case ComponentType.Handlers:
-      return handlersTemplate(commonProps);
+      return handlersTemplate(commonProps, isViewMode);
    case ComponentType.ExportImport:
-      return importExportTemplate(commonProps);
+      return importExportTemplate(commonProps, isViewMode);
     case ComponentType.InvokeFunction:
-      return invokeFunctionTemplate(commonProps);
+      return invokeFunctionTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

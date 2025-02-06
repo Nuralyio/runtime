@@ -90,15 +90,17 @@ export class TextLabelBlock extends BaseElementBlock {
     if(!this.shouldDisplay) return nothing;
 
     return html`
-   
+
           <hy-label
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
             style=${styleMap(combinedStyles)}
             @click=${() => {
-        if (this.component.event?.onClick) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item );
-        }
+              if(this.isViewMode){
+                if (this.component.event?.onClick) {
+                  executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item );
+                }
+              }
       }}
             @mouseenter=${() => {
         if (this.component?.event?.mouseEnter) {
