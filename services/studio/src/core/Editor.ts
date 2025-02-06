@@ -29,5 +29,5 @@ class Editor {
     }
 
 }
-
-export default new Editor();
+const EditorInstance = new Editor();
+export default EditorInstance;

@@ -107,7 +107,7 @@ export class CollectionViwer extends BaseElementBlock {
           }
         ),
         JSON.parse(JSON.stringify(item)),
-        this.isPreviewMode()
+        this.isViewMode
       )}
           `
       : html`
