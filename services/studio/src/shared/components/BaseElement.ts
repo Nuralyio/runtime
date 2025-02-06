@@ -205,7 +205,11 @@ export class BaseElementBlock extends LitElement {
     });
     super.connectedCallback();
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
-
+    this.addEventListener("click", (e) => {
+      if (this.component.event?.onClick) {
+        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`), {}, this.item);
+      }
+    });
     // Using the bound handlers
     eventDispatcher.on('component:refresh', this.traitInputsHandlerBound);
     eventDispatcher.on('component:refresh', this.traitStylesHandlerBound);
