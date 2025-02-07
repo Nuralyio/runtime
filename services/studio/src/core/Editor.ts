@@ -1,6 +1,6 @@
 import { setVar } from "$store/context";
 import { eventDispatcher } from "@utils/change-detection";
-import { isServer } from "lit";
+import { isServer } from "utils/envirement";
 
 class Editor {
   components: any[] = [];
