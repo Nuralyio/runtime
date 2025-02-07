@@ -55,7 +55,7 @@ class Executor {
         isMobile: false,
       };
       this.registerApplications();
-      this.updateEditorContext()
+      
 
     });
     eventDispatcher.on("component:refresh", () => this.registerApplications())

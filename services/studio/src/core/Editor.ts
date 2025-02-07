@@ -1,33 +1,89 @@
+import { setVar } from "$store/context";
+import { eventDispatcher } from "@utils/change-detection";
+import { isServer } from "lit";
+
 class Editor {
-    components: any = [];
-    currentEditingApplication: any = {};
-    currentComponent: any = null;
-    selectedComponents : any = [];
-    currentPlatform: any = {};
+  components: any[] = [];
+  currentEditingApplication: any = {};
+  currentComponent: any = null;
+  selectedComponents: any[] = [];
+  currentPlatform: any = {};
+  isPreviewMode: boolean = false;
+  isEditorMode: boolean = false;
 
-    getComponentStyle(component: any, attribute: string) {
-        if (this.currentPlatform.platform !== "desktop") {
-            return {...component?.style, ...component.breakpoints?.[this.currentPlatform.width]?.style}[attribute];
-        } else {
-            return component?.style?.[attribute];
-        }
+  constructor() {
+    if (!isServer) {
+      window.addEventListener("resize", this.handleResize);
+    }
+  }
+
+  private handleResize = () => {
+    if (this.isEditorMode) {
+      this.updatePlatform();
+    }
+  };
+
+  private updatePlatform() {
+    const width = window.innerWidth;
+    let currentPlatform :any= {};
+
+    // Simplified platform logic with clearer conditions
+    if (width <= 500) {
+      currentPlatform = this.createPlatform("mobile", "375px", "767px", true);
+    } else if (width <= 1024) {
+      currentPlatform = this.createPlatform("tablet", "1024px", "768px", true);
+    } else {
+      currentPlatform = this.createPlatform("desktop", "100%", undefined, false);
     }
 
-    getComponentBreakpointStyle(component: any, attribute: string) {
-        return component.breakpoints?.[this.currentPlatform.width].style?.[attribute];
+    // If platform has changed, update the state and trigger events
+    if (currentPlatform.platform !== this.currentPlatform.platform) {
+      this.currentPlatform = { ...currentPlatform };
+      console.log("Platform changed to", this.currentPlatform);
+      setVar("global", "currentPlatform", { ...this.currentPlatform });
+      eventDispatcher.emit("component:refresh");
     }
-    getComponentBreakpointInput(component: any, attributeName: string) {
-        if(this.currentPlatform.platform !== "desktop"){
-            if(component?.input?.[attributeName]?.type === "handler"){
-                return component?.input?.[attributeName];
-            }else{
-                return component.breakpoints?.[this.currentPlatform.width]?.input?.[attributeName] ?? component?.input?.[attributeName];
-            }
-        }else{
-            return component?.input?.[attributeName];
-        }
-    }
+  }
 
+  private createPlatform(platform: string, width: string, height?: string, isMobile: boolean = false) {
+    return { platform, width, height, isMobile };
+  }
+
+  setEditorMode(isEditorMode: boolean) {
+    this.isEditorMode = isEditorMode;
+    if (this.isEditorMode) {
+      this.updatePlatform();
+    }
+  }
+
+  getEditorMode() {
+    return this.isEditorMode;
+  }
+
+  getComponentStyle(component: any, attribute: string) {
+    if (this.currentPlatform.platform !== "desktop") {
+      const breakpointStyle = component?.breakpoints?.[this.currentPlatform.width]?.style;
+      return { ...component?.style, ...breakpointStyle }[attribute];
+    } else {
+      return component?.style?.[attribute];
+    }
+  }
+
+  getComponentBreakpointStyle(component: any, attribute: string) {
+    return component?.breakpoints?.[this.currentPlatform.width]?.style?.[attribute];
+  }
+
+  getComponentBreakpointInput(component: any, attributeName: string) {
+    if (this.currentPlatform.platform !== "desktop") {
+      const input = component?.input?.[attributeName];
+      if (input?.type === "handler") {
+        return input;
+      }
+      return component?.breakpoints?.[this.currentPlatform.width]?.input?.[attributeName] ?? input;
+    }
+    return component?.input?.[attributeName];
+  }
 }
+
 const EditorInstance = new Editor();
 export default EditorInstance;

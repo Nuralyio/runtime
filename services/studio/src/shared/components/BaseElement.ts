@@ -124,6 +124,7 @@ export class BaseElementBlock extends LitElement {
   }
 
   async traitStyleHandler(style: any, styleName: string): Promise<void> {
+    this.calculateStyles();
     if (isServer) {
       return;
     }
@@ -158,21 +159,23 @@ export class BaseElementBlock extends LitElement {
     }
   }
 
-  override update(changedProperties: PropertyValueMap<any>) {
-    super.update(changedProperties);
+  private calculateStyles() {
 
     if (this.currentPlatform?.platform !== "desktop") {
       this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width]?.style ?? {};
       if (this.component?.style) {
-        this.calculatedStyles = Object.assign(
-          {},
-          this.component?.style,
-          this.calculatedStyles
-        );
+        this.calculatedStyles = Object.assign({}, this.component?.style, this.calculatedStyles);
       }
     } else {
       this.calculatedStyles = this.component?.style || {};
     }
+
+  }
+
+  override update(changedProperties: PropertyValueMap<any>) {
+    super.update(changedProperties);
+
+      this.calculateStyles();
     if (this.closestGenericComponentWrapper && false) {
       if (
         this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width ||
