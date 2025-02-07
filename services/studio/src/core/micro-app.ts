@@ -10,6 +10,7 @@ import { eventDispatcher } from "utils/change-detection";
 import { $environment, ViewMode } from "$store/environment";
 import { debounceTime } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
+import EditorInstance from "./Editor";
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
@@ -22,7 +23,8 @@ export class MicroApp extends LitElement {
   @property({ type: String, reflect: true }) uuid!: string;
   @property({ type: String, reflect: true }) page_uuid?: string;
   @property({ type: String, reflect: true }) componentToRenderUUID?: string;
-  @property({ type: Object, reflect: false }) mode: ViewMode = ViewMode.Preview;
+  @property({ type: String, reflect: false }) mode: ViewMode = ViewMode.Preview;
+  @property({ type: Boolean, reflect: false }) prod = true;
 
   @state() components: any[] = [];
 
@@ -45,6 +47,7 @@ export class MicroApp extends LitElement {
     super.connectedCallback();
     this.initializeAppComponents();
     this.setupSubscriptions();
+    EditorInstance.setEditorMode(this.prod);
   }
 
   /**
