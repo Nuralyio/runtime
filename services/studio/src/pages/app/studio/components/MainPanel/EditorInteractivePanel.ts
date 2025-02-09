@@ -41,7 +41,6 @@ export class EditorInteractivePanel extends LitElement {
 
   constructor() {
     super();
-    this.initializeSubscriptions();
   }
 
   handleScroll = (event: Event) => {
@@ -52,6 +51,7 @@ export class EditorInteractivePanel extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.initializeSubscriptions();
     $contextMenuEvent.subscribe(this.handleContextMenuEvent);
     requestAnimationFrame(() => {
       this.shadowRoot?.querySelector(".page-container")?.addEventListener("scroll", this.handleScroll);
@@ -100,7 +100,7 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   private initializeSubscriptions() {
-    $selectedComponent($currentApplication.get().uuid).subscribe(selectedComponent => {
+    $selectedComponent($currentApplication.get()?.uuid).subscribe(selectedComponent => {
       this.selectedComponent = selectedComponent;
     });
 
