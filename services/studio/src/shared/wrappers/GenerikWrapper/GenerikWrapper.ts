@@ -148,11 +148,7 @@ export class GenerikComponentWrapper extends LitElement {
             @mouseenter=${() => setHoveredComponentAction(this.component)}
             @mouseleave=${() => setHoveredComponentAction(null)}
           >
-            <component-title
-              @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}
-              .component=${{ ...this.component }}
-              .selectedComponent=${{ ...this.selectedComponent }}
-            ></component-title>
+         
             <div
               ${ref(this.inputRef)}
               class=${classMap({ selected: this.selectedComponent?.uuid === this.component.uuid })}
@@ -172,6 +168,13 @@ export class GenerikComponentWrapper extends LitElement {
               </div>
               <slot></slot>
             </div>
+            <component-title
+              @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}
+              .component=${{ ...this.component }}
+              .selectedComponent=${{ ...this.selectedComponent }}
+              .hoveredComponent=${{ ...this.hoveredComponent }}
+
+            ></component-title>
           </span>
         </drag-wrapper>
       </resize-wrapper>

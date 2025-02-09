@@ -1,7 +1,6 @@
-import { html, LitElement, nothing, type PropertyValueMap } from "lit";
+import { css, html, LitElement, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import styles from "./DragWrapper.style.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
@@ -9,120 +8,239 @@ import { moveDraggedComponent } from "$store/actions/component/moveDraggedCompon
 
 @customElement("drag-wrapper")
 export class DragWrapper extends LitElement {
-  static styles = styles;
+  static styles = [
+    css`
+      .drop-zone {
+        display: block;
+        opacity: 0;
+        height: 100px;
+        margin: 0;
+        border: 0;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        position: relative;
+        background-color: transparent;
+        pointer-events: auto;
+        min-width: 100px;
+        max-width: 100%;
+      }
+
+      .drop-zone::before {
+        content: "Drop before";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .drop-zone.active {
+        opacity: 1;
+        height: 40px;
+        margin: 2px auto;
+        border: 2px dashed #3b82f6;
+        background-color: #eff6ff;
+      }
+
+      .drop-zone.active.target::before {
+        color: #3b82f6;
+        opacity: 1;
+      }
+    `
+  ];
+
   slotRef: Ref<HTMLInputElement> = createRef();
+  
   @property({ type: Object })
   component: ComponentElement;
-  @property({
-    type: Object
-  })
+
+  @property({ type: Object })
   draggingComponentInfo: DraggingComponentInfo;
+
   @state()
   isDragging: boolean;
+
   @state()
-  dropDragPalceHolderStyle = {
-    display: "none",
-    height: "20px",
-    width: "auto",
-    backgroundColor: "rgb(202 235 255)",
-    zIndex: "7",
-    borderRadius: " 2px"
+  dropBeforePlaceHolderStyle = {
+    opacity: "0",
+    height: "0px",
+    width: "100%",
+    border: "0",
+    margin: "0",
+    backgroundColor: "transparent"
   };
 
-  firstUpdated(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-  }
+  @state()
+  dropAfterPlaceHolderStyle = {
+    opacity: "0",
+    height: "0px",
+    width: "100%",
+    border: "0",
+    margin: "0",
+    backgroundColor: "transparent"
+  };
 
-  updated(changedProperties) {
+  updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "draggingComponentInfo") {
-        if ([...changedProperties][1][1]) {
-          this.isDragging = true;
-        } else {
-          this.isDragging = false;
-        }
+        this.isDragging = Object.keys(this.draggingComponentInfo || {}).length > 0;
       }
     });
   }
 
+  private pendingLeaveTimeout: number | null = null;
+
+  private handleDragLeave(e: DragEvent) {
+    e.preventDefault();
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    
+    if (this.pendingLeaveTimeout) {
+      clearTimeout(this.pendingLeaveTimeout);
+      this.pendingLeaveTimeout = null;
+    }
+
+    if (!relatedTarget || !this.contains(relatedTarget)) {
+      this.pendingLeaveTimeout = setTimeout(() => {
+        this.resetDropZones();
+        this.pendingLeaveTimeout = null;
+      }, 80) as unknown as number;
+    }
+  }
+
+  private resetDropZones() {
+    this.dropBeforePlaceHolderStyle = {
+      opacity: "0",
+      height: "0px",
+      width: "100%",
+      border: "0",
+      margin: "0",
+      backgroundColor: "transparent"
+    };
+    this.dropAfterPlaceHolderStyle = {
+      opacity: "0",
+      height: "0px",
+      width: "100%",
+      border: "0",
+      margin: "0",
+      backgroundColor: "transparent"
+    };
+  }
+
+  private handleDragOver(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (this.pendingLeaveTimeout) {
+      clearTimeout(this.pendingLeaveTimeout);
+      this.pendingLeaveTimeout = null;
+    }
+
+    const rect = this.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const midPoint = rect.height / 2;
+    
+    const componentWidth = this.draggingComponentInfo?.blockInfo?.width 
+      ? `${this.draggingComponentInfo.blockInfo.width}`
+      : "100%";
+
+    const activeStyle = {
+      opacity: "1",
+      height: "40px",
+      width: "100%",
+      border: "2px dashed #3b82f6",
+      margin: "2px auto",
+      backgroundColor: "#eff6ff"
+    };
+
+    if (y < midPoint) {
+      this.dropBeforePlaceHolderStyle = activeStyle;
+      this.dropAfterPlaceHolderStyle = this.getInactiveStyle();
+    } else {
+      this.dropBeforePlaceHolderStyle = this.getInactiveStyle();
+      this.dropAfterPlaceHolderStyle = activeStyle;
+    }
+  }
+
+  private getInactiveStyle() {
+    return {
+      opacity: "0",
+      height: "0px",
+      width: "100%",
+      border: "0",
+      margin: "0",
+      backgroundColor: "transparent"
+    };
+  }
+
+  private handleDrop(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.resetDropZones();
+  }
+
+  private handleDropBefore(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!this.draggingComponentInfo?.componentId) return;
+    
+    moveDraggedComponent(this.component.uuid, this.draggingComponentInfo.componentId, "before");
+    setDraggingComponentInfo(null);
+    this.resetDropZones();
+  }
+
+  private handleDropAfter(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!this.draggingComponentInfo?.componentId) return;
+    
+    moveDraggedComponent(this.component.uuid, this.draggingComponentInfo.componentId, "after");
+    setDraggingComponentInfo(null);
+    this.resetDropZones();
+  }
+
   render() {
-    const isDragintiator =
-      this.component.uuid === this.draggingComponentInfo?.componentId;
-    return html`<div
-      ${ref(this.slotRef)}
-      @dragover=${(e) => {
-      e.preventDefault();
-      this.dropDragPalceHolderStyle = {
-        ...this.dropDragPalceHolderStyle,
-        display: "block"
-      };
-    }}
-      @drop=${(e: Event) => {
-      this.dropDragPalceHolderStyle = {
-        ...this.dropDragPalceHolderStyle,
-        display: "none",
-        height: "20px",
-        width: "auto"
-      };
-      e.preventDefault();
-    }}
-
-      @dragend=${(e: Event) => {
-      e.preventDefault();
-      setDraggingComponentInfo(null);
-    }}  
-      @dragleave=${(e: DragEvent) => {
-      e.preventDefault();
-      if (!(e.relatedTarget as HTMLElement)?.classList.contains("drop-zone")) {
-        this.dropDragPalceHolderStyle = {
-          ...this.dropDragPalceHolderStyle,
-          display: "none"
-        };
-      }
-    }}
-    >
-      ${this.isDragging && !isDragintiator
-      ? html`<span
-            class="drop-zone "
-            @dragenter=${(e: Event) => {
-        e.preventDefault();
-
-        this.dropDragPalceHolderStyle = {
-          ...this.dropDragPalceHolderStyle,
-          height:
-            this.draggingComponentInfo.blockInfo.height ??
-            this.dropDragPalceHolderStyle.height
-        };
-
-      }}
-            @dragleave=${(e: Event) => {
-        e.preventDefault();
-        this.dropDragPalceHolderStyle = {
-          ...this.dropDragPalceHolderStyle,
-          display: "none",
-          height: "20px",
-          width: "auto"
-        };
-      }}
-            @drop=${(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.dropDragPalceHolderStyle = {
-          ...this.dropDragPalceHolderStyle,
-          display: "none",
-          height: "20px"
-        };
-        moveDraggedComponent(
-          this.component?.uuid,
-          this.draggingComponentInfo.componentId
-        );
-        setDraggingComponentInfo(null);
-
-      }}
-            style=${styleMap(this.dropDragPalceHolderStyle)}
-          ></span> `
-      : nothing}<slot></slot>
-    </div>`;
+    const isDragInitiator = this.component.uuid === this.draggingComponentInfo?.componentId;
+    const beforeActive = this.dropBeforePlaceHolderStyle.opacity === "1";
+    const afterActive = this.dropAfterPlaceHolderStyle.opacity === "1";
+  
+    return html`
+      <div
+        ${ref(this.slotRef)}
+        @dragover=${this.handleDragOver}
+        @dragleave=${this.handleDragLeave}
+        @drop=${this.handleDrop}
+        @dragend=${(e: Event) => {
+          e.preventDefault();
+          setDraggingComponentInfo(null);
+          this.resetDropZones();
+        }}
+      >
+        ${!isDragInitiator
+          ? html`<div
+              class="drop-zone ${beforeActive ? 'active target' : ''}"
+              style=${styleMap(this.dropBeforePlaceHolderStyle)}
+              @dragover=${this.handleDragOver}
+              @drop=${this.handleDropBefore}
+            ></div>`
+          : nothing}
+        
+        <slot></slot>
+    
+        ${!isDragInitiator
+          ? html`<div
+              class="drop-zone ${afterActive ? 'active target' : ''}"
+              style=${styleMap(this.dropAfterPlaceHolderStyle)}
+              @dragover=${this.handleDragOver}
+              @drop=${this.handleDropAfter}
+            ></div>`
+          : nothing}
+      </div>`;
   }
 }

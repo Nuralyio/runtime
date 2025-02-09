@@ -330,12 +330,12 @@ export class ResizeWrapper extends LitElement {
   render() {
     return html`
       <!-- Points -->
+       
       <div
         class=${classMap({
       element: true,
       selected:
-        this.isSelected ||
-        this.hoveredComponent?.uuid === this.component.uuid,
+        this.isSelected ,
       hovered:
         this.hoveredComponent?.uuid === this.component.uuid &&
         this.selectedComponent?.uuid !== this.component.uuid,

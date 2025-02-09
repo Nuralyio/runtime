@@ -20,8 +20,23 @@ export default css`
     height: 100%;
     display: none;
     border: 2px dashed rgb(110 110 110);
+    border-color: #94a3b8;
+    background-color: #f8fafc;
     z-index: -4;
+    min-height: 100px;
   }
+  .drop-zone::before {
+        content: "Drop inside the container";
+        top: 37%;
+        left: 33%;
+        transform: translate(-50%, -50%);
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: opacity 0.2s ease;
+        white-space: nowrap;
+        position:relative
+      }
   .drop-zone-end-of-container-vertical {
     margin-top: auto;
   }
@@ -36,6 +51,7 @@ export default css`
     justify-content: center;
     align-items: center;
     width: 100%;
+    height:100%
   }
 
   @media (prefers-color-scheme: dark) {

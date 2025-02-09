@@ -19,11 +19,13 @@ export class ComponentTitle extends LitElement {
       font-size: 14px;
       cursor: pointer;
       user-select: none;
-      margin-top: -20px;
+      margin-top: 0px;
     }
   `;
   @property({ type: Object })
   component: ComponentElement;
+  @property({ type: Object })
+  hoveredComponent: ComponentElement;
   @state()
   selectedComponents: string[] = [];
   @state()
@@ -50,7 +52,8 @@ export class ComponentTitle extends LitElement {
   }
 
   render() {
-    const displayStyle = this.selectedComponents.includes(this.component.uuid) ? "block" : "none";
+    const displayStyle = this.selectedComponents.includes(this.component.uuid)
+    ||  this.hoveredComponent?.uuid === this.component.uuid ? "block" : "none";
 
     return html`
       <span
