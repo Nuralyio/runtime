@@ -21,48 +21,65 @@ import { eventDispatcher } from "@utils/change-detection.ts";
 @customElement("vertical-container-block")
 export class VerticalContainer extends BaseElementBlock {
   static styles = styles;
+
   @property({ type: Object })
   component: ComponentElement;
+
   @property({ type: Object })
   item: any;
+
   @state()
   dragOverSituation = false;
+
   @state()
   selectedComponent: ComponentElement;
+
   @state()
   hoveredComponent: ComponentElement;
-  @property({
-    type: Object
-  })  
+
+  @property({ type: Object })
   draggingComponentInfo: DraggingComponentInfo;
+
   @property({ type: Boolean })
   isViewMode = false;
+
   @state()
   dropDragPlaceholderStyle = {
     display: "none",
     height: "auto",
     width: "auto",
     minWidth: "80px",
-    backgroundColor: "rgb(202 235 255)",
     zIndex: "7",
-    borderRadius: "2px"
+    borderRadius: "2px",
   };
+
   @state()
   wrapperStyle: any = {};
 
   @state()
   containerRef: Ref<HTMLInputElement> = createRef();
 
+  isDragging: boolean;
+
   override async connectedCallback() {
     await super.connectedCallback();
     this.addEventListener("contextmenu", this.onContextMenu.bind(this));
     $draggingComponentInfo.subscribe((draggingComponentInfo: DraggingComponentInfo) => {
-      this.draggingComponentInfo = draggingComponentInfo || null;
-    })
+      this.draggingComponentInfo = draggingComponentInfo || {};
+      this.isDragging = Object.keys(this.draggingComponentInfo).length > 0;
+      console.log(this.isDragging);
+    });
   }
+
   protected updated(_changedProperties: PropertyValues): void {
     super.updated(_changedProperties);
+    _changedProperties.forEach((_oldValue, propName) => {
+      if (propName === "draggingComponentInfo") {
+        // Handle changes if needed
+      }
+    });
   }
+
   onContextMenu(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -73,28 +90,30 @@ export class VerticalContainer extends BaseElementBlock {
       setContextMenuEvent(e);
     }
   }
+
   renderView() {
     return html`
       <div
         data-component-uuid=${this.component?.uuid}
         style=${styleMap({
           "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
-          ...this.calculatedStyles
+          ...this.calculatedStyles,
         })}
         class=${classMap({
           container: true,
           vertical: this.inputHandlersValue.direction === "vertical",
-          "drag-over": this.dragOverSituation
+          "drag-over": this.dragOverSituation,
         })}
       >
         ${this.component?.childrenIds?.length
           ? renderComponent(
-            this.component.childrenIds.map((id) =>
-              ({
+              this.component.childrenIds.map((id) => ({
                 ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
-                item: this.item
-              } as ComponentElement)
-            )      , this.item, this.isViewMode)
+                item: this.item,
+              })),
+              this.item,
+              this.isViewMode
+            )
           : nothing}
       </div>
     `;
@@ -103,136 +122,127 @@ export class VerticalContainer extends BaseElementBlock {
   protected firstUpdated(_changedProperties: PropertyValues): void {
     eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
       this.traitInputsHandlers();
-      this.requestUpdate()
+      this.requestUpdate();
     });
   }
 
-  render() {
-    const verticalContainerStyles =this.calculatedStyles || {};
-    const verticalContainerAutoWidth = this.calculatedStyles?.width;
-    const verticalContainerAutoHeight = this.calculatedStyles?.height;
-    if(this.isViewMode ){
-      this.style.width = this.calculatedStyles?.width;
-
-    }else{
-      this.closestGenericComponentWrapper!.style.width = this.calculatedStyles?.width;
-    }
-    if(!this.shouldDisplay) return nothing;
+  renderDropZone() {
     return html`
-      ${this.isViewMode
-      ? this.renderView()
-      : html`
-        <div
-          data-component-uuid=${this.component?.uuid}
-          ${ref(this.containerRef)}
-          @click="${(e: Event) => {
-            setContextMenuEvent(null);
-            if (!$resizing.get()) {
-              setCurrentComponentIdAction(this.component?.uuid);
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }}"
-          style=${styleMap({
-            ...verticalContainerStyles,
-            width: this.calculatedStyles?.width,
-            height: this.calculatedStyles?.height,
-            "min-height": this.component?.childrenIds?.length ? "auto" : "300px"
-          })}
-          class=${classMap({
-            container: true,
-            vertical: this.inputHandlersValue.direction === "vertical",
-            "drag-over": this.dragOverSituation
-          })}
-          @dragenter=${(e: DragEvent) => {
-            e.preventDefault();
-            this.dragOverSituation = true;
-            this.dropDragPlaceholderStyle.display = "block";
-          }}
-          @dragleave=${(e: DragEvent) => {
-            e.preventDefault();
-            if (!this.isRelatedTargetInsideContainer(e.relatedTarget)) {
-              this.dropDragPlaceholderStyle.display = "none";
-              this.dragOverSituation = false;
-            }               
-
-          }}
-          @dragover=${(e: DragEvent) => e.preventDefault()}
-          @drop=${(e: DragEvent) => {
-            e.preventDefault();
-            this.dragOverSituation = false;
-            moveDraggedComponent(
-              this.component?.uuid,
-              this.draggingComponentInfo.componentId,
-              true
-            );
-            setDraggingComponentInfo(null);
-          }}
-          @dragend=${(e: DragEvent) => {
-            e.preventDefault();
-            this.dragOverSituation = false;
-          }}
-        >
-          ${this.component?.childrenIds?.length
-            ? renderComponent(
-              this.component.childrenIds.map((id) =>
-                ({
-                  ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
-                  item: this.item
-                } as ComponentElement)
-              ),
-              this.item,
-              this.isViewMode
-            )
-            : html`
-                <div
-                  class="empty-message"
-                  @click="${(e: Event) => {
-              setCurrentComponentIdAction(this.component?.uuid);
-            }}"
-                >
-                  Add or Drag an item into this container
-                </div>
-              `}
-            ${
-              this.dragOverSituation ? html`
-              <div
-        
+      <div
         @dragenter=${(e: DragEvent) => e.preventDefault()}
         @dragover=${(e: DragEvent) => e.preventDefault()}
-        
         @drop=${(e: DragEvent) => {
           e.preventDefault();
-         console.log(this.draggingComponentInfo)
-         this.dragOverSituation = false;
+          console.log(this.draggingComponentInfo);
+          this.dragOverSituation = false;
         }}
         @dropend=${(e: DragEvent) => {
           e.preventDefault();
           this.dragOverSituation = false;
         }}
-          style=${styleMap({
-            ...this.dropDragPlaceholderStyle,
-            height:
-              this.draggingComponentInfo?.blockInfo.height ??
-             "100px",
-            width:
-              this.draggingComponentInfo?.blockInfo.width ??
-              this.dropDragPlaceholderStyle.width
-          })}
-          class="drop-zone"
-        ></div>
-      </div>
-      `: nothing}
-    </div>
-  `}
-  `;
+        style=${styleMap({
+          ...this.dropDragPlaceholderStyle,
+          height: this.draggingComponentInfo?.blockInfo?.height ?? "100px",
+          width: "100%",
+        })}
+        class="drop-zone"
+      ></div>
+    `;
+  }
+
+  render() {
+    const verticalContainerStyles = this.calculatedStyles || {};
+    const verticalContainerAutoWidth = this.calculatedStyles?.width;
+    const verticalContainerAutoHeight = this.calculatedStyles?.height;
+
+    if (this.isViewMode) {
+      this.style.width = this.calculatedStyles?.width;
+    } else {
+      this.closestGenericComponentWrapper!.style.width = this.calculatedStyles?.width;
+    }
+
+    if (!this.shouldDisplay) return nothing;
+
+    return html`
+      ${this.isViewMode
+        ? this.renderView()
+        : html`
+            <div
+              data-component-uuid=${this.component?.uuid}
+              ${ref(this.containerRef)}
+              @click="${(e: Event) => {
+                setContextMenuEvent(null);
+                if (!$resizing.get()) {
+                  setCurrentComponentIdAction(this.component?.uuid);
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }}"
+              style=${styleMap({
+                ...verticalContainerStyles,
+                width: this.calculatedStyles?.width,
+                height: this.calculatedStyles?.height,
+                "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
+              })}
+              class=${classMap({
+                container: true,
+                vertical: this.inputHandlersValue.direction === "vertical",
+                "drag-over": this.dragOverSituation,
+              })}
+              @dragenter=${(e: DragEvent) => {
+                if (!this.isRelatedTargetInsideContainer(e.relatedTarget)) {
+                  this.dragOverSituation = true;
+                  this.dropDragPlaceholderStyle.display = "block";
+                }
+              }}
+              @dragleave=${(e: DragEvent) => {
+                if (!this.isRelatedTargetInsideContainer(e.relatedTarget)) {
+                  this.dropDragPlaceholderStyle.display = "none";
+                  this.dragOverSituation = false;
+                }
+              }}
+              @dragover=${(e: DragEvent) => e.preventDefault()}
+              @drop=${(e: DragEvent) => {
+                e.preventDefault();
+                this.dragOverSituation = false;
+                this.dropDragPlaceholderStyle.display = "none";
+                moveDraggedComponent(this.component?.uuid, this.draggingComponentInfo.componentId, "inside");
+                setDraggingComponentInfo(null);
+              }}
+              @dragend=${(e: DragEvent) => {
+                e.preventDefault();
+                this.dragOverSituation = false;
+                this.dropDragPlaceholderStyle.display = "none";
+              }}
+            >
+              ${this.component?.childrenIds?.length
+                ? renderComponent(
+                    this.component.childrenIds.map((id) => ({
+                      ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
+                      item: this.item,
+                    })),
+                    this.item,
+                    this.isViewMode
+                  )
+                : html`
+                    <div
+                      class="empty-message"
+                      @click="${(e: Event) => {
+                        setCurrentComponentIdAction(this.component?.uuid);
+                      }}"
+                    >
+                      Add or Drag an item into this container
+                    </div>
+                  `}
+              ${this.dragOverSituation ? html` ${this.renderDropZone()} ` : nothing}
+            </div>
+          `}
+    `;
   }
 
   private isRelatedTargetInsideContainer(relatedTarget: EventTarget | null): boolean {
     return (
-      relatedTarget instanceof HTMLElement &&
-      (relatedTarget.classList.contains("drag-over") ||
-        relatedTarget.classList.contains("drop-zone") )
+      relatedTarget instanceof HTMLElement && this.containerRef.value?.contains(relatedTarget)
     );
   }
 }

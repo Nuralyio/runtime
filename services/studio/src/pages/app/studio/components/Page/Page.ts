@@ -230,7 +230,7 @@ export class PageContent extends LitElement {
           "width": this.currentPlatform?.width || "auto",
           "height": this.currentPlatform?.height || "",
         })}
-        @click=${this.handlePageClick}
+        @mousedown=${this.handlePageClick}
         @dragend=${this.preventDefault}
         @dragenter=${this.preventDefault}
         @dragleave=${this.preventDefault}
@@ -250,7 +250,7 @@ export class PageContent extends LitElement {
   handlePageClick(e) {
     if (!$resizing.get()) {
       if (!this.isViewMode) {
-        setCurrentComponentIdAction(null);
+      //  setVar("global", "selectedComponents", []);
       }
     }
   }

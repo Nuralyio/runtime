@@ -176,14 +176,11 @@ export class BaseElementBlock extends LitElement {
     super.update(changedProperties);
 
       this.calculateStyles();
-    if (this.closestGenericComponentWrapper && false) {
+    if (this.closestGenericComponentWrapper) {
       if (
         this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width ||
         this.closestGenericComponentWrapper!.style.height !== this.calculatedStyles.height
       ) {
-        this.closestGenericComponentWrapper!.style.display = "block";
-        this.closestGenericComponentWrapper!.style.width = this.calculatedStyles.width || "auto";
-        this.closestGenericComponentWrapper!.style.height = this.calculatedStyles.height || "auto";
         eventDispatcher.emit("refresh:resize" + this.component.uuid, {}, 0);
       }
     }
@@ -209,9 +206,7 @@ export class BaseElementBlock extends LitElement {
     super.connectedCallback();
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
     this.addEventListener("click", (e) => {
-      if (this.component.event?.onClick) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`), {}, this.item);
-      }
+    
     });
     // Using the bound handlers
     eventDispatcher.on('component:refresh', this.traitInputsHandlerBound);

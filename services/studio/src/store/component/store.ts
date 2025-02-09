@@ -37,14 +37,7 @@ export const $currentComponentId = persistentAtom<string>(
 export const $hoveredComponentId = atom<string>(null);
 export const $hoveredComponent = atom<Object>(null);
 
-export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
-  "draggingComponentInfo",
-  null,
-  {
-    encode: JSON.stringify,
-    decode: JSON.parse
-  }
-);
+export const $draggingComponentInfo = atom<Object>(null)
 
 export const $applicationComponents = ($application_id: string) => computed(
   [$components],
