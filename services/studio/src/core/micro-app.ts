@@ -44,9 +44,9 @@ export class MicroApp extends LitElement {
   }
 
   override connectedCallback(): void {
+    this.setupSubscriptions();
     super.connectedCallback();
     this.initializeAppComponents();
-    this.setupSubscriptions();
     EditorInstance.setEditorMode(this.prod);
   }
 
@@ -83,7 +83,7 @@ export class MicroApp extends LitElement {
     ];
 
     merge(...observables)
-      .pipe(debounceTime(10))
+      .pipe(debounceTime(30))
       .subscribe(() => this.refreshComponent());
   }
 
