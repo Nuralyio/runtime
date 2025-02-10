@@ -2,6 +2,7 @@ import { atom, computed, deepMap, onMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
 import { type PageElement } from "./handlers/pages/interfaces/interface";
 import { setVar } from "$store/context";
+import { eventDispatcher } from "@utils/change-detection";
 
 /**
  * Pages stores
@@ -83,13 +84,14 @@ export const $currentPage = ($application_id: string, currentPageId: string) => 
     return currentPage;
   }
 );
-$pages.subscribe((pagesStore) => {
-  Object.keys(pagesStore).forEach((key) => {
-    setVar(key, `${key}.appPages`, pagesStore[key]);
-  });
-});
-onMount($pages, () => {
 
+onMount($pages, () => {
+  $pages.subscribe((pagesStore) => {
+    Object.keys(pagesStore).forEach((key) => {
+      setVar(key, `${key}.appPages`, pagesStore[key]);
+      eventDispatcher.emit('component:refresh')
+    });
+  });
 
   return () => {
   };
