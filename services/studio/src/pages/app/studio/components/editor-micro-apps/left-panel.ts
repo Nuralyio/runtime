@@ -256,7 +256,7 @@ export default [{
             }
        
 
-            return appPages.map((page) => {
+            return appPages?.map((page) => {
                 const componentIds = page.component_ids;
                 const appId = page.application_id;
                 const children = [];
