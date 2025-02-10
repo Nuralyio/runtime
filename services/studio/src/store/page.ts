@@ -83,13 +83,13 @@ export const $currentPage = ($application_id: string, currentPageId: string) => 
     return currentPage;
   }
 );
-
-onMount($pages, () => {
-  $pages.subscribe((pagesStore) => {
-    Object.keys(pagesStore).forEach((key) => {
-      setVar(key, `${key}.appPages`, pagesStore[key]);
-    });
+$pages.subscribe((pagesStore) => {
+  Object.keys(pagesStore).forEach((key) => {
+    setVar(key, `${key}.appPages`, pagesStore[key]);
   });
+});
+onMount($pages, () => {
+
 
   return () => {
   };
