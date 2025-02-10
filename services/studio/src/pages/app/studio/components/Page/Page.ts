@@ -71,6 +71,9 @@ export class PageContent extends LitElement {
     }
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
+    if(!currentPage){
+      return;
+    }
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {
