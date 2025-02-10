@@ -195,7 +195,7 @@ export default [{
         value: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = GetVar("currentPage") || appPages[0]?.uuid;
+            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
             const currentComponent= GetVar("selectedComponents");
             
             if(!appPages) {
