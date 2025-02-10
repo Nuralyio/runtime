@@ -124,8 +124,8 @@ export class PageContent extends LitElement {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
     const currentPage = getVar("global", "currentPage");
-    if (!currentPage) {
-      setVar("global", "currentPage", $applicationPages($currentApplication.get().uuid).get()[0]?.uuid);
+    if (!currentPage && $currentApplication.get()) {
+      setVar("global", "currentPage", $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid);
     }
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
   }
