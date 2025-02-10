@@ -309,12 +309,11 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   }
 
   function GetContextVar(symbol: string, customContentId: string | null, component: any): any {
-    const contentId = customContentId || component.application_id;
-    if (context && context[contentId] && context[contentId][symbol] && "value" in context[contentId][symbol]) {
-      return context[contentId][symbol].value
-
-        ;
+    const contentId = customContentId || component?.application_id;
+    if (context && context[contentId] && context[contentId]?.[symbol] && "value" in context[contentId]?.[symbol]) {
+      return context[contentId]?.[symbol]?.value;
     }
+    return null;
   }
 
   function GetVar(symbol: string): any {
