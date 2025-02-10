@@ -52,7 +52,7 @@ export default [
                 const newPageName = EventData.value;
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-                const currentPage = appPages.find((page)=>page.uuid == currentPageId);
+                const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
                 const newPage = {...currentPage,name:newPageName};
                 UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
                     console.log("Page Updated");
@@ -75,7 +75,7 @@ export default [
             if(currentPageId) {
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-                const currentPage = appPages.find((page)=>page.uuid == currentPageId);
+                const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
                 return currentPage?.name || '';
             }
 

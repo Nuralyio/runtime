@@ -957,7 +957,7 @@ export default [{
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
-            const currentPageName = appPages.find((page)=>page.uuid == currentPage).name
+            const currentPageName = appPages?.find((page)=>page.uuid == currentPage).name
             return currentPageName;
             `
       }
