@@ -260,7 +260,6 @@ class Executor {
 }
 
 export const ExecuteInstance = Executor.getInstance();
-
 /**
  * Executes the given code within a closure, providing access to various context and application data.
  * @param {any} component - The component to execute the code for.
@@ -284,6 +283,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   const VarsProxy = ExecuteInstance.VarsProxy;
   const Current = ExecuteInstance.Current;
   const currentPlatform = ExecuteInstance.currentPlatform;
+
   function SetVar(symbol: string, value: any): void {
     setVar("global", symbol, value);
   }
@@ -372,43 +372,48 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
         const textData = await result.text();
         console.log("Text Response:", textData);
         return textData;
-
       }
     } catch (error) {
       console.error("Error in InvokeFunctionHandler:", error);
     }
   }
+
   const closureFunction = ExecuteInstance.prepareClosureFunction(code);
 
-  return closureFunction(
-    PropertiesProxy,
-    Editor,
-    JSON.parse(JSON.stringify(item ?? {})),
-    Current,
-    currentPlatform,
-    Values,
-    Apps,
-    VarsProxy,
-    SetVar,
-    GetContextVar,
-    GetVar,
-    GetComponent,
-    GetComponents,
-    AddComponent,
-    SetContextVar,
-    AddPage,
-    Navigation,
-    updatePage,
-    context,
-    applications,
-    updateInput,
-    updateEvent,
-    updateStyleHandlers,
-    EventData,
-    updateStyle,
-    openEditorTab,
-    setCurrentEditorTab,
-    InvokeFunction,
-    Utils
-  );
+  try {
+    return closureFunction(
+      PropertiesProxy,
+      Editor,
+      JSON.parse(JSON.stringify(item ?? {})),
+      Current,
+      currentPlatform,
+      Values,
+      Apps,
+      VarsProxy,
+      SetVar,
+      GetContextVar,
+      GetVar,
+      GetComponent,
+      GetComponents,
+      AddComponent,
+      SetContextVar,
+      AddPage,
+      Navigation,
+      updatePage,
+      context,
+      applications,
+      updateInput,
+      updateEvent,
+      updateStyleHandlers,
+      EventData,
+      updateStyle,
+      openEditorTab,
+      setCurrentEditorTab,
+      InvokeFunction,
+      Utils
+    );
+  } catch (error) {
+    console.error("Error executing closure function:", error);
+    return null;
+  }
 }
