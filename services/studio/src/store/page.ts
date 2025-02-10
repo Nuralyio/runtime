@@ -84,15 +84,7 @@ export const $currentPage = ($application_id: string, currentPageId: string) => 
     return currentPage;
   }
 );
-
-onMount($pages, () => {
-  $pages.subscribe((pagesStore) => {
-    Object.keys(pagesStore).forEach((key) => {
-      setVar(key, `${key}.appPages`, pagesStore[key]);
-      eventDispatcher.emit('component:refresh')
-    });
-  });
-
-  return () => {
-  };
+const pagesStore = $pages.get()
+Object.keys(pagesStore).forEach((key) => {
+  setVar(key, `${key}.appPages`, pagesStore[key]);
 });
