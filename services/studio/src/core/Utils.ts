@@ -4,6 +4,6 @@ export class Utils {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
     public static first(array: any[]): any {
-        return array[0] ?? null;
+        return array?.[0] ?? null;
     }
 }
