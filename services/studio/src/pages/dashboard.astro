@@ -1,45 +1,50 @@
 ---
-import Layout from './_layouts/LandingLayout.astro';
+import { ApplicationList } from "./applications/ApplicationList";
+import { fetchAllApplications } from "@services/applications.service";
+import { processHeaders } from "utils/api-calls-utils";
+import { $applications } from "$store/apps";
 import "../core/micro-app";
+
 import { MicroApp } from '../core/micro-app';
-import 'dotenv/config'
-import { processHeaders } from '@utils/api-calls-utils';
-import { fetchApplicationPagesById } from '@services/page.service';
-import { fetchApplicationComponentById } from '@services/component.service';
-import { fetchAllApplications } from '@services/applications.service';
-
-const dashboardAPPUUID = process.env.DASHBOARD_APP_UUID;
-const dashboardAPPPageUUID = process.env.DASHBOARD_PAGE_UUID;
-let pageData, componentData, applications, application;
-
 const processedHeaders = processHeaders(Astro.request.headers);
 
-  // Load application pages, components, and applications in parallel
-  const [pageRequest, componentResponse, applicationsRequest] =
-    await Promise.all([
-    fetchApplicationPagesById(processedHeaders, dashboardAPPUUID),
-    fetchApplicationComponentById(processedHeaders, dashboardAPPUUID),
-    fetchAllApplications(processedHeaders)
-  ]);
-  pageData = pageRequest.data;
-
-
-  applications = applicationsRequest.data;
-  application = applications.find((application) => application.uuid === dashboardAPPUUID);
-
-  componentData = componentResponse.data.map((component) => component.component);
-
+let applications = [];
+let error = false;
+const result = await fetchAllApplications(processedHeaders);
+if (result.data) {
+  $applications.set(result.data); 
+  
+} else {
+  console.log(result)
+  error = true;
+}
+applications = result.data;
+console.log($applications.get())
 ---
-<Layout title="Welcome to Astrolus.">
+<head>
+  <title>Nuraly - applications</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+</head>
 
+<div>
+  <div>
+    {error && <div>Something seriously bad happened</div>}
+    {!error && <ApplicationList client:only="lit" />}
+  </div>
   <MicroApp
-  .prod={true}
   client:idle
   mode="preview"
-  uuid={dashboardAPPUUID}
-  page_uuid={dashboardAPPPageUUID}
- ></MicroApp>
-</Layout>
+  uuid={"1"}
+  page_uuid={"c81948a2-5816-4eb7-8f87-f429d0dc0562"}
+></MicroApp>
+</div>
+
+<script define:vars={{ applications }}>
+  window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
+</script>
 <style>
   html {
     overflow: hidden;
@@ -53,9 +58,3 @@ const processedHeaders = processHeaders(Astro.request.headers);
       }
     }
 </style>
-
-<script define:vars={{ pageData, componentData , application}}>
-  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
-  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
-  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
-</script>
