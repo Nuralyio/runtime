@@ -59,8 +59,7 @@ export class GenerikComponentWrapper extends LitElement {
     });
     $hoveredComponent.subscribe((hoveredComponent: ComponentElement) => {
       this.hoveredComponent = hoveredComponent;
-    }
-    );
+    });
     $context.subscribe(() => {
       this.currentSelection = getVar("global", "selectedComponents")?.value || [];
     });
@@ -134,7 +133,10 @@ export class GenerikComponentWrapper extends LitElement {
         .component=${{ ...this.component }}
         .selectedComponent=${{ ...this.selectedComponent }}
         .hoveredComponent=${{ ...this.hoveredComponent }}
+        .inputRef=${this.inputRef}
       >
+      </resize-wrapper>
+
         <drag-wrapper
           .component=${{ ...this.component }}
           .draggingComponentInfo=${{ ...this.draggingComponentInfo }}
@@ -177,7 +179,6 @@ export class GenerikComponentWrapper extends LitElement {
             ></component-title>
           </span>
         </drag-wrapper>
-      </resize-wrapper>
     `;
   }
 

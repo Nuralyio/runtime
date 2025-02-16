@@ -22,7 +22,8 @@ export class InsertDropdownBlock extends BaseElementBlock {
         @click-item=${(e) => {
       if (this.component.event?.onClick) {
         executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`), {
-          value: e.detail.value
+          value: e.detail.value.value,
+          additionalData : e.detail.value.additionalData
         });
       }
     }

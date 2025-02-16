@@ -95,9 +95,7 @@ export class TabsPanel extends LitElement {
   override render() {
     return html`
       ${this.editableTabs.length === 0 ? html`
-		<editor-interactive-panel >
-          <content-page></content-page>
-        </editor-interactive-panel>` : html`
+		` : html`
         <hy-tabs
         style=${
           styleMap({

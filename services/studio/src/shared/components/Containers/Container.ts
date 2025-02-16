@@ -8,16 +8,11 @@ import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "../../../utils/render-util.ts";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import styles from "./Container.style.ts";
-import { getVar } from "$store/context.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
-import { moveDraggedComponentInside } from "$store/actions/component/moveDraggedComponentInside.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
-import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
-import { moveDraggedComponent } from "$store/actions/component/moveDraggedComponent.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
-
+import { Utils } from "core/Utils.ts";
 @customElement("vertical-container-block")
 export class VerticalContainer extends BaseElementBlock {
   static styles = styles;
@@ -44,16 +39,6 @@ export class VerticalContainer extends BaseElementBlock {
   isViewMode = false;
 
   @state()
-  dropDragPlaceholderStyle = {
-    display: "none",
-    height: "auto",
-    width: "auto",
-    minWidth: "80px",
-    zIndex: "7",
-    borderRadius: "2px",
-  };
-
-  @state()
   wrapperStyle: any = {};
 
   @state()
@@ -64,20 +49,6 @@ export class VerticalContainer extends BaseElementBlock {
   override async connectedCallback() {
     await super.connectedCallback();
     this.addEventListener("contextmenu", this.onContextMenu.bind(this));
-    $draggingComponentInfo.subscribe((draggingComponentInfo: DraggingComponentInfo) => {
-      this.draggingComponentInfo = draggingComponentInfo || {};
-      this.isDragging = Object.keys(this.draggingComponentInfo).length > 0;
-      console.log(this.isDragging);
-    });
-  }
-
-  protected updated(_changedProperties: PropertyValues): void {
-    super.updated(_changedProperties);
-    _changedProperties.forEach((_oldValue, propName) => {
-      if (propName === "draggingComponentInfo") {
-        // Handle changes if needed
-      }
-    });
   }
 
   onContextMenu(e: MouseEvent) {
@@ -94,27 +65,36 @@ export class VerticalContainer extends BaseElementBlock {
   renderView() {
     return html`
       <div
+      ${ref(this.inputRef)
+      }
         data-component-uuid=${this.component?.uuid}
         style=${styleMap({
-          "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
-          ...this.calculatedStyles,
-        })}
+        ...this.calculatedStyles,
+        "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
+        "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
+
+      })}
         class=${classMap({
-          container: true,
-          vertical: this.inputHandlersValue.direction === "vertical",
-          "drag-over": this.dragOverSituation,
-        })}
+        container: true,
+        vertical: this.inputHandlersValue.direction === "vertical",
+        "drag-over": this.dragOverSituation,
+      })}
+      @click="${(e: Event) => {
+                this.executeEvent("onclick", e);
+
+              }
+              }"
       >
         ${this.component?.childrenIds?.length
-          ? renderComponent(
-              this.component.childrenIds.map((id) => ({
-                ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
-                item: this.item,
-              })),
-              this.item,
-              this.isViewMode
-            )
-          : nothing}
+        ? renderComponent(
+          this.component.childrenIds.map((id) => ({
+            ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
+            item: this.item,
+          })),
+          this.item,
+          this.isViewMode
+        )
+        : nothing}
       </div>
     `;
   }
@@ -126,123 +106,63 @@ export class VerticalContainer extends BaseElementBlock {
     });
   }
 
-  renderDropZone() {
-    return html`
-      <div
-        @dragenter=${(e: DragEvent) => e.preventDefault()}
-        @dragover=${(e: DragEvent) => e.preventDefault()}
-        @drop=${(e: DragEvent) => {
-          e.preventDefault();
-          console.log(this.draggingComponentInfo);
-          this.dragOverSituation = false;
-        }}
-        @dropend=${(e: DragEvent) => {
-          e.preventDefault();
-          this.dragOverSituation = false;
-        }}
-        style=${styleMap({
-          ...this.dropDragPlaceholderStyle,
-          height: this.draggingComponentInfo?.blockInfo?.height ?? "100px",
-          width: "100%",
-        })}
-        class="drop-zone"
-      ></div>
-    `;
-  }
 
-  render() {
-    const verticalContainerStyles = this.calculatedStyles || {};
-    const verticalContainerAutoWidth = this.calculatedStyles?.width;
-    const verticalContainerAutoHeight = this.calculatedStyles?.height;
-
-    if (this.isViewMode) {
-      this.style.width = this.calculatedStyles?.width;
-    } else {
-      this.closestGenericComponentWrapper!.style.width = this.calculatedStyles?.width;
-    }
-
-    if (!this.shouldDisplay) return nothing;
-
+  override renderComponent() {
     return html`
       ${this.isViewMode
         ? this.renderView()
         : html`
             <div
+            ${ref(this.inputRef)
+          }
               data-component-uuid=${this.component?.uuid}
               ${ref(this.containerRef)}
               @click="${(e: Event) => {
-                setContextMenuEvent(null);
-                if (!$resizing.get()) {
-                  setCurrentComponentIdAction(this.component?.uuid);
-                  e.preventDefault();
-                  e.stopPropagation();
-                }
-              }}"
+            setContextMenuEvent(null);
+            this.executeEvent("onClick", e);
+          }}"
               style=${styleMap({
-                ...verticalContainerStyles,
-                width: this.calculatedStyles?.width,
-                height: this.calculatedStyles?.height,
-                "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
-              })}
+                ...this.getStyles(),
+             "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
+          })}
               class=${classMap({
-                container: true,
-                vertical: this.inputHandlersValue.direction === "vertical",
-                "drag-over": this.dragOverSituation,
-              })}
-              @dragenter=${(e: DragEvent) => {
-                if (!this.isRelatedTargetInsideContainer(e.relatedTarget)) {
-                  this.dragOverSituation = true;
-                  this.dropDragPlaceholderStyle.display = "block";
-                }
-              }}
-              @dragleave=${(e: DragEvent) => {
-                if (!this.isRelatedTargetInsideContainer(e.relatedTarget)) {
-                  this.dropDragPlaceholderStyle.display = "none";
-                  this.dragOverSituation = false;
-                }
-              }}
-              @dragover=${(e: DragEvent) => e.preventDefault()}
-              @drop=${(e: DragEvent) => {
-                e.preventDefault();
-                this.dragOverSituation = false;
-                this.dropDragPlaceholderStyle.display = "none";
-                moveDraggedComponent(this.component?.uuid, this.draggingComponentInfo.componentId, "inside");
-                setDraggingComponentInfo(null);
-              }}
-              @dragend=${(e: DragEvent) => {
-                e.preventDefault();
-                this.dragOverSituation = false;
-                this.dropDragPlaceholderStyle.display = "none";
-              }}
+            container: true,
+            vertical: this.inputHandlersValue.direction === "vertical",
+            horizontal: this.inputHandlersValue.direction !== "vertical",
+          })}
+            
             >
               ${this.component?.childrenIds?.length
-                ? renderComponent(
-                    this.component.childrenIds.map((id) => ({
-                      ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
-                      item: this.item,
-                    })),
-                    this.item,
-                    this.isViewMode
-                  )
-                : html`
+            ? renderComponent(
+              this.component.childrenIds.map((id) => ({
+                ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
+                item: this.item,
+              })),
+              this.item,
+              this.isViewMode
+            )
+            : html`
                     <div
                       class="empty-message"
                       @click="${(e: Event) => {
-                        setCurrentComponentIdAction(this.component?.uuid);
-                      }}"
+                setCurrentComponentIdAction(this.component?.uuid);
+              }}"
                     >
                       Add or Drag an item into this container
+                      <drag-wrapper
+                    .where=${"inside"}
+                    .message=${"Drop inside"}
+                    .component=${{ ...this.component }}
+                    .inputRef=${this.inputRef}
+                    .isDragInitiator=${this.isDragInitiator}
+                  >
+                  </drag-wrapper>
                     </div>
                   `}
-              ${this.dragOverSituation ? html` ${this.renderDropZone()} ` : nothing}
+                 
             </div>
           `}
     `;
   }
 
-  private isRelatedTargetInsideContainer(relatedTarget: EventTarget | null): boolean {
-    return (
-      relatedTarget instanceof HTMLElement && this.containerRef.value?.contains(relatedTarget)
-    );
-  }
 }

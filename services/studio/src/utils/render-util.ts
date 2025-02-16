@@ -73,7 +73,7 @@ const importExportTemplate = (props: any, isViewMode: boolean)  => html`
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
-
+  return html`${template}`;
   if (isViewMode) {
     return html`${template}`;
   }
