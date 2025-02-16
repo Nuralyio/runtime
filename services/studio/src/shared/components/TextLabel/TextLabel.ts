@@ -1,130 +1,78 @@
 import { type ComponentElement } from "$store/component/interface.ts";
-import { html, nothing, type PropertyValues } from "lit";
+import { html, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
-import { getNestedAttribute } from "@utils/object.utils.ts";
-import { executeCodeWithClosure } from "../../../core/Kernel.ts";
-import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
-import "@nuralyui/label";
-import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
+import { ref, } from "lit/directives/ref.js";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
   static styles = styles;
   @property({ type: Object })
   component: ComponentElement;
-  @state()
-  currentPageViewPort: string;
-  @state()
-  viewPortStyles: any;
-  @state()
-  components: ComponentElement[];
-
-  @property({ type: Boolean })
-  isViewMode = false;
 
   @property({ type: Object })
   item: any;
 
   @state()
   isEditable = false;
-
   @state()
-  hoveredComponent: ComponentElement;
+  currentValue ;
 
-  @state()
-  va;
   constructor() {
     super();
-       
-    
+
     this.registerCallback("value", (value: any) => {
-      if(value!==undefined)
-        if(this.va!==value){
-          this.va = value;
+      if (value !== undefined)
+        if (this.currentValue !== value) {
+          this.currentValue = value;
 
         }
     });
     this.registerCallback("innerAlignment", (value: any) => {
-      if(this.closestGenericComponentWrapper){
-      if(this.inputHandlersValue?.innerAlignment === "end") {
-        this.closestGenericComponentWrapper.style.marginLeft = "auto";
-      }else{
-        this.closestGenericComponentWrapper.style.marginLeft = "unset";
-      }}
-    } );
-  }
-  override async connectedCallback() {
-    await super.connectedCallback();
-    const labelStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
-      : {};
-   
-   
-
-  }
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
-      //console.log('data', data)
-     this.traitInputsHandlers();
+      if (this.closestGenericComponentWrapper) {
+        if (this.inputHandlersValue?.innerAlignment === "end") {
+          this.closestGenericComponentWrapper.style.marginLeft = "auto";
+        } else {
+          this.closestGenericComponentWrapper.style.marginLeft = "unset";
+        }
+      }
     });
   }
 
-  renderView() {
-    const labelStyles = this.calculatedStyles || {};
-    const labelStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
-      : {};
-    const labelAutoWidth = this.inputHandlersValue?.width;
-    const labelAutoHeight = this.inputHandlersValue?.height;
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
+      this.traitInputsHandlers();
+    });
 
-    const combinedStyles = {
-      ...labelStyles,
-      width: labelAutoWidth ? "auto" : labelStyles.width,
-      height: labelAutoHeight ? "auto" : labelStyles.height,
-      ...labelStyleHandlers
-    };
-    if(!this.shouldDisplay) return nothing;
+  }
 
+  override renderComponent() {
     return html`
-
-          <hy-label
+     <hy-label
+     class="${`drop-${this.component.uuid}`}"
+          ${ref(this.inputRef)}
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
-            style=${styleMap(combinedStyles)}
-            @click=${() => {
-              if(this.isViewMode){
-                if (this.component.event?.onClick) {
-                  executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item );
-                }
-              }
+            style=${styleMap(this.calculatedStyles)}
+            @click=${(e) => {
+        this.executeEvent("onClick", e);
       }}
-            @mouseenter=${() => {
-        if (this.component?.event?.mouseEnter) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseEnter`));
-        }
+            @mouseenter=${(e) => {
+        this.executeEvent("mouseEnter");
+
       }}
             @mouseleave=${() => {
-        if (this.component?.event?.mouseLeave) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseLeave`));
-        }
+        this.executeEvent("mouseLeave");
+
       }}
       
             @dblclick=${(e) => {
         e.preventDefault();
         this.isEditable = true;
-      }}
-          >${this.va || "Text label"} </hy-label>
-        `
-      
-  }
-
-  render() {
-    return html`
-      ${this.renderView()}
+      }}>${this.currentValue || "Text label"} </hy-label>
     `;
   }
 }

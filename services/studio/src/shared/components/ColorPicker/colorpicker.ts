@@ -43,7 +43,7 @@ export class ColorPickerBlock extends BaseElementBlock {
           }
         );
     }
-  });
+  },0);
 
   constructor() {
     super();

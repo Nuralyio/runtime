@@ -19,7 +19,7 @@ export class ComponentTitle extends LitElement {
       font-size: 14px;
       cursor: pointer;
       user-select: none;
-      margin-top: 0px;
+      margin-top: -20px;
     }
   `;
   @property({ type: Object })

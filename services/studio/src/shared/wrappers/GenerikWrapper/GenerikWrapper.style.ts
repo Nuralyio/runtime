@@ -2,8 +2,12 @@ import { css } from "lit";
 
 const ComponentWrapperStyle = css`
     
-    :host {
+   :host {
+    
     }
+
+    ::slotted(*) {
+}
   .resizer-line-top,
   .resizer-line-bottom,
   .resizer-line-right,

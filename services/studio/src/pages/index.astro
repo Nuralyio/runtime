@@ -33,7 +33,7 @@ const processedHeaders = processHeaders(Astro.request.headers);
 <Layout title="Welcome to Astrolus.">
 
   <MicroApp
-  client:idle
+  client:load
   .prod={true}
   mode="preview"
   uuid={homeAppUUID}

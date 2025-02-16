@@ -8,6 +8,7 @@ import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { debounce } from "@utils/time.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
+import { ref } from "lit/directives/ref.js";
 
 @customElement("text-input-block")
 export class TextInputBlock extends BaseElementBlock {
@@ -117,46 +118,26 @@ export class TextInputBlock extends BaseElementBlock {
     }, 3000);
   }
 
-  render() {
-    const inputStyles = this.calculatedStyles || {};
-    const inputAutoWidth = this.inputHandlersValue?.width;
-    const inputAutoHeight = this.inputHandlersValue?.height;
-
-    const inputStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(
-          Object.entries(this.component.styleHandlers).filter(([_, v]) => v)
-        )
-      : {};
+  override renderComponent() {
+   
 
     return html`
       <span
+      ${ref(this.inputRef)}
         style=${styleMap({
-          ...inputStyles,
-          width: inputAutoWidth ? "auto" : inputStyles.width,
-          height: inputAutoHeight ? "auto" : inputStyles.height,
-          display: "block",
-          ...inputStyleHandlers,
+          ...this.componentStyles
         })}
       >
-        ${
-          this.component.uuid === "a40800b4-930f-46bf-8ecc-ada07d233682"
-            ? JSON.stringify(this.inputHandlersValue.state, null, 2)
-            : nothing
-        }
         <hy-input
-          style=${styleMap({
-            ...inputStyles,
-            width: inputAutoWidth ? "auto" : inputStyles.width,
-            height: inputAutoHeight ? "auto" : inputStyles.height,
-          })}
+          style=${styleMap(this.componentStyles)}
           @valueChange=${this.handleValueChange}
           @focused=${this.onFocus}
           @blur=${this.onBlur}
           .value=${this.currentValue}
-          .size=${inputStyleHandlers?.size
-            ? inputStyleHandlers.size
-            : inputStyles?.size
-              ? inputStyles.size
+          .size=${this.componentStyles?.size
+            ? this.componentStyles.size
+            : this.componentStyles?.size
+              ? this.componentStyles.size
               : nothing}
           .state=${this.inputHandlersValue.status ?? nothing}
           .type=${this.inputHandlersValue.type ?? nothing}
@@ -170,11 +151,11 @@ export class TextInputBlock extends BaseElementBlock {
             slot="label"
             style=${styleMap({
               "--hybrid-input-label-color":
-                inputStyleHandlers["--hybrid-input-label-color"] ??
-                inputStyles["--hybrid-input-label-color"],
+                this.componentStyles["--hybrid-input-label-color"] ??
+                this.componentStyles["--hybrid-input-label-color"],
               "--hybrid-input-label-font-size":
-                inputStyleHandlers["--hybrid-input-label-font-size"] ??
-                inputStyles["--hybrid-input-label-font-size"],
+                this.componentStyles["--hybrid-input-label-font-size"] ??
+                this.componentStyles["--hybrid-input-label-font-size"],
             })}
           >
             ${this.inputHandlersValue?.label ?? ""}
@@ -183,11 +164,11 @@ export class TextInputBlock extends BaseElementBlock {
             slot="helper-text"
             style=${styleMap({
               "--hybrid-input-helper-text-color":
-                inputStyleHandlers["--hybrid-input-helper-text-color"] ??
-                inputStyles["--hybrid-input-helper-text-color"],
+                this.componentStyles["--hybrid-input-helper-text-color"] ??
+                this.componentStyles["--hybrid-input-helper-text-color"],
               "--hybrid-input-helper-text-font-size":
-                inputStyleHandlers["--hybrid-input-helper-text-font-size"] ??
-                inputStyles["--hybrid-input-helper-text-font-size"],
+                this.componentStyles["--hybrid-input-helper-text-font-size"] ??
+                this.componentStyles["--hybrid-input-helper-text-font-size"],
             })}
           >
             ${this.inputHandlersValue?.helper ?? ""}

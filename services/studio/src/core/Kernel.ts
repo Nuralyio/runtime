@@ -326,9 +326,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     return Object.values(applications[application_id] || {}).find((c: ComponentElement) => c.uuid === componentUuid);
   }
 
-  function AddComponent(application_id: string, pageId: string, componentType: ComponentType): any {
+  function AddComponent({application_id, pageId, componentType, additionalData}): any {
     const generatedName = GenerateName(componentType);
-    addComponentAction({ name: generatedName, component_type: componentType }, pageId, application_id);
+    addComponentAction({ name: generatedName, component_type: componentType , ...additionalData}, pageId, application_id);
   }
 
   function GetComponents(componentIds: string[]): any[] {

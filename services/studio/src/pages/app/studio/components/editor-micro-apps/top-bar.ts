@@ -66,69 +66,129 @@ export default [{
       options: {
         type: "handler",
         value: /* js */`
-            const options = [
-                {
-                  label: "Text Label",
-                  value: "text_label",
-                  icon:'i-cursor'
-                },
-                {
-                  label: "Table",
-                  value: "Table",
-                  icon:'table'
-                },
-                {
-                  label: "Checkbox",
-                  value: "checkbox",
-                  icon:'square-check'
-                },
-                {
-                  label: "Select",
-                  value: "select",
-                  icon:'th-list'
-                },
-                {
-                  label: "DatePicker",
-                  value: "DatePicker",
-                  icon:'calendar'
-                },
-                {
-                  label: "Icon",
-                  value: "Icon",
-                  icon:'icons'
-                },
-                {
-                  label: "Image",
-                  value: "Image",
-                  icon:'image'
-                },
-                {
-                  label: "MicroApp",
-                  value: "MicroApp",
-                  icon: "cube"
-                },
-                {
-                  label: "Collections",
-                  value: "Collection",
-                  icon: "layer-group"
-                },
-                {
-                  label: "Text Input",
-                  value: "text_input",
-                  icon:'pen-to-square'
-                },
-                {
-                  label: "Button", //vertical-container-block
-                  value: "button_input",
-                  icon:'smile'
-                },
-                { type: "divider" },
-                {
-                  label: "Vertical Container", //
-                  value: "vertical-container-block",
-                  icon:'grip-vertical'
-                },
-              ];
+        const options = [
+          {
+            label: "Text Label",
+            value: {
+              value: "text_label",
+              additionalData: {
+                
+              },
+            },
+            icon: "i-cursor",
+          },
+          {
+            label: "Table",
+            value: {
+              value: "table",
+              additionalData: {
+                
+              },
+            },
+            icon: "table",
+          },
+          {
+            label: "Checkbox",
+            value: {
+              value: "checkbox",
+              additionalData: {
+                
+              },
+            },
+            icon: "square-check",
+          },
+          {
+            label: "Select",
+            value: {
+              value: "select",
+              additionalData: {
+                
+              },
+            },
+            icon: "th-list",
+          },
+          {
+            label: "DatePicker",
+            value: {
+              value: "date_picker",
+              additionalData: {
+                
+              },
+            },
+            icon: "calendar",
+          },
+          {
+            label: "Icon",
+            value: {
+              value: "icon",
+              additionalData: {
+                
+              },
+            },
+            icon: "icons",
+          },
+          {
+            label: "Image",
+            value: {
+              value: "image",
+              additionalData: {
+                
+              },
+            },
+            icon: "image",
+          },
+          {
+            label: "MicroApp",
+            value: {
+              value: "micro_app",
+              additionalData: {
+                
+              },
+            },
+            icon: "cube",
+          },
+          {
+            label: "Collections",
+            value: {
+              value: "collection",
+              additionalData: {
+                
+              },
+            },
+            icon: "layer-group",
+          },
+          {
+            label: "Text Input",
+            value: {
+              value: "text_input",
+              additionalData: {
+                
+              },
+            },
+            icon: "pen-to-square",
+          },
+          {
+            label: "Button",
+            value: {
+              value: "button_input",
+              additionalData: {
+                
+              },
+            },
+            icon: "smile",
+          },
+          { type: "divider" },
+          {
+            label: "Container",
+            value: {
+              value: "vertical-container-block",
+              additionalData: {
+                
+              },
+            },
+            icon: "grip-vertical",
+          },
+        ];
             return options;
             `
       }
@@ -139,7 +199,12 @@ export default [{
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
            if(currentPage){
-            AddComponent(currentEditingApplication.uuid,currentPage,EventData.value)
+            AddComponent({
+              application_id : currentEditingApplication.uuid,
+              pageId : currentPage,
+              componentType : EventData.value,
+              additionalData : EventData.additionalData
+            })
            }
           `
     }

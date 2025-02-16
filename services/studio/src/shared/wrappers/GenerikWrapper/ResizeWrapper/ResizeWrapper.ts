@@ -13,9 +13,8 @@ import { eventDispatcher } from "@utils/change-detection.ts";
 @customElement("resize-wrapper")
 export class ResizeWrapper extends LitElement {
   static styles = styles;
-  inputRef: Ref<HTMLInputElement> = createRef();
   onlyWidthResizableComponents = [ComponentType.TextInput, ComponentType.Select, ComponentType.DatePicker, ComponentType.Button, ComponentType.Checkbox];
-  notResizableComponents = [ComponentType.Checkbox, ComponentType.TextLabel];
+  notResizableComponents = [];
   @property({ type: Object })
   component: ComponentElement;
 
@@ -26,7 +25,8 @@ export class ResizeWrapper extends LitElement {
   isSelected = false;
   @property({ type: Object })
   hoveredComponent: ComponentElement;
-
+  @property({ type: Object })
+  inputRef: Ref<HTMLInputElement> = createRef();
   @state()
   styles: any = {
     lines: {
@@ -77,11 +77,33 @@ export class ResizeWrapper extends LitElement {
     });
   }
 
-  updated(changedProperties) {
-    changedProperties.forEach((_oldValue, propName) => {
-      if (propName === "component") {
-      }
-    });
+ updated(changedProperties) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has("inputRef")) {
+        clearTimeout(this._debounceInputRef);
+        this._debounceInputRef = setTimeout(() => {
+            this.observeInputRef();
+        }, 200); // Ajuste la durée selon les besoins
+    }
+
+    if (changedProperties.has("component")) {
+        clearTimeout(this._debounceComponent);
+        this._debounceComponent = setTimeout(() => {
+            this.firstUpdated();
+        }, 200);
+    }
+}
+  observeInputRef() {
+    if (this.inputRef?.value) {
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          this.firstUpdated();
+        }
+      });
+  
+      observer.observe(this.inputRef.value, { attributes: true, childList: true, subtree: true });
+    }
   }
 
   emitResizingEvent(isResising) {
@@ -206,13 +228,17 @@ export class ResizeWrapper extends LitElement {
       window.removeEventListener("mousemove", this.resize);
     }
   }
-
+   extractNumber(str) {
+    const match = str?.match(/\d+/);
+    return match ? Number(match[0]) : null;
+  }
+  
   firstUpdated() {
-    
+    const margin = this.extractNumber(this.component.style?.['margin-left']); 
       requestAnimationFrame(() => {
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
-        const originalWidth = this.inputRef.value.offsetWidth;
+        const originalWidth = this.inputRef.value.offsetWidth+margin;
         const originalHeight = this.inputRef.value.offsetHeight;
         
         // Calculate the scaled dimensions
@@ -295,6 +321,7 @@ export class ResizeWrapper extends LitElement {
       this.component.component_type == ComponentType.TextInput
       || this.component.component_type == ComponentType.DatePicker
     ) {
+      debugger
       updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         width: this.inputRef.value.style.width
       });
@@ -334,14 +361,14 @@ export class ResizeWrapper extends LitElement {
       <div
         class=${classMap({
       element: true,
-      selected:
-        this.isSelected ,
+     
       hovered:
         this.hoveredComponent?.uuid === this.component.uuid &&
-        this.selectedComponent?.uuid !== this.component.uuid,
-      bordered: this.showBorder
+       !this.isSelected ,
+      bordered: this.showBorder,
+      selected:
+      this.isSelected ,
     })}
-       ${ref(this.inputRef)}
       >
         <div
           @mousedown=${this.mouseDown}

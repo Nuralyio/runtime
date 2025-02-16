@@ -1,13 +1,19 @@
-import { LitElement, type PropertyValueMap, type PropertyValues } from "lit";
+import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
-import { type ComponentElement } from "$store/component/interface.ts";
+import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../utils/change-detection.ts";
 import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
-import { $context, getVar } from "$store/context.ts";
+import { $context, getVar, setVar } from "$store/context.ts";
 import Editor from "core/Editor.ts";
+import { createRef, type Ref } from "lit/directives/ref.js";
+import { $hoveredComponent } from "$store/component/store.ts";
+import { setHoveredComponentAction } from "$store/actions/component/setHoveredComponentAction.ts";
+import "../wrappers/GenerikWrapper/DragWrapper/DragWrapper.ts";
+import { Utils } from "core/Utils.ts";
+import deepEqual from "fast-deep-equal";
 
 function isPromise(value) {
   return Boolean(value && typeof value.then === "function");
@@ -19,7 +25,8 @@ export class BaseElementBlock extends LitElement {
 
   @property({ type: Object })
   item: any;
-
+  @property({ type: Boolean })
+  isViewMode = false;
   @state()
   inputHandlersValue: any = {};
 
@@ -34,14 +41,24 @@ export class BaseElementBlock extends LitElement {
 
   @state()
   isEditable = false;
+  @state() hoveredComponent: ComponentElement;
+  @state() isDragInitiator = false;
 
   @state()
   closestGenericComponentWrapper: HTMLElement;
+  @state() selectedComponent: ComponentElement;
+  @state() draggingComponentInfo: DraggingComponentInfo;
 
+  @state()
+  currentSelection: any;
   ExecuteInstance: any;
   currentPlatform: any;
+  @state()
   calculatedStyles: any = {};
+  componentStyles: any = {};
 
+  @state()
+  inputRef: Ref<HTMLInputElement> = createRef();
   private traitInputsHandlerBound = this.traitInputsHandlers.bind(this);
   private traitStylesHandlerBound = this.traitStylesHandlers.bind(this);
 
@@ -56,6 +73,18 @@ export class BaseElementBlock extends LitElement {
   constructor() {
     super();
     this.ExecuteInstance = ExecuteInstance;
+    $hoveredComponent.subscribe((hoveredComponent: ComponentElement) => {
+      this.hoveredComponent = hoveredComponent;
+    });
+    $context.subscribe((context) => {
+      this.currentPlatform = getVar("global", "currentPlatform")?.value ?? {
+        platform: "desktop",
+        isMobile: false,
+      };
+      this.currentSelection = getVar("global", "selectedComponents")?.value || [];
+    });
+    /*eventDispatcher.on('component:refresh', this.traitInputsHandlerBound);
+    eventDispatcher.on('component:refresh', this.traitStylesHandlerBound);*/
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
@@ -124,7 +153,6 @@ export class BaseElementBlock extends LitElement {
   }
 
   async traitStyleHandler(style: any, styleName: string): Promise<void> {
-    this.calculateStyles();
     if (isServer) {
       return;
     }
@@ -157,10 +185,10 @@ export class BaseElementBlock extends LitElement {
       }
       await Promise.all(handlerPromises);
     }
+    this.calculateStyles();
   }
 
   private calculateStyles() {
-
     if (this.currentPlatform?.platform !== "desktop") {
       this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width]?.style ?? {};
       if (this.component?.style) {
@@ -169,48 +197,55 @@ export class BaseElementBlock extends LitElement {
     } else {
       this.calculatedStyles = this.component?.style || {};
     }
-
+    const  {width, height} = this.calculatedStyles;
+    if(width){
+      const widthUnit = Utils.extractUnit(width);
+      if(widthUnit === '%'){
+        this.style.width = width;
+      }
+     
+    } 
   }
 
   override update(changedProperties: PropertyValueMap<any>) {
     super.update(changedProperties);
 
-      this.calculateStyles();
+
     if (this.closestGenericComponentWrapper) {
+      //   Object.keys(this.calculatedStyles).forEach((key) => {
+      //     this.closestGenericComponentWrapper!.style.setProperty(key, this.calculatedStyles[key]);
+      //   }
+      // );
       if (
         this.closestGenericComponentWrapper!.style.width !== this.calculatedStyles.width ||
         this.closestGenericComponentWrapper!.style.height !== this.calculatedStyles.height
       ) {
-        eventDispatcher.emit("refresh:resize" + this.component.uuid, {}, 0);
+        //   this.closestGenericComponentWrapper!.style.width = this.calculatedStyles.width;
+        //   this.closestGenericComponentWrapper!.style.height = this.calculatedStyles.height;
+        //  this.closestGenericComponentWrapper!.style.display = "block";
       }
     }
 
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
-        if (changedProperties.get("component")?.event?.onInit !== this.component?.event?.onInit) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, this.item);
-        }
-        this.traitInputsHandlers();
-        this.traitStylesHandlers();
+          if (changedProperties.get("component")?.event?.onInit !== this.component?.event?.onInit) {
+            executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, this.item);
+          }
+          this.traitInputsHandlers();
+          this.traitStylesHandlers();
+       
       }
     });
   }
 
   override async connectedCallback() {
-    $context.subscribe((context) => {
-      this.currentPlatform = getVar("global", "currentPlatform")?.value ?? {
-        platform: "desktop",
-        isMobile: false,
-      };
-    });
+   
+   
     super.connectedCallback();
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
-    this.addEventListener("click", (e) => {
-    
-    });
+    this.addEventListener("mouseenter", this.mouseEnterHandler);
     // Using the bound handlers
-    eventDispatcher.on('component:refresh', this.traitInputsHandlerBound);
-    eventDispatcher.on('component:refresh', this.traitStylesHandlerBound);
+  
 
     const excludedTypes = ["text_label", "text_input"];
     if (!excludedTypes.includes(this.component.component_type)) {
@@ -227,20 +262,196 @@ export class BaseElementBlock extends LitElement {
         }
       }
     });
+
+    this.addEventListener("dragenter", () => {
+      const wrappers = this.shadowRoot?.querySelectorAll('drag-wrapper') || [];
+      wrappers.forEach(wrapper => {
+        wrapper.dispatchEvent(new CustomEvent("drag-over-component", {
+          bubbles: true,
+          composed: true,
+        }));
+      });
+    });
+    this.addEventListener("drop", () => {
+      const wrappers = this.shadowRoot?.querySelectorAll('drag-wrapper') || [];
+      wrappers.forEach(wrapper => {
+        wrapper.dispatchEvent(new CustomEvent("drag-leave-component", {
+          bubbles: true,
+          composed: true,
+        }));
+      });
+    });
+   
+    this.addEventListener("dragleave", () => {
+      const wrappers = this.shadowRoot?.querySelectorAll('drag-wrapper') || [];
+      wrappers.forEach(wrapper => {
+        wrapper.dispatchEvent(new CustomEvent("drag-leave-component", {
+          bubbles: true,
+          composed: true,
+        }));
+      });
+    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-
-    // Removing the event listeners
+  
+    // Suppression des écouteurs d'événements globaux
     eventDispatcher.off('component:refresh', this.traitInputsHandlerBound);
     eventDispatcher.off('component:refresh', this.traitStylesHandlerBound);
+  
+    // Suppression des écouteurs d'événements attachés à l'élément
+    this.removeEventListener("mouseenter", this.mouseEnterHandler);
+    this.removeEventListener("dragenter", this.dragEnterHandler);
+    this.removeEventListener("drop", this.dropHandler);
+    this.removeEventListener("dragleave", this.dragLeaveHandler);
   }
+  
+  // Assurez-vous d'ajouter des références aux handlers dans connectedCallback
+  private mouseEnterHandler = (e: Event) => {
+    if (!this.isViewMode) {
+      setHoveredComponentAction(this.component);
+    }
+  };
+  
+  private dragEnterHandler = () => {
+    const wrappers = this.shadowRoot?.querySelectorAll('drag-wrapper') || [];
+    wrappers.forEach(wrapper => {
+      wrapper.dispatchEvent(new CustomEvent("drag-over-component", {
+        bubbles: true,
+        composed: true,
+      }));
+    });
+  };
+  
+  private dropHandler = () => {
+    const wrappers = this.shadowRoot?.querySelectorAll('drag-wrapper') || [];
+    wrappers.forEach(wrapper => {
+      wrapper.dispatchEvent(new CustomEvent("drag-leave-component", {
+        bubbles: true,
+        composed: true,
+      }));
+    });
+  };
+  
+  private dragLeaveHandler = () => {
+    const wrappers = this.shadowRoot?.querySelectorAll('drag-wrapper') || [];
+    wrappers.forEach(wrapper => {
+      wrapper.dispatchEvent(new CustomEvent("drag-leave-component", {
+        bubbles: true,
+        composed: true,
+      }));
+    });
+  };
 
   protected get shouldDisplay(): boolean {
     return (
       this.inputHandlersValue?.display === undefined ||
       this.inputHandlersValue?.display
     );
+  }
+  renderComponent() {
+
+  }
+
+  getStyles(){
+    //  "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
+    return {...this.componentStyles, width : Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto"};
+  }
+
+  executeEvent(eventName, e?) {
+    if (this.isViewMode) {
+      if (this.component.event?.[eventName]) {
+        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.${eventName}`), {}, this.item);
+      }
+    } else {
+      if (eventName === "onClick") {
+        if (e) {
+         this.selectComponentAction(e);
+         e.stopPropagation();
+         e.preventDefault();
+        }
+      }
+    }
+  }
+  selectComponentAction(e){
+    let currentSelection = getVar("global", "selectedComponents")?.value || [];
+    if (e.metaKey) {
+      currentSelection.push(this.component.uuid);
+    } else if (e.shiftKey) {
+      currentSelection = currentSelection.filter((uuid) => uuid !== this.component.uuid);
+    } else {
+      currentSelection = [this.component.uuid];
+    }
+    setVar("global", "selectedComponents", [...currentSelection]);
+  }
+  protected render(): unknown {
+    if (!this.shouldDisplay) return nothing;
+    this.componentStyles = this.calculatedStyles || {};
+    const labelStyleHandlers = this.component?.styleHandlers
+      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
+      : {};
+
+    this.componentStyles = {
+      ...this.componentStyles,
+
+      ...labelStyleHandlers
+    };
+    return html`
+
+       
+           
+     ${!this.isViewMode ? html` 
+
+      <component-title
+         @click=${(e) => {
+        this.executeEvent("onclick", e);
+      }}
+              @dragInit=${(e) => {
+        this.isDragInitiator = e.detail.value;
+        this.setAttribute("draggable", `true`);
+      }}
+              @dragend=${() => {
+        this.isDragInitiator = false;
+      }}
+              .component=${{ ...this.component }}
+              .selectedComponent=${{ ...this.selectedComponent }}
+              .hoveredComponent=${{ ...this.hoveredComponent }}
+
+            ></component-title>
+            
+  <resize-wrapper
+        .hoveredComponent=${{ ...this.hoveredComponent }}
+        .isSelected=${this.currentSelection.includes(this.component.uuid)}
+        .component=${{ ...this.component }}
+        .selectedComponent=${{ ...this.selectedComponent }}
+        .inputRef=${this.inputRef}
+        style="width: fit-content; height: fit-content;"
+
+      >
+      </resize-wrapper>
+      <drag-wrapper
+        .where=${"before"}
+        .message=${"Drop before"}
+          .component=${{ ...this.component }}
+          .inputRef=${this.inputRef}
+          .isDragInitiator=${this.isDragInitiator}
+        >
+        </drag-wrapper>
+      `: nothing} 
+    ${this.renderComponent()}
+    ${!this.isViewMode ? html` 
+    <drag-wrapper
+    .where=${"after"}
+    .message=${"Drop after"}
+
+          .component=${{ ...this.component }}
+          .inputRef=${this.inputRef}
+          .isDragInitiator=${this.isDragInitiator}
+        >
+        </drag-wrapper> `: nothing} 
+        
+        `;
+
   }
 }
