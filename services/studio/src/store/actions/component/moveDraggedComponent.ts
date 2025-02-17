@@ -19,14 +19,13 @@ export function moveDraggedComponent(
   const appUUID = $currentApplication.get().uuid;
   const components: ComponentElement[] = $componentWithChildren(appUUID).get();
 
-  // 1) Find the dragged component and note its old parent & index
   let draggedComponent: ComponentElement | undefined;
   let parentOfDragged: ComponentElement | undefined;
   let oldIndexInParent = -1;
 
   function findDraggedRecursively(comp: ComponentElement) {
     if (comp.uuid === draggedComponentId) {
-      draggedComponent = comp;
+      draggedComponent = { ...comp };
       return;
     }
     if (comp.childrenIds) {
@@ -40,9 +39,7 @@ export function moveDraggedComponent(
     }
   }
 
-  parentOfDragged = components.find((c) =>
-    c.childrenIds?.includes(draggedComponentId)
-  );
+  parentOfDragged = components.find((c) => c.childrenIds?.includes(draggedComponentId));
 
   for (const rootComp of components) {
     findDraggedRecursively(rootComp);
@@ -54,69 +51,53 @@ export function moveDraggedComponent(
   }
 
   if (!components.some((c) => c.uuid === draggedComponentId)) {
-    components.push(draggedComponent);
+    components.push({ ...draggedComponent });
   }
 
-  // 2) Get current page info
   const currentPageId = getVar("global", "currentPage").value;
   const pagesForApp = $pages.get()[appUUID];
-  const pageIndex = pagesForApp.findIndex(
-    (page: PageElement) => page.uuid === currentPageId
-  );
+  const pageIndex = pagesForApp.findIndex((page: PageElement) => page.uuid === currentPageId);
   if (pageIndex < 0) return;
   const page = pagesForApp[pageIndex];
 
-  // 3) Remove from old location
   if (parentOfDragged) {
     oldIndexInParent = parentOfDragged.childrenIds?.indexOf(draggedComponentId) ?? -1;
-    parentOfDragged.childrenIds = parentOfDragged.childrenIds?.filter(
-      (id) => id !== draggedComponentId
-    );
+    parentOfDragged.childrenIds = parentOfDragged.childrenIds?.filter(id => id !== draggedComponentId);
     updateComponentHandler(parentOfDragged, appUUID);
   } else {
     oldIndexInParent = page.component_ids.indexOf(draggedComponentId);
-    page.component_ids = page.component_ids.filter(
-      (id) => id !== draggedComponentId
-    );
+    page.component_ids = page.component_ids.filter(id => id !== draggedComponentId);
     if ("root" in draggedComponent) {
       draggedComponent.root = false;
     }
   }
 
-  // 4) Determine new location
   const dropInComponent = components.find((c) => c.uuid === dropInComponentId);
 
   if (!dropInComponent) {
-    // Insert at root level
-    const insertionIndex =
-      oldIndexInParent >= 0 && oldIndexInParent <= page.component_ids.length
-        ? oldIndexInParent
-        : page.component_ids.length;
+    const insertionIndex = oldIndexInParent >= 0 && oldIndexInParent <= page.component_ids.length
+      ? oldIndexInParent
+      : page.component_ids.length;
     page.component_ids.splice(insertionIndex, 0, draggedComponentId);
     draggedComponent.root = true;
   } else {
     const dropInIsContainer = Array.isArray(dropInComponent.childrenIds);
 
     if (position === "inside" && dropInIsContainer) {
-      // Insert inside container
       dropInComponent.childrenIds = dropInComponent.childrenIds || [];
-      const insertionIndex =
-        oldIndexInParent >= 0 && oldIndexInParent <= dropInComponent.childrenIds.length
-          ? oldIndexInParent
-          : dropInComponent.childrenIds.length;
+      const insertionIndex = oldIndexInParent >= 0 && oldIndexInParent <= dropInComponent.childrenIds.length
+        ? oldIndexInParent
+        : dropInComponent.childrenIds.length;
       dropInComponent.childrenIds.splice(insertionIndex, 0, draggedComponentId);
       updateComponentHandler(dropInComponent, appUUID);
     } else {
-      const parentOfDropIn = components.find((c) =>
-        c.childrenIds?.includes(dropInComponentId)
-      );
-
+      const parentOfDropIn = components.find((c) => c.childrenIds?.includes(dropInComponentId));
       if (parentOfDropIn) {
-        // Insert as sibling in parent
         const indexOfDropIn = parentOfDropIn.childrenIds?.indexOf(dropInComponentId);
         if (indexOfDropIn != null && indexOfDropIn >= 0) {
           let insertIndex = indexOfDropIn;
           if (position === "after") insertIndex += 1;
+          else if (position === "before") insertIndex = Math.max(0, insertIndex);
           parentOfDropIn.childrenIds?.splice(insertIndex, 0, draggedComponentId);
         } else {
           parentOfDropIn.childrenIds?.push(draggedComponentId);
@@ -124,29 +105,26 @@ export function moveDraggedComponent(
         updateComponentHandler(parentOfDropIn, appUUID);
       } else {
         draggedComponent.root = true;
-        // Insert at root level relative to drop target
         const dropInIndex = page.component_ids.indexOf(dropInComponentId);
         if (dropInIndex >= 0) {
           let insertIndex = dropInIndex;
           if (position === "after") insertIndex += 1;
+          else if (position === "before") insertIndex = Math.max(0, insertIndex);
           page.component_ids.splice(insertIndex, 0, draggedComponentId);
         } else {
-          const insertionIndex =
-            oldIndexInParent >= 0 && oldIndexInParent <= page.component_ids.length
-              ? oldIndexInParent
-              : page.component_ids.length;
+          const insertionIndex = oldIndexInParent >= 0 && oldIndexInParent <= page.component_ids.length
+            ? oldIndexInParent
+            : page.component_ids.length;
           page.component_ids.splice(insertionIndex, 0, draggedComponentId);
         }
       }
     }
   }
 
-  // 5) Update dragged component and stores
   updateComponentHandler(draggedComponent, appUUID);
   $components.setKey(appUUID, components);
   updatePageAction(page, appUUID);
   updatePageHandler(page);
-  eventDispatcher.emit("component:refresh");
-
-  console.log(`Moved ${draggedComponent.uuid} to ${position} ${dropInComponentId}`);
+    eventDispatcher.emit("component:refresh");
+  console.log(`Moved ${draggedComponent.uuid} to ${position} ${dropInComponentId}`, draggedComponent);
 }
