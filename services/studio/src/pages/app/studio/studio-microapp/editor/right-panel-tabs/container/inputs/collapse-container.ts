@@ -5,4 +5,5 @@ export const StudioContainerCollapseContainer = generateDynamicContainer("contai
   "table_direction_block",
   "container_alignment_block",
   "gap_vertical_container",
+  "container_layout_block",
 ]);

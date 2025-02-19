@@ -1,7 +1,11 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-editor-theme.ts";
-
+/**
+ * 
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+ */
 export const StudioInputAlignmentDirection = [
   {
     uuid: "container_alignment_block",

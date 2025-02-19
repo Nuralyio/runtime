@@ -228,7 +228,7 @@ export default [{
                             case 'text_input':
                                 componentIcon='pen-to-square';
                                 break;
-                            case 'image':
+                            case 'Image':
                                 componentIcon='image';
                                 break;
                             case 'icon':

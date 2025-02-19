@@ -13,6 +13,10 @@ export default css`
     background-color: var(--container-bg-color-local, var(--container-bg-color));
 }
 
+.boxed{
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+}
 .container > * {
 }
   .vertical {
