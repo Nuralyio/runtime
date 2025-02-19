@@ -71,7 +71,7 @@ export class HyMenuComponent extends LitElement {
       if (menu.children) {
         return html`
           <hy-sub-menu 
-          .menu=${menu.menu} 
+          .menu=${menu} 
           .text=${menu.text} 
           .icon=${menu.icon} 
           .disabled=${menu.disabled} 

@@ -75,7 +75,7 @@ export class HySubMenu extends LitElement {
               <hy-icon name="${this.menu.icon}" class="action-icon"></hy-icon>
             </hy-dropdown>
             `:nothing}
-            <hy-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></hy-icon>
+            ${this.menu.children.length ? html`<hy-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></hy-icon>` : nothing}
           </div>
         </div>
         <slot @select-menu=${this._handleSelectedChild} @selected-link=${this._handleSelectedChild} style="display:${this.isOpen ? nothing : 'none'};"></slot>
