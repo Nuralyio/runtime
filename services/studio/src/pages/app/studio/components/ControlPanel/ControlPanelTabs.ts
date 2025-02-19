@@ -84,7 +84,9 @@ export class ParametersPanel extends LitElement {
               --hy-collapse-header-collapsed-background-color: #3a3a3a;
 
               --hybrid-select-options-background-color: #0a0a0a;
+
           }
+         
       }
   `;
 

@@ -21,6 +21,5 @@
       ]
     },
     "target": "esnext",
-  },
-  "exclude": ["node_modules"]
+  }
 }
