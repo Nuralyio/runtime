@@ -125,11 +125,13 @@ export class TextInputBlock extends BaseElementBlock {
       <span
       ${ref(this.inputRef)}
         style=${styleMap({
-          ...this.componentStyles
+          ...this.getStyles(),
         })}
       >
         <hy-input
-          style=${styleMap(this.componentStyles)}
+          style=${styleMap({...this.getStyles(),           
+            "pointer-events": !this.isViewMode ? "none" : "auto",
+          })}
           @valueChange=${this.handleValueChange}
           @focused=${this.onFocus}
           @blur=${this.onBlur}

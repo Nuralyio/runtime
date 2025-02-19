@@ -129,9 +129,12 @@ export default [{
           {
             label: "Image",
             value: {
-              value: "image",
+              value: "Image",
               additionalData: {
-                
+                style:{
+                  width: "100px",
+                  height: "100px",
+                }
               },
             },
             icon: "image",
@@ -141,7 +144,7 @@ export default [{
             value: {
               value: "micro_app",
               additionalData: {
-                
+               
               },
             },
             icon: "cube",

@@ -4,6 +4,7 @@ import "@nuralyui/image";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
+import { ref } from "lit/directives/ref.js";
 
 
 @customElement("image-block")
@@ -30,9 +31,12 @@ export class ImageBlock extends BaseElementBlock {
       : this.inputHandlersValue.src;
     return html`
       <hy-image
+      ${ref(this.inputRef)}
       style=${
         styleMap({
-          ...this.componentStyles}
+          ...this.componentStyles,
+        "display": "block"},
+          
         )
       }
         .src=${imageSrc ?? nothing}

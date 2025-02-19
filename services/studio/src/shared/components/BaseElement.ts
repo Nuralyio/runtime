@@ -245,7 +245,13 @@ export class BaseElementBlock extends LitElement {
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
     this.addEventListener("mouseenter", this.mouseEnterHandler);
     // Using the bound handlers
-  
+    this.addEventListener("click", (e)=>{
+      if(!this.isViewMode){
+        this.selectComponentAction(e);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
 
     const excludedTypes = ["text_label", "text_input"];
     if (!excludedTypes.includes(this.component.component_type)) {

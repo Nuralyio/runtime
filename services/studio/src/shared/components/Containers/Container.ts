@@ -77,6 +77,7 @@ export class VerticalContainer extends BaseElementBlock {
         class=${classMap({
         container: true,
         vertical: this.inputHandlersValue.direction === "vertical",
+        boxed: this.inputHandlersValue.layout === "boxed",
         "drag-over": this.dragOverSituation,
       })}
       @click="${(e: Event) => {
@@ -109,6 +110,7 @@ export class VerticalContainer extends BaseElementBlock {
 
   override renderComponent() {
     return html`
+    ${this.inputHandlersValue.layout}
       ${this.isViewMode
         ? this.renderView()
         : html`
@@ -129,6 +131,7 @@ export class VerticalContainer extends BaseElementBlock {
             container: true,
             vertical: this.inputHandlersValue.direction === "vertical",
             horizontal: this.inputHandlersValue.direction !== "vertical",
+            boxed: this.inputHandlersValue.layout == "boxed",
           })}
             
             >
