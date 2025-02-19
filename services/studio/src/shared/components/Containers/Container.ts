@@ -110,7 +110,6 @@ export class VerticalContainer extends BaseElementBlock {
 
   override renderComponent() {
     return html`
-    ${this.inputHandlersValue.layout}
       ${this.isViewMode
         ? this.renderView()
         : html`
