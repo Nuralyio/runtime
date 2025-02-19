@@ -19,7 +19,7 @@ export class TextLabelBlock extends BaseElementBlock {
   @state()
   isEditable = false;
   @state()
-  currentValue ;
+  currentValue;
 
   constructor() {
     super();
@@ -56,7 +56,7 @@ export class TextLabelBlock extends BaseElementBlock {
           ${ref(this.inputRef)}
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
-            style=${styleMap({...this.calculatedStyles, "--text-label-font-size" : this.calculatedStyles.fontSize})}
+            style=${styleMap({ ...this.calculatedStyles, "--text-label-font-size": this.calculatedStyles.fontSize })}
             @click=${(e) => {
         this.executeEvent("onClick", e);
       }}
