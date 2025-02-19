@@ -38,6 +38,7 @@ export default css`
         margin: var(--resolved-text-label-margin);
         display: block;
         user-select: none;*/
+        font-size: var(--resolved-text-label-font-size);
         color: var(--resolved-text-label-color);
     }
 
