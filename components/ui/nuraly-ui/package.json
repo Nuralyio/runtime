@@ -23,8 +23,7 @@
     "test:prod:watch": "MODE=prod wtr --watch",
     "roll": "rollup -c ; ",
     "link": "node -e \"const { execSync } = require('child_process'); ['button', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm link', { stdio: 'inherit' }));\"",
-    "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm unlink', { stdio: 'inherit' }));\""
-  },
+    "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm unlink @nuralyui/' + dir, { stdio: 'inherit' }));\""  },
   "keywords": [
     "web-components",
     "lit-element",
