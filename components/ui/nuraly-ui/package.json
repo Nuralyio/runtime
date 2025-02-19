@@ -22,7 +22,8 @@
     "test:prod": "MODE=prod wtr",
     "test:prod:watch": "MODE=prod wtr --watch",
     "roll": "rollup -c ; ",
-    "link": "cd dist/components/button && npm link && cd .. && cd colorpicker && npm link && cd .. && cd datepicker && npm link && cd .. && cd dropdown && npm link && cd .. && cd icon && npm link && cd .. && cd input && npm link && cd .. && cd menu && npm link && cd .. && cd modal && npm link && cd .. && cd radio && npm link && cd .. && cd select && npm link && cd .. && cd slider-input && npm link && cd .. && cd tabs && npm link && cd .. && cd tooltips && npm link && cd ..  && cd checkbox && npm link && cd .. && cd table && npm link && cd .. && cd collapse && npm link && cd .."
+    "link": "node -e \"const { execSync } = require('child_process'); ['button', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm link', { stdio: 'inherit' }));\"",
+    "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm unlink', { stdio: 'inherit' }));\""
   },
   "keywords": [
     "web-components",

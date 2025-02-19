@@ -6,7 +6,7 @@ export const styles = css`
     height: 100%;
   }
    .tabs-container{
-    background-color:var(--hybrid-tabs-container-background-color);
+    background-color:var(--hybrid-tabs-container-background-color, var(--hybrid-tabs-container-background-local-color));
     height: 100%;
    }
   .tab-labels,
@@ -128,13 +128,13 @@ export const styles = css`
   }
   .tab-label.active {
     color: var(--hybrid-tabs-label-active);
-    font-weight: bold;
+    background-color: var(--hybrid-tabs-label-active-background-color); /* Added background color */
   } 
   .add-tab-icon{
     --hybrid-icon-color:var(--hybrid-tabs-add-icon-color);
   }
   :host{
-    --hybrid-tabs-container-background-color:#ffffff;
+    --hybrid-tabs-container-background-local-color:#ffffff;
     --hybrid-tabs-container-box-shadow:none;
     --hybrid-tabs-dragging-start-border:1px dashed black;
     --hybrid-tabs-dragging-enter-background-color:#1661b1;
@@ -179,14 +179,16 @@ export const styles = css`
     --hybrid-tabs-label-active: #000000;
     --hybrid-tabs-label-color:gray;
     --hybrid-tabs-add-icon-color: #000000;
+    --hybrid-tabs-label-active-background-color: transparent; /* Added variable */
   }
   @media (prefers-color-scheme: dark) {
     :host{
-      --hybrid-tabs-container-background-color: #000000;
+      --hybrid-tabs-container-background-local-color: #3e3e3e;
       --hybrid-tabs-content-background-color: #2d2d2d;
       --hybrid-tabs-label-hover-color: #aaa;
       --hybrid-tabs-label-active:#ffffff;   
       --hybrid-tabs-add-icon-color: #ffffff;
+      --hybrid-tabs-label-active-background-color: #2d2d2d; /* Dark mode background */
     }
   }
 `;

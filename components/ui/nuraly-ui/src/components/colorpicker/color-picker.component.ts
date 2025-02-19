@@ -8,7 +8,7 @@ import {ColorPickerSize} from './color-picker.types.js';
 @customElement('hy-color-picker')
 export class ColorPicker extends LitElement {
   @property({type: String})
-  color = '#ffffff';
+  color = 'transparent';
 
   @property({type: Boolean, reflect: true})
   show = false;
