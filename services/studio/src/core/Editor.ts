@@ -68,6 +68,10 @@ class Editor {
       return component?.style?.[attribute];
     }
   }
+  
+  getCurrentPlatform() {
+    return this.currentPlatform;
+  }
 
   getComponentBreakpointStyle(component: any, attribute: string) {
     return component?.breakpoints?.[this.currentPlatform.width]?.style?.[attribute];
