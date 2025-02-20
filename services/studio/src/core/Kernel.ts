@@ -17,6 +17,7 @@ import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function
 import { Utils } from "./Utils";
 import Editor from "./Editor"
 import { Navigation } from "./Navigation";
+import { updateComponentName } from "$store/actions/component/update-component-name";
 const DEBUG = false;
 
 /**
@@ -240,6 +241,7 @@ class Executor {
         "context",
         "applications",
         "updateInput",
+        "updateName",
         "updateEvent",
         "updateStyleHandlers",
         "EventData",
@@ -323,7 +325,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   }
 
   function GetComponent(componentUuid: string, application_id: string): any {
-    return Object.values(applications[application_id] || {}).find((c: ComponentElement) => c.uuid === componentUuid);
+    return Editor.components.find((c: ComponentElement) => c.uuid === componentUuid);
   }
 
   function AddComponent({application_id, pageId, componentType, additionalData}): any {
@@ -342,6 +344,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   function updateInput(component: ComponentElement, inputName: string, handlerType: string, handlerValue: any) {
     const eventData = { [inputName]: { type: handlerType, value: handlerValue } };
     updateComponentAttributes(component.application_id, component.uuid, "input", eventData);
+  }
+  function updateName(component: ComponentElement, componentName: string) {
+    updateComponentName(component.application_id, component.uuid, componentName);
   }
 
   function updateEvent(component: ComponentElement, symbol: string, value: any) {
@@ -402,6 +407,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     context,
     applications,
     updateInput,
+    updateName,
     updateEvent,
     updateStyleHandlers,
     EventData,
