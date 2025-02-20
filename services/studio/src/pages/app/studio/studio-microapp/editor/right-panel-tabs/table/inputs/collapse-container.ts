@@ -1,6 +1,7 @@
 import { generateDynamicContainer } from "../../../utils/input-collapse-container-generator.ts";
 
 export const StudioTableCollapseContainer = generateDynamicContainer("table_collapse_container", [
+  "component_value_text_block",
   "table_values_handler_block",
   "table_selection_mode",
   //"table_columns_block",

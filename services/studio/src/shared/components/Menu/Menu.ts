@@ -56,7 +56,7 @@ export class MenuBlock extends BaseElementBlock {
   }
 
 
-  override render() {
+  override renderComponent() {
     return html`
       <div>
         ${this.error ? html`

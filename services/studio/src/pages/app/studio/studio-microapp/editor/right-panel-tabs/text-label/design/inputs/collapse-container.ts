@@ -2,6 +2,7 @@ import { generateDynamicContainer } from "../../../../utils/input-collapse-conta
 
 // Example usage
 export const StudioCollapseContainer = generateDynamicContainer("text_label_collapse_container", [
+  "component_value_text_block",
   "value_text_block",
   "display_block"
 ]);
