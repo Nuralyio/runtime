@@ -52,14 +52,18 @@ export class VerticalContainer extends BaseElementBlock {
   }
 
   onContextMenu(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    const rect = this.containerRef.value?.getBoundingClientRect();
-    if (rect) {
-      e["ComponentTop"] = rect.top;
-      e["ComponentLeft"] = rect.left;
-      setContextMenuEvent(e);
+    if(!this.isViewMode) {
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = this.containerRef.value?.getBoundingClientRect();
+      if (rect) {
+        e["ComponentTop"] = rect.top;
+        e["ComponentLeft"] = rect.left;
+        setContextMenuEvent(e);
+      }
     }
+
+   
   }
 
   renderView() {
