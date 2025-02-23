@@ -5,6 +5,7 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
 
 let HyCheckbox: any;
 const loadHyCheckbox = async () => {
@@ -52,21 +53,17 @@ export class TextInputBlock extends BaseElementBlock {
     }
   };
 
-  render() {
+  renderComponent() {
     const checkBoxStyles = this.component?.style || {};
     const checkboxAutoWidth = this.inputHandlersValue?.width;
     const checkboxAutoHeight = this.inputHandlersValue?.height;
 
     return html`
-      ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show"
-        ? html`
             <hy-checkbox
-              style=${styleMap({
-                ...checkBoxStyles,
-                width: checkboxAutoWidth ? "auto" : checkBoxStyles.width,
-                height: checkboxAutoHeight ? "auto" : checkBoxStyles.height,
-                "user-select": "none",
-              })}
+             ${ref(this.inputRef)}
+                    style=${styleMap({
+                      ...this.getStyles(),
+                    })}
               .checked=${this.inputHandlersValue?.checked == "check"}
               .indeterminate=${this.inputHandlersValue?.checked == "indeterminate"}
               .disabled=${this.inputHandlersValue?.state == "disabled"}
@@ -75,8 +72,7 @@ export class TextInputBlock extends BaseElementBlock {
             >
               ${this.inputHandlersValue?.label ?? ""}
             </hy-checkbox>
-          `
-        : nothing}
+          
     `;
   }
 }

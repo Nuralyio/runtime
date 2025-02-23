@@ -82,6 +82,11 @@ export class BaseElementBlock extends LitElement {
         isMobile: false,
       };
       this.currentSelection = getVar("global", "selectedComponents")?.value || [];
+      if(!this.isViewMode){
+       // this.inputRef?.value?.style?.setProperty("pointer-events", "none");
+      }else{
+        //this.inputRef?.value?.style?.setProperty("pointer-events", "auto");
+      }
     });
     /*eventDispatcher.on('component:refresh', this.traitInputsHandlerBound);
     eventDispatcher.on('component:refresh', this.traitStylesHandlerBound);*/

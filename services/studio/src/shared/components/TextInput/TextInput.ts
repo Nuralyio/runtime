@@ -7,7 +7,6 @@ import "@nuralyui/input";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { debounce } from "@utils/time.ts";
-import { eventDispatcher } from "@utils/change-detection.ts";
 import { ref } from "lit/directives/ref.js";
 
 @customElement("text-input-block")
@@ -122,15 +121,10 @@ export class TextInputBlock extends BaseElementBlock {
    
 
     return html`
-      <span
-      ${ref(this.inputRef)}
-        style=${styleMap({
-          ...this.getStyles(),
-        })}
-      >
+  
         <hy-input
+        ${ref(this.inputRef)}
           style=${styleMap({...this.getStyles(),           
-            "pointer-events": !this.isViewMode ? "none" : "auto",
           })}
           @valueChange=${this.handleValueChange}
           @focused=${this.onFocus}
@@ -176,7 +170,6 @@ export class TextInputBlock extends BaseElementBlock {
             ${this.inputHandlersValue?.helper ?? ""}
           </span>
         </hy-input>
-      </span>
     `;
   }
 }

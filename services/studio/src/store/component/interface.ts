@@ -15,7 +15,7 @@ export const enum ComponentType {
   Event = "event", //TODO: this is an event not a component type
   Table = "Table",
   Checkbox = "checkbox",
-  DatePicker = "DatePicker",
+  DatePicker = "Datepicker",
   Icon = "Icon",
   Image = "Image",
   MicroApp = "MicroApp",

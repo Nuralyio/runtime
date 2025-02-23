@@ -6,7 +6,6 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
 import { ref, } from "lit/directives/ref.js";
-import "@nuralyui/label";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
