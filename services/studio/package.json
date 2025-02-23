@@ -35,7 +35,7 @@
     "@nuralyui/checkbox": "^0.0.2",
     "@nuralyui/collapse": "^0.0.5",
     "@nuralyui/color-picker": "^0.0.2",
-    "@nuralyui/datepicker": "^0.0.2",
+    "@nuralyui/datepicker": "^0.0.3",
     "@nuralyui/divider": "^0.0.1",
     "@nuralyui/dropdown": "^0.0.3",
     "@nuralyui/icon": "^0.0.4",
