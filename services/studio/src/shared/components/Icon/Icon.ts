@@ -7,6 +7,7 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/icon";
 import { executeCodeWithClosure } from "core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
 
 
 @customElement("icon-block")
@@ -26,20 +27,18 @@ export class IconBlock extends BaseElementBlock {
 
   }
 
-  render() {
-    const iconStyles = this.calculatedStyles || {};
-    const iconStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([, value]) => value)) : {};
+  renderComponent() {
 
     return html`
       <hy-icon
+      ${ref(this.inputRef)}
       @click=${() => {
       if (this.component.event?.onClick) {
         executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item);
       }
     }}
         .name=${this.inputHandlersValue.icon ?? "smile"}
-        style=${styleMap({ ...iconStyles, ...iconStyleHandlers })}>
+        style=${styleMap({ ...this.getStyles()})}>
       </hy-icon>
     `;
   }

@@ -91,7 +91,12 @@ export default [{
             value: {
               value: "checkbox",
               additionalData: {
-                
+                input : {
+                  "label": {
+                      "type": "value",
+                      "value": " Check box"
+                  }
+              }
               },
             },
             icon: "square-check",
@@ -101,7 +106,17 @@ export default [{
             value: {
               value: "select",
               additionalData: {
-                
+                input : {
+                  "options": {
+                      "type": "handler",
+                      "value": 'return [\\n    {\\n        label : \"Item 1\", \\n        value :\"item 1\"\\n    },\\n    {\\n        label : \"Item 2\", \\n        value :\"item 2\"\\n    }\\n]'
+
+                  },
+                  "placeholder": {
+                      "type": "value",
+                      "value": "Select item"
+                  }
+              }
               },
             },
             icon: "th-list",
@@ -109,7 +124,7 @@ export default [{
           {
             label: "DatePicker",
             value: {
-              value: "date_picker",
+              value: "Datepicker",
               additionalData: {
                 
               },
@@ -119,7 +134,7 @@ export default [{
           {
             label: "Icon",
             value: {
-              value: "icon",
+              value: "Icon",
               additionalData: {
                 
               },
@@ -142,7 +157,7 @@ export default [{
           {
             label: "MicroApp",
             value: {
-              value: "micro_app",
+              value: "MicroApp",
               additionalData: {
                
               },
@@ -152,7 +167,7 @@ export default [{
           {
             label: "Collections",
             value: {
-              value: "collection",
+              value: "Collection",
               additionalData: {
                 
               },

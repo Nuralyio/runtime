@@ -122,11 +122,12 @@ export class CollectionViwer extends BaseElementBlock {
       </div>`;
   }
 
-  override render() {
+  override renderComponent() {
     return html`
         <div
+        ${ref(this.inputRef)}
         style=${styleMap({  
-          ...this.calculatedStyles,
+          ...this.getStyles(),
         })} 
         class=${classMap({
           collection_viewer: true,

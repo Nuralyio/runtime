@@ -61,7 +61,7 @@
     "astro": "^4.16.14",
     "astro-compressor": "^1.0.0",
     "astrojs-service-worker": "^2.0.0",
-    "dayjs": "^1.11.13",
+    "dayjs": "^2.0.0-alpha.4",
     "dotenv": "^16.4.7",
     "esbuild": "^0.23.0",
     "escodegen": "^2.1.0",
