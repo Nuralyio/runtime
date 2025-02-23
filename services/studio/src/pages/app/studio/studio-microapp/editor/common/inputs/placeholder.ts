@@ -60,8 +60,9 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const { input: { placeholder } = {} } = Utils.first(Editor.selectedComponents) || {};
-          return placeholder?.type === 'handler' ? '' : placeholder?.value || '';
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'placeholder') : null;
+        return Input?.type === "value" ? Input.value ?? '' : '';
         `
       },
       state: {

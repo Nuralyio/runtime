@@ -64,8 +64,9 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const { input: { label } = {} } = Utils.first(Editor.selectedComponents);
-          return label?.type === 'handler' ? '' : label?.value || '';
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'label') : null;
+        return Input?.type === "value" ? Input.value ?? '' : '';
         `
       },
       state: {

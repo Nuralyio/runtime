@@ -68,7 +68,15 @@ class Editor {
       return component?.style?.[attribute];
     }
   }
-  
+
+  getComponentStyles(component: any) {
+    if (this.currentPlatform.platform !== "desktop") {
+      const breakpointStyle = component?.breakpoints?.[this.currentPlatform.width]?.style;
+      return { ...component?.style, ...breakpointStyle };
+    } else {
+      return component?.style ?? {};
+    }
+  }
   getCurrentPlatform() {
     return this.currentPlatform;
   }
