@@ -6,6 +6,7 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
+import { ref } from "lit/directives/ref.js";
 
 let HyButton: any;
 const loadHyButton = async () => {
@@ -44,22 +45,18 @@ export class ButtonBlock extends BaseElementBlock {
       this.requestUpdate()
     });
   }
-  render() {
-    if(!this.shouldDisplay) return nothing;
-    const buttonStyles = this.component?.style || {};
-    const buttonStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(Object.entries(this.component.styleHandlers).filter(([key, value]) => value))
-      : {};
-
+  renderComponent() {
+    const buttonStyles = this.getStyles();
     return html`
             <hy-button
-              .size=${buttonStyleHandlers?.size
-                ? buttonStyleHandlers.size
+              ${ref(this.inputRef)}
+              .size=${buttonStyles?.size
+                ? buttonStyles.size
                 : buttonStyles?.size
                 ? buttonStyles.size
                 : nothing}
-              .type=${buttonStyleHandlers?.type
-                ? buttonStyleHandlers.type
+              .type=${buttonStyles?.type
+                ? buttonStyles.type
                 : buttonStyles?.type
                 ? buttonStyles.type
                 : nothing}
@@ -72,7 +69,10 @@ export class ButtonBlock extends BaseElementBlock {
                   executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
                 }
               }}
-              style=${styleMap({ ...buttonStyles, ...buttonStyleHandlers })}
+              style=${styleMap({ ...this.getStyles() , 
+                "--hybrid-button-width": buttonStyles?.width,
+                "--hybrid-button-height": buttonStyles?.height,
+               })}
             >
               ${this.inputHandlersValue.label ?? "Button"}
             </hy-button>

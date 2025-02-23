@@ -74,22 +74,14 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
-            if (selectedComponent?.input?.helper?.type == "value") {
-              return selectedComponent.input.helper.value ?? '';
-            }
-            return '';
-          } catch(e) {
-            console.log(e);
-            return '';
-          }
+          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const helperInput = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'helper') : null;
+          return helperInput?.type === "value" ? helperInput.value ?? '' : '';
         `
       },
       state: {
         type: "handler",
         value: /* js */`
-          try {
             const selectedComponent = Utils.first(Editor.selectedComponents);
             let state = "unabled";
             if (selectedComponent?.input?.helper?.type == "handler" && 
@@ -97,10 +89,6 @@ export default [
               state = "disabled";
             }
             return state;
-          } catch(e) {
-            console.log(e);
-            return "unabled";
-          }
         `
       },
       placeholder: {
@@ -150,14 +138,10 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        try {
           const selectedComponent = Utils.first(Editor.selectedComponents);
           if (selectedComponent && EventData.value !== selectedComponent?.input?.helper?.value) {
             updateInput(selectedComponent, 'helper', 'handler', EventData.value);
           }
-        } catch(error) {
-          console.log(error);
-        }
       `
     }
   }
