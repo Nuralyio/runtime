@@ -63,7 +63,7 @@ export default [
         type: "handler",
         value: /* js */ `
             const selectedComponent = Utils.first(Editor.selectedComponents);
-            const currentType = selectedComponent?.style?.type || 'default';
+            const currentType = Editor.getComponentStyle(selectedComponent, 'type') || 'default';
             const options = [
               { label: "Primary", value: "primary" },
               { label: "Secondary", value: "secondary" },

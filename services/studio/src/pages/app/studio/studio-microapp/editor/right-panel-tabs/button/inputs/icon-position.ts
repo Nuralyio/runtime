@@ -57,10 +57,12 @@ export default [
           const selectedComponent = Utils.first(Editor.selectedComponents);
           const isDisabled = selectedComponent?.input?.iconPosition?.type === 'handler' &&
             selectedComponent?.input?.iconPosition?.value;
+          const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'iconPosition') : null;
+
           
           const currentIconPosition = isDisabled 
             ? ''
-            : selectedComponent?.input?.iconPosition?.value || 'left';
+            : Input?.value || 'left';
 
           return [
             [
