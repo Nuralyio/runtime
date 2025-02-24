@@ -185,6 +185,7 @@ export class BaseElementBlock extends LitElement {
   async traitStylesHandlers() {
     const handlerPromises = [];
     if (this.component?.styleHandlers) {
+      this.stylesHandlersValue = {};
       for (const [styleName, style] of Object.entries(this.component?.styleHandlers)) {
         handlerPromises.push(this.traitStyleHandler(style, styleName));
       }
@@ -366,7 +367,7 @@ export class BaseElementBlock extends LitElement {
   }
 
   getStyles(){
-    return {...Editor.getComponentStyles(this.component), width : Utils.extractUnit(Editor.getComponentStyle(this.component, "width")) === "%" ? "100%" : Editor.getComponentStyle(this.component, "width") ?? "auto"};
+    return {...Editor.getComponentStyles(this.component),...this.stylesHandlersValue, width : Utils.extractUnit(Editor.getComponentStyle(this.component, "width")) === "%" ? "100%" : Editor.getComponentStyle(this.component, "width") ?? "auto"};
   }
 
   executeEvent(eventName, e?) {

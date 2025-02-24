@@ -62,51 +62,35 @@ export const StudioSelectHelperFontSize = [
     },
     event: {
       valueChange:  /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            const unity = EventData.unity || "px"
-                            updateStyle(currentComponent, "--hybrid-select-helper-text-font-size", EventData.value+unity);
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const unity = EventData.unity || "px"
+        updateStyle(selectedComponent, "--hybrid-select-helper-text-font-size", EventData.value+unity);
                         
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }                 
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-helper-text-font-size']?.split('')
-                if(fontSize) 
-                    {
-                        let unity='';
-                        let value='';
-                        fontSize.forEach((char)=>
-                            {
-                            if(char>='0' && char<='9')
-                                value+=char 
-                            else 
-                            unity+=char
-                           }
-                        );
-                        return [+value,unity]
-                    }
-                    else 
-                      return [0,'px']
-            }
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+      const fontSize =  Editor.getComponentStyle(selectedComponent, "--hybrid-select-helper-text-font-size")?.split('')
+      if(fontSize) 
+          {
+              let unity='';
+              let value='';
+              fontSize.forEach((char)=>
+                  {
+                  if(char>='0' && char<='9')
+                      value+=char 
+                  else 
+                  unity+=char
+                  }
+              );
+              return [+value,unity]
+          }
+          else 
+            return [0,'px']
 
-        }catch(e){
-            console.log(e);
-        }
             `
       },
       state: {
