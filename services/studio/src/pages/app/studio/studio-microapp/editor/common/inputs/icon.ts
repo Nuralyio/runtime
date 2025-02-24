@@ -55,7 +55,9 @@ export default [
         type: "handler",
         value: /* js */ ` 
           const selectedComponent = Utils.first(Editor.selectedComponents);
-          return selectedComponent?.input?.icon?.value || '';
+          const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'icon') : null;
+
+          return Input?.value || '';
         `
       },
       placeholder: {
