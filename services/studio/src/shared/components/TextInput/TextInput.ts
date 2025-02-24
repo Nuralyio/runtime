@@ -121,11 +121,9 @@ export class TextInputBlock extends BaseElementBlock {
    
 
     return html`
-  
         <hy-input
         ${ref(this.inputRef)}
-          style=${styleMap({...this.getStyles(),           
-          })}
+          style=${styleMap({...this.getStyles()})}
           @valueChange=${this.handleValueChange}
           @focused=${this.onFocus}
           @blur=${this.onBlur}
@@ -145,27 +143,13 @@ export class TextInputBlock extends BaseElementBlock {
         >
           <span
             slot="label"
-            style=${styleMap({
-              "--hybrid-input-label-color":
-                this.componentStyles["--hybrid-input-label-color"] ??
-                this.componentStyles["--hybrid-input-label-color"],
-              "--hybrid-input-label-font-size":
-                this.componentStyles["--hybrid-input-label-font-size"] ??
-                this.componentStyles["--hybrid-input-label-font-size"],
-            })}
+           
           >
             ${this.inputHandlersValue?.label ?? ""}
           </span>
           <span
             slot="helper-text"
-            style=${styleMap({
-              "--hybrid-input-helper-text-color":
-                this.componentStyles["--hybrid-input-helper-text-color"] ??
-                this.componentStyles["--hybrid-input-helper-text-color"],
-              "--hybrid-input-helper-text-font-size":
-                this.componentStyles["--hybrid-input-helper-text-font-size"] ??
-                this.componentStyles["--hybrid-input-helper-text-font-size"],
-            })}
+           
           >
             ${this.inputHandlersValue?.helper ?? ""}
           </span>
