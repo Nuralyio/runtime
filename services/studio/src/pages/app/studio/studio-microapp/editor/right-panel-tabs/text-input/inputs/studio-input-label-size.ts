@@ -55,7 +55,7 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     style: {
-      width: "155px",
+      width: "100px",
       size: "small"
     },
     event: {

@@ -59,7 +59,7 @@ export default [
         type: "handler",
         value: /* js */ `
           const selectedComponent = Utils.first(Editor.selectedComponents);
-          const currentColor = selectedComponent?.style && selectedComponent.style['--hybrid-icon-color'] || "";
+          const currentColor = selectedComponent?.style && selectedComponent?.style['--hybrid-icon-color'] || "";
           return currentColor;
         `
       },
@@ -69,7 +69,7 @@ export default [
         
           const selectedComponent = Utils.first(Editor.selectedComponents);
           let state = 'enabled';
-          if (selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-icon-color']) {
+          if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-icon-color']) {
             state = 'disabled';
           }
           return state;

@@ -35,7 +35,8 @@ export default [{
 
     style: {
       width: "255px",
-      height: "100%"
+      height: "100%",
+       "--hybrid-button-font-size": "12px"
     },
     childrenIds: ["menu_header", "menu_1"]
   },
@@ -185,7 +186,7 @@ export default [{
     component_type: ComponentType.Menu,
     style: {
       "--hybrid-menu-border": "none",
-      "--hybrid-menu-font-size": "14px",
+      "--hybrid-menu-font-size": "12px",
       "--hybrid-sub-menu-padding-y": "4px",
       "--hybrid-menu-link-padding-y": "4px"
     },

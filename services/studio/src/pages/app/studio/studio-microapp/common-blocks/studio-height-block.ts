@@ -45,7 +45,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       display: "block",
-      width: "100px",
+      width: "50px",
       size: "small"
     },
     event: {
@@ -64,7 +64,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-        return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'height') || 0;
+        return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'height') || "auto";
         `
       },
       state: {

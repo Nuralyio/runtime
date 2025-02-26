@@ -21,7 +21,8 @@ export const StudioComponentNameInput = [
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
-      "justify-content": "space-between"
+      "justify-content": "space-between",
+      "margin-right" :  "30px"
     },
     childrenIds: ["component_value_text_input"]
   },
@@ -97,7 +98,7 @@ export const StudioComponentNameInput = [
         value: /* js */ `
           const selectedComponent = Utils.first(Editor.selectedComponents);
           const handlerValue = selectedComponent?.input?.value?.type === 'handler'
-            ? selectedComponent.input.value.value
+            ? selectedComponent?.input?.value.value
             : '';
           return ['value', handlerValue];
         `

@@ -65,7 +65,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       display: "block",
-      width: "100px",
+      width: "50px",
       size: "small"
     },
     event: {
@@ -97,7 +97,7 @@ export default [
       try {
         const selectedComponent = Utils.first(Editor.selectedComponents);
         if (selectedComponent) {
-            let width = selectedComponent.style?.width || "0px";
+            let width = selectedComponent?.style?.width || "0px";
             width = width.trim();
             let numericPart = "";
             let unitPart = "";
@@ -123,7 +123,7 @@ export default [
             try {
                 const selectedComponent = Utils.first(Editor.selectedComponents);
                 if (selectedComponent) {
-                    updateStyle(selectedComponent, "width", EventData.value);
+                    updateStyle(selectedComponent, "width", EventData.value ?? "auto");
                 }
             } catch (error) {
                 console.log(error);
@@ -133,7 +133,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'width') || 0;
+          return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'width') || "auto";
         `
       },
       state: {

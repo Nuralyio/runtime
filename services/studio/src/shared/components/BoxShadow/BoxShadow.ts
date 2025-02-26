@@ -109,7 +109,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			this.handleColorChange(e);
     }}
 		 >
-		${this.insetValue ? html`Disable` : html`Enable`} Shodow Box
+		${this.insetValue ? html`<hy-label>Disable</hy-label>` : html`<hy-label>Enable</hy-label>`}<hy-label> Shodow Box</hy-label>
 		</hy-checkbox>
 		<div>
 			<div style="display : flex">

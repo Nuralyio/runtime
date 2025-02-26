@@ -44,7 +44,7 @@ export const StudioCollectionColumnInput =  [
     },
     ...COMMON_ATTRIBUTES,
     style: {
-      width: "155px",
+      width: "100px",
       size: "small"
     },
     event: {
@@ -72,7 +72,7 @@ export const StudioCollectionColumnInput =  [
         value:/* js */`
                     const selectedComponent = Utils.first(Editor.selectedComponents);
                         let state='enabled';
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['fontSize']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize']){
                          state='disabled'
                         }
                         return state

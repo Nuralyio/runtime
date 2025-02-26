@@ -41,7 +41,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
 
-      "--hybrid-button-height": "30px",
+      "--hybrid-button-height": "26px",
       "--hybrid-button-width": "52px"
     },
     input: {
@@ -51,11 +51,11 @@ export default [
                const selectedComponent = Utils.first(Editor.selectedComponents);
                 let defaultVerticalAlign='';
                 let isDisabled = false;
-                if(selectedComponent.styleHandlers && selectedComponent?.styleHandlers['align-items']) {
+                if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['align-items']) {
                     isDisabled = true
                 }
-                else if ( selectedComponent.style)
-                defaultVerticalAlign = selectedComponent.style['align-items'] ||'start';
+                else if ( selectedComponent?.style)
+                defaultVerticalAlign = selectedComponent?.style['align-items'] ||'start';
                 const options =[
                                 {value:'start',icon: "arrow-up",disabled:isDisabled},
                                 {value:'end',icon: "arrow-down",disabled:isDisabled},

@@ -126,7 +126,7 @@ export const StudioContainerInputLayout = [
         value: /* js */`
                 const selectedComponent = Utils.first(Editor.selectedComponents);
                 const handlerValue = selectedComponent?.input?.layout?.type === 'handler'
-                ? selectedComponent.input.layout.value
+                ? selectedComponent?.input?.layout.value
                 : '';
                 return ['layout', handlerValue];
                 `

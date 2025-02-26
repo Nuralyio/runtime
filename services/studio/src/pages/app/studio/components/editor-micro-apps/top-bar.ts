@@ -9,6 +9,9 @@ export default [{
   style: {
     width: "100vw",
     "height": "40px",
+    "--hybrid-button-font-size": "12px",
+    "border-bottom": "1px solid #888888",
+    "--text-label-dark-color": "#c2c2c2",
   },
   childrenIds: ["info-top-bar", "settings-top-bar"]
 },
@@ -79,7 +82,7 @@ export default [{
           {
             label: "Table",
             value: {
-              value: "table",
+              value: "Table",
               additionalData: {
                 
               },

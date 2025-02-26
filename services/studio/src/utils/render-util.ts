@@ -14,6 +14,7 @@ import "@shared/components/Border/Border";
 import "@shared/components/BoxShadow/BoxShadow";
 import "@shared/components/Table/Table";
 import "@shared/components/Checkbox/Checkbox";
+import "@shared/components/Dropdown/Dropdown";
 import "@shared/components/DatePicker/DatePicker";
 import "@shared/components/Icon/Icon";
 import "@shared/components/Image/Image";
@@ -61,6 +62,7 @@ const microAppTemplate = (props: any, isViewMode: boolean)  => html`<micro-app-b
 const collapseTemplate = (props: any, isViewMode: boolean)  => html`<collapse-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></collapse-block>`;
 const dividerTemplate = (props: any, isViewMode: boolean)  => html`<divider-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></divider-block>`;
 const handlersTemplate = (props: any, isViewMode: boolean)  => html`<handler-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></handler-block>`;
+const dropDownTemplate = (props: any, isViewMode: boolean)  => html`<dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></dropdown-block>`;
 
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
@@ -143,6 +145,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return importExportTemplate(commonProps, isViewMode);
     case ComponentType.InvokeFunction:
       return invokeFunctionTemplate(commonProps, isViewMode);
+    case ComponentType.Dropdown:
+      return dropDownTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

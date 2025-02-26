@@ -17,29 +17,30 @@ export const CollapseContainerTheme = {
 
 
 export const InputTextLabelTheme = {
-  width: "90px"
+  width: "95px"
 };
 
 
 export const RadioButtonWithTwoOptionsTheme = {
-  "--hybrid-button-height": "28px",
+  "--hybrid-button-height": "26px",
   "--hybrid-button-width": "80px",
-  "--hybrid-button-font-size": "12px"
+  "--hybrid-button-font-size": "12px",
+  
 };
 
 export const RadioButtonWithThreeOptionsTheme = {
-  "--hybrid-button-height": "30px",
+  "--hybrid-button-height": "26px",
   "--hybrid-button-width": "51px",
   "--hybrid-button-font-size": "12px"
 };
 
 export const TextInputTheme = {
   size: "small",
-  width: "153px"
+  width: "161px"
 };
 
 export const ButtonTheme = {
-  "--hybrid-button-height": "30px",
+  "--hybrid-button-height": "26px",
   "--hybrid-button-width": "76px",
   "--hybrid-button-font-size": "12px",
   "--hybrid-button-border-top-left-radius": "4px",
@@ -57,5 +58,6 @@ export const SelectTheme = {
 export const CollapseHeaderTheme = {
   "font-size": "16px",
   "font-weight": "bold", 
-  "margin-bottom": "10px"
+  "margin-bottom": "10px",
+  // "--resolved-text-label-color": "#0a3b97"
 };

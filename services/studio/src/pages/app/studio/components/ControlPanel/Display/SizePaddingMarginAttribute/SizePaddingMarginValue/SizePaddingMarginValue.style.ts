@@ -3,10 +3,12 @@ import { css } from "lit";
 export default css`
   hy-input {
     --hybrid-input-container-border-color: transparent;
-    --hybrid-input-container-padding-top: 0px;
-    --hybrid-input-container-padding-bottom: 0px;
-    --hybrid-input-container-padding-left: 0px;
-    --hybrid-input-container-padding-right: 0px;
+   --hybrid-input-medium-padding-top: 0px;
+   --hybrid-input-medium-padding-bottom: 0px;
+   --hybrid-input-medium-padding-left: 0px;
+   --hybrid-input-medium-padding-right: 0px;
+        padding-top: var(--hybrid-input-medium-padding-top, var(--hybrid-input-local-medium-padding-top));
+
     --hybrid-input-text-align: center;
   }
 
@@ -23,7 +25,7 @@ export default css`
     border-radius: 3px;
     padding-top: 5px;
     padding-bottom: 35px;
-	margin-right: 10px;
+	  margin-right: 10px;
     position: relative;
   }
 

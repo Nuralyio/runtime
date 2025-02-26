@@ -56,8 +56,6 @@ export default [
   `
     },
     style: {
-      width: "155px",
-      display: "block"
     },
     input: {
       value: {

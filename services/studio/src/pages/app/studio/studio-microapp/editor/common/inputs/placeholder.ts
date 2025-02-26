@@ -109,7 +109,7 @@ export default [
         value: /* js */ `
           const selectedComponent = Utils.first(Editor.selectedComponents);
           const handlerValue = selectedComponent?.input?.placeholder?.type === 'handler'
-            ? selectedComponent.input.placeholder.value
+            ? selectedComponent?.input?.placeholder.value
             : '';
           return ['placeholder', handlerValue];
         `

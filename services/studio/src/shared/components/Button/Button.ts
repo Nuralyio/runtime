@@ -74,7 +74,7 @@ export class ButtonBlock extends BaseElementBlock {
                 "--hybrid-button-height": buttonStyles?.height,
                })}
             >
-              ${this.inputHandlersValue.label ?? "Button"}
+             <hy-label> ${this.inputHandlersValue.label ?? "Button"}</hy-label>
             </hy-button>
     `;
   }

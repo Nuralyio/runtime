@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/slider-input";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
+import { styleMap } from "lit/directives/style-map.js";
 
 // Debounce function
 function debounce(func: Function, wait: number) {
@@ -21,6 +22,7 @@ export class AttributeBorderValue extends BaseElementBlock {
     css`
       :host {
         display: block;
+        --box-manager-background-color: transparent;
       }
       hy-slider-input {
         width: 100%;
@@ -61,7 +63,7 @@ export class AttributeBorderValue extends BaseElementBlock {
 
   .container-outside {
     width: 210px;
-    background-color: #393939;
+    background-color: var(--box-manager-background-color, #393939);
     padding: 50px;
     border-radius: 3px;
     padding-top: 5px;
@@ -108,7 +110,7 @@ export class AttributeBorderValue extends BaseElementBlock {
 
   .container {
     width: 200px;
-    height: 85px;
+    height: 65px;
     border: 1px solid #bcbcbc;
     border-radius: 3px;
     padding: 5px;
@@ -141,6 +143,17 @@ export class AttributeBorderValue extends BaseElementBlock {
     transform: translateX(-50%);
   }
 
+  .container > .border-bottom-right-radius {
+    position: absolute;
+    bottom: 0;
+    bottom: -20px;
+    right: -35px;
+  }
+
+
+
+
+
   .input-group {
     display: flex;
     justify-content: space-between;
@@ -148,6 +161,13 @@ export class AttributeBorderValue extends BaseElementBlock {
     width: 300px;
     margin: 10px;
   }
+
+  @media (prefers-color-scheme: dark) {
+    :host{
+      --box-manager-background-color: #393939;
+    }
+  }
+  
     `
   ];
   @property()
@@ -203,76 +223,65 @@ cassAttributes : any = {
         this.cassAttributes["padding-right"] = `${handlers?.["padding-right"]?.value ?? 0}${handlers?.["padding-right"]?.unit ?? "px"}`;
         this.cassAttributes["padding-bottom"] = `${handlers?.["padding-bottom"]?.value ?? 0}${handlers?.["padding-bottom"]?.unit ?? "px"}`;
         this.cassAttributes["padding-left"] = `${handlers?.["padding-left"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
+        this.cassAttributes["border-bottom-right-radius"] = `${handlers?.["border-bottom-right-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
         
     const isDisabled = this.inputHandlersValue.state == "disabled" ? true : false;
     return html`
-      <div style="display: flex">
-        <div class="first-row">
-          <hy-icon name="expand"></hy-icon>
-          <hy-slider-input
-            id="slider-change-via-textbox"
-            data-prop="slider-change-via-textbox"
-            .min=${0}
-            .max=${200}
-            .value=${this.borderRadius}
-            .disabled =${isDisabled}
-            @changed="${(e) => {
-              this.cassAttributes["border-radius"] = e.detail.value+"px";
-              this.debouncedChanged("border-radius");
-            }
-            }"
-          ></hy-slider-input>
-        </div>
-        <div class="second-row">
-          <hy-input 
-          .value=${this.borderRadius} 
-          .disabled =${isDisabled}
-          ></hy-input>
-        </div>
-      </div>
-
+      
       <div class="container-outside">
-                <div class="margin-label" style="margin-left: -43px; margin-top: 2px">Margin </div>
+                <div class="margin-label" style="margin-left: -43px; margin-top: 2px"><hy-label>margin</hy-label> </div>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => {
                   this.cassAttributes["margin-left"] = e.detail.value;
                   this.debouncedChanged("margin-left");
                 }}"
                 class="position-input margin-left" placeholder="margin left" value=${this.cassAttributes["margin-left"]}></hy-input>
-                <hy-input 
+                <hy-input
+                .size=${"default"} 
                 @valueChange="${(e) => {
                   this.cassAttributes["margin-right"] = e.detail.value;
                   this.debouncedChanged("margin-right");
                   
                 }}"
                 class="position-input margin-right" placeholder="margin right" .value=${this.cassAttributes["margin-right"]}></hy-input>
-                <hy-input 
+                <hy-input
+                .size=${"default"} 
                 @valueChange="${(e) => {
                   this.cassAttributes["margin-top"] = e.detail.value;
                   this.debouncedChanged("margin-top");
                 }}"
                 class="position-input margin-top" placeholder="margin top" .value=${this.cassAttributes["margin-top"]}></hy-input>
-                <hy-input 
+                <hy-input
+                .size=${"default"} 
                 @valueChange="${(e) => {}}"
 
                 class="position-input margin-bottom" placeholder="margin bottom" .value=${this.cassAttributes["margin-top"]}></hy-input>
-            <div class="container ">
-                <div class="padding-label">Padding</div>
-                <hy-input 
+            <div class="container "
+            style=${
+              styleMap({
+                'border-bottom-right-radius' : this.cassAttributes["border-bottom-right-radius"]})
+            }
+            >
+                <div class="padding-label"><hy-label>padding</hy-label></div>
+                <hy-input
+                .size=${"default"} 
                 @valueChange="${(e) => {
                   this.cassAttributes["padding-left"] = e.detail.value;
                   this.debouncedChanged("padding-left");
                 }}"
                 class="position-input padding-left" placeholder="padding left" .value=${ this.cassAttributes["padding-left"] }></hy-input>
 
-                <hy-input 
+                <hy-input
+                .size=${"default"} 
                 @valueChange="${(e) => {
                   this.cassAttributes["padding-right"] = e.detail.value;
                   this.debouncedChanged("padding-right");
                 }}"
 
                 class="position-input padding-right" placeholder="padding right" .value=${ this.cassAttributes["padding-right"]}></hy-input>
-                <hy-input 
+                <hy-input
+                .size=${"default"} 
                 @valueChange="${(e) => {
                   this.cassAttributes["padding-top"] = e.detail.value;
                   this.debouncedChanged("padding-top");
@@ -280,11 +289,22 @@ cassAttributes : any = {
 
                 class="position-input padding-top" placeholder="padding top" .value=${this.cassAttributes["padding-top"]}></hy-input>
                 <hy-input
+                .size=${"default"}
                 @valueChange="${(e) => {
                   this.cassAttributes["padding-bottom"] = e.detail.value;
                   this.debouncedChanged("padding-bottom");
                 }}"
                  class="position-input padding-bottom" placeholder="padding bottom" .value=${this.cassAttributes["padding-bottom"]}></hy-input>
+
+
+
+                 <hy-input
+                .size=${"default"}
+                @valueChange="${(e) => {
+                  this.cassAttributes["border-bottom-right-radius"] = e.detail.value;
+                  this.debouncedChanged("border-bottom-right-radius");
+                }}"
+                 class="position-input border-bottom-right-radius" placeholder="padding bottom" .value=${this.cassAttributes["border-bottom-right-radius"]}></hy-input>
 
             </div>
         </div>

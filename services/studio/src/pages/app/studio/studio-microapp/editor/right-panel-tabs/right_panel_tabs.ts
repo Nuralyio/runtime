@@ -10,7 +10,10 @@ export default {
     width: "100%",
     height: "100%",
     display: "grid",
-    "--hybrid-tabs-content-padding": "0px"
+    "--hybrid-tabs-content-padding": "0px",
+    "--hybrid-button-font-size": "12px",
+    "--text-label-dark-color": "#c2c2c2",
+    "--hybrid-input-text-color": "#c2c2c2",
   },
   input: {
     tabs: {
@@ -77,7 +80,7 @@ export default {
                                             "studio_image_handler"
                                         ];
                                         break;
-                        case "DatePicker":
+                        case "Datepicker":
                             parameters=[
                                 "datepicker_block",
                                         ];

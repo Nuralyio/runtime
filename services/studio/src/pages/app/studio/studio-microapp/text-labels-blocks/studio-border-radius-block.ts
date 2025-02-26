@@ -80,6 +80,7 @@ export default [
                       "padding-right",
                       "padding-top",
                       "padding-bottom",
+                      "border-bottom-right-radius"
                   ];
       
                   const extractedStyles = {};
@@ -125,6 +126,8 @@ export default [
                       "margin-bottom": { value: 0, unit: 'px' },
                       "padding-top": { value: 0, unit: 'px' },
                       "padding-bottom": { value: 0, unit: 'px' },
+                      "padding-bottom": { value: 0, unit: 'px' },
+                      "border-bottom-right-radius": { value: 0, unit: 'px' },
                   };
               }
           }
@@ -161,51 +164,5 @@ export default [
     }
   },
 
-  {
-    uuid: "label_border_radius_handler",
-    application_id: "1",
-    component_type: ComponentType.Event,
-    ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
-    name: "label border radius handler",
-    style: {
-      display: "block",
-      width: "250px"
-    },
-    input: {
-      value: {
-        type: "handler",
-        value: /* js */`
-                const parameter ='borderRadius';
-                let borderRadiusHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    borderRadiusHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['border-radius'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,borderRadiusHandler];
-            `
-      }
-    },
-
-    event: {
-      codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'border-radius',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
-      `
-    }
-  }
+ 
 ];

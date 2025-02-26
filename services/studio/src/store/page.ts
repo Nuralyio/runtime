@@ -54,10 +54,7 @@ export const $showBorder = persistentAtom<boolean>("show_border", false, {
   decode: JSON.parse
 });
 
-export const $contextMenuEvent = persistentAtom<object>("context_menu_event", {}, {
-  encode: JSON.stringify,
-  decode: JSON.parse
-});
+export const $contextMenuEvent = atom<object>();
 
 /**
  * Selector for pages of a specific application

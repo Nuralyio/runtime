@@ -97,7 +97,7 @@ export const StudioTextValueInput = [
         value: /* js */ `
           const selectedComponent = Utils.first(Editor.selectedComponents);
           const handlerValue = selectedComponent?.input?.value?.type === 'handler'
-            ? selectedComponent.input.value.value
+            ? selectedComponent?.input?.value.value
             : '';
           return ['value', handlerValue];
         `

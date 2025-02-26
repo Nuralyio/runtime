@@ -14,6 +14,7 @@ import { setHoveredComponentAction } from "$store/actions/component/setHoveredCo
 import "../wrappers/GenerikWrapper/DragWrapper/DragWrapper.ts";
 import { Utils } from "core/Utils.ts";
 import deepEqual from "fast-deep-equal";
+import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 
 function isPromise(value) {
   return Boolean(value && typeof value.then === "function");
@@ -56,6 +57,8 @@ export class BaseElementBlock extends LitElement {
   @state()
   calculatedStyles: any = {};
   componentStyles: any = {};
+
+  isConnected2 = false;
 
   @state()
   inputRef: Ref<HTMLInputElement> = createRef();
@@ -237,17 +240,35 @@ export class BaseElementBlock extends LitElement {
           if (changedProperties.get("component")?.event?.onInit !== this.component?.event?.onInit) {
             executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, this.item);
           }
-          this.traitInputsHandlers();
-          this.traitStylesHandlers();
+          if(this.isConnected2){
+            this.traitInputsHandlers();
+            this.traitStylesHandlers();
+          }
+        
        
       }
     });
   }
-
+  onContextMenu(e: MouseEvent) {
+    if(!this.isViewMode) {
+      this.selectComponentAction(e)
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = this.inputRef.value?.getBoundingClientRect();
+      if (rect) {
+        e["ComponentTop"] = rect.top;
+        e["ComponentLeft"] = rect.left;
+        e["ComponentBottom"] = rect.bottom;
+        e["ComponentHeight"] = rect.height;
+        setContextMenuEvent(e);
+      }
+    }
+  }
   override async connectedCallback() {
-   
-   
     super.connectedCallback();
+    this.isConnected2 = true;
+    this.addEventListener("contextmenu", this.onContextMenu.bind(this));
+    
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
     this.addEventListener("mouseenter", this.mouseEnterHandler);
     // Using the bound handlers
@@ -307,7 +328,7 @@ export class BaseElementBlock extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-  
+    this.isConnected2 = false;
     // Suppression des écouteurs d'événements globaux
     eventDispatcher.off('component:refresh', this.traitInputsHandlerBound);
     eventDispatcher.off('component:refresh', this.traitStylesHandlerBound);

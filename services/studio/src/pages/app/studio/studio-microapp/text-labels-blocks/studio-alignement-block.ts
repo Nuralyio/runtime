@@ -40,7 +40,7 @@ export default [
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     style: {
-      "--hybrid-button-height": "30px",
+      "--hybrid-button-height": "26px",
       "--hybrid-button-width": "52px"
     },
 

@@ -126,7 +126,7 @@ export const StudioContainerInputDirection = [
         value: /* js */`
                 const selectedComponent = Utils.first(Editor.selectedComponents);
                 const handlerValue = selectedComponent?.input?.direction?.type === 'handler'
-                ? selectedComponent.input.direction.value
+                ? selectedComponent?.input?.direction.value
                 : '';
                 return ['direction', handlerValue];
                 `

@@ -51,7 +51,7 @@ export const StudioButtonStateInput = [
             const selectedComponent = Utils.first(Editor.selectedComponents);
             if (!selectedComponent) return [[], '', 'button'];
             const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'state')?.value : null;
-            console.log(Input)
+            
             const isDisabled = selectedComponent?.input?.state?.type === 'handler';
             const currentState = isDisabled ? '' : (Input || 'enabled');
             
@@ -102,7 +102,7 @@ export const StudioButtonStateInput = [
         value: /* js */`
             const selectedComponent = Utils.first(Editor.selectedComponents);
             const stateHandler = selectedComponent?.input?.state?.type === 'handler' 
-              ? selectedComponent.input.state.value 
+              ? selectedComponent?.input?.state.value 
               : '';
             return ['state', stateHandler];
          `
