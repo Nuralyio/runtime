@@ -25,7 +25,7 @@ export class RadioButtonBlock extends BaseElementBlock {
     }
   };
 
-  render() {
+  renderComponent() {
     const options = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[0] : [];
     const defaultValue = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[1] : EMPTY_STRING;
     const type = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[2] : "default";

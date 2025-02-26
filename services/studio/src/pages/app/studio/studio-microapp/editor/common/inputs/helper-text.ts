@@ -130,7 +130,7 @@ export default [
             const selectedComponent = Utils.first(Editor.selectedComponents);
             if (selectedComponent?.input?.helper?.type == 'handler' && 
                 selectedComponent?.input?.helper?.value) {
-              helperHandler = selectedComponent.input.helper.value;
+              helperHandler = selectedComponent?.input?.helper.value;
             }
             return [parameter, helperHandler];
         `

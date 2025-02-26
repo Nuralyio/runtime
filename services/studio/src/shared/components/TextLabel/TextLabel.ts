@@ -6,6 +6,7 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
 import { ref, } from "lit/directives/ref.js";
+import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
@@ -26,7 +27,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
     this.registerCallback("value", (value: any) => {
       if (value !== undefined)
-        if (this.currentValue !== value) {
+        if (this.currentValue !== value && !this.isEditable) {
           this.currentValue = value;
 
         }
@@ -53,6 +54,10 @@ export class TextLabelBlock extends BaseElementBlock {
     return html`
      <hy-label
      class="${`drop-${this.component.uuid}`}"
+     @input=${(e) => {
+          const eventData = { ['value']: { type: 'string', value: e.target.innerText } };
+          updateComponentAttributes(this.component.application_id, this.component.uuid, "input", eventData);
+     }}
           ${ref(this.inputRef)}
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"

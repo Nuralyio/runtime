@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@nuralyui/tabs";
 import "@nuralyui/select";
@@ -38,6 +38,10 @@ export class EditorInteractivePanel extends LitElement {
   @state() selectedComponent: ComponentElement;
   @state() currentPageViewPort: string;
   private inputRef: Ref<HTMLInputElement> = createRef();
+  private inputRef2: Ref<HTMLInputElement> = createRef();
+
+  @state() currentcontextMenuEvent: any;
+  @state() showContextMeny: boolean = false;
 
   constructor() {
     super();
@@ -45,7 +49,7 @@ export class EditorInteractivePanel extends LitElement {
 
   handleScroll = (event: Event) => {
     if (this.inputRef.value) {
-      this.inputRef.value.style.display = "none";
+      
     }
   };
 
@@ -72,24 +76,48 @@ export class EditorInteractivePanel extends LitElement {
     <ai-assistant-block> </ai-assistant-block>
     <theme-contaienr>
       <div>
-        <quick-action-wrapper
+        ${
+          this.showContextMeny  ? html`
+           <quick-action-wrapper
+        .componentToRenderUUID=${"quick-action-wrapper"}
+        .contextMenuEvent=${this.currentcontextMenuEvent}
         id="quick-action-wrapper"
           ${ref(this.inputRef)}
-          style="position: absolute; display: none;"
+          style="position: absolute; "
           @click=${(e: Event) => {
-    }}
+      }}
           @displayQuickActionChanged=${(e: CustomEvent) => {
-    }}
+      }}
           .component=${{ ...this.selectedComponent }}
         ></quick-action-wrapper>
+
+        <quick-action-wrapper
+        .componentToRenderUUID=${"quick-action-wrapper-bottom"}
+
+        position="bottom"
+        .contextMenuEvent=${this.currentcontextMenuEvent}
+        id="quick-action-wrapper"
+          ${ref(this.inputRef2)}
+          style="position: absolute; "
+          @click=${(e: Event) => {
+      }}
+          @displayQuickActionChanged=${(e: CustomEvent) => {
+      }}
+          .component=${{ ...this.selectedComponent }}
+        ></quick-action-wrapper>
+
+          `: nothing
+        }
+       
+
         <div class="page-container">
           <div
             class="zoom-area"
             style=${styleMap({
-      margin: "0 auto",
-      width: this.currentPageViewPort,
-      scale: this.zoomLevel / 100
-    })}
+        margin: "0 auto",
+        width: this.currentPageViewPort,
+        scale: this.zoomLevel / 100
+      })}
           >
             <slot></slot>
           </div>
@@ -133,20 +161,24 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   private handleContextMenuEvent = (contextMenuEvent: any) => {
+    this.currentcontextMenuEvent = contextMenuEvent;
     if (contextMenuEvent && Object.keys(contextMenuEvent).length) {
+      this.showContextMeny = true;
       if (this.inputRef.value) {
-        this.inputRef.value.style.display = "block";
-        this.inputRef.value.style.top = `${contextMenuEvent.ComponentTop - 5}px`;
-        this.inputRef.value.style.left = `${contextMenuEvent.ComponentLeft}px`;
+      
+     
+       
       }
     } else if (this.inputRef.value) {
-      this.inputRef.value.style.display = "none";
+      
+      this.showContextMeny = false;
     }
   };
 
   private handleEscapeKey = (event: KeyboardEvent) => {
     if (event.key === "Escape" && this.inputRef.value) {
-      this.inputRef.value.style.display = "none";
+      
+      this.showContextMeny = false;
     }
   };
 
@@ -154,7 +186,8 @@ export class EditorInteractivePanel extends LitElement {
     if (this.inputRef.value &&
       !(clickOutsideEvent.composedPath() as HTMLElement[]).find((element) => element.id == "quick-action-wrapper")
     ) {
-      this.inputRef.value.style.display = "none";
+      
+      this.showContextMeny = false;
     }
 
   };

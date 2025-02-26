@@ -113,7 +113,7 @@ export default [
         value: /* js */ `
           const selectedComponent = Utils.first(Editor.selectedComponents);
           const handlerValue = selectedComponent?.input?.label?.type === 'handler'
-            ? selectedComponent.input.label.value
+            ? selectedComponent?.input?.label.value
             : '';
           return ['label', handlerValue];
         `

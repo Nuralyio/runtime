@@ -29,6 +29,7 @@ export const enum ComponentType {
   Divider = "Divider",
   ExportImport = "ExportImport",
   InvokeFunction = "InvokeFunction",
+  Dropdown = "dropdown",
 }
 
 export interface DraggingComponentInfo {

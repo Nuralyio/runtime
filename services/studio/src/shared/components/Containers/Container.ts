@@ -48,23 +48,9 @@ export class VerticalContainer extends BaseElementBlock {
 
   override async connectedCallback() {
     await super.connectedCallback();
-    this.addEventListener("contextmenu", this.onContextMenu.bind(this));
   }
 
-  onContextMenu(e: MouseEvent) {
-    if(!this.isViewMode) {
-      e.preventDefault();
-      e.stopPropagation();
-      const rect = this.containerRef.value?.getBoundingClientRect();
-      if (rect) {
-        e["ComponentTop"] = rect.top;
-        e["ComponentLeft"] = rect.left;
-        setContextMenuEvent(e);
-      }
-    }
 
-   
-  }
 
   renderView() {
     return html`

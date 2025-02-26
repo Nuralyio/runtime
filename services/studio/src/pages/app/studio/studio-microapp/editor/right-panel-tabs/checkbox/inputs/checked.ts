@@ -60,10 +60,10 @@ export default [
                 const selectedComponent = Utils.first(Editor.selectedComponents);
                 let currentCheck="";
                 let isDisabled=false;
-                if(selectedComponent?.input?.checked?.type =='handler' && selectedComponent.input?.checked?.value) { 
+                if(selectedComponent?.input?.checked?.type =='handler' && selectedComponent?.input?.checked?.value) { 
                     isDisabled=true;
                 } else {
-                    currentCheck = selectedComponent.input?.checked?.value || 'uncheck';
+                    currentCheck = selectedComponent?.input?.checked?.value || 'uncheck';
                 }
                 const options = [
                     { icon: "check", value: "check", disabled: isDisabled }, 

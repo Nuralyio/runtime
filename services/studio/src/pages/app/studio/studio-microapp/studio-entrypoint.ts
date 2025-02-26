@@ -49,6 +49,7 @@ import tableSelectionModeBlock from "./editor/right-panel-tabs/table/inputs/sele
 import tableFilterBlock from "./editor/right-panel-tabs/table/inputs/filter.ts";
 import studioIconColorBlock from "./editor/right-panel-tabs/icon/inputs/color.ts";
 import QuickActions from "../components/editor-micro-apps/quick-action.ts";
+import QuickActionsButton from "../components/editor-micro-apps/quick-action-bottom.ts";
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block.ts";
 import studioLabelBlock from "./editor/common/inputs/label.ts";
 import studioBorderCollapse from "./common-blocks/studio-border-collapse.ts";
@@ -307,6 +308,7 @@ export default [
   ...studioSelectSelectionmodeBlock,
   ...studioSizeCollpaseBlock,
   ...QuickActions,
+  ...QuickActionsButton,
   ...microAppSelectionBlocks,
   ...microAppContainerBlocks,
   ...collectionContainerBlocks,

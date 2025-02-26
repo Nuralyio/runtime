@@ -47,7 +47,7 @@ export default [
           let currentPosition = "";
           let isDisabled = false;
 
-          if (selectedComponent.styleHandlers?.position) {
+          if (selectedComponent?.styleHandlers?.position) {
             isDisabled = true;
           } else {
             currentPosition = selectedComponent?.style?.['position'] || 'static';

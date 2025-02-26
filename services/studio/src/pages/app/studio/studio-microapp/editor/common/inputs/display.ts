@@ -1,6 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
-import { InputBlockContainerTheme, InputTextLabelTheme } from "../../utils/common-editor-theme.ts";
+import { InputBlockContainerTheme, InputTextLabelTheme, RadioButtonWithTwoOptionsTheme } from "../../utils/common-editor-theme.ts";
 
 export default [
   {
@@ -46,7 +46,7 @@ export default [
           let currentDisplay = "";
           let isDisabled = false;
 
-          if (selectedComponent.input?.display?.type == 'handler' && selectedComponent.input?.display?.value) {
+          if (selectedComponent?.input?.display?.type == 'handler' && selectedComponent?.input?.display?.value) {
             isDisabled = true;
           } else {
             currentDisplay = Editor.getComponentBreakpointInput(selectedComponent, 'display')?.value ?? true;
@@ -73,10 +73,7 @@ export default [
       }
     },
     style: {
-      display: "block",
-      "--hybrid-button-height": "30px",
-      "--hybrid-button-width": "76px",
-      "--hybrid-button-font-size": "12px"
+      ...RadioButtonWithTwoOptionsTheme
     },
     event: {
       changed: /* js */ `
@@ -91,7 +88,6 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between"
     },

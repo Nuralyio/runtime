@@ -61,11 +61,11 @@ export const StatusInputBlock = [
 
           let isDisabled = false;
           let currentStatus = '';
-          if (selectedComponent.input && selectedComponent?.input?.status?.type == "handler" &&
-            selectedComponent.input && selectedComponent?.input?.status?.value != "") {
+          if (selectedComponent?.input && selectedComponent?.input?.status?.type == "handler" &&
+            selectedComponent?.input && selectedComponent?.input?.status?.value != "") {
             isDisabled = true;
           } else {
-            currentStatus = selectedComponent.input && selectedComponent?.input?.status?.value || 'default';
+            currentStatus = selectedComponent?.input && selectedComponent?.input?.status?.value || 'default';
           }
 
           const options = [

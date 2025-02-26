@@ -94,7 +94,6 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between"
     },
@@ -117,7 +116,7 @@ export default [
         value: /* js */`
           const selectedComponent = Utils.first(Editor.selectedComponents);
           const handlerValue = selectedComponent?.input?.iconPosition?.type === 'handler'
-            ? selectedComponent.input.iconPosition.value
+            ? selectedComponent?.input?.iconPosition.value
             : '';
           return ['iconPosition', handlerValue];
         `

@@ -59,7 +59,7 @@ export default [
           const selectedComponent = Utils.first(Editor.selectedComponents);
           let isDisabled = false;
           let currentSize = '';
-          if (selectedComponent.styleHandlers && selectedComponent?.styleHandlers?.size) {
+          if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers?.size) {
             isDisabled = true;
           } else {
             currentSize = Editor.getComponentStyle(selectedComponent, 'size') || 'medium';

@@ -39,7 +39,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small",
-      width: "155px"
+      width: "100px"
     },
     styleHandlers: {},
     name: "Left panel",

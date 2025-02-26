@@ -60,7 +60,7 @@ export default [
           const selectedComponent = Utils.first(Editor.selectedComponents);
           let isDisabled = false;
           let currentState = '';
-          if (selectedComponent.styleHandlers && selectedComponent?.styleHandlers?.state) {
+          if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers?.state) {
             isDisabled = true;
           } else {
             currentState = Editor.getComponentStyle(selectedComponent, 'state') || 'default';

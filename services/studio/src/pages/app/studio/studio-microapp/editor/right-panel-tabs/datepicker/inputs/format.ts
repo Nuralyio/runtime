@@ -66,7 +66,7 @@ export default [
         value: /* js */`
           const selectedComponent = Utils.first(Editor.selectedComponents);
 
-          let format = selectedComponent.input?.format?.value ?? 'DD/MM/YYYY';
+          let format = selectedComponent?.input?.format?.value ?? 'DD/MM/YYYY';
           let selectedFormat;
           const options = [
             { label: "dd/mm/yyyy", value: "DD/MM/YYYY" },
@@ -87,7 +87,7 @@ export default [
         value: /* js */`
           const selectedComponent = Utils.first(Editor.selectedComponents);
           let state = "unabled";
-          if (selectedComponent.input?.format?.type === "handler" && selectedComponent.input?.format?.value) {
+          if (selectedComponent?.input?.format?.type === "handler" && selectedComponent?.input?.format?.value) {
             state = "disabled";
           }
           return state;
@@ -111,7 +111,6 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between"
     },

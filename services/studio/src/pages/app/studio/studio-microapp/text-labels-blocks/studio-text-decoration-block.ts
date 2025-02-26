@@ -48,7 +48,7 @@ export default [
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
-      "--hybrid-button-height": "30px",
+      "--hybrid-button-height": "26px",
       "--hybrid-button-width": "32px"
     },
     input: {
@@ -58,7 +58,7 @@ export default [
           const selectedComponent = Utils.first(Editor.selectedComponents);
           let defaultTextDecoration = '';
           let isDisabled = false;
-          if (selectedComponent.styleHandlers && selectedComponent?.styleHandlers['text-decoration']) {
+          if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['text-decoration']) {
             isDisabled = true;
           } else {
             defaultTextDecoration = Editor.getComponentStyle(selectedComponent, 'text-decoration') || 'none';

@@ -12,7 +12,7 @@ export const StudioTextInputDesign = [
       display: "flex",
       "flex-direction": "column",
       "align-items": "center",
-      "justify-content": "center"
+      "justify-content": "center",
     },
     childrenIds: [
       "text_input_collapse_container",
