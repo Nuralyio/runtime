@@ -12,7 +12,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
 
     childrenIds: ["font_family_label", "font_family_select", "font_family_handler"]
@@ -103,7 +103,7 @@ export default [
     },
     style: {
       display: "block",
-      "--hybrid-select-width": "155px",
+      "--hybrid-select-width": "150px",
       "size": "small"
     },
     event: {

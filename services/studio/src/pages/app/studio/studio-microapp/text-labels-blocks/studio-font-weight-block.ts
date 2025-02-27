@@ -19,7 +19,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["text_label_font_weight", "font_weight_content", "font_weight_handler"]
   },

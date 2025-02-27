@@ -12,8 +12,8 @@ export class RightPanel extends LitElement {
         display: none;
       }
       :host{
-        --hybrid-tabs-content-padding: 10;
-        /* --hybrid-button-primary-background-color : #0a3b97 */
+        --hybrid-tabs-content-padding: 20px;
+        --hybrid-tabs-content-maring: 10px;
       }
       aside.visible {
         display: flex;
@@ -43,8 +43,8 @@ export class RightPanel extends LitElement {
         <div class="my-4 w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"></span>
         </div>
-        <div class="my flex-grow" style="width:290px;height: 100%">
-          <control-panel class="w-full h-full" style="width:355px;height: 100%;"></control-panel>
+        <div class="my flex-grow" style="width:290px;height: 100%; margin:10px">
+          <control-panel class="w-full h-full" style="width:345px;height: 100%;"></control-panel>
         </div>
       </aside>`;
   }

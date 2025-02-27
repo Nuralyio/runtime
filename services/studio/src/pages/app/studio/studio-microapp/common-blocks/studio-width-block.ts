@@ -12,7 +12,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: [
       "width_label",

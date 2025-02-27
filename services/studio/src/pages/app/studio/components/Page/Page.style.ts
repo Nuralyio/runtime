@@ -15,6 +15,10 @@ const pageStyle = css`
   .page-container {
     height: calc(100vh - 120px);
     position: relative;
+    background:white;
+    --hybrid-tabs-content-padding: 0;
+    --hybrid-tabs-border-radius: 8px;
+    --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #dbdbdbbf ;
     
   }
   .mobile.page-container {

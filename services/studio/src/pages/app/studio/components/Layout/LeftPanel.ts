@@ -8,8 +8,8 @@ export class LeftPanel extends LitElement {
   static styles = [
     css`
       hy-tabs {
-        --hybrid-tabs-content-background-color: #f8fafc;
         font-size: 12px;
+        
       }
       @media (prefers-color-scheme: dark) {
         hy-tabs {

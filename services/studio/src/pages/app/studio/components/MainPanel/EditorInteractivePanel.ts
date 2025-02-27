@@ -23,6 +23,11 @@ export class EditorInteractivePanel extends LitElement {
     .page-container {
       width: 100%;
       overflow: auto;
+    --hybrid-tabs-content-padding: 10px;
+
+      
+      
+      
     }
     .zoom-area {
       overflow: visible;

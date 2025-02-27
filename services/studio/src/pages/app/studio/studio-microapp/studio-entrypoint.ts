@@ -142,8 +142,12 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     style: {
-      width: "300px",
-      "--hybrid-menu-border": "none"
+      "--hybrid-menu-border": "none",
+      "--hybrid-tabs-container-box-shadow":" 2px 0px 5px 0px #dbdbdbbf",
+      "--hybrid-tabs-content-background-color": "transparent",
+     "--hybrid-tabs-border-radius": "8px",
+      "width": "295px",
+
     },
     input: {
       index:{

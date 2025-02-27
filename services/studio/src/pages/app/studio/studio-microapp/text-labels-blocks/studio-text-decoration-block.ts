@@ -17,7 +17,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["text_label_text_decoration", "text_decoration_content", "text_decoration_handler"]
   },
@@ -49,7 +49,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       "--hybrid-button-height": "26px",
-      "--hybrid-button-width": "32px"
+      "--hybrid-button-width": "31px"
     },
     input: {
       value: {

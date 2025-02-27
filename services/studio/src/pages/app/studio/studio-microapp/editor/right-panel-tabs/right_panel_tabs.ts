@@ -14,6 +14,8 @@ export default {
     "--hybrid-button-font-size": "12px",
     "--text-label-dark-color": "#c2c2c2",
     "--hybrid-input-text-color": "#c2c2c2",
+    "--hybrid-tabs-container-box-shadow":" 2px 0px 5px 0px #dbdbdbbf",
+    "--hybrid-tabs-border-radius": "8px",
   },
   input: {
     tabs: {
