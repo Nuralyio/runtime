@@ -483,7 +483,7 @@ export default [{
 
     component_type: ComponentType.Container,
     style: {
-      
+      "margin-top" : "5px",
       "margin-right": "24px",
       "justify-content": "space-between",
       "align-items": "center",
@@ -550,6 +550,7 @@ export default [{
 
     component_type: ComponentType.Button,
     style: {
+      "margin-top" : "15px",
       "type": "ghost",
       "--hybrid-button-padding-y": "2px",
       "--hybrid-button-padding-x": "2px",
@@ -649,7 +650,7 @@ export default [{
 
     component_type: ComponentType.Container,
     style: {
-      
+      "margin-top" : "5px",
       "margin-right": "4px",
       "justify-content": "space-between",
     },

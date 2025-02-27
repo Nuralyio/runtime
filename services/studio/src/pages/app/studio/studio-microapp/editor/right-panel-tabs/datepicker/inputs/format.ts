@@ -82,6 +82,10 @@ export default [
           return result;  
         `
       },
+      placeholder : {
+        type : "string", 
+        value : "Select format"
+      },
       state: {
         type: "handler",
         value: /* js */`

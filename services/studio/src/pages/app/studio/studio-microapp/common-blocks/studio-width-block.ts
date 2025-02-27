@@ -65,7 +65,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       display: "block",
-      width: "50px",
+      width: "80px",
       size: "small"
     },
     event: {
