@@ -2,7 +2,7 @@ export const InputBlockContainerTheme = {
   display: "flex",
   "align-items": "center",
   "justify-content": "space-between",
-  "width": "290px"
+  "width": "276px"
 };
 
 export const CollapseContainerTheme = {
@@ -23,7 +23,7 @@ export const InputTextLabelTheme = {
 
 export const RadioButtonWithTwoOptionsTheme = {
   "--hybrid-button-height": "26px",
-  "--hybrid-button-width": "80px",
+  "--hybrid-button-width": "75px",
   "--hybrid-button-font-size": "12px",
   
 };
@@ -36,7 +36,7 @@ export const RadioButtonWithThreeOptionsTheme = {
 
 export const TextInputTheme = {
   size: "small",
-  width: "161px"
+  width: "151px"
 };
 
 export const ButtonTheme = {
@@ -50,7 +50,7 @@ export const ButtonTheme = {
 };
 
 export const SelectTheme = {
-  "--hybrid-select-width": "160px",
+  "--hybrid-select-width": "140px",
   "--hybrid-select-small-height": "22px",
   "size": "small"
 };

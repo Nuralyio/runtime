@@ -12,7 +12,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
 
     childrenIds: ["text_label_vertical_alignement", "text_vertical_align_content", "vertical_alignement_handler"]

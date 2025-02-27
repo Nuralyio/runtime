@@ -14,7 +14,10 @@ export default [{
   style: {
     width: "100%",
     height: "100%",
-    display: "grid"
+    display: "grid",
+    margin: "10px 10px 0 10px",
+
+
   },
   childrenIds: ["left_panel_tabs"]
 },
@@ -186,6 +189,7 @@ export default [{
     component_type: ComponentType.Menu,
     style: {
       "--hybrid-menu-border": "none",
+      width: "100%",
       "--hybrid-menu-font-size": "12px",
       "--hybrid-sub-menu-padding-y": "4px",
       "--hybrid-menu-link-padding-y": "4px"

@@ -12,7 +12,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["font_color_label", "font_color_input_2", "font_color_handler"]
   },

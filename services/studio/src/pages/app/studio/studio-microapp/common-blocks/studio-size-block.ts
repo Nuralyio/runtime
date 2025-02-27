@@ -13,7 +13,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px",
+      "width": "276px",
     },
     childrenIds: ["size_radio_block", "size_handler_block"],
   },

@@ -13,7 +13,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["text_label_click_event", "click_event_value"]
   },

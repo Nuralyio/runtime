@@ -12,7 +12,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["position_label", "position_select", "position_handler"]
   },
@@ -67,7 +67,7 @@ export default [
     },
     style: {
       display: "block",
-      "--hybrid-select-width": "155px",
+      "--hybrid-select-width": "150px",
       "size": "small"
     },
     event: {

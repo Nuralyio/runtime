@@ -14,13 +14,15 @@ export class TabsPanel extends LitElement {
     css`
             :host {
                 display: block;
-                background-color: #2d2d2d;
                 font-family: 'Roboto', sans-serif;
+                margin: 10px 0 0 16px;
             }
             hy-tabs  {
             	--hybrid-menu-background-color: #2c2c2c;
 		        --hybrid-tabs-label-font-size: 12px;
 		          --hybrid-button-border-color: transparent;
+    --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #dbdbdbbf ;
+
           		}
 
         `
@@ -97,29 +99,30 @@ export class TabsPanel extends LitElement {
       ${this.editableTabs.length === 0 ? html`
 		` : html`
         <hy-tabs
-        style=${
-          styleMap({
-            "--hybrid-tabs-content-padding": "0px",
-          })
+        style=${styleMap({
+      "--hybrid-tabs-content-padding": "0px",
+      "--hybrid-tabs-border-radius": "8px"
+
+    })
         }
           .activeTab=${this.activeTab}
           @removeTab=${(e: CustomEvent) => {
-            this.activeTab = 0;
-            this.editableTabs = [...this.editableTabs.filter((tab, index) => index !== e.detail.index)];
-          console.log( this.editableTabs)
-          }}
+          this.activeTab = 0;
+          this.editableTabs = [...this.editableTabs.filter((tab, index) => index !== e.detail.index)];
+          console.log(this.editableTabs)
+        }}
           @tabTilteClick=${(e: CustomEvent) => {
-            console.log("tabTilteClick", $editorState.get().tabs[e.detail.index])
-            setCurrentEditorTab($editorState.get().tabs[e.detail.index]);
-          } 
-      }
+          console.log("tabTilteClick", $editorState.get().tabs[e.detail.index])
+          setCurrentEditorTab($editorState.get().tabs[e.detail.index]);
+        }
+        }
           .tabs=${this.editableTabs}
           .editable=${{
-            canDeleteTab: true,
-            canEditTabTitle: false,
-            canAddTab: false,
-            canMove: false
-          }}
+          canDeleteTab: true,
+          canEditTabTitle: false,
+          canAddTab: false,
+          canMove: false
+        }}
         ></hy-tabs>
       `}
 

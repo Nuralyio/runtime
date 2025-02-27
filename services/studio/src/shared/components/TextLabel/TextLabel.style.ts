@@ -7,14 +7,12 @@ label{
 }
 
 :host{
-    --text-label-color:black;
     display: flex;
     width:fit-content;
 }
 
 @media (prefers-color-scheme: dark) {
     :host { 
-        --text-label-color:white;
       }
  }
 

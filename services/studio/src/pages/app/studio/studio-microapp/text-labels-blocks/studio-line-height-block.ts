@@ -11,7 +11,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["text_label_line_height", "line_height_input", "line_height_handler"]
   },

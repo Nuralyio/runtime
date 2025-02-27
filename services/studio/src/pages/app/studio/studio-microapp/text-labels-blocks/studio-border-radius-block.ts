@@ -13,7 +13,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["border_radius_label", "border_radius_block", "label_border_radius_handler"]
 
