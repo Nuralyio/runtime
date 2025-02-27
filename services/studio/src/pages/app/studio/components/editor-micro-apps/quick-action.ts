@@ -8,11 +8,11 @@ export default [
     component_type: ComponentType.Icon,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
-    style:{
+    style: {
       "margin": "5px",
       "display": "block"
     },
-    input : {
+    input: {
       icon: {
         type: "string",
         value: "font"
@@ -26,11 +26,11 @@ export default [
     component_type: ComponentType.Icon,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
-    style:{
+    style: {
       "margin": "5px 5px 5px 15px",
       "display": "block"
     },
-    input : {
+    input: {
       icon: {
         type: "string",
         value: "i-cursor"
@@ -45,11 +45,11 @@ export default [
     component_type: ComponentType.Icon,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
-    style:{
+    style: {
       "margin": "5px 5px 5px 25px",
       "display": "block",
     },
-    input : {
+    input: {
       icon: {
         type: "string",
         value: "arrows-alt-h"
@@ -63,11 +63,11 @@ export default [
     component_type: ComponentType.Icon,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
-    style:{
+    style: {
       "margin": "5px 5px 5px 25px",
       "display": "block",
     },
-    input : {
+    input: {
       icon: {
         type: "string",
         value: "arrows-alt-v"
@@ -80,11 +80,11 @@ export default [
     component_type: ComponentType.Icon,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
-    style:{
+    style: {
       "margin": "5px 5px 5px 15px",
       "display": "block"
     },
-    input : {
+    input: {
       icon: {
         type: "string",
         value: "bold"
@@ -100,20 +100,32 @@ export default [
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     input: {
-     
+
       direction: {
         type: "string",
         value: "horizontal"
       }
     },
     style: {
-      padding : "6px 5px 0 5px"
+      padding: "6px 5px 0 5px"
     },
-    childrenIds: [ "text_label_quick_action", "text_input_quick_action"]
+    childrenIds: [
+      "text_label_quick_action",
+      "text_input_quick_action",
+      "checkbox_quick_action",
+      "select_quick_action",
+      "datepicker_quick_action",
+      "container_quick_action",
+      "icon_quick_action",
+      "image_quick_action",
+      "collection_quick_action",
+      "button_quick_action",
+      "table_quick_action"
+    ]
   },
- 
+
   {
-    uuid : "text_input_quick_action",
+    uuid: "text_input_quick_action",
     application_id: "1",
     component_type: ComponentType.Container,
     input: {
@@ -124,18 +136,161 @@ export default [
         
           return selectedComponent?.component_type == "text_input";
         `
-      }, 
+      },
       direction: {
         type: "string",
         value: "horizontal"
       }
     },
-    childrenIds: [  "input_type_radio" , "label_font_size_input" , "font_size_input",   "width_icon", "width_input", "height_icon", "height_input"]
+    childrenIds: ["input_type_radio", "label_font_size_input", "font_size_input", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
 
   {
-    uuid : "text_label_quick_action",
+    uuid: "checkbox_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "select";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["select_selectionmode_radio", "width_icon", "width_input", "height_icon", "height_input"]
+
+  },
+
+  {
+    uuid: "select_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "checkbox";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["checkbox_checked_radio", "width_icon", "width_input", "height_icon", "height_input"]
+
+  },
+  {
+    uuid: "datepicker_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "Datepicker";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["datepicker_format_select", "width_icon", "width_input", "height_icon", "height_input"]
+  },
+  {
+    uuid: "container_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "vertical-container-block";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input"]
+  },
+  {
+    uuid: "icon_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "Icon";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
+  },
+  {
+    uuid: "image_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "Image";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["width_icon", "width_input", "height_icon", "height_input"]
+  },
+  {
+    uuid: "collection_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+        
+          return selectedComponent?.component_type == "Collection";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["table_direction_select","label_collection_column_input", "column_input_2","width_icon", "width_input", "height_icon", "height_input"]
+  },
+  {
+    uuid: "text_label_quick_action",
     application_id: "1",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -146,33 +301,109 @@ export default [
         const selectedComponent = Utils.first(Editor.selectedComponents);
           return selectedComponent?.component_type === "text_label";
         `
-      }, 
+      },
       direction: {
         type: "string",
         value: "horizontal"
       }
     },
-    childrenIds: [ "font_icon", "font_family_select", "font_size_icon", "font_size_input_2", "bold_icon", "font_weight_content"]
+    childrenIds: ["font_icon", "font_family_select", "font_size_icon", "font_size_input_2", "bold_icon", "font_weight_content"]
+
+  },
+  {
+    uuid: "button_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    ...COMMON_ATTRIBUTES,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+          return selectedComponent?.component_type === "button_input";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["input_type_radio", "label_icon_input", "icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
 
+  {
+    uuid: "table_quick_action",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    ...COMMON_ATTRIBUTES,
+    input: {
+      display: {
+        type: "handler",
+        value: /* js */`
+        const selectedComponent = Utils.first(Editor.selectedComponents);
+          return selectedComponent?.component_type === "Table";
+        `
+      },
+      direction: {
+        type: "string",
+        value: "horizontal"
+      }
+    },
+    childrenIds: ["table_selectionmode_radio", "table_filter_radio", "width_icon", "width_input", "height_icon", "height_input"]
 
-{
-  name : "text label font size",
-  uuid: "label_font_size_input",
-  application_id: "1",
-  component_type: ComponentType.TextLabel,
-  ...COMMON_ATTRIBUTES,
-  input:{
-    value: {
-      type: "string",
-      value: "Label"
+  },
+
+  {
+    name: "text label font size",
+    uuid: "label_font_size_input",
+    application_id: "1",
+    component_type: ComponentType.TextLabel,
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Label"
+      }
+    },
+    style: {
+      "margin": "0px 10px 0px 15px"
     }
   },
-  style:{
-    "margin" : "0px 10px 0px 15px"
-  }
-},
+
+  {
+    name: "text label font size",
+    uuid: "label_icon_input",
+    application_id: "1",
+    component_type: ComponentType.TextLabel,
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Icon"
+      }
+    },
+    style: {
+      "margin": "0px 10px 0px 15px"
+    }
+  },
+
+  {
+    name: "text label font size",
+    uuid: "label_collection_column_input",
+    application_id: "1",
+    component_type: ComponentType.TextLabel,
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Column"
+      }
+    },
+    style: {
+      "margin": "0px 10px 0px 15px"
+    }
+  },
   {
     name: "name",
     application_id: "1",

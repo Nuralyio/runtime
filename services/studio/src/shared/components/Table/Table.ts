@@ -6,6 +6,8 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/table";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
+
 
 
 @customElement("table-block")
@@ -137,7 +139,7 @@ export class TextInputBlock extends BaseElementBlock {
   }
 
 
-  render() {
+  renderComponent() {
     const tableStyles = this.component?.style || {};
     const tableAutoWidth = this.inputHandlersValue?.width;
     const tableAutoHeight = this.inputHandlersValue?.height;
@@ -145,6 +147,7 @@ export class TextInputBlock extends BaseElementBlock {
     const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data[1] : this.rows;
     return html`
       <hy-table
+        ${ref(this.inputRef)}
         style=${styleMap({ ...tableStyles, width: tableAutoWidth ? "auto" : tableStyles.width, "overflow": "auto" })}
         .headers="${headers}"
         .rows="${rows}"

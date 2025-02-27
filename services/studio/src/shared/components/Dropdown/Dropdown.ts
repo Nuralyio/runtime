@@ -55,7 +55,6 @@ export class SelectBlock extends BaseElementBlock {
     <span>
       <hy-dropdown  
       .show=${this.show}
-      .always=${this.show}
             ${ref(this.inputRef)}
             style=${styleMap({
             ...this.getStyles(),
@@ -71,3 +70,4 @@ export class SelectBlock extends BaseElementBlock {
     `;
     }
 }
+//.always=${this.show}
