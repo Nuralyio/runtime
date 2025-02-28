@@ -35,7 +35,6 @@ export class ComponentRepositoryPrismaPgSQL implements IComponentRepository {
         return new Component(component!.component, component!.user_id, component!.uuid, component!.application_id);
     }
     public async update(uuid: string, component: Component): Promise<Component> {
-       console.log(component)
         const updatedComponent = await prisma.components.update({
             where: { uuid },
             data: {
