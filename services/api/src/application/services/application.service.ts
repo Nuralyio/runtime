@@ -1,14 +1,20 @@
-import { singleton } from 'tsyringe';
+import { delay, inject, singleton } from 'tsyringe';
 import { Application } from '../models/application';
 import { ApplicationRepository } from '../repositories/application.repository';
 import { NUser } from '../../auth/domain/user';
 import { OwnershipService } from '../../ownership/services/ownership.service';
+import { PageService } from '../../page/services/page.service';
+import { v4 as uuidv4 } from 'uuid';
+
 @singleton()
 export class ApplicationService {
   private ApplicationRepository: ApplicationRepository;
   private ownershipSercice: OwnershipService;
 
-  constructor(productRepository: ApplicationRepository, ownershipService: OwnershipService) {
+  constructor(productRepository: ApplicationRepository, ownershipService: OwnershipService, 
+
+   @inject(delay(()=>PageService)) private pageService: PageService
+  ) {
     this.ApplicationRepository = productRepository;
     this.ownershipSercice = ownershipService
     //this.ownershipSercice = new OwernshipService
@@ -18,6 +24,7 @@ export class ApplicationService {
     const application: Application = new Application(published, name ?? this.generateAppName(), uuid, user_id);
     const newApplication = await this.ApplicationRepository.create(application);
     this.ownershipSercice.create('application', newApplication.uuid, user_id);
+    this.pageService.create("Page1", "page1", newApplication.uuid, user_id, uuidv4(), false, []);
     return newApplication;
   }
 
