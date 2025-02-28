@@ -1,3 +1,10 @@
+
+export const CommonButtonTheme = {
+  "--hybrid-button-primary-background-color": "#26327b",
+  "--hybrid-button-primary-border-color": "#26327b",
+  "--hybrid-button-hover-color": "white",
+  "--hybrid-button-hover-background-color": "#26327b",
+};
 export const InputBlockContainerTheme = {
   display: "flex",
   "align-items": "center",
@@ -25,13 +32,17 @@ export const RadioButtonWithTwoOptionsTheme = {
   "--hybrid-button-height": "26px",
   "--hybrid-button-width": "75px",
   "--hybrid-button-font-size": "12px",
+...CommonButtonTheme
   
 };
 
+
 export const RadioButtonWithThreeOptionsTheme = {
   "--hybrid-button-height": "26px",
-  "--hybrid-button-width": "51px",
-  "--hybrid-button-font-size": "12px"
+  "--hybrid-button-width": "50px",
+  "--hybrid-button-font-size": "12px",
+...CommonButtonTheme
+
 };
 
 export const TextInputTheme = {
@@ -46,7 +57,9 @@ export const ButtonTheme = {
   "--hybrid-button-border-top-left-radius": "4px",
   "--hybrid-button-border-top-right-radius": "4px",
   "--hybrid-button-border-bottom-left-radius": "4px",
-  "--hybrid-button-border-bottom-right-radius": "4px"
+  "--hybrid-button-border-bottom-right-radius": "4px",
+...CommonButtonTheme
+
 };
 
 export const SelectTheme = {
