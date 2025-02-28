@@ -17,13 +17,8 @@ const handleError = (res: Response, status: number, logMessage: string, response
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const headerValue = req.header('X-USER');
-    console.log('headerValue: ', headerValue);
-
- 
-
     try {
         const user: User = JSON.parse(headerValue as string);
-        console.log(user);
         (req as any).user = user;
         next();
     } catch (error) {

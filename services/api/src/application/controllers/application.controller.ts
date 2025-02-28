@@ -25,9 +25,9 @@ export class ApplicationController extends Controller {
   @Post()
   public async create(
     @Request() request: NRequest,
-    @Body() requestBody: {  name: string; }): Promise<Application> {
+    @Body() requestBody: {  name?: string  }): Promise<Application> {
     const {  name} = requestBody;
-    return await this.applicationService.create(false /* published */, name, uuidv4(), request.user.uuid);
+    return await this.applicationService.create(false /* published */, uuidv4(), request.user.uuid, name);
   }
 
   @Get()
