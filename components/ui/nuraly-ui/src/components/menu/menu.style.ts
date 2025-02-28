@@ -50,7 +50,7 @@ const menuStyle = css`
     --hybrid-sub-menu-padding-y: 8px;
     --hybrid-sub-menu-margin-y: 0px;
     --hybrid-sub-menu-padding-left: 10px;
-    --hybrid-sub-menu-padding-left-text: 15px;
+    --hybrid-sub-menu-padding-left-text: 5px;
     --hybrid-sub-menu-empty-icon-padding-left-text: 29px;
     --hybrid-sub-menu-children-padding-left: 15px;
   }

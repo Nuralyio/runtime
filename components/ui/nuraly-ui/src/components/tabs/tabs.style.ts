@@ -6,6 +6,7 @@ export const styles = css`
     height: 100%;
   }
    .tabs-container{
+    border-radius: var(--hybrid-tabs-border-radius, var(--hybrid-tabs-border-radius-local));
     background-color:var(--hybrid-tabs-container-background-color, var(--hybrid-tabs-container-background-local-color));
     height: 100%;
    }
@@ -52,8 +53,9 @@ export const styles = css`
 
   .tab-content {
     padding: var(--hybrid-tabs-content-padding);
+    margin: var(--hybrid-tabs-content-maring);
     flex-grow: 1;
-    background-color: var(--hybrid-tabs-content-background-color);
+    background-color: var(--hybrid-tabs-content-background-color, var(--hybrid-tabs-content-background-color-local));
     border-top: var(--hybrid-tabs-content-border-top);
     max-height:100vh;
     overflow-y:auto;
@@ -135,6 +137,7 @@ export const styles = css`
   }
   :host{
     --hybrid-tabs-container-background-local-color:#ffffff;
+    --hybrid-tabs-border-radius-local:0px;
     --hybrid-tabs-container-box-shadow:none;
     --hybrid-tabs-dragging-start-border:1px dashed black;
     --hybrid-tabs-dragging-enter-background-color:#1661b1;
@@ -143,14 +146,14 @@ export const styles = css`
     --hybrid-tabs-va-ra-border:none;
     --hybrid-tabs-va-ra-border-right:1px solid #ccc;
     --hybrid-tabs-label-cursor:pointer;
-    --hybrid-tabs-label-padding: 7px 7px 5px 7px;
+    --hybrid-tabs-label-padding: 3px 7px 5px 7px;
     --hybrid-tabs-label-border-bottom: 2px solid transparent;
     --hybrid-tabs-label-transition: border-color 0.1s ease;
     --hybrid-tabs-label-user-select: none;
     --hybrid-tabs-label-hover-color: #1661b1;
     --hybrid-tabs-label-active-hover-color:#006afe;
-    --hybrid-tabs-content-padding:10px;
-    --hybrid-tabs-content-background-color: #fff;
+    --hybrid-tabs-content-padding:5px;
+    --hybrid-tabs-content-background-color-local: #fff;
     --hybrid-tabs-content-border-top: 1px solid #ccc;
     --hybrid-tabs-right-align-labels-flex-direction:row-reverse;
     --hybrid-tabs-right-align-labels-align-self: end;
@@ -184,7 +187,7 @@ export const styles = css`
   @media (prefers-color-scheme: dark) {
     :host{
       --hybrid-tabs-container-background-local-color: #3e3e3e;
-      --hybrid-tabs-content-background-color: #2d2d2d;
+      --hybrid-tabs-content-background-color-local: #2d2d2d;
       --hybrid-tabs-label-hover-color: #aaa;
       --hybrid-tabs-label-active:#ffffff;   
       --hybrid-tabs-add-icon-color: #ffffff;
