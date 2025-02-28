@@ -41,7 +41,7 @@ export class HyDropdownMenu extends LitElement {
   override render() {
     return html`<div @mousedown=${this.onClickMenu}>
       ${this.icon ? html`<hy-icon name=${this.icon}></hy-icon>` : nothing}
-      <span class="menu-label"> ${this.label}</span>
+      <hy-label class="menu-label"> ${this.label}</hy-label>
       <hy-icon
         name="${this.direction == DropDownDirection.Right ? 'caret-right' : 'caret-left'}"
         id="caret-icon"

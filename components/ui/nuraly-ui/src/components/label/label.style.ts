@@ -3,7 +3,6 @@ import { css } from "lit";
 export default css`
     :host {
         /* Default color variables */
-        --text-label-color: black; /* Default text color */
         --text-label-local-dark-color: white; /* Dark mode text color */
         --text-label-local-light-color: black; /* Light mode text color */
 
@@ -45,14 +44,14 @@ export default css`
     @media (prefers-color-scheme: dark) {
         :host {
             /* Update resolved color for dark mode */
-            --resolved-text-label-color: var(--text-label-local-dark-color, var(--text-label-color));
+            --resolved-text-label-color: var(--text-label-dark-color, var(--text-label-local-dark-color, var(--text-label-color)));
         }
     }
 
     @media (prefers-color-scheme: light) {
         :host {
             /* Optionally update color for light mode */
-            --resolved-text-label-color: var(--text-label-local-light-color, var(--text-label-color));
+            --resolved-text-label-color: var(--text-label-color, var( --text-label-local-light-color));
         }
     }
 `;

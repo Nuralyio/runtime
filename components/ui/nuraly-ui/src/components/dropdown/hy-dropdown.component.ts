@@ -13,14 +13,17 @@ export class HyDropdownComponent extends LitElement {
   triggerElement!: HTMLElement;
   @query('.dropdown-container')
   dropDownContainer!: HTMLElement;
-  @property()
+  @property({type: Array})
   options!: IOption[];
   @property({type: Boolean, reflect: true})
   show = false;
   @property()
   trigger = TriggerMode.Click;
-  @property()
+  @property({type: Object})
   template!:TemplateResult<1>;
+
+  @property({type: Boolean, reflect: true})
+  always = false;
 
 
   @state()
@@ -74,7 +77,7 @@ export class HyDropdownComponent extends LitElement {
   }
   onClickOutside = (onClickEvent:Event) => {
     const outsideClick = !onClickEvent.composedPath().includes(this)
-    if (outsideClick && this.show){
+    if (outsideClick && this.show && !this.always){
       this.show = false;
       this.initPosition();
     }

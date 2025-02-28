@@ -8,7 +8,6 @@ const dropdownMenuStyle = css`
     background-color: var(--hybrid-dropdown-background-color);
     display: flex;
     align-items: center;
-      border-radius: 10px;
   }
   hy-icon {
     display: flex;
