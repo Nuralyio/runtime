@@ -193,7 +193,7 @@ export default [{
       "--hybrid-menu-font-size": "12px",
       "--hybrid-sub-menu-padding-y": "4px",
       "--hybrid-menu-link-padding-y": "4px",
-      "--hybrid-sub-menu-highlighted-background-color" : "transparent",
+      "--hybrid-sub-menu-highlighted-background-color" : "#f1f3ff",
     },
     input: {
       options: {
@@ -229,7 +229,7 @@ export default [{
                                 componentIcon='table';
                                 break;
                             case 'vertical-container-block':
-                                componentIcon='grip-vertical';
+                                componentIcon = component.input?.direction?.value === 'horizontal' ? 'grip-horizontal' : 'grip-vertical';
                                 break;
                             case 'text_input':
                                 componentIcon='pen-to-square';
@@ -251,6 +251,8 @@ export default [{
                             id: component.uuid,
                             selected: currentComponent?.length && component.uuid == currentComponent[0],
                             handlerKey: "onSelect",
+                            menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" }] }
+
                         })
                         if(componentChildrenIds){
                             children[children.length-1]={...children[children.length-1],children:[]}
@@ -278,7 +280,9 @@ export default [{
                     icon: 'file',
                     type: "page",
                     handlerKey: "onSelect",
-                    children: children
+                    children: children,
+                    menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" }] }
+
                 };
             });
 

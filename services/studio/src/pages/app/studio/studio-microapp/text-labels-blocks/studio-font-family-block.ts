@@ -60,50 +60,98 @@ export default [
                     {
                     label: "Arial",
                     value: "Arial",
+                    additionalStyle: {
+                      fontFamily: "Arial",
+                      fontSize: "17px"
+                    }
                     }, 
                     {
                     label: "Tahoma",
                     value: "Tahoma",
-                   },
+                    additionalStyle: {
+                        fontFamily: "Tahoma",
+                        fontSize: "17px"
+                    }
+                    },
                     {
                      label: "Verdana",
                      value: "Verdana",
+                     additionalStyle: {
+                        fontFamily: "Verdana",
+                        fontSize: "17px"
+                      }
                    },
                    {
                     label:'Georgia',
                     value:'Georgia',
+                    additionalStyle: {
+                      fontFamily: 'Georgia',
+                        fontSize: "17px"
+                    }
                   },
                   {
                     label:'Courier New',
                     value:'Courier New',
+                    additionalStyle: {
+                      fontFamily: 'Courier New',
+                        fontSize: "17px"
+                    }
                  },
                   {
                     label:'Roboto',
                     value:'"Roboto", sans-serif',
+                    additionalStyle: {
+                      fontFamily: '"Roboto", sans-serif',
+                        fontSize: "17px"
+                    }
                  },
                  {
                   label:'Lato',
                   value:'"Lato", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Lato", sans-serif',
+                        fontSize: "17px"
+                  }
                },
                  {
                   label:'Merriweather',
                   value:'"Merriweather", serif',
+                  additionalStyle: {
+                    fontFamily: '"Merriweather", serif',
+                        fontSize: "17px"
+                  }
                },
                  {
                   label:'Aleo',
                   value:'"Aleo", serif',
+                  additionalStyle: {
+                    fontFamily: '"Aleo", serif',
+                        fontSize: "17px"
+                  }
                },
                  {
                   label:'mulish',
                   value:'"Mulish", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Mulish", sans-serif',
+                        fontSize: "17px"
+                  }
                },
                  {
                   label:'Asap Condensed',
                   value:'"Asap Condensed", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Asap Condensed", sans-serif',
+                        fontSize: "17px"
+                  }
                },
                  {
                   label:'Barlow',
                   value:'"Barlow", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Barlow", sans-serif',
+                        fontSize: "17px"
+                  }
                }
             
             ]
