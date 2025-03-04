@@ -29,6 +29,7 @@ import studioButtonIconPosition from "./editor/right-panel-tabs/button/inputs/ic
 import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
+import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
 import studioInputLabelColor from "./editor/right-panel-tabs/text-input/inputs/studio-input-label-color.ts";
 import studioInputLabelSize from "./editor/right-panel-tabs/text-input/inputs/studio-input-label-size.ts";
@@ -311,6 +312,7 @@ export default [
   ...studioSelectTypeBlock,
   ...studioSelectSelectionmodeBlock,
   ...studioSizeCollpaseBlock,
+  ...studioCursorBlock,
   ...QuickActions,
   ...QuickActionsButton,
   ...microAppSelectionBlocks,
