@@ -7,7 +7,6 @@ export default [
     application_id: "1",
     name: "helper text block",
     component_type: ComponentType.Container,
-    styleHandlers: {},
     input: {
       direction: {
         type: "string",
@@ -15,25 +14,39 @@ export default [
       }
     },
     ...COMMON_ATTRIBUTES,
-    style: {
-    },
     childrenIds: [ "dropdonwn-context"]
   },
-  {
-    name: "name",
-    application_id: "1",
-    component_type: ComponentType.AI
-  },
-  {
-    uuid: "export-import-block-wrapper",
-    application_id: "1",
-    name: "export-import-block-wrapper",
-    component_type: ComponentType.ExportImport
-  },
+ 
+  // {
+  //   uuid: "export-import-block-wrapper",
+  //   application_id: "1",
+  //   name: "export-import-block-wrapper",
+  //   component_type: ComponentType.ExportImport
+  // },
   {
     uuid: "dropdonwn-context",
     application_id: "1",
     name: "dropdonwn-context",
     component_type: ComponentType.Dropdown,
+    event : {
+      onItemClicked: /* javascript */`
+      const selectedComponent = Utils.first(Editor.selectedComponents);
+      console.clear();
+      console.log(EventData.value);
+      switch(EventData.value) {
+        case 'Copy':
+          CopyComponentToClipboard(selectedComponent);
+          break;
+        case 'Paste':
+          PasteComponentFromClipboard();
+          break;
+          case 'Delete':
+            DeleteComponentAction(selectedComponent);
+            break;
+      }
+     
+      `
+  }
+
   }
 ];

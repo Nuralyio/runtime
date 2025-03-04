@@ -1,6 +1,6 @@
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
-import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
+import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../utils/change-detection.ts";
 import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
@@ -431,8 +431,7 @@ export class BaseElementBlock extends LitElement {
     };
     return html`
 
-       
-           
+          
      ${!this.isViewMode ? html` 
 
       <component-title

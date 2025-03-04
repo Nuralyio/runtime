@@ -4,7 +4,7 @@ import { atom, computed, deepMap } from "nanostores";
 import studioComponents from "../../pages/app/studio/studio-microapp/studio-entrypoint.ts";
 import landingComponents from "../../pages/app/studio/studio-microapp/landing/landing-main-components";
 import { currentLoadedApplication } from "$store/ssr/server-data";
-import { fillApplicationComponents } from "./helper";
+import { extractChildresIds, fillApplicationComponents } from "./helper";
 
 export interface ComponentStore {
   [key: string]: ComponentElement[];
@@ -58,6 +58,7 @@ export const $componentWithChildren = ($application_id: string) => computed(
   [$applicationComponents($application_id)],
   (components: ComponentElement[]) => fillApplicationComponents(components)
 );
+
 
 export const $selectedComponent = ($application_id: string) => computed(
   [$applicationComponents($application_id), $currentComponentId],

@@ -227,7 +227,7 @@ export default [
         value: "horizontal"
       }
     },
-    childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input"]
+    childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input", "app_insert_top_bar"]
   },
   {
     uuid: "icon_quick_action",

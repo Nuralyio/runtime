@@ -14,9 +14,11 @@ export class InsertDropdownBlock extends BaseElementBlock {
   component: ComponentElement;
 
 
-  render() {
+  renderComponent() {
     return html`
       <hy-dropdown
+      style=${styleMap({ ...this.getStyles() , 
+               })}
         trigger=${this.inputHandlersValue?.trigger ?? nothing}
         .options=${this.inputHandlersValue?.options ?? []}
         @click-item=${(e) => {
@@ -33,12 +35,14 @@ export class InsertDropdownBlock extends BaseElementBlock {
           .type=${this.inputHandlersValue.buttonType ?? nothing}
           .icon="${this.inputHandlersValue.buttonIcon ? [this.inputHandlersValue.buttonIcon] : nothing}"
           style=${styleMap({
-      "--hybrid-button-padding-y": "2px",
+              " --hybrid-button-height": "23px",
+               "--hybrid-button-margin-y":" -9px",
+      "--hybrid-button-padding-y": "1px",
       "--hybrid-button-padding-x": "2px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     })}
-        >
+        > 
         </hy-button>
       </hy-dropdown>
     `;
