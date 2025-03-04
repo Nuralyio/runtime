@@ -148,6 +148,9 @@ export default [
       "--hybrid-tabs-content-background-color": "transparent",
      "--hybrid-tabs-border-radius": "8px",
       "width": "295px",
+      "--hybrid-tabs-container-background-local-color": "transparent",
+      "--hybrid-tabs-label-active-background-color": "transparent",
+      
 
     },
     input: {
