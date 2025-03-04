@@ -222,7 +222,7 @@ export class BaseElementBlock extends LitElement {
             break;
       }
     }
-    const  {width, height} = this.calculatedStyles;
+    const  {width, height, cursor} = this.calculatedStyles;
     
     if(width){
       const widthUnit = Utils.extractUnit(width);
@@ -231,6 +231,9 @@ export class BaseElementBlock extends LitElement {
       }
      
     } 
+    if(cursor){
+      this.style.cursor = cursor;
+    }
   }
 
   override update(changedProperties: PropertyValueMap<any>) {
