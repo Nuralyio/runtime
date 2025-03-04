@@ -66,6 +66,10 @@ export default [
   `
     },
     input: {
+      innerAlignment : {
+        type : "string", 
+        value : "end"
+      },
       value: {
         type: "handler",
         value: /* js */`

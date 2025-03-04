@@ -101,10 +101,7 @@ export default [
     ...COMMON_ATTRIBUTES,
     input: {
 
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
+      
     },
     style: {
       padding: "6px 5px 0 5px"
@@ -137,10 +134,6 @@ export default [
           return selectedComponent?.component_type == "text_input";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["input_type_radio", "label_font_size_input", "font_size_input", "width_icon", "width_input", "height_icon", "height_input"]
 
@@ -159,10 +152,6 @@ export default [
           return selectedComponent?.component_type == "select";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["select_selectionmode_radio", "width_icon", "width_input", "height_icon", "height_input"]
 
@@ -181,10 +170,6 @@ export default [
           return selectedComponent?.component_type == "checkbox";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["checkbox_checked_radio", "width_icon", "width_input", "height_icon", "height_input"]
 
@@ -202,10 +187,6 @@ export default [
           return selectedComponent?.component_type == "Datepicker";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["datepicker_format_select", "width_icon", "width_input", "height_icon", "height_input"]
   },
@@ -222,10 +203,6 @@ export default [
           return selectedComponent?.component_type == "vertical-container-block";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input", "app_insert_top_bar"]
   },
@@ -242,10 +219,6 @@ export default [
           return selectedComponent?.component_type == "Icon";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
   },
@@ -262,10 +235,6 @@ export default [
           return selectedComponent?.component_type == "Image";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["width_icon", "width_input", "height_icon", "height_input"]
   },
@@ -282,10 +251,6 @@ export default [
           return selectedComponent?.component_type == "Collection";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["table_direction_select","label_collection_column_input", "column_input_2","width_icon", "width_input", "height_icon", "height_input"]
   },
@@ -302,10 +267,6 @@ export default [
           return selectedComponent?.component_type === "text_label";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["font_icon", "font_family_select", "font_size_icon", "font_size_input_2", "bold_icon", "font_weight_content"]
 
@@ -323,10 +284,6 @@ export default [
           return selectedComponent?.component_type === "button_input";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["input_type_radio", "label_icon_input", "icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
 
@@ -345,10 +302,6 @@ export default [
           return selectedComponent?.component_type === "Table";
         `
       },
-      direction: {
-        type: "string",
-        value: "horizontal"
-      }
     },
     childrenIds: ["table_selectionmode_radio", "table_filter_radio", "width_icon", "width_input", "height_icon", "height_input"]
 

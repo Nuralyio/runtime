@@ -63,7 +63,7 @@ export const ButtonTheme = {
 };
 
 export const SelectTheme = {
-  "--hybrid-select-width": "140px",
+  "--hybrid-select-width": "152px",
   "--hybrid-select-small-height": "22px",
   "size": "small"
 };

@@ -25,7 +25,7 @@ export default [
     input:{
       value:{
         type: "handler",
-        value: `return "Inputs"`
+        value: `return "Box"`
       }
     }
   },
