@@ -37,7 +37,7 @@ const dropdownStyle = css`
   }
   @media (prefers-color-scheme: dark) {
     :host {
-      --hybrid-dropdown-background-color: #1b1b1b;
+      --hybrid-dropdown-background-color: #232323;
       --hybrid-dropdown-hovered-background-color: #2b2b2b;
       --hybrid-dropdown-disabled-background-color: #6f6f6f;
       --hybrid-dropdown-text-color: #f4f4f4;
