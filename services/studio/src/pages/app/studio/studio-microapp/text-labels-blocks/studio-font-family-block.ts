@@ -76,7 +76,35 @@ export default [
                   {
                     label:'Courier New',
                     value:'Courier New',
-                 }
+                 },
+                  {
+                    label:'Roboto',
+                    value:'"Roboto", sans-serif',
+                 },
+                 {
+                  label:'Lato',
+                  value:'"Lato", sans-serif',
+               },
+                 {
+                  label:'Merriweather',
+                  value:'"Merriweather", serif',
+               },
+                 {
+                  label:'Aleo',
+                  value:'"Aleo", serif',
+               },
+                 {
+                  label:'mulish',
+                  value:'"Mulish", sans-serif',
+               },
+                 {
+                  label:'Asap Condensed',
+                  value:'"Asap Condensed", sans-serif',
+               },
+                 {
+                  label:'Barlow',
+                  value:'"Barlow", sans-serif',
+               }
             
             ]
             if(fontFamily){
