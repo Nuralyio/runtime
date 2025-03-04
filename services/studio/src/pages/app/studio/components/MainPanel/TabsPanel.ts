@@ -21,9 +21,16 @@ export class TabsPanel extends LitElement {
             	--hybrid-menu-background-color: #2c2c2c;
 		        --hybrid-tabs-label-font-size: 12px;
 		          --hybrid-button-border-color: transparent;
-    --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #dbdbdbbf ;
+   
+    --hybrid-tabs-container-background-local-color: transparent;
+    --hybrid-tabs-label-active-background-color: transparent;
 
           		}
+              @media (prefers-color-scheme: dark) {
+                hy-tabs {
+                  --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #454545 ;
+                }
+              }
 
         `
   ];
