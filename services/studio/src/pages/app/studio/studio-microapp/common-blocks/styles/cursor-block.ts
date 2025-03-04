@@ -54,7 +54,7 @@ export default [
           }
 
           const options = [
-            { label: "Pointer", value: "auto", disabled: isDisabled },
+            { label: "Auto", value: "auto", disabled: isDisabled },
             { label: "Hand", value: "pointer", disabled: isDisabled },
           ];
 
