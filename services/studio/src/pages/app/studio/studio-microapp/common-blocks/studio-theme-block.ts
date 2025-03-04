@@ -35,7 +35,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: ["cursor_block"]
+    childrenIds: []
   };
   components.push(parentContainer);
 
