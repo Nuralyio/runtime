@@ -5,7 +5,6 @@ import {styles} from './menu.style.js';
 import {IMenu} from './menu.types.js';
 import './templates/hy-menu-link.js';
 import './templates/hy-sub-menu.js';
-
 @customElement('hy-menu')
 export class HyMenuComponent extends LitElement {
   private _currentSelectedLink!: number;
