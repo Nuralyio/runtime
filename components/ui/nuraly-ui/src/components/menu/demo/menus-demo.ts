@@ -6,10 +6,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import { LitElement, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 import '../menu.component';
-import {IMenu} from '../menu.types';
+import { IMenu } from '../menu.types';
 
 @customElement('hy-menu-demo')
 export class ElMeenuElement extends LitElement {
@@ -20,37 +20,45 @@ export class ElMeenuElement extends LitElement {
   items: IMenu[] = [
     {
       text: 'First Menu',
-      selected:true,
+      selected: true,
       children: [
-        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
-      },
-        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
-        ,children: [
-          {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'circle-exclamation',label:'error'}
+        {
+          text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }, status: { icon: 'warning', label: 'warning' }
         },
-          {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
-          ,children: [
-            {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'circle-exclamation',label:'error'}
-          },
-            {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},status:{icon:'warning',label:'warning'}
-          },
-          ],},
-        ]},
+        {
+          text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }, status: { icon: 'warning', label: 'warning' }
+          , children: [
+            {
+              text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }, status: { icon: 'circle-exclamation', label: 'error' }
+            },
+            {
+              text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }, status: { icon: 'warning', label: 'warning' }
+              , children: [
+                {
+                  text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }, status: { icon: 'circle-exclamation', label: 'error' }
+                },
+                {
+                  text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }, status: { icon: 'warning', label: 'warning' }
+                },
+              ],
+            },
+          ]
+        },
       ],
       disabled: false,
-      icon:'bug',
-      menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]},
-      status:{icon:'warning',label:'warning'}
+      icon: 'bug',
+      menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] },
+      status: { icon: 'warning', label: 'warning' }
     },
     {
       text: 'Second Menu',
       children: [
-        {text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
-        {text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi',menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}},
-      
+        { text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] } },
+        { text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi', menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] } },
+
       ],
       link: '',
-      menu:{icon:'bars',actions:[{label:'Delete',value:'delete'},{label:'Rename',value:'rename'}]}
+      menu: { icon: 'bars', actions: [{ label: 'Delete', value: 'delete' }, { label: 'Rename', value: 'rename' }] }
     },
   ];
 
@@ -62,21 +70,23 @@ export class ElMeenuElement extends LitElement {
     {
       text: 'First Menu',
       children: [
-        {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right'},
-        {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree', children: [
-          {text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right'},
-          {text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree'},
-        ],},
-       
+        { text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right' },
+        {
+          text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree', children: [
+            { text: 'Submenu 1-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right' },
+            { text: 'Submenu 1-2', link: 'Submenu 1-2 link', icon: 'tree' },
+          ],
+        },
+
       ],
       disabled: false,
     },
     {
       text: 'Second Menu',
       children: [
-        {text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud'},
-        {text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi'},
-      
+        { text: 'Submenu 2-1', link: 'Submenu 2-1 link', icon: 'cloud' },
+        { text: 'Submenu 2-2', link: 'Submenu 2-2 link', icon: 'wifi' },
+
       ],
       link: '',
     },
@@ -85,16 +95,16 @@ export class ElMeenuElement extends LitElement {
   items3: IMenu[] = [
     {
       text: 'Submenu 0-0', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',
-      
+
     },
     {
       text: 'Submenu 0-1', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',
-      
+
     }, {
       text: 'Submenu 0-2', link: 'Submenu 1-1 link', icon: 'globe', iconPosition: 'right',
-      
+
     },
-    
+
   ];
 
   protected override render() {
@@ -102,14 +112,14 @@ export class ElMeenuElement extends LitElement {
       <h3>Treeview</h3>
       <hy-menu
         .items=${this.items}
-        @action-click=${(e:CustomEvent)=>{
-          console.log('action name',e.detail.value)
-          console.log('option path',e.detail.path)
-        }}
+        @action-click=${(e: CustomEvent) => {
+        console.log('action name', e.detail.value)
+        console.log('option path', e.detail.path)
+      }}
         @change=${(e: CustomEvent) => {
-          this.path = e.detail.path;
-          this.value = e.detail.value;
-        }}
+        this.path = e.detail.path;
+        this.value = e.detail.value;
+      }}
       ></hy-menu>
       path: ${this.path?.join('-')} value: ${this.value}
 
@@ -117,27 +127,27 @@ export class ElMeenuElement extends LitElement {
       <hy-menu
         .items=${this.items}
         @change=${(e: CustomEvent) => {
-          this.path = e.detail.path;
-          this.value = e.detail.value;
-        }}
+        this.path = e.detail.path;
+        this.value = e.detail.value;
+      }}
       ></hy-menu>
 
       <h3>Treeview</h3>
       <hy-menu
         .items=${this.items2}
         @change=${(e: CustomEvent) => {
-          this.path = e.detail.path;
-          this.value = e.detail.value;
-        }}
+        this.path = e.detail.path;
+        this.value = e.detail.value;
+      }}
       ></hy-menu>
 
       <h3>Treeview</h3>
       <hy-menu
         .items=${this.items3}
         @change=${(e: CustomEvent) => {
-          this.path = e.detail.path;
-          this.value = e.detail.value;
-        }}
+        this.path = e.detail.path;
+        this.value = e.detail.value;
+      }}
       ></hy-menu>
     `;
   }

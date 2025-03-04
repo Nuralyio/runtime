@@ -30,7 +30,7 @@ export class HyMenuLink extends LitElement {
   @property({type: Boolean, reflect: true})
   selected = false;
 
-  @property()
+  @property({reflect: true})
   menu!:{icon:string,actions:IAction[]}
 
   @property()
@@ -99,7 +99,7 @@ export class HyMenuLink extends LitElement {
               <hy-icon name=${this.status.icon} class="status-icon"></hy-icon>
                 `:nothing}
               ${this.menu?.actions?html`
-                <hy-dropdown .options=${this.menu.actions} .trigger=${'hover'} @click-item=${this.onActionClick}>
+                <hy-dropdown .options=${this.menu.actions} .trigger=${'click'} @click-item=${this.onActionClick}>
                   <hy-icon name="${this.menu.icon}" id="action-icon" ></hy-icon>
                 </hy-dropdown>
                   `:nothing}

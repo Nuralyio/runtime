@@ -1,6 +1,7 @@
 export interface IOption {
   label: string;
   value: string;
+  additionalStyle?: any;
 }
 
 export enum OptionType {

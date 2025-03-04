@@ -53,7 +53,7 @@ const buttonStyles = css`
   button:hover:not(:disabled) {
     cursor: pointer;
     border-color: var(--hybrid-button-hover-border-color,var(--hybrid-button-local-hover-border-color));
-    background-color: var(--hybrid-button-hover-background-color,var(--hybrid-button-local-hover-border-color));
+    background-color: var(--hybrid-button-hover-background-color,var(--hybrid-button-local-hover-background-color));
     color: var(--hybrid-button-hover-color,var(--hybrid-button-local-hover-color));
   }
   button:hover:not(:disabled) hy-icon {

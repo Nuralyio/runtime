@@ -6,6 +6,7 @@ import {map} from 'lit/directives/map.js';
 import {IOption, OptionSelectionMode, OptionSize, OptionStatus, OptionType} from './select.types.js';
 import {choose} from 'lit/directives/choose.js';
 import {EMPTY_STRING, MULTIPLE_OPTIONS_SEPARATOR} from './select.constant.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 @customElement('hy-select')
 export class HySelectComponent extends LitElement {
@@ -166,7 +167,11 @@ export class HySelectComponent extends LitElement {
               (option) =>
                 html`<div class="option" @click="${(e: Event) => this.selectOption(e, option)}">
                   ${this.selected.includes(option) ? html`<hy-icon name="check" id="check-icon"></hy-icon>` : nothing}
-                  <span class="option-text">${option.label}</span>
+                  <span class="option-text" 
+                  style=${styleMap({
+                    ...option.additionalStyle ?? []
+                  })}
+                  >${option.label}</span>
                 </div>`
             )}
           </div>
