@@ -193,7 +193,7 @@ export default [{
       "--hybrid-menu-font-size": "12px",
       "--hybrid-sub-menu-padding-y": "4px",
       "--hybrid-menu-link-padding-y": "4px",
-      "--hybrid-sub-menu-highlighted-background-color" : "#f1f3ff",
+      "--hybrid-sub-menu-highlighted-background-color" : "transparent",
     },
     input: {
       options: {
