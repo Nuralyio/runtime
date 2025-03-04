@@ -18,7 +18,8 @@ export class SelectBlock extends BaseElementBlock {
 
     @state()
     options: any[] = [
-        { label: 'Copy', value: 'Copy', icon: 'copy' },
+        { label: 'Copy', value: 'Copy', icon: 'copy'  },
+        { label: 'Paste', value: 'Paste', icon: 'paste'  },
         { label: 'Delete', value: 'Delete', icon: 'trash' },
         { label: 'Export', value: 'value12' },
         { label: 'Import', value: 'value12' },
@@ -62,7 +63,13 @@ export class SelectBlock extends BaseElementBlock {
         
         trigger="click"
           .options=${this.options}
-          @click-item=${(e: CustomEvent) => console.log('value clicked', e.detail)}
+          @click-item=${(e: CustomEvent) =>{
+             if (this.component.event?.onItemClicked) {
+                executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onItemClicked`), {
+                    value: e.detail.value
+                });
+              }
+          }}
             >
        
       </hy-dropdown>

@@ -48,13 +48,16 @@ export default [{
     uuid: "app_insert_top_bar",
     name: "app insert top bar",
     application_id: "1",
-
+    style: {
+      "--text-label-color": "black",
+      "--hybrid-button-hover-background-color": "white"
+    },
     component_type: ComponentType.InsertDropdown,
     input: {
       label: {
         type: "handler",
         value: /* js */`
-            return '';
+            return ' Add Component';
             `
       },
       buttonIcon: {
@@ -63,12 +66,7 @@ export default [{
             return 'plus';
             `
       },
-      buttonType: {
-        type: "handler",
-        value: /* js */`
-            return 'ghost';
-            `
-      },
+     
       options: {
         type: "handler",
         value: /* js */`
@@ -201,7 +199,6 @@ export default [{
             },
             icon: "smile",
           },
-          { type: "divider" },
           {
             label: "Container",
             value: {

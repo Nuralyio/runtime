@@ -1,6 +1,6 @@
-import { type ComponentElement } from "$store/component/interface.ts";
+import { ComponentType, type ComponentElement } from "$store/component/interface.ts";
 import { $context, getVar } from "$store/context.ts";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
@@ -11,15 +11,15 @@ export class ComponentTitle extends LitElement {
     .component-name {
       position: absolute;
       display: none;
-      z-index: 7;
+      /* z-index: 7; */
       padding: 1px;
-      background: #2395ff;
+   
       color: white;
       font-weight: 300;
       font-size: 14px;
       cursor: pointer;
       user-select: none;
-      margin-top: -20px;
+      margin-top: -22px;
     }
   `;
   @property({ type: Object })
@@ -62,8 +62,20 @@ export class ComponentTitle extends LitElement {
         @mouseup=${this.handleMouseUp}
         class="component-name"
       >
-        ${this.component.name}
+        <span style=${
+          styleMap({
+            padding:" 4px",
+            background: "#2395ff"
+          })
+        }> ${this.component.name} </span>
+        ${this.selectedComponents.includes(this.component.uuid)&& this.component.component_type ===ComponentType.Container ? html`
+        <micro-app
+      style=${styleMap({
+      })}
+    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app>
+          `: nothing}
       </span>
+     
     `;
   }
 

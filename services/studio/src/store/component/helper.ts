@@ -39,3 +39,40 @@ export const fillComponentChildren = (
 };
 export const fillApplicationComponents = (components: ComponentElement[]) =>
   components.map(component => fillComponentChildren(components, component));
+
+export const extractChildresIds = (components: ComponentElement[]) =>
+  components.map(component => fillComponentChildren(components, component));
+
+
+
+
+/**
+ * Recursively extracts all child component IDs from a given component.
+ * @param components - Array of all components in the application.
+ * @param component - The component whose child IDs need to be extracted.
+ * @returns An array of all child component IDs.
+ */
+export const extractAllChildrenIds = (
+  components: ComponentElement[],
+  component: ComponentElement
+): string[] => {
+  const componentMap = new Map(components.map(comp => [comp.uuid, comp]));
+
+  const result: string[] = [];
+  const stack: ComponentElement[] = [component];
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+
+    if (current?.childrenIds) {
+      result.push(...current.childrenIds);
+
+      // Add valid children to the stack for further traversal
+      stack.push(...current.childrenIds
+        .map(childId => componentMap.get(childId))
+        .filter(Boolean) as ComponentElement[]);
+    }
+  }
+
+  return result;
+};

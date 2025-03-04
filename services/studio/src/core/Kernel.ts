@@ -18,6 +18,8 @@ import { Utils } from "./Utils";
 import Editor from "./Editor"
 import { Navigation } from "./Navigation";
 import { updateComponentName } from "$store/actions/component/update-component-name";
+import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
+import { deleteComponentAction } from "$store/actions/component/deleteComponentAction";
 const DEBUG = false;
 
 /**
@@ -241,6 +243,9 @@ class Executor {
         "context",
         "applications",
         "updateInput",
+        "CopyComponentToClipboard",
+        "PasteComponentFromClipboard",
+        "DeleteComponentAction",
         "updateName",
         "updateEvent",
         "updateStyleHandlers",
@@ -345,6 +350,23 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     const eventData = { [inputName]: { type: handlerType, value: handlerValue } };
     updateComponentAttributes(component.application_id, component.uuid, "input", eventData);
   }
+
+  function CopyComponentToClipboard(component: ComponentElement) {
+    copyCpmponentToClipboard(component)
+  }
+
+  function PasteComponentFromClipboard() {
+    pasteComponentFromClipboard();
+  }
+  function DeleteComponentAction(component: ComponentElement) {
+    deleteComponentAction(
+      component.uuid,
+      component.application_id,
+    );
+  }  
+
+  
+
   function updateName(component: ComponentElement, componentName: string) {
     updateComponentName(component.application_id, component.uuid, componentName);
   }
@@ -407,6 +429,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     context,
     applications,
     updateInput,
+    CopyComponentToClipboard,
+    PasteComponentFromClipboard,
+    DeleteComponentAction,
     updateName,
     updateEvent,
     updateStyleHandlers,

@@ -109,7 +109,6 @@ export class TabsPanel extends LitElement {
           @removeTab=${(e: CustomEvent) => {
           this.activeTab = 0;
           this.editableTabs = [...this.editableTabs.filter((tab, index) => index !== e.detail.index)];
-          console.log(this.editableTabs)
         }}
           @tabTilteClick=${(e: CustomEvent) => {
           console.log("tabTilteClick", $editorState.get().tabs[e.detail.index])
@@ -118,7 +117,7 @@ export class TabsPanel extends LitElement {
         }
           .tabs=${this.editableTabs}
           .editable=${{
-          canDeleteTab: true,
+          canDeleteTab: this.editableTabs.length !== 1,
           canEditTabTitle: false,
           canAddTab: false,
           canMove: false

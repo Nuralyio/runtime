@@ -26,6 +26,7 @@ import { setCurrentComponentIdAction } from "$store/actions/component/setCurrent
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction.ts";
 import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
 import { setEnvirementMode } from "$store/actions/editor/setEnvirementMode";
+import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -154,7 +155,32 @@ export class PageContent extends LitElement {
           this.confirmDelete();
         }
         break;
+      case "c":
+        if (e.metaKey || e.ctrlKey) {
+          this.handleCopy();
+        }
+        break;
+      case "v":
+        if (e.metaKey || e.ctrlKey) {
+          this.handlePaste();
+        }
+        break;
     }
+  }
+
+  handleCopy() {
+      const selectedComponentId= getVar("global", "selectedComponents").value ?? [];
+      const currentEditingApplication = getVar('global', "currentEditingApplication").value;
+      const applicationComponents = $applicationComponents(currentEditingApplication.uuid).get();
+      const selectedComponents = applicationComponents.find((component) =>
+        selectedComponentId[0] === component.uuid
+      );
+      console.log("selectedComponents", selectedComponents);
+      copyCpmponentToClipboard(selectedComponents);
+  }
+  
+  handlePaste() {
+    pasteComponentFromClipboard()
   }
 
   clearSelectedComponents() {
@@ -221,6 +247,14 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
+    <micro-app
+      style=${styleMap({
+        "z-index": 9999999,
+        position: "absolute",
+        bottom: "10px",
+        left: "40%",
+      })}
+    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app>
       <style>
         :host{
           zoom: ${this.zoomLevel}%;
@@ -243,7 +277,13 @@ export class PageContent extends LitElement {
         ${this.components.length
       ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
       : html`<div class="page-empty-message-container">
-                <p class="page-empty-message">Add an item from the insert panel</p>
+                <p class="page-empty-message">Add an item to the page
+                <micro-app
+      style=${styleMap({
+      })}
+    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app>
+                </p>
+                
               </div>`}
       </div>
       </rectangle-selection>
