@@ -28,7 +28,7 @@ export class HySubMenu extends LitElement {
   isOpen = false;
 
   @property()
-  menu!: { icon: string, actions: IAction[], children: any };
+  menu!: { icon: string, actions: IAction[], children: any  , menu : any};
 
   @property()
   status!: { icon: string, label: string };
