@@ -28,7 +28,7 @@ export default [
     input: {
       value: {
         type: "string",
-        value: 'Border radius'
+        value: ' '
       }
     },
     style: {

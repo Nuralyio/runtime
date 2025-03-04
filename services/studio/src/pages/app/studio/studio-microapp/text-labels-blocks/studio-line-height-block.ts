@@ -44,6 +44,10 @@ export default [
     styleHandlers: {},
     name: "Left panel",
     input: {
+      innerAlignment : {
+        type : "string", 
+        value : "end"
+      },
       value: {
         type: "handler",
         value: /* js */ `    

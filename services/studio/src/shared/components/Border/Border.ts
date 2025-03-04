@@ -85,69 +85,68 @@ export class AttributeBorderValue extends BaseElementBlock {
   }
 
   .margin-left {
-    left: 10px;
-    top: 50%;
+    left: 5px;
+    top: 53.5%;
     transform: translateY(-40%);
   }
 
   .margin-right {
-    right: 5px;
-    top: 50%;
+    right: 37px;
+    top: 53.5%;
     transform: translateY(-40%);
   }
 
   .margin-top {
-    top: 15px;
-    left: 50%;
+    top: 20px;
+    left: 44.5%;
     transform: translateX(-50%);
   }
 
   .margin-bottom {
-    bottom: 15px;
-    left: 50%;
+    bottom: 10px;
+    left: 44.5%;
     transform: translateX(-50%);
   }
 
   .container {
-    width: 200px;
     height: 65px;
     border: 1px solid #bcbcbc;
     border-radius: 3px;
     padding: 5px;
     position: relative;
+    width: 164px;
   }
 
   .container > .padding-left {
     position: absolute;
     top: 40%;
-    left: 0;
+    left: 4px;
   }
 
   .container > .padding-right {
     position: absolute;
     top: 40%;
-    right: 0;
+    right: 4px;
   }
 
   .container > .padding-top {
     position: absolute;
-    top: 0;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
   }
 
   .container > .padding-bottom {
     position: absolute;
-    bottom: 0;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
   }
 
   .container > .border-bottom-right-radius {
     position: absolute;
-    bottom: 0;
-    bottom: -20px;
-    right: -35px;
+    bottom: -28px;
+    right: -27px;
   }
 
 
@@ -229,7 +228,7 @@ cassAttributes : any = {
     return html`
       
       <div class="container-outside">
-                <div class="margin-label" style="margin-left: -43px; margin-top: 2px"><hy-label>margin</hy-label> </div>
+                <div class="margin-label" style="margin-left: -43px; margin-top: 2px"><hy-label>Margin</hy-label> </div>
                 <hy-input 
                 .size=${"default"}
                 @valueChange="${(e) => {
@@ -263,7 +262,7 @@ cassAttributes : any = {
                 'border-bottom-right-radius' : this.cassAttributes["border-bottom-right-radius"]})
             }
             >
-                <div class="padding-label"><hy-label>padding</hy-label></div>
+                <div class="padding-label"><hy-label>Padding</hy-label></div>
                 <hy-input
                 .size=${"default"} 
                 @valueChange="${(e) => {

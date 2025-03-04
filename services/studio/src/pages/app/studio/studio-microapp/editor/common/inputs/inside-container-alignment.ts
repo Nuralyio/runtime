@@ -62,6 +62,7 @@ export const StudioInnerContainerInputAlignment = [
           const currentType = Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'innerAlignment') || 'start';
           const options = [
             { label: "Start", value: "start" },
+            { label: "Middle", value: "middle" },
             { label: "End", value: "end" },
           ];
           return [options, [currentType]];

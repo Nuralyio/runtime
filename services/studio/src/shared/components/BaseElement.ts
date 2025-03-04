@@ -206,7 +206,24 @@ export class BaseElementBlock extends LitElement {
     } else {
       this.calculatedStyles = this.component?.style || {};
     }
+    const {innerAlignment} = this.inputHandlersValue;
+    if(innerAlignment){
+      this.style.removeProperty("align-self");
+      this.style.removeProperty("margin");
+      this.style.removeProperty("margin-left");
+
+      switch(innerAlignment){
+        case "end":
+         this.style.setProperty("margin-left", "auto");
+          break;
+          case "middle":
+            this.style.setProperty("align-self", "center");
+            this.style.setProperty("margin", "auto");
+            break;
+      }
+    }
     const  {width, height} = this.calculatedStyles;
+    
     if(width){
       const widthUnit = Utils.extractUnit(width);
       if(widthUnit === '%'){
@@ -388,7 +405,10 @@ export class BaseElementBlock extends LitElement {
   }
 
   getStyles(){
-    return {...Editor.getComponentStyles(this.component),...this.stylesHandlersValue, width : Utils.extractUnit(Editor.getComponentStyle(this.component, "width")) === "%" ? "100%" : Editor.getComponentStyle(this.component, "width") ?? "auto"};
+    return {
+      ...Editor.getComponentStyles(this.component),
+      ...this.stylesHandlersValue,
+      width : Utils.extractUnit(Editor.getComponentStyle(this.component, "width")) === "%" ? "100%" : Editor.getComponentStyle(this.component, "width") ?? "auto"};
   }
 
   executeEvent(eventName, e?) {
