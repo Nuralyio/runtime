@@ -3,8 +3,18 @@ export const CommonButtonTheme = {
   "--hybrid-button-primary-background-color": "#26327b",
   "--hybrid-button-primary-border-color": "#26327b",
   "--hybrid-button-hover-color": "white",
-  "--hybrid-button-hover-background-color": "#26327b",
+  "--hybrid-button-hover-background-color": "#3949a3",
+  "--hybrid-button-primary-hover-background-color": "#3949a3"
 };
+
+export const SingleButtonTheme= {
+  ...CommonButtonTheme,
+  "--hybrid-button-border-top-left-radius": "4px",
+  "--hybrid-button-border-top-right-radius": "4px",
+  "--hybrid-button-border-bottom-left-radius": "4px",
+  "--hybrid-button-border-bottom-right-radius": "4px",
+  "--hybrid-button-height": "25px"
+}
 export const InputBlockContainerTheme = {
   display: "flex",
   "align-items": "center",

@@ -1,4 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { CommonButtonTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
@@ -49,7 +50,8 @@ export default [
     ...COMMON_ATTRIBUTES,
     style: {
       "--hybrid-button-height": "26px",
-      "--hybrid-button-width": "31px"
+      "--hybrid-button-width": "31px",
+      ...CommonButtonTheme
     },
     input: {
       value: {

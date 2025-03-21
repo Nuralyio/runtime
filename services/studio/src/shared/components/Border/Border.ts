@@ -6,11 +6,13 @@ import "@nuralyui/slider-input";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
+import "@nuralyui/color-picker";
+import { CommonButtonTheme, SelectTheme, SingleButtonTheme } from "pages/app/studio/studio-microapp/editor/utils/common-editor-theme.ts";
 
 // Debounce function
 function debounce(func: Function, wait: number) {
   let timeout: number;
-  return function(...args: any[]) {
+  return function (...args: any[]) {
     clearTimeout(timeout);
     timeout = window.setTimeout(() => func.apply(this, args), wait);
   };
@@ -185,9 +187,25 @@ export class AttributeBorderValue extends BaseElementBlock {
   };
 
   @state()
-cassAttributes : any = {
-}
+  cassAttributes: any = {
+  }
 
+  @state()
+  activeBorders = {
+
+    all: true,
+    top: false,
+    right: false,
+    bottom: false,
+    left: false,
+  };
+
+  @state()
+  borderSize = {
+    size: 0,
+    type: "solid",
+    color: "#000000",
+  };
   // Padding States
   @state()
   padding = {
@@ -200,99 +218,322 @@ cassAttributes : any = {
   @state()
   unity = "";
   // Debounced changed event handler
-  debouncedChanged = debounce((attributeName:string) => {
+  debouncedChanged = debounce((attributeName: string) => {
     if (this.component.event.borderRadiusChanged) {
       const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.borderRadiusChanged`), {
         attributeName,
         value: this.cassAttributes[attributeName],
       });
     }
-  }, 100); // Adjust the debounce delay as needed
+  }, 100);
 
-  override render() {
+  debouncedBorderChanged = (borders) => {
+    if (this.component.event.borderChanged) {
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.borderChanged`), {
+        borders
+      });
+    }
+  };
+
+  // add function to remove and update the borders
+
+  toggleBorder(border) {
+    if (border === 'all') {
+      const newState = !this.activeBorders.all;
+      this.activeBorders = {
+        all: newState,
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+      };
+    } else {
+      this.activeBorders = {
+        ...this.activeBorders,
+        all: false,
+        [border]: !this.activeBorders[border],
+      };
+    }
+    this.updateBorders()
+    this.requestUpdate();
+  }
+  handleValueChange = (event: { detail: { value: any } }) => {
+    this.borderSize.color = event.detail.value;
+    this.updateBorders();
+  };
+  renderBorder() {
+    return html`
+  <div>
+    <hy-button
+    style=${styleMap({
+     ...SingleButtonTheme
+    })}
+      type=${this.activeBorders.all ? 'primary' : ''}
+      @click=${() => this.toggleBorder('all')}
+    >
+      ALL
+    </hy-button>
+    <hy-button
+    style=${styleMap({
+     ...SingleButtonTheme
+    })}
+      type=${this.activeBorders.top ? 'primary' : ''}
+      @click=${() => this.toggleBorder('top')}
+    >
+      TOP
+    </hy-button>
+    <hy-button
+    style=${styleMap({
+     ...SingleButtonTheme
+    })}
+      type=${this.activeBorders.right ? 'primary' : ''}
+      @click=${() => this.toggleBorder('right')}
+    >
+      RIGHT
+    </hy-button>
+    <hy-button
+    style=${styleMap({
+     ...SingleButtonTheme
+    })}
+      type=${this.activeBorders.bottom ? 'primary' : ''}
+      @click=${() => this.toggleBorder('bottom')}
+    >
+      BOTTOM
+    </hy-button>
+    <hy-button
+    style=${styleMap({
+     ...SingleButtonTheme
+    })}
+      type=${this.activeBorders.left ? 'primary' : ''}
+      @click=${() => this.toggleBorder('left')}
+    >
+      LEFT
+    </hy-button>
+    <div style="display: flex; align-items: center;">
+    <div style="width : 60px; margin-right : 10px">
+      <hy-input value=${this.borderSize.size ?? 0}
+
+      @valueChange=${(e: any) => {
+        this.borderSize.size = e.detail.value;
+        this.updateBorders();
+      }
+      }
+      ></hy-input>
+    </div>
+    <div> <hy-select 
+    style=${styleMap({
+     ...SelectTheme
+    })}
+
+    size="small"
+    style="--hybrid-select-width:150px;size:small;width:auto;"
+    palceholder="Solid"
+     .defaultSelected="${[ this.borderSize.type ?? 'solid']}"
+     @changed=${(e: any) => {
+        this.borderSize.type = e.detail.value.value;
+        this.updateBorders()
+      }}
+    .options=${[
+        { label: 'Solid', value: 'solid' },
+        { label: 'Dotted', value: 'dotted' },
+        { label: 'Dashed', value: 'dashed' },
+        { label: 'Double', value: 'double' },
+        { label: 'Groove', value: 'groove' },
+        { label: 'Ridge', value: 'ridge' },
+        { label: 'Inset', value: 'inset' },
+        { label: 'Outset', value: 'outset' },
+
+      ]}></hy-select></div>
+    <div>
+    <hy-color-picker
+    .color=${this.borderSize.color ?? "#000000"}
+    @color-changed=${this.handleValueChange}
+    
+    ></hy-color-picker>
+    </div>
+    </div>
+   
+  </div>
+`;
+  }
+  constructor(){
+    super();
+    this.registerCallback("border", (borders) => {
+
+      // extract the border size and color from the first border
+      const border = borders[0];
+      const fisrtCorssedBorder = border.border ?? border["border-top"] ?? border["border-right"] ?? border["border-bottom"] ?? border["border-left"];
+      this.borderSize.size = fisrtCorssedBorder.split(" ")[0].replace("px", "");
+      this.borderSize.color = fisrtCorssedBorder.split(" ")[2];
+      this.borderSize.type = fisrtCorssedBorder.split(" ")[1];
+      console.log(this.borderSize, 'this.borderSize');
+      if(borders.find((border) => Object.keys(border)[0] == "border")){
+          this.activeBorders.all = true;
+      }else{
+        this.activeBorders.all = false;
+      }
+      if(borders.find((border) => Object.keys(border)[0] == "border-top")){
+        this.activeBorders.top = true;
+      }else{
+        this.activeBorders.top = false;
+      }
+      if(borders.find((border) => Object.keys(border)[0] == "border-right")){
+        this.activeBorders.right = true;
+      }else{
+        this.activeBorders.right = false;
+      }
+      if(borders.find((border) => Object.keys(border)[0] == "border-bottom")){
+        this.activeBorders.bottom = true;
+      }else{
+        this.activeBorders.bottom = false;
+      }
+      if(borders.find((border) => Object.keys(border)[0] == "border-left")){
+        this.activeBorders.left = true;
+      }else{
+        this.activeBorders.left = false;
+      }
+    })
+  }
+  updateBorders() {
+    const { size, type, color } = this.borderSize;
+    const { all, top, right, bottom, left } = this.activeBorders;
+    let borders = [];
+
+    if (all) {
+      borders.push({
+        border: `${size}px ${type} ${color}`
+      });
+    } else {
+      borders.push({
+        "border": undefined
+      })
+      if (top) borders.push(
+        { "border-top": `${size}px ${type} ${color}` }
+      ); else {
+        borders.push({
+          "border-top": undefined
+        })
+      }
+      if (right) borders.push(
+        { "border-right": `${size}px ${type} ${color}` }
+      ); else
+        borders.push({
+          "border-right": undefined
+        })
+    }
+    if (bottom) borders.push(
+      { "border-bottom": `${size}px ${type} ${color}` }
+    ); else {
+      borders.push({
+        "border-bottom": undefined
+      })
+    }
+
+    if (left) borders.push(
+      { "border-left": `${size}px ${type} ${color}` }
+    ); else {
+      borders.push({
+        "border-left": undefined
+      })
+    }
+    this.debouncedBorderChanged(borders);
+
+  }
+
+  updated(changedProperties: Map<string, any>) {
+    if (changedProperties.has("component")) {
+      const borders = Object.keys(this.getStyles()).filter(key => key.startsWith("border"));
+      console.log(borders);
+
+      console.log(this.getStyles(), this.component.style);
+    }
+  }
+  override renderComponent() {
     const handlers = this.inputHandlersValue.value;
+    const border = this.inputHandlersValue.border;
+    console.log("border",border);
     this.borderRadius = this.inputHandlersValue.value ? this.inputHandlersValue.value["border-radius"]?.value : 0;
     this.unity = this.inputHandlersValue.value ? this.inputHandlersValue.value["border-radius"]?.unit : "px";
-       // Initialize Margin
-        this.cassAttributes["margin-top"] = `${handlers?.["margin-top"]?.value ?? 0}${handlers?.["margin-top"]?.unit ?? "px"}`;
-        this.cassAttributes["margin-right"] = `${handlers?.["margin-right"]?.value ?? 0}${handlers?.["margin-right"]?.unit ?? "px"}`;
-        this.cassAttributes["margin-bottom"] = `${handlers?.["margin-bottom"]?.value ?? 0}${handlers?.["margin-bottom"]?.unit ?? "px"}`;
-        this.cassAttributes["margin-left"] = `${handlers?.["margin-left"]?.value ?? 0}${handlers?.["margin-left"]?.unit ?? "px"}`;
-        this.cassAttributes["padding-top"] = `${handlers?.["padding-top"]?.value ?? 0}${handlers?.["padding-top"]?.unit ?? "px"}`;
-        this.cassAttributes["padding-right"] = `${handlers?.["padding-right"]?.value ?? 0}${handlers?.["padding-right"]?.unit ?? "px"}`;
-        this.cassAttributes["padding-bottom"] = `${handlers?.["padding-bottom"]?.value ?? 0}${handlers?.["padding-bottom"]?.unit ?? "px"}`;
-        this.cassAttributes["padding-left"] = `${handlers?.["padding-left"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
-        this.cassAttributes["border-bottom-right-radius"] = `${handlers?.["border-bottom-right-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
-        
+    // Initialize Margin
+    this.cassAttributes["margin-top"] = `${handlers?.["margin-top"]?.value ?? 0}${handlers?.["margin-top"]?.unit ?? "px"}`;
+    this.cassAttributes["margin-right"] = `${handlers?.["margin-right"]?.value ?? 0}${handlers?.["margin-right"]?.unit ?? "px"}`;
+    this.cassAttributes["margin-bottom"] = `${handlers?.["margin-bottom"]?.value ?? 0}${handlers?.["margin-bottom"]?.unit ?? "px"}`;
+    this.cassAttributes["margin-left"] = `${handlers?.["margin-left"]?.value ?? 0}${handlers?.["margin-left"]?.unit ?? "px"}`;
+    this.cassAttributes["padding-top"] = `${handlers?.["padding-top"]?.value ?? 0}${handlers?.["padding-top"]?.unit ?? "px"}`;
+    this.cassAttributes["padding-right"] = `${handlers?.["padding-right"]?.value ?? 0}${handlers?.["padding-right"]?.unit ?? "px"}`;
+    this.cassAttributes["padding-bottom"] = `${handlers?.["padding-bottom"]?.value ?? 0}${handlers?.["padding-bottom"]?.unit ?? "px"}`;
+    this.cassAttributes["padding-left"] = `${handlers?.["padding-left"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
+    this.cassAttributes["border-bottom-right-radius"] = `${handlers?.["border-bottom-right-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
+
     const isDisabled = this.inputHandlersValue.state == "disabled" ? true : false;
     return html`
-      
+      ${this.renderBorder()}
       <div class="container-outside">
                 <div class="margin-label" style="margin-left: -43px; margin-top: 2px"><hy-label>Margin</hy-label> </div>
                 <hy-input 
                 .size=${"default"}
                 @valueChange="${(e) => {
-                  this.cassAttributes["margin-left"] = e.detail.value;
-                  this.debouncedChanged("margin-left");
-                }}"
+        this.cassAttributes["margin-left"] = e.detail.value;
+        this.debouncedChanged("margin-left");
+      }}"
                 class="position-input margin-left" placeholder="margin left" value=${this.cassAttributes["margin-left"]}></hy-input>
                 <hy-input
                 .size=${"default"} 
                 @valueChange="${(e) => {
-                  this.cassAttributes["margin-right"] = e.detail.value;
-                  this.debouncedChanged("margin-right");
-                  
-                }}"
+        this.cassAttributes["margin-right"] = e.detail.value;
+        this.debouncedChanged("margin-right");
+
+      }}"
                 class="position-input margin-right" placeholder="margin right" .value=${this.cassAttributes["margin-right"]}></hy-input>
                 <hy-input
                 .size=${"default"} 
                 @valueChange="${(e) => {
-                  this.cassAttributes["margin-top"] = e.detail.value;
-                  this.debouncedChanged("margin-top");
-                }}"
+        this.cassAttributes["margin-top"] = e.detail.value;
+        this.debouncedChanged("margin-top");
+      }}"
                 class="position-input margin-top" placeholder="margin top" .value=${this.cassAttributes["margin-top"]}></hy-input>
                 <hy-input
                 .size=${"default"} 
-                @valueChange="${(e) => {}}"
+                @valueChange="${(e) => { }}"
 
                 class="position-input margin-bottom" placeholder="margin bottom" .value=${this.cassAttributes["margin-top"]}></hy-input>
             <div class="container "
-            style=${
-              styleMap({
-                'border-bottom-right-radius' : this.cassAttributes["border-bottom-right-radius"]})
-            }
+            style=${styleMap({
+        'border-bottom-right-radius': this.cassAttributes["border-bottom-right-radius"]
+      })
+      }
             >
                 <div class="padding-label"><hy-label>Padding</hy-label></div>
                 <hy-input
                 .size=${"default"} 
                 @valueChange="${(e) => {
-                  this.cassAttributes["padding-left"] = e.detail.value;
-                  this.debouncedChanged("padding-left");
-                }}"
-                class="position-input padding-left" placeholder="padding left" .value=${ this.cassAttributes["padding-left"] }></hy-input>
+        this.cassAttributes["padding-left"] = e.detail.value;
+        this.debouncedChanged("padding-left");
+      }}"
+                class="position-input padding-left" placeholder="padding left" .value=${this.cassAttributes["padding-left"]}></hy-input>
 
                 <hy-input
                 .size=${"default"} 
                 @valueChange="${(e) => {
-                  this.cassAttributes["padding-right"] = e.detail.value;
-                  this.debouncedChanged("padding-right");
-                }}"
+        this.cassAttributes["padding-right"] = e.detail.value;
+        this.debouncedChanged("padding-right");
+      }}"
 
-                class="position-input padding-right" placeholder="padding right" .value=${ this.cassAttributes["padding-right"]}></hy-input>
+                class="position-input padding-right" placeholder="padding right" .value=${this.cassAttributes["padding-right"]}></hy-input>
                 <hy-input
                 .size=${"default"} 
                 @valueChange="${(e) => {
-                  this.cassAttributes["padding-top"] = e.detail.value;
-                  this.debouncedChanged("padding-top");
-                }}"
+        this.cassAttributes["padding-top"] = e.detail.value;
+        this.debouncedChanged("padding-top");
+      }}"
 
                 class="position-input padding-top" placeholder="padding top" .value=${this.cassAttributes["padding-top"]}></hy-input>
                 <hy-input
                 .size=${"default"}
                 @valueChange="${(e) => {
-                  this.cassAttributes["padding-bottom"] = e.detail.value;
-                  this.debouncedChanged("padding-bottom");
-                }}"
+        this.cassAttributes["padding-bottom"] = e.detail.value;
+        this.debouncedChanged("padding-bottom");
+      }}"
                  class="position-input padding-bottom" placeholder="padding bottom" .value=${this.cassAttributes["padding-bottom"]}></hy-input>
 
 
@@ -300,9 +541,9 @@ cassAttributes : any = {
                  <hy-input
                 .size=${"default"}
                 @valueChange="${(e) => {
-                  this.cassAttributes["border-bottom-right-radius"] = e.detail.value;
-                  this.debouncedChanged("border-bottom-right-radius");
-                }}"
+        this.cassAttributes["border-bottom-right-radius"] = e.detail.value;
+        this.debouncedChanged("border-bottom-right-radius");
+      }}"
                  class="position-input border-bottom-right-radius" placeholder="padding bottom" .value=${this.cassAttributes["border-bottom-right-radius"]}></hy-input>
 
             </div>

@@ -1,4 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
@@ -40,8 +41,7 @@ export default [
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     style: {
-      "--hybrid-button-height": "26px",
-      "--hybrid-button-width": "52px"
+     ...RadioButtonWithThreeOptionsTheme
     },
 
     input: {

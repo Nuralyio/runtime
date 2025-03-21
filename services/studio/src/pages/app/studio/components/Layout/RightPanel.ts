@@ -14,7 +14,14 @@ export class RightPanel extends LitElement {
       :host{
         --hybrid-tabs-content-padding: 20px;
         --hybrid-tabs-content-maring: 10px;
+        --hybrid-tabs-container-background-color : white;
       }
+      @media (prefers-color-scheme: dark) {
+        :host{
+        --hybrid-tabs-container-background-color : #313131;
+
+      }
+    }
       aside.visible {
         display: flex;
       }`];
