@@ -45,6 +45,14 @@ export default [
       width: "50px"
     },
     event: {
+      borderChanged: /* js */ `
+      console.log(EventData.borders)
+      const selectedComponent = Utils.first(Editor.selectedComponents);
+      EventData.borders.forEach(border => {
+        const keyName = Object.keys(border)[0];
+        updateStyle(selectedComponent, keyName,border[keyName] );
+      })
+      `,
       borderRadiusChanged:  /* js */ `
                     try{
                         const selectedComponens =  GetVar( "selectedComponents")||[];
@@ -59,6 +67,56 @@ export default [
   `
     },
     input: {
+      border: {
+        type: "handler",
+        value: /* js */`
+        try {
+          const selectedComponents = GetVar("selectedComponents") || [];
+          if (selectedComponents.length) {
+            const selectedComponent = selectedComponents[0];
+            const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
+            const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
+
+            if (currentComponent?.style) {
+              const borderProperties = [
+                "border",
+                "border-top",
+                "border-right",
+                "border-bottom",
+                "border-left"
+              ];
+              const styles = Editor.getComponentStyles(currentComponent);
+              const borderStyles = Object.keys(styles)
+                .filter(key => key === "border" || (key.startsWith("border-") && !key.includes("radius")));
+              
+              // Extract color and size from border if it exists
+              if (styles.border) {
+                const borderValue = styles.border;
+                const parts = borderValue.split(' ');
+                const size = parts[0] || '0px';
+                const type = parts[1] || 'solid';
+                const color = parts[2] || '#000000';
+                
+                return [
+                  { border: borderValue },
+                  { "border-size": size },
+                  { "border-type": type },
+                  { "border-color": color },
+                  ...borderStyles
+                    .filter(key => key !== "border")
+                    .map(style => ({[style]: styles[style]}))
+                ];
+              }
+              
+              return borderStyles.map(style => {
+                return {[style]: styles[style]}})
+            }
+          }  
+        }catch(e){
+          console.log(e);
+        }
+      `
+      },
       value: {
         type: "handler",
         value: /* js */`
@@ -80,8 +138,11 @@ export default [
                       "padding-right",
                       "padding-top",
                       "padding-bottom",
-                      "border-bottom-right-radius"
+                      "border-bottom-right-radius",
                   ];
+
+                
+                  
       
                   const extractedStyles = {};
       

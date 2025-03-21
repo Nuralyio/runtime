@@ -13,7 +13,7 @@ export default {
     "--hybrid-tabs-content-padding": "0px",
     "--hybrid-button-font-size": "12px",
     "--text-label-dark-color": "#c2c2c2",
-    "--hybrid-tabs-container-box-shadow":" 2px 0px 5px 0px #dbdbdbbf",
+    "--hybrid-tabs-container-box-shadow":"0px 0px 4px 0px #dbdbdbbf",
     "--hybrid-tabs-container-background-local-color": "transparent",
     "--hybrid-tabs-label-active-background-color": "transparent",
     "--hybrid-tabs-border-radius": "8px",

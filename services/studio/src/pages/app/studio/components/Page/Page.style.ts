@@ -18,7 +18,7 @@ const pageStyle = css`
     background:white;
     --hybrid-tabs-content-padding: 0;
     --hybrid-tabs-border-radius: 8px;
-    --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #dbdbdbbf ;
+    --hybrid-tabs-container-box-shadow : 0px 0px 5px 0px #dbdbdbbf ;
     --hybrid-tabs-container-background-local-color: transparent;
     --hybrid-tabs-label-active-background-color: transparent;
     
