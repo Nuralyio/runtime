@@ -49,6 +49,8 @@ export const styles = css`
 
   .tab-label.active {
     color: var(--hybrid-tabs-label-active-hover-color);
+    border-top-left-radius: var(--hybrid-tabs-label-active-border-left-radius, 0);
+    border-top-right-radius: var(--hybrid-tabs-label-active-border-right-radius, 0);
   }
 
   .tab-content {
