@@ -70,7 +70,7 @@ export class HyRadioComponent extends LitElement {
                 .value="${option.value}"
                 @change="${() => this.handleChange(option)}"
                 ?checked="${option.value === this.selectedOption}"
-                ?disabled=${option.disabled || this.isAllDisabled}
+                ?disabled=${option.disabled }
               />
             </div>
             <span>${option.label}</span>

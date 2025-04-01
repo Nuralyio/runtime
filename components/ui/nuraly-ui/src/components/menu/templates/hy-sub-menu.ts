@@ -66,7 +66,8 @@ export class HySubMenu extends LitElement {
   }
 
   onActionClick(e: CustomEvent) {
-    this.dispatchEvent(new CustomEvent('action-click', { detail: { value: e.detail.value, path: this.optionPath }, composed: true, bubbles: true }))
+    console.log(e.detail)
+    this.dispatchEvent(new CustomEvent('action-click', { detail: { value: e.detail.value, path: this.optionPath, additionalData: e.detail.additionalData}, composed: true, bubbles: true }))
   }
 
   override render() {

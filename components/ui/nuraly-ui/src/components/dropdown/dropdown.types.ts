@@ -4,6 +4,7 @@ export interface IOption {
   disabled?: boolean;
   icon?: string;
   children?: IOption[];
+  additionalData?: any;
 }
 
 export const enum TriggerMode {
