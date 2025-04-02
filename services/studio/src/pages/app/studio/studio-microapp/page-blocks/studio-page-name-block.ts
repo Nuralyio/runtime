@@ -46,7 +46,6 @@ export default [
     },
     event: {
       valueChange:  /* js */ `
-                try{
                     const currentPageId =  GetVar("currentPage");
                     if(currentPageId){
                 const newPageName = EventData.value;
@@ -61,9 +60,6 @@ export default [
                 })
                     }
                     
-                }catch(error){
-                    console.log(error);
-                } 
   `
     },
     input: {

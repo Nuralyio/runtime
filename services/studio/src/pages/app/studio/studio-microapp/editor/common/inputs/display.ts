@@ -46,10 +46,10 @@ export default [
           let currentDisplay = "";
           let isDisabled = false;
 
-          if (selectedComponent?.input?.display?.type == 'handler' && selectedComponent?.input?.display?.value) {
+          if (selectedComponent?.input?.display?.type == 'handler' && !!selectedComponent?.input?.display?.value) {
             isDisabled = true;
           } else {
-            currentDisplay = Editor.getComponentBreakpointInput(selectedComponent, 'display')?.value ?? true;
+            currentDisplay = Editor.getComponentBreakpointInput(selectedComponent, 'display')?.value ;
           }
 
           const options = [
@@ -123,6 +123,7 @@ export default [
     event: {
       codeChange: /* js */ `
         const selectedComponent = Utils.first(Editor.selectedComponents);
+        console.log(EventData.value)
         updateInput(selectedComponent, 'display', 'handler', EventData.value);
       `
     }

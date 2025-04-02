@@ -1,7 +1,7 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 import { StudioButtonTheme } from "../editor/right-panel-tabs/button/theme.ts";
-import { RadioButtonWithTwoOptionsTheme } from "../editor/utils/common-editor-theme.ts";
+import { RadioButtonWithThreeOptionsTheme, RadioButtonWithTwoOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 
 export default [
   {
@@ -49,7 +49,7 @@ export default [
     name: "label font weight",
 
     style: {
-      ...RadioButtonWithTwoOptionsTheme
+      ...RadioButtonWithThreeOptionsTheme,
     },
     input: {
       value: {
@@ -62,6 +62,7 @@ export default [
                   // Return default values if no component is selected
                   return [
                       [
+                          { value: '300', label: "Slim", disabled: false },
                           { value: 'normal', label: "Normal", disabled: false },
                           { value: 'bold', label: "Bold", disabled: false },
                       ],
@@ -77,6 +78,7 @@ export default [
                   // Return default values if the current component is not found
                   return [
                       [
+                          { value: '300', label: "Slim", disabled: false },
                           { value: 'normal', label: "Normal", disabled: false },
                           { value: 'bold', label: "Bold", disabled: false },
                       ],
@@ -91,6 +93,7 @@ export default [
                   : currentComponent.style?.['font-weight'] || 'normal';
           
               const options = [
+                  { value: '300', label: "Slim", disabled: !!hasFontWeightHandler },
                   { value: 'normal', label: "Normal", disabled: !!hasFontWeightHandler },
                   { value: 'bold', label: "Bold", disabled: !!hasFontWeightHandler },
               ];

@@ -3,5 +3,6 @@ import { generateDynamicContainer } from "../../../utils/input-collapse-containe
 export const StudioCollectionCollapseContainer = generateDynamicContainer("collection_collapse_container", [
   "collection_data",
   "table_direction_block",
-  "column_vertical_container"
+  "column_vertical_container",
+  "border_collapse_container"
 ]);

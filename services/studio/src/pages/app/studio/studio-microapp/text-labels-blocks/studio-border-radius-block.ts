@@ -46,7 +46,6 @@ export default [
     },
     event: {
       borderChanged: /* js */ `
-      console.log(EventData.borders)
       const selectedComponent = Utils.first(Editor.selectedComponents);
       EventData.borders.forEach(border => {
         const keyName = Object.keys(border)[0];
@@ -139,6 +138,9 @@ export default [
                       "padding-top",
                       "padding-bottom",
                       "border-bottom-right-radius",
+                      "border-top-right-radius",
+                      "border-bottom-left-radius",
+                      "border-top-left-radius",
                   ];
 
                 
@@ -189,6 +191,9 @@ export default [
                       "padding-bottom": { value: 0, unit: 'px' },
                       "padding-bottom": { value: 0, unit: 'px' },
                       "border-bottom-right-radius": { value: 0, unit: 'px' },
+                      "border-bottom-left-radius": { value: 0, unit: 'px' },
+                      "border-top-right-radius": { value: 0, unit: 'px' },
+                      "border-top-left-radius": { value: 0, unit: 'px' },
                   };
               }
           }
