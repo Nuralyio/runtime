@@ -1,6 +1,10 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { isServer } from "utils/envirement";
 import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
-
+ let functionAppUUID = "" ;
+ if(!isServer){
+  functionAppUUID = window.__FUNCTION_APP_UUID__;
+ }
 export const StudioFunctionCollection = [
   {
     "name": "function_micro_app",
@@ -17,7 +21,6 @@ export const StudioFunctionCollection = [
       }
     },
     "style": {
-      "width": "146px",
       "height": "643px",
       "display": "flex",
       "box-shadow": " 0px 0px 0px 0px #000000 ",
@@ -35,12 +38,30 @@ export const StudioFunctionCollection = [
       }
     },
     "childrenIds": [
-      "fb0e5b41-d71b-4a80-927f-bbb6095dd68c",
-      "e68eacb2-5b8b-46f0-9189-a63a0d739dd9"
+      "function_micro_app_block",
     ],
     "application_id": "1",
-    "application_id": "1",
     "component_type": "vertical-container-block"
+  },
+  {
+    application_id: "1",
+    uuid: "function_micro_app_block",
+    name: "function_micro_app",
+    component_type: ComponentType.MicroApp,
+    input: {
+      appUUID: {
+        type: "string",
+        value: functionAppUUID
+      },
+      componentToRenderUUID: {
+        type: "string",
+        value: "5d05786e-9b57-4c7f-8ae4-b11ac9f5d84c"
+      },
+      mode: {
+        type: "string",
+        value: "preview"
+      }
+    },
   },
   {
     "name": "text_label_3780",

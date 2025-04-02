@@ -141,12 +141,27 @@ export default {
                                 "studio_collection_handler"
                             ];
                             break;
+
+                            case "RefComponent": 
+                            parameters=[
+                                "ref_component_blocks"
+                            ]
+                            handlers=[
+                                "studio_ref_component_handler"
+                            ];
+                            themes=[
+                                "studio_ref_component_theme_container"
+                            ];
+                            break;
                     }
                 }
                 else if(currentPageId) {
                         parameters=[
                             "page_name_block", 
                             "page_url_block"    
+                        ]
+                        themes=[
+                            "PageThemeStudio",
                         ]
                 }
                 return [
