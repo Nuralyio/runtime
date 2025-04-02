@@ -3,6 +3,7 @@ import { css } from "lit";
 const pageStyle = css`
   :host {
     display: block;
+    overflow: hidden
   }
 
   .page-empty-message-container {
@@ -74,10 +75,11 @@ const pageStyle = css`
     }
 
     .page-container.viewer {
-      max-width: 90vw;
-      max-height: 90vh;
+      /* max-height: 90vh; */
     }
   }
+
+
 `;
 
 export default [pageStyle];

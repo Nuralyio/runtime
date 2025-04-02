@@ -70,9 +70,8 @@ export class TabsBlock extends BaseElementBlock {
   }
 
   private updateComponents() {
-    $applicationComponents(this.component.application_id).subscribe((components = []) => {
+    const  components  = $applicationComponents(this.component.application_id).get();
       this.componentsWithChildren = [...components];
       this.editableTabs = this.generateTabs();
-    });
   }
 }

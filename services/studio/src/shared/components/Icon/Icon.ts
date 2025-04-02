@@ -32,13 +32,12 @@ export class IconBlock extends BaseElementBlock {
     return html`
       <hy-icon
       ${ref(this.inputRef)}
-      @click=${() => {
-      if (this.component.event?.onClick) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item);
-      }
+      @click=${(e) => {
+         this.executeEvent("onClick", e);
+    
     }}
         .name=${this.inputHandlersValue.icon ?? "smile"}
-        style=${styleMap({ ...this.getStyles()})}>
+        style=${styleMap({ display:"block",...this.getStyles()})}>
       </hy-icon>
     `;
   }

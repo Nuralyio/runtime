@@ -59,7 +59,7 @@ export class VerticalContainer extends BaseElementBlock {
       }
         data-component-uuid=${this.component?.uuid}
         style=${styleMap({
-        ...this.calculatedStyles,
+        ...this.getStyles(),
         "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
         "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
 
@@ -70,8 +70,18 @@ export class VerticalContainer extends BaseElementBlock {
         boxed: this.inputHandlersValue.layout === "boxed",
         "drag-over": this.dragOverSituation,
       })}
+      @mouseenter="${(e: Event) => {
+        this.executeEvent("onMouseEnter", e);
+      }
+      }"
+      @mouseleave="${(e: Event) => {
+        console.log("onMouseLeave");
+        this.executeEvent("onMouseLeave", e);
+      }
+      }"
       @click="${(e: Event) => {
-                this.executeEvent("onclick", e);
+        console.log("onClick");
+                this.executeEvent("onClick", e);
 
               }
               }"
@@ -90,12 +100,7 @@ export class VerticalContainer extends BaseElementBlock {
     `;
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
-      this.traitInputsHandlers();
-      this.requestUpdate();
-    });
-  }
+ 
 
 
   override renderComponent() {

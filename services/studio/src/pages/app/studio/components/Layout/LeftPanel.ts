@@ -11,11 +11,20 @@ export class LeftPanel extends LitElement {
         font-size: 12px;
         
       }
+      :host{
+        --hybrid-tabs-content-padding: 20px;
+        --hybrid-tabs-content-maring: 10px;
+        --hybrid-tabs-container-background-color : white;
+      }
+       
       @media (prefers-color-scheme: dark) {
         hy-tabs {
           --hybrid-tabs-content-background-color: #2c2c2c;
           color: #f3f3f3;
           font-weight: 400;
+        }
+        :host{
+          --hybrid-tabs-container-background-color : #313131;
         }
       }
       aside {

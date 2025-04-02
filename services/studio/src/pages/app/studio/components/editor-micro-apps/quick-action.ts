@@ -204,7 +204,7 @@ export default [
         `
       },
     },
-    childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input", "app_insert_top_bar"]
+    childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input", "app_insert_top_bar2"]
   },
   {
     uuid: "icon_quick_action",

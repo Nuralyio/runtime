@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/button";
 import { type ComponentElement } from "$store/component/interface.ts";
@@ -12,6 +12,15 @@ import { styleMap } from "lit/directives/style-map.js";
 export class InsertDropdownBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
+
+
+  static override  styles = [
+    css`
+    hy-dropdown{
+      --hybrid-dropdown-padding: 7px;
+    }
+   `
+  ]
 
 
   renderComponent() {
@@ -31,7 +40,7 @@ export class InsertDropdownBlock extends BaseElementBlock {
     }
     }
       >
-        <hy-button
+        <!-- <hy-button
           .type=${this.inputHandlersValue.buttonType ?? nothing}
           .icon="${this.inputHandlersValue.buttonIcon ? [this.inputHandlersValue.buttonIcon] : nothing}"
           style=${styleMap({
@@ -42,8 +51,13 @@ export class InsertDropdownBlock extends BaseElementBlock {
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     })}
-        > 
-        </hy-button>
+        > qsd
+        </hy-button> -->
+        <hy-label
+        style=${styleMap({
+          "--text-label-color": this.getStyles()["title-color"],
+        })}
+        >${this.inputHandlersValue?.title}</hy-label>
       </hy-dropdown>
     `;
   }

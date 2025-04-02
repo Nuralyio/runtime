@@ -50,10 +50,6 @@ export class ColorPickerBlock extends BaseElementBlock {
     this.registerCallback("value", this.handleValueChange);
   }
 
-  override async connectedCallback() {
-    await super.connectedCallback();
-    await loadHyColorPicker();
-  }
 
   render() {
     return html`

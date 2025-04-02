@@ -146,7 +146,6 @@ export class ParametersPanel extends LitElement {
    */
   render() {
     return html`
-      ${this.currentTab.type}
       ${this.currentTab && this.currentTab.type === "page" ? html`
       <micro-app uuid="1" componentToRenderUUID="right_panel_tabs"></micro-app>
       ` : nothing}

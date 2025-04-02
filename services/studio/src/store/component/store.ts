@@ -71,3 +71,32 @@ export const $componentsByUUIDs = ($application_id: string, uuids: string[]) => 
   (components: ComponentElement[]) =>
     components.filter(component => uuids.includes(component.uuid))
 );
+
+export const $runtimeStyles = deepMap<{
+  [key: string]: {
+      [key: string]: string;
+  }
+}>({
+  
+});
+
+
+export const setcomponentRuntimeStyleAttribute = (componentId: string, attribute: string, value: string) => {
+  $runtimeStyles.setKey(componentId, {
+    ...$runtimeStyles.get()[componentId],
+    [attribute]: value
+  });
+}
+$runtimeStyles.subscribe((styles) => {
+})
+export const $runtimeStylescomponentStyleByID = ($componentId: string) => computed(
+  [$runtimeStyles],
+  (styles) => {
+    const componentStyles = styles[$componentId] || {};
+    return componentStyles;
+  }
+);
+
+export const clearComponentRuntimeStyleAttributes = () => {
+  $runtimeStyles.set({});
+}

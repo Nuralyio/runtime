@@ -72,7 +72,7 @@ export class ComponentTitle extends LitElement {
         <micro-app
       style=${styleMap({
       })}
-    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app>
+    uuid="1" componentToRenderUUID="app_insert_top_bar2"> </micro-app>
           `: nothing}
       </span>
      

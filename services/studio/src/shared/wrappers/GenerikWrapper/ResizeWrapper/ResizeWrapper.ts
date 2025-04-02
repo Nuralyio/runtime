@@ -234,12 +234,16 @@ export class ResizeWrapper extends LitElement {
   }
   
   firstUpdated() {
-    const margin = this.extractNumber(this.component.style?.['margin-left']); 
+    const marginLeft = this.extractNumber(this.component.style?.['margin-left']); 
+    const marginRight = this.extractNumber(this.component.style?.['margin-right']); 
+    const marginTop = this.extractNumber(this.component.style?.['margin-top']);
+    const marginBottom = this.extractNumber(this.component.style?.['margin-bottom']);
+     
       requestAnimationFrame(() => {
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
         this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
-        const originalWidth = this.inputRef.value.offsetWidth+margin;
-        const originalHeight = this.inputRef.value.offsetHeight;
+        const originalWidth = this.inputRef.value.offsetWidth+marginLeft+marginRight;
+        const originalHeight = this.inputRef.value.offsetHeight+marginTop+marginBottom;
         
         // Calculate the scaled dimensions
         const scaledWidth = originalWidth;
@@ -321,7 +325,7 @@ export class ResizeWrapper extends LitElement {
       this.component.component_type == ComponentType.TextInput
       || this.component.component_type == ComponentType.DatePicker
     ) {
-      debugger
+      
       updateComponentAttributes(this.component.application_id, this.component.uuid, "style", {
         width: this.inputRef.value.style.width
       });

@@ -82,6 +82,8 @@ import { StudioCollection } from "./editor/right-panel-tabs/collection";
 import { StudioFunction } from "./editor/left-panel-tabs/functions";
 import { StudioTextInput } from "./editor/right-panel-tabs/text-input/index.ts";
 import { StudioDashboard } from "./dashboard/index.ts";
+import { StudioRefComponent } from "./editor/right-panel-tabs/ref-component/index.ts";
+import { PageThemeStudio } from "./page-blocks/themes.ts";
 
 
 export default [
@@ -258,7 +260,7 @@ export default [
       }
     }
   },
-
+  ...PageThemeStudio,
   ...studioPageNameBlock,
   ...studioPageUrlBlock,
   ...studioTableValuesBlock,
@@ -337,5 +339,6 @@ export default [
   ...StudioFunction,
   ...StudioTextInput,
   ...RightPanelFunctionTab,
-  ...StudioDashboard
+  ...StudioDashboard,
+  ...StudioRefComponent,
 ];

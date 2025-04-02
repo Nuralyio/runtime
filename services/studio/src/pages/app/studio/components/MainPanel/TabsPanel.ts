@@ -22,14 +22,32 @@ export class TabsPanel extends LitElement {
 		        --hybrid-tabs-label-font-size: 12px;
 		          --hybrid-button-border-color: transparent;
     --hybrid-tabs-container-background-local-color: transparent;
-    --hybrid-tabs-label-active-background-color: transparent;
+    --hybrid-tabs-label-active-background-color: white;
+    --hybrid-tabs-label-active-border-left-radius: 5px;
+    --hybrid-tabs-label-active-border-right-radius: 5px;
 
           		}
               @media (prefers-color-scheme: dark) {
                 hy-tabs {
                   --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #454545 ;
+                  --hybrid-tabs-container-background-color : #313131;
+    --hybrid-tabs-label-active-background-color: #272727;
+
                 }
               }
+
+              hy-tabs{
+       
+      }
+       
+      @media (prefers-color-scheme: dark) {
+        hy-tabs {
+          --hybrid-tabs-content-background-color: #2c2c2c;
+          color: #f3f3f3;
+          font-weight: 400;
+        }
+      
+      }
 
         `
   ];
@@ -59,6 +77,7 @@ export class TabsPanel extends LitElement {
               this.editableTabs.push({
                 id: tab.id,
                 label: tab.label,
+                type : "page",
                 content: html`
                                 <editor-interactive-panel>
                                     <content-page></content-page>
@@ -113,8 +132,12 @@ export class TabsPanel extends LitElement {
         }
           .activeTab=${this.activeTab}
           @removeTab=${(e: CustomEvent) => {
-          this.activeTab = 0;
+            const tabToClose = this.editableTabs[e.detail.index];
+            closeEditorTab(tabToClose);
           this.editableTabs = [...this.editableTabs.filter((tab, index) => index !== e.detail.index)];
+          this.activeTab = e.detail.index-1;
+          setCurrentEditorTab(this.editableTabs[this.activeTab]);
+
         }}
           @tabTilteClick=${(e: CustomEvent) => {
           console.log("tabTilteClick", $editorState.get().tabs[e.detail.index])

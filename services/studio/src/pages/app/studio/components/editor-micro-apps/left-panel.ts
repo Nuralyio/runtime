@@ -243,6 +243,12 @@ export default [{
                             case 'DatePicker':
                                 componentIcon='calendar';
                                 break;
+                            case 'Collection':
+                                componentIcon='layer-group';
+                                break;
+                            case 'RefComponent':
+                                componentIcon='crosshairs';
+                                break;
                         }
 
                         children.push({
@@ -281,7 +287,14 @@ export default [{
                     type: "page",
                     handlerKey: "onSelect",
                     children: children,
-                    menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" }] }
+                    menu: { icon: 'ellipsis-v', actions: [
+                      {  handlerKey: "onDelete",
+                        label: 'Delete', 
+                        value: 'delete' ,
+                        icon : "trash",
+                        additionalData:{
+                          page
+                        }}] }
 
                 };
             });
@@ -307,7 +320,9 @@ export default [{
 
       actionClick: `
         try {
-           
+          if(EventData.action === "delete"){
+            deletePage(EventData.value.page);
+          }
             
          } catch(e) {
              console.log(e);
@@ -315,4 +330,5 @@ export default [{
          `
 
     },
+    
   }];
