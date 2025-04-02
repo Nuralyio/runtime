@@ -118,12 +118,17 @@ export class TextInputBlock extends BaseElementBlock {
   }
 
   override renderComponent() {
-   
+   const inputStyles = this.getStyles();
 
     return html`
         <hy-input
         ${ref(this.inputRef)}
-          style=${styleMap({...this.getStyles()})}
+          style=${styleMap({...this.getStyles(),
+              "--hybrid-input-local-border-top-left-radius": inputStyles?.["border-top-left-radius"] ?? "",
+              "--hybrid-input-local-border-top-right-radius": inputStyles?.["border-top-right-radius"] ?? "",
+              "--hybrid-input-local-border-bottom-left-radius": inputStyles?.["border-bottom-left-radius"] ?? "",
+              "--hybrid-input-local-border-bottom-right-radius": inputStyles?.["border-bottom-right-radius"] ?? "",
+          })}
           @valueChange=${this.handleValueChange}
           @focused=${this.onFocus}
           @blur=${this.onBlur}

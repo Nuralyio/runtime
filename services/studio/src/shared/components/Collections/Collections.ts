@@ -59,9 +59,7 @@ export class CollectionViwer extends BaseElementBlock {
 
   override async connectedCallback() {
     await super.connectedCallback();
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, () => {
-      this.traitInputsHandlers();
-    });
+  
     if(this.component?.event?.onInit){
       executeCodeWithClosure(
         this.component,

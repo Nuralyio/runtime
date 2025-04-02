@@ -150,8 +150,27 @@ export class AttributeBorderValue extends BaseElementBlock {
     bottom: -28px;
     right: -27px;
   }
+  .container > .border-top-right-radius {
+    position: absolute;
+    top: -28px;
+    right: -27px;
+  }
 
 
+
+
+  .container > .border-top-left-radius {
+    position: absolute;
+    top: -28px;
+    left: -27px;
+  }
+
+
+  .container > .border-bottom-left-radius {
+    position: absolute;
+    bottom: -28px;
+    left: -27px;
+  }
 
 
 
@@ -359,14 +378,13 @@ export class AttributeBorderValue extends BaseElementBlock {
   constructor(){
     super();
     this.registerCallback("border", (borders) => {
-
+      return
       // extract the border size and color from the first border
-      const border = borders[0];
-      const fisrtCorssedBorder = border.border ?? border["border-top"] ?? border["border-right"] ?? border["border-bottom"] ?? border["border-left"];
+      const border = borders?.[0] ?? [];
+      const fisrtCorssedBorder = border?.border ?? border["border-top"] ?? border["border-right"] ?? border["border-bottom"] ?? border["border-left"];
       this.borderSize.size = fisrtCorssedBorder.split(" ")[0].replace("px", "");
       this.borderSize.color = fisrtCorssedBorder.split(" ")[2];
       this.borderSize.type = fisrtCorssedBorder.split(" ")[1];
-      console.log(this.borderSize, 'this.borderSize');
       if(borders.find((border) => Object.keys(border)[0] == "border")){
           this.activeBorders.all = true;
       }else{
@@ -443,15 +461,11 @@ export class AttributeBorderValue extends BaseElementBlock {
   updated(changedProperties: Map<string, any>) {
     if (changedProperties.has("component")) {
       const borders = Object.keys(this.getStyles()).filter(key => key.startsWith("border"));
-      console.log(borders);
-
-      console.log(this.getStyles(), this.component.style);
     }
   }
   override renderComponent() {
     const handlers = this.inputHandlersValue.value;
     const border = this.inputHandlersValue.border;
-    console.log("border",border);
     this.borderRadius = this.inputHandlersValue.value ? this.inputHandlersValue.value["border-radius"]?.value : 0;
     this.unity = this.inputHandlersValue.value ? this.inputHandlersValue.value["border-radius"]?.unit : "px";
     // Initialize Margin
@@ -464,6 +478,9 @@ export class AttributeBorderValue extends BaseElementBlock {
     this.cassAttributes["padding-bottom"] = `${handlers?.["padding-bottom"]?.value ?? 0}${handlers?.["padding-bottom"]?.unit ?? "px"}`;
     this.cassAttributes["padding-left"] = `${handlers?.["padding-left"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
     this.cassAttributes["border-bottom-right-radius"] = `${handlers?.["border-bottom-right-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
+    this.cassAttributes["border-top-right-radius"] = `${handlers?.["border-top-right-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
+    this.cassAttributes["border-bottom-left-radius"] = `${handlers?.["border-bottom-left-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
+    this.cassAttributes["border-top-left-radius"] = `${handlers?.["border-top-left-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
 
     const isDisabled = this.inputHandlersValue.state == "disabled" ? true : false;
     return html`
@@ -494,12 +511,21 @@ export class AttributeBorderValue extends BaseElementBlock {
                 class="position-input margin-top" placeholder="margin top" .value=${this.cassAttributes["margin-top"]}></hy-input>
                 <hy-input
                 .size=${"default"} 
-                @valueChange="${(e) => { }}"
+                @valueChange="${(e) => { 
 
-                class="position-input margin-bottom" placeholder="margin bottom" .value=${this.cassAttributes["margin-top"]}></hy-input>
+        this.cassAttributes["margin-bottom"] = e.detail.value;
+        this.debouncedChanged("margin-bottom");
+
+
+                }}"
+
+                class="position-input margin-bottom" placeholder="margin bottom" .value=${this.cassAttributes["margin-bottom"]}></hy-input>
             <div class="container "
             style=${styleMap({
-        'border-bottom-right-radius': this.cassAttributes["border-bottom-right-radius"]
+        'border-bottom-right-radius': this.cassAttributes["border-bottom-right-radius"],
+        'border-top-right-radius': this.cassAttributes["border-top-right-radius"],
+        'border-bottom-left-radius': this.cassAttributes["border-bottom-left-radius"],
+        'border-top-left-radius': this.cassAttributes["border-top-left-radius"],
       })
       }
             >
@@ -545,6 +571,37 @@ export class AttributeBorderValue extends BaseElementBlock {
         this.debouncedChanged("border-bottom-right-radius");
       }}"
                  class="position-input border-bottom-right-radius" placeholder="padding bottom" .value=${this.cassAttributes["border-bottom-right-radius"]}></hy-input>
+
+
+                 <hy-input
+                .size=${"default"}
+                @valueChange="${(e) => {
+        this.cassAttributes["border-top-right-radius"] = e.detail.value;
+        this.debouncedChanged("border-top-right-radius");
+      }}"
+                 class="position-input border-top-right-radius" placeholder="padding bottom" .value=${this.cassAttributes["border-top-right-radius"]}></hy-input>
+
+
+
+
+                 <hy-input
+                .size=${"default"}
+                @valueChange="${(e) => {
+        this.cassAttributes["border-bottom-left-radius"] = e.detail.value;
+        this.debouncedChanged("border-bottom-left-radius");
+      }}"
+                 class="position-input border-bottom-left-radius" placeholder="padding bottom" .value=${this.cassAttributes["border-bottom-left-radius"]}></hy-input>
+
+
+                 <hy-input
+                .size=${"default"}
+                @valueChange="${(e) => {
+        this.cassAttributes["border-top-left-radius"] = e.detail.value;
+        this.debouncedChanged("border-top-left-radius");
+      }}"
+                 class="position-input border-top-left-radius" placeholder="padding bottom" .value=${this.cassAttributes["border-top-left-radius"]}></hy-input>
+
+
 
             </div>
         </div>

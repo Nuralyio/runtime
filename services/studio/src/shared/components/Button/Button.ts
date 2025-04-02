@@ -38,13 +38,6 @@ export class ButtonBlock extends BaseElementBlock {
     await loadHyButton();
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
-     this.traitInputsHandlers();
-      this.requestUpdate()
-    });
-  }
   renderComponent() {
     const buttonStyles = this.getStyles();
     return html`
@@ -72,6 +65,12 @@ export class ButtonBlock extends BaseElementBlock {
               style=${styleMap({ ...this.getStyles() , 
                 "--hybrid-button-width": buttonStyles?.width,
                 "--hybrid-button-height": buttonStyles?.height,
+                "--hybrid-button-local-border-top-left-radius": buttonStyles?.["border-top-left-radius"] ?? "",
+                "--hybrid-button-local-border-top-right-radius": buttonStyles?.["border-top-right-radius"] ?? "",
+                "--hybrid-button-local-border-bottom-left-radius": buttonStyles?.["border-bottom-left-radius"] ?? "",
+                "--hybrid-button-local-border-bottom-right-radius": buttonStyles?.["border-bottom-right-radius"] ?? "",
+                "--hybrid-button-margin-y": buttonStyles?.["margin-top"] ?? "",
+
                })}
             >
              <hy-label> ${this.inputHandlersValue.label ?? "Button"}</hy-label>

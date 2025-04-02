@@ -16,6 +16,13 @@ export class RadioButtonBlock extends BaseElementBlock {
 
   @property({ type: Object })
   item: any;
+  constructor() {
+    super();
+    this.registerCallback("value", (value: any) => {
+      this.requestUpdate();
+    }
+    );
+  }
 
   handleChange = (customEvent: CustomEvent) => {
     if (this.component.event.changed) {
@@ -31,10 +38,13 @@ export class RadioButtonBlock extends BaseElementBlock {
     const type = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[2] : "default";
 
     return html`
+    <!-- <pre>${
+      JSON.stringify(options, null, 2)
+    }</pre> -->
       <span style=${styleMap({ ...this.component.style })}>
             <hy-radio-input
               .type=${type}
-              .options=${options}
+              .options=${[...options]}
               .defaultValue="${defaultValue}"
               @change=${this.handleChange}
             ></hy-radio-input>

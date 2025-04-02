@@ -5,6 +5,7 @@ import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 @customElement("handler-block")
 export class HandlerBlock extends BaseElementBlock {
@@ -27,6 +28,10 @@ constructor() {
 }
   override async connectedCallback() {
     await super.connectedCallback();
+    eventDispatcher.on('component:refresh', ()=>{
+    //   this.requestUpdate();
+      this.traitInputsHandlers();
+    })
   }
 
 
@@ -64,6 +69,9 @@ constructor() {
         `, {
         value: ""
       });
+      setTimeout(() => {
+        this.requestUpdate();
+      }, 0);
   };
 
   removeHandler = (eventName: string) => {
@@ -130,8 +138,8 @@ constructor() {
     `;
   }
 
-  render() {
-    const eventsHandlers = this.inputHandlersValue?.events ?? {};
+  renderComponent() {
+    const eventsHandlers = {...this.inputHandlersValue?.events ?? {}};
     const allowedEvents = this.inputHandlersValue?.allowedEvents ?? [];
 
     return html`
@@ -184,6 +192,8 @@ constructor() {
         if (this.inputHandlersValue?.events[eventName] === null) return;
 
         return html`
+        ${eventName}
+        ${this.inputHandlersValue?.events[eventName]}
                 <div class="container">
                   <hy-label>${eventName}</hy-label>
                   <div>

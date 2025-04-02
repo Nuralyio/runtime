@@ -21,4 +21,8 @@ interface CustomSelf extends Worker {
   }
   
   declare var self: CustomSelf;
+
+  interface Window {
+    __FUNCTION_APP_UUID__?: string;
+  }
   

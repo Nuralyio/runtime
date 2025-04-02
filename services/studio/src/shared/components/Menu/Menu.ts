@@ -48,9 +48,12 @@ export class MenuBlock extends BaseElementBlock {
   }
 
   onActionClick(e) {
+    console.log(e)
     if (this.component?.event?.actionClick) {
-      // todo: implement this
-
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.actionClick`), {
+        value : e.detail.additionalData,
+        action : e.detail.value
+      })
     }
 
   }

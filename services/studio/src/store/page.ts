@@ -81,7 +81,11 @@ export const $currentPage = ($application_id: string, currentPageId: string) => 
     return currentPage;
   }
 );
-const pagesStore = $pages.get()
-Object.keys(pagesStore).forEach((key) => {
-  setVar(key, `${key}.appPages`, pagesStore[key]);
-});
+const pagesStore = $pages.get();
+export const refreshPageStoreVar = () => {
+  Object.keys(pagesStore).forEach((key) => {
+    setVar(key, `${key}.appPages`, pagesStore[key]);
+  });
+}
+
+refreshPageStoreVar();

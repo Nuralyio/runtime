@@ -1,4 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { Insert } from "./top-menu/insert";
 
 export default [{
   uuid: "top-bar",
@@ -28,6 +29,7 @@ export default [{
       width: "50vw",
       display: "flex",
       "justify-content": "space-between",
+      "margin-top": "-1px",
     },
     childrenIds: ["app_details_top_bar", "app-page-top-bar"]
   },
@@ -40,9 +42,10 @@ export default [{
     component_type: ComponentType.Container,
     style: {
       "align-items": "center",
-      "gap": "5px"
+      "gap": "5px",
+      "height": "38px",
     },
-    childrenIds: ["app_logo","app_back_top_bar", "app_name_top_bar", "app_insert_top_bar", "prototype_ai_top_bar",]
+    childrenIds: ["app_logo","app_back_top_bar", "app_name_top_baré", "prototype_ai_top_bar3","app_insert_top_bar", "app_edit_top_bar"]
   },
   {
     uuid: "app_insert_top_bar",
@@ -50,7 +53,11 @@ export default [{
     application_id: "1",
     style: {
       "--text-label-color": "black",
-      "--hybrid-button-hover-background-color": "white"
+      "title-color": "white",
+      "--hybrid-button-hover-background-color": "white",
+      // "border-left": "1px solid grey",
+      "padding-left": "12px",
+      "padding-right": "12px",
     },
     component_type: ComponentType.InsertDropdown,
     input: {
@@ -66,152 +73,114 @@ export default [{
             return 'plus';
             `
       },
-     
+      title : {
+        type: "string", 
+        value : "Insert"
+      },
       options: {
         type: "handler",
-        value: /* js */`
-        const options = [
-          {
-            label: "Text Label",
-            value: {
-              value: "text_label",
-              additionalData: {
-                
-              },
-            },
-            icon: "i-cursor",
-          },
-          {
-            label: "Table",
-            value: {
-              value: "Table",
-              additionalData: {
-                
-              },
-            },
-            icon: "table",
-          },
-          {
-            label: "Checkbox",
-            value: {
-              value: "checkbox",
-              additionalData: {
-                input : {
-                  "label": {
-                      "type": "value",
-                      "value": " Check box"
-                  }
-              }
-              },
-            },
-            icon: "square-check",
-          },
-          {
-            label: "Select",
-            value: {
-              value: "select",
-              additionalData: {
-                input : {
-                  "options": {
-                      "type": "handler",
-                      "value": 'return [\\n    {\\n        label : \"Item 1\", \\n        value :\"item 1\"\\n    },\\n    {\\n        label : \"Item 2\", \\n        value :\"item 2\"\\n    }\\n]'
+        value: Insert
+      }
+    },
+    event: {
+      onClick: /* js */ `
+            const currentEditingApplication = GetVar("currentEditingApplication");
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
+           if(currentPage){
+            AddComponent({
+              application_id : currentEditingApplication.uuid,
+              pageId : currentPage,
+              componentType : EventData.value,
+              additionalData : EventData.additionalData
+            })
+           }
+          `
+    }
+  },
 
-                  },
-                  "placeholder": {
-                      "type": "value",
-                      "value": "Select item"
-                  }
-              }
-              },
-            },
-            icon: "th-list",
-          },
-          {
-            label: "DatePicker",
-            value: {
-              value: "Datepicker",
-              additionalData: {
-                
-              },
-            },
-            icon: "calendar",
-          },
-          {
-            label: "Icon",
-            value: {
-              value: "Icon",
-              additionalData: {
-                
-              },
-            },
-            icon: "icons",
-          },
-          {
-            label: "Image",
-            value: {
-              value: "Image",
-              additionalData: {
-                style:{
-                  width: "100px",
-                  height: "100px",
-                }
-              },
-            },
-            icon: "image",
-          },
-          {
-            label: "MicroApp",
-            value: {
-              value: "MicroApp",
-              additionalData: {
-               
-              },
-            },
-            icon: "cube",
-          },
-          {
-            label: "Collections",
-            value: {
-              value: "Collection",
-              additionalData: {
-                
-              },
-            },
-            icon: "layer-group",
-          },
-          {
-            label: "Text Input",
-            value: {
-              value: "text_input",
-              additionalData: {
-                
-              },
-            },
-            icon: "pen-to-square",
-          },
-          {
-            label: "Button",
-            value: {
-              value: "button_input",
-              additionalData: {
-                
-              },
-            },
-            icon: "smile",
-          },
-          {
-            label: "Container",
-            value: {
-              value: "vertical-container-block",
-              additionalData: {
-                
-              },
-            },
-            icon: "grip-vertical",
-          },
-        ];
-            return options;
+  {
+    uuid: "app_edit_top_bar",
+    name: "app insert top bar",
+    application_id: "1",
+    style: {
+      "--text-label-color": "black",
+      "title-color": "white",
+ "--text-label-color": "black",
+      "title-color": "white","--hybrid-button-hover-background-color": "white",
+      "border-left": "1px solid grey",
+      "padding-left": "14px",
+    },
+    component_type: ComponentType.InsertDropdown,
+    input: {
+      label: {
+        type: "handler",
+        value: /* js */`
+            return ' Add Component';
             `
+      },
+      buttonIcon: {
+        type: "handler",
+        value: /* js */`
+            return 'plus';
+            `
+      },
+      title : {
+        type: "string", 
+        value : "Edit"
+      },
+      options: {
+        type: "handler",
+        value: Insert
+      }
+    },
+    event: {
+      onClick: /* js */ `
+            const currentEditingApplication = GetVar("currentEditingApplication");
+            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
+           if(currentPage){
+            AddComponent({
+              application_id : currentEditingApplication.uuid,
+              pageId : currentPage,
+              componentType : EventData.value,
+              additionalData : EventData.additionalData
+            })
+           }
+          `
+    }
+  },
+  {
+    uuid: "app_insert_top_bar2",
+    name: "app insert top bar",
+    application_id: "1",
+    style: {
+ "--text-label-color": "black",
+      "title-color": "white","--hybrid-button-hover-background-color": "white",
+      "border-left": "1px solid grey",
+      "padding-left": "14px",
+    },
+    component_type: ComponentType.InsertDropdown,
+    input: {
+      label: {
+        type: "handler",
+        value: /* js */`
+            return ' Add Component';
+            `
+      },
+      buttonIcon: {
+        type: "handler",
+        value: /* js */`
+            return 'plus';
+            `
+      },
+      title : {
+        type: "string", 
+        value : "Insert"
+      },
+      options: {
+        type: "handler",
+        value: Insert
       }
     },
     event: {
@@ -250,8 +219,8 @@ export default [{
       }
     },
     style:{
-      "width": "42px",
-      "height": "42px",
+      "width": "40px",
+      "height": "40px",
       "display": "block",
     }
   },
@@ -320,7 +289,7 @@ export default [{
     component_type: ComponentType.TextLabel,
     style: {
       // "border-left": "1px solid grey",
-      "--text-label-color": "#d6d6d6",
+      // "--text-label-color": "#d6d6d6",
 
       "padding-left": "px"
     },
@@ -345,14 +314,14 @@ export default [{
       width: "50vw",
       "justify-content": "flex-end",
     },
-    childrenIds: ["mode_topbar", "platform_top_bar", "zoom_top_bar", "prev_next_top_bar", "app_users_top_bar", "app_preview_publish_top_bar", "app_logout_top_bar"]
+    childrenIds: ["mode_topbar", "platform_top_bar", "zoom_top_bar", "prev_next_top_bar", "app_users_top_bar2", "app_preview_publish_top_bar", "app_logout_top_bar"]
   },
   {
     uuid: "zoom_top_bar",
     name: "zoom top bar",
     application_id: "1",
 
-    component_type: ComponentType.Container,
+    component_type: ComponentType.Container,"margin-top": "2px",
     style: {
       
       "align-items": "center",
@@ -432,7 +401,7 @@ export default [{
 
     component_type: ComponentType.Container,
     style: {
-      "height": "42px",
+      "height": "40px",
       "align-self": "center",
       "margin-right": "4px",
     },
@@ -554,7 +523,6 @@ export default [{
 
     component_type: ComponentType.Button,
     style: {
-      "margin-top" : "15px",
       "type": "ghost",
       "--hybrid-button-padding-y": "2px",
       "--hybrid-button-padding-x": "2px",
@@ -601,8 +569,8 @@ export default [{
   },
 
   {
-    uuid: "prototype_ai_top_bar",
-    name: "prototype_ai_top_bar",
+    uuid: "prototype_ai_top_bar2",
+    name: "prototype_ai_top_bar2",
     application_id: "1",
 
     component_type: ComponentType.Button,
@@ -656,7 +624,7 @@ export default [{
 
     component_type: ComponentType.Container,
     style: {
-      "margin-top" : "5px",
+      "margin-top" : "7px",
       "margin-right": "4px",
       "justify-content": "space-between",
     },
@@ -884,7 +852,7 @@ export default [{
     style: {
       "gap": "5px",
       "margin-right": "4px",
-      
+      "margin-top": "2px",
       "align-items": "center",
       "border-left": "1px solid grey",
       "border-right": "1px solid grey",
@@ -1027,9 +995,10 @@ export default [{
     name: "logout",
     component_type: ComponentType.Button,
     style: {
-      "--hybrid-button-padding-y": "2px",
+      "--hybrid-button-padding-y": "9px",
       "--hybrid-button-padding-x": "2px",
       "margin-right": "5px",
+      
       "type": "ghost",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
@@ -1066,7 +1035,7 @@ export default [{
     style: {
       "margin-left": "15px",
       "margin-top": "5px",
-      "--text-label-color": "#d6d6d6",
+      // "--text-label-color": "#d6d6d6",
     },
     input: {
       value: {

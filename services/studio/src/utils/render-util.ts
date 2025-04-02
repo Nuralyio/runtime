@@ -32,6 +32,7 @@ import "@shared/components/Export-Import/Export-Import.ts"
 import "@shared/components/Collections/Collections.ts"
 import "@shared/components/Button/Button.ts"
 import "@shared/components/TextLabel/TextLabel.ts"
+import "@shared/components/RefComponent/RefComponent.ts"
 
 // Reusable templates for common components
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
@@ -63,6 +64,7 @@ const collapseTemplate = (props: any, isViewMode: boolean)  => html`<collapse-bl
 const dividerTemplate = (props: any, isViewMode: boolean)  => html`<divider-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></divider-block>`;
 const handlersTemplate = (props: any, isViewMode: boolean)  => html`<handler-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></handler-block>`;
 const dropDownTemplate = (props: any, isViewMode: boolean)  => html`<dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></dropdown-block>`;
+const refComponentTemplate = (props: any, isViewMode: boolean)  => html`<ref-component-container-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></ref-component-container-block>`;
 
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
@@ -147,6 +149,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return invokeFunctionTemplate(commonProps, isViewMode);
     case ComponentType.Dropdown:
       return dropDownTemplate(commonProps, isViewMode);
+    case ComponentType.RefComponent:
+      return refComponentTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

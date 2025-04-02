@@ -7,6 +7,7 @@ import { styles } from "./TextLabel.style.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
 import { ref, } from "lit/directives/ref.js";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import "@nuralyui/label";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
@@ -43,12 +44,6 @@ export class TextLabelBlock extends BaseElementBlock {
     });
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, (data) => {
-      this.traitInputsHandlers();
-    });
-
-  }
 
   override renderComponent() {
     return html`
@@ -61,16 +56,16 @@ export class TextLabelBlock extends BaseElementBlock {
           ${ref(this.inputRef)}
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
-            style=${styleMap({ ...this.calculatedStyles, "--text-label-font-size": this.calculatedStyles.fontSize })}
+            style=${styleMap({ ...this.getStyles(), "--text-label-font-size": this.calculatedStyles.fontSize })}
             @click=${(e) => {
         this.executeEvent("onClick", e);
       }}
             @mouseenter=${(e) => {
-        this.executeEvent("mouseEnter");
+        this.executeEvent("onMouseEnter");
 
       }}
             @mouseleave=${() => {
-        this.executeEvent("mouseLeave");
+        this.executeEvent("onMouseLeave");
 
       }}
       

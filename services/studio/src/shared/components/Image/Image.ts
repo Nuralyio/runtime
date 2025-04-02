@@ -23,6 +23,8 @@ export class ImageBlock extends BaseElementBlock {
   }
 
   renderComponent() {
+   const fallbackStyles = this.getStyles();
+
     const imageStyles = this.calculatedStyles || {};
     const imageStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
       Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
@@ -34,8 +36,13 @@ export class ImageBlock extends BaseElementBlock {
       ${ref(this.inputRef)}
       style=${
         styleMap({
-          ...this.componentStyles,
-        "display": "block"},
+          ...this.getStyles(),
+        "display": "block",
+        "--hybrid-image-local-border-top-left-radius": fallbackStyles?.["border-top-left-radius"] ?? "",
+              "--hybrid-image-local-border-top-right-radius": fallbackStyles?.["border-top-right-radius"] ?? "",
+              "--hybrid-image-local-border-bottom-left-radius": fallbackStyles?.["border-bottom-left-radius"] ?? "",
+              "--hybrid-image-local-border-bottom-right-radius": fallbackStyles?.["border-bottom-right-radius"] ?? "",
+      },
           
         )
       }

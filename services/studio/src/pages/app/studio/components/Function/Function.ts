@@ -10,6 +10,7 @@ import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function
 import { ButtonTheme } from "../../studio-microapp/editor/utils/common-editor-theme.ts";
 import { buildFunctionHandler } from "$store/handlers/functions/build-function-handler.ts";
 import { deployFunctionHandler } from "$store/handlers/functions/deploy-function-handler.ts";
+import { ExecuteInstance } from "core/Kernel.ts";
 
 // debounce.ts
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
@@ -48,12 +49,12 @@ export class FunctionContent extends LitElement {
 
       .content {
           flex: 1;
-          padding: 16px;
           overflow: auto;
+          background: white;
       }
 
       .buttons {
-          margin-bottom: 16px;
+        margin-bottom: 4px;
       }
 
       .buttons hy-button {
@@ -68,27 +69,28 @@ export class FunctionContent extends LitElement {
    * @param action The action performed.
    */
   private async handleAction(action: string) {
-    // Example: Adding a plain text log entry
-    this.logPanel.addLogEntry(`${action} action triggered.`);
+    // Exemple : Ajout d'une entrée de log en texte brut
+    this.logPanel.addLogEntry(`⚡ ${action} action triggered.`);
     setVar("global", "currentFunctionInvoke", true);
-    // Example: Adding a rich HTML log entry
+
+    // Exemple : Ajout d'une entrée de log enrichie
     switch (action) {
       case "Deploy":
-        this.logPanel.addLogEntry("deployin function ...");
+        this.logPanel.addLogEntry("🚀 Deploying function ...");
         await deployFunctionHandler(this.detail.uuid);
-        this.logPanel.addLogEntry("deployed 🚀 ...");
+        this.logPanel.addLogEntry("✅ Function deployed!");
 
         break;
       case "Build":
-        this.logPanel.addLogEntry("Building function ...");
-
-        await buildFunctionHandler(this.detail.uuid)
-        this.logPanel.addLogEntry("Function built ...");
+        this.logPanel.addLogEntry("🏗️ Building function ...");
+        await buildFunctionHandler(this.detail.uuid);
+        this.logPanel.addLogEntry("✅ Function built!");
 
         break;
+      // default:
+      //   this.logPanel.addLogEntry("⚠️ Unknown action.");
     }
-    
-  }
+}
 
   /**
    * Handle code changes to add log entries.
@@ -96,29 +98,30 @@ export class FunctionContent extends LitElement {
    * @param value The new code value.
    */
   private async handleCodeChange(value: string) {
+    console.log(value)
     // Adding a rich HTML log entry with syntax highlighting or other features
     const richEntry: TemplateResult = html`<strong>Code updated:</strong> <code>${value}</code>`;
-    const currentFunction = getVar("global", "functions").value.find((item: any) => item.id === this.detail.uuid);
+    const currentFunction = ExecuteInstance.Vars.studio_functions.find((item: any) => item.id === this.detail.uuid);
 
     if (currentFunction) {
       currentFunction.handler = value;
-      console.log(currentFunction);
+      console.log("🔧 Updating function:", currentFunction);
 
-      this.logPanel.addLogEntry("Saving function ...");
+      this.logPanel.addLogEntry("💾 Saving function ...");
 
       try {
         const result = await updateFunctionHandler(currentFunction);
         if (result.ok) {
-          this.logPanel.addLogEntry("Saved successfully.");
+          this.logPanel.addLogEntry("✅ Saved successfully.");
         } else {
-          this.logPanel.addLogEntry("Error saving function");
+          this.logPanel.addLogEntry("❌ Error saving function");
         }
       } catch (error: any) {
-        console.error("Error saving function:", error);
-        this.logPanel.addLogEntry(`Error saving function: ${error.message || error}`);
+        console.error("⚠️ Error saving function:", error);
+        this.logPanel.addLogEntry(`❌ Error saving function: ${error.message || error}`);
       }
     } else {
-      this.logPanel.addLogEntry("Error: Function not found.");
+      this.logPanel.addLogEntry("🚨 Error: Function not found.");
     }
   }
 
