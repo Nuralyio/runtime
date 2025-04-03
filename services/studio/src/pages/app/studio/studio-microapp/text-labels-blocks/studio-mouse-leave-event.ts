@@ -53,34 +53,27 @@ export default [
         type: "handler",
         value: /* js */`
                 const event ='mouseleave';
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(!currentComponent.event){
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(!selectedComponent.event){
                             currentComponent= {...currentComponent,event:{mouseLeave:{}}}
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 event;
             `
       }
     },
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateEvent(currentComponent, "mouseLeave",EventData.value )
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                    
+                    updateEvent(selectedComponent, "mouseLeave",EventData.value )
+            
       `
     }
   }

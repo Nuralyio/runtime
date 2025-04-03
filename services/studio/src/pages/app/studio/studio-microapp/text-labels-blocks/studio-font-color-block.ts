@@ -41,17 +41,13 @@ export default [
     event: {
       valueChange: /* js */ `
        
-       try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "color", EventData.value);
+       
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                updateStyle(selectedComponent, "color", EventData.value);
             
-            }
-        }catch(error){
-            console.log(error);
-        }
+        
         
   `
     },
@@ -61,37 +57,29 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                       return currentComponent.style?.color || "black";
-                    }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                       return selectedComponent.style?.color || "black";
 
-                }catch(e){
-                    console.log(e);
-                }
+                
             `
       },
       state: {
         type: "handler",
         value:/* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     let state='enabled';
-                    if(currentComponent?.styleHandlers && currentComponent.styleHandlers['color']){
+                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['color']){
                         state='disabled'
                     }
                 return state;
-                }
 
-            }catch(e){
-                console.log(e);
-            }
+            
             
             `
       }
@@ -114,16 +102,12 @@ export default [
         value: /* js */`
             const parameter ='fontColor';
             let fontColorHandler=''
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                fontColorHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['color'] || ''  
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                fontColorHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['color'] || ''  
+            
             return [parameter,fontColorHandler];
         `
       }
@@ -131,16 +115,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-        try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'color',EventData.value)
-            }
-        }catch(error){
-            console.log(error);
-        }
+        
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                updateStyleHandlers(selectedComponent,'color',EventData.value)
+        
   `
     }
   }

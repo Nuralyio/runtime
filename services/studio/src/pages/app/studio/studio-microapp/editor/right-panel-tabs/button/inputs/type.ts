@@ -121,20 +121,13 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             if (!selectedComponent) return ['type', ''];
             
-            const currentComponent = GetComponent(
-              selectedComponent,
-              GetVar("currentEditingApplication").uuid
-            );
             
-            return ['type', currentComponent?.styleHandlers?.type || ''];
-          } catch(error) {
-            console.error(error);
-            return ['type', ''];
-          }`
+            return ['type', selectedComponent.styleHandlers?.type || ''];
+          `
       }
     },
     event: {

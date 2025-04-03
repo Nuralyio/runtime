@@ -51,14 +51,12 @@ export default [
     event: {
       valueChange:
       /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateStyle(selectedComponent, "height", EventData.value);
           }
-        } catch (error) {
-          console.log(error);
-        }`
+       `
     },
     input: {
       value: {
@@ -70,12 +68,10 @@ export default [
       state: {
         type: "handler",
         value: /* js */`
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             return selectedComponent?.styleHandlers?.height ? 'disabled' : 'enabled';
-          } catch (e) {
-            console.log(e);
-          }`
+          `
       }
     }
   },
@@ -96,35 +92,29 @@ export default [
       checked: {
         type: "handler",
         value: /* js */`
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             return !selectedComponent?.style?.height || selectedComponent?.input?.height?.value === 'auto' ? 'check' : '';
-          } catch (e) {
-            console.log(e);
-          }`
+          `
       },
       state: {
         type: "handler",
         value: /* js */`
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             return selectedComponent?.styleHandlers?.height ? 'disabled' : 'enabled';
-          } catch (e) {
-            console.log(e);
-          }`
+          `
       }
     },
     event: {
       checkboxChanged:  /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             const autoHeight = EventData.value;
             updateInput(selectedComponent, 'height', 'string', autoHeight ? 'auto' : '');
           }
-        } catch (error) {
-          console.log(error);
-        }`
+       `
     }
   },
   {
@@ -141,24 +131,20 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             return ['height', selectedComponent?.styleHandlers?.height || ''];
-          } catch (error) {
-            console.log(error);
-          }`
+          `
       }
     },
     event: {
       codeChange: /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateStyleHandlers(selectedComponent, 'height', EventData.value);
           }
-        } catch (error) {
-          console.log(error);
-        }`
+       `
     }
   }
 ];

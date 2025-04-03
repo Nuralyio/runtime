@@ -105,7 +105,7 @@ export const ComponentRefComponentSelector = [
       state: {
         type: "handler",
         value: /* js */`
-            try{
+            
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 let state = "unabled";
                 if(selectedComponent.input?.ref?.type =="handler" && selectedComponent.input?.ref?.value){
@@ -113,9 +113,7 @@ export const ComponentRefComponentSelector = [
                }
                return state;
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       }
     },

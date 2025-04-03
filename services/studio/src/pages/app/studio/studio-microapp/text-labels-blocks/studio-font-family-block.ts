@@ -50,10 +50,10 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent?.style && currentComponent.style['font-family'];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                let fontFamily = selectedComponent.style && selectedComponent.style['font-family'];
                 let selectedFontFamily;
                 const options = 
                     [
@@ -165,11 +165,11 @@ export default [
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
                 let isDisabled ='enabled';
-                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family']) {
+                if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['font-family']) {
                     isDisabled ='disabled'
                 } 
                 return isDisabled
@@ -185,18 +185,14 @@ export default [
     event: {
       changed: /* js */ `
 
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const fontFamilyValue = EventData.value?EventData.value:'arial'
-                    updateStyle(currentComponent, "font-family", fontFamilyValue);
+                    updateStyle(selectedComponent, "font-family", fontFamilyValue);
         
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
             
       `
     }
@@ -218,16 +214,12 @@ export default [
         value: /* js */`
                 const parameter ='fontFamily';
                 let fontFamilyHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    fontFamilyHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    fontFamilyHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['font-family'] || ''  
+                
                 return [parameter,fontFamilyHandler];
             `
       }
@@ -235,16 +227,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'font-family',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'font-family',EventData.value)
+            
       `
     }
   }

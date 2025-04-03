@@ -49,19 +49,14 @@ export default [
     },
     event: {
       valueChange:  /* js */`
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        console.log(selectedComponens);
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                            
+                            
                             const unity= EventData.unity || 'px'
-                            updateStyle(currentComponent, "fontSize", EventData.value+unity);
+                            updateStyle(selectedComponent, "fontSize", EventData.value+unity);
                         
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }
+                    
                     
   `
     },
@@ -73,15 +68,14 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
                 let fontSize ;
                 if(currentPlatform.platform !== "desktop"){
-                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]?.fontSize?.split('') || currentComponent?.style && currentComponent?.style['fontSize']?.split('')
+                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]?.fontSize?.split('') || selectedComponent.style && selectedComponent.style['fontSize']?.split('')
                 }else{
-                    fontSize =currentComponent?.style && currentComponent.style?.fontSize?.split('')
+                    fontSize =selectedComponent.style && selectedComponent.style?.fontSize?.split('')
                 }
                 if(fontSize) 
                     {
@@ -99,28 +93,25 @@ export default [
                     }
                     else 
                        return [13,'px']
-            }
 
             `
       },
       state: {
         type: "handler",
         value:/* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    if(true) {
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['fontSize']){
+                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['fontSize']){
                          state='disabled'
                         }
                         return state
                     }
         
-                }catch(e){
-                    console.log(e);
-                } 
+                 
                 
                 `
       }
@@ -143,16 +134,12 @@ export default [
         value: /* js */`
                 const parameter ='labelFontSize';
                 let labelFontSizeHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    labelFontSizeHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['fontSize'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    labelFontSizeHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['fontSize'] || ''  
+                
                 return [parameter,labelFontSizeHandler];
             `
       }
@@ -160,16 +147,11 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'fontSize',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    updateStyleHandlers(selectedComponent,'fontSize',EventData.value)
+            
       `
     }
   }

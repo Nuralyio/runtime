@@ -98,11 +98,10 @@ export const StudioCollectionColumnInput =  [
         value: /* js */`
                 const parameter ='labelFontSize';
                 let labelFontSizeHandler =''
-                try{
+                
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     labelFontSizeHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize'] || ''  
-                }catch(error){
-                }
+                
                 return [parameter,labelFontSizeHandler];
             `
       }

@@ -47,18 +47,15 @@ export default [
         value: /* js */`
                 const parameter ='value';
                 let valueHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.data?.value){
-                           valueHandler = currentComponent?.input?.data?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                        
+                        if(selectedComponent.input?.data?.value){
+                           valueHandler = selectedComponent.input?.data?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,valueHandler];
             `
       }
@@ -66,17 +63,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(currentComponent?.input?.value?.value != EventData.value )
-                    updateInput(currentComponent,'data','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(selectedComponent.input?.value?.value != EventData.value )
+                    updateInput(selectedComponent,'data','handler',EventData.value);
+            
       `
     }
   }

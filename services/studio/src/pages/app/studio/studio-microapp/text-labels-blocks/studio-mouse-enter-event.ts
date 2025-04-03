@@ -54,32 +54,24 @@ export default [
         value: /* js */`
                 const event ='mouseenter';
                 let eventCode="";
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        eventCode = currentComponent.event['mouseEnter'] ?? "";
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        eventCode = selectedComponent.event['mouseEnter'] ?? "";
+                
                 return [event, eventCode];
             `
       }
     },
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateEvent(currentComponent, "mouseEnter",EventData.value )
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateEvent(selectedComponent, "mouseEnter",EventData.value )
+            
       `
     }
   }

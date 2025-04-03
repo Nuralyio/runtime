@@ -57,16 +57,14 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       component_type: ComponentType.ColorPicker,
       event: {
         valueChange: /* js */ `
-                    try {
-                        const selectedComponents = GetVar("selectedComponents") || [];
-                        if (selectedComponents.length) {
-                            const selectedComponent = selectedComponents[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                            updateStyle(currentComponent, "${cssVar}", EventData.value);
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        if (true) {
+                            
+                            ;
+                            updateStyle(selectedComponent, "${cssVar}", EventData.value);
                         }
-                    } catch (error) {
-                        console.log(error);
-                    }
+                   
                 `
       },
       ...COMMON_ATTRIBUTES,
@@ -78,36 +76,30 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
         value: {
           type: "handler",
           value: /* js */ `
-                        try {
-                            const selectedComponents = GetVar("selectedComponents") || [];
-                            if (selectedComponents.length) {
-                                const selectedComponent = selectedComponents[0];
-                                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                                if (currentComponent?.style)
-                                    return currentComponent.style['${cssVar}'];
+                        
+                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            if (true) {
+                                if (selectedComponent.style)
+                                    return selectedComponent.style['${cssVar}'];
                             }
-                        } catch (e) {
-                            console.log(e);
-                        }
+                        
                     `
         },
         state: {
           type: "handler",
           value: /* js */ `
-                        try {
-                            const selectedComponents = GetVar("selectedComponents") || [];
-                            if (selectedComponents.length) {
-                                const selectedComponent = selectedComponents[0];
-                                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                        
+                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            if (true) {
+                                
+                                ;
                                 let state = 'enabled';
-                                if (currentComponent.styleHandlers && currentComponent.styleHandlers['${cssVar}']) {
+                                if (selectedComponent.styleHandlers && selectedComponent.styleHandlers['${cssVar}']) {
                                     state = 'disabled';
                                     return state;
                                 }
                             }
-                        } catch (e) {
-                            console.log(e);
-                        }
+                        
                     `
         }
       }
@@ -141,32 +133,26 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
           value: /* js */ `
                         const parameter = '${label}';
                         let helperColorHandler = '';
-                        try {
-                            const selectedComponents = GetVar("selectedComponents") || [];
-                            if (selectedComponents.length) {
-                                const selectedComponent = selectedComponents[0];
-                                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                                helperColorHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['${cssVar}'] || '';
+                        
+                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            if (true) {
+                                
+                                ;
+                                helperColorHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['${cssVar}'] || '';
                             }
-                        } catch (error) {
-                            console.log(error);
-                        }
+                        
                         return [parameter, helperColorHandler];
                     `
         }
       },
       event: {
         codeChange: /* js */ `
-                    try {
-                        const selectedComponents = GetVar("selectedComponents") || [];
-                        if (selectedComponents.length) {
-                            const selectedComponent = selectedComponents[0];
-                            let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                            updateStyleHandlers(currentComponent, '${cssVar}', EventData.value);
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        if (true) {
+                            updateStyleHandlers(selectedComponent, '${cssVar}', EventData.value);
                         }
-                    } catch (error) {
-                        console.log(error);
-                    }
+                    
                 `
       }
     }

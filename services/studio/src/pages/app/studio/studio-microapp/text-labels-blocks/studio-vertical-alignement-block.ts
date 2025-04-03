@@ -68,21 +68,17 @@ export default [
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent.style['display'];
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     const verticalAlignValue = EventData.value;
                     if(currentComponentDisplay!='flex')
-                    updateStyle(currentComponent, "display", 'flex');
+                    updateStyle(selectedComponent, "display", 'flex');
                 
-                    updateStyle(currentComponent, "align-items", verticalAlignValue);
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateStyle(selectedComponent, "align-items", verticalAlignValue);
+              
       `
     }
   },
@@ -102,16 +98,12 @@ export default [
         value: /* js */`
                 const parameter ='verticalAlignement';
                 let verticalAlignementHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    verticalAlignementHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['align-items'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    verticalAlignementHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['align-items'] || ''  
+                
                 return [parameter,verticalAlignementHandler];
             `
       }
@@ -119,21 +111,19 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent?.style['display'];
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                if(true) {
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     
                     if(currentComponentDisplay!='flex')
-                     updateStyle(currentComponent, "display", 'flex');
+                     updateStyle(selectedComponent, "display", 'flex');
                     
-                    updateStyleHandlers(currentComponent,'align-items',EventData.value)
+                    updateStyleHandlers(selectedComponent,'align-items',EventData.value)
                 }
-            }catch(error){
-                console.log(error);
-            }
+            
       `
     }
   }

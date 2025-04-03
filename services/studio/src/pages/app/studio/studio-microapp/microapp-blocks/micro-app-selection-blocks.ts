@@ -41,10 +41,10 @@ export default [
 
                 let options = [];
                 let selectedMicroApplication;
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let appUUID = currentComponent?.input?.['appUUID'];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                let appUUID = selectedComponent.input?.['appUUID'];
               
             return new Promise((resolve, reject)=>{
             fetch('/api/applications')
@@ -77,17 +77,13 @@ export default [
     event: {
       changed: /* js */ `
 
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const appUUIDValue = EventData.value?EventData.value:''
-                    updateInput(currentComponent, "appUUID", 'string',  appUUIDValue);
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    updateInput(selectedComponent, "appUUID", 'string',  appUUIDValue);
+            
             
       `
     }

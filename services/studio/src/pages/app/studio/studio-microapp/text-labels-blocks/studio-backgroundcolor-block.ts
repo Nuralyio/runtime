@@ -43,17 +43,14 @@ export default [
     event: {
       valueChange: /* js */ `
            
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "background-color", EventData.value);
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    
+                    
+                    updateStyle(selectedComponent, "background-color", EventData.value);
+                
+            
             
       `
     },
@@ -62,17 +59,13 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            return currentComponent.style?.backgroundColor || "#ffffff";
-                        }
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                            
+                            
+                            return selectedComponent.style?.backgroundColor || "#ffffff";
 
-                    }catch(e){
-                        console.log(e);
-                    }
+                  
                 `
       }
     }

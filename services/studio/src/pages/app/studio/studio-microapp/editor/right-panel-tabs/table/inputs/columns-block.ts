@@ -47,10 +47,10 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent?.style['font-family'];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                let fontFamily = selectedComponent.style['font-family'];
                 let selectedFontFamily;
                 const options = 
                     [
@@ -89,18 +89,14 @@ export default [
     event: {
       changed: /* js */ `
 
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const fontFamilyValue = EventData.value?EventData.value:'initial'
-                    updateStyle(currentComponent, "font-family", fontFamilyValue);
+                    updateStyle(selectedComponent, "font-family", fontFamilyValue);
         
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
             
       `
     }

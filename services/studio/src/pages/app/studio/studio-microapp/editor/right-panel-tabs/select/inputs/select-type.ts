@@ -61,16 +61,16 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
                 let currentType=""
                 let isDisabled=false;
-                if(currentComponent.input?.type?.type =='handler'&&currentComponent.input?.type?.value){
+                if(selectedComponent.input?.type?.type =='handler'&&selectedComponent.input?.type?.value){
                     isDisabled =true
                 }
                 else 
-                currentType = currentComponent.input?.type?.value || 'default';
+                currentType = selectedComponent.input?.type?.value || 'default';
                 const options = 
                     [
                     {
@@ -95,17 +95,14 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                    
                     const typeValue = EventData.value;
-                    updateInput(currentComponent,'type','string',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateInput(selectedComponent,'type','string',EventData.value)
+              
       `
     }
   },
@@ -138,18 +135,14 @@ export default [
         value: /* js */`
                 const parameter ='type';
                 let typeHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.type?.type =='handler' && currentComponent?.input?.type?.value){
-                            typeHandler = currentComponent?.input?.type?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.input?.type?.type =='handler' && selectedComponent.input?.type?.value){
+                            typeHandler = selectedComponent.input?.type?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,typeHandler];
             `
       }
@@ -157,17 +150,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.type?.value)
-                    updateInput(currentComponent,'type','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(EventData.value != selectedComponent.input?.type?.value)
+                    updateInput(selectedComponent,'type','handler',EventData.value);
+            
       `
     }
   }

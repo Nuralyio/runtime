@@ -51,57 +51,45 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `    
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const lineHeight= currentComponent?.styleHandlers && currentComponent.style['line-height']?.split('px')[0] || 0
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        const lineHeight= selectedComponent.styleHandlers && selectedComponent.style['line-height']?.split('px')[0] || 0
                         if(lineHeight)
                             return lineHeight;
                         else  
                         return 0       
-                    }
         
-                }catch(e){
-                    console.log(e);
-                }                
+                                
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['line-height']){
+                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['line-height']){
                          state='disabled'
                         }
                         return state
-                    }
         
-                }catch(e){
-                    console.log(e);
-                }      
+                      
                 
                 `
       }
     },
     event: {
       valueChange:  /* js */ `
-                  try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "line-height", EventData.value+'px');
-                }
-            }catch(error){
-                console.log(error);
-            }     
+                  
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyle(selectedComponent, "line-height", EventData.value+'px');
+                 
       `
 
     }
@@ -123,16 +111,12 @@ export default [
         value: /* js */`
                 const parameter ='lineHeight';
                 let lineHeightHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    lineHeightHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['line-height'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    lineHeightHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['line-height'] || ''  
+                
                 return [parameter,lineHeightHandler];
             `
       }
@@ -140,16 +124,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'line-height',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'line-height',EventData.value)
+            
       `
     }
   }

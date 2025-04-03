@@ -54,17 +54,14 @@ export default [
     event: {
       valueChange: /* js */ `
        
-       try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "--hybrid-input-label-color", EventData.value);
+       
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             
-            }
-        }catch(error){
-            console.log(error);
-        }
+                
+                
+                updateStyle(selectedComponent, "--hybrid-input-label-color", EventData.value);
+            
+        
         
   `
     },
@@ -77,38 +74,30 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.style)
-                        return currentComponent.style['--hybrid-input-label-color'];
-                    }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.style)
+                        return selectedComponent.style['--hybrid-input-label-color'];
 
-                }catch(e){
-                    console.log(e);
-                }
+                
             `
       },
       state: {
         type: "handler",
         value:/* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     let state='enabled';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-label-color']){
+                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-color']){
                         state='disabled'
                     }
                     state;
-                }
 
-            }catch(e){
-                console.log(e);
-            }
+            
             `
       }
     }
@@ -143,16 +132,12 @@ export default [
         value: /* js */`
             const parameter ='labelColor';
             let labelColorHandler=''
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                labelColorHandler=currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-input-label-color'] || ''  
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                labelColorHandler=selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-color'] || ''  
+            
             return [parameter,labelColorHandler];
         `
       }
@@ -160,16 +145,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-        try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'--hybrid-input-label-color',EventData.value)
-            }
-        }catch(error){
-            console.log(error);
-        }
+        
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                updateStyleHandlers(selectedComponent,'--hybrid-input-label-color',EventData.value)
+        
   `
     }
   }

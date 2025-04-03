@@ -46,7 +46,7 @@ export default [
     },
     event: {
       valueChange:  /* js */ `
-            try{
+            
                 const currentPageId =  GetVar("currentPage");
                 if(currentPageId){
             const newPageUrl = EventData.value;
@@ -61,9 +61,7 @@ export default [
             })
                 }
                 
-            }catch(error){
-                console.log(error);
-            } 
+             
                
   `
     },
@@ -71,7 +69,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            try{
+            
             const currentPageId =  GetVar("currentPage");
             if(currentPageId) {
                 const currentEditingApplication = GetVar("currentEditingApplication");
@@ -80,9 +78,7 @@ export default [
                 return currentPage?.url || '';
             }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       placeholder: {

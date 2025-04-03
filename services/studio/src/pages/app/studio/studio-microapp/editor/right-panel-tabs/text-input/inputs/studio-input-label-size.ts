@@ -60,30 +60,25 @@ export default [
     },
     event: {
       valueChange:  /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                            
+                            
                             const unity= EventData.unity ||"px"
-                            updateStyle(currentComponent, "--hybrid-input-label-font-size", EventData.value+unity);
+                            updateStyle(selectedComponent, "--hybrid-input-label-font-size", EventData.value+unity);
                         
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }                 
+                                     
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent?.style && currentComponent.style['--hybrid-input-label-font-size']?.split('')
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                const fontSize =selectedComponent.style && selectedComponent.style['--hybrid-input-label-font-size']?.split('')
                 if(fontSize) 
                     {
                         let unity='';
@@ -100,31 +95,24 @@ export default [
                     }
                     else 
                        return [13,'px']
-            }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       state: {
         type: "handler",
         value:/* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-label-font-size']){
+                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-font-size']){
                          state='disabled'
                         }
                         return state
-                    }
         
-                }catch(e){
-                    console.log(e);
-                } 
+                 
                 
                 `
       }
@@ -158,16 +146,12 @@ export default [
         value: /* js */`
                 const parameter ='labelSize';
                 let labelSizeHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    labelSizeHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-input-label-font-size'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    labelSizeHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-font-size'] || ''  
+                
                 return [parameter,labelSizeHandler];
             `
       }
@@ -175,16 +159,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'--hybrid-input-label-font-size',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'--hybrid-input-label-font-size',EventData.value)
+            
       `
     }
   }

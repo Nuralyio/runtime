@@ -54,57 +54,49 @@ export default [
     },
     event: {
       valueChange:/* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         const newSrcText = EventData.value;
-                        updateInput(currentComponent,'src','string',newSrcText);
-                    }
-                }catch(error){
-                    console.log(error);
-                } 
+                        updateInput(selectedComponent,'src','string',newSrcText);
+                 
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.src?.type == "value"){
-                const currentSrc=currentComponent.input?.src?.value??'';
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            if(true) {
+                
+                                    
+                if(selectedComponent.input?.src?.type == "value"){
+                const currentSrc=selectedComponent.input?.src?.value??'';
                 return currentSrc;
                 }
             }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            if(true) {
+                
+                                    
                 let state = "unabled";
-                if(currentComponent.input?.src?.type =="handler"&&currentComponent.input?.src?.value){
+                if(selectedComponent.input?.src?.type =="handler"&&selectedComponent.input?.src?.value){
                    state = "disabled"
                }
                return state;
             }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       placeholder: {
@@ -142,18 +134,15 @@ export default [
         value: /* js */`
                 const parameter ='src';
                 let srcHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.src?.type =='handler' && currentComponent?.input?.src?.value){
-                           srcHandler = currentComponent?.input?.src?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                        
+                        if(selectedComponent.input?.src?.type =='handler' && selectedComponent.input?.src?.value){
+                           srcHandler = selectedComponent.input?.src?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,srcHandler];
             `
       }
@@ -161,17 +150,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.src?.value != EventData.value )
-                    updateInput(currentComponent,'src','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(EventData.value != selectedComponent.input?.src?.value != EventData.value )
+                    updateInput(selectedComponent,'src','handler',EventData.value);
+            
       `
     }
   }

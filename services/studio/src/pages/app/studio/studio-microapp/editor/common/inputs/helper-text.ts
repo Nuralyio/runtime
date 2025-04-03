@@ -59,15 +59,13 @@ export default [
     },
     event: {
       valueChange:  /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             const newHelperText = EventData.value;
             updateInput(selectedComponent, 'helper', 'value', newHelperText);
           }
-        } catch(error) {
-          console.log(error);
-        } 
+        
       `
     },
     input: {

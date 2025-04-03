@@ -34,7 +34,7 @@ export const StudioDashboard = [
       "name": "Collection_6675",
       "uuid": "1a1d1c02-2d49-4480-81df-6bdb075d96e2",
       "event": {
-        "onInit": "try {\n  fetch('/api/applications', {\n    method: 'GET',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': 'Bearer <your-token>', // Include if authentication is required\n    },\n  })\n    .then((response) => {\n      if (!response.ok) {\n        throw new Error(`HTTP error! status: ${response.status}`);\n      }\n      return response.json();\n    })\n    .then((data) => {\n      Vars.apps = data;\n      console.log(data);\n      return data;\n    })\n    .catch((error) => {\n      console.error('Error fetching applications:', error);\n      return null;\n    });\n} catch (error) {\n  console.error('Unexpected error:', error);\n}"
+        "onInit": "\n  fetch('/api/applications', {\n    method: 'GET',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': 'Bearer <your-token>', // Include if authentication is required\n    },\n  })\n    .then((response) => {\n      if (!response.ok) {\n        throw new Error(`HTTP error! status: ${response.status}`);\n      }\n      return response.json();\n    })\n    .then((data) => {\n      Vars.apps = data;\n      console.log(data);\n      return data;\n    })\n    .catch((error) => {\n      console.error('Error fetching applications:', error);\n      return null;\n    });\n} catch (error) {\n  console.error('Unexpected error:', error);\n}"
       },
       "input": {
         "data": {
