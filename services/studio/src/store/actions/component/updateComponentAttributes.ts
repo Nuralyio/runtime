@@ -7,6 +7,7 @@ import { updateComponentHandler } from "$store/handlers/components/update-compon
 import type { UpdateType } from "$store/actions/component.ts";
 import { getVar } from "$store/context.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
+import { ExecuteInstance } from "core/Kernel.ts";
 
 export function updateComponentAttributes(
   application_id: string,
@@ -15,6 +16,7 @@ export function updateComponentAttributes(
   updatedAttributes: Record<string, any>, // Define a more specific type
   save = true,
 ) {
+  
   // Retrieve the currentPlatform from global context
   const currentPlatform = getVar("global", "currentPlatform")?.value ?? {
     platform: "desktop",
@@ -119,12 +121,20 @@ export function updateComponentAttributes(
           updateComponentHandler(componentToUpdate, application_id);
         }, 0);
       }
+     
     } else {
       // No update needed
       // console.log('Attributes are the same, no update needed:', updatedAttributes);
     }
-  }
+    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents;
 
-  // Trigger a refresh event for any listeners
-  eventDispatcher.emit("component:refresh");
+    const index = selectedComponents.findIndex(c => c.uuid === componentToUpdate.uuid);
+    if (index !== -1) {
+        ExecuteInstance.VarsProxy.selectedComponents[index] = componentToUpdate;
+    }
+  }
+ 
+//   // Trigger a refresh event for any listeners
+//  eventDispatcher.emit("component:refresh");
+  eventDispatcher.emit(`component-updated:${String(componentId)}`);
 }

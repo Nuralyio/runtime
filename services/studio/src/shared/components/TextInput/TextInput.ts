@@ -29,11 +29,7 @@ export class TextInputBlock extends BaseElementBlock {
   private _inputElement: HTMLInputElement | null = null;
 
   handleValueChange = debounce((customEvent: CustomEvent) => {
-    if (!this.ExecuteInstance.PropertiesProxy[this.component.name]) {
-      this.ExecuteInstance.PropertiesProxy[this.component.name] = {};
-    }
-    this.ExecuteInstance.PropertiesProxy[this.component.name].value = customEvent.detail.value;
-
+   
     if (this.component?.event?.valueChange) {
       executeCodeWithClosure(
         this.component,
@@ -56,7 +52,6 @@ export class TextInputBlock extends BaseElementBlock {
     this.registerCallback("value", (value) => {
       if (!this._isUserFocused && this.currentValue !== value) {
         this.currentValue = value ?? "";
-        this.requestUpdate();
       }
     });
 
@@ -132,7 +127,7 @@ export class TextInputBlock extends BaseElementBlock {
           @valueChange=${this.handleValueChange}
           @focused=${this.onFocus}
           @blur=${this.onBlur}
-          .value=${this.currentValue}
+          .value=${this.inputHandlersValue?.value ?? nothing}
           .size=${this.componentStyles?.size
             ? this.componentStyles.size
             : this.componentStyles?.size

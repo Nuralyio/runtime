@@ -50,7 +50,7 @@ export default [
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `
-        updateStyle(Utils.first(Editor.selectedComponents), "--hybrid-icon-color", EventData.value);
+        updateStyle(Utils.first(Vars.selectedComponents), "--hybrid-icon-color", EventData.value);
       `
     },
     ...COMMON_ATTRIBUTES,
@@ -58,7 +58,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const currentColor = selectedComponent?.style && selectedComponent?.style['--hybrid-icon-color'] || "";
           return currentColor;
         `
@@ -67,7 +67,7 @@ export default [
         type: "handler",
         value: /* js */ `
         
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let state = 'enabled';
           if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-icon-color']) {
             state = 'disabled';
@@ -103,7 +103,7 @@ export default [
         value: /* js */ `
           const parameter = 'iconColor';
           let iconColorHandler = '';
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             iconColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-icon-color'] || '';
           }
@@ -113,7 +113,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         updateStyleHandlers(selectedComponent, '--hybrid-icon-color', EventData.value);
       `
     }

@@ -56,7 +56,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let isDisabled = false;
           let currentSize = '';
           if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers?.size) {
@@ -92,7 +92,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-        updateStyle(Utils.first(Editor.selectedComponents), 'size', EventData.value);
+        updateStyle(Utils.first(Vars.selectedComponents), 'size', EventData.value);
       `,
     },
   },
@@ -123,7 +123,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const parameter = 'size';
           const sizeHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['size'] || '';  
           return [parameter, sizeHandler];
@@ -132,7 +132,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        updateStyleHandlers(Utils.first(Editor.selectedComponents), 'size', EventData.value);
+        updateStyleHandlers(Utils.first(Vars.selectedComponents), 'size', EventData.value);
       `,
     },
   },

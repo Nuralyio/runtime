@@ -186,7 +186,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         style: {},
         event: {
           valueChange: /* js */ `
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
           `
         },
@@ -194,8 +194,8 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
           value: {
             type: "handler",
             value: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
-              return  Editor.getComponentStyle(Utils.first(Editor.selectedComponents), "${item.cssVar}") ?? "black";
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+              return  Editor.getComponentStyle(Utils.first(Vars.selectedComponents), "${item.cssVar}") ?? "black";
               `
           }
         }
@@ -211,7 +211,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
             type: "handler",
             value: /* js */ `
               const cssVarValue = "${item.cssVar}";
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               const handler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers[cssVarValue] || "";
               return [cssVarValue, handler];
             `
@@ -219,7 +219,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         },
         event: {
           codeChange: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               updateStyleHandlers(selectedComponent, "${item.cssVar}", EventData.value);
           `
         }

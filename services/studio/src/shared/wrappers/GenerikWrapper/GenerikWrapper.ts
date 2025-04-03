@@ -61,7 +61,6 @@ export class GenerikComponentWrapper extends LitElement {
       this.hoveredComponent = hoveredComponent;
     });
     $context.subscribe(() => {
-      this.currentSelection = getVar("global", "selectedComponents")?.value || [];
     });
     $draggingComponentInfo.subscribe((draggingComponentInfo: DraggingComponentInfo) => {
       if (draggingComponentInfo) {

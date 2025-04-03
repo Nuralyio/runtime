@@ -64,7 +64,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
 
           let format = selectedComponent?.input?.format?.value ?? 'DD/MM/YYYY';
           let selectedFormat;
@@ -89,7 +89,7 @@ export default [
       state: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let state = "unabled";
           if (selectedComponent?.input?.format?.type === "handler" && selectedComponent?.input?.format?.value) {
             state = "disabled";
@@ -104,7 +104,7 @@ export default [
     event: {
       changed: /* js */`
         const formatValue = EventData.value ? EventData.value : 'DD/MM/YYYY';
-        updateInput(Utils.first(Editor.selectedComponents), "format", "string", formatValue);
+        updateInput(Utils.first(Vars.selectedComponents), "format", "string", formatValue);
       `
     }
   },
@@ -137,7 +137,7 @@ export default [
         type: "handler",
         value: /* js */`
           const parameter = 'format';
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let formatHandler = '';
 
           if (selectedComponent?.input?.format?.type === 'handler' && selectedComponent?.input?.format?.value) {
@@ -151,7 +151,7 @@ export default [
 
     event: {
       codeChange: /* js */`
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (EventData.value !== selectedComponent?.input?.format?.value) {
           updateInput(selectedComponent, 'format', 'handler', EventData.value);
         }

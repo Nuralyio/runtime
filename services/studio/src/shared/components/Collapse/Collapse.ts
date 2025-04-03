@@ -35,15 +35,7 @@ export class Collapse extends BaseElementBlock {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
-    eventDispatcher.on(
-      `component-property-changed:${String(this.component.name)}`,
-      async (data) => {
-        await this.traitInputsHandlers();
-        this.updateComponents();
-        this.requestUpdate();
-      },
-      10
-    );
+
 
     super.firstUpdated(_changedProperties);
     const application_id = this.component.application_id;

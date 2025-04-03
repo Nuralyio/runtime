@@ -66,14 +66,14 @@ export const StudioContainerInputLayout = [
                 { label: "Boxed", value: "boxed" },
               ];
               return [options, [[
-                Utils.first(Editor.selectedComponents)?.input?.layout?.value ?? "default"
+                Utils.first(Vars.selectedComponents)?.input?.layout?.value ?? "default"
               ]]];
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 let isDisabled = 'enabled';
                 if (selectedComponent?.input?.layout?.type === 'handler' &&
                   selectedComponent?.input?.layout?.value ) {
@@ -89,7 +89,7 @@ export const StudioContainerInputLayout = [
     },
     event: {
       changed: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               const typeValue = EventData.value || 'default';
               updateInput(selectedComponent, "layout", 'string',typeValue);
             `
@@ -124,7 +124,7 @@ export const StudioContainerInputLayout = [
       value: {
         type: "handler",
         value: /* js */`
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 const handlerValue = selectedComponent?.input?.layout?.type === 'handler'
                 ? selectedComponent?.input?.layout.value
                 : '';
@@ -135,7 +135,7 @@ export const StudioContainerInputLayout = [
     event: {
       codeChange: /* js */ `
 
-      const selectedComponent = Utils.first(Editor.selectedComponents);
+      const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.layout?.value) {
           updateInput(selectedComponent, 'layout', 'handler', EventData.value);
         }

@@ -22,16 +22,17 @@ export default {
     tabs: {
       type: "handler",
       value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
+      Vars.selectedComponents
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 const currentPageId = GetVar("currentPage");
                 const currentEditingApplication = GetVar("currentEditingApplication");
+                console.log("selectedComponent", selectedComponent)
                 let parameters = [];
                 let handlers = [];
                 let themes = [];
-                if(selectedComponents.length)
+                if(selectedComponent)
                     { 
-                        const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
-                    switch(component?.component_type){
+                    switch(selectedComponent?.component_type){
                         case "text_label":
                             parameters=[
                                "text_label_bocks"
@@ -173,7 +174,7 @@ export default {
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value: selectedComponents.length|| currentPageId
+                            value: selectedComponent || currentPageId
                                 ? parameters
                                 : ["select_component_text"]
                         }
@@ -185,7 +186,7 @@ export default {
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value:  selectedComponents.length|| currentPageId
+                            value:  selectedComponent || currentPageId
                                 ? handlers
                                 : []
                         }
@@ -197,7 +198,7 @@ export default {
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value:  selectedComponents.length|| currentPageId
+                            value:  selectedComponent|| currentPageId
                                 ? themes
                                 : []
                         }

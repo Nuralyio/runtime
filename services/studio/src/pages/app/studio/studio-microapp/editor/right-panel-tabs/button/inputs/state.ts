@@ -48,7 +48,7 @@ export const StudioButtonStateInput = [
         type: "handler",
         value: /* js */ ` 
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             if (!selectedComponent) return [[], '', 'button'];
             const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'state')?.value : null;
             
@@ -72,7 +72,7 @@ export const StudioButtonStateInput = [
     style: { ...RadioButtonWithTwoOptionsTheme },
     event: {
       changed: /* js */ `
-            updateInput(Utils.first(Editor.selectedComponents), 'state', 'value', EventData.value);
+            updateInput(Utils.first(Vars.selectedComponents), 'state', 'value', EventData.value);
           `
     }
   },
@@ -100,7 +100,7 @@ export const StudioButtonStateInput = [
       value: {
         type: "handler",
         value: /* js */`
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             const stateHandler = selectedComponent?.input?.state?.type === 'handler' 
               ? selectedComponent?.input?.state.value 
               : '';
@@ -110,7 +110,7 @@ export const StudioButtonStateInput = [
     },
     event: {
       codeChange: /* js */ `
-          updateInput(Utils.first(Editor.selectedComponents), 'state', 'handler', EventData.value);
+          updateInput(Utils.first(Vars.selectedComponents), 'state', 'handler', EventData.value);
         `
     }
   }

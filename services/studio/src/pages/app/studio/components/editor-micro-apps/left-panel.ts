@@ -313,7 +313,11 @@ export default [{
                 if(componentParentPage != currentPage ){
                     SetVar("currentPage" , componentParentPage)
                 }
-                SetVar("selectedComponents",[EventData.id]);
+                const selectedComponent = Editor.components.find(
+                  component => component.uuid == EventData.id
+                );
+                console.log("selectedComponent", selectedComponent )
+                Vars.selectedComponents = [selectedComponent];
             }
         `,
       /* js */

@@ -65,8 +65,8 @@ export const StudioInputAlignmentDirection = [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
-          const currentType = Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'justify-content') ?? "default";
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const currentType = Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'justify-content') ?? "default";
 
           const options = [
             { label: "flex-start", value: "flex-start" },
@@ -80,7 +80,7 @@ export const StudioInputAlignmentDirection = [
       state: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let isDisabled = 'enabled';
           if (selectedComponent?.styleHandlers?.['justify-content']) {
             isDisabled = 'disabled';
@@ -95,7 +95,7 @@ export const StudioInputAlignmentDirection = [
     },
     event: {
       changed: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const typeValue = EventData.value || 'default';
         updateStyle(selectedComponent, 'justify-content', typeValue);
       `
@@ -131,7 +131,7 @@ export const StudioInputAlignmentDirection = [
         value: /* js */ `
           const parameter = 'justify-content';
           let typeHandler = '';
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           typeHandler = selectedComponent?.styleHandlers?.['justify-content'] || '';
           return [parameter, typeHandler];
         `
@@ -139,7 +139,7 @@ export const StudioInputAlignmentDirection = [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         updateStyleHandlers(selectedComponent, 'justify-content', EventData.value);
       `
     }

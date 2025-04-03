@@ -57,7 +57,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let isDisabled = false;
           let currentState = '';
           if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers?.state) {
@@ -92,7 +92,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-        updateStyle(Utils.first(Editor.selectedComponents), 'state', EventData.value ?? 'default');
+        updateStyle(Utils.first(Vars.selectedComponents), 'state', EventData.value ?? 'default');
       `
     }
   },
@@ -122,7 +122,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
 
           const parameter = 'status';
           const statusHandler = selectedComponent?.styleHandlers?.['state'] || '';
@@ -133,7 +133,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        updateStyleHandlers(Utils.first(Editor.selectedComponents), 'state', EventData.value);
+        updateStyleHandlers(Utils.first(Vars.selectedComponents), 'state', EventData.value);
       `
     }
   }

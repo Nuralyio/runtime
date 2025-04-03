@@ -38,7 +38,6 @@ export class ComponentTitle extends LitElement {
 
   setupSubscriptions() {
     $context.subscribe(() => {
-      this.selectedComponents = getVar("global", "selectedComponents")?.value || [];
     });
   }
 

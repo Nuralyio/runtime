@@ -57,7 +57,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let defaultTextDecoration = '';
           let isDisabled = false;
           if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['text-decoration']) {
@@ -82,7 +82,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const textDecorationValue = EventData.value ? EventData.value : 'none';
         updateStyle(selectedComponent, "text-decoration", textDecorationValue);
       `
@@ -105,7 +105,7 @@ export default [
         value: /* js */ `
           const parameter = 'textDecoration';
           let textDecorationHandler = '';
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           textDecorationHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['text-decoration'] || '';  
           return [parameter, textDecorationHandler];
         `
@@ -113,7 +113,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         updateStyleHandlers(selectedComponent, 'text-decoration', EventData.value);
       `
     }

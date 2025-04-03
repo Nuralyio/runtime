@@ -47,7 +47,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-               const selectedComponent = Utils.first(Editor.selectedComponents);
+               const selectedComponent = Utils.first(Vars.selectedComponents);
                 let defaultVerticalAlign='';
                 let isDisabled = false;
                 if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['align-items']) {

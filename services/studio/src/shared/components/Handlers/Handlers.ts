@@ -22,68 +22,44 @@ export class HandlerBlock extends BaseElementBlock {
   component: ComponentElement;
 constructor() {
   super();
-  this.registerCallback('events' , ()=>{
-    console.log('events');
-  })
+
+  eventDispatcher.onAny( ()=>{
+   this.traitInputsHandlers()
+  } );
+ 
 }
-  override async connectedCallback() {
-    await super.connectedCallback();
-    eventDispatcher.on('component:refresh', ()=>{
-    //   this.requestUpdate();
-      this.traitInputsHandlers();
-    })
-  }
 
 
   handleCodeChange = (e: CustomEvent, eventName: string) => {
     executeCodeWithClosure(this.component,
-      `
-        try{
-          const selectedComponens =  GetVar( "selectedComponents")||[];
-          if( selectedComponens.length) {
-              const selectedComponent = selectedComponens[0];
-              let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-              updateEvent(currentComponent, "${eventName}", EventData.value )
-          }
-        }catch(error){
-            console.log(error);
-        }
+      /* js */`
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateEvent(selectedComponent, "${eventName}", EventData.value )
+       
         `, {
         value: e.detail.value
       });
   };
 
   createHandleCodeChange = (eventName: string) => {
+    
     executeCodeWithClosure(this.component,
-      `
-        try{
-          const selectedComponens =  GetVar( "selectedComponents")||[];
-          if( selectedComponens.length) {
-              const selectedComponent = selectedComponens[0];
-              let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-              updateEvent(currentComponent, "${eventName}", EventData.value )
-          }
-        }catch(error){
-            console.log(error);
-        }
+      /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateEvent(selectedComponent, "${eventName}", "" )
         `, {
         value: ""
       });
-      setTimeout(() => {
-        this.requestUpdate();
-      }, 0);
+        this.traitInputsHandlers();
+        this.requestUpdate( )
   };
 
   removeHandler = (eventName: string) => {
     executeCodeWithClosure(this.component,
-      `
+      /* js */ `
         try{
-          const selectedComponens =  GetVar( "selectedComponents")||[];
-          if( selectedComponens.length) {
-              const selectedComponent = selectedComponens[0];
-              let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-              updateEvent(currentComponent, "${eventName}", null )
-          }
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateEvent(selectedComponent, "${eventName}", null )
         }catch(error){
             console.log(error);
         }
@@ -188,12 +164,10 @@ constructor() {
             </hy-tooltip>
           </hy-dropdown>
           <div>
-            ${Object.keys(eventsHandlers).map((eventName) => {
+            ${Object.keys(this.inputHandlersValue?.events).map((eventName) => {
         if (this.inputHandlersValue?.events[eventName] === null) return;
 
         return html`
-        ${eventName}
-        ${this.inputHandlersValue?.events[eventName]}
                 <div class="container">
                   <hy-label>${eventName}</hy-label>
                   <div>

@@ -121,7 +121,8 @@ export class EditorInteractivePanel extends LitElement {
             style=${styleMap({
         margin: "0 auto",
         width: this.currentPageViewPort,
-        scale: this.zoomLevel / 100
+        scale: this.zoomLevel / 100,
+        height: "100%",
       })}
           >
             <slot></slot>

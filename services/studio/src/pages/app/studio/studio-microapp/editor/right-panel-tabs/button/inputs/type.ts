@@ -62,7 +62,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             const currentType = Editor.getComponentStyle(selectedComponent, 'type') || 'default';
             const options = [
               { label: "Primary", value: "primary" },
@@ -78,7 +78,7 @@ export default [
       state: {
         type: "handler",
         value: /* js */ `
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             return selectedComponent?.styleHandlers?.type ? 'disabled' : 'enabled';
           `
       }
@@ -89,7 +89,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-            updateStyle(Utils.first(Editor.selectedComponents), "type", EventData.value || 'default');
+            updateStyle(Utils.first(Vars.selectedComponents), "type", EventData.value || 'default');
         `
     }
   },
@@ -122,7 +122,7 @@ export default [
         type: "handler",
         value: /* js */ `
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             if (!selectedComponent) return ['type', ''];
             
             const currentComponent = GetComponent(
@@ -139,7 +139,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-            updateStyleHandlers(Utils.first(Editor.selectedComponents), 'type', EventData.value);
+            updateStyleHandlers(Utils.first(Vars.selectedComponents), 'type', EventData.value);
         `
     }
   }

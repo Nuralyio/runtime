@@ -71,7 +71,7 @@ export default [
     event: {
       onArrowUp: /* js */ `
       try {
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
           let width = Editor.getComponentStyle(selectedComponent, 'width') || "0px"
             width = width.trim();
             let numericPart = "";
@@ -95,7 +95,7 @@ export default [
   `,
       onArrowDown: /* js */ `
       try {
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent) {
             let width = selectedComponent?.style?.width || "0px";
             width = width.trim();
@@ -121,7 +121,7 @@ export default [
   `,
       valueChange: /* js */ `
             try {
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (selectedComponent) {
                     updateStyle(selectedComponent, "width", EventData.value ?? "auto");
                 }
@@ -133,13 +133,13 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'width') || "auto";
+          return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'width') || "auto";
         `
       },
       state: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           return selectedComponent?.styleHandlers?.['width'] ? 'disabled' : 'enabled';
         `
       }
@@ -166,7 +166,7 @@ export default [
         type: "handler",
         value: /* js */`
             try {
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (selectedComponent) {
                     return !selectedComponent?.style?.width || selectedComponent?.input?.width?.value == 'auto' ? 'check' : '';
                 }
@@ -179,7 +179,7 @@ export default [
         type: "handler",
         value: /* js */`
             try {
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (selectedComponent) {
                     return selectedComponent?.styleHandlers?.['width'] ? 'disabled' : 'enabled';
                 }
@@ -192,7 +192,7 @@ export default [
     event: {
       checkboxChanged:  /* js */ `
             try {
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (selectedComponent) {
                     updateInput(selectedComponent, 'width', 'string', EventData.value ? 'auto' : '');
                 }
@@ -217,7 +217,7 @@ export default [
         type: "handler",
         value: /* js */`
             try {
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 return ['width', selectedComponent?.styleHandlers?.['width'] || ''];
             } catch (error) {
                 console.log(error);
@@ -229,7 +229,7 @@ export default [
     event: {
       codeChange: /* js */ `
             try {
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (selectedComponent) {
                     updateStyleHandlers(selectedComponent, 'width', EventData.value);
                 }

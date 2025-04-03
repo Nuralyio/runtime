@@ -52,7 +52,7 @@ export default [
       valueChange:
       /* js */ `
         try {
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateStyle(selectedComponent, "height", EventData.value);
           }
@@ -64,14 +64,14 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-        return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'height') || "auto";
+        return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'height') || "auto";
         `
       },
       state: {
         type: "handler",
         value: /* js */`
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             return selectedComponent?.styleHandlers?.height ? 'disabled' : 'enabled';
           } catch (e) {
             console.log(e);
@@ -97,7 +97,7 @@ export default [
         type: "handler",
         value: /* js */`
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             return !selectedComponent?.style?.height || selectedComponent?.input?.height?.value === 'auto' ? 'check' : '';
           } catch (e) {
             console.log(e);
@@ -107,7 +107,7 @@ export default [
         type: "handler",
         value: /* js */`
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             return selectedComponent?.styleHandlers?.height ? 'disabled' : 'enabled';
           } catch (e) {
             console.log(e);
@@ -117,7 +117,7 @@ export default [
     event: {
       checkboxChanged:  /* js */ `
         try {
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             const autoHeight = EventData.value;
             updateInput(selectedComponent, 'height', 'string', autoHeight ? 'auto' : '');
@@ -142,7 +142,7 @@ export default [
         type: "handler",
         value: /* js */`
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             return ['height', selectedComponent?.styleHandlers?.height || ''];
           } catch (error) {
             console.log(error);
@@ -152,7 +152,7 @@ export default [
     event: {
       codeChange: /* js */ `
         try {
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateStyleHandlers(selectedComponent, 'height', EventData.value);
           }

@@ -30,7 +30,7 @@ export default [
     component_type: ComponentType.Dropdown,
     event : {
       onItemClicked: /* javascript */`
-      const selectedComponent = Utils.first(Editor.selectedComponents);
+      const selectedComponent = Utils.first(Vars.selectedComponents);
       console.clear();
       console.log(EventData.value);
       switch(EventData.value) {

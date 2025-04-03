@@ -46,7 +46,7 @@ export default [
     },
     event: {
       borderChanged: /* js */ `
-      const selectedComponent = Utils.first(Editor.selectedComponents);
+      const selectedComponent = Utils.first(Vars.selectedComponents);
       EventData.borders.forEach(border => {
         const keyName = Object.keys(border)[0];
         updateStyle(selectedComponent, keyName,border[keyName] );

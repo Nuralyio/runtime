@@ -104,10 +104,10 @@ export default [{
     name: "app insert top bar",
     application_id: "1",
     style: {
-      "--text-label-color": "black",
+      "--text-label-color": "white",
       "title-color": "white",
- "--text-label-color": "black",
-      "title-color": "white","--hybrid-button-hover-background-color": "white",
+      "--resolved-text-label-color": "white",
+      "--hybrid-button-hover-background-color": "white",
       "border-left": "1px solid grey",
       "padding-left": "14px",
     },
@@ -482,14 +482,14 @@ export default [{
     },
     event:{
       onClick: /* js */`
-            SetVar("currentEditingMode" , "edit")
+      Vars.currentEditingMode = "edit";
         `
     },
     input: {
       display : {
         type: "handler",
         value: /* js */`
-            const isEdit = GetVar("currentEditingMode") == "edit"
+            const isEdit = Vars.currentEditingMode  == "edit"
             return !isEdit;
             `
       },
@@ -529,18 +529,18 @@ export default [{
       "--hybrid-button-height": "40px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent",
-      "--hybrid-button-ghost-text-color": "white"
+      "--resolved-text-label-color": "white"
     },
     event:{
       onClick: /* js */`
-          SetVar("currentEditingMode" , "preview")
+      Vars.currentEditingMode = "preview"
         `
     },
     input: {
       display : {
         type: "handler",
         value: /* js */`
-            const isEdit = GetVar("currentEditingMode") == "edit"
+            const isEdit = Vars.currentEditingMode == "edit"
             return isEdit;
             `
       },

@@ -52,7 +52,7 @@ export const StudioComponentNameInput = [
     },
     event: {
       valueChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent) {
             updateName(selectedComponent, EventData.value);
         }
@@ -62,14 +62,14 @@ export const StudioComponentNameInput = [
       value: {
         type: "handler",
         value: /* js */ `
-          const { name } = Utils.first(Editor.selectedComponents) || {};
+          const { name } = Utils.first(Vars.selectedComponents) || {};
           return name;
         `
       },
       state: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           return selectedComponent?.input?.value?.type === "handler" &&
             selectedComponent?.input?.value?.value
             ? "disabled"
@@ -96,7 +96,7 @@ export const StudioComponentNameInput = [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const handlerValue = selectedComponent?.input?.value?.type === 'handler'
             ? selectedComponent?.input?.value.value
             : '';
@@ -106,7 +106,7 @@ export const StudioComponentNameInput = [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.value?.value) {
           updateInput(selectedComponent, 'value', 'handler', EventData.value);
         }

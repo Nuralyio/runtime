@@ -59,10 +59,8 @@ export const createHandlersFromEvents = (
         events: {
           type: "handler",
           value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                return currentComponent.event ?? {}
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+                return selectedComponent.event ?? {}
                 `
         }
       }
