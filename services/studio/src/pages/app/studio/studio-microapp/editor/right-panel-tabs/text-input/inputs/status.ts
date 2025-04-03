@@ -57,7 +57,7 @@ export const StatusInputBlock = [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
 
           let isDisabled = false;
           let currentStatus = '';
@@ -82,7 +82,7 @@ export const StatusInputBlock = [
     },
     event: {
       changed: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const statusValue = EventData.value ? EventData.value : 'default';
         updateInput(selectedComponent, 'status', 'string', statusValue);
       `
@@ -116,7 +116,7 @@ export const StatusInputBlock = [
         value: /* js */ `
           const parameter = 'status';
           let statusHandler = '';
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent?.input && selectedComponent?.input.status?.type == "handler") {
             statusHandler = selectedComponent?.input && selectedComponent?.input.status?.value || '';
           }
@@ -126,7 +126,7 @@ export const StatusInputBlock = [
     },
     event: {
       codeChange: /* js */ `
-        updateInput(Utils.first(Editor.selectedComponents), 'status', 'handler', EventData.value);
+        updateInput(Utils.first(Vars.selectedComponents), 'status', 'handler', EventData.value);
       `
     }
   }

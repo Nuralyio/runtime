@@ -61,7 +61,7 @@ export default [
       }
 
             
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
        // updateStyle(selectedComponent, "hello", EventData.value);
       `
     },
@@ -69,8 +69,8 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
-          return  Editor.getComponentStyle(Utils.first(Editor.selectedComponents), "color") ?? "black";
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          return  Editor.getComponentStyle(Utils.first(Vars.selectedComponents), "color") ?? "black";
           `
       }
     }

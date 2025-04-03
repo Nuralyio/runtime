@@ -1,3 +1,5 @@
+import { Observable } from "rxjs";
+
 export class Utils {
     public static CapitalizeFirstLetter(string: string): string {
         if (!string) return '';
@@ -10,4 +12,10 @@ export class Utils {
     public static extractUnit(str :string) {
         return str?.match(/[a-zA-Z%]+/g)?.[0] || "";
     }
+    public static createStoreObservable(store: any): Observable<void> {
+        return new Observable((subscriber) => {
+          const unsubscribe = store.subscribe((data) => subscriber.next(data));
+          return () => unsubscribe();
+        });
+      }
 }

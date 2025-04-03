@@ -62,7 +62,7 @@ export const StudioSelectHelperFontSize = [
     },
     event: {
       valueChange:  /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const unity = EventData.unity || "px"
         updateStyle(selectedComponent, "--hybrid-select-helper-text-font-size", EventData.value+unity);
                         
@@ -72,7 +72,7 @@ export const StudioSelectHelperFontSize = [
       value: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
       const fontSize =  Editor.getComponentStyle(selectedComponent, "--hybrid-select-helper-text-font-size")?.split('')
       if(fontSize) 
           {

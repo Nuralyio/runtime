@@ -62,7 +62,7 @@ export class RefComponentContainer extends BaseElementBlock {
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
         eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, () => {
-            this.traitInputsHandlers();
+           // this.traitInputsHandlers();
             this.requestUpdate();
         });
 

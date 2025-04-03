@@ -47,7 +47,7 @@ export default [
     },
     event: {
       valueChange: /* js */ `
-                    const selectedComponent = Utils.first(Editor.selectedComponents);
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
                     const unity = EventData.unity || 'px'
                     updateStyle(selectedComponent, "--hybrid-input-helper-text-font-size", EventData.value+unity);
   `
@@ -56,7 +56,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const fontSize = Editor.getComponentStyle(selectedComponent, "--hybrid-input-helper-text-font-size")?.split('');
         if (fontSize) {
           {
@@ -80,7 +80,7 @@ export default [
       state: {
         type: "handler",
         value:/* js */`
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             return selectedComponent?.styleHandlers?.["--hybrid-input-helper-text-font-size"] ? "disabled" : "enabled";
                 `
       }
@@ -112,7 +112,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const helperSizeHandler = selectedComponent?.styleHandlers?.["--hybrid-input-helper-text-font-size"] || "";
           return ["helperSize", helperSizeHandler];
             `
@@ -121,7 +121,7 @@ export default [
 
     event: {
       codeChange: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               updateStyleHandlers(selectedComponent,'--hybrid-input-helper-text-font-size',EventData.value)
       `
     }

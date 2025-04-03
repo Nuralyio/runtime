@@ -35,9 +35,9 @@ export class RightPanel extends LitElement {
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
     });
-    $context.listen(() => {
-      this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
-    });
+    // $context.listen(() => {
+    //   this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
+    // });
   }
 
 

@@ -54,7 +54,7 @@ export default [
     },
     event: {
       valueChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent) {
           updateInput(selectedComponent, 'label', 'value', EventData.value);
         }
@@ -64,7 +64,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'label') : null;
         return Input?.type === "value" ? Input.value ?? '' : '';
         `
@@ -72,7 +72,7 @@ export default [
       state: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           return selectedComponent?.input?.label?.type === "handler" &&
             selectedComponent?.input?.label?.value
             ? "disabled"
@@ -111,7 +111,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const handlerValue = selectedComponent?.input?.label?.type === 'handler'
             ? selectedComponent?.input?.label.value
             : '';
@@ -121,7 +121,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.label?.value) {
           updateInput(selectedComponent, 'label', 'handler', EventData.value);
         }

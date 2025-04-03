@@ -64,13 +64,10 @@ export default [
     event: {
       valueChange:/* js */ `
                 try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+
                         const newAltText = EventData.value;
-                        updateInput(currentComponent,'alt','string',newAltText);
-                    }
+                        updateInput(selectedComponent,'alt','string',newAltText);
                 }catch(error){
                     console.log(error);
                 } 
@@ -81,15 +78,11 @@ export default [
         type: "handler",
         value: /* js */`
             try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.alt?.type=="value"){
-                const currentAlt=currentComponent.input?.alt?.value??'';
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+                if(selectedComponent.input?.alt?.type=="value"){
+                const currentAlt=selectedComponent.input?.alt?.value??'';
                 return currentAlt;
                 }
-            }
 
         }catch(e){
             console.log(e);

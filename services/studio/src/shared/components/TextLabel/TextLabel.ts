@@ -47,6 +47,7 @@ export class TextLabelBlock extends BaseElementBlock {
 
   override renderComponent() {
     return html`
+    <!-- ${this.inputHandlersValue.value} -->
      <hy-label
      class="${`drop-${this.component.uuid}`}"
      @input=${(e) => {

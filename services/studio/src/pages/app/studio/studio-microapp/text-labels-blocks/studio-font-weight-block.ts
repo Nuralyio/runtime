@@ -55,10 +55,9 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-             const selectedComponents = GetVar("selectedComponents") || [];
-              const selectedComponent = selectedComponents[0];
+        
+             const selectedComponents = Utils.first(Vars.selectedComponents)
           
-              if (!selectedComponent) {
                   // Return default values if no component is selected
                   return [
                       [
@@ -69,12 +68,10 @@ export default [
                       'normal',
                       'button'
                   ];
-              }
           
               const currentEditingApplication = GetVar("currentEditingApplication");
-              const currentComponent = GetComponent(selectedComponent, currentEditingApplication?.uuid);
           
-              if (!currentComponent) {
+              if (!selectedComponents) {
                   // Return default values if the current component is not found
                   return [
                       [
@@ -87,10 +84,10 @@ export default [
                   ];
               }
           
-              const hasFontWeightHandler = currentComponent.styleHandlers?.['font-weight'];
+              const hasFontWeightHandler = selectedComponents.styleHandlers?.['font-weight'];
               const defaultFontWeight = hasFontWeightHandler
                   ? ''
-                  : currentComponent.style?.['font-weight'] || 'normal';
+                  : selectedComponents.style?.['font-weight'] || 'normal';
           
               const options = [
                   { value: '300', label: "Slim", disabled: !!hasFontWeightHandler },
@@ -106,17 +103,10 @@ export default [
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+      const selectedComponents = Utils.first(Vars.selectedComponents)
+
                     const fontWeightValue = EventData.value?EventData.value:'normal'
-                    updateStyle(currentComponent, "font-weight", fontWeightValue);
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    updateStyle(selectedComponents, "font-weight", fontWeightValue);
             
       `
     }
@@ -137,17 +127,12 @@ export default [
         type: "handler",
         value: /* js */`
                 const parameter ='fontWeight';
-                let fontWeightHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    fontWeightHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-weight'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                let fontWeightHandler='';
+               const selectedComponents = Utils.first(Vars.selectedComponents)
+
+                    fontWeightHandler= selectedComponents?.styleHandlers && selectedComponents?.styleHandlers['font-weight'] || ''  
+                    
+                
                 return [parameter,fontWeightHandler];
             `
       }

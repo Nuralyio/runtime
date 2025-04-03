@@ -57,7 +57,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 let currentCheck="";
                 let isDisabled=false;
                 if(selectedComponent?.input?.checked?.type =='handler' && selectedComponent?.input?.checked?.value) { 
@@ -80,7 +80,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                     const checkedValue = EventData.value;
                     updateInput(selectedComponent, 'checked', 'string', checkedValue);
       `
@@ -112,7 +112,7 @@ export default [
         value: /* js */`
                 const parameter ='checkbox';
                 let checkboxHandler='';
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if(selectedComponent?.input?.checked?.type =='handler' && selectedComponent?.input?.checked?.value) {
                     checkboxHandler = selectedComponent?.input?.checked?.value;
                 }
@@ -122,7 +122,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if(selectedComponent && EventData.value != selectedComponent?.input?.checked?.value) {
                     updateInput(selectedComponent, 'checked', 'handler', EventData.value);
                 }

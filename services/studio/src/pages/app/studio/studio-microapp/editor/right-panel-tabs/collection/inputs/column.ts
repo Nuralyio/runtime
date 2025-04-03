@@ -50,7 +50,7 @@ export const StudioCollectionColumnInput =  [
     event: {
       valueChange:  /* js */`
 
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 updateStyle(selectedComponent, "--columns", EventData.value);
                         
                    
@@ -61,8 +61,8 @@ export const StudioCollectionColumnInput =  [
       value: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Editor.selectedComponents);
-                let fontSize =  Editor.getComponentStyle(Utils.first(Editor.selectedComponents), '--columns') || 1;
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+                let fontSize =  Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '--columns') || 1;
                  return [fontSize ]
 
             `
@@ -70,7 +70,7 @@ export const StudioCollectionColumnInput =  [
       state: {
         type: "handler",
         value:/* js */`
-                    const selectedComponent = Utils.first(Editor.selectedComponents);
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
                         let state='enabled';
                         if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize']){
                          state='disabled'
@@ -99,7 +99,7 @@ export const StudioCollectionColumnInput =  [
                 const parameter ='labelFontSize';
                 let labelFontSizeHandler =''
                 try{
-                    const selectedComponent = Utils.first(Editor.selectedComponents);
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
                     labelFontSizeHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize'] || ''  
                 }catch(error){
                 }
@@ -110,7 +110,7 @@ export const StudioCollectionColumnInput =  [
 
     event: {
       codeChange: /* js */ `
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                     updateStyleHandlers(selectedComponent,'--columns',EventData.value)
       `
     }

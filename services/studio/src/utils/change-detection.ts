@@ -1,15 +1,19 @@
+import { Subject, Observable, Subscription, BehaviorSubject, timer } from 'rxjs';
+import { share, switchMap } from 'rxjs/operators';
+
 class EventDispatcher {
   private static instance: EventDispatcher;
-  private events: { [key: string]: Function[] };
-  private debounceTimers: { [key: string]: NodeJS.Timeout };
+  private subjects: { [key: string]: Subject<any> } = {};
+  private subscriptions: { [key: string]: Map<Function, Subscription> } = {};
+  private debounceSubjects: { [key: string]: BehaviorSubject<any> } = {};
 
-  // Private constructor to prevent direct instantiation
+  private globalEventSubject = new Subject<{ eventName: string; data: any }>();
+  public readonly allEvents$: Observable<{ eventName: string; data: any }>;
+
   private constructor() {
-    this.events = {};
-    this.debounceTimers = {};
+    this.allEvents$ = this.globalEventSubject.asObservable().pipe(share());
   }
 
-  // Static method to get the single instance
   public static getInstance(): EventDispatcher {
     if (!EventDispatcher.instance) {
       EventDispatcher.instance = new EventDispatcher();
@@ -17,36 +21,39 @@ class EventDispatcher {
     return EventDispatcher.instance;
   }
 
-  // Subscribe to an event
-  public on(event: string, listener: Function): void {
-    if (!this.events[event]) {
-      this.events[event] = [];
+  private getSubject(event: string): Subject<any> {
+    if (!this.subjects[event]) {
+      this.subjects[event] = new Subject<any>();
     }
-    this.events[event].push(listener);
+    return this.subjects[event];
   }
 
-  // Unsubscribe from an event
+  public on(event: string, listener: Function): Subscription {
+    if (!this.subscriptions[event]) {
+      this.subscriptions[event] = new Map<Function, Subscription>();
+    }
+    const subscription = this.getSubject(event).subscribe((data) => listener(data));
+    this.subscriptions[event].set(listener, subscription);
+    return subscription;
+  }
+
+  public onAny(listener: (eventName: string, data: any) => void): Subscription {
+    return this.allEvents$.subscribe(({ eventName, data }) => listener(eventName, data));
+  }
+
   public off(event: string, listener: Function): void {
-    if (!this.events[event]) return;
-    this.events[event] = this.events[event].filter(l => l !== listener);
+    if (!this.subscriptions[event]) return;
+    const subscription = this.subscriptions[event].get(listener);
+    if (subscription) {
+      subscription.unsubscribe();
+      this.subscriptions[event].delete(listener);
+    }
   }
 
-  // Emit an event with debounce
-  public emit(event: string, data?: any, debounceTime: number = 0): void {
-    if (!this.events[event]) return;
-
-    // Clear the previous debounce timer if exists
-    if (this.debounceTimers[event]) {
-      clearTimeout(this.debounceTimers[event]);
-    }
-
-    // Set a new debounce timer
-    this.debounceTimers[event] = setTimeout(() => {
-      this.events[event].forEach(listener => listener(data));
-      delete this.debounceTimers[event]; // Cleanup after execution
-    }, debounceTime);
+  public emit(event: string, data?: any): void {
+    this.getSubject(event).next(data);
+    this.globalEventSubject.next({ eventName: event, data });
   }
 }
 
-// Export the singleton instance
 export const eventDispatcher = EventDispatcher.getInstance();

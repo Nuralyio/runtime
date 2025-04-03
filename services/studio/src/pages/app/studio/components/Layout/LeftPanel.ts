@@ -48,7 +48,6 @@ export class LeftPanel extends LitElement {
     super.connectedCallback();
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
-      this.requestUpdate();
     });
   }
 

@@ -17,6 +17,16 @@ export const StudioTextLabelDesign = [{
     "typography_collapse_container",
     "size_collapse_container",
     "border_collapse_container"
-  ]
+  ],
+  input: {
+    aa: {
+      type: "handler",
+      value:
+        /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        
+        `
+    }
+  }
 }
 ];

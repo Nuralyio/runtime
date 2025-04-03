@@ -22,16 +22,18 @@ export class TabsBlock extends BaseElementBlock {
   @state()
   private componentsWithChildren: ComponentElement[] = [];
 
-  override  connectedCallback() {
-     super.connectedCallback();
-     this.traitInputsHandlers();
-  }
-
-  override update(changedProperties: Map<string | number | symbol, unknown>) {
+ constructor(){
+  super()
+  this.registerCallback('tabs' , ()=>{
+    this.updateComponents();
+    this.editableTabs = this.generateTabs();
+  })
+ }
+  override async  update(changedProperties: Map<string | number | symbol, unknown>) {
     super.update(changedProperties);
     if (changedProperties.has("component")) {
       this.updateComponents();
-      //this.editableTabs = this.memoizedGenerateTabs();
+      this.editableTabs = this.generateTabs();
     }
   }
 

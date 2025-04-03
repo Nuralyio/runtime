@@ -3,7 +3,7 @@
 import { GenerateName } from "utils/naming-generator";
 
 import { $applications, $values } from "$store/apps";
-import { $components } from "$store/component/store.ts";
+import { $components, setcomponentRuntimeStyleAttribute } from "$store/component/store.ts";
 import type { ComponentElement, ComponentType } from "$store/component/interface";
 import { $context, getVar, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
@@ -20,6 +20,8 @@ import { Navigation } from "./Navigation";
 import { updateComponentName } from "$store/actions/component/update-component-name";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction";
+import type { PageElement } from "$store/handlers/pages/interfaces/interface";
+import { deletePageAction } from "$store/actions/page/deletePageAction";
 const DEBUG = false;
 
 /**
@@ -39,26 +41,27 @@ class Executor {
   VarsProxy: Record<string, any> = {};
   Current: Record<string, any> = {};
   private functionCache: Record<string, Function> = {};
-  currentPlatform:any = {};
+  currentPlatform: any = {};
 
   Component: any = {};
   listner: any = {};
   private listeners: Record<string, Set<string>> = {};
   private proxyCache: WeakMap<object, any> = new WeakMap();
-
+  styleProxyCache = new WeakMap();
+  setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   private constructor() {
     this.PropertiesProxy = this.createProxy(this.Properties);
-    this.VarsProxy = this.createProxy(this.Vars);
+    this.VarsProxy = this.createProxy(this.Vars, 'Vars' );
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
-    $context.subscribe(()=>{
+    $context.subscribe(() => {
       this.currentPlatform = getVar("global", "currentPlatform")?.value ?? {
         platform: "desktop",
         isMobile: false,
       };
       this.registerApplications();
-      
+
 
     });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
@@ -68,14 +71,15 @@ class Executor {
     }
   }
 
-  updateEditorContext(){
-    const selectedComponensIds = getVar( "global", "selectedComponents")?.value || []
+  updateEditorContext() {
+    const selectedComponensIds = getVar("global", "selectedComponents")?.value || []
     const currentEditingApplicationUUID = getVar("global", "currentEditingApplication")?.value?.uuid;
-    Editor.selectedComponents = Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid));
+    Editor.Vars = Editor.Vars ??{}
+    Editor.selectedComponents = this.createProxy(Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid)));
     Editor.currentPlatform = this.currentPlatform;
-    
+
   }
-  private createProxy(target: any): any {
+  private createProxy(target: any,scope?): any {
     const self = this;
 
     if (typeof target !== "object" || target === null) {
@@ -84,6 +88,7 @@ class Executor {
 
     return new Proxy(target, {
       get(target, prop, receiver) {
+       
         if (DEBUG) {
           console.log(`[DEBUG] Accessing property '${String(prop)}'`);
         }
@@ -142,7 +147,11 @@ class Executor {
       set(target, prop, value, receiver) {
         const oldValue = target[prop as string];
         const result = Reflect.set(target, prop, value, receiver);
-
+        if(scope){
+          eventDispatcher.emit(
+            `${scope}:${(String(prop))}`,
+          )
+        }
         if (DEBUG) {
           console.log(`[DEBUG] Set property '${String(prop)}' from '${oldValue}' to '${value}'`);
         }
@@ -168,6 +177,33 @@ class Executor {
         return result;
       },
     });
+  }
+
+
+  watchStyleChanges(target, callback) {
+    if (typeof target !== "object" || target === null) {
+      return target;
+    }
+  
+    // If the proxy already exists in the cache, return it
+    if (this.styleProxyCache.has(target)) {
+      return this.styleProxyCache.get(target);
+    }
+  
+    const proxy = new Proxy(target, {
+      set(obj, prop: any, value) {
+        if (obj[prop] !== value) {
+          console.log(`Style property changed: ${prop} = ${value}`);
+          callback(prop, value);
+        }
+        obj[prop] = value;
+        return true;
+      }
+    });
+  
+    // Cache the proxy to avoid re-creating it
+    this.styleProxyCache.set(target, proxy);
+    return proxy;
   }
 
   static getInstance(): Executor {
@@ -216,7 +252,7 @@ class Executor {
     });
     Editor.components = componentsList;
     this.updateEditorContext()
-    
+
   }
 
   prepareClosureFunction(code: string): Function {
@@ -243,6 +279,7 @@ class Executor {
         "context",
         "applications",
         "updateInput",
+        "deletePage",
         "CopyComponentToClipboard",
         "PasteComponentFromClipboard",
         "DeleteComponentAction",
@@ -267,7 +304,8 @@ class Executor {
 }
 
 export const ExecuteInstance = Executor.getInstance();
-
+ExecuteInstance.setcomponentRuntimeStyleAttribute = setcomponentRuntimeStyleAttribute;
+const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
 /**
  * Executes the given code within a closure, providing access to various context and application data.
  * @param {any} component - The component to execute the code for.
@@ -277,7 +315,27 @@ export const ExecuteInstance = Executor.getInstance();
  * @returns {any} The result of executing the closure function.
  */
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
+
   ExecuteInstance.Current = component;
+ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
+
+// Only create the proxy once
+if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
+  const newProxy = observe(ExecuteInstance.Current.style, (target,prop, value) => {
+    ExecuteInstance.setcomponentRuntimeStyleAttribute(
+      ExecuteInstance.Current.uuid,
+      prop,
+      value);
+    
+    console.log(`Detected change: ${prop} = ${value}`);
+  });
+
+  ExecuteInstance.Current.style = newProxy;
+} else {
+  // If a proxy already exists, keep the existing one
+  ExecuteInstance.Current.style = ExecuteInstance.styleProxyCache.get(ExecuteInstance.Current.style);
+}
+
 
   if (isServer) {
     return;
@@ -333,9 +391,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     return Editor.components.find((c: ComponentElement) => c.uuid === componentUuid);
   }
 
-  function AddComponent({application_id, pageId, componentType, additionalData}): any {
+  function AddComponent({ application_id, pageId, componentType, additionalData }): any {
     const generatedName = GenerateName(componentType);
-    addComponentAction({ name: generatedName, component_type: componentType , ...additionalData}, pageId, application_id);
+    addComponentAction({ name: generatedName, component_type: componentType, ...additionalData }, pageId, application_id);
   }
 
   function GetComponents(componentIds: string[]): any[] {
@@ -351,6 +409,13 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     updateComponentAttributes(component.application_id, component.uuid, "input", eventData);
   }
 
+  function deletePage(page: PageElement) {
+    const userInput = confirm("Are you sure you want to delete this page?");
+    if (userInput) {
+      deletePageAction(page);
+    }
+  }
+
   function CopyComponentToClipboard(component: ComponentElement) {
     copyCpmponentToClipboard(component)
   }
@@ -359,13 +424,17 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     pasteComponentFromClipboard();
   }
   function DeleteComponentAction(component: ComponentElement) {
-    deleteComponentAction(
-      component.uuid,
-      component.application_id,
-    );
-  }  
+    const userInput = confirm("Are you sure you want to delete this component?");
+    if (userInput) {
+      deleteComponentAction(
+        component.uuid,
+        component.application_id,
+      );
+    }
 
-  
+  }
+
+
 
   function updateName(component: ComponentElement, componentName: string) {
     updateComponentName(component.application_id, component.uuid, componentName);
@@ -381,16 +450,16 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     updateComponentAttributes(component.application_id, component.uuid, "style", eventData);
   }
 
-  async function InvokeFunction(id: string, payload: any={}) {
+  async function InvokeFunction(id: string, payload: any = {}) {
     try {
       const result = await invokeFunctionHandler(id, {
         payload: {
-          data : payload
+          data: payload
         }
       });
-  
+
       const contentType = result.headers?.get("Content-Type") || "";
-  
+
       if (contentType.includes("application/json")) {
         const jsonData = await result.json();
         console.log("JSON Response:", jsonData);
@@ -429,6 +498,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     context,
     applications,
     updateInput,
+    deletePage,
     CopyComponentToClipboard,
     PasteComponentFromClipboard,
     DeleteComponentAction,

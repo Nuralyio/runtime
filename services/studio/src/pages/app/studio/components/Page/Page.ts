@@ -22,11 +22,11 @@ import { $environment, type Environment, ViewMode } from "$store/environment";
 import {
   moveDraggedComponentIntoCurrentPageRoot
 } from "$store/actions/component/moveDraggedComponentIntoCurrentPageRoot.ts";
-import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction.ts";
 import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
 import { setEnvirementMode } from "$store/actions/editor/setEnvirementMode";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
+import { ExecuteInstance } from "core/Kernel";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -37,25 +37,14 @@ export class PageContent extends LitElement {
   @state() components: ComponentElement[] = [];
 
   @property({ type: Boolean }) isViewMode = false;
-  mode: ViewMode;
+  mode: ViewMode = ViewMode.Edit;
   @state() zoomLevel = 100;
   @state() currentPlatform: any;
 
   constructor() {
     super();
 
-    $pages.listen(() => this.refreshComponent());
-    $components.listen(() => this.refreshComponent());
-    $context.listen(() => this.refreshComponent());
-    $values.listen(() => this.refreshComponent());
-    $environment.subscribe((environment: Environment) => {
-      if(!getVar("global", "currentEditingMode")?.value) {
-        setVar("global", "currentEditingMode", environment.mode);
-      }
-      this.mode = environment.mode;
-      this.refreshComponent();
-    });
-    eventDispatcher.on("component:refresh", () => {
+    eventDispatcher.onAny((eventName, data) => {
       this.refreshComponent();
     });
 
@@ -68,7 +57,7 @@ export class PageContent extends LitElement {
     const currentPlatform = getVar("global", "currentPlatform")?.value;
     if(currentPlatform?.platform !== this.currentPlatform?.platform) {
       this.currentPlatform = getVar("global", "currentPlatform")?.value;
-      eventDispatcher.emit("component:refresh");
+      //eventDispatcher.emit("component:refresh");
     }
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = getVar("global", "currentPage");
@@ -81,7 +70,6 @@ export class PageContent extends LitElement {
       const currentAppUuid = currentEditingApplication.value.uuid;
 
       this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
-
       const components = $applicationComponents(currentAppUuid).get();
       // Filter for components that belong to the current page and are root.
       const pageComponents = components.filter(
@@ -109,12 +97,17 @@ export class PageContent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    $context.subscribe(() => {
-      this.zoomLevel = getVar("global", "editor_panel_zoom")?.value || 100;
-      this.mode = getVar("global", "currentEditingMode")?.value || ViewMode.Edit;
-      setEnvirementMode(this.mode);
-    });
 
+    eventDispatcher.on('Vars:currentEditingMode', (data)=>{
+      if(! ExecuteInstance.Vars.currentEditingMode ){
+        ExecuteInstance.Vars.currentEditingMode =  ViewMode.Edit;
+      }
+      if(ExecuteInstance.Vars.currentEditingMode !== this.mode){
+        this.mode = ExecuteInstance.Vars.currentEditingMode;
+        setEnvirementMode( this.mode )
+      }
+     
+    })
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
       });
@@ -260,12 +253,13 @@ export class PageContent extends LitElement {
           zoom: ${this.zoomLevel}%;
         }
       </style>
-       <rectangle-selection>
+       <!-- <rectangle-selection> -->
       <div
         class="page-container ${this.currentPlatform?.isMobile  ? "mobile" : ""} ${this.isPreviewMode() ? "viewer" : ""}"
         style=${styleMap({
           "width": this.currentPlatform?.width || "auto",
-          "height": this.currentPlatform?.height || "",
+          "height": this.currentPlatform?.height || "100%",
+          background :  this.currentPage?.style?.["background-color"] || "",
         })}
         @mousedown=${this.handlePageClick}
         @dragend=${this.preventDefault}
@@ -286,7 +280,7 @@ export class PageContent extends LitElement {
                 
               </div>`}
       </div>
-      </rectangle-selection>
+      <!-- </rectangle-selection> -->
     `;
   }
 

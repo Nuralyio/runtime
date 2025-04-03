@@ -46,7 +46,7 @@ export default [
                 const parameter = 'data';
                 let labelHandler = '';
                 
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (selectedComponent?.input?.data?.type === 'handler' && selectedComponent?.input?.data?.value) {
                     labelHandler = selectedComponent?.input?.data.value;
                 }
@@ -58,7 +58,7 @@ export default [
 
     event: {
       codeChange: /* js */ `
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (EventData.value !== selectedComponent?.input?.data?.value) {
                     updateInput(selectedComponent, 'data', 'handler', EventData.value);
                 }

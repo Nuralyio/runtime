@@ -54,7 +54,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const isDisabled = selectedComponent?.input?.iconPosition?.type === 'handler' &&
             selectedComponent?.input?.iconPosition?.value;
           const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'iconPosition') : null;
@@ -80,7 +80,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent) {
           updateInput(selectedComponent, 'iconPosition', 'value', EventData.value);
         }
@@ -114,7 +114,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const handlerValue = selectedComponent?.input?.iconPosition?.type === 'handler'
             ? selectedComponent?.input?.iconPosition.value
             : '';
@@ -124,7 +124,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.iconPosition?.value) {
           updateInput(selectedComponent, 'iconPosition', 'handler', EventData.value);
         }

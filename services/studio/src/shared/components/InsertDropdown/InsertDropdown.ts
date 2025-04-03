@@ -55,7 +55,7 @@ export class InsertDropdownBlock extends BaseElementBlock {
         </hy-button> -->
         <hy-label
         style=${styleMap({
-          "--text-label-color": this.getStyles()["title-color"],
+          "--resolved-text-label-color": this.getStyles()["title-color"],
         })}
         >${this.inputHandlersValue?.title}</hy-label>
       </hy-dropdown>

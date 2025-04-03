@@ -66,14 +66,14 @@ export const StudioContainerInputDirection = [
                 { label: "horizontal", value: "horizontal" },
               ];
               return [options, [[
-                Utils.first(Editor.selectedComponents)?.input?.direction?.value ?? "default"
+                Utils.first(Vars.selectedComponents)?.input?.direction?.value ?? "default"
               ]]];
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 let isDisabled = 'enabled';
                 if (selectedComponent?.input?.direction?.type === 'handler' &&
                   selectedComponent?.input?.direction?.value ) {
@@ -89,7 +89,7 @@ export const StudioContainerInputDirection = [
     },
     event: {
       changed: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               const typeValue = EventData.value || 'default';
               updateInput(selectedComponent, "direction", 'string',typeValue);
             `
@@ -124,7 +124,7 @@ export const StudioContainerInputDirection = [
       value: {
         type: "handler",
         value: /* js */`
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 const handlerValue = selectedComponent?.input?.direction?.type === 'handler'
                 ? selectedComponent?.input?.direction.value
                 : '';
@@ -135,7 +135,7 @@ export const StudioContainerInputDirection = [
     event: {
       codeChange: /* js */ `
 
-      const selectedComponent = Utils.first(Editor.selectedComponents);
+      const selectedComponent = Utils.first(Vars.selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.direction?.value) {
           updateInput(selectedComponent, 'direction', 'handler', EventData.value);
         }

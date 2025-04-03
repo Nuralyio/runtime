@@ -43,7 +43,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           let currentPosition = "";
           let isDisabled = false;
 
@@ -73,7 +73,7 @@ export default [
     event: {
       changed: /* js */ `
         try {
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           const positionValue = EventData.value;
           updateStyle(selectedComponent, 'position', positionValue);
         } catch (error) {
@@ -101,7 +101,7 @@ export default [
           let positionHandler = '';
           
           try {
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             positionHandler = selectedComponent?.styleHandlers?.['position'] || '';
           } catch (error) {
             console.log(error);
@@ -114,7 +114,7 @@ export default [
     event: {
       codeChange: /* js */ `
         try {
-          const selectedComponent = Utils.first(Editor.selectedComponents);
+          const selectedComponent = Utils.first(Vars.selectedComponents);
           updateStyleHandlers(selectedComponent, 'position', EventData.value);
         } catch (error) {
           console.log(error);

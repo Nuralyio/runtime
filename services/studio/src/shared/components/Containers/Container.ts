@@ -1,7 +1,7 @@
 import { $resizing } from "$store/apps.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { $components, $draggingComponentInfo } from "$store/component/store.ts";
-import { html, nothing, type PropertyValues } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -13,95 +13,68 @@ import { setCurrentComponentIdAction } from "$store/actions/component/setCurrent
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
 import { Utils } from "core/Utils.ts";
+
 @customElement("vertical-container-block")
 export class VerticalContainer extends BaseElementBlock {
   static styles = styles;
 
-  @property({ type: Object })
-  component: ComponentElement;
+  @property({ type: Object }) component: ComponentElement;
+  @property({ type: Object }) item: any;
+  @property({ type: Object }) draggingComponentInfo: DraggingComponentInfo;
+  @property({ type: Boolean }) isViewMode = false;
 
-  @property({ type: Object })
-  item: any;
-
-  @state()
-  dragOverSituation = false;
-
-  @state()
-  selectedComponent: ComponentElement;
-
-  @state()
-  hoveredComponent: ComponentElement;
-
-  @property({ type: Object })
-  draggingComponentInfo: DraggingComponentInfo;
-
-  @property({ type: Boolean })
-  isViewMode = false;
-
-  @state()
-  wrapperStyle: any = {};
-
-  @state()
-  containerRef: Ref<HTMLInputElement> = createRef();
+  @state() dragOverSituation = false;
+  @state() selectedComponent: ComponentElement;
+  @state() hoveredComponent: ComponentElement;
+  @state() wrapperStyle: any = {};
+  @state() containerRef: Ref<HTMLInputElement> = createRef();
+  @state() childrenComponents: ComponentElement[] = [];
 
   isDragging: boolean;
 
   override async connectedCallback() {
     await super.connectedCallback();
+    this.updateChildrenComponents();
   }
 
+  override updated(changedProperties: Map<string, any>) {
+    if (changedProperties.has("component")) {
+      this.updateChildrenComponents();
+    }
+  }
 
+  private updateChildrenComponents(): void {
+    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+      return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
+    }) ?? [];
+  }
 
   renderView() {
     return html`
       <div
-      ${ref(this.inputRef)
-      }
+        ${ref(this.inputRef)}
         data-component-uuid=${this.component?.uuid}
         style=${styleMap({
-        ...this.getStyles(),
-        "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
-        "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
-
-      })}
+          ...this.getStyles(),
+          "min-height": this.childrenComponents.length ? "auto" : "300px",
+          "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
+        })}
         class=${classMap({
-        container: true,
-        vertical: this.inputHandlersValue.direction === "vertical",
-        boxed: this.inputHandlersValue.layout === "boxed",
-        "drag-over": this.dragOverSituation,
-      })}
-      @mouseenter="${(e: Event) => {
-        this.executeEvent("onMouseEnter", e);
-      }
-      }"
-      @mouseleave="${(e: Event) => {
-        console.log("onMouseLeave");
-        this.executeEvent("onMouseLeave", e);
-      }
-      }"
-      @click="${(e: Event) => {
-        console.log("onClick");
-                this.executeEvent("onClick", e);
-
-              }
-              }"
+          container: true,
+          vertical: this.inputHandlersValue.direction === "vertical",
+          boxed: this.inputHandlersValue.layout === "boxed",
+          "drag-over": this.dragOverSituation,
+        })}
+        @mouseenter="${(e: Event) => this.executeEvent("onMouseEnter", e)}"
+        @mouseleave="${(e: Event) => this.executeEvent("onMouseLeave", e)}"
+        @click="${(e: Event) => this.executeEvent("onClick", e)}"
       >
-        ${this.component?.childrenIds?.length
-        ? renderComponent(
-          this.component.childrenIds.map((id) => ({
-            ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
-            item: this.item,
-          })),
-          this.item,
-          this.isViewMode
-        )
-        : nothing}
+        ${this.childrenComponents.length
+          ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode)
+          : nothing}
       </div>
     `;
   }
-
- 
-
 
   override renderComponent() {
     return html`
@@ -109,57 +82,44 @@ export class VerticalContainer extends BaseElementBlock {
         ? this.renderView()
         : html`
             <div
-            ${ref(this.inputRef)
-          }
+              ${ref(this.inputRef)}
               data-component-uuid=${this.component?.uuid}
               ${ref(this.containerRef)}
               @click="${(e: Event) => {
-            setContextMenuEvent(null);
-            this.executeEvent("onClick", e);
-          }}"
+                setContextMenuEvent(null);
+                this.executeEvent("onClick", e);
+              }}"
               style=${styleMap({
                 ...this.getStyles(),
-             "min-height": this.component?.childrenIds?.length ? "auto" : "300px",
-          })}
+                "min-height": this.childrenComponents.length ? "auto" : "300px",
+              })}
               class=${classMap({
-            container: true,
-            vertical: this.inputHandlersValue.direction === "vertical",
-            horizontal: this.inputHandlersValue.direction !== "vertical",
-            boxed: this.inputHandlersValue.layout == "boxed",
-          })}
-            
+                container: true,
+                vertical: this.inputHandlersValue.direction === "vertical",
+                horizontal: this.inputHandlersValue.direction !== "vertical",
+                boxed: this.inputHandlersValue.layout == "boxed",
+              })}
             >
-              ${this.component?.childrenIds?.length
-            ? renderComponent(
-              this.component.childrenIds.map((id) => ({
-                ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === id),
-                item: this.item,
-              })),
-              this.item,
-              this.isViewMode
-            )
-            : html`
+              ${this.childrenComponents.length
+                ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode)
+                : html`
                     <div
                       class="empty-message"
-                      @click="${(e: Event) => {
-                setCurrentComponentIdAction(this.component?.uuid);
-              }}"
+                      @click="${() => setCurrentComponentIdAction(this.component?.uuid)}"
                     >
                       Add or Drag an item into this container
                       <drag-wrapper
-                    .where=${"inside"}
-                    .message=${"Drop inside"}
-                    .component=${{ ...this.component }}
-                    .inputRef=${this.inputRef}
-                    .isDragInitiator=${this.isDragInitiator}
-                  >
-                  </drag-wrapper>
+                        .where=${"inside"}
+                        .message=${"Drop inside"}
+                        .component=${{ ...this.component }}
+                        .inputRef=${this.inputRef}
+                        .isDragInitiator=${this.isDragInitiator}
+                      >
+                      </drag-wrapper>
                     </div>
                   `}
-                 
             </div>
           `}
     `;
   }
-
 }

@@ -81,7 +81,7 @@ export const ComponentRefComponentSelector = [
       value: {
         type: "handler",
         value: /* js */ ` 
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const currentApplicationComponent = Editor.components.filter(
           (component) => component.application_id == selectedComponent.application_id && component.uuid !==selectedComponent.uuid
         );
@@ -106,7 +106,7 @@ export const ComponentRefComponentSelector = [
         type: "handler",
         value: /* js */`
             try{
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 let state = "unabled";
                 if(selectedComponent.input?.ref?.type =="handler" && selectedComponent.input?.ref?.value){
                    state = "disabled"
@@ -125,7 +125,7 @@ export const ComponentRefComponentSelector = [
     event: {
       changed: /* js */ `
 
-        const selectedComponent = Utils.first(Editor.selectedComponents);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
         const localeValue = EventData.value?EventData.value:''
         updateInput(selectedComponent, "ref", 'string',localeValue);
 
@@ -158,7 +158,7 @@ export const ComponentRefComponentSelector = [
         value: /* js */`
                 const parameter ='ref';
                 let refHandler=''
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 if(selectedComponent?.input?.ref?.type =='handler' && selectedComponent?.input?.ref?.value){
                     refHandler = selectedComponent?.input?.ref?.value
                 }
@@ -169,7 +169,7 @@ export const ComponentRefComponentSelector = [
 
     event: {
       codeChange: /* js */ `
-      const selectedComponent = Utils.first(Editor.selectedComponents);
+      const selectedComponent = Utils.first(Vars.selectedComponents);
       if(EventData.value != selectedComponent?.input?.ref?.value)
         updateInput(selectedComponent,'ref','handler',EventData.value);
       `

@@ -61,7 +61,7 @@ export const StudioContainerGapInput = [
     },
     event: {
       valueChange: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               updateStyle(selectedComponent, "gap", EventData.value + 'px');
             `
     },
@@ -69,13 +69,13 @@ export const StudioContainerGapInput = [
       value: {
         type: "handler",
         value: /* js */`
-              return Editor.getComponentStyle(Utils.first(Editor.selectedComponents), 'gap') ?? 0
+              return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'gap') ?? 0
             `
       },
       state: {
         type: "handler",
         value: /* js */`
-            const selectedComponent = Utils.first(Editor.selectedComponents);
+            const selectedComponent = Utils.first(Vars.selectedComponents);
             let state = 'enabled';
             if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap']) {
               state = 'disabled';
@@ -101,7 +101,7 @@ export const StudioContainerGapInput = [
         value: /* js */`
                 const parameter = 'gap';
                 let heightHandler = '';
-                const selectedComponent = Utils.first(Editor.selectedComponents);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 heightHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap'] || '';  
                 return [parameter, heightHandler];
             `
@@ -109,7 +109,7 @@ export const StudioContainerGapInput = [
     },
     event: {
       codeChange: /* js */ `
-              const selectedComponent = Utils.first(Editor.selectedComponents);
+              const selectedComponent = Utils.first(Vars.selectedComponents);
               updateStyleHandlers(selectedComponent, 'gap', EventData.value);
       `
     }

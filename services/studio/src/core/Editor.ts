@@ -10,6 +10,8 @@ class Editor {
   currentPlatform: any = {};
   isPreviewMode: boolean = false;
   isEditorMode: boolean = false;
+  Vars: any = {};
+  currentSelection : any[]  =[]
 
   constructor() {
     if (!isServer) {

@@ -5,12 +5,13 @@ import { renderComponent } from "utils/render-util";
 import "@shared/components/TextLabel/TextLabel";
 import "@shared/components/Containers/Container";
 import { $context } from "$store/context";
-import { $microAppCurrentPage, $pages } from "$store/page";
+import { $currentPage, $microAppCurrentPage, $pages } from "$store/page";
 import { eventDispatcher } from "utils/change-detection";
 import { $environment, ViewMode } from "$store/environment";
 import { debounceTime } from "rxjs/operators";
-import { merge, Observable } from "rxjs";
+import { merge, Observable, Subscription } from "rxjs";
 import EditorInstance from "./Editor";
+import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
@@ -20,6 +21,8 @@ export class MicroApp extends LitElement {
       }
   `];
 
+  private subscription = new Subscription();
+
   @property({ type: String, reflect: true }) uuid!: string;
   @property({ type: String, reflect: true }) page_uuid?: string;
   @property({ type: String, reflect: true }) componentToRenderUUID?: string;
@@ -27,20 +30,40 @@ export class MicroApp extends LitElement {
   @property({ type: Boolean, reflect: false }) prod = true;
 
   @state() components: any[] = [];
+  @state() componentsToRender: any[] = [];
+  @state() page: any = {};
 
   constructor() {
     super();
   }
 
   /**
-   * Refresh the list of components based on the current UUID and page UUID.
+   * Rafraîchit la liste des composants en fonction de l'UUID actuel et de l'UUID de la page.
    */
   refreshComponent(): void {
     const components = $applicationComponents(this.uuid).get();
     this.components = this.page_uuid
       ? components.filter((component) => component.pageId === this.page_uuid && component.root === true)
       : components;
+  }
 
+  /**
+   * Hook `updated()` de LitElement : déclenché lorsque les propriétés changent.
+   */
+  override updated(changedProperties: Map<string, any>): void {
+    if (changedProperties.has("components") || changedProperties.has("componentToRenderUUID")|| changedProperties.has("page_uuid")) {
+      this.updateComponentsToRender();
+    }
+   
+  }
+
+  /**
+   * Met à jour `componentsToRender` en fonction de la sélection actuelle.
+   */
+  private updateComponentsToRender(): void {
+    this.componentsToRender = this.componentToRenderUUID
+      ? this.components.filter((component) => component.uuid === this.componentToRenderUUID)
+      : this.components;
   }
 
   override connectedCallback(): void {
@@ -49,9 +72,14 @@ export class MicroApp extends LitElement {
     this.initializeAppComponents();
     EditorInstance.setEditorMode(this.prod);
   }
-
+  
+  override disconnectedCallback(): void {
+    this.subscription.unsubscribe();
+    super.disconnectedCallback();
+  }
+  
   /**
-   * Fetch application components if not already loaded.
+   * Récupère les composants de l'application s'ils ne sont pas déjà chargés.
    */
   private initializeAppComponents(): void {
     const appLoaded = $components.get()[this.uuid];
@@ -64,32 +92,49 @@ export class MicroApp extends LitElement {
         .then((data) => data.map((component) => component.component))
         .then((data) => {
           $components.setKey(this.uuid, data);
+          this.refreshComponent()
+          this.updateComponentsToRender();
+          this.requestUpdate();
         });
-    }
 
+        this.page_uuid && fetch(`/api/pages/${this.page_uuid}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          this.page = data;
+          this.setPageStyle();
+          this.requestUpdate();
+
+        });
+    } else {
+      this.page = $currentPage(this.uuid, this.page_uuid).get();
+      this.setPageStyle();
+    }
   }
 
   /**
-   * Set up subscriptions to relevant observables and handle component refresh logic.
+   * Définit le style de la page.
+   */
+  setPageStyle() {}
+
+  /**
+   * Configure les abonnements aux observables pertinents pour gérer la logique de rafraîchissement.
    */
   private setupSubscriptions(): void {
     const observables = [
-      this.createStoreObservable($pages),
       this.createStoreObservable($components),
-      this.createStoreObservable($context),
-      this.createStoreObservable($applicationComponents(this.uuid)),
-      this.createStoreObservable($environment),
-      this.createEventObservable("component:refresh"),
     ];
 
-    merge(...observables)
-      .pipe(debounceTime(30))
+    const mergedSubscription = merge(...observables)
+      .pipe(debounceTime(10))
       .subscribe(() => this.refreshComponent());
+
+    this.subscription.add(mergedSubscription);
   }
 
   /**
-   * Create an observable for a given store.
-   * @param store - The store to observe.
+   * Crée un observable pour un store donné.
+   * @param store - Le store à observer.
    */
   private createStoreObservable(store: any): Observable<void> {
     return new Observable((subscriber) => {
@@ -99,31 +144,34 @@ export class MicroApp extends LitElement {
   }
 
   /**
-   * Create an observable for a specific event.
-   * @param eventName - The name of the event to observe.
+   * Crée un observable pour un événement spécifique.
+   * @param eventName - Le nom de l'événement à observer.
    */
   private createEventObservable(eventName: string): Observable<void> {
     return new Observable((subscriber) => {
-      eventDispatcher.on(eventName, () => subscriber.next());
+      const handler = () => subscriber.next();
+      eventDispatcher.on(eventName, handler);
+      return () => eventDispatcher.off(eventName, handler);
     });
   }
 
   /**
-   * Check if the app is in preview mode.
+   * Vérifie si l'application est en mode prévisualisation.
    */
   private isPreviewMode(): boolean {
     return this.mode === ViewMode.Preview;
   }
 
   override render() {
-    if (!this.uuid || !this.components.length) return nothing;
-
-    const componentsToRender = this.componentToRenderUUID
-      ? this.components.filter((component) => component.uuid === this.componentToRenderUUID)
-      : this.components;
+    if (!this.uuid || !this.componentsToRender.length) return nothing;
 
     return html`
-      ${renderComponent(componentsToRender, null, this.isPreviewMode())}
+      <div style=${styleMap({
+        "background-color": this.page?.style?.["background-color"] || "",
+        "height": "100%",
+      })}>
+        ${renderComponent(this.componentsToRender, null, this.isPreviewMode())}
+      </div>
     `;
   }
 }
