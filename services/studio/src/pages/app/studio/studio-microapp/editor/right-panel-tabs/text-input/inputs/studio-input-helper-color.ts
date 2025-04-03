@@ -54,17 +54,12 @@ export default [
     event: {
       valueChange: /* js */ `
        
-       try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "--hybrid-input-helper-text-color", EventData.value);
-            
-            }
-        }catch(error){
-            console.log(error);
-        }
+       
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                updateStyle(selectedComponent, "--hybrid-input-helper-text-color", EventData.value);
+        
         
   `
     },
@@ -77,38 +72,30 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.style)
-                        return currentComponent.style['--hybrid-input-helper-text-color'];
-                    }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.style)
+                        return selectedComponent.style['--hybrid-input-helper-text-color'];
 
-                }catch(e){
-                    console.log(e);
-                }
+                
             `
       },
       state: {
         type: "handler",
         value:/* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     let state='enabled';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-input-helper-text-color']){
+                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-helper-text-color']){
                         state='disabled'
                     }
                     return state;
-                }
 
-            }catch(e){
-                console.log(e);
-            }
+            
             `
       }
     }
@@ -143,16 +130,12 @@ export default [
         value: /* js */`
             const parameter ='helperColor';
             let helperColorHandler=''
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                helperColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-input-helper-text-color'] || ''  
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                helperColorHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-helper-text-color'] || ''  
+            
             return [parameter,helperColorHandler];
         `
       }
@@ -160,16 +143,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-        try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'--hybrid-input-helper-text-color',EventData.value)
-            }
-        }catch(error){
-            console.log(error);
-        }
+        
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                updateStyleHandlers(selectedComponent,'--hybrid-input-helper-text-color',EventData.value)
+        
   `
     }
   }

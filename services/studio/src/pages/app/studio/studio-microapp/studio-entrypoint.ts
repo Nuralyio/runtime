@@ -121,12 +121,10 @@ export default [
     },
     event: {
       valueChange: `
-            try{
+            
             SetContextVar("text_label_value", EventData.value);
             updateStyle(app1.text_label, "color", EventData.value);
-            }catch(e){
-                console.log(e);
-            }
+            
       `
     },
     ...COMMON_ATTRIBUTES

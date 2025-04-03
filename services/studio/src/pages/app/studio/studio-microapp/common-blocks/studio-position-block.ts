@@ -72,13 +72,11 @@ export default [
     },
     event: {
       changed: /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           const positionValue = EventData.value;
           updateStyle(selectedComponent, 'position', positionValue);
-        } catch (error) {
-          console.log(error);
-        }
+       
       `
     }
   },
@@ -100,12 +98,10 @@ export default [
           const parameter = 'position';
           let positionHandler = '';
           
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             positionHandler = selectedComponent?.styleHandlers?.['position'] || '';
-          } catch (error) {
-            console.log(error);
-          }
+          
 
           return [parameter, positionHandler];
         `
@@ -113,12 +109,10 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           updateStyleHandlers(selectedComponent, 'position', EventData.value);
-        } catch (error) {
-          console.log(error);
-        }
+       
       `
     }
   }

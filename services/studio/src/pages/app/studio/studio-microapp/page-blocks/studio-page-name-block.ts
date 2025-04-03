@@ -66,7 +66,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            try{
+            
             const currentPageId =  GetVar("currentPage");
             if(currentPageId) {
                 const currentEditingApplication = GetVar("currentEditingApplication");
@@ -75,9 +75,7 @@ export default [
                 return currentPage?.name || '';
             }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       placeholder: {

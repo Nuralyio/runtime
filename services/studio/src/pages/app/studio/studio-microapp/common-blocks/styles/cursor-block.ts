@@ -69,13 +69,11 @@ export default [
     },
     event: {
       changed: /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           const positionValue = EventData.value;
           updateStyle(selectedComponent, 'cursor', positionValue);
-        } catch (error) {
-          console.log(error);
-        }
+       
       `
     }
   },
@@ -97,12 +95,10 @@ export default [
           const parameter = 'position';
           let positionHandler = '';
           
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             positionHandler = selectedComponent?.styleHandlers?.['cursor'] || '';
-          } catch (error) {
-            console.log(error);
-          }
+          
 
           return [parameter, positionHandler];
         `
@@ -110,12 +106,10 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        try {
+        
           const selectedComponent = Utils.first(Vars.selectedComponents);
           updateStyleHandlers(selectedComponent, 'cursor', EventData.value);
-        } catch (error) {
-          console.log(error);
-        }
+       
       `
     }
   }

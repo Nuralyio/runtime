@@ -385,6 +385,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
     }
+    
   }
 
   function GetComponent(componentUuid: string, application_id: string): any {

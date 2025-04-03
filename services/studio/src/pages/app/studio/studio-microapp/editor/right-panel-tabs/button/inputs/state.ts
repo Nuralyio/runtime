@@ -47,7 +47,7 @@ export const StudioButtonStateInput = [
       value: {
         type: "handler",
         value: /* js */ ` 
-          try {
+          
             const selectedComponent = Utils.first(Vars.selectedComponents);
             if (!selectedComponent) return [[], '', 'button'];
             const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'state')?.value : null;
@@ -63,10 +63,7 @@ export const StudioButtonStateInput = [
               currentState,
               'button'
             ];
-          } catch(error) {
-            console.error(error);
-            return [[], '', 'button'];
-          }`
+          `
       }
     },
     style: { ...RadioButtonWithTwoOptionsTheme },

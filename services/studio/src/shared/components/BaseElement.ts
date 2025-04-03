@@ -556,7 +556,7 @@ export class BaseElementBlock extends LitElement {
                 this.isDragInitiator = false;
               }}
               .component=${this.component }
-              .selectedComponent=${this.selectedComponent}
+              .selectedComponent=${{...this.selectedComponent}}
               .hoveredComponent=${{...this.hoveredComponent} }
             ></component-title>
             `

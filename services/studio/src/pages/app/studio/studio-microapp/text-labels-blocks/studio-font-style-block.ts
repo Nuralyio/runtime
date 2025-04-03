@@ -51,8 +51,8 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
             
                 if (!selectedComponent) {
                     // Return default values if no component is selected
@@ -67,26 +67,11 @@ export default [
                     ];
                 }
             
-                const currentEditingApplication = GetVar("currentEditingApplication");
-                const currentComponent = GetComponent(selectedComponent, currentEditingApplication?.uuid);
             
-                if (!currentComponent) {
-                    // Return default values if the current component is not found
-                    return [
-                        [
-                            { value: 'normal', label: "Normal", disabled: false },
-                            { value: 'italic', label: "Italic", disabled: false },
-                            { value: 'oblique', label: "Oblique", disabled: false }
-                        ],
-                        'normal',
-                        'button'
-                    ];
-                }
-            
-                const hasFontStyleHandler = currentComponent.styleHandlers?.['font-style'];
+                const hasFontStyleHandler = selectedComponent.styleHandlers?.['font-style'];
                 const defaultFontStyle = hasFontStyleHandler
                     ? ''
-                    : currentComponent.style?.['font-style'] || 'normal';
+                    : selectedComponent.style?.['font-style'] || 'normal';
             
                 const options = [
                     { value: 'normal', label: "Normal", disabled: !!hasFontStyleHandler },
@@ -102,17 +87,13 @@ export default [
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const fontStyleValue = EventData.value?EventData.value:'normal'
-                    updateStyle(currentComponent, "font-style", fontStyleValue);
-                }
-            }catch(error){
-                console.log(error);
-            }     
+                    updateStyle(selectedComponent, "font-style", fontStyleValue);
+                 
       `
     }
   },
@@ -133,16 +114,12 @@ export default [
         value: /* js */`
                 const parameter ='style';
                 let fontStyleHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    fontStyleHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-style'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    fontStyleHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['font-style'] || ''  
+                
                 return [parameter,fontStyleHandler];
             `
       }
@@ -150,16 +127,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'font-style',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'font-style',EventData.value)
+            
       `
     }
   }

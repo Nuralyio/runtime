@@ -62,36 +62,29 @@ export default [
     },
     event: {
       valueChange: /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                            
+                            
                             const unity = EventData.unity || "px"
-                            updateStyle(currentComponent, "--hybrid-select-label-font-size", EventData.value+unity);
-                        
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }                 
+                            updateStyle(selectedComponent, "--hybrid-select-label-font-size", EventData.value+unity);
+                                     
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
                 let fontSize;
                 if(currentPlatform.platform !== "desktop"){
                     fontSize = currentComponent?.breakpoints?.[currentPlatform.width]['--hybrid-select-label-font-size']?.split('')
                 }else{
-                    fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-label-font-size']?.split('')
+                    fontSize =selectedComponent.style && selectedComponent.style['--hybrid-select-label-font-size']?.split('')
                 }
-                console.log("fontSize",fontSize)
                 if(fontSize) 
                     {
                         let unity='';
@@ -108,31 +101,24 @@ export default [
                     }
                     else 
                        return [0,'px']
-            }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       state: {
         type: "handler",
         value:/* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-label-font-size']){
+                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-select-label-font-size']){
                          state='disabled'
                         }
                         return state
-                    }
         
-                }catch(e){
-                    console.log(e);
-                } 
+                 
                 
                 `
       }
@@ -166,16 +152,12 @@ export default [
         value: /* js */`
                 const parameter ='labelSize';
                 let labelSizeHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    labelSizeHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-label-font-size'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    labelSizeHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-select-label-font-size'] || ''  
+                
                 return [parameter,labelSizeHandler];
             `
       }
@@ -183,16 +165,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'--hybrid-select-label-font-size',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'--hybrid-select-label-font-size',EventData.value)
+            
       `
     }
   }

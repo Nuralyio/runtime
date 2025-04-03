@@ -58,57 +58,46 @@ export default [
     },
     event: {
       valueChange:/* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                        
                         const newFallBack = EventData.value;
-                        updateInput(currentComponent,'fallback','string',newFallBack);
-                    }
-                }catch(error){
-                    console.log(error);
-                } 
+                        updateInput(selectedComponent,'fallback','string',newFallBack);
+                 
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.fallback?.type=="string"){
-                const currentFallback=  currentComponent.input?.fallback?.value??'';
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                                    
+                if(selectedComponent.input?.fallback?.type=="string"){
+                const currentFallback=  selectedComponent.input?.fallback?.value??'';
                 currentFallback;
                 }
-            }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                                    
                 let state = "unabled";
-                if(currentComponent.input?.fallback?.type =="handler"&&currentComponent.input?.fallback?.value){
+                if(selectedComponent.input?.fallback?.type =="handler"&&selectedComponent.input?.fallback?.value){
                    state = "disabled"
                }
                return state;
-            }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       placeholder: {
@@ -146,18 +135,15 @@ export default [
         value: /* js */`
                 const parameter ='fallback';
                 let fallbackHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.fallback?.type =='handler' && currentComponent?.input?.fallback?.value){
-                           fallbackHandler = currentComponent?.input?.fallback?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                        
+                        if(selectedComponent.input?.fallback?.type =='handler' && selectedComponent.input?.fallback?.value){
+                           fallbackHandler = selectedComponent.input?.fallback?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,fallbackHandler];
             `
       }
@@ -165,17 +151,14 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.fallback?.value != EventData.value )
-                    updateInput(currentComponent,'fallback','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                    
+                    if(EventData.value != selectedComponent.input?.fallback?.value != EventData.value )
+                    updateInput(selectedComponent,'fallback','handler',EventData.value);
+            
       `
     }
   }

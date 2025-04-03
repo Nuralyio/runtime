@@ -63,50 +63,44 @@ export default [
     },
     event: {
       valueChange:/* js */ `
-                try{
+                
           const selectedComponent = Utils.first(Vars.selectedComponents);
 
                         const newAltText = EventData.value;
                         updateInput(selectedComponent,'alt','string',newAltText);
-                }catch(error){
-                    console.log(error);
-                } 
+                 
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
+            
               const selectedComponent = Utils.first(Vars.selectedComponents);
                 if(selectedComponent.input?.alt?.type=="value"){
                 const currentAlt=selectedComponent.input?.alt?.value??'';
                 return currentAlt;
                 }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            if(true) {
+                
+                                    
                 let state = "unabled";
-                if(currentComponent.input?.alt?.type =="handler"&&currentComponent.input?.alt?.value){
+                if(selectedComponent.input?.alt?.type =="handler"&&selectedComponent.input?.alt?.value){
                    state = "disabled"
                }
                return state;
             }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       placeholder: {
@@ -145,18 +139,14 @@ export default [
         value: /* js */`
                 const parameter ='alt';
                 let altHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.alt?.type =='handler' && currentComponent?.input?.alt?.value){
-                           altHandler = currentComponent?.input?.alt?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.input?.alt?.type =='handler' && selectedComponent.input?.alt?.value){
+                           altHandler = selectedComponent.input?.alt?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,altHandler];
             `
       }
@@ -164,17 +154,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.alt?.value != EventData.value )
-                    updateInput(currentComponent,'alt','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(EventData.value != selectedComponent.input?.alt?.value != EventData.value )
+                    updateInput(selectedComponent,'alt','handler',EventData.value);
+            
       `
     }
   }

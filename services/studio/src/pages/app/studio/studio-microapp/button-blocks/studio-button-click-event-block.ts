@@ -49,34 +49,22 @@ export default [
         value: /* js */`
                 const event ='onClick';
                 let currentEventValue =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent.event?.onClick){
-                            currentEventValue= currentComponent.event.onClick;
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.event?.onClick){
+                            currentEventValue= selectedComponent.event.onClick;
                         } 
-                    }
-                }catch(error){
-                    console.log(error);
-                }
                 return [event,currentEventValue];
             `
       }
     },
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateEvent(currentComponent, "onClick",EventData.value )
-                }
-            }catch(error){
-                console.log(error);
-            }
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateEvent(selectedComponent, "onClick",EventData.value )
       `
     }
   }

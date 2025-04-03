@@ -53,30 +53,26 @@ export default [
       })
       `,
       borderRadiusChanged:  /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, EventData.attributeName,EventData.value);
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }      
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                            
+                            
+                            updateStyle(selectedComponent, EventData.attributeName,EventData.value);
+                          
   `
     },
     input: {
       border: {
         type: "handler",
         value: /* js */`
-        try {
-          const selectedComponents = GetVar("selectedComponents") || [];
-          if (selectedComponents.length) {
-            const selectedComponent = selectedComponents[0];
+        
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (true) {
+            
             const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
             const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
 
-            if (currentComponent?.style) {
+            if (selectedComponent.style) {
               const borderProperties = [
                 "border",
                 "border-top",
@@ -111,22 +107,20 @@ export default [
                 return {[style]: styles[style]}})
             }
           }  
-        }catch(e){
-          console.log(e);
-        }
+       
       `
       },
       value: {
         type: "handler",
         value: /* js */`
-        try {
-          const selectedComponents = GetVar("selectedComponents") || [];
-          if (selectedComponents.length) {
-              const selectedComponent = selectedComponents[0];
+        
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (true) {
+              
               const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
               const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
       
-              if (currentComponent?.style) {
+              if (selectedComponent.style) {
                   const propertiesToExtract = [
                       "border-radius",
                       "margin-left",
@@ -149,7 +143,7 @@ export default [
                   const extractedStyles = {};
       
                   propertiesToExtract.forEach((prop) => {
-                      const propValue = currentComponent.style[prop];
+                      const propValue = selectedComponent.style[prop];
                       if (propValue) {
                           let value = '';
                           let unit = '';
@@ -197,31 +191,25 @@ export default [
                   };
               }
           }
-      } catch (e) {
-          console.log(e);
-      }
+      
             `
       },
       state: {
         type: "handler",
         value:/* js */`
             
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     let state='enabled' 
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['border-radius'])
+                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['border-radius'])
                      {  state='disabled'
                         
                      }
                      return state
-                }
     
-            }catch(e){
-                console.log(e);
-            }
+            
             
             `
 

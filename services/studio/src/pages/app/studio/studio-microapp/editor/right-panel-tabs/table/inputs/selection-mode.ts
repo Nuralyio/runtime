@@ -57,16 +57,15 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+
                 let currentSelectionMode =""
                 let isDisabled=false;
-                if(currentComponent.input?.selectionMode?.type =='handler'&&currentComponent.input?.selectionMode?.value){
+                if(selectedComponent.input?.selectionMode?.type =='handler'&&selectedComponent.input?.selectionMode?.value){
                        isDisabled =true
                 }
                 else 
-                currentSelectionMode = currentComponent.input?.selectionMode?.value || 'none';
+                currentSelectionMode = selectedComponent.input?.selectionMode?.value || 'none';
                 const options = 
                     [
                     {
@@ -96,17 +95,11 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+              const selectedComponent = Utils.first(Vars.selectedComponents);
                     const selectionModeValue = EventData.value;
-                    updateInput(currentComponent,'selectionMode','string',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateInput(selectedComponent,'selectionMode','string',EventData.value)
+              
       `
     }
   },
@@ -136,18 +129,10 @@ export default [
         value: /* js */`
                 const parameter ='selectionMode';
                 let selectionModeHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.selectionMode?.type =='handler' && currentComponent?.input?.selectionMode?.value){
-                            selectionModeHandler = currentComponent?.input?.selectionMode?.value
+                  const selectedComponent = Utils.first(Vars.selectedComponents);
+                        if(selectedComponent?.input?.selectionMode?.type =='handler' && selectedComponent?.input?.selectionMode?.value){
+                            selectionModeHandler = selectedComponent?.input?.selectionMode?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
                return  [parameter,selectionModeHandler];
             `
       }
@@ -155,17 +140,9 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.selectionMode?.value)
-                    updateInput(currentComponent,'selectionMode','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+                    if(EventData.value != selectedComponent?.input?.selectionMode?.value)
+                    updateInput(selectedComponent,'selectionMode','handler',EventData.value);
       `
     }
   }

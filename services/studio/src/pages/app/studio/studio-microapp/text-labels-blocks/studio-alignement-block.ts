@@ -48,8 +48,8 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-            const selectedComponents = GetVar("selectedComponents") || [];
-            const selectedComponent = selectedComponents[0];
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            
         
             if (!selectedComponent) {
                 // Return default values if no component is selected
@@ -64,10 +64,10 @@ export default [
                 ];
             }
         
-            const currentEditingApplication = GetVar("currentEditingApplication");
-            const currentComponent = GetComponent(selectedComponent, currentEditingApplication?.uuid);
+            
+            
         
-            if (!currentComponent) {
+            if (!selectedComponent) {
                 // Return default values if the current component is not found
                 return [
                     [
@@ -80,10 +80,10 @@ export default [
                 ];
             }
         
-            const hasJustifyContentHandler = currentComponent.styleHandlers?.['justify-content'];
+            const hasJustifyContentHandler = selectedComponent.styleHandlers?.['justify-content'];
             const defaultTextAlign = hasJustifyContentHandler
                 ? ''
-                : currentComponent.style?.['justify-content'] || 'start';
+                : selectedComponent.style?.['justify-content'] || 'start';
         
             const options = [
                 { value: 'start', icon: "align-left", disabled: !!hasJustifyContentHandler },
@@ -99,21 +99,18 @@ export default [
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent.style['display'];
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     const textAlignValue = EventData.value;
                     if(currentComponentDisplay!='flex')
-                    updateStyle(currentComponent, "display", 'flex');
+                    updateStyle(selectedComponent, "display", 'flex');
                 
-                    updateStyle(currentComponent, "justify-content", textAlignValue);
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateStyle(selectedComponent, "justify-content", textAlignValue);
+              
       `
     }
   },
@@ -134,16 +131,12 @@ export default [
         value: /* js */`
                 const parameter ='horizontalAlignement';
                 let horizontalAlignementHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    horizontalAlignementHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['justify-content'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    horizontalAlignementHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['justify-content'] || ''  
+                
                 return [parameter,horizontalAlignementHandler];
             `
       }
@@ -151,21 +144,17 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent?.style['display'];
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     
                     if(currentComponentDisplay!='flex')
-                     updateStyle(currentComponent, "display", 'flex');
+                     updateStyle(selectedComponent, "display", 'flex');
                     
-                    updateStyleHandlers(currentComponent,'justify-content',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    updateStyleHandlers(selectedComponent,'justify-content',EventData.value)
+            
       `
     }
   }

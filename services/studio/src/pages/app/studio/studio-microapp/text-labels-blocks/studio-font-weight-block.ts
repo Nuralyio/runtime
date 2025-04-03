@@ -69,7 +69,7 @@ export default [
                       'button'
                   ];
           
-              const currentEditingApplication = GetVar("currentEditingApplication");
+              
           
               if (!selectedComponents) {
                   // Return default values if the current component is not found
@@ -140,16 +140,14 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'font-weight',EventData.value)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                if(true) {
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'font-weight',EventData.value)
                 }
-            }catch(error){
-                console.log(error);
-            }
+            
       `
     }
   }
