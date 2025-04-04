@@ -110,6 +110,9 @@ export class PageContent extends LitElement {
 
     eventDispatcher.on('Vars:currentPage', (data)=>{
      this.refreshComponent();
+    this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
+    this.style.setProperty('--hybrid-page-background-color-dark', this.currentPage?.style?.["--hybrid-page-background-color-dark"]);
+
      
     })
 
@@ -248,6 +251,16 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
+    <style>
+      .page-container {
+        --page-background-color : var(--hybrid-page-background-color);
+      }
+      @media (prefers-color-scheme: dark) {
+        .page-container {
+          --page-background-color : var(--hybrid-page-background-color-dark);
+        }
+      }
+    </style>
     <micro-app
       style=${styleMap({
         "z-index": 9999999,
@@ -267,7 +280,7 @@ export class PageContent extends LitElement {
         style=${styleMap({
           "width": this.currentPlatform?.width || "auto",
           "height": this.currentPlatform?.height || "100%",
-          background :  this.currentPage?.style?.["background-color"] || "",
+        
         })}
         @mousedown=${this.handlePageClick}
         @dragend=${this.preventDefault}

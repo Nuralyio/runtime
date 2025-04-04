@@ -2,6 +2,7 @@ import { $currentApplication } from "$store/apps";
 import { type PageElement } from "./interfaces/interface";
 import { addPageToApplicationAction } from "$store/actions/application/addPageToApplicationAction.ts";
 import { updatePageAction } from "$store/actions/page/updatePageAction.ts";
+import { eventDispatcher } from "@utils/change-detection";
 
 export const addPageHandler = (page: PageElement, resolve?, reject ?) => {
 
@@ -38,6 +39,7 @@ export const updatePageHandler = (page: PageElement, callback?: (page: any) => v
   }).then(res => res.json())
     .then((res) => {
       updatePageAction(res, $currentApplication.get().uuid);
+      eventDispatcher.emit("Vars:currentPage")
       // todo: call the callback when updated
     });
 };

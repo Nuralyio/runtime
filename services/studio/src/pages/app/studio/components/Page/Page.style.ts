@@ -16,7 +16,7 @@ const pageStyle = css`
   .page-container {
     height: calc(100vh - 120px);
     position: relative;
-    background:white;
+    background: var(--page-background-color, white);
     --hybrid-tabs-content-padding: 0;
     --hybrid-tabs-border-radius: 8px;
     --hybrid-tabs-container-box-shadow : 0px 0px 5px 0px #dbdbdbbf ;
@@ -53,7 +53,7 @@ const pageStyle = css`
   @media (prefers-color-scheme: dark) {
     .page-container {
       --hybrid-tabs-content-background-color: #313131;
-      background: transparent;
+      background: var(--page-background-color, transparent);
       color: #f8fafc;
     }
   }

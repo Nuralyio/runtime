@@ -23,7 +23,6 @@ const processedHeaders = processHeaders(Astro.request.headers);
   ]);
   pageData = pageRequest.data;
 
-
   applications = applicationsRequest.data;
   application = applications.find((application) => application.uuid === homeAppUUID);
 
@@ -39,22 +38,27 @@ const processedHeaders = processHeaders(Astro.request.headers);
   uuid={homeAppUUID}
   page_uuid={homeAppPageUUID}
  ></MicroApp>
-</Layout>
-<style>
-  html {
+ <style is:inline is:global>
+    html {
+    background-color : var(--hybrid-page-background-color, #ffffff);
   }
   @media (prefers-color-scheme: dark) {
       html {
         --hybrid-tabs-content-background-color: #313131;
-      background: #313131;
+          background: #313131;
+           color:#f8fafc;
+        background-color : var(--hybrid-page-background-color-dark, #313131);
 
-        color:#f8fafc;
       }
     }
 </style>
+</Layout>
+
 
 <script define:vars={{ pageData, componentData , application}}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
+  document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
+  document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
 </script>

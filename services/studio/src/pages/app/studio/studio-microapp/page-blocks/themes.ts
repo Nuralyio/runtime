@@ -1,7 +1,8 @@
 import { ComponentType } from "$store/component/interface";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes";
 
-import inputs from  "./pages-bg-color";
+import inputs from "./pages-bg-color";
+import inputsDark from "./pages-bg-color-dark";
 
 
 export const PageThemeStudio = [
@@ -15,7 +16,8 @@ export const PageThemeStudio = [
             display: "flex",
             "flex-direction": "column"
         },
-        childrenIds: ["page_bg_color_theme_block"]
+        childrenIds: ["page_bg_color_theme_block", "page_bg-dark_color_theme_block"]
     },
-    ...inputs
+    ...inputs,
+    ...inputsDark
 ]

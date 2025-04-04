@@ -16,18 +16,14 @@ import "./AI-Assistant.ts";
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
     :host {
-      height: calc(100vh - 110px);
+      height: calc(100vh - 90px);
       display: block;
-        /*width: calc(100vw - 650px);*/
+        width: calc(100vw - 600px);
     }
     .page-container {
       width: 100%;
       overflow: auto;
     --hybrid-tabs-content-padding: 10px;
-
-      
-      
-      
     }
     .zoom-area {
       overflow: visible;
