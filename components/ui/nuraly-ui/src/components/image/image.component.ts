@@ -1,8 +1,9 @@
-import { LitElement,PropertyValues,html } from "lit";
+import { LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-
+import styles from './image.style.js';
 @customElement('hy-image')
 export class HyImage extends LitElement{
+  static override styles = styles;
 
     @property()
     src!:string

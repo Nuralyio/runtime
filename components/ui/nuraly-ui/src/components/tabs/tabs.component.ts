@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, PropertyValueMap, html, nothing} from 'lit';
-import {property} from 'lit/decorators.js';
-import {styles} from './tabs.style.js';
-import {classMap} from 'lit/directives/class-map.js';
-import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation, TabsAlign} from './tabs.constant.js';
-//todo: make this use peer dependency
-import "../label/label.component.js";
+import { LitElement, PropertyValueMap, html, nothing } from 'lit';
+import { property } from 'lit/decorators.js';
+import { styles } from './tabs.style.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation, TabsAlign } from './tabs.constant.js';
 /**
  * `hy-tabs` is a LitElement that provides a customizable tabs.
  * @customElement 'hy-tabs'
@@ -77,7 +75,7 @@ export class TabsComponent extends LitElement {
 
   private observeChildrenChanges() {
     const mutationObserver = new MutationObserver(() => {
-      this.requestUpdate();
+     // this.requestUpdate();
     });
 
     mutationObserver.observe(this, {childList: true});

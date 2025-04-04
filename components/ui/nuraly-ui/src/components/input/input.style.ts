@@ -1,5 +1,5 @@
-import {css} from 'lit';
-import {styleVariables} from './variables.style.js';
+import { css } from 'lit';
+import { styleVariables } from './variables.style.js';
 
 const inputStyle = css`
   :host {
@@ -133,6 +133,10 @@ const inputStyle = css`
     border-left: var(--hybrid-input-border-left,var(--hybrid-input-local-border-left));
     border-right: var(--hybrid-input-border-right,var(--hybrid-input-local-border-right,));
     border-radius: var(--hybrid-input-border-radius,var(--hybrid-input-local-border-radius)); 
+    border-top-left-radius:var(--hybrid-input-border-top-left-radius,var(--hybrid-input-local-border-top-left-radius)) ;
+    border-top-right-radius: var(--hybrid-input-border-top-right-radius,var(--hybrid-input-local-border-top-right-radius));
+    border-bottom-left-radius: var(--hybrid-input-border-bottom-left-radius,var(--hybrid-input-local-border-bottom-left-radius));
+    border-bottom-right-radius: var(--hybrid-input-border-bottom-right-radius,var(--hybrid-input-local-border-bottom-right-radius));
     display: flex;
     position: relative;
   }
