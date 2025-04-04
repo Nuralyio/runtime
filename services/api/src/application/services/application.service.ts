@@ -42,6 +42,7 @@ export class ApplicationService {
   }
 
   public async delete(uuid: string): Promise<Application> {
+    await this.pageService.deleteApplicationPages(uuid);
     return await this.ApplicationRepository.delete(uuid);
   }
 

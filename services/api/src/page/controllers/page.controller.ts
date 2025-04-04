@@ -69,9 +69,9 @@ export class PageController extends Controller {
 
     @Delete("{id}")
     public async delete(
-        @Path() id: number
+        @Path() id: string
     ): Promise<Page> {
-        return await this.pageService.delete(id);
+        return (await this.pageService.delete([id]))[0] ?? null;
     }
 
 

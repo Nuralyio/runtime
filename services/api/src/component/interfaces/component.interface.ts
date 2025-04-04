@@ -7,6 +7,6 @@ export interface IComponentRepository {
     findComponentByApplication(application_id: string): Promise<Component[]>;
     findComponentByUuid(uuid: string): Promise<Component | null>;
     update(uuid: string, Component: Component): Promise<Component>;
-    delete(uuid: string): Promise<Component>;
+    delete(uuid: string[]): Promise<Component[]>;
 
 }

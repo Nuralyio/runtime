@@ -1,38 +1,39 @@
-import { injectable } from 'tsyringe';
+import { injectable, singleton } from 'tsyringe';
 import { IComponentRepository } from '../interfaces/component.interface';
 import { Component } from '../models/component';
+import { ComponentRepository } from '../repositories/component.repository';
 
-@injectable()
+@singleton()
 export class ComponentService {
-  private ComponentRepository: IComponentRepository;
+  private componentRepository: ComponentRepository;
 
-  constructor(commponentRepository: IComponentRepository) {
-    this.ComponentRepository = commponentRepository;
+  constructor(componentRepository: ComponentRepository) {  
+    this.componentRepository = componentRepository;
   }
 
   public async create(component: Component, user_id: string): Promise<Component> {
     const ucomponent: Component = new Component(component, user_id, component.uuid, component.application_id);
-    return await this.ComponentRepository.create(ucomponent)
+    return await this.componentRepository.create(ucomponent)
   }
 
   public async findAll(): Promise<Component[]> {
-    return await this.ComponentRepository.findAll();
+    return await this.componentRepository.findAll();
   }
 
   public async findComponentByApplication(application_id: string): Promise<Component[]> {
-    return await this.ComponentRepository.findComponentByApplication(application_id);
+    return await this.componentRepository.findComponentByApplication(application_id);
   }
 
   public async findComponentByUuid(uuid: string): Promise<Component | null> {
-    return await this.ComponentRepository.findComponentByUuid(uuid);
+    return await this.componentRepository.findComponentByUuid(uuid);
   }
 
   public async update(component: Component, uuid: string): Promise<Component> {
-    return await this.ComponentRepository.update(uuid, component);
+    return await this.componentRepository.update(uuid, component);
   }
 
-  public async delete(uuid: string): Promise<Component> {
-    return await this.ComponentRepository.delete(uuid);
+  public async delete(uuids: string[]): Promise<Component[]> {
+    return await this.componentRepository.delete(uuids);
   }
 
 }

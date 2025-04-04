@@ -1,22 +1,26 @@
 import { ComponentService } from "../services/component.service";
 import { Body, Controller, Delete, Get, Request, Path, Post, Put, Query, Route, Security, Tags, Middlewares } from "tsoa";
 import { Component } from "../models/component";
-import { ComponentRepositoryPrismaPgSQL } from "../repositories/component.repository";
+import { ComponentRepository } from "../repositories/component.repository";
 import authMiddleware from "../../middlewares/user.middleware";
 import { CreateComponentRequest } from "../interfaces/CreateComponentRequest";
 import { removeNullProperties } from "../../shared/utils/remove-null-properties";
 
 import {NotFoundException} from "../../exceptions/NotFoundException";
+import { IComponentRepository } from "../interfaces/component.interface";
+import { injectable } from "tsyringe";
 
 @Route('/api/components')
 @Tags('Components')
+@injectable()
 export class ComponentController extends Controller {
   private readonly componentService: ComponentService;
 
-  constructor() {
+  constructor(
+    componentService : ComponentService
+  ) {
     super();
-    const componentRepository = new ComponentRepositoryPrismaPgSQL();
-    this.componentService = new ComponentService(componentRepository);
+    this.componentService = componentService;
   }
 
   @Post()
@@ -66,8 +70,15 @@ export class ComponentController extends Controller {
   public async delete(
     @Path() uuid: string
   ): Promise<Component> {
-    return await this.componentService.delete(uuid);
+    return (await this.componentService.delete([uuid]))[0] ?? null;
   }
 
+
+  @Delete()
+  public async deleteMany(
+    @Body() requestBody: { uuids: string [] }
+  ): Promise<Component[]> {
+    return await this.componentService.delete(requestBody.uuids);
+  }
 
 }

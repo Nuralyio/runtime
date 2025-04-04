@@ -6,6 +6,6 @@ export interface IPageRepository {
     findPageByUUID(uuid: string): Promise<Page>;
     findPagesByApplicationUUID(uuid: string): Promise<Page[]>;
     update( Page: Page): Promise<Page>;
-    delete(id: number): Promise<Page>;
+    delete(id: string): Promise<Page>;
 
 }

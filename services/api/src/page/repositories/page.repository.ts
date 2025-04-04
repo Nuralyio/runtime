@@ -1,10 +1,12 @@
 import prisma from '../../../prisma/prisma';
+import { NotFoundException } from '../../exceptions/NotFoundException';
 import { IPageRepository } from '../interfaces/page.interface';
 import { Page } from '../models/page';
-import { singleton } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 
 @singleton()
 export class PageRepository implements IPageRepository {
+
     public async create(page: Page): Promise<Page> {
         return await prisma.pages.create({
             data: {
@@ -18,9 +20,12 @@ export class PageRepository implements IPageRepository {
         })
     }
     public async findPageByUUID(uuid: string): Promise<Page> {
-        const page = await prisma.pages.findFirstOrThrow(
+        const page = await prisma.pages.findFirst(
             { where: { uuid } }
         );
+        if (!page) {
+            throw new NotFoundException(`Page with uuid ${uuid} not found`);
+        }
         return new Page(
             page.name,
             page.url,
@@ -28,7 +33,8 @@ export class PageRepository implements IPageRepository {
             page.user_id,
             page.uuid,
             page.need_authentification,
-            page.component_ids
+            page.component_ids,
+            page.style
         ) 
     }
 
@@ -43,7 +49,8 @@ export class PageRepository implements IPageRepository {
             page.user_id,
             page.uuid,
             page.need_authentification,
-            page.component_ids 
+            page.component_ids,
+            page.style
         ));
     }
 
@@ -65,7 +72,8 @@ export class PageRepository implements IPageRepository {
         ));
     }
     public async update( page: Page): Promise<Page> {
-        const { name, url, application_id, user_id, uuid, need_authentification, component_ids } = page;
+        console.log("page", page);
+        const { name, url, application_id, user_id, uuid, need_authentification, component_ids, style ={} } = page;
 
         const updatedPage = await prisma.pages.update({
             where: { uuid },
@@ -76,15 +84,18 @@ export class PageRepository implements IPageRepository {
                 user_id,
                 uuid,
                 need_authentification,
-                component_ids
+                component_ids,
+                style
             }
         });
         return updatedPage;
     }
-    public async delete(id: number): Promise<Page> {
+    public async delete(page_uuid: string): Promise<Page> {
+
         const deletePage = await prisma.pages.delete({
-            where: { id }
+            where: { uuid: page_uuid }
         });
+        // this
         const { name, url, application_id, user_id, uuid, need_authentification, component_ids } = deletePage;
         return new Page(
             name,
