@@ -35,7 +35,6 @@ try {
   // Handle component data
   componentData = componentResponse.data.map((component) => component.component);
   $components.set({ [app.uuid]: componentData });
-  console.log( $components.get())
   // Handle applications data
   applications = applicationsRequest.data;
   $applications.set(applications);
