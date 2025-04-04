@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const dropdownStyle = css`
   .dropdown-container {
@@ -29,7 +29,7 @@ const dropdownStyle = css`
     --hybrid-dropdown-disabled-text-color: rgba(0, 0, 0, 0.5);
     --hybrid-dropdown-only-text-padding-left: 18px;
     --hybrid-dropdown-icon-and-text-padding-left: 4px;
-    --hybrid-dropdown-menu-children-top: 10px;
+    --hybrid-dropdown-menu-children-top: 0px;
     --hybrid-dropdown-menu-children-offset: -2px;
     --hybrid-dropdown-menu-children-z-index: 2;
       --hybrid-dropdown-font-size-local: 13px;
