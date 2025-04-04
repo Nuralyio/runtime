@@ -161,7 +161,6 @@ export class MicroApp extends LitElement {
 
     return html`
       <div style=${styleMap({
-        "background-color": this.page?.style?.["background-color"] || "",
         "height": "100%",
       })}>
         ${renderComponent(this.componentsToRender, null, this.isPreviewMode())}

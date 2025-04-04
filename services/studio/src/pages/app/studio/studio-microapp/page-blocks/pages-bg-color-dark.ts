@@ -3,7 +3,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
   {
-    uuid: "page_bg_color_theme_block",
+    uuid: "page_bg-dark_color_theme_block",
     application_id: "1",
     name: "page name block",
     component_type: ComponentType.Container,
@@ -15,10 +15,10 @@ export default [
       "align-items": "center"
     },
 
-    childrenIds: ["page_bg-color_label", "page_color_input"]
+    childrenIds: ["page_bg-dark-color_label", "page_dark_color_input"]
   },
   {
-    uuid: "page_bg-color_label",
+    uuid: "page_bg-dark-color_label",
     name: "page name text label",
     component_type: ComponentType.TextLabel,
     application_id: "1",
@@ -26,7 +26,7 @@ export default [
     input: {
       value: {
         type: "string",
-        value: 'Background color'
+        value: 'Drak Background color'
       }
 
     },
@@ -36,7 +36,7 @@ export default [
   },
 
   {
-    uuid: "page_color_input",
+    uuid: "page_dark_color_input",
     application_id: "1",
     component_type: ComponentType.ColorPicker,
     ...COMMON_ATTRIBUTES,
@@ -52,9 +52,9 @@ export default [
         const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
         const newPage = {...currentPage,style:{
             ...currentPage.style || {},
-
-          "--hybrid-page-background-color": newPageName
+          "--hybrid-page-background-color-dark": newPageName
         }};
+        console.log(newPage)
         UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
             console.log("Page Updated");
         }).catch((e) => {
