@@ -7,8 +7,10 @@ export class Page {
     uuid: string;
     need_authentification: boolean;
     component_ids: string [];
+    style : any;
 
-    constructor(name: string, url: string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_ids: string []) {
+    constructor(name: string, url: string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_ids: string [],style : any= {}) {
+        this.style = style;
         this.name = name;
         this.url = url;
         this.application_id = application_id;
