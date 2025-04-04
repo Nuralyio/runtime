@@ -316,7 +316,6 @@ export default [{
                 const selectedComponent = Editor.components.find(
                   component => component.uuid == EventData.id
                 );
-                console.log("selectedComponent", selectedComponent )
                 Vars.selectedComponents = [selectedComponent];
             }
         `,

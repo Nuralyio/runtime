@@ -25,8 +25,6 @@ export default {
       Vars.selectedComponents
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 const currentPageId = GetVar("currentPage");
-                
-                console.log("selectedComponent", selectedComponent)
                 let parameters = [];
                 let handlers = [];
                 let themes = [];
