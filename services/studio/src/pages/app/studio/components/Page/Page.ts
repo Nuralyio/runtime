@@ -112,6 +112,11 @@ export class PageContent extends LitElement {
      this.refreshComponent();
      
     })
+
+    eventDispatcher.on('component:deleted', (data)=>{
+      this.refreshComponent();
+      
+     })
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
       });

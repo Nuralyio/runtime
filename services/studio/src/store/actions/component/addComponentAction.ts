@@ -15,9 +15,7 @@ export const addComponentAction = (
   currentApplicationId: string,
   updateParent = true
 ) => {
-  currentApplicationId = currentApplicationId ?? component
-  
-  const currentComponentId = ExecuteInstance.Vars.selectedComponents?.[0];
+  const currentComponentId = ExecuteInstance.Vars.selectedComponents?.[0].uuid;
   const componentsStore: ComponentStore = $components.get();
   const components: ComponentElement[] = componentsStore[currentApplicationId] || [];
 
