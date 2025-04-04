@@ -34,6 +34,9 @@ export class ImageBlock extends BaseElementBlock {
     return html`
       <hy-image
       ${ref(this.inputRef)}
+      @click=${(e: MouseEvent) => {
+        this.executeEvent("onClick", e);
+      }}
       style=${
         styleMap({
           ...this.getStyles(),

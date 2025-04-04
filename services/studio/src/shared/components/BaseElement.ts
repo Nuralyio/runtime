@@ -1,21 +1,20 @@
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
-import { ComponentType, type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
+import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../utils/change-detection.ts";
 import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
-import { $context, getVar, setVar } from "$store/context.ts";
+import { $context } from "$store/context.ts";
 import Editor from "core/Editor.ts";
 import { createRef, type Ref } from "lit/directives/ref.js";
-import { $applicationComponents, $hoveredComponent, $runtimeStylescomponentStyleByID, clearComponentRuntimeStyleAttributes } from "$store/component/store.ts";
+import { $hoveredComponent, $runtimeStylescomponentStyleByID } from "$store/component/store.ts";
 import { setHoveredComponentAction } from "$store/actions/component/setHoveredComponentAction.ts";
 import "../wrappers/GenerikWrapper/DragWrapper/DragWrapper.ts";
 import { Utils } from "core/Utils.ts";
-import deepEqual from "fast-deep-equal";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
-import { addlogDebug, resetComponentDebug } from "$store/actions/debug/store.ts";
+import { addlogDebug } from "$store/actions/debug/store.ts";
 import { $debug } from "$store/debug.ts";
 import { Subscription } from "rxjs";
 import EditorInstance from "core/Editor.ts";
@@ -105,17 +104,14 @@ export class BaseElementBlock extends LitElement {
   
   constructor() {
     super();
-    const newPlatform = getVar("global", "currentPlatform")?.value ?? {
+   
+    this.ExecuteInstance = ExecuteInstance;
+    const newPlatform = ExecuteInstance.Vars.currentPlatform ?? {
       platform: "desktop",
       isMobile: false,
     };
     this.currentPlatform = newPlatform;
-    this.ExecuteInstance = ExecuteInstance;
     
-    // $hoveredComponent.listen((hoveredComponent: ComponentElement) => {
-    //   this.hoveredComponent = hoveredComponent;
-    //     });
-
         const context =   $context.get()
  
 
@@ -347,7 +343,6 @@ export class BaseElementBlock extends LitElement {
 
     // @todo:eventleak
    const sub3 = eventDispatcher.on('Vars:selectedComponents', ()=>{
-      console.log("Vars:selectedComponents")
       this.currentSelection = Array.from(ExecuteInstance.Vars.selectedComponents ).map(
         c=> c.uuid
       );
@@ -513,15 +508,6 @@ export class BaseElementBlock extends LitElement {
   }
   
   selectComponentAction(e) {
-    let currentSelection = getVar("global", "selectedComponents")?.value || [];
-    // if (e.metaKey) {
-    //   currentSelection.push(this.component.uuid);
-    // } else if (e.shiftKey) {
-    //   currentSelection = currentSelection.filter((uuid) => uuid !== this.component.uuid);
-    // } else {
-    //   currentSelection = [this.component.uuid];
-    // }
-    //setVar("global", "selectedComponents", [...currentSelection]);
     this.currentSelection = Array.from([this.component.uuid]);
     EditorInstance.currentSelection = Array.from([this.component.uuid]);;
     ExecuteInstance.VarsProxy.selectedComponents = Array.from([this.component])

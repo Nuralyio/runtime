@@ -2,7 +2,7 @@ import { atom, computed, deepMap, onMount } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
 import { type PageElement } from "./handlers/pages/interfaces/interface";
 import { setVar } from "$store/context";
-import { eventDispatcher } from "@utils/change-detection";
+import { ExecuteInstance } from "core/Kernel";
 
 /**
  * Pages stores
@@ -85,7 +85,10 @@ const pagesStore = $pages.get();
 export const refreshPageStoreVar = () => {
   Object.keys(pagesStore).forEach((key) => {
     setVar(key, `${key}.appPages`, pagesStore[key]);
+    ExecuteInstance.VarsProxy[`${key}.appPages`] = pagesStore[key];
   });
 }
 
+onMount($pages, () => {
 refreshPageStoreVar();
+});

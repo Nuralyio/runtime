@@ -201,9 +201,8 @@ export default [{
         value: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
-            const currentComponent= GetVar("selectedComponents");
-            
+            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+            const currentComponent= Vars.selectedComponents;
             if(!appPages) {
                  [];
             }else{
@@ -255,7 +254,7 @@ export default [{
                             text: component.name,
                             icon:componentIcon,
                             id: component.uuid,
-                            selected: currentComponent?.length && component.uuid == currentComponent[0],
+                            selected: currentComponent?.length && component.uuid == currentComponent[0]?.uuid,
                             handlerKey: "onSelect",
                             menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" }] }
 
@@ -305,13 +304,13 @@ export default [{
     event: {
       onSelect: /* js */ `
         if(EventData.type === "page"){
-                SetVar("currentPage" , EventData.id)
-                SetVar("selectedComponents",[])
+                Vars.currentPage = EventData.id;
+                Vars.selectedComponents = [];
             }else{
                 const componentParentPage = EventData.page;
-                const currentPage = GetVar("currentPage")
+                const currentPage =  Vars.currentPage;
                 if(componentParentPage != currentPage ){
-                    SetVar("currentPage" , componentParentPage)
+                    Vars.currentPage = componentParentPage;
                 }
                 const selectedComponent = Editor.components.find(
                   component => component.uuid == EventData.id

@@ -1,6 +1,6 @@
-import { setVar } from "$store/context";
 import { eventDispatcher } from "@utils/change-detection";
 import { isServer } from "utils/envirement";
+import { ExecuteInstance } from "./Kernel";
 
 class Editor {
   components: any[] = [];
@@ -41,8 +41,7 @@ class Editor {
     // If platform has changed, update the state and trigger events
     if (currentPlatform.platform !== this.currentPlatform.platform) {
       this.currentPlatform = { ...currentPlatform };
-      console.log("Platform changed to", this.currentPlatform);
-      setVar("global", "currentPlatform", { ...this.currentPlatform });
+      ExecuteInstance.VarsProxy.currentPlatform = { ...this.currentPlatform };
       eventDispatcher.emit("component:refresh");
     }
   }
