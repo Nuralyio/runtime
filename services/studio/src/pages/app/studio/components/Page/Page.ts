@@ -130,12 +130,9 @@ export class PageContent extends LitElement {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
     const currentPage = ExecuteInstance.Vars.currentPage;
-    console.log('currentPage: ', currentPage);
 
     if (!currentPage && $currentApplication.get()) {
       ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
-      console.log("currentPage", ExecuteInstance.Vars.currentPage);
-      // setVar("global", "currentPage", $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid);
     }
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
   }
