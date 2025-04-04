@@ -1,11 +1,10 @@
-import { css, html, nothing, type PropertyValueMap, type PropertyValues } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
-import { eventDispatcher } from "@utils/change-detection.ts";
 import { ref } from "lit/directives/ref.js";
 
 let HyButton: any;

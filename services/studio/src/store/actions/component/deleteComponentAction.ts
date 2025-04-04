@@ -45,6 +45,6 @@ export async function deleteComponentAction(componentId: string, application_id:
       )
     });
     await deleteComponentActionHandler(componentId);
-    eventDispatcher.emit("component:refresh");
+    eventDispatcher.emit("component:deleted");
   }
 }
