@@ -4,11 +4,9 @@ import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from "utils/render-util";
 import "@shared/components/TextLabel/TextLabel";
 import "@shared/components/Containers/Container";
-import { $context } from "$store/context";
-import { $currentPage, $microAppCurrentPage, $pages } from "$store/page";
+import { $currentPage, $microAppCurrentPage } from "$store/page";
 import { eventDispatcher } from "utils/change-detection";
-import { $environment, ViewMode } from "$store/environment";
-import { debounceTime } from "rxjs/operators";
+import { ViewMode } from "$store/environment";
 import { merge, Observable, Subscription } from "rxjs";
 import EditorInstance from "./Editor";
 import { styleMap } from "lit/directives/style-map.js";
@@ -16,9 +14,7 @@ import { styleMap } from "lit/directives/style-map.js";
 @customElement("micro-app")
 export class MicroApp extends LitElement {
   static override styles = [css`
-      :host *:not(style) {
-         
-      }
+    
   `];
 
   private subscription = new Subscription();
@@ -100,7 +96,6 @@ export class MicroApp extends LitElement {
         this.page_uuid && fetch(`/api/pages/${this.page_uuid}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           this.page = data;
           this.setPageStyle();
           this.requestUpdate();
@@ -126,7 +121,6 @@ export class MicroApp extends LitElement {
     ];
 
     const mergedSubscription = merge(...observables)
-      .pipe(debounceTime(10))
       .subscribe(() => this.refreshComponent());
 
     this.subscription.add(mergedSubscription);

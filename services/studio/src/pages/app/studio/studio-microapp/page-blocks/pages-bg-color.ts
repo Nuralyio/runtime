@@ -44,7 +44,7 @@ export default [
     event: {
       valueChange: /* js */ `
 
-      const currentPageId =  GetVar("currentPage");
+      const currentPageId =  Vars.currentPage;
       if(currentPageId){
         const newPageName = EventData.value;
         const currentEditingApplication = GetVar("currentEditingApplication");

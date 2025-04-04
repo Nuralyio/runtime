@@ -3,7 +3,7 @@ import { $currentApplication } from "$store/apps";
 import { extractAllChildrenIds } from "$store/component/helper";
 import type { ComponentElement } from "$store/component/interface";
 import { $applicationComponents } from "$store/component/store";
-import { getVar } from "$store/context";
+import { ExecuteInstance } from "core/Kernel";
 
 export function copyCpmponentToClipboard(component : ComponentElement) {
     const application_id = component.application_id;
@@ -33,7 +33,7 @@ export function pasteComponentFromClipboard() {
                 const [rootComponents, childrens] = findRootAndChildren(newSchema);
                 console.log(rootComponents, childrens);
                 const application_id = $currentApplication.get()?.uuid;
-                 const currentPage = getVar("global", "currentPage")?.value;
+                 const currentPage =ExecuteInstance.Vars.currentPage;
                  console.log("Current page:", currentPage);
                  console.log("Current application:", application_id);
                  childrens.forEach(component => {

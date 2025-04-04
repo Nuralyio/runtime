@@ -1,10 +1,9 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { isServer } from "utils/envirement";
-import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
- let functionAppUUID = "" ;
- if(!isServer){
-  functionAppUUID = window.__FUNCTION_APP_UUID__;
- }
+let functionAppUUID = "" ;
+if(!isServer){
+ functionAppUUID = window.__FUNCTION_APP_UUID__;
+}
 export const StudioFunctionCollection = [
   {
     "name": "function_micro_app",
@@ -103,7 +102,6 @@ export const StudioFunctionCollection = [
     },
     "childrenIds": [],
     "application_id": "1",
-    "application_id": "1",
     "component_type": "text_label"
   },
   {
@@ -119,7 +117,6 @@ export const StudioFunctionCollection = [
       "770176d7-b582-4b20-bb61-7ca780510bdf",
       "3f07be1d-8be5-4a59-b46c-e805c926cab2"
     ],
-    "application_id": "1",
     "application_id": "1",
     "component_type": "vertical-container-block"
   },
@@ -139,7 +136,6 @@ export const StudioFunctionCollection = [
     "childrenIds": [
       "46048d56-5520-4370-8b91-ff985c82b378"
     ],
-    "application_id": "1",
     "application_id": "1",
     "component_type": "Collection"
   },
@@ -170,7 +166,6 @@ export const StudioFunctionCollection = [
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
     "application_id": "1",
-    "application_id": "1",
     "component_type": "text_input"
   },
   {
@@ -195,7 +190,6 @@ export const StudioFunctionCollection = [
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
     "application_id": "1",
-    "application_id": "1",
     "component_type": "button_input"
   },
   {
@@ -212,7 +206,6 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "application_id": "1",
     "application_id": "1",
     "component_type": "text_label"
   },
@@ -231,7 +224,6 @@ export const StudioFunctionCollection = [
       "b67f4f2e-1232-4c31-beb9-f73c7c04802e",
       "f6d5d534-ba89-4f13-a0d8-f94c3b88bfa8"
     ],
-    "application_id": "1",
     "application_id": "1",
     "component_type": "vertical-container-block"
   },
@@ -254,7 +246,6 @@ export const StudioFunctionCollection = [
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
     "application_id": "1",
-    "application_id": "1",
     "component_type": "button_input"
   },
   {
@@ -274,7 +265,6 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "childrenIds": [],
-    "application_id": "1",
     "application_id": "1",
     "component_type": "button_input"
   }

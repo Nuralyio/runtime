@@ -1,14 +1,12 @@
-import type { AddComponentAction } from "$store/interfaces/component.interfaces.ts";
-import { getVar } from "$store/context.ts";
 import { $components } from "$store/component/store.ts";
 import { type ComponentElement, ComponentType, type ComponentStore } from "$store/component/interface.ts";
 import { v4 as uuidv4 } from "uuid";
 import { addComponentHandler } from "$store/handlers/components/add-component.handler.ts";
 
-import { addComponentAsChildOf } from "$store/actions/component/addComponentAsChildOf.ts";
 import { addComponentToCurrentPageAction } from "$store/actions/component/addComponentToCurrentPageAction.ts";
 import { updateComponentHandler } from "$store/handlers/components/update-component.handler.ts";
 import { eventDispatcher } from "@utils/change-detection.ts"; // Ensure this handler is imported
+import { ExecuteInstance } from "core/Kernel";
 
 /** Actions*/
 export const addComponentAction = (
@@ -18,7 +16,8 @@ export const addComponentAction = (
   updateParent = true
 ) => {
   currentApplicationId = currentApplicationId ?? component
-  const currentComponentId = getVar("global", "selectedComponents")?.value[0];
+  
+  const currentComponentId = ExecuteInstance.Vars.selectedComponents?.[0];
   const componentsStore: ComponentStore = $components.get();
   const components: ComponentElement[] = componentsStore[currentApplicationId] || [];
 

@@ -2,9 +2,9 @@
 
 import { GenerateName } from "utils/naming-generator";
 
-import { $applications, $values } from "$store/apps";
+import { $applications } from "$store/apps";
 import { $components, setcomponentRuntimeStyleAttribute } from "$store/component/store.ts";
-import type { ComponentElement, ComponentType } from "$store/component/interface";
+import type { ComponentElement } from "$store/component/interface";
 import { $context, getVar, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
 import { isServer } from "utils/envirement";
@@ -15,7 +15,7 @@ import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.t
 import { eventDispatcher } from "@utils/change-detection";
 import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler";
 import { Utils } from "./Utils";
-import Editor from "./Editor"
+import Editor from "./Editor";
 import { Navigation } from "./Navigation";
 import { updateComponentName } from "$store/actions/component/update-component-name";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
@@ -41,7 +41,10 @@ class Executor {
   VarsProxy: Record<string, any> = {};
   Current: Record<string, any> = {};
   private functionCache: Record<string, Function> = {};
-  currentPlatform: any = {};
+  currentPlatform: any = {
+    platform: "desktop",
+    isMobile: false,
+  };
 
   Component: any = {};
   listner: any = {};
@@ -55,15 +58,15 @@ class Executor {
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
-    $context.subscribe(() => {
-      this.currentPlatform = getVar("global", "currentPlatform")?.value ?? {
-        platform: "desktop",
-        isMobile: false,
-      };
-      this.registerApplications();
+    // $context.subscribe(() => {
+    //   this.currentPlatform = this.VarsProxy.currentPlatform ?? {
+    //     platform: "desktop",
+    //     isMobile: false,
+    //   };
+    //   this.registerApplications();
 
 
-    });
+    // });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
 
     if (DEBUG) {
@@ -72,7 +75,7 @@ class Executor {
   }
 
   updateEditorContext() {
-    const selectedComponensIds = getVar("global", "selectedComponents")?.value || []
+    const selectedComponensIds = this.Vars.selectedComponents || []
     const currentEditingApplicationUUID = getVar("global", "currentEditingApplication")?.value?.uuid;
     Editor.Vars = Editor.Vars ??{}
     Editor.selectedComponents = this.createProxy(Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid)));

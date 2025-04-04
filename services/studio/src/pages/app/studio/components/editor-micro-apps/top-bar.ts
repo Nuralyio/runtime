@@ -86,7 +86,7 @@ export default [{
       onClick: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
+            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
            if(currentPage){
             AddComponent({
               application_id : currentEditingApplication.uuid,
@@ -138,7 +138,7 @@ export default [{
       onClick: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
+            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
            if(currentPage){
             AddComponent({
               application_id : currentEditingApplication.uuid,
@@ -187,7 +187,7 @@ export default [{
       onClick: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
+            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
            if(currentPage){
             AddComponent({
               application_id : currentEditingApplication.uuid,
@@ -217,6 +217,11 @@ export default [{
             return 'data:image/jpeg;base64,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';
             `
       }
+    },
+    event:{
+      onClick : /* js */`
+        Navigation.toUrl('/dashboard');
+      `
     },
     style:{
       "width": "40px",
@@ -660,10 +665,10 @@ export default [{
     },
     event:{
       onClick: /* js */`
-          SetVar("currentPlatform" , {
+          Vars.currentPlatform =  {
             platform: "desktop",
             width: "100%",
-          })
+          }
         `
     },
     input: {
@@ -729,12 +734,12 @@ export default [{
     },
     event:{
       onClick: /* js */`
-      SetVar("currentPlatform" , {
+      Vars.currentPlatform =  {
         platform: "tablet",
         width: "1024px",
         height: "768px",
         isMobile: true
-      })
+      }
         `
     },
     input: {
@@ -800,12 +805,12 @@ export default [{
     },
     event:{
       onClick: /* js */`
-      SetVar("currentPlatform" , {
+      Vars.currentPlatform =  {
         platform: "mobile",
         width: "375px",
         height: "767px",
         isMobile: true
-      })
+      }
         `
     },
     input: {
@@ -1043,7 +1048,7 @@ export default [{
         value: /* js */`
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = GetVar("currentPage") || appPages?.[0]?.uuid;
+            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
             const currentPageName = appPages?.find((page)=>page.uuid == currentPage).name
             return currentPageName;
             `

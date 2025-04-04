@@ -6,19 +6,19 @@ import "@shared/components/TextLabel/TextLabel";
 import "@shared/wrappers/GenerikWrapper/GenerikWrapper";
 import "@shared/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
-import { $currentApplication, $resizing, $values } from "$store/apps";
+import { $currentApplication, $resizing } from "$store/apps";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $applicationComponents, $components, $draggingComponentInfo } from "$store/component/store.ts";
+import { $applicationComponents, $draggingComponentInfo } from "$store/component/store.ts";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
-import { $applicationPages, $currentPage, $currentPageViewPort, $pages } from "$store/page";
+import { $applicationPages, $currentPage, $currentPageViewPort } from "$store/page";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
-import { $context, getVar, setVar } from "$store/context";
+import { getVar, setVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
-import { $environment, type Environment, ViewMode } from "$store/environment";
+import { ViewMode } from "$store/environment";
 import {
   moveDraggedComponentIntoCurrentPageRoot
 } from "$store/actions/component/moveDraggedComponentIntoCurrentPageRoot.ts";
@@ -54,13 +54,12 @@ export class PageContent extends LitElement {
   }
 
   refreshComponent() {
-    const currentPlatform = getVar("global", "currentPlatform")?.value;
+    const currentPlatform = ExecuteInstance.Vars.currentPlatform;
     if(currentPlatform?.platform !== this.currentPlatform?.platform) {
-      this.currentPlatform = getVar("global", "currentPlatform")?.value;
-      //eventDispatcher.emit("component:refresh");
+      this.currentPlatform = currentPlatform;
     }
     log.prefix("PageContent").info("refreshComponent");
-    const currentPage = getVar("global", "currentPage");
+    const currentPage = ExecuteInstance.Vars.currentPage;
     if(!currentPage){
       return;
     }
@@ -69,14 +68,14 @@ export class PageContent extends LitElement {
     if (currentEditingApplication && currentPage) {
       const currentAppUuid = currentEditingApplication.value.uuid;
 
-      this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
+      this.currentPage = $currentPage(currentAppUuid, currentPage).get();
       const components = $applicationComponents(currentAppUuid).get();
       // Filter for components that belong to the current page and are root.
       const pageComponents = components.filter(
         component =>
           component.pageId &&
-          currentPage.value &&
-          component.pageId === currentPage.value &&
+          currentPage &&
+          component.pageId === currentPage &&
           component.root
       );
 
@@ -108,6 +107,11 @@ export class PageContent extends LitElement {
       }
      
     })
+
+    eventDispatcher.on('Vars:currentPage', (data)=>{
+     this.refreshComponent();
+     
+    })
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
       });
@@ -120,9 +124,13 @@ export class PageContent extends LitElement {
     window.onresize = () => {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
-    const currentPage = getVar("global", "currentPage");
+    const currentPage = ExecuteInstance.Vars.currentPage;
+    console.log('currentPage: ', currentPage);
+
     if (!currentPage && $currentApplication.get()) {
-      setVar("global", "currentPage", $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid);
+      ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
+      console.log("currentPage", ExecuteInstance.Vars.currentPage);
+      // setVar("global", "currentPage", $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid);
     }
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
   }
@@ -150,7 +158,7 @@ export class PageContent extends LitElement {
         break;
       case "c":
         if (e.metaKey || e.ctrlKey) {
-          this.handleCopy();
+          // this.handleCopy();
         }
         break;
       case "v":
@@ -168,7 +176,6 @@ export class PageContent extends LitElement {
       const selectedComponents = applicationComponents.find((component) =>
         selectedComponentId[0] === component.uuid
       );
-      console.log("selectedComponents", selectedComponents);
       copyCpmponentToClipboard(selectedComponents);
   }
   
