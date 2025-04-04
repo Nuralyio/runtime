@@ -16,7 +16,7 @@ export default css`
         --text-label-margin: 0; /* Default margin */
 
         /* Use the local color variable first, then fallback to global or defined values */
-        --resolved-text-label-color: var(--text-label-local-color, var(--text-label-color));
+        --resolved-text-label-color: var(--text-label-color, var( --text-label-local-color));
         --resolved-text-label-font-size: var(--text-label-font-size);
         --resolved-text-label-font-weight: var(--text-label-font-weight);
         --resolved-text-label-line-height: var(--text-label-line-height);
@@ -44,14 +44,13 @@ export default css`
     @media (prefers-color-scheme: dark) {
         :host {
             /* Update resolved color for dark mode */
-            --resolved-text-label-color: var(--text-label-dark-color, var(--text-label-local-dark-color, var(--text-label-color)));
-        }
+            --resolved-text-label-color: var(--text-label-dark-color, var(--text-label-color, var(--text-label-local-dark-color)));        }
     }
 
     @media (prefers-color-scheme: light) {
         :host {
+            --resolved-text-label-color: var(--text-label-color, var(--text-label-local-color));
             /* Optionally update color for light mode */
-            --resolved-text-label-color: var(--text-label-color, var( --text-label-local-light-color));
         }
     }
 `;
