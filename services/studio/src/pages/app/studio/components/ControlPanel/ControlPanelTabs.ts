@@ -123,15 +123,15 @@ export class ParametersPanel extends LitElement {
    * Set up subscriptions for state management
    */
   setupSubscriptions() {
-    $context.subscribe(() => {
-      const selectedComponentIds = (getVar("global", "selectedComponents")?.value || []);
-      $applicationComponents($currentApplication.get()?.uuid).subscribe((components: ComponentElement[]) => {
-        const selectedComponents = components.filter((component: ComponentElement) =>
-          selectedComponentIds.includes(component.uuid)
-        );
-        this.selectedComponent = selectedComponents.length ? { ...selectedComponents[0] } : null;
-      });
-    });
+    // $context.subscribe(() => {
+    //   const selectedComponentIds = (getVar("global", "selectedComponents")?.value || []);
+    //   $applicationComponents($currentApplication.get()?.uuid).subscribe((components: ComponentElement[]) => {
+    //     const selectedComponents = components.filter((component: ComponentElement) =>
+    //       selectedComponentIds.includes(component.uuid)
+    //     );
+    //     this.selectedComponent = selectedComponents.length ? { ...selectedComponents[0] } : null;
+    //   });
+    // });
 
     $editorState.subscribe((editorState) => {
       setTimeout(() => {

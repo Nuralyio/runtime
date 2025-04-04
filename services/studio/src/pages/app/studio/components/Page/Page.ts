@@ -15,7 +15,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
-import { getVar, setVar } from "$store/context";
+import { getVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
 import { ViewMode } from "$store/environment";
@@ -172,7 +172,8 @@ export class PageContent extends LitElement {
   }
 
   handleCopy() {
-      const selectedComponentId= getVar("global", "selectedComponents").value ?? [];
+      const selectedComponentId=  (ExecuteInstance.VarsProxy.selectedComponents ?? []).
+      map((component: ComponentElement) => component.uuid);
       const currentEditingApplication = getVar('global', "currentEditingApplication").value;
       const applicationComponents = $applicationComponents(currentEditingApplication.uuid).get();
       const selectedComponents = applicationComponents.find((component) =>
@@ -187,27 +188,27 @@ export class PageContent extends LitElement {
 
   clearSelectedComponents() {
     try {
-      setVar("global", "selectedComponents", []);
+      ExecuteInstance.VarsProxy.selectedComponents = []
     } catch (error) {
       console.error("Error clearing selected components:", error);
     }
   }
 
   handleEnterKey(e) {
-    try {
-      const selectedComponents = getVar("global", "selectedComponents").value ?? [];
-      eventDispatcher.emit("keydown", {
-        key: e.key,
-        selectedComponents: selectedComponents
-      });
-    } catch (error) {
-      console.error("Error handling Enter key:", error);
-    }
+    // try {
+    //   const selectedComponents =  ExecuteInstance.VarsProxy.selectedComponents ?? []
+    //   eventDispatcher.emit("keydown", {
+    //     key: e.key,
+    //     selectedComponents: selectedComponents
+    //   });
+    // } catch (error) {
+    //   console.error("Error handling Enter key:", error);
+    // }
   }
 
 
   confirmDelete() {
-    const selectedComponents = getVar("global", "selectedComponents").value ?? [];
+    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents ?? [];
     if (selectedComponents.length > 0) {
       const confirmation = window.confirm("Are you sure you want to delete the selected components?");
       if (confirmation) {
@@ -217,11 +218,9 @@ export class PageContent extends LitElement {
   }
 
   handleDeleteKey() {
-    const selectedComponents = getVar("global", "selectedComponents").value ?? [];
-    selectedComponents.forEach((componentId: string) => {
-      const currentEditingApplication = getVar("global", "currentEditingApplication");
-      const currentAppUuid = currentEditingApplication.value.uuid;
-      deleteComponentAction(componentId, currentAppUuid).then(r => {
+    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents ?? [];
+    selectedComponents.forEach((component: ComponentElement) => {
+      deleteComponentAction(component.uuid, component.application_id).then(r => {
         // todo: implment this
       });
     });
