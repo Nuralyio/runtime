@@ -7,7 +7,7 @@ import { renderComponent } from "../../../utils/render-util.ts";
 import { $components } from "$store/component/store.ts";
 import { $resizing } from "$store/apps.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { $environment, type Environment, ViewMode } from "$store/environment.ts";
+import { ViewMode } from "$store/environment.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 import { executeCodeWithClosure } from "core/Kernel.ts";
@@ -16,143 +16,111 @@ import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("collection-viewer")
-export class CollectionViwer extends BaseElementBlock {
-
+export class CollectionViewer extends BaseElementBlock {
   static override styles = styles;
-  @property({ type: Object })
-  component: ComponentElement;
+
+  @property({ type: Object }) component: ComponentElement;
   @property({ type: Boolean }) isViewMode = false;
-  mode: ViewMode;
-  @state()
-  hoveredComponent: Readonly<ComponentElement>;
-  @state()
-  currentEditingApplication: any;
-  @state()
-  draggingComponentInfo: DraggingComponentInfo;
-  @state()
-  dropDragPalceHolderStyle = {
+  @property({ type: String }) mode: ViewMode;
+
+  @state() hoveredComponent: Readonly<ComponentElement>;
+  @state() currentEditingApplication: any;
+  @state() draggingComponentInfo: DraggingComponentInfo;
+  @state() dropDragPalceHolderStyle = {
     display: "none",
     height: "auto",
     width: "auto",
     minWidth: "80px",
     backgroundColor: "rgb(202 235 255)",
     zIndex: "7",
-    borderRadius: " 2px"
+    borderRadius: "2px"
   };
+  @state() childrenComponents: ComponentElement[] = [];
+
   selectedComponent: Readonly<ComponentElement>;
-  @state()
-  components: ComponentElement[];
-  @state()
   containerRef: Ref<HTMLInputElement> = createRef();
-
-  constructor() {
-    super();
-
-    this.registerCallback("data", (data) => {
-    });
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
-    });
-  }
 
   override async connectedCallback() {
     await super.connectedCallback();
-  
-    if(this.component?.event?.onInit){
+    this.updateChildrenComponents();
+    
+    if (this.component?.event?.onInit) {
       executeCodeWithClosure(
         this.component,
-        getNestedAttribute(this.component, `event.onInit`)
+        getNestedAttribute(this.component, "event.onInit")
       );
     }
-
   }
 
-  // todo: move this to a util class
-  isPreviewMode() {
-    return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
+  override updated(changedProperties: Map<string, any>) {
+    if (changedProperties.has("component")) {
+      this.updateChildrenComponents();
+    }
   }
 
-  renderRow(item: any) {
+  private updateChildrenComponents(): void {
+    const applicationComponents = $components.get()[this.component?.application_id];
+    if (!applicationComponents || !this.component?.childrenIds?.length) {
+      this.childrenComponents = [];
+      return;
+    }
+
+    this.childrenComponents = this.component.childrenIds
+      .map(id => applicationComponents.find(component => component.uuid === id))
+      .filter(Boolean);
+  }
+
+  private handleCollectionClick(e: MouseEvent) {
+    setContextMenuEvent(null);
+    if ($resizing.get()) return;
+    
+    setCurrentComponentIdAction(this.component?.uuid);
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  private renderRow(item: any) {
     return html`
       <div class="collection" ${ref(this.containerRef)}
-           @click="${(e: any) => {
-      setContextMenuEvent(null);
-      if (!$resizing.get()) {
-        setCurrentComponentIdAction(this.component?.uuid);
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.target.classList.contains("collection")) {
-          setCurrentComponentIdAction(this.component?.uuid);
-          e.preventDefault();
-          e.stopPropagation();
+           @click="${(e: MouseEvent) => this.handleCollectionClick(e)}">
+        ${this.childrenComponents.length
+          ? html`${renderComponent(
+              this.childrenComponents.map(component => ({ ...component, item })),
+              item,
+              this.isViewMode
+            )}`
+          : html`<div class="empty-message">Add or Drag an item into this collection</div>`
         }
-      }
-    }}"
-
-      >
-        ${this.component?.childrenIds?.length
-      ? html`
-            ${renderComponent(
-        this.component.childrenIds?.map(
-          (uuid) => {
-            return {
-              ...$components.get()[this.component?.application_id]?.find((component) => component.uuid === uuid),
-              item
-            } as ComponentElement;
-          }
-        ),
-        JSON.parse(JSON.stringify(item)),
-        this.isViewMode
-      )}
-          `
-      : html`
-            <div
-
-              class="empty-message"
-              @click="${(e: any) => {
-        // setCurrentComponentIdAction(this.component?.uuid);
-      }}"
-            >
-              Add or Drag an item into this collection
-            </div>`}
       </div>`;
   }
 
+  private getData() {
+    if (Array.isArray(this.inputHandlersValue.data)) {
+      return this.inputHandlersValue.data;
+    }
+    
+    return this.component.input?.data ? [] : [
+      { title: "Function 1" },
+      { title: "Function 2" },
+      { title: "Function 3" }
+    ];
+  }
+
   override renderComponent() {
+    const isVertical = this.inputHandlersValue.direction?.value === "vertical";
+    const data = this.getData();
+
     return html`
-        <div
+      <div
         ${ref(this.inputRef)}
-        style=${styleMap({  
-          ...this.getStyles(),
-        })} 
+        style=${styleMap(this.getStyles())}
         class=${classMap({
           collection_viewer: true,
-          vertical: this.inputHandlersValue.direction?.value === "vertical",
-        })}>
-          ${(Array.isArray(this.inputHandlersValue.data) ? this.inputHandlersValue.data :
-
-            this.component.input?.data ? [] : [
-            
-            {
-      title: "Function 1",
-          }, {
-            title: "Function 2",
-            
-          }, {
-            title: "Function 3",
-          }])?.map((item: any, index) => {
-      return html`${this.renderRow({ ...item, index })}`;
-    })}
-        </div>
-
+          vertical: isVertical
+        })}
+      >
+        ${data.map((item, index) => this.renderRow({ ...item, index }))}
+      </div>
     `;
   }
 }
-/**
-
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-
-
- */

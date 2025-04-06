@@ -1,5 +1,4 @@
 import { ComponentType, type ComponentElement } from "$store/component/interface.ts";
-import { $context, getVar } from "$store/context.ts";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -10,7 +9,6 @@ export class ComponentTitle extends LitElement {
   static styles = css`
     .component-name {
       position: absolute;
-      display: none;
       /* z-index: 7; */
       padding: 1px;
    
@@ -24,12 +22,11 @@ export class ComponentTitle extends LitElement {
   `;
   @property({ type: Object })
   component: ComponentElement;
-  @property({ type: Object })
-  hoveredComponent: ComponentElement;
-  @state()
-  selectedComponents: string[] = [];
   @state()
   isDragInitiator = false;
+
+  @property({ type: Boolean })
+  display: Boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -37,8 +34,7 @@ export class ComponentTitle extends LitElement {
   }
 
   setupSubscriptions() {
-    $context.subscribe(() => {
-    });
+   
   }
 
   emitEvent(value: boolean) {
@@ -51,12 +47,10 @@ export class ComponentTitle extends LitElement {
   }
 
   render() {
-    const displayStyle = this.selectedComponents.includes(this.component.uuid)
-    ||  this.hoveredComponent?.uuid === this.component.uuid ? "block" : "none";
-
+   
     return html`
+    ${this.display ? html`
       <span
-        style=${styleMap({ display: displayStyle })}
         @mousedown=${this.handleMouseDown}
         @mouseup=${this.handleMouseUp}
         class="component-name"
@@ -67,13 +61,16 @@ export class ComponentTitle extends LitElement {
             background: "#2395ff"
           })
         }> ${this.component.name} </span>
-        ${this.selectedComponents.includes(this.component.uuid)&& this.component.component_type ===ComponentType.Container ? html`
+        ${this.component.component_type ===ComponentType.Container ? html`
         <micro-app
       style=${styleMap({
       })}
     uuid="1" componentToRenderUUID="app_insert_top_bar2"> </micro-app>
           `: nothing}
       </span>
+
+    `: nothing}
+    
      
     `;
   }

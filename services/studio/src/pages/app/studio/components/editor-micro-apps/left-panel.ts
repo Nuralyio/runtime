@@ -81,7 +81,7 @@ export default [{
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["remove_page", "add_page"]
+    childrenIds: [ "add_page"]
   },
   {
     uuid: "add_page",
@@ -132,48 +132,6 @@ export default [{
             }).catch((e) => {
                 console.error(e);
             })
-         } catch(e) {
-             console.log(e);
-         }
-         `
-      /* end */
-    },
-    application_id: "1"
-  },
-  {
-    uuid: "remove_page",
-    name: "remove page",
-    component_type: ComponentType.Button,
-    style: {
-      "--hybrid-button-padding-y": "2px",
-      "--hybrid-button-padding-x": "2px",
-      "type": "ghost",
-      "--hybrid-button-ghost-border-color": "transparent",
-      "--hybrid-button-ghost-background-color": "transparent"
-
-    },
-    input: {
-      label: {
-        type: "handler",
-        value: /* js */`
-            const removePageLabelBtn='';
-            return removePageLabelBtn;
-        `
-      },
-      icon: {
-        type: "handler",
-        value: /* js */`
-            const removePageIcon='trash';
-            return removePageIcon;
-        `
-      }
-    },
-
-    event: {
-      /* js */
-      onClick: `
-        try {
-           
          } catch(e) {
              console.log(e);
          }
