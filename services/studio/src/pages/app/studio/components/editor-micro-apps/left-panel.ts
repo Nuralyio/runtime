@@ -256,7 +256,10 @@ export default [{
                             id: component.uuid,
                             selected: currentComponent?.length && component.uuid == currentComponent[0]?.uuid,
                             handlerKey: "onSelect",
-                            menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" }] }
+                            menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" , additionalData: {
+                              type: "component",
+                              component
+                            } }] }
 
                         })
                         if(componentChildrenIds){
@@ -292,6 +295,7 @@ export default [{
                         value: 'delete' ,
                         icon : "trash",
                         additionalData:{
+                          type: "page",
                           page
                         }}] }
 
@@ -321,14 +325,23 @@ export default [{
       /* js */
 
       actionClick: `
-        try {
-          if(EventData.action === "delete"){
-            deletePage(EventData.value.page);
+        if (EventData.action === "delete") {
+          const { type, component, page } = EventData.value;
+        
+          switch (type) {
+            case "component":
+              if (component) {
+                DeleteComponentAction(component);
+              }
+              break;
+        
+            case "page":
+              if (page) {
+                deletePage(page);
+              }
+              break;
           }
-            
-         } catch(e) {
-             console.log(e);
-         }
+        }
          `
 
     },
