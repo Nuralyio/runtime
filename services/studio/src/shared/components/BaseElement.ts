@@ -487,25 +487,25 @@ export class BaseElementBlock extends LitElement {
       ...this.runtimeStyles
     };
   }
-
-  executeEvent(eventName, e?) {
+  executeEvent(eventName: string, event?: Event) {
     if (this.isViewMode) {
-      if (this.component.event?.[eventName]) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.${eventName}`), {}, this.item);
+      const eventCode = this.component.event?.[eventName];
+      if (eventCode) {
+        executeCodeWithClosure(
+          this.component,
+          getNestedAttribute(this.component, `event.${eventName}`),
+          { event: event },
+          this.item
+        );
       }
-    } else {
-      if (eventName === "onClick") {
-        if (e) {
-          this.selectComponentAction(e);
-          e.stopPropagation();
-          e.preventDefault();
-        }
-
-      }
+      return;
     }
-
-    
-
+  
+    if (eventName === "onClick" && event) {
+      this.selectComponentAction(event);
+      event.stopPropagation();
+      event.preventDefault();
+    }
   }
   
   selectComponentAction(e) {

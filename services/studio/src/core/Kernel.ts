@@ -54,6 +54,7 @@ class Executor {
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   GetVar: (symbol: string) => any;
   GetContextVar:  any;
+  Event: Event;
   private constructor() {
     this.PropertiesProxy = this.createProxy(this.Properties);
     this.VarsProxy = this.createProxy(this.Vars, 'Vars' );
@@ -265,6 +266,7 @@ class Executor {
       this.functionCache[code] = new Function(
         "Components",
         "Editor",
+        "Event",
         "Item",
         "Current",
         "currentPlatform",
@@ -322,6 +324,7 @@ const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
 
   ExecuteInstance.Current = component;
+  ExecuteInstance.Event = EventData.event;
 ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
 
 // Only create the proxy once
@@ -354,6 +357,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   const VarsProxy = ExecuteInstance.VarsProxy;
   const Current = ExecuteInstance.Current;
   const currentPlatform = ExecuteInstance.currentPlatform;
+  const Event = ExecuteInstance.Event;
   function SetVar(symbol: string, value: any): void {
     setVar("global", symbol, value);
   }
@@ -488,6 +492,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   return closureFunction(
     PropertiesProxy,
     Editor,
+    Event,
     JSON.parse(JSON.stringify(item ?? {})),
     Current,
     currentPlatform,
