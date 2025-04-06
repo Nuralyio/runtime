@@ -102,7 +102,7 @@ export const StudioSelectHelperFontSize = [
                         
                         
                         let state='enabled';
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-select-helper-text-font-size']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-select-helper-text-font-size']){
                          state='disabled'
                         }
                         return state
@@ -146,7 +146,7 @@ export const StudioSelectHelperFontSize = [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    helperSizeHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
+                    helperSizeHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
                 
                 return [parameter,helperSizeHandler];
             `

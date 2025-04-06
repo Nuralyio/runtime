@@ -94,7 +94,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
                                 
                                 ;
                                 let state = 'enabled';
-                                if (selectedComponent.styleHandlers && selectedComponent.styleHandlers['${cssVar}']) {
+                                if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['${cssVar}']) {
                                     state = 'disabled';
                                     return state;
                                 }
@@ -138,7 +138,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
                             if (true) {
                                 
                                 ;
-                                helperColorHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['${cssVar}'] || '';
+                                helperColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['${cssVar}'] || '';
                             }
                         
                         return [parameter, helperColorHandler];

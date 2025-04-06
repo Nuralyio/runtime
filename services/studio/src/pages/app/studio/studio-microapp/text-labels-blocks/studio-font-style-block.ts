@@ -68,7 +68,7 @@ export default [
                 }
             
             
-                const hasFontStyleHandler = selectedComponent.styleHandlers?.['font-style'];
+                const hasFontStyleHandler = selectedComponent?.styleHandlers?.['font-style'];
                 const defaultFontStyle = hasFontStyleHandler
                     ? ''
                     : selectedComponent.style?.['font-style'] || 'normal';
@@ -118,7 +118,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    fontStyleHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['font-style'] || ''  
+                    fontStyleHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['font-style'] || ''  
                 
                 return [parameter,fontStyleHandler];
             `

@@ -92,7 +92,7 @@ export default [
                     
                     
                     let state='enabled';
-                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-color']){
+                    if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-input-label-color']){
                         state='disabled'
                     }
                     state;
@@ -136,7 +136,7 @@ export default [
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 
                     
-                labelColorHandler=selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-color'] || ''  
+                labelColorHandler=selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-input-label-color'] || ''  
             
             return [parameter,labelColorHandler];
         `

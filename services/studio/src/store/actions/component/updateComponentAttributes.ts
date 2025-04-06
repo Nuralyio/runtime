@@ -135,6 +135,6 @@ export function updateComponentAttributes(
   }
  
 //   // Trigger a refresh event for any listeners
-//  eventDispatcher.emit("component:refresh");
+ eventDispatcher.emit("component:updated");
   eventDispatcher.emit(`component-updated:${String(componentId)}`);
 }

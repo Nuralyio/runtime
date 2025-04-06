@@ -203,7 +203,7 @@ export default [
                     
                     
                     let state='enabled' 
-                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['border-radius'])
+                    if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['border-radius'])
                      {  state='disabled'
                         
                      }

@@ -169,7 +169,7 @@ export default [
                 
                 
                 let isDisabled ='enabled';
-                if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['font-family']) {
+                if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['font-family']) {
                     isDisabled ='disabled'
                 } 
                 return isDisabled
@@ -218,7 +218,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    fontFamilyHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['font-family'] || ''  
+                    fontFamilyHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['font-family'] || ''  
                 
                 return [parameter,fontFamilyHandler];
             `

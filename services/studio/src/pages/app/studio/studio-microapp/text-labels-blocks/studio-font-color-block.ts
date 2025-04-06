@@ -74,7 +74,7 @@ export default [
                     
                     
                     let state='enabled';
-                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['color']){
+                    if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['color']){
                         state='disabled'
                     }
                 return state;
@@ -106,7 +106,7 @@ export default [
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 
                     
-                fontColorHandler = selectedComponent.styleHandlers && selectedComponent.styleHandlers['color'] || ''  
+                fontColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['color'] || ''  
             
             return [parameter,fontColorHandler];
         `

@@ -1,10 +1,9 @@
 import { type ComponentElement } from "$store/component/interface.ts";
-import { html, type PropertyValues } from "lit";
+import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
-import { eventDispatcher } from "@utils/change-detection.ts";
 import { ref, } from "lit/directives/ref.js";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import "@nuralyui/label";
@@ -20,19 +19,12 @@ export class TextLabelBlock extends BaseElementBlock {
 
   @state()
   isEditable = false;
-  @state()
-  currentValue;
+
 
   constructor() {
     super();
 
-    this.registerCallback("value", (value: any) => {
-      if (value !== undefined)
-        if (this.currentValue !== value && !this.isEditable) {
-          this.currentValue = value;
-
-        }
-    });
+  
     this.registerCallback("innerAlignment", (value: any) => {
       if (this.closestGenericComponentWrapper) {
         if (this.inputHandlersValue?.innerAlignment === "end") {
@@ -57,7 +49,7 @@ export class TextLabelBlock extends BaseElementBlock {
           ${ref(this.inputRef)}
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
-            style=${styleMap({ ...this.getStyles(), "--text-label-font-size": this.calculatedStyles.fontSize })}
+            style=${styleMap({ ...this.getStyles(), "--text-label-font-size": this.getStyles().fontSize })}
             @click=${(e) => {
         this.executeEvent("onClick", e);
       }}
@@ -73,7 +65,7 @@ export class TextLabelBlock extends BaseElementBlock {
             @dblclick=${(e) => {
         e.preventDefault();
         this.isEditable = true;
-      }}>${this.currentValue || "Text label"} </hy-label>
+      }}>${this.inputHandlersValue.value || "Text label"} </hy-label>
     `;
   }
 }

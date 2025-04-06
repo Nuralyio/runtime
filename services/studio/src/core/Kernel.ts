@@ -52,6 +52,8 @@ class Executor {
   private proxyCache: WeakMap<object, any> = new WeakMap();
   styleProxyCache = new WeakMap();
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
+  GetVar: (symbol: string) => any;
+  GetContextVar:  any;
   private constructor() {
     this.PropertiesProxy = this.createProxy(this.Properties);
     this.VarsProxy = this.createProxy(this.Vars, 'Vars' );
@@ -384,12 +386,15 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     return null;
   }
 
-  function GetVar(symbol: string): any {
+   function GetVar(symbol: string): any {
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
     }
     
   }
+
+  ExecuteInstance.GetVar = GetVar;
+  ExecuteInstance.GetContextVar = GetContextVar;
 
   function GetComponent(componentUuid: string, application_id: string): any {
     return Editor.components.find((c: ComponentElement) => c.uuid === componentUuid);

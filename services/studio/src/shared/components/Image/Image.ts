@@ -25,7 +25,7 @@ export class ImageBlock extends BaseElementBlock {
   renderComponent() {
    const fallbackStyles = this.getStyles();
 
-    const imageStyles = this.calculatedStyles || {};
+    const imageStyles = this.getStyles() || {};
     const imageStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
       Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
       const imageSrc = this.isDarkMode 

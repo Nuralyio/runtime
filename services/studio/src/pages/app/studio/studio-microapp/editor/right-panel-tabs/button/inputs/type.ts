@@ -126,7 +126,7 @@ export default [
             if (!selectedComponent) return ['type', ''];
             
             
-            return ['type', selectedComponent.styleHandlers?.type || ''];
+            return ['type', selectedComponent?.styleHandlers?.type || ''];
           `
       }
     },

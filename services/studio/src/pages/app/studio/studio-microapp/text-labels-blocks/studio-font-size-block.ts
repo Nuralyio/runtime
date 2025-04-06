@@ -105,7 +105,7 @@ export default [
                         
                         
                         let state='enabled';
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['fontSize']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize']){
                          state='disabled'
                         }
                         return state
@@ -138,7 +138,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    labelFontSizeHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['fontSize'] || ''  
+                    labelFontSizeHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize'] || ''  
                 
                 return [parameter,labelFontSizeHandler];
             `
