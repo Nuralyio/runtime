@@ -544,11 +544,14 @@ export class BaseElementBlock extends LitElement {
               }}
               .component=${this.component }
               .selectedComponent=${{...this.selectedComponent}}
-              .hoveredComponent=${{...this.hoveredComponent} }
+              .display=${EditorInstance.currentSelection.includes(this.component.uuid)}
+
             ></component-title>
             `
           : nothing
         }
+         ${this.item?.index === 0 || this.item?.index === undefined ?
+          html`
         <resize-wrapper
           .hoveredComponent=${{...this.hoveredComponent} }
           .isSelected=${EditorInstance.currentSelection.includes(this.component.uuid)}
@@ -564,6 +567,10 @@ export class BaseElementBlock extends LitElement {
           .inputRef=${this.inputRef}
           .isDragInitiator=${this.isDragInitiator}
         ></drag-wrapper>
+        `
+          : nothing
+        }
+        
       `: nothing} 
       ${this.renderComponent()}
       ${!this.isViewMode ? html` 
