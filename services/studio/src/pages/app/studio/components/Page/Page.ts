@@ -100,6 +100,9 @@ export class PageContent extends LitElement {
     eventDispatcher.on('Vars:currentEditingMode', (data)=>{
       if(! ExecuteInstance.Vars.currentEditingMode ){
         ExecuteInstance.Vars.currentEditingMode =  ViewMode.Edit;
+        this.mode =  ViewMode.Edit;
+        setEnvirementMode( this.mode )
+
       }
       if(ExecuteInstance.Vars.currentEditingMode !== this.mode){
         this.mode = ExecuteInstance.Vars.currentEditingMode;
@@ -117,6 +120,11 @@ export class PageContent extends LitElement {
     })
 
     eventDispatcher.on('component:deleted', (data)=>{
+      this.refreshComponent();
+      
+     })
+
+     eventDispatcher.on('component:updated', (data)=>{
       this.refreshComponent();
       
      })

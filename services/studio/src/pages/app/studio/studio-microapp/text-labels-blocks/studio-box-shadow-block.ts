@@ -3,6 +3,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
   {
+    // @todo: re-apply the box shadow block 
     uuid: "box_shadow_block",
     name: "name",
     application_id: "1",
@@ -33,7 +34,7 @@ export default [
     }
   },
   {
-    uuid: "box_shadow_values",
+    uuid: "box_shadow_valuess",
     name: "name",
     application_id: "1",
     component_type: ComponentType.ShadowBox,
@@ -96,7 +97,7 @@ export default [
                         
                         
                         let state ='enabled'
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['box-shadow']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow']){
                                state='disabled'
                         }
                         return state;
@@ -140,7 +141,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    boxShadowHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['box-shadow'] || ''  
+                    boxShadowHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow'] || ''  
                 
                 return [parameter,boxShadowHandler];
             `

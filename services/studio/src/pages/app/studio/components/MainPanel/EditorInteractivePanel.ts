@@ -3,7 +3,7 @@ import { customElement, state } from "lit/decorators.js";
 import "@nuralyui/tabs";
 import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
-import { $environment, type Environment, ViewMode } from "$store/environment";
+import { ViewMode } from "$store/environment";
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page";
 import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/store.ts";
@@ -12,13 +12,14 @@ import { $currentApplication } from "$store/apps";
 import "../Layout/ThemeContainer";
 
 import "./AI-Assistant.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
+import { ExecuteInstance } from "core/Kernel.ts";
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
     :host {
       height: calc(100vh - 90px);
       display: block;
-        width: calc(100vw - 600px);
     }
     .page-container {
       width: 100%;
@@ -74,6 +75,11 @@ export class EditorInteractivePanel extends LitElement {
 
   render() {
     return html`
+    <style>
+      :host{
+        width: ${this.mode == ViewMode.Edit ? "calc(100vw - 700px)" : "100vw"};
+      }
+    </style>
     <ai-assistant-block> </ai-assistant-block>
     <theme-contaienr>
       <div>
@@ -134,9 +140,9 @@ export class EditorInteractivePanel extends LitElement {
       this.selectedComponent = selectedComponent;
     });
 
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
-    });
+    eventDispatcher.on('Vars:currentEditingMode', (data)=>{
+      this.mode = ExecuteInstance.Vars.currentEditingMode
+    })
 
     $currentPageViewPort.subscribe(viewPort => {
       this.updateViewPort(viewPort);

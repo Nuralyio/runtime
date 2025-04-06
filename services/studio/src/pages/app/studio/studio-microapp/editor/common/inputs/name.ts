@@ -37,7 +37,7 @@ export const StudioComponentNameInput = [
     input: {
       value: {
         type: "string",
-        value: 'Value'
+        value: 'Name'
       }
     }
   },

@@ -27,7 +27,7 @@ export class BaseElementBlock extends LitElement {
   @property({ type: Object })
   component: ComponentElement;
 
-  @property({ type: Object })
+  @property({ type: Object , reflect: true})
   item: any;
   @property({ type: Boolean })
   isViewMode = false;
@@ -174,6 +174,7 @@ export class BaseElementBlock extends LitElement {
             }
             console.error(e)
             resolve();
+            throw e;
           }
         });
       } else {

@@ -107,7 +107,7 @@ export default [
                         
                         
                         let state='enabled';
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-font-size']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-input-label-font-size']){
                          state='disabled'
                         }
                         return state
@@ -150,7 +150,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    labelSizeHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-label-font-size'] || ''  
+                    labelSizeHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-input-label-font-size'] || ''  
                 
                 return [parameter,labelSizeHandler];
             `

@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
-import { createRef, type Ref, ref } from "lit/directives/ref.js";
+import { createRef, type Ref } from "lit/directives/ref.js";
 import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
 import { moveDraggedComponent } from "$store/actions/component/moveDraggedComponent.ts";
 import { $draggingComponentInfo } from "$store/component/store";
@@ -188,8 +188,8 @@ export class DragWrapper extends LitElement {
       position: "relative",
     };
        this.dropBeforePlaceHolderStyle = activeStyle;
-    this.dropBeforePlaceHolderStyle.width = this.inputRef.value?.style.width ;
-    this.dropBeforePlaceHolderStyle.height = this.inputRef.value?.style.height;
+    // this.dropBeforePlaceHolderStyle.width = this.inputRef.value?.style.width ;
+    // this.dropBeforePlaceHolderStyle.height = this.inputRef.value?.style.height;
   }
 
  

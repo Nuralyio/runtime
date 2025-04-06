@@ -5,11 +5,11 @@ import { $components, $componentWithChildren } from "$store/component/store.ts";
 import { $pages } from "$store/page.ts";
 import type { PageElement } from "$store/handlers/pages/interfaces/interface.ts";
 import { $currentApplication } from "$store/apps.ts";
-import { getVar } from "$store/context";
 import { updatePageAction } from "../page/updatePageAction";
 import { updatePageHandler } from "$store/handlers/pages/handler";
 import { updateComponentHandler } from "$store/handlers/components/update-component.handler";
 import { eventDispatcher } from "@utils/change-detection";
+import { ExecuteInstance } from "core/Kernel";
 
 export function moveDraggedComponent(
   dropInComponentId: string,
@@ -54,7 +54,7 @@ export function moveDraggedComponent(
     components.push({ ...draggedComponent });
   }
 
-  const currentPageId = getVar("global", "currentPage").value;
+  const currentPageId = ExecuteInstance.Vars.currentPage;
   const pagesForApp = $pages.get()[appUUID];
   const pageIndex = pagesForApp.findIndex((page: PageElement) => page.uuid === currentPageId);
   if (pageIndex < 0) return;

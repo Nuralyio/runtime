@@ -73,7 +73,7 @@ export default [
                         
                         
                         let state='enabled';
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['letter-spacing']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['letter-spacing']){
                          state='disabled'
                         }
                         return state
@@ -115,7 +115,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    letterSpacingHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['letter-spacing'] || ''  
+                    letterSpacingHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['letter-spacing'] || ''  
                 
                 return [parameter,letterSpacingHandler];
             `

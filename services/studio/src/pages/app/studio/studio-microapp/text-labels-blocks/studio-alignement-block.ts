@@ -80,7 +80,7 @@ export default [
                 ];
             }
         
-            const hasJustifyContentHandler = selectedComponent.styleHandlers?.['justify-content'];
+            const hasJustifyContentHandler = selectedComponent?.styleHandlers?.['justify-content'];
             const defaultTextAlign = hasJustifyContentHandler
                 ? ''
                 : selectedComponent.style?.['justify-content'] || 'start';
@@ -135,7 +135,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    horizontalAlignementHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['justify-content'] || ''  
+                    horizontalAlignementHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['justify-content'] || ''  
                 
                 return [parameter,horizontalAlignementHandler];
             `

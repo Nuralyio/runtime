@@ -5,7 +5,7 @@ import type { ComponentElement } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from "$store/handlers/components/update-component.handler.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
-import { $pages } from "$store/page.ts";
+import { $pages, refreshPageStoreVar } from "$store/page.ts";
 import { setVar } from "$store/context.ts";
 
 export function updateComponentName(
@@ -55,5 +55,6 @@ export function updateComponentName(
     });
 
   // Trigger a refresh event for any listeners
-  eventDispatcher.emit("component:refresh");
+ eventDispatcher.emit("component:updated");
+ refreshPageStoreVar()
 }

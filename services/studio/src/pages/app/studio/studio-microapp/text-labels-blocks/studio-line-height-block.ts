@@ -55,7 +55,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                         
                         
-                        const lineHeight= selectedComponent.styleHandlers && selectedComponent.style['line-height']?.split('px')[0] || 0
+                        const lineHeight= selectedComponent?.styleHandlers && selectedComponent.style['line-height']?.split('px')[0] || 0
                         if(lineHeight)
                             return lineHeight;
                         else  
@@ -72,7 +72,7 @@ export default [
                         
                         
                         let state='enabled';
-                        if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['line-height']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['line-height']){
                          state='disabled'
                         }
                         return state
@@ -115,7 +115,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    lineHeightHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['line-height'] || ''  
+                    lineHeightHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['line-height'] || ''  
                 
                 return [parameter,lineHeightHandler];
             `

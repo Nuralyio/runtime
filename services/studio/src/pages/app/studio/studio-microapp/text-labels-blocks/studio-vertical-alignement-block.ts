@@ -102,7 +102,7 @@ export default [
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
-                    verticalAlignementHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['align-items'] || ''  
+                    verticalAlignementHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['align-items'] || ''  
                 
                 return [parameter,verticalAlignementHandler];
             `

@@ -90,7 +90,7 @@ export default [
                     
                     
                     let state='enabled';
-                    if(selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-helper-text-color']){
+                    if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-input-helper-text-color']){
                         state='disabled'
                     }
                     return state;
@@ -134,7 +134,7 @@ export default [
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 
                     
-                helperColorHandler= selectedComponent.styleHandlers && selectedComponent.styleHandlers['--hybrid-input-helper-text-color'] || ''  
+                helperColorHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-input-helper-text-color'] || ''  
             
             return [parameter,helperColorHandler];
         `

@@ -494,8 +494,7 @@ export default [{
       display : {
         type: "handler",
         value: /* js */`
-            const isEdit = Vars.currentEditingMode  == "edit"
-            return !isEdit;
+            return Vars.currentEditingMode  == "preview"
             `
       },
       label: {
@@ -545,8 +544,7 @@ export default [{
       display : {
         type: "handler",
         value: /* js */`
-            const isEdit = Vars.currentEditingMode == "edit"
-            return isEdit;
+            return Vars.currentEditingMode == "edit" || Vars.currentEditingMode == undefined
             `
       },
       label: {
