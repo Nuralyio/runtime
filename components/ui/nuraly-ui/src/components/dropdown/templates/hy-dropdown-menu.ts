@@ -1,7 +1,7 @@
-import {LitElement, html, nothing} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {styles} from './hy-dropdown-menu.style.js';
-import {DropDownDirection} from '../dropdown.types';
+import { LitElement, html, nothing } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { styles } from './hy-dropdown-menu.style.js';
+import { DropDownDirection } from '../dropdown.types';
 @customElement('hy-dropdown-menu')
 export class HyDropdownMenu extends LitElement {
   static override styles = styles;

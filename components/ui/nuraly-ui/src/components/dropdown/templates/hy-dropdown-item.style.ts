@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const dropdownItemStyle = css`
     div {
@@ -16,6 +16,7 @@ const dropdownItemStyle = css`
     }
     :host(:not([disabled])) div:hover {
         background-color: var(--hybrid-dropdown-hovered-background-color);
+        margin-left: -1px;
     }
     :host([disabled]) div {
         background-color: var(--hybrid-dropdown-disabled-background-color);
