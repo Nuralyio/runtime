@@ -40,8 +40,8 @@ export class CodeEditor extends LitElement {
 
   editor?: monaco.editor.IStandaloneCodeEditor;
 
-  @property({ type: Boolean, attribute: "readonly" }) readOnly?: boolean;
-  @property() theme?: string;
+  @property({ type: Boolean, attribute: "readonly" }) readonly?: boolean;
+  @property() theme?: string = "";
   @property() language?: string;
   @property() code?: string;
 
@@ -94,7 +94,7 @@ export class CodeEditor extends LitElement {
       theme: this.getTheme(),
       fontSize: 13,
       automaticLayout: true,
-      readOnly: this.readOnly ?? false,
+      readOnly: this.readonly ?? false,
     });
 
     // Listen for content changes and re-dispatch an event:
@@ -144,6 +144,27 @@ export class CodeEditor extends LitElement {
           this.editor.setPosition(cursorPosition);
         }
       }
+    }
+    if (
+      changedProperties.has("readonly") &&
+      this.readonly !== changedProperties.get("readonly")
+    ) {
+
+      this.editor?.updateOptions({
+        readOnly: this.readonly ?? false,
+      });
+
+    }
+
+    if (
+      changedProperties.has("theme") &&
+      this.theme !== changedProperties.get("theme")
+    ) {
+
+      this.editor?.updateOptions({
+        theme: this.theme 
+      });
+
     }
   }
 

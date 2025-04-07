@@ -1,6 +1,5 @@
-import { $resizing } from "$store/apps.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
-import { $components, $draggingComponentInfo } from "$store/component/store.ts";
+import { $components } from "$store/component/store.ts";
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
@@ -11,7 +10,6 @@ import styles from "./Container.style.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
-import { eventDispatcher } from "@utils/change-detection.ts";
 import { Utils } from "core/Utils.ts";
 
 @customElement("vertical-container-block")
@@ -52,6 +50,7 @@ export class VerticalContainer extends BaseElementBlock {
   renderView() {
     return html`
       <div
+      id=${this.inputHandlersValue.id ?? nothing}
         ${ref(this.inputRef)}
         data-component-uuid=${this.component?.uuid}
         style=${styleMap({

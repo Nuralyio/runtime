@@ -77,11 +77,10 @@ export class EditorInteractivePanel extends LitElement {
     return html`
     <style>
       :host{
-        width: ${this.mode == ViewMode.Edit ? "calc(100vw - 700px)" : "100vw"};
+        width: ${this.mode == ViewMode.Edit ? "calc(100vw - 600px)" : "100vw"};
       }
     </style>
     <ai-assistant-block> </ai-assistant-block>
-    <theme-contaienr>
       <div>
         ${
           this.showContextMeny  ? html`
@@ -131,7 +130,6 @@ export class EditorInteractivePanel extends LitElement {
           </div>
         </div>
       </div>
-      </theme-contaienr>
     `;
   }
 
@@ -141,7 +139,7 @@ export class EditorInteractivePanel extends LitElement {
     });
 
     eventDispatcher.on('Vars:currentEditingMode', (data)=>{
-      this.mode = ExecuteInstance.Vars.currentEditingMode
+      this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
     })
 
     $currentPageViewPort.subscribe(viewPort => {

@@ -27,12 +27,13 @@ import "@shared/components/InsertDropdown/InsertDropdown";
 import "@shared/components/Collapse/Collapse";
 import "@shared/components/Divider/Divider";
 import "@shared/components/Handlers/Handlers";
-import "@shared/components/Function/InvokeFunction.ts"
-import "@shared/components/Export-Import/Export-Import.ts"
-import "@shared/components/Collections/Collections.ts"
-import "@shared/components/Button/Button.ts"
-import "@shared/components/TextLabel/TextLabel.ts"
-import "@shared/components/RefComponent/RefComponent.ts"
+import "@shared/components/Function/InvokeFunction.ts";
+import "@shared/components/Export-Import/Export-Import.ts";
+import "@shared/components/Collections/Collections.ts";
+import "@shared/components/Button/Button.ts";
+import "@shared/components/TextLabel/TextLabel.ts";
+import "@shared/components/RefComponent/RefComponent.ts";
+import "@shared/components/Code/Code.ts";
 
 // Reusable templates for common components
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
@@ -65,7 +66,7 @@ const dividerTemplate = (props: any, isViewMode: boolean)  => html`<divider-bloc
 const handlersTemplate = (props: any, isViewMode: boolean)  => html`<handler-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></handler-block>`;
 const dropDownTemplate = (props: any, isViewMode: boolean)  => html`<dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></dropdown-block>`;
 const refComponentTemplate = (props: any, isViewMode: boolean)  => html`<ref-component-container-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></ref-component-container-block>`;
-
+const codeTemplate = (props: any, isViewMode: boolean)  => html`<code-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></code-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -151,6 +152,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return dropDownTemplate(commonProps, isViewMode);
     case ComponentType.RefComponent:
       return refComponentTemplate(commonProps, isViewMode);
+    case ComponentType.Code:
+      return codeTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

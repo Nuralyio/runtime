@@ -22,6 +22,7 @@ export const enum ComponentType {
   RadioButton = "RadioButton",
   IconPicker = "IconPicker",
   RefComponent = "RefComponent",
+  Code = "code-block",
   UsersDropdown = "UsersDropdown",
   InsertDropdown = "InsertDropdown",
   Collapse = "Collapse",

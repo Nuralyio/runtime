@@ -260,8 +260,11 @@ export class PageContent extends LitElement {
   render() {
     return html`
     <style>
+      
       .page-container {
         --page-background-color : var(--hybrid-page-background-color);
+        margin-top: 20px;
+
       }
       @media (prefers-color-scheme: dark) {
         .page-container {
