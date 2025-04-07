@@ -152,6 +152,11 @@ export default {
                                 "studio_ref_component_theme_container"
                             ];
                             break;
+                            case "code-block":
+                                parameters=[
+                                    "code_blocks"
+                                ]
+                                break
                     }
                 }
                 else if(currentPageId) {

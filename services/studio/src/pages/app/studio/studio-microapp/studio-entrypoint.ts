@@ -84,6 +84,7 @@ import { StudioTextInput } from "./editor/right-panel-tabs/text-input/index.ts";
 import { StudioDashboard } from "./dashboard/index.ts";
 import { StudioRefComponent } from "./editor/right-panel-tabs/ref-component/index.ts";
 import { PageThemeStudio } from "./page-blocks/themes.ts";
+import { StudioCode } from "./editor/right-panel-tabs/code/index.ts";
 
 
 export default [
@@ -339,4 +340,5 @@ export default [
   ...RightPanelFunctionTab,
   ...StudioDashboard,
   ...StudioRefComponent,
+  ...StudioCode
 ];

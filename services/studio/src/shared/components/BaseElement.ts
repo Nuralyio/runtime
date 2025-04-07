@@ -132,6 +132,17 @@ export class BaseElementBlock extends LitElement {
     this.isConnected2 = true;
     this.traitInputsHandlers();
     this.traitStylesHandlers();
+    const hash = window.location.hash.replace("#", "");
+    if(hash && this.id == hash){
+      this.scrollToTarget();
+    }
+    // todo: subscribe only when component has id
+    window.addEventListener('hashchange', () =>{
+      const hash = window.location.hash.replace("#", "");
+      if(hash && this.id == hash){
+        this.scrollToTarget();
+      }
+  });
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
@@ -179,7 +190,9 @@ export class BaseElementBlock extends LitElement {
         });
       } else {
         this.inputHandlersValue[inputName] = input.value;
-
+          if(inputName = "id"){
+            this.id = input.value;
+          }
         if (this.inputHandlersValue[inputName] !== input.value) {
            this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
         }
@@ -350,6 +363,8 @@ export class BaseElementBlock extends LitElement {
       EditorInstance.currentSelection = this.currentSelection ;;
     })
     this.subscription.add(sub3)
+  }else{
+    
   }
 
   
@@ -406,7 +421,11 @@ export class BaseElementBlock extends LitElement {
     });
     this.subscription.add(keydownSubscription);
   }
-
+  scrollToTarget() {
+    if (this.inputRef.value) {
+      this.inputRef.value.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
   override disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -545,7 +564,6 @@ export class BaseElementBlock extends LitElement {
               .component=${this.component }
               .selectedComponent=${{...this.selectedComponent}}
               .display=${EditorInstance.currentSelection.includes(this.component.uuid)}
-
             ></component-title>
             `
           : nothing

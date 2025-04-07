@@ -29,6 +29,7 @@ const pageStyle = css`
     border: 16px solid #000;
     border-radius: 40px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    margin: auto;
   }
 
   .page-container.viewer {

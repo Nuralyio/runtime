@@ -75,6 +75,16 @@ export const Insert = /* js */`
             },
             icon: "crosshairs",
           },
+          {
+            label: "Code",
+            value: {
+              value: "code-block",
+              additionalData: {
+                
+              },
+            },
+            icon: "file-code",
+          },
         ];
         const inputOptions = [
           {

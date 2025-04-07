@@ -71,6 +71,7 @@ class Executor {
 
     // });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
+    eventDispatcher.on("component:updated", () => this.registerApplications())
 
     if (DEBUG) {
       console.log("Executor initialized with debug mode enabled.");
@@ -226,6 +227,7 @@ class Executor {
   }
 
   registerApplications() {
+    console.log('registerApplications: ');
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
     const loadedApplications = $applications.get();
@@ -257,6 +259,7 @@ class Executor {
       this.applications[application_id][component.name] = { ...component };
     });
     Editor.components = componentsList;
+    this.PropertiesProxy = componentsList;
     this.updateEditorContext()
 
   }

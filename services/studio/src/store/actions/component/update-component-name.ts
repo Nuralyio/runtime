@@ -7,6 +7,7 @@ import { updateComponentHandler } from "$store/handlers/components/update-compon
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { $pages, refreshPageStoreVar } from "$store/page.ts";
 import { setVar } from "$store/context.ts";
+import { ExecuteInstance } from "core/Kernel.ts";
 
 export function updateComponentName(
   application_id: string,
@@ -52,6 +53,8 @@ export function updateComponentName(
   const pagesStore = $pages.get()
     Object.keys(pagesStore).forEach((key) => {
     setVar(key, `${key}.appPages`, pagesStore[key]);
+        ExecuteInstance.VarsProxy[`${key}.appPages`] = [...pagesStore[key]];
+
     });
 
   // Trigger a refresh event for any listeners
