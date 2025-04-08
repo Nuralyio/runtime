@@ -1,5 +1,5 @@
 import { $applicationComponents, $components } from "$store/component/store.ts";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from "utils/render-util";
 import "@shared/components/TextLabel/TextLabel";
@@ -66,64 +66,103 @@ export class MicroApp extends LitElement {
   override connectedCallback(): void {
     this.setupSubscriptions();
     super.connectedCallback();
+    
+  }
+  
+  protected firstUpdated(_changedProperties: PropertyValues): void {
     this.initializeAppComponents();
     EditorInstance.setEditorMode(this.prod);
   }
-  
   override disconnectedCallback(): void {
     this.subscription.unsubscribe();
     super.disconnectedCallback();
   }
   
   /**
-   * Récupère les composants de l'application s'ils ne sont pas déjà chargés.
-   */
-  private initializeAppComponents(): void {
-    const appLoaded = $components.get()[this.uuid];
-  
-    if (this.page_uuid) {
-      $microAppCurrentPage.setKey(this.uuid, this.page_uuid);
-    }
-  
-    if (appLoaded === undefined) {
-      // Fetch components
-      fetch(`/api/components/application/${this.uuid}`)
-        .then((response) => response.json())
-        .then((data) => data.map((component) => component.component))
-        .then((data) => {
-          $components.setKey(this.uuid, data);
-          this.refreshComponent();
-          this.updateComponentsToRender();
-          this.requestUpdate();
-        });
-  
-      // Fetch pages
-      fetch(`/api/pages/application/${this.uuid}`)
-        .then((response) => response.json())
-        .then((data) => {
-          this.page = data[0];
-          this.setPageStyle();
-          this.requestUpdate();
-        });
-    } else {
-      if (window.__URL__) {
-        const page = $applicationPages(this.uuid)
-          .get()
-          .find((page: PageElement) => page.url === window.__URL__)?.uuid;
-  
-        this.page = page;
-      } else {
-        this.page = $currentPage(this.uuid, this.page_uuid).get().uuid;
-      }
-  
-      if (this.page) {
-        this.page_uuid = this.page;
-      }
-  
-      this.refreshComponent();
-      this.setPageStyle();
-    }
+ * Récupère les composants de l'application s'ils ne sont pas déjà chargés.
+ */
+private initializeAppComponents(): void {
+  console.log('Initializing app components for UUID:', this.uuid);
+
+  const appLoaded = $components.get()[this.uuid];
+  console.log('App already loaded?', appLoaded !== undefined);
+
+  if (this.page_uuid) {
+    console.log('Setting current page UUID in micro app:', this.page_uuid);
+    $microAppCurrentPage.setKey(this.uuid, this.page_uuid);
   }
+
+  if (appLoaded === undefined) {
+    console.log('App not loaded yet, fetching components and pages...');
+
+    // Fetch components
+    fetch(`/api/components/application/${this.uuid}`)
+      .then((response) => {
+        console.log('Component fetch response:', response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Raw components data:', data);
+        const components = data.map((component) => component.component);
+        console.log('Extracted components:', components);
+        return components;
+      })
+      .then((components) => {
+        $components.setKey(this.uuid, components);
+        console.log('Components set in store');
+        this.refreshComponent();
+        this.updateComponentsToRender();
+        this.requestUpdate();
+        console.log('Component UI refreshed');
+      })
+      .catch((error) => {
+        console.error('Error fetching components:', error);
+      });
+
+    // Fetch pages
+    fetch(`/api/pages/application/${this.uuid}`)
+      .then((response) => {
+        console.log('Page fetch response:', response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Fetched pages:', data);
+        this.page = data[0];
+        console.log('Set first page as current page:', this.page);
+        this.setPageStyle();
+        this.requestUpdate();
+      })
+      .catch((error) => {
+        console.error('Error fetching pages:', error);
+      });
+
+  } else {
+    console.log('App already loaded, resolving current page...');
+
+    if (window.__URL__) {
+      const page = $applicationPages(this.uuid)
+        .get()
+        .find((page: PageElement) => page.url === window.__URL__)?.uuid;
+
+      console.log('Page found by URL:', window.__URL__, '=>', page);
+      this.page = page;
+    } else {
+      const currentPage = $currentPage(this.uuid, this.page_uuid).get().uuid;
+      console.log('Current page from store:', currentPage);
+      this.page = currentPage;
+    }
+
+    if (this.page) {
+      console.log('Setting page_uuid to:', this.page);
+      this.page_uuid = this.page;
+    }
+
+    this.refreshComponent();
+    console.log('Component refreshed');
+    this.setPageStyle();
+    console.log('Page style set');
+  }
+}
 
   /**
    * Définit le style de la page.
