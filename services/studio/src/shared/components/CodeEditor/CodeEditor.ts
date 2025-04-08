@@ -10,16 +10,36 @@ import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 // @ts-ignore
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
+/**
+ * @todo: add worker for those
+ *    { label: "JS/Typescript", value: "javascript" },
+                { label: "Python", value: "python" },
+                { label: "Java", value: "java" },
+                { label: "C#", value: "csharp" },
+                { label: "C++", value: "cpp" },
+                { label: "Go", value: "go" },
+                { label: "Rust", value: "rust" },
+                { label: "PHP", value: "php" },
+                { label: "Ruby", value: "ruby" },
+                { label: "HTML/CSS", value: "html" },
+                { label: "SQL", value: "sql" }      
+                
+ */
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 
 // Make sure Monaco uses the right workers:
 (self as any).MonacoEnvironment = {
   getWorker(_: any, label: string) {
+    console.log(label)
     if (label === "typescript" || label === "javascript") {
       return new tsWorker();
     }
     if (label === "json") {
       return new jsonWorker();
+    }
+    if (label === "html") {
+      return new htmlWorker();
     }
     return new editorWorker();
   },
@@ -154,6 +174,19 @@ export class CodeEditor extends LitElement {
         readOnly: this.readonly ?? false,
       });
 
+    }
+
+    if (
+      changedProperties.has("language") &&
+      this.language !== changedProperties.get("language")
+    ) {
+
+      if (this.editor && this.editor.getModel()) {
+        monaco.editor.setModelLanguage(
+          this.editor.getModel()!,
+          this.language || "plaintext"
+        );
+      }
     }
 
     if (

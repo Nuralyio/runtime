@@ -23,6 +23,8 @@ export const enum ComponentType {
   IconPicker = "IconPicker",
   RefComponent = "RefComponent",
   Code = "code-block",
+  RichText = "rich-text",
+  RichTextEditor = "rich-text-editor",
   UsersDropdown = "UsersDropdown",
   InsertDropdown = "InsertDropdown",
   Collapse = "Collapse",

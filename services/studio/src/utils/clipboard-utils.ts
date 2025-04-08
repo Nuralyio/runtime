@@ -21,37 +21,36 @@ export function copyCpmponentToClipboard(component : ComponentElement) {
 
 export function pasteComponentFromClipboard() {
     navigator.clipboard.readText().then(clipboardText => {
-        console.log("Text pasted:", clipboardText);
-        try {
-            const schema = JSON.parse(clipboardText);
-            if (schema.version !== "1.0") {
-                console.error("Schema version not supported");
-                return;
-            } else {
-                const newSchema = transformSchemaWithNewUUIDs(schema);
-                console.log("Schema successfully transformed:", newSchema);
-                const [rootComponents, childrens] = findRootAndChildren(newSchema);
-                console.log(rootComponents, childrens);
-                const application_id = $currentApplication.get()?.uuid;
-                 const currentPage =ExecuteInstance.Vars.currentPage;
-                 console.log("Current page:", currentPage);
-                 console.log("Current application:", application_id);
-                 childrens.forEach(component => {
-                    delete component.root;
-                    addComponentAction(component, currentPage, application_id, false);
-                }
-                );
-                rootComponents.forEach(component => {
-                    delete component.root;
-                    addComponentAction(component, currentPage, application_id);
-                });
-            }
-        } catch (err) {
-            console.error("Error while reading the text:", err);
-        }
+        traitCompoentFromSchema(clipboardText);
     }).catch(err => {
         console.error("Error while reading the text:", err);
     });
+}
+
+export function traitCompoentFromSchema(clipboardText) {
+    try {
+        const schema = JSON.parse(clipboardText);
+        if (schema.version !== "1.0") {
+            console.error("Schema version not supported");
+            return;
+        } else {
+            const newSchema = transformSchemaWithNewUUIDs(schema);
+            const [rootComponents, childrens] = findRootAndChildren(newSchema);
+            const application_id = $currentApplication.get()?.uuid;
+             const currentPage =ExecuteInstance.Vars.currentPage;
+             childrens.forEach(component => {
+                delete component.root;
+                addComponentAction(component, currentPage, application_id, false);
+            }
+            );
+            rootComponents.forEach(component => {
+                delete component.root;
+                addComponentAction(component, currentPage, application_id);
+            });
+        }
+    } catch (err) {
+        console.error("Error while reading the text:", err);
+    }
 }
 
 export function generateNuralyClipboardStructure(component, childrenComponents) {

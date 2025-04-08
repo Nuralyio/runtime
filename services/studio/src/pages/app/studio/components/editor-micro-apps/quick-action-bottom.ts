@@ -28,11 +28,32 @@ export default [
     application_id: "1",
     name: "dropdonwn-context",
     component_type: ComponentType.Dropdown,
+    input : {
+      show:{
+        type : "boolean",
+        value : true
+      },
+      options:{
+        type: "handler",
+        value: /* javascript */`
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          let options = [];
+          if(selectedComponent){
+            options = [
+              { label: 'Copy', value: 'Copy', icon: 'copy' },
+              { label: 'Paste', value: 'Paste', icon: 'paste' },
+              { label: 'Delete', value: 'Delete', icon: 'trash' },
+              { label: 'Export', value: 'value12' },
+              { label: 'Import', value: 'value12' },
+            ];
+          }
+          return options;
+        `
+      }
+    },
     event : {
       onItemClicked: /* javascript */`
       const selectedComponent = Utils.first(Vars.selectedComponents);
-      console.clear();
-      console.log(EventData.value);
       switch(EventData.value) {
         case 'Copy':
           CopyComponentToClipboard(selectedComponent);

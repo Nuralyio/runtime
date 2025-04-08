@@ -80,8 +80,8 @@ export class BaseElementBlock extends LitElement {
   private selectComponentActionClickBound = (e) => {
     if (!this.isViewMode) {
       this.selectComponentAction(e);
-      e.preventDefault();
-      e.stopPropagation();
+      // e.preventDefault();
+      // e.stopPropagation();
     }
   };
 
@@ -183,7 +183,6 @@ export class BaseElementBlock extends LitElement {
             this.errors[inputName] = {
                 error: e.message,
             }
-            console.error(e)
             resolve();
             throw e;
           }

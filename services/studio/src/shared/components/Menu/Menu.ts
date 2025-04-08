@@ -1,5 +1,5 @@
 import type { ComponentElement } from "$store/component/interface.ts";
-import { css, html, nothing } from "lit";
+import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/menu/templates/hy-sub-menu.js";
 import "@nuralyui/menu/templates/hy-menu-link.js";
@@ -8,6 +8,7 @@ import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { EMPTY_STRING } from "@utils/constants.ts";
+import { ref } from "lit/directives/ref.js";
 
 @customElement("menu-block")
 export class MenuBlock extends BaseElementBlock {
@@ -61,11 +62,13 @@ export class MenuBlock extends BaseElementBlock {
 
   override renderComponent() {
     return html`
-      <div>
-        ${this.error ? html`
-          <pre class="error">${this.error}</pre>` : nothing}
+      
         <hy-menu
-          style=${styleMap({ ...this.component?.style })}
+                    ${ref(this.inputRef)}
+
+          style=${styleMap({ ...this.getStyles(), 
+            display : 'block',
+           })}
           placeholder="Select an option"
           .items=${this.inputHandlersValue?.options ?? []}
           @action-click=${this.onActionClick}
@@ -83,7 +86,6 @@ export class MenuBlock extends BaseElementBlock {
       });
     }}">
         </hy-menu>
-      </div>
     `;
   }
 }

@@ -5,6 +5,8 @@ import { deleteComponentActionHandler } from "$store/handlers/components/delete-
 import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { removeComponentToCurrentPageAction } from "$store/actions/page/removeComponentToCurrentPageAction.ts";
 
+
+// todo: remove component from the parent
 export async function deleteComponentAction(componentId: string, application_id: string) {
   const components = $components.get()[application_id];
 

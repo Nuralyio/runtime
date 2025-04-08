@@ -156,7 +156,51 @@ export default {
                                 parameters=[
                                     "code_blocks"
                                 ]
-                                break
+                            break
+                            case "rich-text":
+                                parameters=[
+                                    "rich_text_blocks"
+                                ]
+                                handlers=[
+                                    "studio_rich_text_handler"
+                                ]
+                                themes=[
+                                    "studio_rich_text_theme_container"
+                                ]
+                            break
+                            case "rich-text-editor": 
+                                parameters=[
+                                    "rich_text_editor_blocks"
+                                ]
+                                handlers=[
+                                    "studio_rich_text_editor_handler"
+                                ]
+                                themes=[
+                                    "studio_rich_text_editor_theme_container"
+                                ]
+                            break
+                            case "menu":
+                                parameters=[
+                                    "menu_blocks"
+                                ]
+                                handlers=[
+                                    "studio_menu_handler"
+                                ]
+                                themes=[
+                                    "studio_menu_theme_container"
+                                ]
+                            break
+                            case "dropdown":
+                                parameters=[
+                                    "dropdown_blocks"
+                                ]
+                                handlers=[
+                                    "studio_dropdown_handler"
+                                ]
+                                themes=[
+                                    "studio_dropdown_theme_container"
+                                ]
+                            break
                     }
                 }
                 else if(currentPageId) {

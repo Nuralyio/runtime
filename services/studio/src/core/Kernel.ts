@@ -18,7 +18,7 @@ import { Utils } from "./Utils";
 import Editor from "./Editor";
 import { Navigation } from "./Navigation";
 import { updateComponentName } from "$store/actions/component/update-component-name";
-import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
+import { copyCpmponentToClipboard, pasteComponentFromClipboard, traitCompoentFromSchema } from "@utils/clipboard-utils";
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction";
 import type { PageElement } from "$store/handlers/pages/interfaces/interface";
 import { deletePageAction } from "$store/actions/page/deletePageAction";
@@ -56,20 +56,14 @@ class Executor {
   GetContextVar:  any;
   Event: Event;
   private constructor() {
+    if(isServer){
+      return;
+    }
     this.PropertiesProxy = this.createProxy(this.Properties);
     this.VarsProxy = this.createProxy(this.Vars, 'Vars' );
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
-    // $context.subscribe(() => {
-    //   this.currentPlatform = this.VarsProxy.currentPlatform ?? {
-    //     platform: "desktop",
-    //     isMobile: false,
-    //   };
-    //   this.registerApplications();
-
-
-    // });
     eventDispatcher.on("component:refresh", () => this.registerApplications())
     eventDispatcher.on("component:updated", () => this.registerApplications())
 
@@ -227,7 +221,7 @@ class Executor {
   }
 
   registerApplications() {
-    console.log('registerApplications: ');
+    // console.log('registerApplications: ');
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
     const loadedApplications = $applications.get();
@@ -284,6 +278,7 @@ class Executor {
         "AddComponent",
         "SetContextVar",
         "AddPage",
+        "TraitCompoentFromSchema",
         "Navigation",
         "UpdatePage",
         "context",
@@ -331,6 +326,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
 ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
 
 // Only create the proxy once
+
+// TODO: Implement the Current.values proxy to manage scoped data.
+// TODO: Add support for accessing and modifying parent values.
 if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   const newProxy = observe(ExecuteInstance.Current.style, (target,prop, value) => {
     ExecuteInstance.setcomponentRuntimeStyleAttribute(
@@ -372,6 +370,11 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
       });
     });
   }
+
+  function TraitCompoentFromSchema(text){
+    traitCompoentFromSchema(text);
+  }
+
 
   function updatePage(page: any): Promise<any> {
     return new Promise((resolve) => {
@@ -510,6 +513,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     AddComponent,
     SetContextVar,
     AddPage,
+    TraitCompoentFromSchema,
     Navigation,
     updatePage,
     context,

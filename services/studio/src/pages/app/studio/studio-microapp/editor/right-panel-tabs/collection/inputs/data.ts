@@ -50,7 +50,6 @@ export default [
                 if (selectedComponent?.input?.data?.type === 'handler' && selectedComponent?.input?.data?.value) {
                     labelHandler = selectedComponent?.input?.data.value;
                 }
-                
                 return [parameter, labelHandler];
             `
       }
