@@ -61,7 +61,7 @@ export class ComponentTitle extends LitElement {
             background: "#2395ff"
           })
         }> ${this.component.name} </span>
-        ${this.component.component_type ===ComponentType.Container ? html`
+        ${this.component.component_type ===ComponentType.Container && false ? html`
         <micro-app
       style=${styleMap({
       })}

@@ -272,14 +272,14 @@ export class PageContent extends LitElement {
         }
       }
     </style>
-    <micro-app
+    <!-- <micro-app
       style=${styleMap({
         "z-index": 9999999,
         position: "absolute",
         bottom: "10px",
         left: "40%",
       })}
-    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app>
+    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app> -->
       <style>
         :host{
           zoom: ${this.zoomLevel}%;

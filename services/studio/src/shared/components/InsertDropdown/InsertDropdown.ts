@@ -27,6 +27,8 @@ export class InsertDropdownBlock extends BaseElementBlock {
     return html`
       <hy-dropdown
       style=${styleMap({ ...this.getStyles() , 
+    "--hybrid-icon-color": "#515151",
+        
                })}
         trigger=${this.inputHandlersValue?.trigger ?? nothing}
         .options=${this.inputHandlersValue?.options ?? []}

@@ -7,6 +7,8 @@ import { getNestedAttribute } from "../../../utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
 
+import "../RichText/RichTextEditor.ts";
+
 
 
 @customElement("code-block")
@@ -65,11 +67,17 @@ export class TextInputBlock extends BaseElementBlock {
 
         return html`
       <code-editor
+      @click=${(e) => {
+                this.executeEvent("onClick", e);
+            }   
+      }
+      ${ref(this.inputRef)}
       style=${styleMap({
             ...this.getStyles(),
             display: "block",
         })
             }
+            language="${this.inputHandlersValue?.language ?? "javascript"}"
       theme="${this.inputHandlersValue?.theme ?? "vs"}"
                    ${ref(this.inputRef)}
         .readonly=${this.inputHandlersValue?.readonly ?? this.isViewMode === true}

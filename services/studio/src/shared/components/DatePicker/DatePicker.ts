@@ -10,7 +10,7 @@ import { getNestedAttribute } from "@utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 
 @customElement("date-picker-block")
-export class SelectBlock extends BaseElementBlock {
+export class DatepickertBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 

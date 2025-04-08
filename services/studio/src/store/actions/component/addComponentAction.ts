@@ -40,6 +40,7 @@ export const addComponentAction = (
   if (currentComponentId) {
     if (
       currentComponent?.component_type === ComponentType.Container ||
+      currentComponent?.component_type === ComponentType.Dropdown ||
       currentComponent?.component_type === ComponentType.Collection
     ) {
       // Add as child of the current component

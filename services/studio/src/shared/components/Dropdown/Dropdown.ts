@@ -4,27 +4,31 @@ import "@nuralyui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { $environment, ViewMode } from "$store/environment.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
 import { ref } from "lit/directives/ref.js";
+import { $components } from "$store/component/store.ts";
+import { renderComponent } from "@utils/render-util.ts";
+import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 
 
 @customElement("dropdown-block")
-export class SelectBlock extends BaseElementBlock {
+export class DropdownBlock extends BaseElementBlock {
     @property({ type: Object })
     component: ComponentElement;
 
+    @state() childrenComponents: ComponentElement[] = [];
+
     @state()
     options: any[] = [
-        { label: 'Copy', value: 'Copy', icon: 'copy'  },
-        { label: 'Paste', value: 'Paste', icon: 'paste'  },
+        { label: 'Copy', value: 'Copy', icon: 'copy' },
+        { label: 'Paste', value: 'Paste', icon: 'paste' },
         { label: 'Delete', value: 'Delete', icon: 'trash' },
         { label: 'Export', value: 'value12' },
         { label: 'Import', value: 'value12' },
     ];
-    show = true;
+    show = false;
 
     constructor() {
         super();
@@ -36,6 +40,22 @@ export class SelectBlock extends BaseElementBlock {
         this.registerCallback("value", (v) => {
             this.requestUpdate();
         });
+    }
+
+    private updateChildrenComponents(): void {
+        this.childrenComponents = this.component?.childrenIds
+            ?.map((id) => {
+                return $components.get()[this.component?.application_id]?.find(
+                    (component) => component.uuid === id
+                );
+            })
+            .filter(Boolean) ?? [];
+    }
+
+    override updated(changedProperties: Map<string, any>) {
+        if (changedProperties.has("component")) {
+            this.updateChildrenComponents();
+        }
     }
 
     handleValueChange = (customEvent: CustomEvent) => {
@@ -53,27 +73,67 @@ export class SelectBlock extends BaseElementBlock {
         const selectStyles = this.component?.style || {};
 
         return html`
-    <span>
       <hy-dropdown  
-      .show=${this.show}
+      .show=${this.inputHandlersValue.show}
             ${ref(this.inputRef)}
             style=${styleMap({
             ...this.getStyles(),
         })} 
         
         trigger="click"
-          .options=${this.options}
-          @click-item=${(e: CustomEvent) =>{
-             if (this.component.event?.onItemClicked) {
-                executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onItemClicked`), {
-                    value: e.detail.value
-                });
-              }
-          }}
+          .options=${this.inputHandlersValue.options || options}
+          @click-item=${(e: CustomEvent) => {
+
+                executeCodeWithClosure(this.component,
+                    /* js */ `
+                    try {
+                        Vars.currentValue = "${e.detail.value}"
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    `, {});
+                if (this.component.event?.onItemClicked) {
+                    executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onItemClicked`), {
+                        value: e.detail.value
+                    });
+                }
+            }}
             >
-       
+       <span>
+        ${this.childrenComponents.length
+                ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode)
+                : html`
+                     <hy-label
+                style=${styleMap({
+                    "--resolved-text-label-color": this.getStyles()["title-color"],
+                })}
+                >${this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ??  nothing}</hy-label>
+                  
+                <drag-wrapper
+                        .where=${"inside"}
+                        .message=${"Drop inside"}
+                        .component=${{ ...this.component }}
+                        .inputRef=${this.inputRef}
+                        .isDragInitiator=${this.isDragInitiator}
+                      >
+                      </drag-wrapper>
+                <!-- <div
+                      class="empty-message"
+                      @click="${() => setCurrentComponentIdAction(this.component?.uuid)}"
+                    >
+                      Add or Drag an item into this container
+                      <drag-wrapper
+                        .where=${"inside"}
+                        .message=${"Drop inside"}
+                        .component=${{ ...this.component }}
+                        .inputRef=${this.inputRef}
+                        .isDragInitiator=${this.isDragInitiator}
+                      >
+                      </drag-wrapper>
+                    </div> -->
+                  `}
+       </span>
       </hy-dropdown>
-        </span>
     `;
     }
 }

@@ -77,7 +77,7 @@ export class EditorInteractivePanel extends LitElement {
     return html`
     <style>
       :host{
-        width: ${this.mode == ViewMode.Edit ? "calc(100vw - 600px)" : "100vw"};
+        width: ${this.mode == ViewMode.Edit ? "calc(100vw - 650px)" : "100vw"};
       }
     </style>
     <ai-assistant-block> </ai-assistant-block>

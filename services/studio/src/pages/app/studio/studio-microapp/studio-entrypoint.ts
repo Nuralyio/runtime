@@ -85,6 +85,10 @@ import { StudioDashboard } from "./dashboard/index.ts";
 import { StudioRefComponent } from "./editor/right-panel-tabs/ref-component/index.ts";
 import { PageThemeStudio } from "./page-blocks/themes.ts";
 import { StudioCode } from "./editor/right-panel-tabs/code/index.ts";
+import { StudioMenu } from "./editor/right-panel-tabs/menu/index.ts";
+import { StudioRichText } from "./editor/right-panel-tabs/Richtext/index.ts";
+import { StudioDropdown } from "./editor/right-panel-tabs/dropdown/index.ts";
+import { StudioRichTextEditor } from "./editor/right-panel-tabs/RichtextEditor/index.ts";
 
 
 export default [
@@ -340,5 +344,9 @@ export default [
   ...RightPanelFunctionTab,
   ...StudioDashboard,
   ...StudioRefComponent,
-  ...StudioCode
+  ...StudioCode,
+  ...StudioMenu,
+  ...StudioRichText,
+  ...StudioRichTextEditor,
+  ...StudioDropdown
 ];
