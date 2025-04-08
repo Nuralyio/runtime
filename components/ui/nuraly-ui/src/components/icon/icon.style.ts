@@ -3,7 +3,7 @@ import {styleVariables} from './icon.variables.js';
 
 const iconStyles = css`
   .svg-icon {
-    fill: var(--hybrid-icon-color);
+    fill: var(--hybrid-icon-color, #000000);
     width: var(--hybrid-icon-width);
     height: var(--hybrid-icon-height);
   }

@@ -1,8 +1,8 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 export const styleVariables = css`
   :host {
-    --hybrid-icon-color: #000000;
+    /* --hybrid-icon-color: #000000; */
     --hybrid-icon-width: 18px;
     --hybrid-icon-height: 18px;
   }
