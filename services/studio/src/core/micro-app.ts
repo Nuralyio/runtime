@@ -64,14 +64,14 @@ export class MicroApp extends LitElement {
   }
 
   override connectedCallback(): void {
-    this.setupSubscriptions();
     super.connectedCallback();
-    
+    this.setupSubscriptions();
+    EditorInstance.setEditorMode(this.prod);
+    this.initializeAppComponents();
   }
   
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this.initializeAppComponents();
-    EditorInstance.setEditorMode(this.prod);
+    
   }
   override disconnectedCallback(): void {
     this.subscription.unsubscribe();
