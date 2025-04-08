@@ -1,8 +1,12 @@
 ---
-const { params } = Astro;
-const segments = params.params ? params.params.split('/') : [];
-const page_url = segments[0] ;
-import Index from './index.astro';
+const { params } = Astro.params;
+// const segments = params.params ? params.params.split('/') : [];
+const page_url = "segments[0]" ;
+import Index from './_index.astro';
 ---
-<Index page_url={page_url} param2={page_url} />
+<script define:vars={{ params }}>
+  window.__URL__ = params;
+
+</script>
+<Index page_url={params} param2={page_url} />
 

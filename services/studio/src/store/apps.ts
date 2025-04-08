@@ -1,7 +1,7 @@
 import { atom, deepMap, keepMount } from "nanostores";
-import { persistentAtom } from "@nanostores/persistent";
 
 import { setVar } from "./context";
+import deepEqual from "fast-deep-equal";
 
 const isServer = typeof window === "undefined";
 
@@ -31,7 +31,6 @@ export const $applications = atom<any>([...initialState, ...coreApplications]);
 export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
 export const $values = deepMap<any>({});
-import deepEqual from "fast-deep-equal";
 
 
 export function setValue(componentId, key, value) {

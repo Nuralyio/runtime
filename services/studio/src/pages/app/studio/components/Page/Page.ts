@@ -96,7 +96,26 @@ export class PageContent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    const currentPage = ExecuteInstance.Vars.currentPage;
+    console.log("window.__URL__", window.__URL__);
+    if (!currentPage && $currentApplication.get()) {
+      if(window.__URL__){
+        const page = $applicationPages($currentApplication.get()?.uuid).get().find((page: PageElement) => {
+          return page.url === window.__URL__;
+        }
+        )?.uuid;
+        if(page){
+          ExecuteInstance.VarsProxy.currentPage = page;
+        }else{
+          ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
 
+        }
+      }else{
+      ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
+        
+      }
+
+    }
     eventDispatcher.on('Vars:currentEditingMode', (data)=>{
       if(! ExecuteInstance.Vars.currentEditingMode ){
         ExecuteInstance.Vars.currentEditingMode =  ViewMode.Edit;
@@ -140,11 +159,7 @@ export class PageContent extends LitElement {
     window.onresize = () => {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
-    const currentPage = ExecuteInstance.Vars.currentPage;
-
-    if (!currentPage && $currentApplication.get()) {
-      ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
-    }
+   
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
   }
 

@@ -1,6 +1,5 @@
 import { atom } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
-import deepEqual from "fast-deep-equal";
 
 
 const isServer = typeof window === "undefined";

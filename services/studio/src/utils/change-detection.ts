@@ -1,5 +1,5 @@
-import { Subject, Observable, Subscription, BehaviorSubject, timer } from 'rxjs';
-import { share, switchMap } from 'rxjs/operators';
+import { Subject, Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { share } from 'rxjs/operators';
 
 class EventDispatcher {
   private static instance: EventDispatcher;

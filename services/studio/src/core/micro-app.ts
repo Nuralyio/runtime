@@ -4,12 +4,13 @@ import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from "utils/render-util";
 import "@shared/components/TextLabel/TextLabel";
 import "@shared/components/Containers/Container";
-import { $currentPage, $microAppCurrentPage } from "$store/page";
+import { $applicationPages, $currentPage, $microAppCurrentPage } from "$store/page";
 import { eventDispatcher } from "utils/change-detection";
 import { ViewMode } from "$store/environment";
 import { merge, Observable, Subscription } from "rxjs";
 import EditorInstance from "./Editor";
 import { styleMap } from "lit/directives/style-map.js";
+import type { PageElement } from "$store/handlers/pages/interfaces/interface";
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
@@ -79,30 +80,47 @@ export class MicroApp extends LitElement {
    */
   private initializeAppComponents(): void {
     const appLoaded = $components.get()[this.uuid];
+  
     if (this.page_uuid) {
       $microAppCurrentPage.setKey(this.uuid, this.page_uuid);
     }
+  
     if (appLoaded === undefined) {
+      // Fetch components
       fetch(`/api/components/application/${this.uuid}`)
         .then((response) => response.json())
         .then((data) => data.map((component) => component.component))
         .then((data) => {
           $components.setKey(this.uuid, data);
-          this.refreshComponent()
+          this.refreshComponent();
           this.updateComponentsToRender();
           this.requestUpdate();
         });
-
-        this.page_uuid && fetch(`/api/pages/${this.page_uuid}`)
+  
+      // Fetch pages
+      fetch(`/api/pages/application/${this.uuid}`)
         .then((response) => response.json())
         .then((data) => {
-          this.page = data;
+          this.page = data[0];
           this.setPageStyle();
           this.requestUpdate();
-
         });
     } else {
-      this.page = $currentPage(this.uuid, this.page_uuid).get();
+      if (window.__URL__) {
+        const page = $applicationPages(this.uuid)
+          .get()
+          .find((page: PageElement) => page.url === window.__URL__)?.uuid;
+  
+        this.page = page;
+      } else {
+        this.page = $currentPage(this.uuid, this.page_uuid).get().uuid;
+      }
+  
+      if (this.page) {
+        this.page_uuid = this.page;
+      }
+  
+      this.refreshComponent();
       this.setPageStyle();
     }
   }
