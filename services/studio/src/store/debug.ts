@@ -1,4 +1,3 @@
-import { log, logger } from "@nanostores/logger";
 import { atom, keepMount } from "nanostores";
 
 

@@ -168,10 +168,11 @@ html {
   }
 }
 </style>
-<script define:vars={{ pageData, componentData, applications, application , functionAppUUID }}>
+<script define:vars={{ pageData, componentData, applications, application , functionAppUUID, urls }}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
   window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
   window.__FUNCTION_APP_UUID__ = functionAppUUID;
+  window.__URL__ = urls;
 </script>

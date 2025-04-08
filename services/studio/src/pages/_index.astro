@@ -7,7 +7,7 @@ import { processHeaders } from '@utils/api-calls-utils';
 import { fetchApplicationPagesById } from '@services/page.service';
 import { fetchApplicationComponentById } from '@services/component.service';
 import { fetchAllApplications } from '@services/applications.service';
-
+const { page_url } = Astro.props;
 const homeAppUUID = process.env.HOME_APP_UUID;
 const homeAppPageUUID = process.env.HOME_PAGE_UUID;
 let pageData, componentData, applications, application;
