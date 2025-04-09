@@ -9,6 +9,7 @@ import { getNestedAttribute } from "@utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { EMPTY_STRING } from "@utils/constants.ts";
 import { ref } from "lit/directives/ref.js";
+import "@nuralyui/menu";
 
 @customElement("menu-block")
 export class MenuBlock extends BaseElementBlock {
