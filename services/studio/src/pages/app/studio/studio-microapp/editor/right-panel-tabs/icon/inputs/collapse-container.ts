@@ -2,6 +2,7 @@ import { generateDynamicContainer } from "../../../utils/input-collapse-containe
 
 export const StudioIconCollapseContainer = generateDynamicContainer("icon_collapse_container", [
   "component_value_text_block",
+  "component_id_text_block",
   "icon_picker_block",
   "icon_color_block"
 

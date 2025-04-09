@@ -3,6 +3,7 @@ import { generateDynamicContainer } from "../../../utils/input-collapse-containe
 // Example usage
 export const StudioTextInputContainer = generateDynamicContainer("text_input_collapse_container", [
   "component_value_text_block",
+  "component_id_text_block",
   "value_text_block",
   "helper_text_block",
   "label_text_block",

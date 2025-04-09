@@ -2,6 +2,7 @@ import { generateDynamicContainer } from "../../../utils/input-collapse-containe
 
 export const StudioInputCollapseContainer = generateDynamicContainer("datepicker_input_collapse_container", [
   "component_value_text_block",
+  "component_id_text_block",
   "value_text_block",
   "datepicker_locale_block",
   "size_block",
