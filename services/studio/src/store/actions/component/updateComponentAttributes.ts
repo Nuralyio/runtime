@@ -5,7 +5,6 @@ import type { ComponentElement } from "$store/component/interface.ts";
 import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from "$store/handlers/components/update-component.handler.ts";
 import type { UpdateType } from "$store/actions/component.ts";
-import { getVar } from "$store/context.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { ExecuteInstance } from "core/Kernel.ts";
 
@@ -18,7 +17,7 @@ export function updateComponentAttributes(
 ) {
   
   // Retrieve the currentPlatform from global context
-  const currentPlatform = getVar("global", "currentPlatform")?.value ?? {
+  const currentPlatform = ExecuteInstance.Vars.currentPlatform ?? {
     platform: "desktop",
     isMobile: false,
   };
