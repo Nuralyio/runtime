@@ -84,6 +84,7 @@ export class VerticalContainer extends BaseElementBlock {
             <div
               ${ref(this.inputRef)}
               data-component-uuid=${this.component?.uuid}
+              data-component-name=${this.component?.name}
               ${ref(this.containerRef)}
               @click="${(e: Event) => {
                 setContextMenuEvent(null);
