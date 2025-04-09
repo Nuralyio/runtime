@@ -80,8 +80,8 @@ export class BaseElementBlock extends LitElement {
   private selectComponentActionClickBound = (e) => {
     if (!this.isViewMode) {
       this.selectComponentAction(e);
-      // e.preventDefault();
-      // e.stopPropagation();
+       e.preventDefault();
+       e.stopPropagation();
     }
   };
 
