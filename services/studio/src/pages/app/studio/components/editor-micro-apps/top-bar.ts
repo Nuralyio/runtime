@@ -1,4 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { Edit } from "./top-menu/edit";
 import { Insert } from "./top-menu/insert";
 
 export default [{
@@ -113,12 +114,13 @@ export default [{
   name: "app insert top bar",
   application_id: "1",
   style: {
-    "--text-label-color": "white",
+    "--text-label-color": "#515151",
+    "--hybrid-icon-color": "#515151",
     "title-color": "white",
-    "--resolved-text-label-color": "white",
     "--hybrid-button-hover-background-color": "white",
-    "border-left": "1px solid grey",
-    "padding-left": "14px",
+    // "border-left": "1px solid grey",
+    "padding-left": "12px",
+    "padding-right": "12px",
   },
   component_type: ComponentType.InsertDropdown,
   input: {
@@ -140,7 +142,7 @@ export default [{
     },
     options: {
       type: "handler",
-      value: Insert
+      value: Edit
     }
   },
   event: {
