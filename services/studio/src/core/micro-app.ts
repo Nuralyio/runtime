@@ -147,9 +147,17 @@ private initializeAppComponents(): void {
       console.log('Page found by URL:', window.__URL__, '=>', page);
       this.page = page;
     } else {
-      const currentPage = $currentPage(this.uuid, this.page_uuid).get().uuid;
+      const currentPage = $currentPage(this.uuid, this.page_uuid).get()?.uuid;
       console.log('Current page from store:', currentPage);
-      this.page = currentPage;
+      if(currentPage){
+        this.page = currentPage;
+
+      }else{
+        const pages = $applicationPages(this.uuid).get();
+        console.log('All pages:', pages);
+        this.page = pages[0]?.uuid;
+        console.log('Defaulting to first page:', this.page);
+      }
     }
 
     if (this.page) {
