@@ -27,6 +27,7 @@ import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
 import { setEnvirementMode } from "$store/actions/editor/setEnvirementMode";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
 import { ExecuteInstance } from "core/Kernel";
+import EditorInstance from "core/Editor";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -47,6 +48,8 @@ export class PageContent extends LitElement {
     eventDispatcher.onAny((eventName, data) => {
       this.refreshComponent();
     });
+
+    EditorInstance.updatePlatform ()
 
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
       this.draggingComponentInfo = draggingComponentInfo || null;

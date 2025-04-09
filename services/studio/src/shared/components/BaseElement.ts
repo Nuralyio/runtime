@@ -6,7 +6,7 @@ import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
 import { isServer } from "../../utils/envirement.ts";
 import { $context } from "$store/context.ts";
-import Editor from "core/Editor.ts";
+import Editor, { getInitPlatform } from "core/Editor.ts";
 import { createRef, type Ref } from "lit/directives/ref.js";
 import { $hoveredComponent, $runtimeStylescomponentStyleByID } from "$store/component/store.ts";
 import { setHoveredComponentAction } from "$store/actions/component/setHoveredComponentAction.ts";
@@ -105,10 +105,7 @@ export class BaseElementBlock extends LitElement {
     super();
    
     this.ExecuteInstance = ExecuteInstance;
-    const newPlatform = ExecuteInstance.Vars.currentPlatform ?? {
-      platform: "desktop",
-      isMobile: false,
-    };
+    const newPlatform = ExecuteInstance.Vars.currentPlatform ?? getInitPlatform();
     this.currentPlatform = newPlatform;
     
         const context =   $context.get()

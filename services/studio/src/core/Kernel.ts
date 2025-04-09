@@ -15,7 +15,7 @@ import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.t
 import { eventDispatcher } from "@utils/change-detection";
 import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler";
 import { Utils } from "./Utils";
-import Editor from "./Editor";
+import Editor, { getInitPlatform } from "./Editor";
 import { Navigation } from "./Navigation";
 import { updateComponentName } from "$store/actions/component/update-component-name";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard, traitCompoentFromSchema } from "@utils/clipboard-utils";
@@ -41,10 +41,7 @@ class Executor {
   VarsProxy: Record<string, any> = {};
   Current: Record<string, any> = {};
   private functionCache: Record<string, Function> = {};
-  currentPlatform: any = {
-    platform: "desktop",
-    isMobile: false,
-  };
+  currentPlatform: any ;
 
   Component: any = {};
   listner: any = {};
@@ -77,7 +74,7 @@ class Executor {
     const currentEditingApplicationUUID = getVar("global", "currentEditingApplication")?.value?.uuid;
     Editor.Vars = Editor.Vars ??{}
     Editor.selectedComponents = this.createProxy(Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid)));
-    Editor.currentPlatform = this.currentPlatform;
+    Editor.currentPlatform = this.currentPlatform ?? getInitPlatform();
 
   }
   private createProxy(target: any,scope?): any {
@@ -534,3 +531,4 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     Utils
   );
 }
+
