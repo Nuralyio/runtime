@@ -6,14 +6,9 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
+import "@nuralyui/button";
 
-let HyButton: any;
-const loadHyButton = async () => {
-  if (!HyButton) {
-    const module = await import("@nuralyui/button");
-    HyButton = module.default || module;
-  }
-};
+
 
 @customElement("button-block")
 export class ButtonBlock extends BaseElementBlock {
@@ -34,7 +29,6 @@ export class ButtonBlock extends BaseElementBlock {
   override async connectedCallback() {
     await super.connectedCallback();
     this.registerCallback("value", () => {});
-    await loadHyButton();
   }
 
   renderComponent() {
