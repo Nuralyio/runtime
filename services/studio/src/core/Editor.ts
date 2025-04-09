@@ -11,12 +11,15 @@ class Editor {
   isPreviewMode: boolean = false;
   isEditorMode: boolean = false;
   Vars: any = {};
-  currentSelection : any[]  =[]
+  currentSelection: any[] = []
 
   constructor() {
     if (!isServer) {
       window.addEventListener("resize", this.handleResize);
     }
+    eventDispatcher.on('Vars:currentPlatform', (data) => {
+      this.currentPlatform = ExecuteInstance.Vars.currentPlatform;
+    })
   }
 
   private handleResize = () => {
@@ -27,7 +30,7 @@ class Editor {
 
   private updatePlatform() {
     const width = window.innerWidth;
-    let currentPlatform :any= {};
+    let currentPlatform: any = {};
 
     // Simplified platform logic with clearer conditions
     if (width <= 500) {
