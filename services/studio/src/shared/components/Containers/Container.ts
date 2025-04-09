@@ -53,6 +53,7 @@ export class VerticalContainer extends BaseElementBlock {
       id=${this.inputHandlersValue.id ?? nothing}
         ${ref(this.inputRef)}
         data-component-uuid=${this.component?.uuid}
+        data-component-name=${this.component?.name}
         style=${styleMap({
           ...this.getStyles(),
           "min-height": this.childrenComponents.length ? "auto" : "300px",
