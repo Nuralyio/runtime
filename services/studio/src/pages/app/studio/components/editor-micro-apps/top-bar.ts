@@ -372,7 +372,7 @@ export default [{
   },
   event: {
     valueChange: /* js */`
-        SetVar('editor_panel_zoom',EventData.value);
+        Vars.EditorZoom = EventData.value;
         `
   },
   input: {
