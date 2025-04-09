@@ -130,6 +130,12 @@ export class PageContent extends LitElement {
      
     })
 
+    eventDispatcher.on('Vars:EditorZoom', (data)=>{
+
+      this.zoomLevel = ExecuteInstance.Vars.EditorZoom;
+      // this.style.setProperty('--zoom-level', `${this.zoomLevel}%`);
+    })
+
     eventDispatcher.on('Vars:currentPage', (data)=>{
      this.refreshComponent();
     this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
