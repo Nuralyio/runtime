@@ -3,7 +3,6 @@ import { css } from "lit";
 const pageStyle = css`
   :host {
     display: block;
-    overflow: hidden
   }
 
   .page-empty-message-container {
