@@ -36,7 +36,7 @@ export class EditorInteractivePanel extends LitElement {
     }
   `;
   @state() mode: ViewMode = ViewMode.Edit;
-  @state() zoomLevel = 100;
+  @state() zoomLevel = 95;
   @state() selectedComponent: ComponentElement;
   @state() currentPageViewPort: string;
   private inputRef: Ref<HTMLInputElement> = createRef();
