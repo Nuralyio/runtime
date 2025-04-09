@@ -31,6 +31,7 @@ export class DatepickertBlock extends BaseElementBlock {
          ${ref(this.inputRef)}
         style=${styleMap({
       ...this.getStyles(),
+      "display" : this.getStyles().display ?? "block", 
     })}
           .helper=${this.inputHandlersValue.helper ?? nothing}
           .label=${this.inputHandlersValue.label ?? nothing}

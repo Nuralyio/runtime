@@ -19,7 +19,7 @@ export const InputBlockContainerTheme = {
   display: "flex",
   "align-items": "center",
   "justify-content": "space-between",
-  "width": "270px"
+  "width": "277px"
 };
 
 export const CollapseContainerTheme = {
