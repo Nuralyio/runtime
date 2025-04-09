@@ -521,8 +521,7 @@ export class BaseElementBlock extends LitElement {
   
     if (eventName === "onClick" && event) {
       this.selectComponentAction(event);
-      event.stopPropagation();
-      event.preventDefault();
+     
     }
   }
   
