@@ -4,7 +4,6 @@ import { type ComponentElement, type DraggingComponentInfo } from "$store/compon
 import { eventDispatcher } from "../../utils/change-detection.ts";
 import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute } from "../../utils/object.utils.ts";
-import { setValue } from "$store/apps.ts";
 import { isServer } from "../../utils/envirement.ts";
 import { $context } from "$store/context.ts";
 import Editor from "core/Editor.ts";
@@ -143,6 +142,10 @@ export class BaseElementBlock extends LitElement {
         this.scrollToTarget();
       }
   });
+
+  eventDispatcher.on("Vars:currentPlatform", (data) => {
+    this.traitInputsHandlers();
+  })
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
@@ -195,7 +198,7 @@ export class BaseElementBlock extends LitElement {
         if (this.inputHandlersValue[inputName] !== input.value) {
            this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
         }
-        setValue(this.component.name, inputName, input.value);
+        //setValue(this.component.name, inputName, input.value);
         if (this?.callbacks[inputName]) {
           this.callbacks[inputName](input.value);
         }
