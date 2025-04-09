@@ -2,6 +2,7 @@ import { generateDynamicContainer } from "../../../utils/input-collapse-containe
 
 export const StudioTableCollapseContainer = generateDynamicContainer("table_collapse_container", [
   "component_value_text_block",
+  "component_id_text_block",
   "table_values_handler_block",
   "table_selection_mode",
   //"table_columns_block",
