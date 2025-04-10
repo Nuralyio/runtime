@@ -8,9 +8,10 @@ import { $applicationPages, $currentPage, $microAppCurrentPage } from "$store/pa
 import { eventDispatcher } from "utils/change-detection";
 import { ViewMode } from "$store/environment";
 import { merge, Observable, Subscription } from "rxjs";
-import EditorInstance from "./Editor";
+import EditorInstance, { getInitPlatform } from "./Editor";
 import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "$store/handlers/pages/interfaces/interface";
+import { ExecuteInstance } from "./Kernel";
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
@@ -66,6 +67,10 @@ export class MicroApp extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     this.setupSubscriptions();
+    if(!ExecuteInstance.Vars.currentPlatform){
+      console.log(ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform() )
+
+    }
     EditorInstance.setEditorMode(this.prod);
     this.initializeAppComponents();
   }
