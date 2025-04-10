@@ -5,7 +5,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { ref, } from "lit/directives/ref.js";
-import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import "@nuralyui/label";
 
 @customElement("text-label-block")
@@ -43,8 +42,9 @@ export class TextLabelBlock extends BaseElementBlock {
      <hy-label
      class="${`drop-${this.component.uuid}`}"
      @input=${(e) => {
-          const eventData = { ['value']: { type: 'string', value: e.target.innerText } };
-          updateComponentAttributes(this.component.application_id, this.component.uuid, "input", eventData);
+       const eventData = { ['value']: { type: 'string', value: e.target.innerText } };
+      this.executeEvent("onInput", e, eventData);
+          // updateComponentAttributes(this.component.application_id, this.component.uuid, "input", eventData);
      }}
           ${ref(this.inputRef)}
             id=${this.component.uuid}

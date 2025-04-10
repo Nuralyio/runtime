@@ -1059,8 +1059,20 @@ export default [{
   component_type: ComponentType.TextLabel,
   style: {
     "margin-left": "15px",
-    "margin-top": "5px",
+    "margin-top": "9px",
+    "height": "20px"
     // "--text-label-color": "#d6d6d6",
+  },
+  event:{
+    onInput : /* js */`
+    const currentEditingApplication = GetVar("currentEditingApplication");
+    currentEditingApplication.name = EventData.value.value;
+    console.log(currentEditingApplication)
+    currentEditingApplication.uuid
+    UpdateApplication({...currentEditingApplication});
+    EventData.event.preventDefault();
+    EventData.event.stopPropagation();
+    `
   },
   input: {
     value: {
@@ -1070,7 +1082,11 @@ export default [{
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
             const currentPageName = appPages?.find((page)=>page.uuid == currentPage).name
-            return currentPageName;
+
+            console.log('currentEditingApplicationcurrentEditingApplication',currentEditingApplication)
+            const appName = currentEditingApplication.name;
+            return appName;
+             return currentPageName;
             `
     }
   }

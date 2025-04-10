@@ -512,14 +512,14 @@ export class BaseElementBlock extends LitElement {
       ...this.runtimeStyles,
     };
   }
-  executeEvent(eventName: string, event?: Event) {
+  executeEvent(eventName: string, event?: Event , data?: any) {
     if (this.isViewMode) {
       const eventCode = this.component.event?.[eventName];
       if (eventCode) {
         executeCodeWithClosure(
           this.component,
           getNestedAttribute(this.component, `event.${eventName}`),
-          { event: event },
+          { event: event, ...data },
           this.item
         );
       }
