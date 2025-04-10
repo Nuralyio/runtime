@@ -43,8 +43,9 @@ export function deleteApplicationAction(application_id: any) {
 }
 
 export function updateApplicationActionHandler(application: any) {
-
-  fetch("/api/applications/" + application.uuid, {
+const{ uuid } = application;
+delete application.uuid;
+  fetch("/api/applications/" + uuid, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"

@@ -22,6 +22,7 @@ import { copyCpmponentToClipboard, pasteComponentFromClipboard, traitCompoentFro
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction";
 import type { PageElement } from "$store/handlers/pages/interfaces/interface";
 import { deletePageAction } from "$store/actions/page/deletePageAction";
+import { updateSepecificApplication } from "$store/actions/application/updateApplication";
 const DEBUG = false;
 
 /**
@@ -269,6 +270,7 @@ class Executor {
         "Vars",
         "SetVar",
         "GetContextVar",
+        "UpdateApplication",
         "GetVar",
         "GetComponent",
         "GetComponents",
@@ -393,6 +395,10 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     return null;
   }
 
+  function UpdateApplication( application){
+    updateSepecificApplication(application);
+  }
+
    function GetVar(symbol: string): any {
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
@@ -504,6 +510,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     VarsProxy,
     SetVar,
     GetContextVar,
+    UpdateApplication,
     GetVar,
     GetComponent,
     GetComponents,
