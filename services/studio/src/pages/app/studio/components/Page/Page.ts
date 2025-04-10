@@ -99,6 +99,9 @@ export class PageContent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    $applicationPages($currentApplication.get()?.uuid).subscribe((pages: PageElement[]) => {
+      this.refreshComponent();
+    })
     const currentPage = ExecuteInstance.Vars.currentPage;
     console.log("window.__URL__", window.__URL__);
     if (!currentPage && $currentApplication.get()) {
