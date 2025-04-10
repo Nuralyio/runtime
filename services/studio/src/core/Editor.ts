@@ -118,7 +118,7 @@ export const  getInitPlatform = () => {
 
   // Simplified platform logic with clearer conditions
   if (width <= 500) {
-    currentPlatform = createPlatform("mobile", "375px", "767px", true);
+    currentPlatform = createPlatform("mobile", "430px", "932px", true);
   } else if (width <= 1024) {
     currentPlatform = createPlatform("tablet", "1024px", "768px", true);
   } else {
