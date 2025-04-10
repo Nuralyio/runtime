@@ -2,6 +2,7 @@ import { atom, deepMap, keepMount } from "nanostores";
 
 import { setVar } from "./context";
 import deepEqual from "fast-deep-equal";
+import { ExecuteInstance } from "core/Kernel";
 
 const isServer = typeof window === "undefined";
 
@@ -78,5 +79,7 @@ keepMount($resizing);
 
 if (!isServer) {
   const currentApplication = $currentApplication.get();
+  ExecuteInstance.VarsProxy["currentEditingApplication"] = currentApplication;
+  console.log("currentApplication ", currentApplication);
   setVar("global", `currentEditingApplication`, currentApplication);
 }

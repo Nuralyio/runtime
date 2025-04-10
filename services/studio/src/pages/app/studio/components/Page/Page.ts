@@ -286,6 +286,8 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
+    ${ExecuteInstance.Vars.currentPage}
+    ${JSON.stringify($currentApplication.get())}
     <style>
       
       .page-container {
