@@ -73,6 +73,7 @@ export class RichTextContainer extends BaseElementBlock {
       <div ${ref(this.inputRef)}
       style=${styleMap({
         ...this.getStyles(),
+        width: this.editing  ? "auto" : this.getStyles().width,
         display: "block",})}
       >
         ${this.editing && !this.isViewMode
