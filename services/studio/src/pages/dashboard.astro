@@ -30,6 +30,15 @@ const processedHeaders = processHeaders(Astro.request.headers);
   componentData = componentResponse.data.map((component) => component.component);
 
 ---
+
+<script is:inline define:vars={{ pageData, componentData , application}}>
+  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
+  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
+  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
+  document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
+  document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
+
+</script>
 <Layout title="Welcome to Astrolus.">
 
   <MicroApp
@@ -56,12 +65,3 @@ const processedHeaders = processHeaders(Astro.request.headers);
       }
     }
 </style>
-
-<script define:vars={{ pageData, componentData , application}}>
-  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
-  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
-  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
-  document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
-  document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
-
-</script>
