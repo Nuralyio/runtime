@@ -827,7 +827,7 @@ export default [{
     onClick: /* js */`
       Vars.currentPlatform =  {
         platform: "mobile",
-        width: "375px",
+        width: "430px",
         height: "767px",
         isMobile: true
       }

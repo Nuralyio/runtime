@@ -29,7 +29,7 @@ export const StudioFunctionCollection = [
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
     "breakpoints": {
-      "375px": {
+      "430px": {
         "width": "100%"
       },
       "1024px": {
