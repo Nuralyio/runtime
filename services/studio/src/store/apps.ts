@@ -1,8 +1,7 @@
-import { atom, deepMap, keepMount } from "nanostores";
+import { atom, deepMap, keepMount, onMount } from "nanostores";
 
 import { setVar } from "./context";
 import deepEqual from "fast-deep-equal";
-import { ExecuteInstance } from "core/Kernel";
 
 const isServer = typeof window === "undefined";
 
@@ -76,10 +75,15 @@ export const $showShareApplicationModal = atom<boolean>(false);
 
 keepMount($resizing);
 
-
+onMount($applications, () => {
+    
 if (!isServer) {
   const currentApplication = $currentApplication.get();
-  ExecuteInstance.VarsProxy["currentEditingApplication"] = currentApplication;
+  setTimeout(() => {
+
+  }, 0);
   console.log("currentApplication ", currentApplication);
   setVar("global", `currentEditingApplication`, currentApplication);
 }
+});
+
