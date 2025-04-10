@@ -189,7 +189,7 @@ export class BaseElementBlock extends LitElement {
         });
       } else {
         this.inputHandlersValue[inputName] = input.value;
-          if(inputName = "id"){
+          if(inputName == "id"){
             this.id = input.value;
           }
         if (this.inputHandlersValue[inputName] !== input.value) {
