@@ -498,11 +498,18 @@ export class BaseElementBlock extends LitElement {
   }
 
   getStyles() {
+    const width = Editor.getComponentStyle(this.component, "width");
+  
     return {
       ...Editor.getComponentStyles(this.component),
       ...this.stylesHandlersValue,
-      width: Utils.extractUnit(Editor.getComponentStyle(this.component, "width")) === "%" ? "100%" : Editor.getComponentStyle(this.component, "width") ?? "auto",
-      ...this.runtimeStyles
+      width:
+        width === "auto"
+          ? "auto"
+          : Utils.extractUnit(width) === "%"
+          ? "100%"
+          : width ?? "auto",
+      ...this.runtimeStyles,
     };
   }
   executeEvent(eventName: string, event?: Event) {
