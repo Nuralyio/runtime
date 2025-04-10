@@ -154,7 +154,7 @@ export class EditorInteractivePanel extends LitElement {
   private updateViewPort(viewPort: string) {
     const viewPortMap = {
       tablet: "720px",
-      mobile: "375px",
+      mobile: "430px",
       default: "100%"
     };
     this.currentPageViewPort = viewPortMap[viewPort] || viewPortMap.default;
