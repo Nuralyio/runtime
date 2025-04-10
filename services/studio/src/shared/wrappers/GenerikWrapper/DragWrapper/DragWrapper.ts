@@ -204,6 +204,8 @@ export class DragWrapper extends LitElement {
     moveDraggedComponent(this.component.uuid, this.draggingComponentInfo.componentId, this.where  );
     setDraggingComponentInfo(null);
     this.resetDropZones();
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   render() {
