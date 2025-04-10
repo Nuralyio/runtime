@@ -24,6 +24,7 @@ import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
 import studioPositionBlock from "./common-blocks/studio-position-block.ts";
 import studioWidthBlock from "./common-blocks/studio-width-block.ts";
 import studioHeightBlock from "./common-blocks/studio-height-block.ts";
+import studioFLexBlock from "./common-blocks/flex-size.ts";
 import studioButtonTypeBlock from "./editor/right-panel-tabs/button/inputs/type.ts";
 import studioButtonIconPosition from "./editor/right-panel-tabs/button/inputs/icon-position.ts";
 import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
@@ -279,6 +280,7 @@ export default [
   ...studioAlignementBlock,
   ...studioVerticalAlignementBlock,
   ...studioWidthBlock,
+  ...studioFLexBlock,
   ...studioHeightBlock,
   ...studioFontWeightBlock,
   ...studioFontStyleBlock,

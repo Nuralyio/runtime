@@ -52,6 +52,6 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
-    childrenIds: ["height_vertical_container", "width_vertical_container", "position_block","inner_container_alignement_block", "cursor_block"]
+    childrenIds: ["width_vertical_container", "height_vertical_container",  "position_block","inner_container_alignement_block", "cursor_block" , "flex_font_size_vertical_container"]
   }
 ];

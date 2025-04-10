@@ -299,13 +299,16 @@ export class BaseElementBlock extends LitElement {
           break;
       }
     }
-    const { width, height, cursor } = this.calculatedStyles;
+    const { width, height, cursor, flex } = this.calculatedStyles;
 
     if (width) {
       const widthUnit = Utils.extractUnit(width);
       if (widthUnit === '%') {
         this.style.width = width;
       }
+    }
+    if(flex){
+      this.style.flex = flex;
     }
     if (cursor) {
       this.style.cursor = cursor;
