@@ -157,108 +157,130 @@ export default [{
       options: {
         type: "handler",
         value: /* js */ `
-            const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = Vars[currentEditingApplication?.uuid + ".appPages"]
-            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
-            const currentComponent= Vars.selectedComponents;
-            if(!appPages) {
-                 [];
-            }else{
-                function findChildren(appId,children,childrenIds){
-                    childrenIds.map((componentId)  => {
-                        const component= GetComponent(componentId,appId);
-                        if(!component){
-                            return;
-                        }
-                        const componentChildrenIds = component?.childrenIds;
-                        let componentIcon='smile';
-                        switch(component.component_type){
-                            case 'text_label':
-                                componentIcon="i-cursor";
-                                break;
-                            case 'select':
-                                componentIcon='th-list';
-                                break;
-                            case 'checkbox':
-                                componentIcon='square-check';
-                                break;
-                            case 'Table':
-                                componentIcon='table';
-                                break;
-                            case 'vertical-container-block':
-                                componentIcon = component.input?.direction?.value === 'horizontal' ? 'grip-horizontal' : 'grip-vertical';
-                                break;
-                            case 'text_input':
-                                componentIcon='pen-to-square';
-                                break;
-                            case 'Image':
-                                componentIcon='image';
-                                break;
-                            case 'icon':
-                                componentIcon='icons';
-                                break;
-                            case 'DatePicker':
-                                componentIcon='calendar';
-                                break;
-                            case 'Collection':
-                                componentIcon='layer-group';
-                                break;
-                            case 'RefComponent':
-                                componentIcon='crosshairs';
-                                break;
-                        }
-
-                        children.push({
-                            text: component.name,
-                            icon:componentIcon,
-                            id: component.uuid,
-                            selected: currentComponent?.length && component.uuid == currentComponent[0]?.uuid,
-                            handlerKey: "onSelect",
-                            menu: { icon: 'ellipsis-v', actions: [{ label: 'Delete', value: 'delete' , icon : "trash" , additionalData: {
-                              type: "component",
-                              component
-                            } }] }
-
-                        })
-                        if(componentChildrenIds){
-                            children[children.length-1]={...children[children.length-1],children:[]}
-                            findChildren(appId,children[children.length-1].children,componentChildrenIds);
-                        }
-                        
-                    })
-                }
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        const appPages = Vars[currentEditingApplication?.uuid + ".appPages"];
+        const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+        const currentComponent = Vars.selectedComponents;
+        
+        if (!appPages) {
+          return [];
+        }
+        
+        const selectedComponentId = currentComponent?.[0]?.uuid;
+        const autoOpened = new Set();
+        
+        function findSelectedPath(appId, childrenIds) {
+          for (const componentId of childrenIds) {
+            const component = GetComponent(componentId, appId);
+            if (!component) continue;
+        
+            if (component.uuid === selectedComponentId) {
+              autoOpened.add(component.uuid);
+              return true;
             }
-       
-
-            return appPages?.map((page) => {
-                const componentIds = page.component_ids;
-                const appId = page.application_id;
-                const children = [];
-
-                if (componentIds) {
-                    findChildren(appId, children, componentIds);
+        
+            const componentChildrenIds = component?.childrenIds;
+            if (componentChildrenIds?.length && findSelectedPath(appId, componentChildrenIds)) {
+              autoOpened.add(component.uuid);
+              return true;
+            }
+          }
+          return false;
+        }
+        
+        function findChildren(appId, children, childrenIds) {
+          childrenIds.forEach((componentId) => {
+            const component = GetComponent(componentId, appId);
+            if (!component) return;
+        
+            const componentChildrenIds = component?.childrenIds;
+            let componentIcon = 'smile';
+        
+            switch (component.component_type) {
+              case 'text_label': componentIcon = "i-cursor"; break;
+              case 'select': componentIcon = 'th-list'; break;
+              case 'checkbox': componentIcon = 'square-check'; break;
+              case 'Table': componentIcon = 'table'; break;
+              case 'vertical-container-block':
+                componentIcon = component.input?.direction?.value === 'horizontal' ? 'grip-horizontal' : 'grip-vertical'; break;
+              case 'text_input': componentIcon = 'pen-to-square'; break;
+              case 'Image': componentIcon = 'image'; break;
+              case 'icon': componentIcon = 'icons'; break;
+              case 'DatePicker': componentIcon = 'calendar'; break;
+              case 'Collection': componentIcon = 'layer-group'; break;
+              case 'RefComponent': componentIcon = 'crosshairs'; break;
+            }
+        
+            const isSelected = component.uuid === selectedComponentId;
+        
+            let childNode = {
+              text: component.name,
+              icon: componentIcon,
+              id: component.uuid,
+              selected: isSelected,
+              handlerKey: "onSelect",
+              menu: {
+                icon: 'ellipsis-v',
+                actions: [{
+                  label: 'Delete',
+                  value: 'delete',
+                  icon: "trash",
+                  additionalData: {
+                    type: "component",
+                    component
+                  }
+                }]
+              }
+            };
+        
+            if (componentChildrenIds?.length) {
+              childNode.children = [];
+              findChildren(appId, childNode.children, componentChildrenIds);
+            }
+        
+            if (autoOpened.has(component.uuid)) {
+              childNode.opened = true;
+            }
+        
+            children.push(childNode);
+          });
+        }
+        
+        return appPages.map((page) => {
+          const componentIds = page.component_ids;
+          const appId = page.application_id;
+          const children = [];
+        
+          if (componentIds) {
+            findSelectedPath(appId, componentIds); // Fill autoOpened
+            findChildren(appId, children, componentIds);
+          }
+        
+          return {
+            text: page.name,
+            id: page.uuid,
+            selected: page.uuid === currentPage,
+            opened: page.uuid === currentPage,
+            icon: 'file',
+            type: "page",
+            handlerKey: "onSelect",
+            children: children,
+            menu: {
+              opened: true,
+              icon: 'ellipsis-v',
+              actions: [{
+                handlerKey: "onDelete",
+                label: 'Delete',
+                value: 'delete',
+                icon: "trash",
+                additionalData: {
+                  type: "page",
+                  page
                 }
-
-                return {
-                    text: page.name,
-                    id: page.uuid,
-                    selected: page.uuid === currentPage,
-                    icon: 'file',
-                    type: "page",
-                    handlerKey: "onSelect",
-                    children: children,
-                    menu: { icon: 'ellipsis-v', actions: [
-                      {  handlerKey: "onDelete",
-                        label: 'Delete', 
-                        value: 'delete' ,
-                        icon : "trash",
-                        additionalData:{
-                          type: "page",
-                          page
-                        }}] }
-
-                };
-            });
+              }]
+            }
+          };
+        });
 
             `
       }
