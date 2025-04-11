@@ -1083,7 +1083,6 @@ export default [{
             const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
             const currentPageName = appPages?.find((page)=>page.uuid == currentPage).name
 
-            console.log('currentEditingApplicationcurrentEditingApplication',currentEditingApplication)
             const appName = currentEditingApplication.name;
             return appName;
              return currentPageName;
