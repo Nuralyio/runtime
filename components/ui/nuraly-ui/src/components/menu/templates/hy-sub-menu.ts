@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from 'lit';
+import { LitElement, PropertyValues, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './sub-menu.style.js';
 import { EMPTY_STRING } from '../menu.constants.js';
@@ -24,10 +24,10 @@ export class HySubMenu extends LitElement {
   @state()
   hovered = false;
 
-  @property()
-  menu!: { icon: string, actions: IAction[], children: any  , menu : any};
+  @property({type: Object, reflect: true})
+  menu!: { icon: string, actions: IAction[], children: any  , menu : any , opened : boolean};
 
-  @property()
+  @property({type: Object, reflect: true})
   status!: { icon: string, label: string };
 
   optionPath!: number[];
@@ -68,6 +68,16 @@ export class HySubMenu extends LitElement {
   onActionClick(e: CustomEvent) {
     console.log(e.detail)
     this.dispatchEvent(new CustomEvent('action-click', { detail: { value: e.detail.value, path: this.optionPath, additionalData: e.detail.additionalData}, composed: true, bubbles: true }))
+  }
+  protected override updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('menu')) {
+      const previousMenu = _changedProperties.get('menu') as typeof this.menu;
+      if (previousMenu?.opened !== this.menu.opened) {
+        if(this.menu.opened){
+          this.isOpen = this.menu.opened;
+        }
+      }
+    }
   }
 
   override render() {
