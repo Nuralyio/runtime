@@ -275,14 +275,8 @@ export class BaseElementBlock extends LitElement {
   }
 
   private calculateStyles() {
-    if (this.currentPlatform?.platform !== "desktop") {
-      this.calculatedStyles = this.component?.breakpoints?.[this.currentPlatform.width]?.style ?? {};
-      if (this.component?.style) {
-        this.calculatedStyles = Object.assign({}, this.component?.style, this.calculatedStyles);
-      }
-    } else {
-      this.calculatedStyles = this.component?.style || {};
-    }
+    
+    this.calculatedStyles = Object.assign({}, Editor.getComponentStyles(this.component), this.calculatedStyles);
     const { innerAlignment } = this.inputHandlersValue;
     if (innerAlignment) {
       this.style.removeProperty("align-self");
