@@ -172,6 +172,8 @@ export class PageContent extends LitElement {
     };
    
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
+    this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
+    this.style.setProperty('--hybrid-page-background-color-dark', this.currentPage?.style?.["--hybrid-page-background-color-dark"]);
   }
 
   disconnectedCallback() {
