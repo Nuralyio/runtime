@@ -24,6 +24,7 @@ export const enum ComponentType {
   RefComponent = "RefComponent",
   Code = "code-block",
   RichText = "rich-text",
+  EmbedURL = "embed-url",
   RichTextEditor = "rich-text-editor",
   UsersDropdown = "UsersDropdown",
   InsertDropdown = "InsertDropdown",
