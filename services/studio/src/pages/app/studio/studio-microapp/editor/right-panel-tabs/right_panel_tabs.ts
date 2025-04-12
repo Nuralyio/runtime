@@ -200,7 +200,12 @@ export default {
                                 themes=[
                                     "studio_dropdown_theme_container"
                                 ]
-                            break
+                            break;
+                            case "embed-url":
+                                parameters = [
+                                    "embed_collapse_container"
+                                ]
+                                break;
                     }
                 }
                 else if(currentPageId) {

@@ -357,6 +357,19 @@ export const Insert = /* js */`
             icon: "file-code",
           },
           {
+            label: "Embed URL",
+            value: {
+              value: "embed-url",
+              additionalData: {
+              action: "add",              
+              style :{
+                height: "300px"
+              }
+              },
+            },
+            icon: "file-code",
+          },
+          {
             label: "Media",
             children: mediaOptions,
             icon: "image"
