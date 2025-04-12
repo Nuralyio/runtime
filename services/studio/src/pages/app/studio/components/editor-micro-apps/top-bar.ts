@@ -687,7 +687,7 @@ export default [{
     onClick: /* js */`
           Vars.currentPlatform =  {
             platform: "desktop",
-            width: "100%",
+            width: "1366px",
           }
         `
   },

@@ -39,7 +39,7 @@ class Editor {
     } else if (width <= 1024) {
       currentPlatform = createPlatform("tablet", "1024px", "768px", true);
     } else {
-      currentPlatform = createPlatform("desktop", "100%", undefined, false);
+      currentPlatform = createPlatform("desktop", "1366px", undefined, false);
     }
 
     // If platform has changed, update the state and trigger events
@@ -134,7 +134,7 @@ export const  getInitPlatform = () => {
   } else if (width <= 1024) {
     currentPlatform = createPlatform("tablet", "1024px", "768px", true);
   } else {
-    currentPlatform = createPlatform("desktop", "100%", undefined, false);
+    currentPlatform = createPlatform("desktop", "1366px", undefined, false);
   }
 
   // If platform has changed, update the state and trigger events
