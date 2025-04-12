@@ -370,6 +370,43 @@ export const Insert = /* js */`
             icon: "file-code",
           },
           {
+            label: "Link",
+            value: {
+              value: "link",
+              additionalData: {
+              action: "paste",              
+              schema: JSON.stringify(
+                {
+                  "version": "1.0",
+                  "components": [
+                    {
+                      "name": "link",
+                      "root": true,
+                      "uuid": "b13aa393-45a9-44cb-b9bc-2a3f279ca87a",
+                      "style": {},
+                      "pageId": "2bea47d0-d1a8-4c02-99fe-6274552f6654",
+                      "childrenIds": [
+                        "a86c493d-dea0-4608-b7dd-74a2a02fdfa9"
+                      ],
+                      "application_id": "13186611-5512-4e79-98db-dc7cd88719b6",
+                      "component_type": "link"
+                    },
+                    {
+                      "name": "linkt_label",
+                      "uuid": "a86c493d-dea0-4608-b7dd-74a2a02fdfa9",
+                      "pageId": "2bea47d0-d1a8-4c02-99fe-6274552f6654",
+                      "childrenIds": [],
+                      "application_id": "13186611-5512-4e79-98db-dc7cd88719b6",
+                      "component_type": "text_label"
+                    }
+                  ]
+                }
+              )
+              },
+            },
+            icon: "file-code",
+          },
+          {
             label: "Media",
             children: mediaOptions,
             icon: "image"

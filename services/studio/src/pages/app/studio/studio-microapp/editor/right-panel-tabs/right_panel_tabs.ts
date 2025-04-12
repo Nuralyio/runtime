@@ -206,6 +206,17 @@ export default {
                                     "embed_collapse_container"
                                 ]
                                 break;
+                            case "link":
+                                parameters = [
+                                    "link_collapse_container"
+                                ]
+                                handlers=[
+                                    "studio_link_handler"
+                                ]
+                                themes=[
+                                    "studio_link_theme_container"
+                                ]
+                                break;
                     }
                 }
                 else if(currentPageId) {
