@@ -91,6 +91,7 @@ import { StudioRichText } from "./editor/right-panel-tabs/Richtext/index.ts";
 import { StudioDropdown } from "./editor/right-panel-tabs/dropdown/index.ts";
 import { StudioRichTextEditor } from "./editor/right-panel-tabs/RichtextEditor/index.ts";
 import { StudioEmbed } from "./editor/right-panel-tabs/embed/index.ts";
+import { StudioLink } from "./editor/right-panel-tabs/link/index.ts";
 
 
 export default [
@@ -352,5 +353,6 @@ export default [
   ...StudioRichText,
   ...StudioRichTextEditor,
   ...StudioDropdown,
-  ...StudioEmbed
+  ...StudioEmbed,
+  ...StudioLink
 ];

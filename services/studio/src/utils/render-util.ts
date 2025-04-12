@@ -36,6 +36,7 @@ import "@shared/components/RefComponent/RefComponent.ts";
 import "@shared/components/Code/Code.ts";
 import "@shared/components/RichText/RichText.ts";
 import "@shared/components/EmbedURL/EmbedURL.ts";
+import "@shared/components/Link/Link.ts";
 
 // Reusable templates for common components
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
@@ -71,6 +72,7 @@ const refComponentTemplate = (props: any, isViewMode: boolean)  => html`<ref-com
 const codeTemplate = (props: any, isViewMode: boolean)  => html`<code-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></code-block>`;
 const richTextTemplate = (props: any, isViewMode: boolean)  => html`<rich-text-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></rich-text-block>`;
 const embedURLTemplate = (props: any, isViewMode: boolean)  => html`<embed-url-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></embed-url-block>`;
+const linkTemplate = (props: any, isViewMode: boolean)  => html`<link-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></link-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -162,6 +164,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return richTextTemplate(commonProps, isViewMode);
     case ComponentType.EmbedURL:
       return embedURLTemplate(commonProps, isViewMode);
+    case ComponentType.Link:
+      return linkTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

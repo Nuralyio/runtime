@@ -32,7 +32,8 @@ export const addComponentAction = (
   if (
     !currentComponentId ||
     (currentComponent?.component_type !== ComponentType.Container &&
-      currentComponent?.component_type !== ComponentType.Collection)
+      currentComponent?.component_type !== ComponentType.Collection&&
+      currentComponent?.component_type !== ComponentType.Link)
   ) {
     newComponent.root = true;
   }
@@ -41,6 +42,7 @@ export const addComponentAction = (
     if (
       currentComponent?.component_type === ComponentType.Container ||
       currentComponent?.component_type === ComponentType.Dropdown ||
+      currentComponent?.component_type === ComponentType.Link ||
       currentComponent?.component_type === ComponentType.Collection
     ) {
       // Add as child of the current component
