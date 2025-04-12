@@ -200,41 +200,38 @@ export class BaseElementBlock extends LitElement {
           this.callbacks[inputName](input.value);
         }
       }
-      if (this.inputHandlersValue[inputName]) {
         if (this.inputHandlersValue[inputName] !== input.value) {
            this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = input.value;
           if (this?.callbacks[inputName]) {
             this.callbacks[inputName](input.value);
           }
         }
-      }
     }
   }
 
   async traitInputsHandlers() {
     this.errors = {};
-    const handlerPromises = [];
-    if (this.component?.input) {
-      for (const [inputName, input] of Object.entries(this.component?.input)) {
-        const inputToTrait = Editor.getComponentBreakpointInput(this.component, inputName);
-        handlerPromises.push(this.traitInputHandler(inputToTrait, inputName));
-      }
-      try {
-          Promise.all(handlerPromises);
-      } catch(e) {
-        console.log(e)
-      }
+  
+    const breakpointInputs = Editor.getComponentBreakpointInputs(this.component);
+    const handlerPromises = Object.entries(breakpointInputs).map(([inputName, input]) => {
+      const inputToTrait = Editor.getComponentBreakpointInput(this.component, inputName);
+      return this.traitInputHandler(inputToTrait, inputName);
+    });
+  
+    try {
+      await Promise.all(handlerPromises);
+    } catch (e) {
+      console.log(e);
     }
-    addlogDebug(
-      {
-        errors: {
-          component: {
-            ...this.component,
-            errors: {...this.errors}
-          },
-        }
-      }
-    );
+  
+    addlogDebug({
+      errors: {
+        component: {
+          ...this.component,
+          errors: { ...this.errors },
+        },
+      },
+    });
   }
 
   async traitStyleHandler(style: any, styleName: string): Promise<void> {

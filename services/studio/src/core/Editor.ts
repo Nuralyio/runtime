@@ -18,7 +18,7 @@ class Editor {
       window.addEventListener("resize", this.handleResize);
     }
     eventDispatcher.on('Vars:currentPlatform', (data) => {
-      this.currentPlatform = ExecuteInstance.Vars.currentPlatform;
+      this.currentPlatform = {...ExecuteInstance.Vars.currentPlatform};
     })
   }
 
@@ -92,15 +92,27 @@ class Editor {
   }
 
   getComponentBreakpointInput(component: any, attributeName: string) {
-    if (this.currentPlatform.platform !== "desktop") {
-      const input = component?.input?.[attributeName];
-      if (input?.type === "handler") {
-        return input;
-      }
-      return component?.breakpoints?.[this.currentPlatform.width]?.input?.[attributeName] ?? input;
+    const baseInput = component?.input?.[attributeName];
+    const breakpointInput = component?.breakpoints?.[this.currentPlatform.width]?.input?.[attributeName];
+  
+    if (baseInput?.type === "handler") {
+      return baseInput;
     }
-    return component?.input?.[attributeName];
+  
+    return { ...baseInput, ...breakpointInput };
   }
+
+  getComponentBreakpointInputs(component: any) {
+    const baseInput = component?.input;
+    const breakpointInput = component?.breakpoints?.[this.currentPlatform.width]?.input;
+  
+    if (baseInput?.type === "handler") {
+      return baseInput;
+    }
+  
+    return { ...baseInput, ...breakpointInput };
+  }
+
 
 
 }
