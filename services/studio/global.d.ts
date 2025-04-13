@@ -24,6 +24,7 @@ interface CustomSelf extends Worker {
 
   interface Window {
     __FUNCTION_APP_UUID__?: string;
+    __FUNCTION_PAGE_UUID__?: string;
     __URL__?: string;
   }
   

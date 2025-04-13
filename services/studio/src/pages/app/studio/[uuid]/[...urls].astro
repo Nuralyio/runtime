@@ -16,7 +16,8 @@ import { fetchApplicationComponentById } from "@services/component.service";
 import { EditorSpinner } from '../components/Layout/EditorSpinner'
 import { ApplicationNotFound } from "../../../../exceptions/ApplicationNotFound";
 const { title, uuid, urls = "" } = Astro.params;
-const functionAppUUID = process.env.FUNCTION_PAGE_UUID;
+const functionAppUUID = process.env.FUNCTION_APP_UUID;
+const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
 
 // TODO: handle error
 const processedHeaders = processHeaders(Astro.request.headers);
@@ -57,12 +58,13 @@ try {
 ---
 
 <head> <title>Nuraly - Editing {application?.name}</title> </head>
-<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID, urls }}>
+<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID,functionPageUUID,  urls }}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
   window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
   window.__FUNCTION_APP_UUID__ = functionAppUUID;
+  window.__FUNCTION_PAGE_UUID__ = functionPageUUID;
   window.__URL__ = urls;
 </script>
 <MakeLayout title="Make Apps">
