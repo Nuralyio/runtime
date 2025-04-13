@@ -5,7 +5,7 @@ import { addComponentAction } from "$store/actions/component/addComponentAction.
 import { $context, getVar } from "$store/context.ts";
 import { $currentApplication } from "$store/apps.ts";
 import { addPageAction } from "$store/actions/page/addPageAction.ts";
-import { $applicationComponents, $components } from "$store/component/store.ts";
+import { $applicationComponents } from "$store/component/store.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 
 @customElement("ai-assistant-block")
@@ -173,8 +173,9 @@ export class AIAssistantBlock extends LitElement {
   }
 
   private _initializeWebSocket() {
-    this._socket = new WebSocket("ws://localhost/api/v1/agent/chatbot");
-
+    const domain = window.location.hostname;
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    this._socket = new WebSocket(`${protocol}://${domain}/api/v1/agent/chatbot`);
     this._socket.addEventListener("open", () => {
       console.log("WebSocket connection established");
     });
