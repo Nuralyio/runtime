@@ -23,10 +23,14 @@ class Editor {
   }
 
   private handleResize = () => {
-    if (this.isEditorMode) {
+    if (!this.isEditorMode) {
       this.updatePlatform();
     }
   };
+
+  get isDarkMode() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  }
 
   public updatePlatform() {
     if(isServer) return;
