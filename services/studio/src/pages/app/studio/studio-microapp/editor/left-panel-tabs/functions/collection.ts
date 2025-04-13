@@ -1,8 +1,10 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { isServer } from "utils/envirement";
 let functionAppUUID = "" ;
+let functionPageUUID = "" ;
 if(!isServer){
  functionAppUUID = window.__FUNCTION_APP_UUID__;
+ functionPageUUID = window.__FUNCTION_PAGE_UUID__;
 }
 export const StudioFunctionCollection = [
   {
@@ -54,7 +56,7 @@ export const StudioFunctionCollection = [
       },
       componentToRenderUUID: {
         type: "string",
-        value: "5d05786e-9b57-4c7f-8ae4-b11ac9f5d84c"
+        value: functionPageUUID
       },
       mode: {
         type: "string",
