@@ -6,8 +6,8 @@ export const StudioTextLabelCssVar =  [
         {
           name: "General",
           items: [
-            { label: "Text Label Color", cssVar: "--text-label-color" },
-            { label: "Text Label Dark Color", cssVar: "--text-label-local-dark-color" }
+            { label: "Text Label Color", cssVar: "--text-label-dark-color" },
+            { label: "Text Label Dark Color", cssVar: "--text-label-dark-color" }
           ],
           open: true
         },
