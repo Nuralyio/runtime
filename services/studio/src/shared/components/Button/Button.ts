@@ -3,8 +3,6 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/Kernel.ts";
-import { getNestedAttribute } from "../../../utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 import "@nuralyui/button";
 
@@ -49,11 +47,9 @@ export class ButtonBlock extends BaseElementBlock {
               .disabled=${this.inputHandlersValue.state == "disabled"}
               .icon="${this.inputHandlersValue.icon ? [this.inputHandlersValue.icon] : nothing}"
               .iconPosition=${this.inputHandlersValue.iconPosition ?? nothing}
-              @mousedown=${() => {
+              @mousedown=${(e) => {
 
-                if (this.component.event?.onClick) {
-                  executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
-                }
+               this.executeEvent('onClick' , e)
               }}
               style=${styleMap({ ...this.getStyles() , 
                 "--hybrid-button-width": buttonStyles?.width,
