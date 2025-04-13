@@ -60,11 +60,22 @@ export const MenuData=  [
       codeChange: /* js */ `
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 if (EventData.value !== selectedComponent?.input?.options?.value) {
-                    if(selectedComponent?.input?.options?.type !=  "handler"){
-                         updateInput(selectedComponent, 'options', selectedComponent?.input?.options?.type, JSON.parse(EventData.value));
-                    }else{
-                        updateInput(selectedComponent, 'options', 'handler', EventData.value);
-
+                    const isNotHandler = !EventData.value.includes('return');
+                
+                    if (isNotHandler) {
+                        updateInput(
+                            selectedComponent,
+                            'options',
+                            selectedComponent?.input?.options?.type,
+                            JSON.parse(EventData.value)
+                        );
+                    } else {
+                        updateInput(
+                            selectedComponent,
+                            'options',
+                            'handler',
+                            EventData.value
+                        );
                     }
                 }
       `
