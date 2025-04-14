@@ -91,7 +91,6 @@ export default [{
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
             if(currentPage){
-              console.log(EventData.additionalData)
               const action = EventData.additionalData.action;
               delete EventData.additionalData.action;
               if( action == "add"){
@@ -147,22 +146,23 @@ export default [{
   },
   event: {
     onClick: /* js */ `
-            const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
-           if(currentPage){
-            console.log(EventData)
-            if(EventData.action == "add"){
-              AddComponent({
-                application_id : currentEditingApplication.uuid,
-                pageId : currentPage,
-                componentType : EventData.value,
-                additionalData : EventData.additionalData
-              })
-           }else if(EventData.action == "paste"){
-            alert('aaaa')
-           }
-          }
+    const currentEditingApplication = GetVar("currentEditingApplication");
+    const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+    const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+    if(currentPage){
+      const action = EventData.additionalData.action;
+      delete EventData.additionalData.action;
+      if( action == "add"){
+        AddComponent({
+          application_id : currentEditingApplication.uuid,
+          pageId : currentPage,
+          componentType : EventData.value,
+          additionalData : EventData.additionalData
+        })
+     }else if( action == "paste"){
+      TraitCompoentFromSchema(EventData.additionalData.schema)
+     }
+    }
 
           `
   }
@@ -173,7 +173,9 @@ export default [{
   application_id: "1",
   style: {
     "--text-label-color": "black",
-    "title-color": "white", "--hybrid-button-hover-background-color": "white",
+    "--resolved-text-label-color" : "black",
+    "title-color": "white", 
+    "--hybrid-button-hover-background-color": "white",
     "border-left": "1px solid grey",
     "padding-left": "14px",
   },
@@ -202,22 +204,23 @@ export default [{
   },
   event: {
     onClick: /* js */ `
-            const currentEditingApplication = GetVar("currentEditingApplication");
-            const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
-            if(currentPage){
-              console.log(EventData)
-              if(EventData.action == "add"){
-                AddComponent({
-                  application_id : currentEditingApplication.uuid,
-                  pageId : currentPage,
-                  componentType : EventData.value,
-                  additionalData : EventData.additionalData
-                })
-             }else if(EventData.action == "paste"){
-              alert('bbb')
-             }
-            }
+    const currentEditingApplication = GetVar("currentEditingApplication");
+    const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+    const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+    if(currentPage){
+      const action = EventData.additionalData.action;
+      delete EventData.additionalData.action;
+      if( action == "add"){
+        AddComponent({
+          application_id : currentEditingApplication.uuid,
+          pageId : currentPage,
+          componentType : EventData.value,
+          additionalData : EventData.additionalData
+        })
+     }else if( action == "paste"){
+      TraitCompoentFromSchema(EventData.additionalData.schema)
+     }
+    }
           `
   }
 },
