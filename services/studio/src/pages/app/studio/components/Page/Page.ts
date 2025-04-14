@@ -135,6 +135,9 @@ export class PageContent extends LitElement {
      
     })
 
+    eventDispatcher.on('Copy', (data)=>{
+      this.handleCopy();
+    })
     eventDispatcher.on('Vars:EditorZoom', (data)=>{
 
       this.zoomLevel = ExecuteInstance.Vars.EditorZoom;

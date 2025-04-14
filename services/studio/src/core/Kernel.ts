@@ -258,6 +258,7 @@ class Executor {
   prepareClosureFunction(code: string): Function {
     if (!this.functionCache[code]) {
       this.functionCache[code] = new Function(
+        "eventHandler",
         "Components",
         "Editor",
         "Event",
@@ -498,6 +499,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   const closureFunction = ExecuteInstance.prepareClosureFunction(code);
 
   return closureFunction(
+    eventDispatcher,
     PropertiesProxy,
     Editor,
     Event,
