@@ -5,6 +5,8 @@ let functionPageUUID = "" ;
 if(!isServer){
  functionAppUUID = window.__FUNCTION_APP_UUID__;
  functionPageUUID = window.__FUNCTION_PAGE_UUID__;
+ console.log("functionAppUUID", functionAppUUID)
+ console.log("functionPageUUID", functionPageUUID)
 }
 export const StudioFunctionCollection = [
   {
@@ -54,10 +56,10 @@ export const StudioFunctionCollection = [
         type: "string",
         value: functionAppUUID
       },
-      componentToRenderUUID: {
-        type: "string",
-        value: functionPageUUID
-      },
+      // componentToRenderUUID: {
+      //   type: "string",
+      //   value: functionPageUUID
+      // },
       mode: {
         type: "string",
         value: "preview"
