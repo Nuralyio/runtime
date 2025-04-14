@@ -21,6 +21,7 @@ const pageStyle = css`
     --hybrid-tabs-container-box-shadow : 0px 0px 5px 0px #dbdbdbbf ;
     --hybrid-tabs-container-background-local-color: transparent;
     --hybrid-tabs-label-active-background-color: transparent;
+    margin: auto;
     
   }
   .mobile.page-container {
