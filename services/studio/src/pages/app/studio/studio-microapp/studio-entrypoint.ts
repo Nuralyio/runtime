@@ -199,7 +199,7 @@ export default [
               },
               childrends: {
                 type: "componentIdArray",
-                value: ["function_micro_app"]
+                value: ["function_micro_app_block"]
 
               }
             }
