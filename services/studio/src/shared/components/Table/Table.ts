@@ -112,7 +112,9 @@ export class TextInputBlock extends BaseElementBlock {
 
   onSelect(e: CustomEvent) {
     if (this.component.event?.onSelect) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`));
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`) , {
+        selected : e.detail
+      });
       console.log(fn);
     }
   }
