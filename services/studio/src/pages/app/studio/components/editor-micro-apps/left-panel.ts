@@ -229,7 +229,17 @@ export default [{
                     type: "component",
                     component
                   }
+                },
+                {
+                  label: 'Copy',
+                  value: 'copy',
+                  icon: "copy",
+                  additionalData: {
+                    type: "component",
+                    component
+                  }
                 }]
+
               }
             };
         
@@ -321,6 +331,8 @@ export default [{
               }
               break;
           }
+        }else if(EventData.action === "copy"){
+          eventHandler.emit("Copy")
         }
          `
 
