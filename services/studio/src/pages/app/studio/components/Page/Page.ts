@@ -321,7 +321,7 @@ export class PageContent extends LitElement {
         class="page-container ${this.currentPlatform?.isMobile  ? "mobile" : ""} ${this.isPreviewMode() ? "viewer" : ""}"
         style=${styleMap({
           "overflow" : "scroll",
-          "width": this.currentPlatform?.width || "auto",
+          "min-width": this.currentPlatform?.width || "auto",
           "height": this.currentPlatform?.height || "100%",
         
         })}
