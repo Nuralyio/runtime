@@ -475,9 +475,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   async function InvokeFunction(id: string, payload: any = {}) {
     try {
       const result = await invokeFunctionHandler(id, {
-        payload: {
-          data: payload
-        }
+        payload
       });
 
       const contentType = result.headers?.get("Content-Type") || "";
