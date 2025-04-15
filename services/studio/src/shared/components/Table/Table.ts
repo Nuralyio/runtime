@@ -145,8 +145,8 @@ export class TextInputBlock extends BaseElementBlock {
     const tableStyles = this.component?.style || {};
     const tableAutoWidth = this.inputHandlersValue?.width;
     const tableAutoHeight = this.inputHandlersValue?.height;
-    const headers = this.inputHandlersValue?.data ? this.inputHandlersValue?.data[0] : this.headers;
-    const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data[1] : this.rows;
+    const headers = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.headers : this.headers;
+    const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.rows : this.rows;
     return html`
       <hy-table
         ${ref(this.inputRef)}
