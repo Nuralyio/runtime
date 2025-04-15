@@ -35,7 +35,7 @@ export const DefaultValueSelectInput=  [
     input: {
       value: {
         type: "string",
-        value: 'URL'
+        value: 'Default'
       }
     }
   },
