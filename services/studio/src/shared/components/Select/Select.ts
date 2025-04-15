@@ -5,7 +5,7 @@ import "@nuralyui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { $environment, ViewMode } from "$store/environment.ts";
+import { ViewMode } from "$store/environment.ts";
 import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
@@ -49,7 +49,7 @@ override  renderComponent() {
       <hy-select  
             ${ref(this.inputRef)}
             style=${styleMap({...this.getStyles(), 
-            "--hybrid-select-width" : this.get          
+            "--hybrid-select-width" : this.getStyles()['--hybrid-select-width']  ?? this.getStyles().width    
           })}
                  selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : nothing}
                  .options=${this.inputHandlersValue?.options || options}
