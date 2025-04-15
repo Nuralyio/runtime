@@ -4,6 +4,7 @@ import { ExecuteInstance } from "./Kernel";
 
 class Editor {
   components: any[] = [];
+  functions: any[] = [];
   currentEditingApplication: any = {};
   currentComponent: any = null;
   selectedComponents: any[] = [];
