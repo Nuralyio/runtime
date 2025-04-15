@@ -23,6 +23,7 @@ import { deleteComponentAction } from "$store/actions/component/deleteComponentA
 import type { PageElement } from "$store/handlers/pages/interfaces/interface";
 import { deletePageAction } from "$store/actions/page/deletePageAction";
 import { updateSepecificApplication } from "$store/actions/application/updateApplication";
+import { loadFunctionsHandler } from "$store/handlers/functions/load-functions-handler";
 const DEBUG = false;
 
 /**
@@ -473,6 +474,10 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   }
 
   async function InvokeFunction(name: string, payload: any = {}) {
+    if(!ExecuteInstance.Vars.studio_functions){
+      const functions=  await loadFunctionsHandler();
+      ExecuteInstance.VarsProxy.studio_functions = [...functions]
+    }
    const targetFunction =  (ExecuteInstance.Vars.studio_functions ?? []).find(_function => _function.label ===name )
     try {
       const result = await invokeFunctionHandler(targetFunction.id, payload);
