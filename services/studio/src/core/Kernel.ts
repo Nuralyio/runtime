@@ -475,9 +475,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   async function InvokeFunction(name: string, payload: any = {}) {
    const targetFunction =  (ExecuteInstance.Vars.studio_functions ?? []).find(_function => _function.label ===name )
     try {
-      const result = await invokeFunctionHandler(targetFunction.id, {
-        payload
-      });
+      const result = await invokeFunctionHandler(targetFunction.id, payload);
 
       const contentType = result.headers?.get("Content-Type") || "";
 
