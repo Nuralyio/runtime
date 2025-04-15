@@ -56,10 +56,10 @@ export const StudioFunctionCollection = [
         type: "string",
         value: functionAppUUID
       },
-      // componentToRenderUUID: {
-      //   type: "string",
-      //   value: functionPageUUID
-      // },
+      componentToRenderUUID: {
+        type: "string",
+        value: functionPageUUID
+      },
       mode: {
         type: "string",
         value: "preview"
