@@ -167,9 +167,7 @@ padding-bottom: 50px;">
                   }}
                   .code=${`
 {
-  "payload" : {
     "data": "Hello World"
-  }
 }
           `}
                 language="json"
@@ -183,7 +181,7 @@ padding-bottom: 50px;">
                   .icon=${["bug"]}
                   @click=${() => {
                     window.dispatchEvent(new CustomEvent("add-log", { detail: { result: "invoking function ..." } }));
-                    invokeFunctionHandler(getVar("global", "currentFunction").value.id, { payload: { data: this.payload } })
+                    invokeFunctionHandler(getVar("global", "currentFunction").value.id, this.payload )
                       .then(async (result) => {
                         const _result = await result.text();
                         window.dispatchEvent(new CustomEvent("add-log", { detail: { result: _result } }));
