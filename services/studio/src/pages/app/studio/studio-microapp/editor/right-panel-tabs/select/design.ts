@@ -1,6 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
-// import { StudioSelectInputs } from "./inputs";
+import { StudioSelectInputs } from "./inputs";
 
 export const StudioSelectDesign = [
   {
@@ -22,5 +22,5 @@ export const StudioSelectDesign = [
       "border_collapse_container"
     ]
   },
-  // ...StudioSelectInputs
+   ...StudioSelectInputs
 ];
