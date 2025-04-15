@@ -165,7 +165,7 @@ padding-bottom: 50px;">
                     } = event;
                     this.payload = JSON.parse(value);
                   }}
-                  .code=${this.payload ??`
+                  .code=${`
 {
     "data": "Hello World"
 }
