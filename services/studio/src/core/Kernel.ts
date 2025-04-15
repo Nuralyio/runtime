@@ -472,9 +472,10 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     updateComponentAttributes(component.application_id, component.uuid, "style", eventData);
   }
 
-  async function InvokeFunction(id: string, payload: any = {}) {
+  async function InvokeFunction(name: string, payload: any = {}) {
+   const targetFunction =  (ExecuteInstance.Vars.studio_functions ?? []).find(_function => _function.label ===name )
     try {
-      const result = await invokeFunctionHandler(id, {
+      const result = await invokeFunctionHandler(targetFunction.id, {
         payload
       });
 
