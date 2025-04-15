@@ -392,7 +392,7 @@ export class AIAssistantBlock extends LitElement {
                   autofocus
                   type="text"
                   placeholder="Type your message..."
-                  value="rename label email with e-mail"
+                  value=""
                   @keydown=${this._onInputKeyDown}
                 />
                 <button @click=${this._sendMessage} ?disabled=${this._isLoading}>
