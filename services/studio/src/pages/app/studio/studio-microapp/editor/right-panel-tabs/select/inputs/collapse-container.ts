@@ -4,6 +4,7 @@ export const StudioSelectCollapseContainer = generateDynamicContainer("select_co
   "component_value_text_block",
   "component_id_text_block",
   "select_values_handler_block",
+  "default_value_block",
   "label_text_block",
   "placeholder_text_block",
   "helper_text_block",

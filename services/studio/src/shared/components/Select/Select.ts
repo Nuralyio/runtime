@@ -53,7 +53,7 @@ override  renderComponent() {
           })}
                  selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : nothing}
                  .options=${this.inputHandlersValue?.options || options}
-                 .defaultSelected="${defaultSelected}"
+                 .defaultSelected="${[this.inputHandlersValue?.defaultSelected] }"
                  .placeholder=${this.inputHandlersValue.placeholder || "Select an option"}
                  .status=${selectStyles?.state ?? nothing}
                  .size=${selectStyles?.size ?? nothing}
