@@ -48,7 +48,8 @@ override  renderComponent() {
     <span>
       <hy-select  
             ${ref(this.inputRef)}
-            style=${styleMap({...this.getStyles(),           
+            style=${styleMap({...this.getStyles(), 
+            "--hybrid-select-width" : this.get          
           })}
                  selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : nothing}
                  .options=${this.inputHandlersValue?.options || options}
