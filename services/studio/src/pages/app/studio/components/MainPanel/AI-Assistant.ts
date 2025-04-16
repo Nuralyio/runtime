@@ -1,12 +1,10 @@
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import styles from "./AI-Assistant.style.ts";
-import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
 import { $context, getVar } from "$store/context.ts";
-import { $currentApplication } from "$store/apps.ts";
 import { addPageAction } from "$store/actions/page/addPageAction.ts";
 import { $applicationComponents } from "$store/component/store.ts";
-import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import { traitCompoentFromSchema } from "@utils/clipboard-utils.ts";
 
 @customElement("ai-assistant-block")
 export class AIAssistantBlock extends LitElement {
@@ -237,36 +235,7 @@ export class AIAssistantBlock extends LitElement {
         <hy-button
           @click=${() => {
             if (response.components) {
-              response.components.forEach((component: any) => {
-                if(this._selectedComponents.length > 0){
-                  const currentComponent = this._selectedComponents[0];
-                  if(response.components[0]?.input){
-                      Object.keys(response.components[0]?.input).forEach(
-                        (key) => {
-                          if (component.input && component.input[key]) {
-                            updateComponentAttributes(currentComponent.application_id, currentComponent.uuid, 'input', { [key]: component.input[key] });
-                          }
-                        }
-                      )
-                    
-                    Object.keys(response.components[0]?.event).forEach(
-                      (key) => {
-                        if (response.components[0]?.event && response.components[0]?.event[key]) {
-                          updateComponentAttributes(currentComponent.application_id, currentComponent.uuid, 'event', { [key]: component.event[key] });
-                        }
-                      }
-                    )
-                  }
-                
-                }else{
-                  addComponentAction(
-                    component,
-                    getVar("global", "currentPage").value,
-                    $currentApplication.get().uuid
-                  );
-                }
-               
-              });
+              traitCompoentFromSchema(JSON.stringify(response))
             }
             if (response.pages) {
               response.pages.forEach((page: any) => {
