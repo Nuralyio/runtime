@@ -5,7 +5,7 @@ import { injectable } from "tsyringe";
 import { v4 as uuidv4 } from 'uuid';
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
 import { removeNullProperties } from "../../shared/utils/remove-null-properties";
-import {NotFoundException} from "../../exceptions/NotFoundException";
+import { NotFoundException } from "../../exceptions/NotFoundException";
 
 
 @Route('/api/pages')
@@ -25,14 +25,15 @@ export class PageController extends Controller {
             page: {
                 name: string;
                 url: string;
+                description : string;
                 application_id: string;
                 component_ids: string[]
             }
         }): Promise<Page> {
-        const { page : {name, url, application_id, component_ids = []} } = requestBody;
+        const { page : {name, url, description, application_id, component_ids = []} } = requestBody;
         const need_authentification = false;
         const uuid = uuidv4();
-        return await this.pageService.create(name, url, application_id, request.user.uuid, uuid, need_authentification, component_ids);
+        return await this.pageService.create(name, url, description, application_id, request.user.uuid, uuid, need_authentification, component_ids);
     }
 
 

@@ -2,7 +2,7 @@ import prisma from '../../../prisma/prisma';
 import { NotFoundException } from '../../exceptions/NotFoundException';
 import { IPageRepository } from '../interfaces/page.interface';
 import { Page } from '../models/page';
-import { inject, singleton } from 'tsyringe';
+import { singleton } from 'tsyringe';
 
 @singleton()
 export class PageRepository implements IPageRepository {
@@ -12,6 +12,7 @@ export class PageRepository implements IPageRepository {
             data: {
                 name: page.name,
                 url: page.url,
+                description: page.description,
                 application_id: page.application_id,
                 user_id: page.user_id,
                 uuid: page.uuid,
@@ -29,6 +30,7 @@ export class PageRepository implements IPageRepository {
         return new Page(
             page.name,
             page.url,
+            page.description,
             page.application_id,
             page.user_id,
             page.uuid,
@@ -45,6 +47,7 @@ export class PageRepository implements IPageRepository {
         return pages.reverse().map((page: any) => new Page(
             page.name,
             page.url,
+            page.description,
             page.application_id,
             page.user_id,
             page.uuid,
@@ -64,6 +67,7 @@ export class PageRepository implements IPageRepository {
         return pages.map((page: any) => new Page(
             page.name,
             page.url,
+            page.description,
             page.application_id,
             page.user_id,
             page.uuid,
@@ -73,13 +77,14 @@ export class PageRepository implements IPageRepository {
     }
     public async update( page: Page): Promise<Page> {
         console.log("page", page);
-        const { name, url, application_id, user_id, uuid, need_authentification, component_ids, style ={} } = page;
+        const { name, url, description,application_id, user_id, uuid, need_authentification, component_ids, style ={} } = page;
 
         const updatedPage = await prisma.pages.update({
             where: { uuid },
             data: {
                 name,
                 url,
+                description,
                 application_id,
                 user_id,
                 uuid,
@@ -96,10 +101,11 @@ export class PageRepository implements IPageRepository {
             where: { uuid: page_uuid }
         });
         // this
-        const { name, url, application_id, user_id, uuid, need_authentification, component_ids } = deletePage;
+        const { name, url, description,application_id, user_id, uuid, need_authentification, component_ids } = deletePage;
         return new Page(
             name,
             url,
+            description,
             application_id,
             user_id,
             uuid,

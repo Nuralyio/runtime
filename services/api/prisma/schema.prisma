@@ -71,6 +71,7 @@ model pages {
   style                 Json     @default("{}")
   name                  String
   url                   String
+  description           String  @default("")
   application_id        String
   user_id               String
   uuid                  String @unique
