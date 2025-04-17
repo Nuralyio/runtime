@@ -322,7 +322,7 @@ export class PageContent extends LitElement {
         style=${styleMap({
           "overflow" : "scroll",
           "width": this.currentPlatform?.width || "auto",
-          "height": this.currentPlatform?.height || "100%",
+          "height": this.currentPlatform?.height || "",
         
         })}
         @mousedown=${this.handlePageClick}
