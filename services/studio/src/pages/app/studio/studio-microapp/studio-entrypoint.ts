@@ -59,6 +59,7 @@ import studioSelectValuesBlock from "./editor/right-panel-tabs/select/inputs/stu
 import studioTableValuesBlock from "./editor/right-panel-tabs/table/inputs/data.ts";
 import studioPageNameBlock from "./page-blocks/studio-page-name-block.ts";
 import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
+import studioPageSEOBlock from "./page-blocks/studio-page-seo-block.ts";
 import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks.ts";
 import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks.ts";
 import collectionContainerBlocks from "./collection-blocks/collection-blocks-container.ts";
@@ -269,6 +270,7 @@ export default [
   ...PageThemeStudio,
   ...studioPageNameBlock,
   ...studioPageUrlBlock,
+  ...studioPageSEOBlock,
   ...studioTableValuesBlock,
   ...stduioTable,
   ...tableSelectionModeBlock,

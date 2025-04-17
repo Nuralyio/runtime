@@ -37,8 +37,7 @@ const processedHeaders = processHeaders(Astro.request.headers);
   document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
   document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
 </script>
-<Layout title="Welcome to Astrolus.">
-
+<Layout title={pageData[0]?.title}  description={pageData[0]?.description}>
   <MicroApp
   client:load
   .prod={true}
