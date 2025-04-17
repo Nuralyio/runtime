@@ -142,6 +142,7 @@ export class BaseElementBlock extends LitElement {
 
   eventDispatcher.on("Vars:currentPlatform", (data) => {
     this.traitInputsHandlers();
+    this.traitStylesHandlers();
   })
   }
 
@@ -388,6 +389,7 @@ export class BaseElementBlock extends LitElement {
       async (data) => {
         setTimeout(() => {
           this.traitInputsHandlers();
+          this.traitStylesHandlers();
         this.requestUpdate();
         }, 0);
       }
