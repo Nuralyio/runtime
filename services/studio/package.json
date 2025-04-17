@@ -44,7 +44,7 @@
     "@nuralyui/image": "^0.0.3",
     "@nuralyui/input": "^0.0.3",
     "@nuralyui/label": "^0.0.11",
-    "@nuralyui/menu": "^0.0.7",
+    "@nuralyui/menu": "^0.0.9",
     "@nuralyui/modal": "^0.0.1",
     "@nuralyui/radio": "^0.0.2",
     "@nuralyui/select": "^0.0.3",
