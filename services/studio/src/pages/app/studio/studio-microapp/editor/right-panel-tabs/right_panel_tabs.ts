@@ -222,7 +222,8 @@ export default {
                 else if(currentPageId) {
                         parameters=[
                             "page_name_block", 
-                            "page_url_block"    
+                            "page_url_block",
+                            "description_block"
                         ]
                         themes=[
                             "PageThemeStudio",
