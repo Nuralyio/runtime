@@ -1,7 +1,7 @@
-import { singleton, inject, delay, container } from "tsyringe";
+import { singleton } from "tsyringe";
 import { PageRepository } from '../repositories/page.repository';
 import { Page } from "../models/page";
-import {ApplicationService} from "../../application/services/application.service";
+import { ApplicationService } from "../../application/services/application.service";
 import { ComponentService } from "../../component/services/component.service";
 import { NotFoundException } from "../../exceptions/NotFoundException";
 @singleton()
@@ -20,10 +20,11 @@ export class PageService {
         this.componentService = componentService;
 
     }
-    public async create(name: string, url: string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_id: string[]): Promise<Page> {
+    public async create(name: string, url: string, description :string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_id: string[]): Promise<Page> {
         const page: Page = new Page(
             name,
             url,
+            description,
             application_id,
             user_id,
             uuid,
