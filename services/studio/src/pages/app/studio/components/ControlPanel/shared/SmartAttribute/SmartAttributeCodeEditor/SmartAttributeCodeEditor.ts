@@ -1,8 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import "@shared/components/CodeEditor/CodeEditor";
-// import './Markdown.ts'
+// Lazy load instead of importing eagerly
+// import "@shared/components/CodeEditor/CodeEditor";
 
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {
@@ -13,8 +13,10 @@ export class SmartAttributeCodeeditor extends LitElement {
       }
     `
   ];
+
   @property()
   value: string;
+
   @property({ type: Object })
   containerStyle: any = {
     background: "white",
@@ -29,40 +31,50 @@ export class SmartAttributeCodeeditor extends LitElement {
   @state()
   data: string = "";
 
+  @state()
+  private isEditorLoaded: boolean = false;
+
   constructor() {
     super();
     this.handleCodeEditorChange = this.handleCodeEditorChange.bind(this);
   }
 
+  async connectedCallback() {
+    super.connectedCallback();
+
+    // Lazy-load the code editor module
+    if (!this.isEditorLoaded) {
+      await import("@shared/components/CodeEditor/CodeEditor");
+      this.isEditorLoaded = true;
+    }
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
-    // Ensure that any existing debounce timeout is cleared when the component is disconnected
     if (this.debounceTimeout) {
       clearTimeout(this.debounceTimeout);
     }
   }
-  
 
   render() {
     return html`
-
       <div style=${styleMap(this.containerStyle)}>
-     
-
-        <code-editor
-          theme="vs"
-          @change=${(event: CustomEvent) => {
-        const {
-          detail: { value }
-        } = event;
-        this.debounce(() => this.handleCodeEditorChange(value), 1000);
-      }}
-          .code=${this.value}
-          language="javascript"
-        >
-        </code-editor>
-        <markdown-renderer markdown=${this.data}
-      ></markdown-renderer>
+        ${this.isEditorLoaded
+          ? html`
+              <code-editor
+                theme="vs"
+                @change=${(event: CustomEvent) => {
+                  const {
+                    detail: { value }
+                  } = event;
+                  this.debounce(() => this.handleCodeEditorChange(value), 1000);
+                }}
+                .code=${this.value}
+                language="javascript"
+              ></code-editor>
+            `
+          : html`<p>Loading editor...</p>`}
+        <markdown-renderer markdown=${this.data}></markdown-renderer>
       </div>
     `;
   }
