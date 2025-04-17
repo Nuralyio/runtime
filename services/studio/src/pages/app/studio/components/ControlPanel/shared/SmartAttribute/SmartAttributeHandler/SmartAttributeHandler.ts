@@ -1,7 +1,6 @@
 import { css, html, LitElement, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from "$store/component/interface.ts";
-import "../SmartAttributeCodeEditor/SmartAttributeCodeEditor.ts";
 
 @customElement("smart-attribute-handler")
 export class SmartAttributeHandler extends LitElement {
@@ -12,24 +11,36 @@ export class SmartAttributeHandler extends LitElement {
       }
     `
   ];
+
   @property({ type: Object })
   component: ComponentElement;
+
   @property()
   attributeName: string;
+
   @property()
   attributeValue: string;
+
   @property({ type: Object })
   containerStyle: any;
+
   @property()
   attributeScope: string = "style";
+
   @property()
   handlerScope: string;
+
   @state()
   smartValue: string;
+
   @state()
   view = true;
+
   @state()
   private previousComponentId: string | undefined;
+
+  @state()
+  private editorLoaded = false;
 
   codeChangeHandler(event: CustomEvent) {
     const {
@@ -42,6 +53,15 @@ export class SmartAttributeHandler extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.smartValue = this.getAttributeValue();
+    this.loadEditor();
+  }
+
+  async loadEditor() {
+    if (!this.editorLoaded) {
+      await import("../SmartAttributeCodeEditor/SmartAttributeCodeEditor.ts");
+      this.editorLoaded = true;
+      this.requestUpdate(); // Force re-render after lazy load
+    }
   }
 
   getAttributeValue() {
@@ -65,17 +85,20 @@ export class SmartAttributeHandler extends LitElement {
 
   render() {
     return html`
-    ${this.component.errors &&
-    this.component.errors[this.attributeName]
-      ? html`<div class="error-message-text">
+      ${this.component.errors && this.component.errors[this.attributeName]
+        ? html`<div class="error-message-text">
             ${this.component.errors[this.attributeName]}
           </div>`
-      : nothing}
-      ${this.view ? html`<smart-attribute-codeeditor
+        : nothing}
+
+      ${this.view && this.editorLoaded
+        ? html`<smart-attribute-codeeditor
               .containerStyle=${this.containerStyle ?? nothing}
               .value=${this.attributeValue}
               @change=${this.codeChangeHandler}
-            ></smart-attribute-codeeditor>` : nothing}`;
+            ></smart-attribute-codeeditor>`
+        : nothing}
+    `;
   }
 
   protected updated(
@@ -92,7 +115,6 @@ export class SmartAttributeHandler extends LitElement {
       setTimeout(() => {
         this.view = true;
       }, 0);
-
     }
 
     this.smartValue = this.getAttributeValue();
