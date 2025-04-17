@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 const menuLinkStyle = css`
   :host([disabled]) li {
     color: var(--hybrid-menu-disabled-link-color);
@@ -59,8 +59,10 @@ const menuLinkStyle = css`
   }
 
   :host(:not([disabled])) li:focus {
-    border: var(--hybrid-menu-focus-border);
+    /* border: var(--hybrid-menu-focus-border); */
+    background-color: var(--hybrid-menu-active-background-color);
     color: var(--hybrid-menu-focus-color);
+    border-left: var(--hybrid-menu-selected-link-border);
   }
 
   :host(:not([disabled]):not([selected])) li:active {

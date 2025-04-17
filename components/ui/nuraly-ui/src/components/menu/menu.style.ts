@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const menuStyle = css`
   ul {
@@ -20,7 +20,7 @@ const menuStyle = css`
     --hybrid-menu-focus-border: 1px solid #0f62fe;
     --hybrid-menu-focus-color: #000000;
     --hybrid-menu-active-color: #000000;
-    --hybrid-menu-active-background-color: #c6c6c6;
+    --hybrid-menu-active-background-color: #e0e0e0;
     --hybrid-menu-hover-link-background-color: #f4f4f4;
     --hybrid-menu-hover-link-color: #000000;
     --hybrid-menu-selected-link-background-color: #e0e0e0;
@@ -35,7 +35,7 @@ const menuStyle = css`
     --hybrid-menu-link-icon-only-width: 42px;
     --hybrid-sub-menu-color: #000000;
     --hybrid-sub-menu-disabled-color: #c6c6c6;
-    --hybrid-sub-menu-focus-color: #525252;
+    --hybrid-sub-menu-focus-color: #e0e0e0;
     --hybrid-sub-menu-focus-border: 1px solid #0f62fe;
     --hybrid-sub-menu-hover-background-color: #f4f4f4;
     --hybrid-sub-menu-hover-color: #161616;
