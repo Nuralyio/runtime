@@ -9,13 +9,13 @@ export class HySubMenu extends LitElement {
   @property()
   text!: string;
 
-  @property({ reflect: true })
+  @property({  })
   icon = EMPTY_STRING;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean  })
   highlighted = false;
 
   @state()
@@ -24,10 +24,10 @@ export class HySubMenu extends LitElement {
   @state()
   hovered = false;
 
-  @property({type: Object, reflect: true})
+  @property({type: Object, })
   menu!: { icon: string, actions: IAction[], children: any  , menu : any , opened : boolean};
 
-  @property({type: Object, reflect: true})
+  @property({type: Object, })
   status!: { icon: string, label: string };
 
   optionPath!: number[];
