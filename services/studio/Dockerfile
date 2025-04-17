@@ -7,7 +7,6 @@ RUN npm ci
 
 COPY . .
 
-# Now build
 RUN npm run build
 
 EXPOSE 4321
