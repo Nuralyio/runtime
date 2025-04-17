@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const subMenuStyle = css`
   :host([disabled]) ul > div {
@@ -73,9 +73,16 @@ const subMenuStyle = css`
     background-color: var(--hybrid-sub-menu-hover-background-color);
     color: var(--hybrid-sub-menu-hover-color);
   }
+  :host([selected]:not([disabled])) ul > div {
+    background-color: var(--hybrid-menu-selected-link-background-color);
+    color: var(--hybrid-menu-focus-color);
+    border-left: var(--hybrid-menu-selected-link-border);
+}
   :host(:not([disabled])) ul > div:active {
     background-color: var(--hybrid-sub-menu-active-background-color);
     color: var(--hybrid-sub-menu-active-color);
   }
+
+  
 `;
 export const styles = subMenuStyle;
