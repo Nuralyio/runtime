@@ -1,6 +1,6 @@
 <#macro kw>
   <div class="font-bold text-center " style="
-    font-size: 90px;
+    font-size: 75px;
     line-height: 6rem;
     text-transform: capitalize;
 ">
