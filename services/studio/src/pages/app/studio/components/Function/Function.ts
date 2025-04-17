@@ -1,5 +1,5 @@
 import { customElement, property, query, state } from "lit/decorators.js";
-import { css, html, LitElement, type TemplateResult } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import "@nuralyui/canvas";
 import "../LogPanel/LogPanel.ts"; // Ensure the log-panel component is imported
 import { LogPanel } from "../LogPanel/LogPanel.ts";
@@ -32,7 +32,9 @@ export class FunctionContent extends LitElement {
 
   @state()
   payload: string = {};
-
+  
+  @state()
+  private editorLoaded = false;
   // Debounce delay in milliseconds
   private debounceDelay = 1000;
 
@@ -92,6 +94,17 @@ export class FunctionContent extends LitElement {
     }
 }
 
+connectedCallback(): void {
+  this.loadEditor();
+}
+
+async loadEditor() {
+  if (!this.editorLoaded) {
+    await import("../../components/ControlPanel/shared/SmartAttribute/SmartAttributeCodeEditor/SmartAttributeCodeEditor.ts");
+    this.editorLoaded = true;
+    this.requestUpdate(); // Force re-render after lazy load
+  }
+}
   /**
    * Handle code changes to add log entries.
    * This method is debounced to prevent excessive calls.
@@ -200,7 +213,7 @@ padding-bottom: 50px;">
             </hy-button>
           </hy-dropdown>
         </div>
-        <code-editor
+        ${ this.editorLoaded ? html `<code-editor
           theme="vs"
           @change=${(event: CustomEvent) => {
             const {
@@ -211,7 +224,8 @@ padding-bottom: 50px;">
           .code=${this.detail?.handler}
           language="javascript"
         >
-        </code-editor>
+        </code-editor>` : nothing }
+        
       </div>
       <log-panel></log-panel>
     `;
