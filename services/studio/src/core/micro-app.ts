@@ -97,7 +97,7 @@ private initializeAppComponents(): void {
     $microAppCurrentPage.setKey(this.uuid, this.page_uuid);
   }
 
-  if (appLoaded === undefined) {
+  if (appLoaded === undefined && this.uuid!="1") {
     console.log('App not loaded yet, fetching components and pages...');
 
     // Fetch components
