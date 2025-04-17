@@ -6,25 +6,27 @@ import "@shared/components/TextLabel/TextLabel";
 import "@shared/wrappers/GenerikWrapper/GenerikWrapper";
 import "@shared/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
-import { $currentApplication, $resizing, $values } from "$store/apps";
+import { $currentApplication, $resizing } from "$store/apps";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface";
-import { $applicationComponents, $components, $draggingComponentInfo } from "$store/component/store.ts";
+import { $applicationComponents, $draggingComponentInfo } from "$store/component/store.ts";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
-import { $applicationPages, $currentPage, $currentPageViewPort, $pages } from "$store/page";
+import { $applicationPages, $currentPage, $currentPageViewPort } from "$store/page";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
-import { $context, getVar, setVar } from "$store/context";
+import { getVar } from "$store/context";
 import { log } from "utils/logger";
 import { eventDispatcher } from "utils/change-detection";
-import { $environment, type Environment, ViewMode } from "$store/environment";
+import { ViewMode } from "$store/environment";
 import {
   moveDraggedComponentIntoCurrentPageRoot
 } from "$store/actions/component/moveDraggedComponentIntoCurrentPageRoot.ts";
-import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
 import { deleteComponentAction } from "$store/actions/component/deleteComponentAction.ts";
 import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
+import { setEnvirementMode } from "$store/actions/editor/setEnvirementMode";
+import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
+import { ExecuteInstance } from "core/Kernel";
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -35,23 +37,18 @@ export class PageContent extends LitElement {
   @state() components: ComponentElement[] = [];
 
   @property({ type: Boolean }) isViewMode = false;
-  mode: ViewMode;
+  mode: ViewMode = ViewMode.Edit;
   @state() zoomLevel = 100;
+  @state() currentPlatform: any;
 
   constructor() {
     super();
 
-    $pages.listen(() => this.refreshComponent());
-    $components.listen(() => this.refreshComponent());
-    $context.listen(() => this.refreshComponent());
-    $values.listen(() => this.refreshComponent());
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
+    eventDispatcher.onAny((eventName, data) => {
       this.refreshComponent();
     });
-    eventDispatcher.on("component:refresh", () => {
-      this.refreshComponent();
-    });
+
+    // EditorInstance.updatePlatform ()
 
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
       this.draggingComponentInfo = draggingComponentInfo || null;
@@ -59,28 +56,111 @@ export class PageContent extends LitElement {
   }
 
   refreshComponent() {
+    const currentPlatform = ExecuteInstance.Vars.currentPlatform;
+    if(currentPlatform?.platform !== this.currentPlatform?.platform) {
+      this.currentPlatform = currentPlatform;
+    }
     log.prefix("PageContent").info("refreshComponent");
-    const currentPage = getVar("global", "currentPage");
+    const currentPage = ExecuteInstance.Vars.currentPage;
+    if(!currentPage){
+      return;
+    }
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {
       const currentAppUuid = currentEditingApplication.value.uuid;
 
-      this.currentPage = $currentPage(currentAppUuid, currentPage.value).get();
+      this.currentPage = $currentPage(currentAppUuid, currentPage).get();
       const components = $applicationComponents(currentAppUuid).get();
-      this.components = components.filter(component => component.pageId && currentPage.value && component.pageId === currentPage.value && component.root);
+      // Filter for components that belong to the current page and are root.
+      const pageComponents = components.filter(
+        component =>
+          component.pageId &&
+          currentPage &&
+          component.pageId === currentPage &&
+          component.root
+      );
 
+      // Sort the components based on their position in this.currentPage.component_ids
+      if (this.currentPage?.component_ids) {
+        pageComponents.sort((a, b) => {
+          const idxA = this.currentPage.component_ids.indexOf(a.uuid);
+          const idxB = this.currentPage.component_ids.indexOf(b.uuid);
+          return idxA - idxB;
+        });
+      }
+
+      this.components = pageComponents;
     }
     this.requestUpdate();
   }
 
+
   connectedCallback() {
     super.connectedCallback();
-    $context.subscribe(() => {
-      console.log( getVar("global", "editor_panel_zoom"))
-      this.zoomLevel = getVar("global", "editor_panel_zoom")?.value || 100;
-    });
+    $applicationPages($currentApplication.get()?.uuid).subscribe((pages: PageElement[]) => {
+      this.refreshComponent();
+    })
+    const currentPage = ExecuteInstance.Vars.currentPage;
+    console.log("window.__URL__", window.__URL__);
+    if (!currentPage && $currentApplication.get()) {
+      if(window.__URL__){
+        const page = $applicationPages($currentApplication.get()?.uuid).get().find((page: PageElement) => {
+          return page.url === window.__URL__;
+        }
+        )?.uuid;
+        if(page){
+          ExecuteInstance.VarsProxy.currentPage = page;
+        }else{
+          ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
 
+        }
+      }else{
+      ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
+        
+      }
+
+    }
+    eventDispatcher.on('Vars:currentEditingMode', (data)=>{
+      if(! ExecuteInstance.Vars.currentEditingMode ){
+        ExecuteInstance.Vars.currentEditingMode =  ViewMode.Edit;
+        this.mode =  ViewMode.Edit;
+        setEnvirementMode( this.mode )
+
+      }
+      if(ExecuteInstance.Vars.currentEditingMode !== this.mode){
+        this.mode = ExecuteInstance.Vars.currentEditingMode;
+        setEnvirementMode( this.mode )
+      }
+     
+    })
+
+    eventDispatcher.on('Copy', (data)=>{
+      this.handleCopy();
+    })
+    eventDispatcher.on('Vars:EditorZoom', (data)=>{
+
+      this.zoomLevel = ExecuteInstance.Vars.EditorZoom;
+      // this.style.setProperty('--zoom-level', `${this.zoomLevel}%`);
+    })
+
+    eventDispatcher.on('Vars:currentPage', (data)=>{
+     this.refreshComponent();
+    this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
+    this.style.setProperty('--hybrid-page-background-color-dark', this.currentPage?.style?.["--hybrid-page-background-color-dark"]);
+
+     
+    })
+
+    eventDispatcher.on('component:deleted', (data)=>{
+      this.refreshComponent();
+      
+     })
+
+     eventDispatcher.on('component:updated', (data)=>{
+      this.refreshComponent();
+      
+     })
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
       });
@@ -93,11 +173,10 @@ export class PageContent extends LitElement {
     window.onresize = () => {
       this.updatePageInfo(pageContainer?.clientWidth);
     };
-    const currentPage = getVar("global", "currentPage");
-    if (!currentPage) {
-      setVar("global", "currentPage", $applicationPages($currentApplication.get().uuid).get()[0]?.uuid);
-    }
+   
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
+    this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
+    this.style.setProperty('--hybrid-page-background-color-dark', this.currentPage?.style?.["--hybrid-page-background-color-dark"]);
   }
 
   disconnectedCallback() {
@@ -121,32 +200,57 @@ export class PageContent extends LitElement {
           this.confirmDelete();
         }
         break;
+      case "c":
+        if (e.metaKey || e.ctrlKey) {
+          // this.handleCopy();
+        }
+        break;
+      case "v":
+        if (e.metaKey || e.ctrlKey) {
+          this.handlePaste();
+        }
+        break;
     }
+  }
+
+  handleCopy() {
+      const selectedComponentId=  (ExecuteInstance.VarsProxy.selectedComponents ?? []).
+      map((component: ComponentElement) => component.uuid);
+      const currentEditingApplication = getVar('global', "currentEditingApplication").value;
+      const applicationComponents = $applicationComponents(currentEditingApplication.uuid).get();
+      const selectedComponents = applicationComponents.find((component) =>
+        selectedComponentId[0] === component.uuid
+      );
+      copyCpmponentToClipboard(selectedComponents);
+  }
+  
+  handlePaste() {
+    pasteComponentFromClipboard()
   }
 
   clearSelectedComponents() {
     try {
-      setVar("global", "selectedComponents", []);
+      ExecuteInstance.VarsProxy.selectedComponents = []
     } catch (error) {
       console.error("Error clearing selected components:", error);
     }
   }
 
   handleEnterKey(e) {
-    try {
-      const selectedComponents = getVar("global", "selectedComponents").value ?? [];
-      eventDispatcher.emit("keydown", {
-        key: e.key,
-        selectedComponents: selectedComponents
-      });
-    } catch (error) {
-      console.error("Error handling Enter key:", error);
-    }
+    // try {
+    //   const selectedComponents =  ExecuteInstance.VarsProxy.selectedComponents ?? []
+    //   eventDispatcher.emit("keydown", {
+    //     key: e.key,
+    //     selectedComponents: selectedComponents
+    //   });
+    // } catch (error) {
+    //   console.error("Error handling Enter key:", error);
+    // }
   }
 
 
   confirmDelete() {
-    const selectedComponents = getVar("global", "selectedComponents").value ?? [];
+    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents ?? [];
     if (selectedComponents.length > 0) {
       const confirmation = window.confirm("Are you sure you want to delete the selected components?");
       if (confirmation) {
@@ -156,11 +260,9 @@ export class PageContent extends LitElement {
   }
 
   handleDeleteKey() {
-    const selectedComponents = getVar("global", "selectedComponents").value ?? [];
-    selectedComponents.forEach((componentId: string) => {
-      const currentEditingApplication = getVar("global", "currentEditingApplication");
-      const currentAppUuid = currentEditingApplication.value.uuid;
-      deleteComponentAction(componentId, currentAppUuid).then(r => {
+    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents ?? [];
+    selectedComponents.forEach((component: ComponentElement) => {
+      deleteComponentAction(component.uuid, component.application_id).then(r => {
         // todo: implment this
       });
     });
@@ -188,16 +290,42 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
+    <style>
+      
+      .page-container {
+        --page-background-color : var(--hybrid-page-background-color);
+        margin-top: 20px;
+
+      }
+      @media (prefers-color-scheme: dark) {
+        .page-container {
+          --page-background-color : var(--hybrid-page-background-color-dark);
+        }
+      }
+    </style>
+    <!-- <micro-app
+      style=${styleMap({
+        "z-index": 9999999,
+        position: "absolute",
+        bottom: "10px",
+        left: "40%",
+      })}
+    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app> -->
       <style>
         :host{
           zoom: ${this.zoomLevel}%;
         }
       </style>
-       <rectangle-selection>
+       <!-- <rectangle-selection> -->
       <div
-        class="page-container ${this.isPreviewMode() ? "viewer" : ""}"
-        style=${styleMap(this.currentPage?.style || {})}
-        @click=${this.handlePageClick}
+        class="page-container ${this.currentPlatform?.isMobile  ? "mobile" : ""} ${this.isPreviewMode() ? "viewer" : ""}"
+        style=${styleMap({
+          "overflow" : "scroll",
+          "width": this.currentPlatform?.width || "auto",
+          "height": this.currentPlatform?.height || "",
+        
+        })}
+        @mousedown=${this.handlePageClick}
         @dragend=${this.preventDefault}
         @dragenter=${this.preventDefault}
         @dragleave=${this.preventDefault}
@@ -207,17 +335,23 @@ export class PageContent extends LitElement {
         ${this.components.length
       ? renderComponent(this.components, null, this.mode === ViewMode.Preview || !this.mode || this.isViewMode)
       : html`<div class="page-empty-message-container">
-                <p class="page-empty-message">Add an item from the insert panel</p>
+                <p class="page-empty-message">Add an item to the page
+                <micro-app
+      style=${styleMap({
+      })}
+    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app>
+                </p>
+                
               </div>`}
       </div>
-      </rectangle-selection>
+      <!-- </rectangle-selection> -->
     `;
   }
 
   handlePageClick(e) {
     if (!$resizing.get()) {
       if (!this.isViewMode) {
-        setCurrentComponentIdAction(null);
+      //  setVar("global", "selectedComponents", []);
       }
     }
   }

@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../.
 export default [
   {
     uuid: "table_selection_mode",
-    applicationId: "1",
+    application_id: "1",
     name: "table selection mode block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -17,7 +17,7 @@ export default [
   },
   {
     uuid: "table_selectionmode_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table selection mode radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -33,16 +33,12 @@ export default [
     uuid: "table_selectionmode_label",
     name: "table selection mode label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const selectionModeLabel='Selection mode';
-                return selectionModeLabel;
-                
-                `
+        type: "string",
+        value:'Selection mode'
       }
     },
     style: {
@@ -52,7 +48,7 @@ export default [
   },
   {
     uuid: "table_selectionmode_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -61,16 +57,15 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+
                 let currentSelectionMode =""
                 let isDisabled=false;
-                if(currentComponent.input?.selectionMode?.type =='handler'&&currentComponent.input?.selectionMode?.value){
+                if(selectedComponent.input?.selectionMode?.type =='handler'&&selectedComponent.input?.selectionMode?.value){
                        isDisabled =true
                 }
                 else 
-                currentSelectionMode = currentComponent.input?.selectionMode?.value || 'none';
+                currentSelectionMode = selectedComponent.input?.selectionMode?.value || 'none';
                 const options = 
                     [
                     {
@@ -100,23 +95,17 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+              const selectedComponent = Utils.first(Vars.selectedComponents);
                     const selectionModeValue = EventData.value;
-                    updateInput(currentComponent,'selectionMode','string',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateInput(selectedComponent,'selectionMode','string',EventData.value)
+              
       `
     }
   },
   {
     uuid: "table_selectionmode_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table selection mode handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -126,7 +115,7 @@ export default [
   },
   {
     uuid: "table_selectionmode_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -140,18 +129,10 @@ export default [
         value: /* js */`
                 const parameter ='selectionMode';
                 let selectionModeHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.selectionMode?.type =='handler' && currentComponent?.input?.selectionMode?.value){
-                            selectionModeHandler = currentComponent?.input?.selectionMode?.value
+                  const selectedComponent = Utils.first(Vars.selectedComponents);
+                        if(selectedComponent?.input?.selectionMode?.type =='handler' && selectedComponent?.input?.selectionMode?.value){
+                            selectionModeHandler = selectedComponent?.input?.selectionMode?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
                return  [parameter,selectionModeHandler];
             `
       }
@@ -159,17 +140,9 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.selectionMode?.value)
-                    updateInput(currentComponent,'selectionMode','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+                    if(EventData.value != selectedComponent?.input?.selectionMode?.value)
+                    updateInput(selectedComponent,'selectionMode','handler',EventData.value);
       `
     }
   }

@@ -4,8 +4,10 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/table";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
+
 
 
 @customElement("table-block")
@@ -110,7 +112,9 @@ export class TextInputBlock extends BaseElementBlock {
 
   onSelect(e: CustomEvent) {
     if (this.component.event?.onSelect) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`));
+      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`) , {
+        selected : e.detail
+      });
       console.log(fn);
     }
   }
@@ -137,14 +141,15 @@ export class TextInputBlock extends BaseElementBlock {
   }
 
 
-  render() {
+  renderComponent() {
     const tableStyles = this.component?.style || {};
     const tableAutoWidth = this.inputHandlersValue?.width;
     const tableAutoHeight = this.inputHandlersValue?.height;
-    const headers = this.inputHandlersValue?.data ? this.inputHandlersValue?.data[0] : this.headers;
-    const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data[1] : this.rows;
+    const headers = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.headers : this.headers;
+    const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.rows : this.rows;
     return html`
       <hy-table
+        ${ref(this.inputRef)}
         style=${styleMap({ ...tableStyles, width: tableAutoWidth ? "auto" : tableStyles.width, "overflow": "auto" })}
         .headers="${headers}"
         .rows="${rows}"

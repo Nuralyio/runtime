@@ -5,7 +5,7 @@ import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts"
 export default [
   {
     uuid: "icon_color_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon color block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export default [
   },
   {
     uuid: "icon_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,14 +31,12 @@ export default [
     uuid: "icon_color_label",
     name: "icon color label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Color';
-              return label;`
+        type: "string",
+        value: 'Color'
       }
     },
     style: {
@@ -48,79 +46,49 @@ export default [
   {
     uuid: "icon_color_input",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `
-       
-       try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyle(currentComponent, "--hybrid-icon-color", EventData.value);
-            
-            }
-        }catch(error){
-            console.log(error);
-        }
-        
-  `
+        updateStyle(Utils.first(Vars.selectedComponents), "--hybrid-icon-color", EventData.value);
+      `
     },
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const currentColor = currentComponent?.style&&currentComponent.style['--hybrid-icon-color']||"" ;
-                        return currentColor;
-                    }
-
-                }catch(e){
-                    console.log(e);
-                }
-            `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const currentColor = selectedComponent?.style && selectedComponent?.style['--hybrid-icon-color'] || "";
+          return currentColor;
+        `
       },
       state: {
         type: "handler",
-        value:/* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    let state='enabled';
-                    if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-icon-color']){
-                        state='disabled'
-                    }
-                    return state;
-                }
-            }catch(e){
-                console.log(e);
-            }
-            
-            `
+        value: /* js */ `
+        
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          let state = 'enabled';
+          if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-icon-color']) {
+            state = 'disabled';
+          }
+          return state;
+        `
       }
     }
   },
   {
     uuid: "icon_color_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon color handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
-
     childrenIds: ["icon_color_input", "icon_color_handler"]
   },
   {
     uuid: "icon_color_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -132,37 +100,22 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-            const parameter ='iconColor';
-            let iconColorHandler=''
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                iconColorHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-icon-color'] || ''  
-                }
-            }catch(error){
-                console.log(error);
-            }
-            return [parameter,iconColorHandler];
+        value: /* js */ `
+          const parameter = 'iconColor';
+          let iconColorHandler = '';
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            iconColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-icon-color'] || '';
+          }
+          return [parameter, iconColorHandler];
         `
       }
     },
-
     event: {
       codeChange: /* js */ `
-        try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                updateStyleHandlers(currentComponent,'--hybrid-icon-color',EventData.value)
-            }
-        }catch(error){
-            console.log(error);
-        }
-  `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        updateStyleHandlers(selectedComponent, '--hybrid-icon-color', EventData.value);
+      `
     }
   }
 ];

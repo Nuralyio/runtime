@@ -1,6 +1,6 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../helper/common_attributes.ts";
-import { CollapseContainerTheme } from "./common-editor-theme.ts";
+import { CollapseContainerTheme, CollapseHeaderTheme } from "./common-editor-theme.ts";
 import { v4 as uuidv4 } from "uuid"; // Import UUID package
 
 
@@ -12,7 +12,7 @@ export function generateDynamicContainer(
   return [
     {
       uuid: mainUuid,
-      applicationId: "1",
+      application_id: "1",
       name: "position collapse container",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -23,32 +23,20 @@ export function generateDynamicContainer(
     },
     {
       uuid: collapseUuid,
-      applicationId: "1",
+      application_id: "1",
       name: collapseUuid,
-      component_type: ComponentType.Collapse,
+      component_type: ComponentType.Container,
       style: {
-        ...CollapseContainerTheme
       },
-      input: {
-        size: {
-          type: "handler",
-          value: /* js */ `return 'small';`
-        },
-        components: {
-          type: "array",
-          value: [
-            {
-              blockName: `${collapseUuid}_children`,
-              label: "Inputs",
-              open: true
-            }
-          ]
-        }
-      }
+      childrenIds: [
+        "input_text_label_collapse",
+        `${collapseUuid}_children`
+      ]
     },
+  
     {
       uuid: `${collapseUuid}_children`,
-      applicationId: "1",
+      application_id: "1",
       name: "Left panel",
       component_type: ComponentType.Container,
       style: {},

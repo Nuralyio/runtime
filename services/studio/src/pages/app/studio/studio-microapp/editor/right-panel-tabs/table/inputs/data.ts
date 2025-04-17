@@ -5,7 +5,7 @@ import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts"
 export default [
   {
     uuid: "table_values_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "value handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -19,7 +19,7 @@ export default [
     uuid: "table_values_handler_label",
     name: "table values handler label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -33,7 +33,7 @@ export default [
   },
   {
     uuid: "table_values_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -47,18 +47,15 @@ export default [
         value: /* js */`
                 const parameter ='value';
                 let valueHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.data?.value){
-                           valueHandler = currentComponent?.input?.data?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                        
+                        if(selectedComponent.input?.data?.value){
+                           valueHandler = selectedComponent.input?.data?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,valueHandler];
             `
       }
@@ -66,17 +63,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(currentComponent?.input?.value?.value != EventData.value )
-                    updateInput(currentComponent,'data','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(selectedComponent.input?.value?.value != EventData.value )
+                    updateInput(selectedComponent,'data','handler',EventData.value);
+            
       `
     }
   }

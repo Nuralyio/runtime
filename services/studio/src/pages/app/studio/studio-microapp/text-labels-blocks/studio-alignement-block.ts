@@ -1,10 +1,11 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
   {
     uuid: "text_alignement_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -12,7 +13,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
 
     childrenIds: ["text_label_alignement", "text-align-content", "horizontal_alignement_handler"]
@@ -21,80 +22,102 @@ export default [
     uuid: "text_label_alignement",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Horizontal alignment';
-            `
+        type: "string",
+        value: 'Horizontal alignment'
       }
     }
   },
   {
     uuid: "text-align-content",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     style: {
-      "--hybrid-button-height": "30px",
-      "--hybrid-button-width": "52px"
+     ...RadioButtonWithThreeOptionsTheme
     },
 
     input: {
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let defaultTextAlign='';
-                let isDisabled = false;
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['justify-content']) {
-                    isDisabled = true
-                }
-                else 
-                defaultTextAlign = currentComponent.style['justify-content'] ||'start';
-
-                const options =[{value:'start',icon: "align-left",disabled:isDisabled},
-                                {value:'center',icon: "align-center",disabled:isDisabled},
-                                 {value:'end',icon: "align-right",disabled:isDisabled},
-                              ]
-                const radioType='button';
-                const result =[options,defaultTextAlign,radioType];
-                return  result;           
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            
+        
+            if (!selectedComponent) {
+                // Return default values if no component is selected
+                return [
+                    [
+                        { value: 'start', icon: "align-left", disabled: false },
+                        { value: 'center', icon: "align-center", disabled: false },
+                        { value: 'end', icon: "align-right", disabled: false }
+                    ],
+                    'start',
+                    'button'
+                ];
+            }
+        
+            
+            
+        
+            if (!selectedComponent) {
+                // Return default values if the current component is not found
+                return [
+                    [
+                        { value: 'start', icon: "align-left", disabled: false },
+                        { value: 'center', icon: "align-center", disabled: false },
+                        { value: 'end', icon: "align-right", disabled: false }
+                    ],
+                    'start',
+                    'button'
+                ];
+            }
+        
+            const hasJustifyContentHandler = selectedComponent?.styleHandlers?.['justify-content'];
+            const defaultTextAlign = hasJustifyContentHandler
+                ? ''
+                : selectedComponent.style?.['justify-content'] || 'start';
+        
+            const options = [
+                { value: 'start', icon: "align-left", disabled: !!hasJustifyContentHandler },
+                { value: 'center', icon: "align-center", disabled: !!hasJustifyContentHandler },
+                { value: 'end', icon: "align-right", disabled: !!hasJustifyContentHandler }
+            ];
+        
+            const radioType = 'button';
+        
+            return [options, defaultTextAlign, radioType];
                 `
       }
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent.style['display'];
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     const textAlignValue = EventData.value;
                     if(currentComponentDisplay!='flex')
-                    updateStyle(currentComponent, "display", 'flex');
+                    updateStyle(selectedComponent, "display", 'flex');
                 
-                    updateStyle(currentComponent, "justify-content", textAlignValue);
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateStyle(selectedComponent, "justify-content", textAlignValue);
+              
       `
     }
   },
 
   {
     uuid: "horizontal_alignement_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -108,16 +131,12 @@ export default [
         value: /* js */`
                 const parameter ='horizontalAlignement';
                 let horizontalAlignementHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    horizontalAlignementHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['justify-content'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    horizontalAlignementHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['justify-content'] || ''  
+                
                 return [parameter,horizontalAlignementHandler];
             `
       }
@@ -125,21 +144,17 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent?.style['display'];
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     
                     if(currentComponentDisplay!='flex')
-                     updateStyle(currentComponent, "display", 'flex');
+                     updateStyle(selectedComponent, "display", 'flex');
                     
-                    updateStyleHandlers(currentComponent,'justify-content',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    updateStyleHandlers(selectedComponent,'justify-content',EventData.value)
+            
       `
     }
   }

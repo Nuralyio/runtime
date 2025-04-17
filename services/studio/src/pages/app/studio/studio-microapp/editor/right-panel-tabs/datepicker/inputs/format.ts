@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-edi
 export default [
   {
     uuid: "datepicker_format_block",
-    applicationId: "1",
+    application_id: "1",
     name: "datepicker format block",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -21,7 +21,7 @@ export default [
   },
   {
     uuid: "datepicker_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "datepicker input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -37,7 +37,7 @@ export default [
     uuid: "datepicker_format_label",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -46,16 +46,16 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-               const label ='Format';
-             return label;
-            `
+          const label = 'Format';
+          return label;
+        `
       }
     }
   },
 
   {
     uuid: "datepicker_format_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -63,85 +63,58 @@ export default [
     input: {
       value: {
         type: "handler",
-        value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let format = currentComponent.input?.format?.value??'DD/MM/YYYY';
-                let selectedFormat;
-                const options = 
-                    [
-                    {
-                    label: "dd/mm/yyyy",
-                    value: "DD/MM/YYYY",
-                    }, 
-                    {
-                    label: "mm/dd/yyyyy",
-                    value: "MM/DD/YYYY"
-                   },
-                    {
-                     label: "yyyy/mm/dd",
-                     value: "YYYY/MM/DD"
-                   },            
-            ]
-            if(format){
-                selectedFormat = options.find((option)=> option.value == format);   
-            }
-            const result =[options,[selectedFormat? selectedFormat.label : ""]]
-           return  result;  
-                `
+        value: /* js */`
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+
+          let format = selectedComponent?.input?.format?.value ?? 'DD/MM/YYYY';
+          let selectedFormat;
+          const options = [
+            { label: "dd/mm/yyyy", value: "DD/MM/YYYY" },
+            { label: "mm/dd/yyyyy", value: "MM/DD/YYYY" },
+            { label: "yyyy/mm/dd", value: "YYYY/MM/DD" }
+          ];
+
+          if (format) {
+            selectedFormat = options.find(option => option.value === format);   
+          }
+
+          const result = [options, [selectedFormat ? selectedFormat.label : ""]];
+          return result;  
+        `
+      },
+      placeholder : {
+        type : "string", 
+        value : "Select format"
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                let state = "unabled";
-                if(currentComponent.input?.format?.type =="handler" && currentComponent.input?.format?.value){
-                   state = "disabled"
-               }
-               return state;
-             }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          let state = "unabled";
+          if (selectedComponent?.input?.format?.type === "handler" && selectedComponent?.input?.format?.value) {
+            state = "disabled";
+          }
+          return state;
+        `
       }
     },
     style: {
       ...SelectTheme
     },
     event: {
-      changed: /* js */ `
-
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const formatValue = EventData.value?EventData.value:'DD/MM/YYYY'
-                    updateInput(currentComponent, "format","string",formatValue);
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
-            
+      changed: /* js */`
+        const formatValue = EventData.value ? EventData.value : 'DD/MM/YYYY';
+        updateInput(Utils.first(Vars.selectedComponents), "format", "string", formatValue);
       `
     }
   },
   {
     uuid: "format_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "format handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
-      "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between"
     },
@@ -150,7 +123,7 @@ export default [
   },
   {
     uuid: "format_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -163,40 +136,26 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='format';
-                let formatHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.format?.type =='handler' && currentComponent?.input?.format?.value){
-                            formatHandler = currentComponent?.input?.format?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,formatHandler];
-            `
+          const parameter = 'format';
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          let formatHandler = '';
+
+          if (selectedComponent?.input?.format?.type === 'handler' && selectedComponent?.input?.format?.value) {
+            formatHandler = selectedComponent?.input?.format?.value;
+          }
+
+          return [parameter, formatHandler];
+        `
       }
     },
 
     event: {
-      codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.format?.value)
-                    updateInput(currentComponent,'format','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+      codeChange: /* js */`
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (EventData.value !== selectedComponent?.input?.format?.value) {
+          updateInput(selectedComponent, 'format', 'handler', EventData.value);
+        }
       `
     }
   }
-
 ];

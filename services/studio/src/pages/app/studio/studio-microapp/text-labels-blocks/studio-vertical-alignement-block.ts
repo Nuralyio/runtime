@@ -1,10 +1,11 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { RadioButtonWithThreeOptionsTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
   {
     uuid: "text_vertical_alignement_block",
-    applicationId: "1",
+    application_id: "1",
     name: "text vertical alignement block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -12,7 +13,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
 
     childrenIds: ["text_label_vertical_alignement", "text_vertical_align_content", "vertical_alignement_handler"]
@@ -21,45 +22,39 @@ export default [
     uuid: "text_label_vertical_alignement",
     name: "text_label vertical alignement",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       "width": "90px"
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Vertical alignment';
-            `
+        type: "string",
+        value: 'Vertical alignment'
       }
     }
   },
   {
     uuid: "text_vertical_align_content",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     style: {
-
-      "--hybrid-button-height": "30px",
-      "--hybrid-button-width": "52px"
+      ...RadioButtonWithThreeOptionsTheme
     },
     input: {
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+               const selectedComponent = Utils.first(Vars.selectedComponents);
                 let defaultVerticalAlign='';
                 let isDisabled = false;
-                if(currentComponent.styleHandlers && currentComponent?.styleHandlers['align-items']) {
+                if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['align-items']) {
                     isDisabled = true
                 }
-                else 
-                defaultVerticalAlign = currentComponent.style['align-items'] ||'start';
+                else if ( selectedComponent?.style)
+                defaultVerticalAlign = selectedComponent?.style['align-items'] ||'start';
                 const options =[
                                 {value:'start',icon: "arrow-up",disabled:isDisabled},
                                 {value:'end',icon: "arrow-down",disabled:isDisabled},
@@ -73,27 +68,23 @@ export default [
     },
     event: {
       changed: /* js */ `
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent.style['display'];
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     const verticalAlignValue = EventData.value;
                     if(currentComponentDisplay!='flex')
-                    updateStyle(currentComponent, "display", 'flex');
+                    updateStyle(selectedComponent, "display", 'flex');
                 
-                    updateStyle(currentComponent, "align-items", verticalAlignValue);
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateStyle(selectedComponent, "align-items", verticalAlignValue);
+              
       `
     }
   },
   {
     uuid: "vertical_alignement_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -107,16 +98,12 @@ export default [
         value: /* js */`
                 const parameter ='verticalAlignement';
                 let verticalAlignementHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    verticalAlignementHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['align-items'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    verticalAlignementHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['align-items'] || ''  
+                
                 return [parameter,verticalAlignementHandler];
             `
       }
@@ -124,21 +111,19 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    const currentComponentDisplay = currentComponent?.style['display'];
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                if(true) {
+                    
+                    
+                    const currentComponentDisplay = selectedComponent.style['display'];
                     
                     if(currentComponentDisplay!='flex')
-                     updateStyle(currentComponent, "display", 'flex');
+                     updateStyle(selectedComponent, "display", 'flex');
                     
-                    updateStyleHandlers(currentComponent,'align-items',EventData.value)
+                    updateStyleHandlers(selectedComponent,'align-items',EventData.value)
                 }
-            }catch(error){
-                console.log(error);
-            }
+            
       `
     }
   }

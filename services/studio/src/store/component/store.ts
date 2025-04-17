@@ -4,7 +4,7 @@ import { atom, computed, deepMap } from "nanostores";
 import studioComponents from "../../pages/app/studio/studio-microapp/studio-entrypoint.ts";
 import landingComponents from "../../pages/app/studio/studio-microapp/landing/landing-main-components";
 import { currentLoadedApplication } from "$store/ssr/server-data";
-import { fillApplicationComponents } from "./helper";
+import { extractChildresIds, fillApplicationComponents } from "./helper";
 
 export interface ComponentStore {
   [key: string]: ComponentElement[];
@@ -35,24 +35,17 @@ export const $currentComponentId = persistentAtom<string>(
 );
 
 export const $hoveredComponentId = atom<string>(null);
+export const $hoveredComponent = atom<Object>(null);
 
-export const $draggingComponentInfo = persistentAtom<DraggingComponentInfo>(
-  "draggingComponentInfo",
-  null,
-  {
-    encode: JSON.stringify,
-    decode: JSON.parse
-  }
-);
+export const $draggingComponentInfo = atom<Object>(null)
 
-export const $applicationComponents = ($applicationId: string) => computed(
+export const $applicationComponents = ($application_id: string) => computed(
   [$components],
   (componentsStore: ComponentStore) => {
-    const applicationComponents = Array.from(componentsStore[$applicationId] ?? [])?.map(component => ({
+    const applicationComponents = Array.from(componentsStore[$application_id] ?? [])?.map(component => ({
       ...component,
-      applicationId: $applicationId
     })) ?? [];
-    return fillApplicationComponents(applicationComponents);
+    return applicationComponents;
   }
 );
 
@@ -61,13 +54,49 @@ computed(
   (componentsStore: ComponentStore) => Object.values(componentsStore).flat().filter(component => !component.parent)
 );
 
-export const $componentWithChildren = ($applicationId: string) => computed(
-  [$applicationComponents($applicationId)],
+export const $componentWithChildren = ($application_id: string) => computed(
+  [$applicationComponents($application_id)],
   (components: ComponentElement[]) => fillApplicationComponents(components)
 );
 
-export const $selectedComponent = ($applicationId: string) => computed(
-  [$applicationComponents($applicationId), $currentComponentId],
+
+export const $selectedComponent = ($application_id: string) => computed(
+  [$applicationComponents($application_id), $currentComponentId],
   (components: ComponentElement[], currentComponentId) =>
     components.find(component => component.uuid === currentComponentId) || null
 );
+
+export const $componentsByUUIDs = ($application_id: string, uuids: string[]) => computed(
+  [$applicationComponents($application_id)],
+  (components: ComponentElement[]) =>
+    components.filter(component => uuids.includes(component.uuid))
+);
+
+export const $runtimeStyles = deepMap<{
+  [key: string]: {
+      [key: string]: string;
+  }
+}>({
+  
+});
+
+
+export const setcomponentRuntimeStyleAttribute = (componentId: string, attribute: string, value: string) => {
+  $runtimeStyles.setKey(componentId, {
+    ...$runtimeStyles.get()[componentId],
+    [attribute]: value
+  });
+}
+$runtimeStyles.subscribe((styles) => {
+})
+export const $runtimeStylescomponentStyleByID = ($componentId: string) => computed(
+  [$runtimeStyles],
+  (styles) => {
+    const componentStyles = styles[$componentId] || {};
+    return componentStyles;
+  }
+);
+
+export const clearComponentRuntimeStyleAttributes = () => {
+  $runtimeStyles.set({});
+}

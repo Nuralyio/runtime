@@ -1,10 +1,11 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { CollapseHeaderTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
   {
     uuid: "typography_collapse_container",
-    applicationId: "1",
+    application_id: "1",
     name: "position collapse container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -13,9 +14,9 @@ export default [
   },
   {
     uuid: "typography_collapse",
-    applicationId: "1",
+    application_id: "1",
     name: "typography collapse",
-    component_type: ComponentType.Collapse,
+    component_type: ComponentType.Container,
     style: {
       "--hy-collapse-content-small-size-padding": "5px",
       "--hy-collapse-font-weight": "normal",
@@ -25,25 +26,26 @@ export default [
       "--hy-collapse-border-bottom": "1px solid #ccc",
       "--hy-collapse-local-header-background-color": "#3d3d3d"
     },
-    input: {
-      size: {
+   childrenIds: ["divider", "typography_text_label_collapse", "typography_collapse_container_childrens",]
+  },
+  {
+    uuid: "typography_text_label_collapse",
+    name: "typography_text_label_collapse",
+    application_id: "1",
+    component_type: ComponentType.TextLabel,
+    style: {
+    ...CollapseHeaderTheme
+    },
+    input:{
+      value:{
         type: "handler",
-        value: /* js */ `
-                const size = 'small';
-                return size;
-                `
-      },
-      components: {
-        type: "handler",
-        value: /* js */ `
-                return [{ blockName: 'typography_collapse_container_childrens', label: 'Typography' , open : true}];
-                `
+        value: `return "Typography"`
       }
     }
   },
   {
     uuid: "typography_collapse_container_childrens",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

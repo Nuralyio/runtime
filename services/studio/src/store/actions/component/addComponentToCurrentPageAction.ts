@@ -1,13 +1,13 @@
 import { $currentApplication } from "$store/apps.ts";
-import { getVar } from "$store/context.ts";
 import { $pages } from "$store/page.ts";
 import type { PageElement } from "$store/handlers/pages/interfaces/interface.ts";
 import { updatePageHandler } from "$store/handlers/pages/handler.ts";
+import { ExecuteInstance } from "core/Kernel";
 
 export function addComponentToCurrentPageAction(componentId: string) {
   const currentApp = $currentApplication.get();
   const currentAppId = currentApp.uuid;
-  const currentPageId = getVar("global", "currentPage").value;
+  const currentPageId = ExecuteInstance.Vars.currentPage;
 
   const currentPages = $pages.get();
 
@@ -25,7 +25,7 @@ export function addComponentToCurrentPageAction(componentId: string) {
 
     // Set the updated pages to the store
     $pages.set(updatedPages);
-    updatePageHandler(updatedPage);
+    updatePageHandler(updatedPage, (page: any) => {});
     // Update the page in the handler
     //updatePageHandler(update  dPage);
   }

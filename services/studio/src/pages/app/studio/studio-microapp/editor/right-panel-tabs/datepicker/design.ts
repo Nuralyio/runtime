@@ -5,7 +5,7 @@ import { StudioInputCollapseContainer } from "./inputs/collapse-container.ts";
 export const StudioDatepickerDesign = [
   {
     uuid: "datepicker_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Parent Color Container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

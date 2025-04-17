@@ -1,0 +1,63 @@
+---
+import Layout from './_layouts/LandingLayout.astro';
+import "../core/micro-app";
+import { MicroApp } from '../core/micro-app';
+import 'dotenv/config'
+import { processHeaders } from '@utils/api-calls-utils';
+import { fetchApplicationPagesById } from '@services/page.service';
+import { fetchApplicationComponentById } from '@services/component.service';
+import { fetchAllApplications } from '@services/applications.service';
+const { page_url } = Astro.props;
+const homeAppUUID = process.env.HOME_APP_UUID;
+const homeAppPageUUID = process.env.HOME_PAGE_UUID;
+let pageData, componentData, applications, application;
+
+const processedHeaders = processHeaders(Astro.request.headers);
+
+  // Load application pages, components, and applications in parallel
+  const [pageRequest, componentResponse, applicationsRequest] =
+    await Promise.all([
+    fetchApplicationPagesById(processedHeaders, homeAppUUID),
+    fetchApplicationComponentById(processedHeaders, homeAppUUID),
+    fetchAllApplications(processedHeaders)
+  ]);
+  pageData = pageRequest.data;
+
+  applications = applicationsRequest.data;
+  application = applications.find((application) => application.uuid === homeAppUUID);
+
+  componentData = componentResponse.data.map((component) => component.component);
+
+---
+
+<script is:inline define:vars={{ pageData, componentData , application}}>
+  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
+  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
+  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
+  document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
+  document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
+</script>
+<Layout title={pageData[0]?.title}  description={pageData[0]?.description}>
+  <MicroApp
+  client:load
+  .prod={true}
+  mode="preview"
+  uuid={homeAppUUID}
+  page_uuid={homeAppPageUUID}
+ ></MicroApp>
+ <style is:inline is:global>
+    html {
+    background-color : var(--hybrid-page-background-color, #ffffff);
+  }
+  @media (prefers-color-scheme: dark) {
+      html {
+        --hybrid-tabs-content-background-color: #313131;
+          background: #313131;
+           color:#f8fafc;
+        background-color : var(--hybrid-page-background-color-dark, #313131);
+
+      }
+    }
+</style>
+</Layout>
+

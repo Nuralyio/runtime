@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "page_name_block",
-    applicationId: "1",
+    application_id: "1",
     name: "page name block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -21,14 +21,12 @@ export default [
     uuid: "page_name_text_label",
     name: "page name text label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Page name';
-                return label;`
+        type: "string",
+        value: 'Page name'
       }
 
     },
@@ -39,7 +37,7 @@ export default [
   {
     uuid: "page_name_text_input",
     name: "page name text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -48,13 +46,12 @@ export default [
     },
     event: {
       valueChange:  /* js */ `
-                try{
-                    const currentPageId =  GetVar("currentPage");
+                    const currentPageId =  Vars.currentPage;
                     if(currentPageId){
                 const newPageName = EventData.value;
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                const currentPage = appPages.find((page)=>page.uuid == currentPageId);
+                const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+                const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
                 const newPage = {...currentPage,name:newPageName};
                 UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
                     console.log("Page Updated");
@@ -63,27 +60,22 @@ export default [
                 })
                     }
                     
-                }catch(error){
-                    console.log(error);
-                } 
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const currentPageId =  GetVar("currentPage");
+            
+            const currentPageId =  Vars.currentPage;
             if(currentPageId) {
                 const currentEditingApplication = GetVar("currentEditingApplication");
-                const appPages = GetContextVar(currentEditingApplication.uuid + ".appPages", currentEditingApplication.uuid);
-                const currentPage = appPages.find((page)=>page.uuid == currentPageId);
+                const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+                const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
                 return currentPage?.name || '';
             }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       placeholder: {

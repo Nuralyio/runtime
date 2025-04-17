@@ -1,10 +1,9 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@nuralyui/tabs";
-import "@nuralyui/color-picker";
 import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
-import { $environment, type Environment, ViewMode } from "$store/environment";
+import { ViewMode } from "$store/environment";
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "$store/page";
 import { type ComponentElement } from "$store/component/interface";
 import { $selectedComponent } from "$store/component/store.ts";
@@ -12,18 +11,20 @@ import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { $currentApplication } from "$store/apps";
 import "../Layout/ThemeContainer";
 
-
+import "./AI-Assistant.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
+import { ExecuteInstance } from "core/Kernel.ts";
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
     :host {
-      height: calc(100vh - 110px);
+      height: calc(100vh - 90px);
       display: block;
-        width: calc(100vw - 650px);
     }
     .page-container {
       width: 100%;
       overflow: auto;
+    --hybrid-tabs-content-padding: 10px;
     }
     .zoom-area {
       overflow: visible;
@@ -35,24 +36,28 @@ export class EditorInteractivePanel extends LitElement {
     }
   `;
   @state() mode: ViewMode = ViewMode.Edit;
-  @state() zoomLevel = 100;
+  @state() zoomLevel = 95;
   @state() selectedComponent: ComponentElement;
   @state() currentPageViewPort: string;
   private inputRef: Ref<HTMLInputElement> = createRef();
+  private inputRef2: Ref<HTMLInputElement> = createRef();
+
+  @state() currentcontextMenuEvent: any;
+  @state() showContextMeny: boolean = false;
 
   constructor() {
     super();
-    this.initializeSubscriptions();
   }
 
   handleScroll = (event: Event) => {
     if (this.inputRef.value) {
-      this.inputRef.value.style.display = "none";
+      
     }
   };
 
   connectedCallback() {
     super.connectedCallback();
+    this.initializeSubscriptions();
     $contextMenuEvent.subscribe(this.handleContextMenuEvent);
     requestAnimationFrame(() => {
       this.shadowRoot?.querySelector(".page-container")?.addEventListener("scroll", this.handleScroll);
@@ -70,43 +75,72 @@ export class EditorInteractivePanel extends LitElement {
 
   render() {
     return html`
-    <theme-contaienr>
+    <style>
+      :host{
+        width: ${this.mode == ViewMode.Edit ? "calc(100vw - 650px)" : "100vw"};
+      }
+    </style>
+    <ai-assistant-block> </ai-assistant-block>
       <div>
-        <quick-action-wrapper
+        ${
+          this.showContextMeny  ? html`
+           <quick-action-wrapper
+        .componentToRenderUUID=${"quick-action-wrapper"}
+        .contextMenuEvent=${this.currentcontextMenuEvent}
         id="quick-action-wrapper"
           ${ref(this.inputRef)}
-          style="position: absolute; display: none;"
+          style="position: absolute; "
           @click=${(e: Event) => {
-    }}
+      }}
           @displayQuickActionChanged=${(e: CustomEvent) => {
-    }}
+      }}
           .component=${{ ...this.selectedComponent }}
         ></quick-action-wrapper>
+
+        <quick-action-wrapper
+        .componentToRenderUUID=${"quick-action-wrapper-bottom"}
+
+        position="bottom"
+        .contextMenuEvent=${this.currentcontextMenuEvent}
+        id="quick-action-wrapper"
+          ${ref(this.inputRef2)}
+          style="position: absolute; "
+          @click=${(e: Event) => {
+      }}
+          @displayQuickActionChanged=${(e: CustomEvent) => {
+      }}
+          .component=${{ ...this.selectedComponent }}
+        ></quick-action-wrapper>
+
+          `: nothing
+        }
+       
+
         <div class="page-container">
           <div
             class="zoom-area"
             style=${styleMap({
-      margin: "0 auto",
-      width: this.currentPageViewPort,
-      scale: this.zoomLevel / 100
-    })}
+        margin: "0 auto",
+        width: this.currentPageViewPort,
+        scale: this.zoomLevel / 100,
+        height: "100%",
+      })}
           >
             <slot></slot>
           </div>
         </div>
       </div>
-      </theme-contaienr>
     `;
   }
 
   private initializeSubscriptions() {
-    $selectedComponent($currentApplication.get().uuid).subscribe(selectedComponent => {
+    $selectedComponent($currentApplication.get()?.uuid).subscribe(selectedComponent => {
       this.selectedComponent = selectedComponent;
     });
 
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
-    });
+    eventDispatcher.on('Vars:currentEditingMode', (data)=>{
+      this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
+    })
 
     $currentPageViewPort.subscribe(viewPort => {
       this.updateViewPort(viewPort);
@@ -120,7 +154,7 @@ export class EditorInteractivePanel extends LitElement {
   private updateViewPort(viewPort: string) {
     const viewPortMap = {
       tablet: "720px",
-      mobile: "375px",
+      mobile: "430px",
       default: "100%"
     };
     this.currentPageViewPort = viewPortMap[viewPort] || viewPortMap.default;
@@ -133,20 +167,24 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   private handleContextMenuEvent = (contextMenuEvent: any) => {
+    this.currentcontextMenuEvent = contextMenuEvent;
     if (contextMenuEvent && Object.keys(contextMenuEvent).length) {
+      this.showContextMeny = true;
       if (this.inputRef.value) {
-        this.inputRef.value.style.display = "block";
-        this.inputRef.value.style.top = `${contextMenuEvent.ComponentTop - 5}px`;
-        this.inputRef.value.style.left = `${contextMenuEvent.ComponentLeft}px`;
+      
+     
+       
       }
     } else if (this.inputRef.value) {
-      this.inputRef.value.style.display = "none";
+      
+      this.showContextMeny = false;
     }
   };
 
   private handleEscapeKey = (event: KeyboardEvent) => {
     if (event.key === "Escape" && this.inputRef.value) {
-      this.inputRef.value.style.display = "none";
+      
+      this.showContextMeny = false;
     }
   };
 
@@ -154,7 +192,8 @@ export class EditorInteractivePanel extends LitElement {
     if (this.inputRef.value &&
       !(clickOutsideEvent.composedPath() as HTMLElement[]).find((element) => element.id == "quick-action-wrapper")
     ) {
-      this.inputRef.value.style.display = "none";
+      
+      this.showContextMeny = false;
     }
 
   };

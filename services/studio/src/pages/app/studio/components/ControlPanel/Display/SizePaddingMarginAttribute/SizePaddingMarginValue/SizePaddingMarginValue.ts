@@ -17,7 +17,8 @@ export class SizePaddingMarginValue extends LitElement {
     this.initValues();
   }
 
-  updated(changedProperties) {
+  update(changedProperties) {
+    super.update(changedProperties);
     changedProperties.forEach((_oldValue, propName) => {
       if (propName === "component") {
         this.initValues();
@@ -36,9 +37,6 @@ export class SizePaddingMarginValue extends LitElement {
       paddingTop: this.component?.style.paddingTop ?? 0,
       paddingBottom: this.component?.style.paddingBottom ?? 0
     };
-
-
-    this.requestUpdate();
   }
 
   updateAttribute(key, value) {
@@ -56,29 +54,36 @@ export class SizePaddingMarginValue extends LitElement {
         <div class="container-outside">
                 <div class="margin-label" style="margin-left: -43px; margin-top: 2px">Margin </div>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("marginLeft", e.detail.value)}"
                 class="position-input margin-left" placeholder="margin left" value=${this.position.marginLeft}></hy-input>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("marginRight", e.detail.value)}"
                 class="position-input margin-right" placeholder="margin right" .value=${this.position.marginRight}></hy-input>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("marginTop", e.detail.value)}"
                 class="position-input margin-top" placeholder="margin top" .value=${this.position.marginTop}></hy-input>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("marginBottom", e.detail.value)}"
 
                 class="position-input margin-bottom" placeholder="margin bottom" .value=${this.position.marginBottom}></hy-input>
             <div class="container ">
                 <div class="padding-label">Padding</div>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("paddingLeft", e.detail.value)}"
                 class="position-input padding-left" placeholder="padding left" .value=${this.position.paddingLeft}></hy-input>
 
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("paddingRight", e.detail.value)}"
 
                 class="position-input padding-right" placeholder="padding right" .value=${this.position.paddingRight}></hy-input>
                 <hy-input 
+                .size=${"default"}
                 @valueChange="${(e) => this.updateAttribute("paddingTop", e.detail.value)}"
 
                 class="position-input padding-top" placeholder="padding top" .value=${this.position.paddingTop}></hy-input>

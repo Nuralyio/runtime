@@ -1,10 +1,11 @@
-import { css, html, nothing } from "lit";
+import { css, html, nothing, type PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/select";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 @customElement("handler-block")
 export class HandlerBlock extends BaseElementBlock {
@@ -19,60 +20,46 @@ export class HandlerBlock extends BaseElementBlock {
   ];
   @property({ type: Object })
   component: ComponentElement;
+constructor() {
+  super();
 
-  override async connectedCallback() {
-    await super.connectedCallback();
-    this.registerCallback("value", () => {
-      this.requestUpdate();
-    });
-  }
+  eventDispatcher.onAny( ()=>{
+   this.traitInputsHandlers()
+  } );
+ 
+}
+
 
   handleCodeChange = (e: CustomEvent, eventName: string) => {
     executeCodeWithClosure(this.component,
-      `
-        try{
-          const selectedComponens =  GetVar( "selectedComponents")||[];
-          if( selectedComponens.length) {
-              const selectedComponent = selectedComponens[0];
-              let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-              updateEvent(currentComponent, "${eventName}", EventData.value )
-          }
-        }catch(error){
-            console.log(error);
-        }
+      /* js */`
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateEvent(selectedComponent, "${eventName}", EventData.value )
+       
         `, {
         value: e.detail.value
       });
   };
 
   createHandleCodeChange = (eventName: string) => {
+    
     executeCodeWithClosure(this.component,
-      `
-        try{
-          const selectedComponens =  GetVar( "selectedComponents")||[];
-          if( selectedComponens.length) {
-              const selectedComponent = selectedComponens[0];
-              let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-              updateEvent(currentComponent, "${eventName}", EventData.value )
-          }
-        }catch(error){
-            console.log(error);
-        }
+      /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateEvent(selectedComponent, "${eventName}", "" )
         `, {
         value: ""
       });
+        this.traitInputsHandlers();
+        this.requestUpdate( )
   };
 
   removeHandler = (eventName: string) => {
     executeCodeWithClosure(this.component,
-      `
+      /* js */ `
         try{
-          const selectedComponens =  GetVar( "selectedComponents")||[];
-          if( selectedComponens.length) {
-              const selectedComponent = selectedComponens[0];
-              let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-              updateEvent(currentComponent, "${eventName}", null )
-          }
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateEvent(selectedComponent, "${eventName}", null )
         }catch(error){
             console.log(error);
         }
@@ -127,8 +114,8 @@ export class HandlerBlock extends BaseElementBlock {
     `;
   }
 
-  render() {
-    const eventsHandlers = this.inputHandlersValue?.events ?? {};
+  renderComponent() {
+    const eventsHandlers = {...this.inputHandlersValue?.events ?? {}};
     const allowedEvents = this.inputHandlersValue?.allowedEvents ?? [];
 
     return html`
@@ -177,7 +164,7 @@ export class HandlerBlock extends BaseElementBlock {
             </hy-tooltip>
           </hy-dropdown>
           <div>
-            ${Object.keys(eventsHandlers).map((eventName) => {
+            ${Object.keys(this.inputHandlersValue?.events).map((eventName) => {
         if (this.inputHandlersValue?.events[eventName] === null) return;
 
         return html`

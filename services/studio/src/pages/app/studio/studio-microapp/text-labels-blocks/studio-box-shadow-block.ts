@@ -3,9 +3,10 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
 export default [
   {
+    // @todo: re-apply the box shadow block 
     uuid: "box_shadow_block",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Container,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
@@ -18,14 +19,12 @@ export default [
     uuid: "box_shadow_label",
     name: "box shadow label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-                const label ='Box shadow';
-                return label;`
+        type: "string",
+        value: 'Box shadow'
       }
     },
     style: {
@@ -35,45 +34,41 @@ export default [
     }
   },
   {
-    uuid: "box_shadow_values",
+    uuid: "box_shadow_valuess",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ShadowBox,
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     event: {
       boxShadowChanged:  /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "box-shadow",EventData.value);
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
                         
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }      
+                            
+                            
+                            updateStyle(selectedComponent, "box-shadow",EventData.value);
+                        
+                          
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
 
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                if (currentComponent?.style && currentComponent.style["box-shadow"]) {
-                    const values = currentComponent.style["box-shadow"].match(/-?[0-9]+px/g);  
+                
+                
+                if (selectedComponent.style && selectedComponent.style["box-shadow"]) {
+                    const values = selectedComponent.style["box-shadow"].match(/-?[0-9]+px/g);  
                     const horizontalValue = parseInt(values[0], 10);
                     const verticalValue = parseInt(values[1], 10);
                     const blurValue = parseInt(values[2], 10);
                     const spreadValue = parseInt(values[3], 10);
-                    const colorMatch = currentComponent.style["box-shadow"].match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/);
-                    const insetMatch = currentComponent.style["box-shadow"].includes('inset');
+                    const colorMatch = selectedComponent.style["box-shadow"].match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/);
+                    const insetMatch = selectedComponent.style["box-shadow"].includes('inset');
                     const colorValue = colorMatch ? colorMatch[0] : "#ffffff";
                     const result=[horizontalValue,verticalValue,blurValue,spreadValue,insetMatch,colorValue];
                     return  result;
@@ -89,32 +84,24 @@ export default [
                     return [horizontalValue,verticalValue,blurValue,spreadValue,insetValue,colorValue]
                 }
                 
-            }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       },
       state: {
         type: "handler",
         value:/* js */`
 
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         let state ='enabled'
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['box-shadow']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow']){
                                state='disabled'
                         }
                         return state;
-                    }
-                }
-                catch(e){
-                    console.log(e)
-                }
+                
                 
                 `
       }
@@ -122,13 +109,12 @@ export default [
   },
   {
     uuid: "box_shadow_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "box shadow handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       width: "220px",
-      "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between"
     },
@@ -136,7 +122,7 @@ export default [
   },
   {
     uuid: "box_shadow_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -151,16 +137,12 @@ export default [
         value: /* js */`
                 const parameter ='boxShadow';
                 let boxShadowHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    boxShadowHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['box-shadow'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    boxShadowHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow'] || ''  
+                
                 return [parameter,boxShadowHandler];
             `
       }
@@ -168,16 +150,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'box-shadow',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'box-shadow',EventData.value)
+            
       `
     }
   }

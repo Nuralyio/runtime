@@ -5,7 +5,7 @@ export default [
 
   {
     uuid: "background_color_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -26,37 +26,31 @@ export default [
     uuid: "text_label_background_color",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               const label ='Background Color';
-             return label;
-            `
+        type: "string",
+        value: 'Background Color'
       }
     }
   },
   {
     uuid: "background_color_value",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.ColorPicker,
     event: {
       valueChange: /* js */ `
            
-           try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "background-color", EventData.value);
+           
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    
+                    
+                    updateStyle(selectedComponent, "background-color", EventData.value);
+                
+            
             
       `
     },
@@ -65,17 +59,13 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            return currentComponent.style?.backgroundColor || "#ffffff";
-                        }
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                            
+                            
+                            return selectedComponent.style?.backgroundColor || "#ffffff";
 
-                    }catch(e){
-                        console.log(e);
-                    }
+                  
                 `
       }
     }

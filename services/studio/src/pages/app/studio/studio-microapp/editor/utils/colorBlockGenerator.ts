@@ -6,7 +6,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
   return [
     {
       uuid: `${containerUuid}`,
-      applicationId: "1",
+      application_id: "1",
       name: "select helper color block",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -20,7 +20,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     },
     {
       uuid: `${containerUuid}_input_block`,
-      applicationId: "1",
+      application_id: "1",
       name: "select helper color input block",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -35,7 +35,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_label`,
       name: "select helper color label",
       component_type: ComponentType.TextLabel,
-      applicationId: "1",
+      application_id: "1",
       ...COMMON_ATTRIBUTES,
       input: {
         value: {
@@ -53,20 +53,18 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     {
       uuid: `${containerUuid}_input`,
       name: "helper color input",
-      applicationId: "1",
+      application_id: "1",
       component_type: ComponentType.ColorPicker,
       event: {
         valueChange: /* js */ `
-                    try {
-                        const selectedComponents = GetVar("selectedComponents") || [];
-                        if (selectedComponents.length) {
-                            const selectedComponent = selectedComponents[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                            updateStyle(currentComponent, "${cssVar}", EventData.value);
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        if (true) {
+                            
+                            ;
+                            updateStyle(selectedComponent, "${cssVar}", EventData.value);
                         }
-                    } catch (error) {
-                        console.log(error);
-                    }
+                   
                 `
       },
       ...COMMON_ATTRIBUTES,
@@ -78,43 +76,37 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
         value: {
           type: "handler",
           value: /* js */ `
-                        try {
-                            const selectedComponents = GetVar("selectedComponents") || [];
-                            if (selectedComponents.length) {
-                                const selectedComponent = selectedComponents[0];
-                                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                                if (currentComponent?.style)
-                                    return currentComponent.style['${cssVar}'];
+                        
+                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            if (true) {
+                                if (selectedComponent.style)
+                                    return selectedComponent.style['${cssVar}'];
                             }
-                        } catch (e) {
-                            console.log(e);
-                        }
+                        
                     `
         },
         state: {
           type: "handler",
           value: /* js */ `
-                        try {
-                            const selectedComponents = GetVar("selectedComponents") || [];
-                            if (selectedComponents.length) {
-                                const selectedComponent = selectedComponents[0];
-                                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                        
+                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            if (true) {
+                                
+                                ;
                                 let state = 'enabled';
-                                if (currentComponent.styleHandlers && currentComponent.styleHandlers['${cssVar}']) {
+                                if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['${cssVar}']) {
                                     state = 'disabled';
                                     return state;
                                 }
                             }
-                        } catch (e) {
-                            console.log(e);
-                        }
+                        
                     `
         }
       }
     },
     {
       uuid: `${containerUuid}_handler_block`,
-      applicationId: "1",
+      application_id: "1",
       name: "select helper color handler block",
       component_type: ComponentType.Container,
       ...COMMON_ATTRIBUTES,
@@ -126,7 +118,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     },
     {
       uuid: `${containerUuid}_handler`,
-      applicationId: "1",
+      application_id: "1",
       component_type: ComponentType.Event,
       ...COMMON_ATTRIBUTES,
       styleHandlers: {},
@@ -141,32 +133,26 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
           value: /* js */ `
                         const parameter = '${label}';
                         let helperColorHandler = '';
-                        try {
-                            const selectedComponents = GetVar("selectedComponents") || [];
-                            if (selectedComponents.length) {
-                                const selectedComponent = selectedComponents[0];
-                                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                                helperColorHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['${cssVar}'] || '';
+                        
+                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            if (true) {
+                                
+                                ;
+                                helperColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['${cssVar}'] || '';
                             }
-                        } catch (error) {
-                            console.log(error);
-                        }
+                        
                         return [parameter, helperColorHandler];
                     `
         }
       },
       event: {
         codeChange: /* js */ `
-                    try {
-                        const selectedComponents = GetVar("selectedComponents") || [];
-                        if (selectedComponents.length) {
-                            const selectedComponent = selectedComponents[0];
-                            let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                            updateStyleHandlers(currentComponent, '${cssVar}', EventData.value);
+                    
+                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        if (true) {
+                            updateStyleHandlers(selectedComponent, '${cssVar}', EventData.value);
                         }
-                    } catch (error) {
-                        console.log(error);
-                    }
+                    
                 `
       }
     }

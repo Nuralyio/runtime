@@ -1,3 +1,4 @@
+import { $context, getVar } from "$store/context";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
@@ -11,7 +12,7 @@ class SelectableElement extends LitElement {
       border: 1px solid #000;
       background: lightgray;
       transition: background-color 0.3s;
-      
+
     }
     :host([highlighted]) {
       background: #007bff; 
@@ -29,9 +30,9 @@ class RectangleSelection extends LitElement {
   static styles = css`
     :host {
       display: block;
-      border: 1px solid #ccc;
       position: relative; 
       overflow-x:hidden;
+
     }
     .rectangle {
       position: absolute;
@@ -53,6 +54,7 @@ class RectangleSelection extends LitElement {
   @property({ type: Object }) selectionRect = null;
   mode: ViewMode;
   selectableElements: NodeListOf<Element>;
+  currentPlatform: any;
 
   constructor() {
     super();
@@ -60,6 +62,17 @@ class RectangleSelection extends LitElement {
       this.mode = environment.mode;
       this.requestUpdate();
     });
+    $context.listen(() => {
+      this.currentPlatform = getVar("global", "currentPlatform")?.value;
+      const isDesktop = this.currentPlatform?.platform == undefined || this.currentPlatform?.platform === "desktop";
+
+      if (!isDesktop) {
+        this.style.setProperty("justify-self", "center");
+      } else {
+        this.style.removeProperty("justify-self");
+      }
+    });
+
   }
 
   render() {
@@ -68,9 +81,9 @@ class RectangleSelection extends LitElement {
 
   firstUpdated() {
     if (this.mode === ViewMode.Preview) return;
-    this.addEventListener("mousedown", this.startSelection.bind(this));
-    this.addEventListener("mousemove", this.updateSelection.bind(this));
-    this.addEventListener("mouseup", this.endSelection.bind(this));
+    // this.addEventListener("mousedown", this.startSelection.bind(this));
+    // this.addEventListener("mousemove", this.updateSelection.bind(this));
+    // this.addEventListener("mouseup", this.endSelection.bind(this));
 
     const observer = new MutationObserver(() => {
       this.updateSelectableElements();
@@ -81,8 +94,7 @@ class RectangleSelection extends LitElement {
   }
 
   updateSelectableElements() {
-    this.selectableElements = this.querySelectorAll("generik-component-wrapper");
-    console.log("Updated selectable elements:", this.selectableElements);
+    this.selectableElements = this.querySelectorAll("generiks-component-wrapper");
   }
 
   startSelection(event) {

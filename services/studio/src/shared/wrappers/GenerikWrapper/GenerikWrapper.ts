@@ -3,11 +3,10 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import { $draggingComponentInfo } from "$store/component/store.ts";
+import { $components, $draggingComponentInfo, $hoveredComponent } from "$store/component/store.ts";
 import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 import { $context, getVar, setVar } from "$store/context.ts";
-
 import styles from "./GenerikWrapper.style.ts";
 
 import "./DragWrapper/DragWrapper.ts";
@@ -17,7 +16,7 @@ import "../ComponentTitle/ComponentTitle.ts";
 import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
 import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
 import { setCurrentComponentIdAction } from "$store/actions/component/setCurrentComponentIdAction.ts";
-import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
+import { setHoveredComponentAction } from "$store/actions/component/setHoveredComponentAction.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 
 function safeParseInt(value) {
@@ -56,10 +55,12 @@ export class GenerikComponentWrapper extends LitElement {
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
       this.wrapperStyle =
-        environment.mode === ViewMode.Edit ? { "pointer-events": "none" } : {};
+        environment.mode === ViewMode.Edit ? {  } : {};
+    });
+    $hoveredComponent.subscribe((hoveredComponent: ComponentElement) => {
+      this.hoveredComponent = hoveredComponent;
     });
     $context.subscribe(() => {
-      this.currentSelection = getVar("global", "selectedComponents")?.value || [];
     });
     $draggingComponentInfo.subscribe((draggingComponentInfo: DraggingComponentInfo) => {
       if (draggingComponentInfo) {
@@ -86,12 +87,9 @@ export class GenerikComponentWrapper extends LitElement {
     });
   }
 
-  override updated(changedProperties) {
-    super.updated(changedProperties);
+  override update(changedProperties) {
+    super.update(changedProperties);
 
-    if (changedProperties.has("component")) {
-      this.requestUpdate();
-    }
 
     if (changedProperties.has("highlighted")) {
       const currentSelection = getVar("global", "selectedComponents")?.value || [];
@@ -118,9 +116,7 @@ export class GenerikComponentWrapper extends LitElement {
     // Find the closest parent "generik-component-wrapper"
     const closestWrapper = this.closest("generik-component-wrapper");
     if (closestWrapper) {
-      console.log("Closest generik-component-wrapper found:", closestWrapper);
     } else {
-      console.log("No generik-component-wrapper found in the parent hierarchy.");
     }
   }
 
@@ -136,7 +132,10 @@ export class GenerikComponentWrapper extends LitElement {
         .component=${{ ...this.component }}
         .selectedComponent=${{ ...this.selectedComponent }}
         .hoveredComponent=${{ ...this.hoveredComponent }}
+        .inputRef=${this.inputRef}
       >
+      </resize-wrapper>
+
         <drag-wrapper
           .component=${{ ...this.component }}
           .draggingComponentInfo=${{ ...this.draggingComponentInfo }}
@@ -147,14 +146,10 @@ export class GenerikComponentWrapper extends LitElement {
             class=${classMap({ isDraggable: this.isDragInitiator })}
             @dragend=${() => this.requestUpdate()}
             @mousedown=${this.handleMouseDown}
-            @mouseenter=${() => setHoveredComponentIdAction(this.component?.uuid)}
-            @mouseleave=${() => setHoveredComponentIdAction(null)}
+            @mouseenter=${() => setHoveredComponentAction(this.component)}
+            @mouseleave=${() => setHoveredComponentAction(null)}
           >
-            <component-title
-              @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}
-              .component=${{ ...this.component }}
-              .selectedComponent=${{ ...this.selectedComponent }}
-            ></component-title>
+         
             <div
               ${ref(this.inputRef)}
               class=${classMap({ selected: this.selectedComponent?.uuid === this.component.uuid })}
@@ -174,9 +169,15 @@ export class GenerikComponentWrapper extends LitElement {
               </div>
               <slot></slot>
             </div>
+            <component-title
+              @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}
+              .component=${{ ...this.component }}
+              .selectedComponent=${{ ...this.selectedComponent }}
+              .hoveredComponent=${{ ...this.hoveredComponent }}
+
+            ></component-title>
           </span>
         </drag-wrapper>
-      </resize-wrapper>
     `;
   }
 
@@ -207,8 +208,7 @@ export class GenerikComponentWrapper extends LitElement {
       marginLeft: `${newMarginLeft}px`
     };
     this.component = { ...this.component, style: updatedStyle };
-    updateComponentAttributes(this.component.applicationId, this.component.uuid, "style", updatedStyle);
-    this.requestUpdate();
+    updateComponentAttributes(this.component.application_id, this.component.uuid, "style", updatedStyle);
   }
 
   private resize = (e: MouseEvent) => {

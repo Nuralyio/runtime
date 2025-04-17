@@ -4,7 +4,7 @@ import type { ComponentElement } from "$store/component/interface.ts";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import "@nuralyui/radio";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
 
@@ -16,6 +16,13 @@ export class RadioButtonBlock extends BaseElementBlock {
 
   @property({ type: Object })
   item: any;
+  constructor() {
+    super();
+    this.registerCallback("value", (value: any) => {
+      this.requestUpdate();
+    }
+    );
+  }
 
   handleChange = (customEvent: CustomEvent) => {
     if (this.component.event.changed) {
@@ -25,16 +32,19 @@ export class RadioButtonBlock extends BaseElementBlock {
     }
   };
 
-  render() {
+  renderComponent() {
     const options = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[0] : [];
     const defaultValue = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[1] : EMPTY_STRING;
     const type = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[2] : "default";
 
     return html`
+    <!-- <pre>${
+      JSON.stringify(options, null, 2)
+    }</pre> -->
       <span style=${styleMap({ ...this.component.style })}>
             <hy-radio-input
               .type=${type}
-              .options=${options}
+              .options=${[...options]}
               .defaultValue="${defaultValue}"
               @change=${this.handleChange}
             ></hy-radio-input>

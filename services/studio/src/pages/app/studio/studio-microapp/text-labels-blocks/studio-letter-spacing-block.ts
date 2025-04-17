@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "letter_spacing_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -16,7 +16,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["text_label_letter_spacing", "letter_spacing_input", "letter_spacing_handler"]
   },
@@ -25,23 +25,21 @@ export default [
     name: "text_label",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-              return 'Letter spacing';
-            `
+        type: "string",
+        value: 'Letter spacing'
       }
     }
   },
   {
     uuid: "letter_spacing_input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -54,64 +52,52 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `    
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const letterSpacing =currentComponent.style && currentComponent.style['letter-spacing']?.split('px')[0] || 0
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        const letterSpacing =selectedComponent.style && selectedComponent.style['letter-spacing']?.split('px')[0] || 0
                         if(letterSpacing)
                             return letterSpacing;
                         else  
                         return 0       
-                    }
         
-                }catch(e){
-                    console.log(e);
-                }                
+                                
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['letter-spacing']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['letter-spacing']){
                          state='disabled'
                         }
                         return state
-                    }
         
-                }catch(e){
-                    console.log(e);
-                }      
+                      
                 
                 `
       }
     },
     event: {
       valueChange:  /* js */ `
-                  try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "letter-spacing", EventData.value+'px');
-                }
-            }catch(error){
-                console.log(error);
-            }     
+                  
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyle(selectedComponent, "letter-spacing", EventData.value+'px');
+                 
       `
     }
   },
 
   {
     uuid: "letter_spacing_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -125,16 +111,12 @@ export default [
         value: /* js */`
                 const parameter ='letterSpacing';
                 let letterSpacingHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    letterSpacingHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['letter-spacing'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    letterSpacingHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['letter-spacing'] || ''  
+                
                 return [parameter,letterSpacingHandler];
             `
       }
@@ -142,16 +124,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'letter-spacing',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'letter-spacing',EventData.value)
+            
       `
     }
   }

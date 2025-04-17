@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "font_family_block",
-    applicationId: "1",
+    application_id: "1",
     name: "label family block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -12,7 +12,7 @@ export default [
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
 
     childrenIds: ["font_family_label", "font_family_select", "font_family_handler"]
@@ -21,24 +21,22 @@ export default [
     uuid: "font_family_label",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Font family';
-            `
+        type: "string",
+        value: 'Font family'
       }
     }
   },
 
   {
     uuid: "font_family_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     styleHandlers: {},
     name: "label font family select",
@@ -52,50 +50,126 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let fontFamily = currentComponent?.style && currentComponent.style['font-family'];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                let fontFamily = selectedComponent.style && selectedComponent.style['font-family'];
                 let selectedFontFamily;
                 const options = 
                     [
                     {
                     label: "Arial",
-                    value: "arial",
+                    value: "Arial",
+                    additionalStyle: {
+                      fontFamily: "Arial",
+                      fontSize: "17px"
+                    }
                     }, 
                     {
                     label: "Tahoma",
-                    value: "tahoma",
-                   },
+                    value: "Tahoma",
+                    additionalStyle: {
+                        fontFamily: "Tahoma",
+                        fontSize: "17px"
+                    }
+                    },
                     {
                      label: "Verdana",
-                     value: "verdana",
+                     value: "Verdana",
+                     additionalStyle: {
+                        fontFamily: "Verdana",
+                        fontSize: "17px"
+                      }
                    },
                    {
                     label:'Georgia',
-                    value:'georgia',
+                    value:'Georgia',
+                    additionalStyle: {
+                      fontFamily: 'Georgia',
+                        fontSize: "17px"
+                    }
                   },
                   {
                     label:'Courier New',
-                    value:'courier new',
-                 }
+                    value:'Courier New',
+                    additionalStyle: {
+                      fontFamily: 'Courier New',
+                        fontSize: "17px"
+                    }
+                 },
+                  {
+                    label:'Roboto',
+                    value:'"Roboto", sans-serif',
+                    additionalStyle: {
+                      fontFamily: '"Roboto", sans-serif',
+                        fontSize: "17px"
+                    }
+                 },
+                 {
+                  label:'Lato',
+                  value:'"Lato", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Lato", sans-serif',
+                        fontSize: "17px"
+                  }
+               },
+                 {
+                  label:'Merriweather',
+                  value:'"Merriweather", serif',
+                  additionalStyle: {
+                    fontFamily: '"Merriweather", serif',
+                        fontSize: "17px"
+                  }
+               },
+                 {
+                  label:'Aleo',
+                  value:'"Aleo", serif',
+                  additionalStyle: {
+                    fontFamily: '"Aleo", serif',
+                        fontSize: "17px"
+                  }
+               },
+                 {
+                  label:'mulish',
+                  value:'"Mulish", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Mulish", sans-serif',
+                        fontSize: "17px"
+                  }
+               },
+                 {
+                  label:'Asap Condensed',
+                  value:'"Asap Condensed", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Asap Condensed", sans-serif',
+                        fontSize: "17px"
+                  }
+               },
+                 {
+                  label:'Barlow',
+                  value:'"Barlow", sans-serif',
+                  additionalStyle: {
+                    fontFamily: '"Barlow", sans-serif',
+                        fontSize: "17px"
+                  }
+               }
             
             ]
             if(fontFamily){
                 selectedFontFamily = options.find((option)=> option.value == fontFamily);   
             }
-            const result =[options,[selectedFontFamily? selectedFontFamily.value : ""]]
+            const result =[options,[[selectedFontFamily? selectedFontFamily.value : ""]]]
             return  result;  
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
                 let isDisabled ='enabled';
-                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family']) {
+                if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['font-family']) {
                     isDisabled ='disabled'
                 } 
                 return isDisabled
@@ -105,24 +179,20 @@ export default [
     },
     style: {
       display: "block",
-      "--hybrid-select-width": "155px",
+      "--hybrid-select-width": "150px",
       "size": "small"
     },
     event: {
       changed: /* js */ `
 
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const fontFamilyValue = EventData.value?EventData.value:'arial'
-                    updateStyle(currentComponent, "font-family", fontFamilyValue);
+                    updateStyle(selectedComponent, "font-family", fontFamilyValue);
         
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
             
       `
     }
@@ -130,7 +200,7 @@ export default [
 
   {
     uuid: "font_family_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -144,16 +214,12 @@ export default [
         value: /* js */`
                 const parameter ='fontFamily';
                 let fontFamilyHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    fontFamilyHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['font-family'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    fontFamilyHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['font-family'] || ''  
+                
                 return [parameter,fontFamilyHandler];
             `
       }
@@ -161,16 +227,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'font-family',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'font-family',EventData.value)
+            
       `
     }
   }

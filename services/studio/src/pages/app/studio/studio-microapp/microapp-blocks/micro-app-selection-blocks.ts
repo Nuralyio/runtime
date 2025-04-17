@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "micro_app_selection_blocks",
-    applicationId: "1",
+    application_id: "1",
     name: "micro_app_selection_blocks",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -18,20 +18,18 @@ export default [
     uuid: "micro_app_selection_label",
     name: "label image src",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return "Select Micro Application"
-            `
+        type: "string",
+        value: "Select Micro Application"
       }
     }
   },
   {
     uuid: "micro_app_selection_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -43,10 +41,10 @@ export default [
 
                 let options = [];
                 let selectedMicroApplication;
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let appUUID = currentComponent?.input?.['appUUID'];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                let appUUID = selectedComponent.input?.['appUUID'];
               
             return new Promise((resolve, reject)=>{
             fetch('/api/applications')
@@ -79,17 +77,13 @@ export default [
     event: {
       changed: /* js */ `
 
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const appUUIDValue = EventData.value?EventData.value:''
-                    updateInput(currentComponent, "appUUID", 'string',  appUUIDValue);
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    updateInput(selectedComponent, "appUUID", 'string',  appUUIDValue);
+            
             
       `
     }

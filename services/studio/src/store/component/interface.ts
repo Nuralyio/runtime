@@ -15,18 +15,27 @@ export const enum ComponentType {
   Event = "event", //TODO: this is an event not a component type
   Table = "Table",
   Checkbox = "checkbox",
-  DatePicker = "DatePicker",
+  DatePicker = "Datepicker",
   Icon = "Icon",
   Image = "Image",
   MicroApp = "MicroApp",
   RadioButton = "RadioButton",
   IconPicker = "IconPicker",
+  RefComponent = "RefComponent",
+  Code = "code-block",
+  RichText = "rich-text",
+  EmbedURL = "embed-url",
+  Link = "link",
+  RichTextEditor = "rich-text-editor",
   UsersDropdown = "UsersDropdown",
   InsertDropdown = "InsertDropdown",
   Collapse = "Collapse",
   Handlers = "Handlers",
   AI = "AI",
   Divider = "Divider",
+  ExportImport = "ExportImport",
+  InvokeFunction = "InvokeFunction",
+  Dropdown = "dropdown",
 }
 
 export interface DraggingComponentInfo {
@@ -45,11 +54,7 @@ export interface ComponentElement {
   name: string;
   component_type: ComponentType;
   style?: { [key: string]: string };
-  styleBreakPoints?: {
-    laptop: { [key: string]: string },
-    tablet: { [key: string]: string },
-    mobile: { [key: string]: string },
-  };
+  breakpoints?: any;
   styleHandlers: { [key: string]: string };
   inputHandlers: { [key: string]: string };
   parameters?: { [key: string]: string };
@@ -59,7 +64,7 @@ export interface ComponentElement {
   childrens?: ComponentElement[];
   childrenIds?: string[];
   pageId?: string;
-  applicationId?: string;
+  application_id?: string;
 }
 
 export default {};

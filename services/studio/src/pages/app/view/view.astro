@@ -1,7 +1,6 @@
 ---
 import "../studio/components/MainPanel/EditorInteractivePanel";
 import { TabsPanel } from "../studio/components/MainPanel/TabsPanel";
-import "@nuralyui/button";
 import { TopbarPanelWrapper } from "../studio/components/TopBar/TopbarWrapper/TopbarWrapper";
 import { LeftPanel } from "../studio/components/Layout/LeftPanel";
 import { RightPanel } from "../studio/components/Layout/RightPanel";
@@ -36,7 +35,6 @@ try {
   // Handle component data
   componentData = componentResponse.data.map((component) => component.component);
   $components.set({ [app.uuid]: componentData });
-  console.log( $components.get())
   // Handle applications data
   applications = applicationsRequest.data;
   $applications.set(applications);

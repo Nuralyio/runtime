@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, InputTextLabelTheme, TextInputTheme } from ".
 export const StudioTextValueInput = [
   {
     uuid: "value_text_block",
-    applicationId: "1",
+    application_id: "1",
     name: "value text block",
     component_type: ComponentType.Container,
     style: {
@@ -15,7 +15,7 @@ export const StudioTextValueInput = [
   },
   {
     uuid: "value_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "icon picker handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -23,105 +23,67 @@ export const StudioTextValueInput = [
       display: "flex",
       "justify-content": "space-between"
     },
-
     childrenIds: ["value_text_input", "value_handler"]
   },
   {
     uuid: "value_text_label",
     name: "value text label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     style: {
       ...InputTextLabelTheme
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               return 'Value';
-            `
+        type: "string",
+        value: 'Value'
       }
     }
-
   },
   {
     uuid: "value_text_input",
     name: "value text input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
     },
     event: {
-      valueChange:  /* js */ `
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        updateInput(currentComponent,'value','value',EventData.value);
-                    }
-                }catch(error){
-                    console.log(error);
-                }`
+      valueChange: /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (selectedComponent) {
+          updateInput(selectedComponent, 'value', 'value', EventData.value);
+        }
+      `
     },
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                if(currentComponent.input?.value?.type=="value"){
-                   const currentValue=currentComponent.input?.value?.value || [];
-                   return currentValue;
-               }
-               return [];
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-
+        value: /* js */ `
+          const { input: { value: valueInput } = {} } = Utils.first(Vars.selectedComponents) || {};
+          return valueInput?.type === 'handler' ? '' : valueInput?.value || '';
+        `
       },
       state: {
         type: "handler",
-        value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
-                let state = "unabled";
-                if(currentComponent.input?.value?.type =="handler"&&currentComponent.input?.value?.value){
-                   state = "disabled"
-               }
-               return state;
-            }
-
-        }catch(e){
-            console.log(e);
-        }
-            `
-      }
-      ,
+        value: /* js */ `
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          return selectedComponent?.input?.value?.type === "handler" &&
+            selectedComponent?.input?.value?.value
+            ? "disabled"
+            : "unabled";
+        `
+      },
       placeholder: {
-        type: "handler",
-        value: /* js */`
-                const inputPlaceHolder ="value";
-                return inputPlaceHolder;
-            `
+        type: "string",
+        value: "value"
       }
     }
   },
-
   {
     uuid: "value_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -132,42 +94,22 @@ export const StudioTextValueInput = [
     input: {
       value: {
         type: "handler",
-        value: /* js */`
-                const parameter ='value';
-                let valueHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.value?.type =='handler' && currentComponent?.input?.value?.value){
-                           valueHandler = currentComponent?.input?.value?.value
-                        }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,valueHandler];
-            `
+        value: /* js */ `
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const handlerValue = selectedComponent?.input?.value?.type === 'handler'
+            ? selectedComponent?.input?.value.value
+            : '';
+          return ['value', handlerValue];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.value?.value)   
-                      updateInput(currentComponent,'value','handler',EventData.value);
-                
-                }
-            }catch(error){
-                console.log(error);
-            }
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (selectedComponent && EventData.value !== selectedComponent?.input?.value?.value) {
+          updateInput(selectedComponent, 'value', 'handler', EventData.value);
+        }
       `
     }
   }
-
 ];

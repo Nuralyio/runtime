@@ -1,4 +1,4 @@
-import { css, html } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
@@ -72,21 +72,17 @@ export class MicroAppBlock extends BaseElementBlock {
     }
   }
 
-  updated(changedProperties: any): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("component")) {
-      this.requestUpdate();
-    }
-  }
+  
 
   render() {
-    const isPreviewMode = this.inputHandlersValue.mode === ViewMode.Preview;
+    const isPreviewMode = this.inputHandlersValue.mode === ViewMode.Preview || this.inputHandlersValue.mode === ViewMode.Preview;
 
     return html`
       ${this.inputHandlersValue.appUUID
       ? html`
           <micro-app
             uuid=${this.inputHandlersValue.appUUID}
+            componentToRenderUUID=${this.inputHandlersValue.componentToRenderUUID ?? nothing}
             style=${styleMap({
         pointerEvents: isPreviewMode ? "auto" : "none"
       })}
