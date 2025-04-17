@@ -8,3 +8,9 @@ export function updateApplication(attribute: any) {
   });
   updateApplicationActionHandler($currentApplication.get());
 }
+
+
+
+export function updateSepecificApplication(application: any) {
+  updateApplicationActionHandler(application);
+}

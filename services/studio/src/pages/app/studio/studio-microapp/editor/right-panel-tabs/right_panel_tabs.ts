@@ -2,7 +2,7 @@ import { ComponentType } from "$store/component/interface.ts";
 
 export default {
   uuid: "right_panel_tabs",
-  applicationId: "1",
+  application_id: "1",
   name: "right_panel_tabs",
   component_type: ComponentType.Tabs,
   event: {},
@@ -10,22 +10,27 @@ export default {
     width: "100%",
     height: "100%",
     display: "grid",
-    "--hybrid-tabs-content-padding": "0px"
+    "--hybrid-tabs-content-padding": "0px",
+    "--hybrid-button-font-size": "12px",
+    "--text-label-dark-color": "#c2c2c2",
+    "--hybrid-tabs-container-box-shadow":"0px 0px 4px 0px #dbdbdbbf",
+    "--hybrid-tabs-container-background-local-color": "transparent",
+    "--hybrid-tabs-label-active-background-color": "transparent",
+    "--hybrid-tabs-border-radius": "8px",
   },
   input: {
     tabs: {
       type: "handler",
       value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const currentPageId = GetVar("currentPage");
-                const currentEditingApplication = GetVar("currentEditingApplication");
+      Vars.selectedComponents
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const currentPageId = Vars.currentPage;
                 let parameters = [];
                 let handlers = [];
                 let themes = [];
-                if(selectedComponents.length)
+                if(selectedComponent)
                     { 
-                        const component = GetComponent(selectedComponents[0],currentEditingApplication.uuid);
-                    switch(component.component_type){
+                    switch(selectedComponent?.component_type){
                         case "text_label":
                             parameters=[
                                "text_label_bocks"
@@ -38,24 +43,14 @@ export default {
                             break;
                         case "text_input":
                             parameters=[
-                                "value_text_block",
-                                "helper_text_block",
-                                "label_text_block",
-                                "input_label_color_block",
-                                "input_label_font_size_vertical_container",
-                                "input_helper_color_block",
-                                "input_helper_font_size_vertical_container",
-                                "placeholder_text_block",
-                                "position_collapse_container",
-                                "width_vertical_container",
-                                "size_block",
-                                "input_type_block",
-                                "status_block",
-                                "state_block",
-                                "input_blur_event_block",
-                                "input_valuechange_event_block",
-                                "input_focus_event_block"
+                                'text_input_blocks'
                             ];
+                            handlers=[
+                                "studio_text_input_handler"
+                            ];
+                            themes = [
+                                "text_input_icon_theme_container"
+                            ]
                             break;
                         case "button_input":
                             parameters=[
@@ -75,6 +70,9 @@ export default {
                             handlers=[
                               "studio_checkbox_handler"
                             ];
+                            themes =[
+                                "checkbox_button_theme_container",
+                            ];
                                 break;
                         case "Image":
                             parameters=[
@@ -84,7 +82,7 @@ export default {
                                             "studio_image_handler"
                                         ];
                                         break;
-                        case "DatePicker":
+                        case "Datepicker":
                             parameters=[
                                 "datepicker_block",
                                         ];
@@ -118,6 +116,9 @@ export default {
                             handlers=[
                             "studio_icon_handler"
                             ];
+                            themes=[
+                                "studio_icon_theme_container"
+                            ];
                             break;
                         case "vertical-container-block":
                             parameters=[
@@ -126,19 +127,106 @@ export default {
                             handlers=[
                                 "studio_container_handler"
                             ];
+                            themes=[
+                                "studio_container_theme_container"
+                            ];
                             break;
 
                         case "Collection":
                             parameters=[
                                 "collection_blocks",
                             ]
+                            handlers=[
+                                "studio_collection_handler"
+                            ];
                             break;
+
+                            case "RefComponent": 
+                            parameters=[
+                                "ref_component_blocks"
+                            ]
+                            handlers=[
+                                "studio_ref_component_handler"
+                            ];
+                            themes=[
+                                "studio_ref_component_theme_container"
+                            ];
+                            break;
+                            case "code-block":
+                                parameters=[
+                                    "code_blocks"
+                                ]
+                            break
+                            case "rich-text":
+                                parameters=[
+                                    "rich_text_blocks"
+                                ]
+                                handlers=[
+                                    "studio_rich_text_handler"
+                                ]
+                                themes=[
+                                    "studio_rich_text_theme_container"
+                                ]
+                            break
+                            case "rich-text-editor": 
+                                parameters=[
+                                    "rich_text_editor_blocks"
+                                ]
+                                handlers=[
+                                    "studio_rich_text_editor_handler"
+                                ]
+                                themes=[
+                                    "studio_rich_text_editor_theme_container"
+                                ]
+                            break
+                            case "menu":
+                                parameters=[
+                                    "menu_blocks"
+                                ]
+                                handlers=[
+                                    "studio_menu_handler"
+                                ]
+                                themes=[
+                                    "studio_menu_theme_container"
+                                ]
+                            break
+                            case "dropdown":
+                                parameters=[
+                                    "dropdown_blocks"
+                                ]
+                                handlers=[
+                                    "studio_dropdown_handler"
+                                ]
+                                themes=[
+                                    "studio_dropdown_theme_container"
+                                ]
+                            break;
+                            case "embed-url":
+                                parameters = [
+                                    "embed_collapse_container"
+                                ]
+                                break;
+                            case "link":
+                                parameters = [
+                                    "link_collapse_container"
+                                ]
+                                handlers=[
+                                    "studio_link_handler"
+                                ]
+                                themes=[
+                                    "studio_link_theme_container"
+                                ]
+                                break;
                     }
                 }
                 else if(currentPageId) {
                         parameters=[
                             "page_name_block", 
-                            "page_url_block"    
+                            "page_url_block",
+                            "description_block"
+                        ]
+                        themes=[
+                            "PageThemeStudio",
                         ]
                 }
                 return [
@@ -150,7 +238,7 @@ export default {
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value: selectedComponents.length|| currentPageId
+                            value: selectedComponent || currentPageId
                                 ? parameters
                                 : ["select_component_text"]
                         }
@@ -162,7 +250,7 @@ export default {
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value:  selectedComponents.length|| currentPageId
+                            value:  selectedComponent || currentPageId
                                 ? handlers
                                 : []
                         }
@@ -174,7 +262,7 @@ export default {
                         },
                         childrends: {
                             type: "componentIdArray",
-                            value:  selectedComponents.length|| currentPageId
+                            value:  selectedComponent|| currentPageId
                                 ? themes
                                 : []
                         }

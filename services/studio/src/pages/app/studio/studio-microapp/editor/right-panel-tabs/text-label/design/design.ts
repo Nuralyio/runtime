@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 
 export const StudioTextLabelDesign = [{
   uuid: "text_label_bocks",
-  applicationId: "1",
+  application_id: "1",
   name: "Parent Color Container",
   component_type: ComponentType.Container,
   ...COMMON_ATTRIBUTES,
@@ -13,10 +13,20 @@ export const StudioTextLabelDesign = [{
     "flex-direction": "column"
   },
   childrenIds: [
-    "text_input_collapse_container",
+    "text_label_collapse_container",
     "typography_collapse_container",
     "size_collapse_container",
     "border_collapse_container"
-  ]
+  ],
+  input: {
+    aa: {
+      type: "handler",
+      value:
+        /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        
+        `
+    }
+  }
 }
 ];

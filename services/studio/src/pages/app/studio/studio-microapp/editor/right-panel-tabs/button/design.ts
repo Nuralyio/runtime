@@ -5,7 +5,7 @@ import { COMMON_ATTRIBUTES } from "../../../helper/common_attributes.ts";
 export const StudioButtonDesign = [
   {
     uuid: "buttons_bocks",
-    applicationId: "1",
+    application_id: "1",
     name: "Parent Color Container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

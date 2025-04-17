@@ -1,0 +1,27 @@
+export const SutdioIconCSSVar=  [
+    {
+      name: "Dark Mode",
+      open: true,
+      items: [
+        {
+          name: "General",
+          items: [
+            { label: "Icon Color", cssVar: "--hybrid-icon-color" }
+          ],
+          open: true
+        }
+      ]
+    },
+    {
+      name: "Light Mode",
+      items: [
+        {
+          name: "General",
+          items: [
+            { label: "Icon Color", cssVar: "--hybrid-icon-color" }
+          ]
+        }
+      ]
+    }
+  ];
+  

@@ -11,6 +11,17 @@ export class RightPanel extends LitElement {
      aside {
         display: none;
       }
+      :host{
+        --hybrid-tabs-content-padding: 20px;
+        --hybrid-tabs-content-maring: 10px;
+        --hybrid-tabs-container-background-color : white;
+      }
+      @media (prefers-color-scheme: dark) {
+        :host{
+        --hybrid-tabs-container-background-color : #313131;
+
+      }
+    }
       aside.visible {
         display: flex;
       }`];
@@ -24,11 +35,9 @@ export class RightPanel extends LitElement {
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
     });
-    $context.listen(() => {
-      this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
-      console.log(this.showSecondsRow);
-      this.requestUpdate();
-    });
+    // $context.listen(() => {
+    //   this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
+    // });
   }
 
 
@@ -41,8 +50,8 @@ export class RightPanel extends LitElement {
         <div class="my-4 w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"></span>
         </div>
-        <div class="my flex-grow" style="width:300px;height: 100%">
-          <control-panel class="w-full h-full" style="width:355px;height: 100%"></control-panel>
+        <div class="my flex-grow" style="width:290px;height: 100%; margin:10px">
+          <control-panel class="w-full h-full" style="width:345px;height: 100%;"></control-panel>
         </div>
       </aside>`;
   }

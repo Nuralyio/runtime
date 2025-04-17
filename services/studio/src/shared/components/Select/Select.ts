@@ -5,10 +5,11 @@ import "@nuralyui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { $environment, ViewMode } from "$store/environment.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { ViewMode } from "$store/environment.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
+import { ref } from "lit/directives/ref.js";
 
 
 @customElement("select-block")
@@ -19,10 +20,7 @@ export class SelectBlock extends BaseElementBlock {
 
   constructor() {
     super();
-    $environment.subscribe((environment) => {
-      this.mode = environment.mode;
-      this.requestUpdate();
-    });
+    
   }
 
   override async connectedCallback() {
@@ -41,22 +39,21 @@ export class SelectBlock extends BaseElementBlock {
     }
   };
 
-  render() {
+override  renderComponent() {
     const options = this.inputHandlersValue?.value?.[0] ?? [];
     const defaultSelected = this.inputHandlersValue?.value?.[1] ?? [];
     const selectStyles = this.component?.style || {};
-    const selectAutoWidth = this.inputHandlersValue?.width;
-    const selectStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
 
     return html`
-      <hy-select style=${styleMap({
-      ...selectStyles,
-      width: selectAutoWidth ? "auto" : selectStyles?.width, ...selectStyleHandlers
-    })}
+    <span>
+      <hy-select  
+            ${ref(this.inputRef)}
+            style=${styleMap({...this.getStyles(), 
+            "--hybrid-select-width" : this.getStyles()['--hybrid-select-width']  ?? this.getStyles().width    
+          })}
                  selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : nothing}
                  .options=${this.inputHandlersValue?.options || options}
-                 .defaultSelected="${defaultSelected}"
+                 .defaultSelected="${[this.inputHandlersValue?.defaultSelected] }"
                  .placeholder=${this.inputHandlersValue.placeholder || "Select an option"}
                  .status=${selectStyles?.state ?? nothing}
                  .size=${selectStyles?.size ?? nothing}
@@ -67,6 +64,7 @@ export class SelectBlock extends BaseElementBlock {
         <span slot="label">${this.inputHandlersValue.label ?? nothing}</span>
         <span slot="helper-text">${this.inputHandlersValue.helper ?? nothing}</span>
       </hy-select>
+        </span>
     `;
   }
 }

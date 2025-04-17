@@ -1,32 +1,59 @@
+import { Subject, Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { share } from 'rxjs/operators';
+
 class EventDispatcher {
-  events: {};
+  private static instance: EventDispatcher;
+  private subjects: { [key: string]: Subject<any> } = {};
+  private subscriptions: { [key: string]: Map<Function, Subscription> } = {};
+  private debounceSubjects: { [key: string]: BehaviorSubject<any> } = {};
 
-  constructor() {
-    this.events = {};
+  private globalEventSubject = new Subject<{ eventName: string; data: any }>();
+  public readonly allEvents$: Observable<{ eventName: string; data: any }>;
+
+  private constructor() {
+    this.allEvents$ = this.globalEventSubject.asObservable().pipe(share());
   }
 
-  // Subscribe to an event
-  on(event, listener) {
-    if (!this.events[event]) {
-      this.events[event] = [];
+  public static getInstance(): EventDispatcher {
+    if (!EventDispatcher.instance) {
+      EventDispatcher.instance = new EventDispatcher();
     }
-    this.events[event].push(listener);
+    return EventDispatcher.instance;
   }
 
-  // Unsubscribe from an event
-  off(event, listener) {
-    if (!this.events[event]) return;
-
-    this.events[event] = this.events[event].filter(l => l !== listener);
+  private getSubject(event: string): Subject<any> {
+    if (!this.subjects[event]) {
+      this.subjects[event] = new Subject<any>();
+    }
+    return this.subjects[event];
   }
 
-  // Emit an event
-  emit(event, data?) {
-    if (!this.events[event]) return;
+  public on(event: string, listener: Function): Subscription {
+    if (!this.subscriptions[event]) {
+      this.subscriptions[event] = new Map<Function, Subscription>();
+    }
+    const subscription = this.getSubject(event).subscribe((data) => listener(data));
+    this.subscriptions[event].set(listener, subscription);
+    return subscription;
+  }
 
-    this.events[event].forEach(listener => listener(data));
+  public onAny(listener: (eventName: string, data: any) => void): Subscription {
+    return this.allEvents$.subscribe(({ eventName, data }) => listener(eventName, data));
+  }
+
+  public off(event: string, listener: Function): void {
+    if (!this.subscriptions[event]) return;
+    const subscription = this.subscriptions[event].get(listener);
+    if (subscription) {
+      subscription.unsubscribe();
+      this.subscriptions[event].delete(listener);
+    }
+  }
+
+  public emit(event: string, data?: any): void {
+    this.getSubject(event).next(data);
+    this.globalEventSubject.next({ eventName: event, data });
   }
 }
 
-
-export const eventDispatcher = new EventDispatcher();
+export const eventDispatcher = EventDispatcher.getInstance();

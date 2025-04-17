@@ -1,4 +1,3 @@
-import { logger } from "@nanostores/logger";
 import { atom, keepMount } from "nanostores";
 
 export enum ViewMode {
@@ -18,6 +17,4 @@ export const $environment = atom<Environment>(
 
 keepMount($environment);
 
-logger({
-  environment: $environment
-});
+

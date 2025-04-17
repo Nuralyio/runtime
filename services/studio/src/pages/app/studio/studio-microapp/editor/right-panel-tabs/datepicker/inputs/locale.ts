@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-edi
 export default [
   {
     uuid: "datepicker_locale_block",
-    applicationId: "1",
+    application_id: "1",
     name: "datepicker locale  block",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -21,7 +21,7 @@ export default [
   },
   {
     uuid: "datepicker_local_input_block",
-    applicationId: "1",
+    application_id: "1",
     name: "datepicker local input block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -34,7 +34,7 @@ export default [
   },
   {
     uuid: "datepicker_locale_label_container",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     styleHandlers: {},
@@ -50,7 +50,7 @@ export default [
     uuid: "locale_label",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px;"
@@ -68,7 +68,7 @@ export default [
 
   {
     uuid: "locale_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -77,10 +77,10 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let locale = currentComponent.input?.locale?.value??'en';
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
+                let locale = selectedComponent.input?.locale?.value??'en';
                 let selectedLocale;
                 const options = 
                     [
@@ -116,21 +116,19 @@ export default [
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if(selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)                    
+            
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            if(true) {
+                
+                                    
                 let state = "unabled";
-                if(currentComponent.input?.locale?.type =="handler" && currentComponent.input?.locale?.value){
+                if(selectedComponent.input?.locale?.type =="handler" && selectedComponent.input?.locale?.value){
                    state = "disabled"
                }
                return state;
              }
 
-        }catch(e){
-            console.log(e);
-        }
+        
             `
       }
     },
@@ -140,25 +138,18 @@ export default [
     event: {
       changed: /* js */ `
 
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                     const localeValue = EventData.value?EventData.value:'en'
-                    updateInput(currentComponent, "locale", 'string',localeValue);
-        
-                }
-            }catch(error){
-                console.log(error);
-            }
+                    updateInput(selectedComponent, "locale", 'string',localeValue);
+            
             
       `
     }
   },
   {
     uuid: "locale_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "locale handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -168,7 +159,7 @@ export default [
   },
   {
     uuid: "locale_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -182,18 +173,13 @@ export default [
         value: /* js */`
                 const parameter ='locale';
                 let localeHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.locale?.type =='handler' && currentComponent?.input?.locale?.value){
-                            localeHandler = currentComponent?.input?.locale?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        if(selectedComponent.input?.locale?.type =='handler' && selectedComponent.input?.locale?.value){
+                            localeHandler = selectedComponent.input?.locale?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,localeHandler];
             `
       }
@@ -201,17 +187,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.locale?.value)
-                    updateInput(currentComponent,'locale','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(EventData.value != selectedComponent.input?.locale?.value)
+                    updateInput(selectedComponent,'locale','handler',EventData.value);
+            
       `
     }
   }

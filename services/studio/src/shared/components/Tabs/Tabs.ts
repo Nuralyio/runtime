@@ -22,16 +22,18 @@ export class TabsBlock extends BaseElementBlock {
   @state()
   private componentsWithChildren: ComponentElement[] = [];
 
-  override async connectedCallback() {
-    await super.connectedCallback();
-    await this.traitInputsHandlers();
-  }
-
-  override updated(changedProperties: Map<string | number | symbol, unknown>) {
-    super.updated(changedProperties);
+ constructor(){
+  super()
+  this.registerCallback('tabs' , ()=>{
+    this.updateComponents();
+    this.editableTabs = this.generateTabs();
+  })
+ }
+  override async  update(changedProperties: Map<string | number | symbol, unknown>) {
+    super.update(changedProperties);
     if (changedProperties.has("component")) {
       this.updateComponents();
-      //this.editableTabs = this.memoizedGenerateTabs();
+      this.editableTabs = this.generateTabs();
     }
   }
 
@@ -43,7 +45,7 @@ export class TabsBlock extends BaseElementBlock {
 
       ...this.component.style
     })}
-          .activeTab=${0}
+          .activeTab=${this.inputHandlersValue.index ?? 0}
           .tabs=${this.editableTabs}
           .editable=${{
       canDeleteTab: false,
@@ -70,10 +72,8 @@ export class TabsBlock extends BaseElementBlock {
   }
 
   private updateComponents() {
-    $applicationComponents(this.component.applicationId).subscribe((components = []) => {
+    const  components  = $applicationComponents(this.component.application_id).get();
       this.componentsWithChildren = [...components];
       this.editableTabs = this.generateTabs();
-    });
-    this.requestUpdate();
   }
 }

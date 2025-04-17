@@ -4,13 +4,12 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "checkbox_changed_event_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Checkbox changed event block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
 
-      "margin-top": "10px",
       display: "flex",
       "justify-content": "space-between",
       "align-items": "center"
@@ -23,21 +22,18 @@ export default [
     name: "text label checkbox changed event block",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-               const label ='Checkbox change';
-             return label;
-            `
+        type: "string",
+        value: 'Checkbox change'
       }
     }
   },
   {
     uuid: "checkbox_changed_event_value",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -52,34 +48,24 @@ export default [
         value: /* js */`
                 const event ='checkbox-changed';
                 let currentEventValue =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent.event?.checkboxChanged){
-                            currentEventValue= currentComponent.event.checkboxChanged;
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.event?.checkboxChanged){
+                            currentEventValue= selectedComponent.event.checkboxChanged;
                         } 
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [event,currentEventValue];
             `
       }
     },
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateEvent(currentComponent, "checkboxChanged",EventData.value )
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    updateEvent(selectedComponent, "checkboxChanged",EventData.value )
+            
       `
     }
   }

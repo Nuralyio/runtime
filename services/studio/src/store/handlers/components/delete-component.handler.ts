@@ -13,7 +13,6 @@ export const deleteComponentActionHandler = async (uuid: string): Promise<void> 
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
   } catch (err) {
     // TODO: dispatch error
     console.error(err);

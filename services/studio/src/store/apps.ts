@@ -1,7 +1,7 @@
-import { atom, deepMap, keepMount } from "nanostores";
-import { persistentAtom } from "@nanostores/persistent";
+import { atom, deepMap, keepMount, onMount } from "nanostores";
 
 import { setVar } from "./context";
+import deepEqual from "fast-deep-equal";
 
 const isServer = typeof window === "undefined";
 
@@ -32,9 +32,6 @@ export const $currentApplication = atom<any>(initialAppState);
 export const $applicationPermission = atom<any>([]);
 export const $values = deepMap<any>({});
 
-function deepEqual(obj1, obj2) {
-  return JSON.stringify(obj1) === JSON.stringify(obj2);
-}
 
 export function setValue(componentId, key, value) {
   const componentValues = $values.get()[componentId] || {};
@@ -57,16 +54,18 @@ interface Tab {
   detail?: any;
 }
 
-export const $editorState = persistentAtom<{ currentTab: any, tabs: Tab[] }>("$editorState", {
-  currentTab: {},
+export const $editorState = atom<{ currentTab: any, tabs: Tab[] }>( {
+  currentTab:{
+    id: "0",
+    label: "Page editor",
+    type: "page"
+  },
   tabs: [{
     id: "0",
-    name: "pages",
+    label: "Page editor",
     type: "page"
-  }]
-}, {
-  encode: JSON.stringify,
-  decode: JSON.parse
+  },
+   ]
 });
 
 
@@ -76,8 +75,15 @@ export const $showShareApplicationModal = atom<boolean>(false);
 
 keepMount($resizing);
 
-
+onMount($applications, () => {
+    
 if (!isServer) {
   const currentApplication = $currentApplication.get();
+  setTimeout(() => {
+
+  }, 0);
+  console.log("currentApplication ", currentApplication);
   setVar("global", `currentEditingApplication`, currentApplication);
 }
+});
+

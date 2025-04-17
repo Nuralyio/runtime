@@ -1,39 +1,67 @@
 ---
-import { ApplicationList } from "./applications/ApplicationList";
-import { fetchAllApplications } from "@services/applications.service";
-import { processHeaders } from "utils/api-calls-utils";
-import { $applications } from "$store/apps";
+import Layout from './_layouts/LandingLayout.astro';
+import "../core/micro-app";
+import { MicroApp } from '../core/micro-app';
+import 'dotenv/config'
+import { processHeaders } from '@utils/api-calls-utils';
+import { fetchApplicationPagesById } from '@services/page.service';
+import { fetchApplicationComponentById } from '@services/component.service';
+import { fetchAllApplications } from '@services/applications.service';
+
+const dashboardAPPUUID = process.env.DASHBOARD_APP_UUID;
+const dashboardAPPPageUUID = process.env.DASHBOARD_PAGE_UUID;
+let pageData, componentData, applications, application;
 
 const processedHeaders = processHeaders(Astro.request.headers);
 
-let applications = [];
-let error = false;
-const result = await fetchAllApplications(processedHeaders);
-if (result.data) {
-  $applications.set(result.data); 
-  
-} else {
-  console.log(result)
-  error = true;
-}
-applications = result.data;
-console.log($applications.get())
+  // Load application pages, components, and applications in parallel
+  const [pageRequest, componentResponse, applicationsRequest] =
+    await Promise.all([
+    fetchApplicationPagesById(processedHeaders, dashboardAPPUUID),
+    fetchApplicationComponentById(processedHeaders, dashboardAPPUUID),
+    fetchAllApplications(processedHeaders)
+  ]);
+  pageData = pageRequest.data;
+
+
+  applications = applicationsRequest.data;
+  application = applications.find((application) => application.uuid === dashboardAPPUUID);
+
+  componentData = componentResponse.data.map((component) => component.component);
+
 ---
-<head>
-  <title>Nuraly - applications</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-</head>
 
-<div>
-  <div>
-    {error && <div>Something seriously bad happened</div>}
-    {!error && <ApplicationList client:only="lit" />}
-  </div>
-</div>
+<script is:inline define:vars={{ pageData, componentData , application}}>
+  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
+  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
+  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
+  document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
+  document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
 
-<script define:vars={{ applications }}>
-  window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
 </script>
+<Layout title="Welcome to Astrolus.">
+
+  <MicroApp
+  .prod={true}
+  client:load
+  mode="preview"
+  uuid={dashboardAPPUUID}
+  page_uuid={dashboardAPPPageUUID}
+ ></MicroApp>
+</Layout>
+<style>
+  html {
+    background-color : var(--hybrid-page-background-color, #ffffff);
+
+  }
+  @media (prefers-color-scheme: dark) {
+      html {
+        --hybrid-tabs-content-background-color: #313131;
+         background: #313131;
+
+        color:#f8fafc;
+        background-color : var(--hybrid-page-background-color-dark, #313131);
+
+      }
+    }
+</style>

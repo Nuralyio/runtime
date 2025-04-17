@@ -1,9 +1,9 @@
-import { html, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/button";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 
@@ -14,31 +14,52 @@ export class InsertDropdownBlock extends BaseElementBlock {
   component: ComponentElement;
 
 
-  render() {
+  static override  styles = [
+    css`
+    hy-dropdown{
+      --hybrid-dropdown-padding: 7px;
+    }
+   `
+  ]
+
+
+  renderComponent() {
     return html`
       <hy-dropdown
+      style=${styleMap({ ...this.getStyles() , 
+    "--hybrid-icon-color": "#515151",
+        
+               })}
         trigger=${this.inputHandlersValue?.trigger ?? nothing}
         .options=${this.inputHandlersValue?.options ?? []}
         @click-item=${(e) => {
       if (this.component.event?.onClick) {
         executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`), {
-          value: e.detail.value
+          value: e.detail.value.value,
+          additionalData : e.detail.value.additionalData
         });
       }
     }
     }
       >
-        <hy-button
+        <!-- <hy-button
           .type=${this.inputHandlersValue.buttonType ?? nothing}
           .icon="${this.inputHandlersValue.buttonIcon ? [this.inputHandlersValue.buttonIcon] : nothing}"
           style=${styleMap({
-      "--hybrid-button-padding-y": "2px",
+              " --hybrid-button-height": "23px",
+               "--hybrid-button-margin-y":" -9px",
+      "--hybrid-button-padding-y": "1px",
       "--hybrid-button-padding-x": "2px",
       "--hybrid-button-ghost-border-color": "transparent",
       "--hybrid-button-ghost-background-color": "transparent"
     })}
-        >
-        </hy-button>
+        > qsd
+        </hy-button> -->
+        <hy-label
+        style=${styleMap({
+          "--resolved-text-label-color": this.getStyles()["title-color"],
+        })}
+        >${this.inputHandlersValue?.title}</hy-label>
       </hy-dropdown>
     `;
   }

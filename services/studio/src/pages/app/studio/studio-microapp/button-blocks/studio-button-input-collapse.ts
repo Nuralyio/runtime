@@ -4,7 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "button_collapse_container",
-    applicationId: "1",
+    application_id: "1",
     name: "position collapse container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -15,7 +15,7 @@ export default [
   },
   {
     uuid: "button_label_collapse",
-    applicationId: "1",
+    application_id: "1",
     name: "button collapse",
     component_type: ComponentType.Collapse,
     style: {
@@ -44,7 +44,7 @@ export default [
   },
   {
     uuid: "button_collapse_container_childrens",
-    applicationId: "1",
+    application_id: "1",
     name: "Button panel",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,

@@ -2,8 +2,6 @@ import { css } from "lit";
 
 export default css`
   :host{
-    display:block;
-    width:fit-content;
    }
   .resizer-line-top,
   .resizer-line-bottom,
@@ -73,16 +71,7 @@ export default css`
     border-left: 1px dashed var(--editor-selection-color, #b5b5b5);
   }
 
-  .element.selected .resizer-line-top,
-  .element.selected .resizer-line-bottom {
-    border-top: 1px solid var(--editor-selection-color, #79ade6);
-  }
-  .element.selected .resizer-line-right {
-    border-right: 1px solid var(--editor-selection-color, #79ade6);
-  }
-  .element.selected .resizer-line-left {
-    border-left: 1px solid var(--editor-selection-color, #79ade6);
-  }
+
 
   .element.hovered .resizer-line-top,
   .element.hovered .resizer-line-bottom {
@@ -97,7 +86,16 @@ export default css`
   }
 
 
-
+  .element.selected .resizer-line-top,
+  .element.selected .resizer-line-bottom {
+    border-top: 1px solid var(--editor-selection-color, #79ade6);
+  }
+  .element.selected .resizer-line-right {
+    border-right: 1px solid var(--editor-selection-color, #79ade6);
+  }
+  .element.selected .resizer-line-left {
+    border-left: 1px solid var(--editor-selection-color, #79ade6);
+  }
 
 
 

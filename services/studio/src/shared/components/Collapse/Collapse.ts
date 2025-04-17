@@ -1,4 +1,6 @@
-import { html, nothing } from "lit";
+// collapse-block.ts
+
+import { html, nothing, type PropertyValues } from "lit";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/collapse";
 import { customElement, state } from "lit/decorators.js";
@@ -6,19 +8,25 @@ import { renderComponent } from "@utils/render-util.ts";
 import type { ComponentElement } from "$store/component/interface.ts";
 import { $applicationComponents } from "$store/component/store.ts";
 import { styleMap } from "lit/directives/style-map.js";
+import { eventDispatcher } from "@utils/change-detection.ts";
 
 @customElement("collapse-block")
 export class Collapse extends BaseElementBlock {
+  @state()
+  private sections: any[] = [];
 
   @state()
-  sections = [];
+  private openStates: boolean[] = [];
 
   @state()
-  openStates = [];
+  private componentsWithChildren: ComponentElement[] = [];
 
-  @state()
-  componentsWithChildren: ComponentElement[] = [];
-
+  constructor() {
+    super();
+    this.registerCallback('components', ()=>{
+      this.updateComponents();
+    });
+  }
   override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
     if (changedProperties.has("component")) {
@@ -26,46 +34,52 @@ export class Collapse extends BaseElementBlock {
     }
   }
 
-  updateComponents() {
+  protected firstUpdated(_changedProperties: PropertyValues) {
 
-    $applicationComponents(this.component.applicationId).subscribe((components = []) => {
-      this.componentsWithChildren = [...components];
-      this.sections = this.generateSection().map((section, index) => {
-        section.open = this.openStates[index] ?? section.open;
-        return section;
-      });
-    });
+
+    super.firstUpdated(_changedProperties);
+    const application_id = this.component.application_id;
+    this.componentsWithChildren = $applicationComponents(application_id).get();
+  }
+
+  private updateComponents() {
+    this.sections = this.generateSection();
   }
 
   override render() {
     return html`
       <hy-collapse
-        style=${styleMap({
-      ...this.component.style
-    })}
-        .sections=${this.sections ?? nothing}
+        style=${styleMap(this.component.style)}
+        .sections=${[...this.sections]}
         .size=${this.inputHandlersValue?.size ?? nothing}
-        @section-toggled=${(e: CustomEvent) => {
-      this.openStates[e.detail.index] = !this.openStates[e.detail.index];
-    }}
-      >
-      </hy-collapse>
+        @section-toggled=${this.handleSectionToggled}
+      ></hy-collapse>
     `;
   }
 
-  private generateComponent(_children: string) {
-    const children = this.componentsWithChildren.filter(component => _children == component.uuid);
+  private handleSectionToggled(e: CustomEvent) {
+    const index = e.detail.index;
+    this.openStates[index] = !this.openStates[index];
+    this.sections[index].open = this.openStates[index];
+    this.requestUpdate();
+  }
+
+  private generateComponent(blockName: string) {
+    const children = this.componentsWithChildren.filter(
+      (component) => blockName === component.uuid
+    );
+    // Render directly without memoization
     return renderComponent(children, null, true);
   }
 
   private generateSection() {
-    return (this.inputHandlersValue.components)?.map((section: { label: any; blockName: string; open: boolean }) => {
+    const components = this.inputHandlersValue.components;
+    return components?.map(
+      (section: { label: any; blockName: string; open: boolean }, index: number) => {
         return {
           header: section.label,
-          content: html`
-            <div>${this.generateComponent(section.blockName)}</div>`,
-          open: section.open
-
+          content: html`<div>${this.generateComponent(section.blockName)}</div>`,
+          open: this.openStates[index] ?? section.open,
         };
       }
     );

@@ -6,7 +6,7 @@ export const StudioSelectHelperFontSize = [
 
   {
     uuid: "select_helper_font_size_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     style: {
@@ -16,7 +16,7 @@ export const StudioSelectHelperFontSize = [
   },
   {
     uuid: "helper_size_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -32,7 +32,7 @@ export const StudioSelectHelperFontSize = [
     uuid: "select_text_label_helper_font_size",
     name: "text_label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -51,7 +51,7 @@ export const StudioSelectHelperFontSize = [
   {
     uuid: "select_font_size_helper_input",
     name: "name",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     parameters: {
       value: "22px"
@@ -62,71 +62,53 @@ export const StudioSelectHelperFontSize = [
     },
     event: {
       valueChange:  /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            const unity = EventData.unity || "px"
-                            updateStyle(currentComponent, "--hybrid-select-helper-text-font-size", EventData.value+unity);
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const unity = EventData.unity || "px"
+        updateStyle(selectedComponent, "--hybrid-select-helper-text-font-size", EventData.value+unity);
                         
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }                 
   `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const fontSize =currentComponent?.style && currentComponent.style['--hybrid-select-helper-text-font-size']?.split('')
-                if(fontSize) 
-                    {
-                        let unity='';
-                        let value='';
-                        fontSize.forEach((char)=>
-                            {
-                            if(char>='0' && char<='9')
-                                value+=char 
-                            else 
-                            unity+=char
-                           }
-                        );
-                        return [+value,unity]
-                    }
-                    else 
-                      return [0,'px']
-            }
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+      const fontSize =  Editor.getComponentStyle(selectedComponent, "--hybrid-select-helper-text-font-size")?.split('')
+      if(fontSize) 
+          {
+              let unity='';
+              let value='';
+              fontSize.forEach((char)=>
+                  {
+                  if(char>='0' && char<='9')
+                      value+=char 
+                  else 
+                  unity+=char
+                  }
+              );
+              return [+value,unity]
+          }
+          else 
+            return [0,'px']
 
-        }catch(e){
-            console.log(e);
-        }
             `
       },
       state: {
         type: "handler",
         value:/* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    if(true) {
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['--hybrid-select-helper-text-font-size']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-select-helper-text-font-size']){
                          state='disabled'
                         }
                         return state
                     }
         
-                }catch(e){
-                    console.log(e);
-                } 
+                 
                 
                 `
       }
@@ -134,7 +116,7 @@ export const StudioSelectHelperFontSize = [
   },
   {
     uuid: "helper_size_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "helper size handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -146,7 +128,7 @@ export const StudioSelectHelperFontSize = [
   },
   {
     uuid: "helper_size_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -160,16 +142,12 @@ export const StudioSelectHelperFontSize = [
         value: /* js */`
                 const parameter ='helperSize';
                 let helperSizeHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    helperSizeHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    helperSizeHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['--hybrid-select-helper-text-font-size'] || ''  
+                
                 return [parameter,helperSizeHandler];
             `
       }
@@ -177,16 +155,12 @@ export const StudioSelectHelperFontSize = [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'--hybrid-select-helper-text-font-size',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'--hybrid-select-helper-text-font-size',EventData.value)
+            
       `
     }
   }

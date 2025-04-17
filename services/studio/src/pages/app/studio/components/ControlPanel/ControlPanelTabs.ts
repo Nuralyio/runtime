@@ -1,8 +1,8 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { $applicationComponents } from "$store/component/store.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
-import { $currentApplication } from "$store/apps.ts";
+import { $currentApplication, $editorState } from "$store/apps.ts";
 import { $context, getVar } from "$store/context.ts";
 
 /**
@@ -14,6 +14,8 @@ export class ParametersPanel extends LitElement {
    * Styles for the component
    */
   static styles = css`
+
+  :host{}
       /* ===============================
          Micro-App Styles
          =============================== */
@@ -68,23 +70,30 @@ export class ParametersPanel extends LitElement {
               --hybrid-select-focus-border: 1px solid #ffffff;
 
               /* Button Styles (Dark Mode) */
-              --hybrid-button-border-left: 1px solid #a8a8a8;
-              --hybrid-button-border-right: 1px solid #a8a8a8;
-              --hybrid-button-border-top: 1px solid #a8a8a8;
-              --hybrid-button-border-bottom: 1px solid #a8a8a8;
-              --hybrid-button-background-color: #212121;
+              --hybrid-button-border-left: 1px solid #272626;
+              --hybrid-button-border-right: 1px solid #272626;
+              --hybrid-button-border-top: 1px solid #272626;
+              --hybrid-button-border-bottom: 1px solid #272626;
+              --hybrid-button-background-color: #494949;
               --hybrid-button-text-color: #ffffff;
-              --hybrid-button-primary-background-color: #6d6c6c;
-              --hybrid-button-primary-border-color: #a8a8a8;
-              --hybrid-button-primary-hover-border-color: #a8a8a8;
-              --hybrid-button-primary-hover-background-color: #494949;
+              --hybrid-button-primary-background-color: #212121;
+              --hybrid-button-primary-border-color: #212121;
+              --hybrid-button-primary-hover-border-color: #212121;
+              --hybrid-button-hover-border-color : #212121;
+              --hybrid-button-active-border-color: #212121;
+              --hybrid-button-active-background-color: #212121;
+              --hybrid-button-primary-hover-border-color: #212121;
+              --hybrid-button-primary-hover-background-color: #212121;
+              --hybrid-button-hover-background-color: #3b3b3b;
               /* Collapse Styles (Dark Mode) */
               --hy-collapse-border: 1px solid #a8a8a8;
               --hy-collapse-header-hover-background-color: #3a3a3a;
               --hy-collapse-header-collapsed-background-color: #3a3a3a;
-
+              --hybrid-button-hover-color: #ffffff;
               --hybrid-select-options-background-color: #0a0a0a;
+
           }
+         
       }
   `;
 
@@ -93,6 +102,7 @@ export class ParametersPanel extends LitElement {
    */
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];
+  @state() currentTab = {  };
 
   /**
    * Constructor
@@ -113,14 +123,21 @@ export class ParametersPanel extends LitElement {
    * Set up subscriptions for state management
    */
   setupSubscriptions() {
-    $context.subscribe(() => {
-      const selectedComponentIds = (getVar("global", "selectedComponents")?.value || []);
-      $applicationComponents($currentApplication.get().uuid).subscribe((components: ComponentElement[]) => {
-        const selectedComponents = components.filter((component: ComponentElement) =>
-          selectedComponentIds.includes(component.uuid)
-        );
-        this.selectedComponent = selectedComponents.length ? { ...selectedComponents[0] } : null;
-      });
+    // $context.subscribe(() => {
+    //   const selectedComponentIds = (getVar("global", "selectedComponents")?.value || []);
+    //   $applicationComponents($currentApplication.get()?.uuid).subscribe((components: ComponentElement[]) => {
+    //     const selectedComponents = components.filter((component: ComponentElement) =>
+    //       selectedComponentIds.includes(component.uuid)
+    //     );
+    //     this.selectedComponent = selectedComponents.length ? { ...selectedComponents[0] } : null;
+    //   });
+    // });
+
+    $editorState.subscribe((editorState) => {
+      setTimeout(() => {
+        this.currentTab = editorState.currentTab;
+        this.requestUpdate()
+      }, 0);
     });
   }
 
@@ -129,7 +146,12 @@ export class ParametersPanel extends LitElement {
    */
   render() {
     return html`
+      ${this.currentTab && this.currentTab.type === "page" ? html`
       <micro-app uuid="1" componentToRenderUUID="right_panel_tabs"></micro-app>
+      ` : nothing}
+      ${this.currentTab && this.currentTab.type === "function" ? html`
+      <micro-app uuid="1" componentToRenderUUID="right_panel_function_tabs"></micro-app>
+      ` : nothing}
     `;
   }
 }

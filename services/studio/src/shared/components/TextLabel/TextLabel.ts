@@ -1,29 +1,17 @@
 import { type ComponentElement } from "$store/component/interface.ts";
-import { html, nothing } from "lit";
+import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
-import { getNestedAttribute } from "@utils/object.utils.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
-import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
+import { ref, } from "lit/directives/ref.js";
 import "@nuralyui/label";
-import { setHoveredComponentIdAction } from "$store/actions/component/setHoveredComponentIdAction.ts";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
   static styles = styles;
   @property({ type: Object })
   component: ComponentElement;
-  @state()
-  currentPageViewPort: string;
-  @state()
-  viewPortStyles: any;
-  @state()
-  components: ComponentElement[];
-
-  @property({ type: Boolean })
-  isViewMode = true;
 
   @property({ type: Object })
   item: any;
@@ -31,104 +19,53 @@ export class TextLabelBlock extends BaseElementBlock {
   @state()
   isEditable = false;
 
-  @state()
-  hoveredComponent: ComponentElement;
+
   constructor() {
     super();
-    this.registerCallback("value", (value: any) => {
-      //this.requestUpdate();
-    });
+
+  
     this.registerCallback("innerAlignment", (value: any) => {
-      if(this.closestGenericComponentWrapper){
-      if(this.inputHandlersValue?.innerAlignment === "end") {
-        this.closestGenericComponentWrapper.style.marginLeft = "auto";
-      }else{
-        this.closestGenericComponentWrapper.style.marginLeft = "unset";
-      }}
-    } );
-  }
-  override async connectedCallback() {
-    await super.connectedCallback();
-    const labelStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
-      : {};
-
+      if (this.closestGenericComponentWrapper) {
+        if (this.inputHandlersValue?.innerAlignment === "end") {
+          this.closestGenericComponentWrapper.style.marginLeft = "auto";
+        } else {
+          this.closestGenericComponentWrapper.style.marginLeft = "unset";
+        }
+      }
+    });
   }
 
-  renderView() {
-    const labelStyles = this.component?.style || {};
-    const labelStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
-      : {};
-    const labelAutoWidth = this.inputHandlersValue?.width;
-    const labelAutoHeight = this.inputHandlersValue?.height;
 
-    const combinedStyles = {
-      ...labelStyles,
-      width: labelAutoWidth ? "auto" : labelStyles.width,
-      height: labelAutoHeight ? "auto" : labelStyles.height,
-      ...labelStyleHandlers
-    };
-
+  override renderComponent() {
     return html`
-      ${!this.inputHandlersValue?.display || (this.inputHandlersValue.value && this.inputHandlersValue.display === "show")
-      ? html`
-          <hy-label
+    <!-- ${this.inputHandlersValue.value} -->
+     <hy-label
+     class="${`drop-${this.component.uuid}`}"
+     @input=${(e) => {
+       const eventData = { ['value']: { type: 'string', value: e.target.innerText } };
+      this.executeEvent("onInput", e, eventData);
+          // updateComponentAttributes(this.component.application_id, this.component.uuid, "input", eventData);
+     }}
+          ${ref(this.inputRef)}
             id=${this.component.uuid}
             contentEditable="${this.isEditable}"
-            style=${styleMap(combinedStyles)}
-            @click=${() => {
-        if (this.component.event?.onClick) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`),{}, this.item );
-        }
+            style=${styleMap({ ...this.getStyles(), "--text-label-font-size": this.getStyles().fontSize })}
+            @click=${(e) => {
+        this.executeEvent("onClick", e);
       }}
-            @mouseenter=${() => {
-        if (this.component?.event?.mouseEnter) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseEnter`));
-        }
+            @mouseenter=${(e) => {
+        this.executeEvent("onMouseEnter");
+
       }}
             @mouseleave=${() => {
-        if (this.component?.event?.mouseLeave) {
-          executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.mouseLeave`));
-        }
+        this.executeEvent("onMouseLeave");
+
       }}
-            @blur=${(e: Event) => {
-        this.isEditable = false;
-        const value = (e.target as HTMLElement).innerText;
-        updateComponentAttributes(this.component.applicationId, this.component.uuid, "input", {
-          value: {
-            type: "value",
-            value
-          }
-        });
-      }}
+      
             @dblclick=${(e) => {
         e.preventDefault();
         this.isEditable = true;
-      }}
-          >${this.inputHandlersValue.value || "Text label"}</hy-label>
-        `
-      : nothing}
-    `;
-  }
-
-  render() {
-    return html`
-      ${this.isViewMode
-      ? this.renderView()
-      : html`
-          <resize-wrapper
-            .component=${this.component}
-            @mouseenter="${() => {
-              setHoveredComponentIdAction(this.component?.uuid);
-            }}"
-            @mouseleave="${() => {
-              setHoveredComponentIdAction(null);
-            }}"
-          >
-            ${this.renderView()}
-          </resize-wrapper>
-        `}
+      }}>${this.inputHandlersValue.value || "Text label"} </hy-label>
     `;
   }
 }

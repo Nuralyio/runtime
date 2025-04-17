@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, SelectTheme } from "../../../utils/common-edi
 export const StudioContainerInputDirection = [
   {
     uuid: "table_direction_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -16,7 +16,7 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -31,7 +31,7 @@ export const StudioContainerInputDirection = [
     uuid: "table_direction_label",
     name: "button type label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -48,43 +48,35 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_select",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Select,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "button type select",
     input: {
       placeholder: {
-        type: "handler",
-        value: /* js */`
-                const placeholder = 'Direction';
-                return placeholder;
-                `
+        type: "string",
+        value: 'Direction'
       },
       value: {
         type: "handler",
         value: /* js */ `
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                let currentType = currentComponent?.style?.type || 'default';
-                console.log('currentType',currentType);
-                const options = [
-                    { label: "Vertical", value: "vertical" },
-                    { label: "Horizontal", value: "horizontal" },
-                ];
-                const result = [options, [currentType]];
-                return result;
+              const options = [
+                { label: "vertical", value: "vertical" },
+                { label: "horizontal", value: "horizontal" },
+              ];
+              return [options, [[
+                Utils.first(Vars.selectedComponents)?.input?.direction?.value ?? "default"
+              ]]];
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                const selectedComponents = GetVar("selectedComponents") || [];
-                const selectedComponent = selectedComponents[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
+                const selectedComponent = Utils.first(Vars.selectedComponents);
                 let isDisabled = 'enabled';
-                if (currentComponent?.styleHandlers?.type) {
+                if (selectedComponent?.input?.direction?.type === 'handler' &&
+                  selectedComponent?.input?.direction?.value ) {
                     isDisabled = 'disabled';
                 }
                 return isDisabled;
@@ -97,24 +89,15 @@ export const StudioContainerInputDirection = [
     },
     event: {
       changed: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    const typeValue = EventData.value || 'default';
-                    console.log(EventData);
-                    updateInput(currentComponent, "direction", 'string',typeValue);
-                }
-            } catch (error) {
-                console.log(error);
-            }
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+              const typeValue = EventData.value || 'default';
+              updateInput(selectedComponent, "direction", 'string',typeValue);
             `
     }
   },
   {
     uuid: "table_direction_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "button type handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -127,7 +110,7 @@ export const StudioContainerInputDirection = [
   },
   {
     uuid: "table_direction_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -141,34 +124,21 @@ export const StudioContainerInputDirection = [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter = 'type';
-                let typeHandler = '';
-                try {
-                    const selectedComponents = GetVar("selectedComponents") || [];
-                    if (selectedComponents.length) {
-                        const selectedComponent = selectedComponents[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                        typeHandler = currentComponent?.styleHandlers?.type || '';
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                return [parameter, typeHandler];
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const handlerValue = selectedComponent?.input?.direction?.type === 'handler'
+                ? selectedComponent?.input?.direction.value
+                : '';
+                return ['direction', handlerValue];
                 `
       }
     },
     event: {
       codeChange: /* js */ `
-            try {
-                const selectedComponents = GetVar("selectedComponents") || [];
-                if (selectedComponents.length) {
-                    const selectedComponent = selectedComponents[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid);
-                    updateStyleHandlers(currentComponent, 'type', EventData.value);
-                }
-            } catch (error) {
-                console.log(error);
-            }
+
+      const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (selectedComponent && EventData.value !== selectedComponent?.input?.direction?.value) {
+          updateInput(selectedComponent, 'direction', 'handler', EventData.value);
+        }
             `
     }
   }

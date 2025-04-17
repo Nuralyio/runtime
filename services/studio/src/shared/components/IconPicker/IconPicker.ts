@@ -3,7 +3,7 @@ import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styles } from "./IconPicker.style.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
 import { EMPTY_STRING } from "@utils/constants.ts";
 import * as solidIcons from "@fortawesome/free-solid-svg-icons";
@@ -39,7 +39,6 @@ export class IconPicker extends BaseElementBlock {
 
   handleIconSelect(icon: string) {
     this.selectedIcon = icon === this.selectedIcon ? EMPTY_STRING : icon;
-    this.requestUpdate();
     this.dispatchEvent(new CustomEvent("icon-selected", { detail: icon }));
 
     if (this.component.event?.iconChanged) {

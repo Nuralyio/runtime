@@ -18,7 +18,6 @@ export async function fetchApplicationPagesById(headers: Record<string, string>,
       ...headers
     }
   });
-  console.log(id, response);
   if (!response.ok) {
     console.log(`Failed to fetch application pages: ${response.statusText}`);
     throw new ApplicationNotFound(`Failed to fetch application pages: ${response.statusText}`);

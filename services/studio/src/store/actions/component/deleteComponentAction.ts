@@ -5,8 +5,10 @@ import { deleteComponentActionHandler } from "$store/handlers/components/delete-
 import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { removeComponentToCurrentPageAction } from "$store/actions/page/removeComponentToCurrentPageAction.ts";
 
-export async function deleteComponentAction(componentId: string, applicationId: string) {
-  const components = $components.get()[applicationId];
+
+// todo: remove component from the parent
+export async function deleteComponentAction(componentId: string, application_id: string) {
+  const components = $components.get()[application_id];
 
   const componentToDelete = components.find(
     (component: ComponentElement) => component.uuid === componentId
@@ -25,7 +27,7 @@ export async function deleteComponentAction(componentId: string, applicationId: 
 
           // If the componentId was removed, dispatch the handler
           if (originalChildrenIds.length !== component.childrenIds.length) {
-            updateComponentHandler(component, applicationId);  // Dispatch the handler
+            updateComponentHandler(component, application_id);  // Dispatch the handler
           }
         }
       });
@@ -33,18 +35,18 @@ export async function deleteComponentAction(componentId: string, applicationId: 
       // Save the updated components to the store
       $components.set({
         ...$components.get(),
-        [applicationId]: components
+        [application_id]: components
       });
     }
 
     // Remove the component from the components store
     $components.set({
       ...$components.get(),
-      [applicationId]: components.filter(
+      [application_id]: components.filter(
         (component: ComponentElement) => component.uuid !== componentId
       )
     });
     await deleteComponentActionHandler(componentId);
-    eventDispatcher.emit("component:refresh");
+    eventDispatcher.emit("component:deleted");
   }
 }

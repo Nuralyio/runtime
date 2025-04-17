@@ -5,7 +5,7 @@ import { InputBlockContainerTheme, RadioButtonWithTwoOptionsTheme } from "../../
 export default [
   {
     uuid: "table_filter_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table filter block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -17,7 +17,7 @@ export default [
   },
   {
     uuid: "table_filter_radio_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table filter radio block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -33,16 +33,12 @@ export default [
     uuid: "table_filter_label",
     name: "table filter label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
-        type: "handler",
-        value:/* js */`
-                const filterLabel='Filter';
-                return filterLabel;
-                
-                `
+        type: "string",
+        value:'Filter'
       }
     },
     style: {
@@ -51,7 +47,7 @@ export default [
   },
   {
     uuid: "table_filter_radio",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.RadioButton,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -60,16 +56,16 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                
+                
                 let currentFilter="";
                 let isDisabled =false;
-                if(currentComponent.input?.filter?.type =="handler" && currentComponent.input?.filter?.value){
+                if(selectedComponent.input?.filter?.type =="handler" && selectedComponent.input?.filter?.value){
                     isDisabled =true
                 }
                 else 
-                currentFilter = currentComponent.input?.filter?.value || 'none';
+                currentFilter = selectedComponent.input?.filter?.value || 'none';
                 const options = 
                     [
                     {
@@ -94,23 +90,19 @@ export default [
     },
     event: {
       changed: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
                     const filterValue = EventData.value;
-                    updateInput(currentComponent,'filter','string',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }  
+                    updateInput(selectedComponent,'filter','string',EventData.value)
+              
       `
     }
   },
   {
     uuid: "table_filter_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "table filter handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -120,7 +112,7 @@ export default [
   },
   {
     uuid: "table_filter_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -134,18 +126,14 @@ export default [
         value: /* js */`
                 const parameter ='filter';
                 let filterHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        if(currentComponent?.input?.filter?.type =='handler' && currentComponent?.input?.filter?.value){
-                            filterHandler = currentComponent?.input?.filter?.value
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        if(selectedComponent.input?.filter?.type =='handler' && selectedComponent.input?.filter?.value){
+                            filterHandler = selectedComponent.input?.filter?.value
                         }
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
                 return [parameter,filterHandler];
             `
       }
@@ -153,17 +141,13 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    if(EventData.value != currentComponent?.input?.filter?.value)
-                    updateInput(currentComponent,'filter','handler',EventData.value);
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    if(EventData.value != selectedComponent.input?.filter?.value)
+                    updateInput(selectedComponent,'filter','handler',EventData.value);
+            
       `
     }
   }

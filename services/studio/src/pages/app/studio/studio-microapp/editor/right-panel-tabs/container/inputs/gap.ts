@@ -2,10 +2,10 @@ import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../helper/common_attributes.ts";
 import { InputBlockContainerTheme } from "../../../utils/common-editor-theme.ts";
 
-export const StudioContainerGapInput =  [
+export const StudioContainerGapInput = [
   {
     uuid: "gap_vertical_container",
-    applicationId: "1",
+    application_id: "1",
     name: "gap vertical container",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -14,13 +14,12 @@ export const StudioContainerGapInput =  [
     },
     childrenIds: [
       "gap_label",
-
       "gap_handler_block",
-      ]
+    ]
   },
   {
     uuid: "gap_handler_block",
-    applicationId: "1",
+    application_id: "1",
     name: "placeholder block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
@@ -29,13 +28,13 @@ export const StudioContainerGapInput =  [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["gap_input","gap_handler"]
+    childrenIds: ["gap_input", "gap_handler"]
   },
   {
     uuid: "gap_label",
     name: "gap label",
     component_type: ComponentType.TextLabel,
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
@@ -48,12 +47,11 @@ export const StudioContainerGapInput =  [
             `
       }
     }
-
   },
   {
     uuid: "gap_input",
     name: "gap input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -62,67 +60,34 @@ export const StudioContainerGapInput =  [
       size: "small"
     },
     event: {
-      valueChange:
-      /* js */ `
-                    try{
-                        const selectedComponens =  GetVar( "selectedComponents")||[];
-                        if( selectedComponens.length) {
-                            const selectedComponent = selectedComponens[0];
-                            const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                            updateStyle(currentComponent, "gap",EventData.value+'px');
-                        }
-                    }catch(error){
-                        console.log(error);
-                    }         `
-
+      valueChange: /* js */ `
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateStyle(selectedComponent, "gap", EventData.value + 'px');
+            `
     },
     input: {
       value: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                const height = currentComponent?.style&&currentComponent.style['gap']||0;
-                return height;
-                
-            }
-
-        }
-         catch(e){
-             console.log(e);
-          }
+              return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'gap') ?? 0
             `
       },
       state: {
         type: "handler",
         value: /* js */`
-            try{
-            const selectedComponens =  GetVar( "selectedComponents")||[];
-            if( selectedComponens.length) {
-                const selectedComponent = selectedComponens[0];
-                const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                let state ='enabled'
-                if(currentComponent?.styleHandlers && currentComponent?.styleHandlers['height']){
-                  state ='disabled'
-                }
-                return state;  
+            const selectedComponent = Utils.first(Vars.selectedComponents);
+            let state = 'enabled';
+            if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap']) {
+              state = 'disabled';
             }
-
-        }catch(e){
-            console.log(e);
-        }
+            return state;  
             `
       }
     }
   },
-
-
   {
     uuid: "gap_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -134,38 +99,19 @@ export const StudioContainerGapInput =  [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='gap';
-                let heightHandler=''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    heightHandler = currentComponent?.styleHandlers && currentComponent?.styleHandlers['gap'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
-                return [parameter,heightHandler];
+                const parameter = 'gap';
+                let heightHandler = '';
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                heightHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap'] || '';  
+                return [parameter, heightHandler];
             `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'height',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+              const selectedComponent = Utils.first(Vars.selectedComponents);
+              updateStyleHandlers(selectedComponent, 'gap', EventData.value);
       `
     }
   }
-
-
 ];

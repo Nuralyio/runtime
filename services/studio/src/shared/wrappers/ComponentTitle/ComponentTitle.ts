@@ -1,6 +1,5 @@
-import { type ComponentElement } from "$store/component/interface.ts";
-import { $context, getVar } from "$store/context.ts";
-import { css, html, LitElement } from "lit";
+import { ComponentType, type ComponentElement } from "$store/component/interface.ts";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { setDraggingComponentInfo } from "$store/actions/component/setDraggingComponentInfo.ts";
@@ -10,24 +9,24 @@ export class ComponentTitle extends LitElement {
   static styles = css`
     .component-name {
       position: absolute;
-      display: none;
-      z-index: 7;
+      /* z-index: 7; */
       padding: 1px;
-      background: #2395ff;
+   
       color: white;
       font-weight: 300;
       font-size: 14px;
       cursor: pointer;
       user-select: none;
-      margin-top: -20px;
+      margin-top: -22px;
     }
   `;
   @property({ type: Object })
   component: ComponentElement;
   @state()
-  selectedComponents: string[] = [];
-  @state()
   isDragInitiator = false;
+
+  @property({ type: Boolean })
+  display: Boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -35,9 +34,7 @@ export class ComponentTitle extends LitElement {
   }
 
   setupSubscriptions() {
-    $context.subscribe(() => {
-      this.selectedComponents = getVar("global", "selectedComponents")?.value || [];
-    });
+   
   }
 
   emitEvent(value: boolean) {
@@ -50,17 +47,31 @@ export class ComponentTitle extends LitElement {
   }
 
   render() {
-    const displayStyle = this.selectedComponents.includes(this.component.uuid) ? "block" : "none";
-
+   
     return html`
+    ${this.display ? html`
       <span
-        style=${styleMap({ display: displayStyle })}
         @mousedown=${this.handleMouseDown}
         @mouseup=${this.handleMouseUp}
         class="component-name"
       >
-        ${this.component.name}
+        <span style=${
+          styleMap({
+            padding:" 4px",
+            background: "#2395ff"
+          })
+        }> ${this.component.name} </span>
+        ${this.component.component_type ===ComponentType.Container && false ? html`
+        <micro-app
+      style=${styleMap({
+      })}
+    uuid="1" componentToRenderUUID="app_insert_top_bar2"> </micro-app>
+          `: nothing}
       </span>
+
+    `: nothing}
+    
+     
     `;
   }
 
@@ -70,8 +81,8 @@ export class ComponentTitle extends LitElement {
     setDraggingComponentInfo({
       componentId: this.component?.uuid,
       blockInfo: {
-        height: this.component.style.height,
-        width: this.component.style.width
+        height: this.component.style?.height,
+        width: this.component.style?.width
       }
     });
   }

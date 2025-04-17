@@ -4,7 +4,7 @@ import { property, state } from "lit/decorators.js";
 import "@nuralyui/checkbox";
 import "@nuralyui/slider-input";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "../../../utils/object.utils.ts";
 
 function debounce(func, wait = 100) {
@@ -72,18 +72,20 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
   @state()
   shadowBox = true;
   handleColorChange = debounce((e) => {
-    this.colorValue = e.detail.value;
-    this.boxShadow();
+	  this.colorValue = e.detail.value;
+	  if(e.detail.value!=this.colorValue){
+		this.boxShadow();
+	}
   });
 
   boxShadow() {
+	return
     const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
     if (this.component.event.boxShadowChanged) {
 
       const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.boxShadowChanged`), {
         value: shadowBox
       });
-      console.log(fn);
     }
   }
 
@@ -104,11 +106,10 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 		.disabled=${isDisabled}
 		.checked=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[4] : false} 
 		@checkbox-changed=${(e) => {
-      this.insetValue = e.detail.value;
-      this.boxShadow();
+			this.handleColorChange(e);
     }}
 		 >
-		${this.insetValue ? html`Disable` : html`Enable`} Shodow Box
+		${this.insetValue ? html`<hy-label>Disable</hy-label>` : html`<hy-label>Enable</hy-label>`}<hy-label> Shodow Box</hy-label>
 		</hy-checkbox>
 		<div>
 			<div style="display : flex">

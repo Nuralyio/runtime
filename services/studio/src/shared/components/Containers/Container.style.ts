@@ -2,38 +2,43 @@ import { css } from "lit";
 
 export default css`
   :host{
-      display: inline-block;
   }
-    .container {
+  .container {
+    --container-bg-color-local: var(--container-bg-color);
+
     display: flex;
     width: fit-content;
     min-height: 300px;
     flex-wrap: wrap;
-  }
-  .drag-over {
-    border: 1px dashed #c439ff;
-  }
+    background-color: var(--container-bg-color-local, var(--container-bg-color));
+}
 
-  .drop-zone {
-    width: 50px;
-    height: 100%;
-    display: none;
-    border: 2px dashed rgb(110 110 110);
-    z-index: -4;
-  }
-  .drop-zone-end-of-container-vertical {
-    margin-top: auto;
-  }
-  .drop-zone-end-of-container-horizontal {
-    margin-left: auto;
-  }
+.boxed{
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+}
+.container > * {
+}
   .vertical {
     flex-direction: column;
   }
+  .horizontal {
+}
+
+.horizontal > * {
+}
   .empty-message-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    height:100%
   }
+
+  @media (prefers-color-scheme: dark) {
+    .container {
+    --container-bg-color-local: var(--container-dark-bg-color,  var(--container-bg-color));
+  }
+}
+
 `;

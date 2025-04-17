@@ -5,11 +5,12 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/datepicker";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
+import { executeCodeWithClosure } from "../../../core/Kernel.ts";
 import { getNestedAttribute } from "@utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
 
 @customElement("date-picker-block")
-export class SelectBlock extends BaseElementBlock {
+export class DatepickertBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
@@ -24,16 +25,14 @@ export class SelectBlock extends BaseElementBlock {
     }
   };
 
-  render() {
-    const datepickerStyle = this.component?.style || {};
-    const datepickerAutoWidth = this.inputHandlersValue?.width;
+  renderComponent() {
     return html`
-      <span style=${styleMap({
-      ...datepickerStyle,
-      width: datepickerAutoWidth ? "auto" : datepickerStyle.width,
-      display: "block"
-    })}> 
         <hy-datepicker
+         ${ref(this.inputRef)}
+        style=${styleMap({
+      ...this.getStyles(),
+      "display" : this.getStyles().display ?? "block", 
+    })}
           .helper=${this.inputHandlersValue.helper ?? nothing}
           .label=${this.inputHandlersValue.label ?? nothing}
           .locale=${this.inputHandlersValue.locale ?? nothing}
@@ -44,7 +43,6 @@ export class SelectBlock extends BaseElementBlock {
           .fieldFormat=${this.inputHandlersValue.format ?? nothing}
           @date-change=${this.handleDateChange}
         ></hy-datepicker>
-      </span>
     `;
   }
 }

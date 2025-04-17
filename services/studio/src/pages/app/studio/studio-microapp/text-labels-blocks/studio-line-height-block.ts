@@ -4,14 +4,14 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 export default [
   {
     uuid: "line_height_block",
-    applicationId: "1",
+    application_id: "1",
     name: "Left panel",
     component_type: ComponentType.Container,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between",
-      "width": "290px"
+      "width": "276px"
     },
     childrenIds: ["text_label_line_height", "line_height_input", "line_height_handler"]
   },
@@ -20,86 +20,76 @@ export default [
     name: "text_label",
     component_type: ComponentType.TextLabel,
 
-    applicationId: "1",
+    application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "90px"
     },
     input: {
       value: {
-        type: "handler",
-        value: /* js */`
-              return 'Line height';
-            `
+        type: "string",
+        value: 'Line height'
       }
     }
   },
   {
     uuid: "line_height_input",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.NumberInput,
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small",
-      width: "155px"
+      width: "100px"
     },
     styleHandlers: {},
     name: "Left panel",
     input: {
+      innerAlignment : {
+        type : "string", 
+        value : "end"
+      },
       value: {
         type: "handler",
         value: /* js */ `    
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                        const lineHeight= currentComponent?.styleHandlers && currentComponent.style['line-height']?.split('px')[0] || 0
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
+                        const lineHeight= selectedComponent?.styleHandlers && selectedComponent.style['line-height']?.split('px')[0] || 0
                         if(lineHeight)
                             return lineHeight;
                         else  
                         return 0       
-                    }
         
-                }catch(e){
-                    console.log(e);
-                }                
+                                
                 `
       },
       state: {
         type: "handler",
         value: /* js */`
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if(selectedComponens.length) {
-                        const selectedComponent = selectedComponens[0];
-                        const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                        
+                        
                         let state='enabled';
-                        if(currentComponent.styleHandlers && currentComponent.styleHandlers['line-height']){
+                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['line-height']){
                          state='disabled'
                         }
                         return state
-                    }
         
-                }catch(e){
-                    console.log(e);
-                }      
+                      
                 
                 `
       }
     },
     event: {
       valueChange:  /* js */ `
-                  try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyle(currentComponent, "line-height", EventData.value+'px');
-                }
-            }catch(error){
-                console.log(error);
-            }     
+                  
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyle(selectedComponent, "line-height", EventData.value+'px');
+                 
       `
 
     }
@@ -107,7 +97,7 @@ export default [
 
   {
     uuid: "line_height_handler",
-    applicationId: "1",
+    application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
@@ -121,16 +111,12 @@ export default [
         value: /* js */`
                 const parameter ='lineHeight';
                 let lineHeightHandler =''
-                try{
-                    const selectedComponens =  GetVar( "selectedComponents")||[];
-                    if( selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    const currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)    
-                    lineHeightHandler= currentComponent?.styleHandlers && currentComponent?.styleHandlers['line-height'] || ''  
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+                
+                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                        
+                    lineHeightHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['line-height'] || ''  
+                
                 return [parameter,lineHeightHandler];
             `
       }
@@ -138,16 +124,12 @@ export default [
 
     event: {
       codeChange: /* js */ `
-            try{
-                const selectedComponens =  GetVar( "selectedComponents")||[];
-                if(selectedComponens.length) {
-                    const selectedComponent = selectedComponens[0];
-                    let currentComponent = GetComponent(selectedComponent, GetVar("currentEditingApplication").uuid)
-                    updateStyleHandlers(currentComponent,'line-height',EventData.value)
-                }
-            }catch(error){
-                console.log(error);
-            }
+            
+                const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
+                    
+                    updateStyleHandlers(selectedComponent,'line-height',EventData.value)
+            
       `
     }
   }

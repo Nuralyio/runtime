@@ -1,69 +1,69 @@
-import { css, html, nothing, type PropertyValues } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/button";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "$store/component/interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { executeCodeWithClosure } from "../../../core/executer.ts";
-import { getNestedAttribute } from "../../../utils/object.utils.ts";
-import { setVar } from "$store/context.ts";
+import { ref } from "lit/directives/ref.js";
+import "@nuralyui/button";
+
+
 
 @customElement("button-block")
 export class ButtonBlock extends BaseElementBlock {
   static styles = [
     css`
-    :host {
+      :host {
         --hybrid-button-icon-width: 19px;
-    }
-        
-    `
+      }
+    `,
   ];
+
   @property({ type: Object })
   component: ComponentElement;
+
   @state()
   display: any = false;
 
-
   override async connectedCallback() {
     await super.connectedCallback();
-    this.registerCallback("value", () => {
-      this.requestUpdate();
-    });
+    this.registerCallback("value", () => {});
   }
 
-  override updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (changedProperties.has("component")) {
-      if (this.component) {
-        if (!this.component.input?.show?.value) {
-          this.display = true;
-        }
-      }
-    }
-  }
-
-
-  render() {
-    const buttonStyles = this.component?.style || {};
-    const buttonStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component.styleHandlers).filter(([key, value]) => value)) : {};
-
+  renderComponent() {
+    const buttonStyles = this.getStyles();
     return html`
-  ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show" ? html`
-    <hy-button
-    .size=${buttonStyleHandlers?.size ? buttonStyleHandlers.size : buttonStyles?.size ? buttonStyles.size : nothing}
-    .type=${buttonStyleHandlers?.type ? buttonStyleHandlers.type : buttonStyles?.type ? buttonStyles.type : nothing}     
-    .disabled=${(this.inputHandlersValue.state == "disabled")}
-    .icon="${this.inputHandlersValue.icon ? [this.inputHandlersValue.icon] : nothing}"
-    .iconPosition=${this.inputHandlersValue.iconPosition ?? nothing}
-     @click=${() => {
-      if (this.component.event?.onClick) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`));
-      }
-    }}
-    style=${styleMap({ ...buttonStyles, ...buttonStyleHandlers })}
-      >${this.inputHandlersValue.label ?? "Button"}</hy-button
-    >` : nothing}
-`;
+            <hy-button
+              ${ref(this.inputRef)}
+              .size=${buttonStyles?.size
+                ? buttonStyles.size
+                : buttonStyles?.size
+                ? buttonStyles.size
+                : nothing}
+              .type=${buttonStyles?.type
+                ? buttonStyles.type
+                : buttonStyles?.type
+                ? buttonStyles.type
+                : nothing}
+              .disabled=${this.inputHandlersValue.state == "disabled"}
+              .icon="${this.inputHandlersValue.icon ? [this.inputHandlersValue.icon] : nothing}"
+              .iconPosition=${this.inputHandlersValue.iconPosition ?? nothing}
+              @mousedown=${(e) => {
+
+               this.executeEvent('onClick' , e)
+              }}
+              style=${styleMap({ ...this.getStyles() , 
+                "--hybrid-button-width": buttonStyles?.width,
+                "--hybrid-button-height": buttonStyles?.height,
+                "--hybrid-button-local-border-top-left-radius": buttonStyles?.["border-top-left-radius"] ?? "",
+                "--hybrid-button-local-border-top-right-radius": buttonStyles?.["border-top-right-radius"] ?? "",
+                "--hybrid-button-local-border-bottom-left-radius": buttonStyles?.["border-bottom-left-radius"] ?? "",
+                "--hybrid-button-local-border-bottom-right-radius": buttonStyles?.["border-bottom-right-radius"] ?? "",
+                "--hybrid-button-margin-y": buttonStyles?.["margin-top"] ?? "",
+
+               })}
+            >
+             <hy-label> ${this.inputHandlersValue.label ?? "Button"}</hy-label>
+            </hy-button>
+    `;
   }
 }
