@@ -24,6 +24,10 @@ services:
     extends:
       file: docker-compose-common.yml
       service: rabbitmq   
+  copilot:
+    extends:
+      file: docker-compose-common.yml
+      service: copilot   
 
   nginx:
     build:

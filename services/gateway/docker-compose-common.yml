@@ -58,10 +58,13 @@ services:
       KC_HOSTNAME: ${KC_HOSTNAME:-localhost} 
     ports:
       - 8080:8080
-    depends_on:
-      - postgres
-    volumes: 
-      - infinispan_data:/opt/keycloak/cache
+
+  copilot:
+    image: 058264075488.dkr.ecr.eu-central-1.amazonaws.com/copilot:main
+    environment:
+      MISTRAL_API_KEY: ix8kAONz0rQwUZdsKtDMny15Z2jbqH8W
+    ports:
+      - 6070:6070
   rabbitmq:
     image: "rabbitmq:management"
     environment:
