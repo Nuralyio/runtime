@@ -4,6 +4,8 @@ import { createRef, type Ref, ref } from "lit/directives/ref.js";
 
 // -- Monaco Editor Imports --
 import * as monaco from "monaco-editor";
+import { registerCompletion } from 'monacopilot';
+
 // @ts-ignore
 import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
 // @ts-ignore
@@ -116,6 +118,11 @@ export class CodeEditor extends LitElement {
       automaticLayout: true,
       readOnly: this.readonly ?? false,
     });
+    registerCompletion(monaco, this.editor, {
+      language: this.getLang(),
+      // Your API endpoint for handling completion requests
+      endpoint: '/api/v1/copilot/completion',
+  });
 
     // Listen for content changes and re-dispatch an event:
     this.editor.getModel()?.onDidChangeContent(() => {
