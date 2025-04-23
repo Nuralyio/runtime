@@ -1,8 +1,8 @@
 import { LitElement, html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { UploadFile } from './types';
-import { styles } from './styles';
-import { fileUtils } from './utils';
+import { UploadFile } from './types.js';
+import { styles } from './styles.js';
+import { fileUtils } from './utils.js';
 
 @customElement('nr-file-upload')
 export class FileUpload extends LitElement {
