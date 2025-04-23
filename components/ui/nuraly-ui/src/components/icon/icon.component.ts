@@ -5,16 +5,16 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {library, dom} from '@fortawesome/fontawesome-svg-core';
-import {far} from '@fortawesome/free-regular-svg-icons';
-import {fas} from '@fortawesome/free-solid-svg-icons';
+import { LitElement, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { library, dom } from '@fortawesome/fontawesome-svg-core';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
 library.add(fas, far);
 dom.watch();
 
-import {styles} from './icon.style.js';
-import {IconTypes, regularIconPack, solidIconPack} from './icon.types.js';
+import { styles } from './icon.style.js';
+import { IconTypes, regularIconPack, solidIconPack } from './icon.types.js';
 
 @customElement('hy-icon')
 export class HyIconElement extends LitElement {
