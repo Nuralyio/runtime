@@ -106,7 +106,6 @@ export class ElMeenuElement extends LitElement {
   static override styles = [
     css`
       :host {
-        width: 800px;
         display: flex;
         flex-direction: column;
         align-items: center;
