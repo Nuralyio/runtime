@@ -2,73 +2,55 @@ name: Publish Package to npmjs
 
 on:
   push:
-    branches:
-      - '**'
+    branches: ['**']
   pull_request:
-    branches:
-      - '**'
+    branches: ['**']
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js and NPM Registry
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies (APT)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libevent-2.1-7 libopus0 libwoff1 libharfbuzz-icu0 \
+            libgstreamer-plugins-base1.0-0 libgstreamer-gl1.0-0 \
+            libhyphen0 libmanette-0.2-0 libgles2 \
+            gstreamer1.0-libav libgstreamer-plugins-bad1.0-0
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build --if-present
+
       - name: Upload coverage results to Codecov.io
         uses: codecov/codecov-action@v2
         with:
-          token: ${{secrets.CODECOV_TOKEN}}
+          token: ${{ secrets.CODECOV_TOKEN }}
           version: 'v0.1.15'
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install browsers dependencies
-        run: sudo apt-get update &&  sudo apt-get install libevent-2.1-7 libopus0 libwoff1 libharfbuzz-icu0 libgstreamer-plugins-base1.0-0 libgstreamer-gl1.0-0  libhyphen0 libmanette-0.2-0 libgles2 gstreamer1.0-libav
-      - name: Install libgstreamer-plugins-bad1.0-0
-        run: sudo apt-get update && sudo apt-get install libgstreamer-plugins-bad1.0-0 -y
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build and Test
-        run: |
-          npm run build --if-present
-      #npm test
 
       - name: Publish Components
         run: |
-          npm i -g publish-if-not-published
-          cd dist/components/button && publish-if-not-published -- --access=public
-          cd ../datepicker && publish-if-not-published -- --access=public
-          cd ../icon && publish-if-not-published -- --access=public
-          cd ../input && publish-if-not-published -- --access=public
-          cd ../dropdown && publish-if-not-published -- --access=public
-          cd ../image && publish-if-not-published -- --access=public
-          cd ../tabs && publish-if-not-published -- --access=public
-          cd ../menu && publish-if-not-published -- --access=public
-          cd ../radio && publish-if-not-published -- --access=public
-          cd ../select && publish-if-not-published -- --access=public
-          cd ../tooltips && publish-if-not-published -- --access=public
-          cd ../colorpicker && publish-if-not-published -- --access=public
-          cd ../modal && publish-if-not-published -- --access=public
-          cd ../checkbox && publish-if-not-published -- --access=public
-          cd ../table && publish-if-not-published -- --access=public
-          cd ../slider-input && publish-if-not-published -- --access=public
-          cd ../collapse && publish-if-not-published -- --access=public
-          cd ../label && publish-if-not-published -- --access=public
-          cd ../divider && publish-if-not-published -- --access=public
-          cd ../canvas && publish-if-not-published -- --access=public
-          cd ../chatbot && publish-if-not-published -- --access=public
-          cd ../file-upload && publish-if-not-published -- --access=public
+          npm install -g publish-if-not-published
+          for dir in \
+            button datepicker icon input dropdown image tabs menu \
+            radio select tooltips colorpicker modal checkbox table \
+            slider-input collapse label divider canvas chatbot file-upload; do
+            cd dist/components/$dir
+            publish-if-not-published -- --access=public
+            cd - >/dev/null
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
