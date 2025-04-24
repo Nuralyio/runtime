@@ -109,6 +109,8 @@ export class FileUpload extends LitElement {
   private _onChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     if (target.files) {
+      this._dispatchEvent('files-change', { files: target.files });
+      
       this._handleFiles(target.files);
       target.value = ''; // Reset so same file can be selected again
     }
