@@ -13,7 +13,6 @@ import {choose} from 'lit/directives/choose.js';
 
 @customElement('hy-input')
 export class HyInputElement extends LitElement {
-  // W3C standards
 
   @property({type: Boolean, reflect: true})
   disabled = false;

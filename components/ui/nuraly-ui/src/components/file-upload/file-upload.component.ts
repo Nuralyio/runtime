@@ -14,6 +14,7 @@ export class FileUpload extends LitElement {
   @property({ type: String }) tip: string = '';
   @property({ type: Number }) limit: number = 0;
   @property({ type: Boolean }) preview: boolean = true;
+  @property({ type: Boolean }) generatePreviewOnUpload: boolean = false;
 
   @state() fileList: UploadFile[] = [];
   @state() isDragOver: boolean = false;
@@ -176,8 +177,7 @@ export class FileUpload extends LitElement {
         isImage
       };
 
-      // Create preview URL for images if preview is enabled
-      if (this.preview && isImage) {
+      if (this.preview && this.generatePreviewOnUpload && isImage) {
         fileObj.url = await fileUtils.createFilePreview(lastFile);
       }
 
@@ -206,8 +206,7 @@ export class FileUpload extends LitElement {
         isImage
       };
 
-      // Create preview URL for images if preview is enabled
-      if (this.preview && isImage) {
+      if (this.preview && this.generatePreviewOnUpload && isImage) {
         fileObj.url = await fileUtils.createFilePreview(file);
       }
 
