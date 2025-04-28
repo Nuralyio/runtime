@@ -1,6 +1,6 @@
 {
-  "name": "@nuralyui/file-upload",
-  "version": "0.0.5",
+  "name": "@nuralyui/document",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "type": "module",
