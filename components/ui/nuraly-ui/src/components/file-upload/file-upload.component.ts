@@ -98,6 +98,22 @@ export class FileUpload extends LitElement {
     this.showDragArea = false;
 
     if (e.dataTransfer?.files) {
+      this.dispatchEvent(
+        new CustomEvent(`files-changed`, {
+          detail: e.dataTransfer.files,
+          bubbles: true,
+          composed: true
+        })
+      );
+      
+      this.dispatchEvent(
+        new CustomEvent(`file-drop`, {
+          detail: { files: e.dataTransfer.files },
+          bubbles: true,
+          composed: true
+        })
+      );
+      
       this._handleFiles(e.dataTransfer.files);
     }
   };
@@ -109,19 +125,73 @@ export class FileUpload extends LitElement {
   private _onChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     if (target.files) {
-      this._dispatchEvent('files-change', { files: target.files });
+      this.dispatchEvent(
+        new CustomEvent(`files-changed`, {
+          detail: target.files,
+          bubbles: true,
+          composed: true
+        }
+      ));
       
       this._handleFiles(target.files);
-      target.value = ''; // Reset so same file can be selected again
+      target.value = ''; 
     }
   };
 
   private async _handleFiles(files: FileList) {
-    if (this.limit > 0 && this.fileList.length + files.length > this.limit) {
+    // Early check for multiple mode
+    if (this.multiple && this.limit > 0 && this.fileList.length + files.length > this.limit) {
       this._dispatchEvent('exceed', { files });
       return;
     }
+    
+    // If not multiple, keep only the last file
+    if (!this.multiple && files.length > 0) {
+      // Get the last file from the FileList
+      const lastFile = files[files.length - 1];
+      
+      // If preview modal is showing a preview from a file that's being replaced, close it
+      if (this.previewImage && this.fileList.some(file => file.url === this.previewImage)) {
+        this.previewImage = null;
+      }
+      
+      // If there are existing files, dispatch remove events for each one
+      const oldFiles = [...this.fileList];
+      for (const file of oldFiles) {
+        this._dispatchEvent('remove', { file });
+      }
+      
+      // Clear the file list
+      this.fileList = [];
+      
+      // Process only the last file
+      const isImage = fileUtils.isImageFile(lastFile);
+      const fileObj: UploadFile = {
+        name: lastFile.name,
+        size: fileUtils.formatFileSize(lastFile.size),
+        raw: lastFile,
+        status: 'ready',
+        percentage: 0,
+        uid: Date.now() + Math.random().toString(36).substring(2),
+        isImage
+      };
 
+      // Create preview URL for images if preview is enabled
+      if (this.preview && isImage) {
+        fileObj.url = await fileUtils.createFilePreview(lastFile);
+      }
+
+      this.fileList = [fileObj];
+      
+      this.requestUpdate();
+
+      // Emit file-selected event with the new file
+      this._dispatchEvent('select', { files: [fileObj], fileList: this.fileList });
+      
+      return;
+    }
+
+    // For multiple mode, process all files
     const newFiles: UploadFile[] = [];
 
     for (const file of Array.from(files)) {
@@ -222,7 +292,7 @@ export class FileUpload extends LitElement {
             ${this.tip ? html`<div class="upload-tip">${this.tip}</div>` : ''}
           </div>
         ` : html`
-          <button class="upload-button" @click=${this._onClick}>Upload File</button>
+        <hy-button  @click=${this._onClick}>Upload File</hy-button>
           ${this.tip ? html`<div class="upload-tip">${this.tip}</div>` : ''}
         `}
 
