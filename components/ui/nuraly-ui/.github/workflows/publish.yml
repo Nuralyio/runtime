@@ -45,8 +45,8 @@ jobs:
         run: |
           npm install -g publish-if-not-published
           for dir in \
-            button datepicker icon input dropdown image tabs menu \
-            radio select tooltips colorpicker modal checkbox table \
+            button datepicker icon input dropdown image tabs document menu \
+            radio select tooltips colorpicker modal checkbox video table \
             slider-input collapse label divider canvas chatbot file-upload; do
             cd dist/components/$dir
             publish-if-not-published -- --access=public

@@ -72,7 +72,13 @@ export const styles = css`
   transition: all 0.3s;
   padding: 8px;
   border-radius: 4px;
-  gap: 10px; /* Add consistent spacing between items */
+  gap: 8px; 
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0; 
+  flex-wrap: nowrap;
+  overflow: hidden;
+  max-width: 100%;
 }
 .file-item:hover {
   background-color: #f8f9fa;
@@ -83,17 +89,22 @@ export const styles = css`
   overflow: hidden;
   text-overflow: ellipsis;
   color: #606266;
-  min-width: 0;
+  min-width: 0; 
+  max-width: 100%;
+  word-break: break-all; 
+  width: 0;
 }
 .file-size {
   color: #909399;
   font-size: 12px;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
+  margin-left: 8px; 
+  white-space: nowrap;
 }
 .file-status {
   display: flex;
   align-items: center;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
 }
 .file-actions {
   display: flex;
@@ -200,6 +211,7 @@ export const styles = css`
 .file-container {
   width: 100%;
   position: relative;
+  overflow: hidden; /* Prevent child overflow */
 }
 
 /* Responsive styles */
@@ -225,6 +237,10 @@ export const styles = css`
       "actions actions";
     gap: 4px 8px;
     align-items: center;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden; /* Hide content that overflows */
   }
   .file-item > svg:first-child {
     grid-area: icon;
@@ -234,6 +250,13 @@ export const styles = css`
     grid-area: filename;
     margin: 0;
     padding: 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 0; /* Force shrinking to minimum width */
+    max-width: 100%; /* Ensure it doesn't exceed its container */
+    word-break: break-all; /* Break extremely long words if necessary */
+    flex: 1; /* Take available space */
   }
   .file-size {
     grid-area: size;
