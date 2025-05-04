@@ -93,6 +93,7 @@ import { StudioDropdown } from "./editor/right-panel-tabs/dropdown/index.ts";
 import { StudioRichTextEditor } from "./editor/right-panel-tabs/RichtextEditor/index.ts";
 import { StudioEmbed } from "./editor/right-panel-tabs/embed/index.ts";
 import { StudioLink } from "./editor/right-panel-tabs/link/index.ts";
+import { StudioFileUpload } from "./editor/right-panel-tabs/file-upload/index.ts";
 
 
 export default [
@@ -201,6 +202,17 @@ export default [
               childrends: {
                 type: "componentIdArray",
                 value: ["function_micro_app_block"]
+
+              }
+            },
+            {
+              label: {
+                type: "text",
+                value: "Files"
+              },
+              childrends: {
+                type: "componentIdArray",
+                value: ["files_micro_app_block"]
 
               }
             }
@@ -356,5 +368,6 @@ export default [
   ...StudioRichTextEditor,
   ...StudioDropdown,
   ...StudioEmbed,
-  ...StudioLink
+  ...StudioLink,
+  ...StudioFileUpload
 ];

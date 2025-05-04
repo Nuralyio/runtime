@@ -1,5 +1,11 @@
 import { ComponentType } from "$store/component/interface.ts";
-
+import { isServer } from "@utils/envirement";
+export let filesAppUUID = "" ;
+export let filesPageUUID = "" ;
+if(!isServer){
+ filesAppUUID = window.__MODULES_CONFIG__.files.app_uuid;
+ filesPageUUID = window.__MODULES_CONFIG__.files.left_file_component_uuid;
+}
 export default [{
   uuid: "331",
   application_id: "1",
@@ -22,7 +28,26 @@ export default [{
   childrenIds: ["left_panel_tabs"]
 },
 
-
+ {
+    application_id: "1",
+    uuid: "files_micro_app_block",
+    name: "function_micro_app",
+    component_type: ComponentType.MicroApp,
+    input: {
+      appUUID: {
+        type: "string",
+        value: filesAppUUID
+      },
+      componentToRenderUUID: {
+        type: "string",
+        value: filesPageUUID
+      },
+      mode: {
+        type: "string",
+        value: "preview"
+      }
+    },
+  },
 // pages component 
   {
     uuid: "pages_panel",
@@ -125,6 +150,7 @@ export default [{
             const newPage = {
                 name: "Page_" + (appPages.length + 1),
                 url: ("Page_" + (appPages.length + 1)).toLowerCase(),
+                description  : "",
                 component_ids : []
             };
             AddPage(newPage, currentEditingApplication.uuid).then(() => {

@@ -1,9 +1,15 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $applicationComponents } from "$store/component/store.ts";
 import { type ComponentElement } from "$store/component/interface.ts";
-import { $currentApplication, $editorState } from "$store/apps.ts";
-import { $context, getVar } from "$store/context.ts";
+import { $editorState } from "$store/apps.ts";
+import { isServer } from "@utils/envirement";
+
+ let filesAppUUID = "" ;
+ let rightMenuUUID = "" ;
+if(!isServer){
+ filesAppUUID = window.__MODULES_CONFIG__.files.app_uuid;
+ rightMenuUUID = window.__MODULES_CONFIG__.files.right_file_component_uuid;
+}
 
 /**
  * Control Panel Component
@@ -151,6 +157,9 @@ export class ParametersPanel extends LitElement {
       ` : nothing}
       ${this.currentTab && this.currentTab.type === "function" ? html`
       <micro-app uuid="1" componentToRenderUUID="right_panel_function_tabs"></micro-app>
+      ` : nothing}
+      ${this.currentTab && this.currentTab.type === "files" ? html`
+      <micro-app uuid=${filesAppUUID} componentToRenderUUID=${rightMenuUUID}></micro-app>
       ` : nothing}
     `;
   }

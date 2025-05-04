@@ -1,30 +1,42 @@
 import { persistentAtom } from "@nanostores/persistent";
-import { type ComponentElement, type DraggingComponentInfo } from "./interface";
+import { type ComponentElement } from "./interface";
 import { atom, computed, deepMap } from "nanostores";
-import studioComponents from "../../pages/app/studio/studio-microapp/studio-entrypoint.ts";
-import landingComponents from "../../pages/app/studio/studio-microapp/landing/landing-main-components";
 import { currentLoadedApplication } from "$store/ssr/server-data";
-import { extractChildresIds, fillApplicationComponents } from "./helper";
+import { fillApplicationComponents } from "./helper";
+import { eventDispatcher } from "@utils/change-detection";
 
 export interface ComponentStore {
   [key: string]: ComponentElement[];
 }
 
 const isServer = typeof window === "undefined";
-
 const initialStates = isServer ? [] : JSON.parse(window["__INITIAL_COMPONENT_STATE__"] ?? "[]");
 
-const initialState: ComponentStore = isServer ? {} : {
-  "1": studioComponents as any,
-  "landing": landingComponents as any
-};
+// Initialize with empty object
+const initialState: ComponentStore = isServer ? {} : {};
+
+// Conditionally import components only when on studio path
+if (!isServer) {
+  const isStudioPath = document.location.pathname.startsWith("/app/studio/");
+  
+  if (isStudioPath) {
+    // Dynamically import only when needed
+    import("../../pages/app/studio/studio-microapp/studio-entrypoint.ts").then(studioModule => {
+      $components.setKey("1", studioModule.default as any);
+      eventDispatcher.emit('component:refresh')
+    });
+    
+    import("../../pages/app/studio/studio-microapp/landing/landing-main-components").then(landingModule => {
+      $components.setKey("landing", landingModule.default as any);
+    });
+  }
+}
 
 if (currentLoadedApplication) {
   initialState[currentLoadedApplication.uuid] = initialStates;
 }
 
 export const $components = deepMap<ComponentStore>(initialState);
-
 export const $currentComponentId = persistentAtom<string>(
   "currentComponentId",
   null,
@@ -36,7 +48,6 @@ export const $currentComponentId = persistentAtom<string>(
 
 export const $hoveredComponentId = atom<string>(null);
 export const $hoveredComponent = atom<Object>(null);
-
 export const $draggingComponentInfo = atom<Object>(null)
 
 export const $applicationComponents = ($application_id: string) => computed(
@@ -59,7 +70,6 @@ export const $componentWithChildren = ($application_id: string) => computed(
   (components: ComponentElement[]) => fillApplicationComponents(components)
 );
 
-
 export const $selectedComponent = ($application_id: string) => computed(
   [$applicationComponents($application_id), $currentComponentId],
   (components: ComponentElement[], currentComponentId) =>
@@ -74,12 +84,9 @@ export const $componentsByUUIDs = ($application_id: string, uuids: string[]) => 
 
 export const $runtimeStyles = deepMap<{
   [key: string]: {
-      [key: string]: string;
+    [key: string]: string;
   }
-}>({
-  
-});
-
+}>({});
 
 export const setcomponentRuntimeStyleAttribute = (componentId: string, attribute: string, value: string) => {
   $runtimeStyles.setKey(componentId, {
@@ -87,8 +94,10 @@ export const setcomponentRuntimeStyleAttribute = (componentId: string, attribute
     [attribute]: value
   });
 }
+
 $runtimeStyles.subscribe((styles) => {
 })
+
 export const $runtimeStylescomponentStyleByID = ($componentId: string) => computed(
   [$runtimeStyles],
   (styles) => {

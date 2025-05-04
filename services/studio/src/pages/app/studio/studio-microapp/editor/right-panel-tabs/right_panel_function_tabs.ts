@@ -1,6 +1,7 @@
 import { ComponentType } from "$store/component/interface.ts";
+import { filesAppUUID, filesPageUUID } from "pages/app/studio/components/editor-micro-apps/left-panel.ts";
 import { COMMON_ATTRIBUTES } from "../../helper/common_attributes.ts";
-import FunctionBlocks from './function/index.ts'
+import FunctionBlocks from './function/index.ts';
 export default [{
   uuid: "right_panel_function_tabs",
   application_id: "1",
@@ -45,6 +46,26 @@ export default [{
       "flex-direction": "column"
     },
     childrenIds: ["right_panel_function_invoke"]
+  },
+   {
+    application_id: "1",
+    uuid: "files_micro__right_app_block",
+    name: "function_micro_app",
+    component_type: ComponentType.MicroApp,
+    input: {
+      appUUID: {
+        type: "string",
+        value: filesAppUUID
+      },
+      componentToRenderUUID: {
+        type: "string",
+        value: filesPageUUID
+      },
+      mode: {
+        type: "string",
+        value: "preview"
+      }
+    },
   },
   ...FunctionBlocks
   ];

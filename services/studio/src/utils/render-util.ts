@@ -37,6 +37,7 @@ import "@shared/components/Code/Code.ts";
 import "@shared/components/RichText/RichText.ts";
 import "@shared/components/EmbedURL/EmbedURL.ts";
 import "@shared/components/Link/Link.ts";
+import "@shared/components/FileUpload/FileUpload.ts";
 
 // Reusable templates for common components
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
@@ -73,6 +74,7 @@ const codeTemplate = (props: any, isViewMode: boolean)  => html`<code-block .isV
 const richTextTemplate = (props: any, isViewMode: boolean)  => html`<rich-text-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></rich-text-block>`;
 const embedURLTemplate = (props: any, isViewMode: boolean)  => html`<embed-url-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></embed-url-block>`;
 const linkTemplate = (props: any, isViewMode: boolean)  => html`<link-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></link-block>`;
+const fileUploadTemplate = (props: any, isViewMode: boolean)  => html`<file-upload-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></file-upload-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -85,11 +87,6 @@ const importExportTemplate = (props: any, isViewMode: boolean)  => html`
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
   return html`${template}`;
-  if (isViewMode) {
-    return html`${template}`;
-  }
-
-  return html`<generik-component-wrapper .component=${commonProps.component}>${template}</generik-component-wrapper>`;
 }
 
 function getComponentTemplate(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
@@ -166,6 +163,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return embedURLTemplate(commonProps, isViewMode);
     case ComponentType.Link:
       return linkTemplate(commonProps, isViewMode);
+    case ComponentType.FileUpload:
+      return fileUploadTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

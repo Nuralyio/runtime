@@ -51,6 +51,7 @@ export class ImageBlock extends BaseElementBlock {
       }
         .src=${imageSrc ?? nothing}
         .source=${this.inputHandlersValue.srouce ?? nothing}
+        .previewable=${this.inputHandlersValue.previewable ?? nothing}
         .fallback=${this.inputHandlersValue.fallback ?? nothing}
         .width=${imageStyleHandlers?.width ? imageStyleHandlers.width : imageStyles?.width}
         .height=${imageStyleHandlers?.height ? imageStyleHandlers?.height : imageStyles?.height}

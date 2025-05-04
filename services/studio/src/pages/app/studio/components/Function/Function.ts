@@ -11,6 +11,7 @@ import { ButtonTheme } from "../../studio-microapp/editor/utils/common-editor-th
 import { buildFunctionHandler } from "$store/handlers/functions/build-function-handler.ts";
 import { deployFunctionHandler } from "$store/handlers/functions/deploy-function-handler.ts";
 import { ExecuteInstance } from "core/Kernel.ts";
+import "../../../../../shared/components/CodeEditor/CodeEditor.ts";
 
 // debounce.ts
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
