@@ -132,6 +132,7 @@ export class BaseElementBlock extends LitElement {
     if(hash && this.id == hash){
       this.scrollToTarget();
     }
+
     // todo: subscribe only when component has id
     window.addEventListener('hashchange', () =>{
       const hash = window.location.hash.replace("#", "");
@@ -144,6 +145,14 @@ export class BaseElementBlock extends LitElement {
     this.traitInputsHandlers();
     this.traitStylesHandlers();
   })
+
+  eventDispatcher.on("Vars:currentEditingMode", (data) => {
+    if( getNestedAttribute(this.component, `event.onInit`)){
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, {...this.item});
+    }
+  })
+
+  
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
@@ -158,12 +167,16 @@ export class BaseElementBlock extends LitElement {
       if (input?.type === "handler") {
         return new Promise((resolve, reject) => {
           try {
-            const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value, undefined, this.item);
+            const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `input.${inputName}`).value, undefined, {...this.item});
             if (isPromise(fn)) {
               fn.then((result: any) => {
                 if (this.inputHandlersValue[inputName] !== result) {
                   this.inputHandlersValue[inputName] = result;
-                   this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = result;
+                  if(!this.ExecuteInstance.PropertiesProxy[this.component.name][inputName]){
+                    this.ExecuteInstance.PropertiesProxy[this.component.name] = {}
+                  }
+                  this.ExecuteInstance.PropertiesProxy[this.component.name][inputName] = result;
+
                 }                
                 this.inputHandlersValue[inputName] = result;
 

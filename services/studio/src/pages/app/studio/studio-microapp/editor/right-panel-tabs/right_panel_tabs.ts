@@ -217,6 +217,11 @@ export default {
                                     "studio_link_theme_container"
                                 ]
                                 break;
+                            case "file-upload" : 
+                            handlers =[
+                                "studio_FileUpload_handler"
+                            ] 
+                            break;
                     }
                 }
                 else if(currentPageId) {
