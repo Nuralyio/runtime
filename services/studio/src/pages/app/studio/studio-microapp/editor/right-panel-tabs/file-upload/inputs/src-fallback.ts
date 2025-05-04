@@ -4,20 +4,21 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-
 
 export default [
   {
-    uuid: "image_src_text_block",
+    uuid: "FileUpload_fallback_text_block",
     application_id: "1",
-    name: "image src text block",
+    name: "FileUpload fallback text block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["src_input_block", "src_handler_block"]
+
+    childrenIds: ["FileUpload_fallback_input_block", "fallback_handler_block"]
   },
   {
-    uuid: "src_input_block",
+    uuid: "FileUpload_fallback_input_block",
     application_id: "1",
-    name: "src block",
+    name: "FileUpload fallback block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -25,11 +26,11 @@ export default [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["label_image_src" ]
+    childrenIds: ["label_FileUpload_fallback"]
   },
   {
-    uuid: "label_image_src",
-    name: "label image src",
+    uuid: "label_FileUpload_fallback",
+    name: "label FileUpload fallback",
     component_type: ComponentType.TextLabel,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
@@ -38,41 +39,17 @@ export default [
     },
     input: {
       value: {
-        type: "string",
-        value:'Src'
+        type: "handler",
+        value: /* js */`
+               const label ='Fallback';
+             return label;
+            `
       }
     }
   },
   {
-    uuid: "label_image_src_file",
-    name: "label image src",
-    component_type: ComponentType.FileUpload,
-    application_id: "1",
-    ...COMMON_ATTRIBUTES,
-    style: {
-    },
-    input: {
-      value: {
-        type: "string",
-        value:'Src'
-      }
-    },
-    event:{
-      onFilesChanged :/* js */ `
-      (async () => {
-        const {files} = EventData;
-        const uploadedFile = await FileStorage.upload({ files });
-        const url = "/api/v1/storage/preview/" + uploadedFile.path;
-        const selectedComponent = Utils.first(Vars.selectedComponents);
-        updateInput(selectedComponent,'src','string',url);
-        console.log(url)
-      })();
-      `
-    }
-  },
-  {
-    uuid: "src_text_input",
-    name: "src text input",
+    uuid: "fallback_text_input",
+    name: "fallback text input",
     application_id: "1",
     component_type: ComponentType.TextInput,
     ...COMMON_ATTRIBUTES,
@@ -83,10 +60,11 @@ export default [
       valueChange:/* js */ `
                 
                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                    
                         
                         
-                        const newSrcText = EventData.value;
-                        updateInput(selectedComponent,'src','string',newSrcText);
+                        const newFallBack = EventData.value;
+                        updateInput(selectedComponent,'fallback','string',newFallBack);
                  
   `
     },
@@ -96,14 +74,12 @@ export default [
         value: /* js */`
             
             const selectedComponent = Utils.first(Vars.selectedComponents);
-            if(true) {
                 
                                     
-                if(selectedComponent.input?.src?.type == "value"){
-                const currentSrc=selectedComponent.input?.src?.value??'';
-                return currentSrc;
+                if(selectedComponent.input?.fallback?.type=="string"){
+                const currentFallback=  selectedComponent.input?.fallback?.value??'';
+                currentFallback;
                 }
-            }
 
         
             `
@@ -113,15 +89,13 @@ export default [
         value: /* js */`
             
             const selectedComponent = Utils.first(Vars.selectedComponents);
-            if(true) {
                 
                                     
                 let state = "unabled";
-                if(selectedComponent.input?.src?.type =="handler"&&selectedComponent.input?.src?.value){
+                if(selectedComponent.input?.fallback?.type =="handler"&&selectedComponent.input?.fallback?.value){
                    state = "disabled"
                }
                return state;
-            }
 
         
             `
@@ -129,32 +103,29 @@ export default [
       placeholder: {
         type: "handler",
         value: /* js */`
-                const inputPlaceHolder ="src";
+                const inputPlaceHolder ="fallback";
              return  inputPlaceHolder;
             `
       }
     }
   },
   {
-    uuid: "src_handler_block",
+    uuid: "fallback_handler_block",
     application_id: "1",
-    name: "src handler block",
+    name: "fallback handler block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
-    style: {
-      width: "187px"
-      
-    },
+    style: {},
 
-    childrenIds: ["src_text_input","label_image_src_file", "src_handler"]
+    childrenIds: ["fallback_text_input", "fallback_handler"]
   },
   {
-    uuid: "src_handler",
+    uuid: "fallback_handler",
     application_id: "1",
     component_type: ComponentType.Event,
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
-    name: "src handler",
+    name: "fallback handler",
     style: {
       display: "block"
     },
@@ -162,18 +133,18 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='src';
-                let srcHandler=''
+                const parameter ='fallback';
+                let fallbackHandler=''
                 
                     const selectedComponent = Utils.first(Vars.selectedComponents);
                     
                         
                         
-                        if(selectedComponent.input?.src?.type =='handler' && selectedComponent.input?.src?.value){
-                           srcHandler = selectedComponent.input?.src?.value
+                        if(selectedComponent.input?.fallback?.type =='handler' && selectedComponent.input?.fallback?.value){
+                           fallbackHandler = selectedComponent.input?.fallback?.value
                         }
                 
-                return [parameter,srcHandler];
+                return [parameter,fallbackHandler];
             `
       }
     },
@@ -182,14 +153,14 @@ export default [
       codeChange: /* js */ `
             
                 const selectedComponent = Utils.first(Vars.selectedComponents);
+                
                     
                     
-                    if(EventData.value != selectedComponent.input?.src?.value != EventData.value )
-                    updateInput(selectedComponent,'src','handler',EventData.value);
+                    if(EventData.value != selectedComponent.input?.fallback?.value != EventData.value )
+                    updateInput(selectedComponent,'fallback','handler',EventData.value);
             
       `
     }
   }
-
 
 ];

@@ -1,0 +1,34 @@
+import { customElement } from "lit/decorators.js";
+import { css, html } from "lit";
+import { BaseElementBlock } from "@shared/components/BaseElement.ts";
+import "@nuralyui/file-upload";
+
+@customElement("file-upload-block")
+export class FileUploadBlock extends BaseElementBlock {
+
+  static override styles = [
+    css`
+      :host {
+        display: block;
+      }
+    `
+  ];
+
+
+  override render() {
+    return html`
+      <nr-file-upload
+        accept="*/*"
+        drag
+        limit="5"
+        tip="JPG/PNG files up to 500kb"
+        @files-changed=${(e: CustomEvent) => {
+          const files: File[] = e.detail;
+          this.executeEvent('onFilesChanged', e, {
+            files
+          })
+        }}
+      ></nr-file-upload>
+    `;
+  }
+}

@@ -1,7 +1,7 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { isServer } from "utils/envirement";
-let functionAppUUID = "" ;
-let functionPageUUID = "" ;
+export let functionAppUUID = "" ;
+export let functionPageUUID = "" ;
 if(!isServer){
  functionAppUUID = window.__FUNCTION_APP_UUID__;
  functionPageUUID = window.__FUNCTION_PAGE_UUID__;

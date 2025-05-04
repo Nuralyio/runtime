@@ -1,6 +1,7 @@
 import "../Page/Page.ts";
 import "../Flow/Flow.ts";
 import "../Function/Function.ts";
+import "../Files/Files.ts";
 import "./EditorInteractivePanel.ts";
 import { $editorState } from "$store/apps.ts";
 import { css, html, LitElement } from "lit";
@@ -94,12 +95,14 @@ export class TabsPanel extends LitElement {
                                 </editor-interactive-panel>`
               });
               break;
-            case "datasource":
+            case "files":
               this.editableTabs.push({
                 id: tab.id,
-                label: `${tab.detail?.provider_type}/${tab.detail?.databasename} : ${tab.detail?.label}`,
+                label: tab.label,
                 content: html`
-                                <data-source-explorer .detail=${tab.detail}></data-source-explorer>`
+                                  <editor-interactive-panel>
+                                    <files-page .detail=${tab.detail}></files-page>
+                                </editor-interactive-panel>`
               });
               break;
           }

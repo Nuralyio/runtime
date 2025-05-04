@@ -24,6 +24,7 @@ import type { PageElement } from "$store/handlers/pages/interfaces/interface";
 import { deletePageAction } from "$store/actions/page/deletePageAction";
 import { updateSepecificApplication } from "$store/actions/application/updateApplication";
 import { loadFunctionsHandler } from "$store/handlers/functions/load-functions-handler";
+import { FileStorage } from "./Storage";
 const DEBUG = false;
 
 /**
@@ -259,6 +260,7 @@ class Executor {
   prepareClosureFunction(code: string): Function {
     if (!this.functionCache[code]) {
       this.functionCache[code] = new Function(
+        "FileStorage",
         "eventHandler",
         "Components",
         "Editor",
@@ -501,6 +503,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   const closureFunction = ExecuteInstance.prepareClosureFunction(code);
 
   return closureFunction(
+    FileStorage,
     eventDispatcher,
     PropertiesProxy,
     Editor,
