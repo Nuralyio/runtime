@@ -4,9 +4,9 @@ import { InputBlockContainerTheme, TextInputTheme } from "../../../utils/common-
 
 export default [
   {
-    uuid: "image_src_text_block",
+    uuid: "FileUpload_src_text_block",
     application_id: "1",
-    name: "image src text block",
+    name: "FileUpload src text block",
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {
@@ -25,11 +25,11 @@ export default [
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["label_image_src" ]
+    childrenIds: ["label_FileUpload_src" ]
   },
   {
-    uuid: "label_image_src",
-    name: "label image src",
+    uuid: "label_FileUpload_src",
+    name: "label FileUpload src",
     component_type: ComponentType.TextLabel,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
@@ -44,8 +44,8 @@ export default [
     }
   },
   {
-    uuid: "label_image_src_file",
-    name: "label image src",
+    uuid: "label_FileUpload_src_file",
+    name: "label FileUpload src",
     component_type: ComponentType.FileUpload,
     application_id: "1",
     ...COMMON_ATTRIBUTES,
@@ -146,7 +146,7 @@ export default [
       
     },
 
-    childrenIds: ["src_text_input","label_image_src_file", "src_handler"]
+    childrenIds: ["label_FileUpload_src_file"]
   },
   {
     uuid: "src_handler",

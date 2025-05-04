@@ -30,7 +30,8 @@ export const Insert = /* js */`
             value: {
               value: "Image",
               additionalData: {
-              action: "add",                style:{
+              action: "add",                
+              style:{
                   width: "100px",
                   height: "100px",
                 }
@@ -258,6 +259,22 @@ export const Insert = /* js */`
               },
             },
             icon: "list-ul",
+          },
+          {
+            label: "File Upload",
+            value: {
+              value: "file-upload",
+              additionalData: {
+              action: "add",                
+              input : {
+                  "label": {
+                      "type": "value",
+                      "value": " Check box"
+                  }
+              }
+              },
+            },
+            icon: "file-upload",
           },
           {
             label: "DatePicker",

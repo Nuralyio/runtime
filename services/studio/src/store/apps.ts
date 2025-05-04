@@ -60,10 +60,16 @@ export const $editorState = atom<{ currentTab: any, tabs: Tab[] }>( {
     label: "Page editor",
     type: "page"
   },
-  tabs: [{
+  tabs: [
+    {
     id: "0",
     label: "Page editor",
     type: "page"
+  },
+    {
+    id: "2",
+    label: "Files",
+    type: "files"
   },
    ]
 });

@@ -59,6 +59,7 @@ export class MicroApp extends LitElement {
    * Met à jour `componentsToRender` en fonction de la sélection actuelle.
    */
   private updateComponentsToRender(): void {
+
     this.componentsToRender = this.componentToRenderUUID
       ? this.components.filter((component) => component.uuid === this.componentToRenderUUID)
       : this.components;
@@ -68,8 +69,7 @@ export class MicroApp extends LitElement {
     super.connectedCallback();
     this.setupSubscriptions();
     if(!ExecuteInstance.Vars.currentPlatform){
-      console.log(ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform() )
-
+      ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform()
     }
     EditorInstance.setEditorMode(this.prod);
     this.initializeAppComponents();
@@ -167,7 +167,7 @@ private initializeAppComponents(): void {
 
     if (this.page) {
       console.log('Setting page_uuid to:', this.page);
-      this.page_uuid = this.page;
+      //this.page_uuid = this.page;
     }
 
     this.refreshComponent();

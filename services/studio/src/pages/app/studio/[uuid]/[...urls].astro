@@ -18,6 +18,22 @@ import { ApplicationNotFound } from "../../../../exceptions/ApplicationNotFound"
 const { title, uuid, urls = "" } = Astro.params;
 const functionAppUUID = process.env.FUNCTION_APP_UUID;
 const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
+const files_modules_config = process.env.FILES_MODULES_CONFIG;
+let  FILES_MODULES_CONFIG
+try{
+  if (files_modules_config) {
+     FILES_MODULES_CONFIG = JSON.parse(files_modules_config);
+    console.log('Parsed FILES_MODULES_CONFIG:', FILES_MODULES_CONFIG);
+  } else {
+    console.log('FILES_MODULES_CONFIG is not defined');
+  }
+} catch (error) {
+  console.error('Error parsing FILES_MODULES_CONFIG:', error);
+}
+const filesAppUUID = process.env.FILES_APP_UUID;
+const filesPageUUID = process.env.FILES_PAGE_UUID;
+const filesModulesConfig = FILES_MODULES_CONFIG;
+
 
 // TODO: handle error
 const processedHeaders = processHeaders(Astro.request.headers);
@@ -58,13 +74,18 @@ try {
 ---
 
 <head> <title>Nuraly - Editing {application?.name}</title> </head>
-<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID,functionPageUUID,  urls }}>
+<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID,functionPageUUID, filesAppUUID,filesPageUUID,filesModulesConfig, urls }}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
   window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
   window.__FUNCTION_APP_UUID__ = functionAppUUID;
   window.__FUNCTION_PAGE_UUID__ = functionPageUUID;
+  window.__MODULES_CONFIG__ = filesModulesConfig;
+
+  window.__FILES_APP_UUID__ = filesAppUUID;
+  window.__FILES_PAGE_UUID__ = filesPageUUID;
+
   window.__URL__ = urls;
 </script>
 <MakeLayout title="Make Apps">
