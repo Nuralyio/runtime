@@ -23,7 +23,7 @@ if (!isServer) {
     // Dynamically import only when needed
     import("../../pages/app/studio/studio-microapp/studio-entrypoint.ts").then(studioModule => {
       $components.setKey("1", studioModule.default as any);
-      eventDispatcher.emit('component:refresh:')
+      eventDispatcher.emit('component:refresh')
     });
     
     import("../../pages/app/studio/studio-microapp/landing/landing-main-components").then(landingModule => {
