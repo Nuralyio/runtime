@@ -15,14 +15,14 @@ export class HyDatePickerDemoElement extends LitElement {
 
   override render() {
     return html`
-       <hy-pdf-viewer 
+       <hy-document-viewer 
        previewable="true"
           id="url-viewer"
           src="http://localhost:7004/api/v1/storage/preview/my-folder%2FRNE%20Public.pdf"
           width="100%"
           height="500px"
           previewable
-        ></hy-pdf-viewer>
+        ></hy-document-viewer>
     `;
   }
 }

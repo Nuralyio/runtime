@@ -26,7 +26,7 @@ export class HyButtonElement extends LitElement {
   @property({type: Boolean})
   dashed = false;
 
-  @property({type: String})
+  @property({type: Array})
   icon!: string[];
 
   @property({reflect: true})
@@ -39,7 +39,7 @@ export class HyButtonElement extends LitElement {
         data-type="${this.type}"
         data-size=${this.size ? this.size : nothing}
         data-state="${this.loading ? 'loading' : nothing}"
-        class="${this.dashed ? 'button-dashed' : nothing}"
+        .class="${this.dashed ? 'button-dashed' : nothing}"
       >
         <span id="container">
           ${this.icon?.length ? html` <hy-icon name=${this.icon[0]}></hy-icon>` : nothing}
