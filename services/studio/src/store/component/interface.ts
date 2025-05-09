@@ -26,6 +26,8 @@ export const enum ComponentType {
   RichText = "rich-text",
   EmbedURL = "embed-url",
   Link = "link",
+  Document = "document",
+  Video = "video",
   FileUpload = "file-upload",
   RichTextEditor = "rich-text-editor",
   UsersDropdown = "UsersDropdown",

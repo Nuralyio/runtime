@@ -38,6 +38,8 @@ import "@shared/components/RichText/RichText.ts";
 import "@shared/components/EmbedURL/EmbedURL.ts";
 import "@shared/components/Link/Link.ts";
 import "@shared/components/FileUpload/FileUpload.ts";
+import "@shared/components/Document/Document.ts";
+import "@shared/components/Video/Video.ts";
 
 // Reusable templates for common components
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
@@ -75,6 +77,8 @@ const richTextTemplate = (props: any, isViewMode: boolean)  => html`<rich-text-b
 const embedURLTemplate = (props: any, isViewMode: boolean)  => html`<embed-url-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></embed-url-block>`;
 const linkTemplate = (props: any, isViewMode: boolean)  => html`<link-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></link-block>`;
 const fileUploadTemplate = (props: any, isViewMode: boolean)  => html`<file-upload-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></file-upload-block>`;
+const videoTemplate = (props: any, isViewMode: boolean)  => html`<video-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></video-block>`;
+const documentTemplate = (props: any, isViewMode: boolean)  => html`<document-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></document-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -165,6 +169,10 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return linkTemplate(commonProps, isViewMode);
     case ComponentType.FileUpload:
       return fileUploadTemplate(commonProps, isViewMode);
+    case ComponentType.Video:
+        return videoTemplate(commonProps, isViewMode);
+    case ComponentType.Document:
+        return documentTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

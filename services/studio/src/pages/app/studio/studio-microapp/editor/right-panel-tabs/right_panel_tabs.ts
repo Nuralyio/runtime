@@ -222,6 +222,23 @@ export default {
                                 "studio_FileUpload_handler"
                             ] 
                             break;
+                            
+                            case "video":
+                                parameters = [
+                                    "video_collapse_container"
+                                ]
+                                handlers=[
+                                    "studio_video_handler"
+                                ]
+                                break;
+                            case "document":
+                                parameters = [
+                                    "document_collapse_container"
+                                ]
+                                handlers=[
+                                    "studio_document_handler"
+                                ]
+                                break;
                     }
                 }
                 else if(currentPageId) {

@@ -39,6 +39,34 @@ export const Insert = /* js */`
             },
             icon: "image",
           },
+           {
+            label: "Video",
+            value: {
+              value: "video",
+              additionalData: {
+              action: "add",                
+              style:{
+                  width: "400px",
+                  height: "400px",
+                }
+              },
+            },
+            icon: "video",
+          },
+           {
+            label: "Document",
+            value: {
+              value: "document",
+              additionalData: {
+              action: "add",                
+              style:{
+                  width: "400px",
+                  height: "400px",
+                }
+              },
+            },
+            icon: "document",
+          },
         ]
 
         const applicationOptions = [

@@ -46,8 +46,6 @@ class Executor {
   private functionCache: Record<string, Function> = {};
   currentPlatform: any ;
 
-  Component: any = {};
-  listner: any = {};
   private listeners: Record<string, Set<string>> = {};
   private proxyCache: WeakMap<object, any> = new WeakMap();
   styleProxyCache = new WeakMap();
@@ -220,7 +218,6 @@ class Executor {
   }
 
   registerApplications() {
-    // console.log('registerApplications: ');
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
     const loadedApplications = $applications.get();
