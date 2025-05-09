@@ -39,7 +39,7 @@
     "@nuralyui/color-picker": "^0.0.2",
     "@nuralyui/datepicker": "^0.0.3",
     "@nuralyui/divider": "^0.0.1",
-    "@nuralyui/document": "^0.0.1",
+    "@nuralyui/document": "^0.0.2",
     "@nuralyui/dropdown": "^0.0.8",
     "@nuralyui/file-upload": "^0.0.6",
     "@nuralyui/icon": "^0.0.5",

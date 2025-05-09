@@ -94,6 +94,8 @@ import { StudioRichTextEditor } from "./editor/right-panel-tabs/RichtextEditor/i
 import { StudioEmbed } from "./editor/right-panel-tabs/embed/index.ts";
 import { StudioLink } from "./editor/right-panel-tabs/link/index.ts";
 import { StudioFileUpload } from "./editor/right-panel-tabs/file-upload/index.ts";
+import {StudioDocument} from "./editor/right-panel-tabs/document";
+import {StudioVideo} from "./editor/right-panel-tabs/video";
 
 
 export default [
@@ -369,5 +371,7 @@ export default [
   ...StudioDropdown,
   ...StudioEmbed,
   ...StudioLink,
-  ...StudioFileUpload
+  ...StudioFileUpload,
+    ...StudioDocument,
+    ...StudioVideo
 ];
