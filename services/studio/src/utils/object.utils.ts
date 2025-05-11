@@ -4,3 +4,12 @@ export function getNestedAttribute<T>(obj: Record<string, any>, path: string): a
   }, obj) as T | undefined;
 }
   
+export function hasOnlyEmptyObjects(error) {
+  if (!error || Object.keys(error).length === 0) {
+    return true; // The root object is empty
+  }
+
+  return Object.values(error).every(value =>
+    typeof value === 'object' && value !== null && Object.keys(value).length === 0
+  );
+}
