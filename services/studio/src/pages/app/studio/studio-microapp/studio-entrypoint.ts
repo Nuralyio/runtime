@@ -94,8 +94,8 @@ import { StudioRichTextEditor } from "./editor/right-panel-tabs/RichtextEditor/i
 import { StudioEmbed } from "./editor/right-panel-tabs/embed/index.ts";
 import { StudioLink } from "./editor/right-panel-tabs/link/index.ts";
 import { StudioFileUpload } from "./editor/right-panel-tabs/file-upload/index.ts";
-import {StudioDocument} from "./editor/right-panel-tabs/document";
-import {StudioVideo} from "./editor/right-panel-tabs/video";
+import { StudioDocument } from "./editor/right-panel-tabs/document";
+import { StudioVideo } from "./editor/right-panel-tabs/video";
 
 
 export default [
@@ -148,8 +148,17 @@ export default [
     component_type: ComponentType.Tabs,
 
     event: {
-      valueChange: `
-        updateStyle(app1.text_label, "color", EventData.value);
+      onTabChanged: /* js */ `
+        if (EventData.tab.key === "files") {
+          let filesTabs = Editor.Tabs.find(tab => tab.type === "files");
+          
+          if (!filesTabs) {
+            filesTabs = { id: "files", label: "Files", type: "files" };
+            openEditorTab(filesTabs);
+          }
+          
+          setCurrentEditorTab(filesTabs);
+        }
       `
 
     },
@@ -177,8 +186,9 @@ export default [
             {
               label: {
                 type: "text",
-                value: "Pages"
+                value: "Pages",
               },
+              key : "pages",
               childrends: {
                 type: "componentIdArray",
                 value: ["pages_panel"]
@@ -199,8 +209,9 @@ export default [
             {
               label: {
                 type: "text",
-                value: "Functions"
+                value: "Functions",
               },
+              key : "functions",
               childrends: {
                 type: "componentIdArray",
                 value: ["function_micro_app_block"]
@@ -210,8 +221,9 @@ export default [
             {
               label: {
                 type: "text",
-                value: "Files"
+                value: "Files",
               },
+              key : "files",
               childrends: {
                 type: "componentIdArray",
                 value: ["files_micro_app_block"]
@@ -220,7 +232,8 @@ export default [
             }
           ]
       }
-    }
+    },
+   
   },
   {
     uuid: "text_label_handlers_collapse_container",
