@@ -1,6 +1,7 @@
 import { eventDispatcher } from "@utils/change-detection";
 import { isServer } from "utils/envirement";
 import { ExecuteInstance } from "./Kernel";
+import { $editorState } from "$store/apps";
 
 class Editor {
   components: any[] = [];
@@ -13,6 +14,7 @@ class Editor {
   isEditorMode: boolean = false;
   Vars: any = {};
   currentSelection: any[] = []
+  Tabs: any[] = [];
 
   constructor() {
     if (!isServer) {
@@ -21,6 +23,10 @@ class Editor {
     eventDispatcher.on('Vars:currentPlatform', (data) => {
       this.currentPlatform = {...ExecuteInstance.Vars.currentPlatform};
     })
+    $editorState.subscribe(() =>{
+      this.Tabs = $editorState.get().tabs;
+    })
+
   }
 
   private handleResize = () => {

@@ -22,14 +22,14 @@ export class TabsBlock extends BaseElementBlock {
   @state()
   private componentsWithChildren: ComponentElement[] = [];
 
- constructor(){
-  super()
-  this.registerCallback('tabs' , ()=>{
-    this.updateComponents();
-    this.editableTabs = this.generateTabs();
-  })
- }
-  override async  update(changedProperties: Map<string | number | symbol, unknown>) {
+  constructor() {
+    super()
+    this.registerCallback('tabs', () => {
+      this.updateComponents();
+      this.editableTabs = this.generateTabs();
+    })
+  }
+  override async update(changedProperties: Map<string | number | symbol, unknown>) {
     super.update(changedProperties);
     if (changedProperties.has("component")) {
       this.updateComponents();
@@ -47,12 +47,18 @@ export class TabsBlock extends BaseElementBlock {
     })}
           .activeTab=${this.inputHandlersValue.index ?? 0}
           .tabs=${this.editableTabs}
+          @tabTilteClick=${(e: CustomEvent) => {
+            //@todo pass the object
+          this.executeEvent('onTabChanged', e, {
+            tab: this.editableTabs.find((tab, index) => index === e.detail.index),
+          });
+        }}
           .editable=${{
-      canDeleteTab: false,
-      canEditTabTitle: false,
-      canAddTab: false,
-      canMove: false
-    }}
+          canDeleteTab: false,
+          canEditTabTitle: false,
+          canAddTab: false,
+          canMove: false
+        }}
         ></hy-tabs>
       ` : EMPTY_STRING}
     `;
@@ -66,14 +72,15 @@ export class TabsBlock extends BaseElementBlock {
   private generateTabs() {
     return (this.inputHandlersValue.tabs)?.map(tab => ({
       label: tab.label.value,
+      key: tab.key,
       content: html`
         <div>${this.generateComponent(tab.childrends.value)}</div>`
     }));
   }
 
   private updateComponents() {
-    const  components  = $applicationComponents(this.component.application_id).get();
-      this.componentsWithChildren = [...components];
-      this.editableTabs = this.generateTabs();
+    const components = $applicationComponents(this.component.application_id).get();
+    this.componentsWithChildren = [...components];
+    this.editableTabs = this.generateTabs();
   }
 }
