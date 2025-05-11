@@ -16,53 +16,37 @@ import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts"
 import { addlogDebug } from "$store/actions/debug/store.ts";
 import { $debug } from "$store/debug.ts";
 import { Subscription } from "rxjs";
-
 import "./ZBase/HandlerComponentError.ts";
 
-
 export class BaseElementBlock extends LitElement {
-  @property({ type: Object })
-  component: ComponentElement;
-
-  @property({ type: Object , reflect: true})
-  item: any;
-  @property({ type: Boolean })
-  isViewMode = false;
-  @state()
-  inputHandlersValue: any = {};
-
-  @state()
-  stylesHandlersValue: any = {};
-
-  @state()
-  callbacks: any = {};
-
-  @state()
-  isEditable = false;
+  @property({ type: Object }) component: ComponentElement;
+  @property({ type: Object, reflect: true }) item: any;
+  @property({ type: Boolean }) isViewMode = false;
+  
+  @state() inputHandlersValue: any = {};
+  @state() stylesHandlersValue: any = {};
+  @state() callbacks: any = {};
+  @state() isEditable = false;
   @state() hoveredComponent: ComponentElement;
   @state() isDragInitiator = false;
-
-  @state()
-  closestGenericComponentWrapper: HTMLElement;
+  @state() closestGenericComponentWrapper: HTMLElement;
   @state() selectedComponent: ComponentElement;
   @state() draggingComponentInfo: DraggingComponentInfo;
-
-  @state()
-  currentSelection: any = [];
+  @state() currentSelection: any = [];
+  @state() calculatedStyles: any = {};
+  @state() isConnected2 = false;
+  @state() displayErrorPanel: any;
+  @state() errors: any = {};
+  @state() runtimeStyles: any = {};
+  @state() inputRef: Ref<HTMLInputElement> = createRef();
+  
   ExecuteInstance: any;
   currentPlatform: any;
-  @state()
-  calculatedStyles: any = {};
   componentStyles: any = {};
-  @state()
-  isConnected2 = false;
-
-  private subscription = new Subscription(); // Subscription management
-
-  @state()
-  inputRef: Ref<HTMLInputElement> = createRef();
+  private subscription = new Subscription();
   eventsManager = [];
 
+  // Bound event handlers
   private mouseEnterHandlerBound = this.mouseEnterHandler.bind(this);
   private mouseLeaveHandlerBound = this.mouseLeaveHandler.bind(this);
   private dragEnterHandlerBound = this.dragEnterHandler.bind(this);
@@ -72,18 +56,16 @@ export class BaseElementBlock extends LitElement {
   private selectComponentActionClickBound = (e) => {
     if (!this.isViewMode) {
       this.selectComponentAction(e);
-       e.preventDefault();
-       e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
     }
   };
 
-  @state()
-  displayErrorPanel: any;
-  @state()
-  errors: any = {};
-
-  @state()
-  runtimeStyles: any = {};
+  constructor() {
+    super();
+    this.ExecuteInstance = ExecuteInstance;
+    this.currentPlatform = ExecuteInstance.Vars.currentPlatform ?? getInitPlatform();
+  }
 
   registerCallback(inputName: string, callback: any) {
     this.callbacks[inputName] = callback;
@@ -93,41 +75,30 @@ export class BaseElementBlock extends LitElement {
     delete this.callbacks[inputName];
   }
 
-
-  constructor() {
-    super();
-    this.ExecuteInstance = ExecuteInstance;
-    this.currentPlatform = ExecuteInstance.Vars.currentPlatform ?? getInitPlatform();
-  }
-
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
     this.isConnected2 = true;
     this.traitInputsHandlers();
     this.traitStylesHandlers();
+    
     const hash = window.location.hash.replace("#", "");
-    if(hash && this.id == hash){
-      this.scrollToTarget();
-    }
+    if(hash && this.id == hash) this.scrollToTarget();
 
-    // todo: subscribe only when component has id
-    window.addEventListener('hashchange', () =>{
+    window.addEventListener('hashchange', () => {
       const hash = window.location.hash.replace("#", "");
-      if(hash && this.id == hash){
-        this.scrollToTarget();
+      if(hash && this.id == hash) this.scrollToTarget();
+    });
+
+    eventDispatcher.on("Vars:currentPlatform", () => {
+      this.traitInputsHandlers();
+      this.traitStylesHandlers();
+    });
+
+    eventDispatcher.on("Vars:currentEditingMode", () => {
+      if(getNestedAttribute(this.component, `event.onInit`)) {
+        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, {...this.item});
       }
-  });
-
-  eventDispatcher.on("Vars:currentPlatform", (data) => {
-    this.traitInputsHandlers();
-    this.traitStylesHandlers();
-  })
-
-  eventDispatcher.on("Vars:currentEditingMode", (data) => {
-    if( getNestedAttribute(this.component, `event.onInit`)){
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, {...this.item});
-    }
-  })
+    });
   }
 
   async traitInputHandler(input: any, inputName: string): Promise<void> {
@@ -140,8 +111,8 @@ export class BaseElementBlock extends LitElement {
       try {
         const rawValue = getNestedAttribute(this.component, `input.${inputName}`).value;
         const fn = executeCodeWithClosure(this.component, rawValue, undefined, { ...this.item });
-
         const result = Utils.isPromise(fn) ? await fn : fn;
+        
         if (this.inputHandlersValue[inputName] !== result) {
           this.inputHandlersValue[inputName] = result;
           proxy[this.component.name][inputName] = result;
@@ -166,16 +137,14 @@ export class BaseElementBlock extends LitElement {
 
   async traitInputsHandlers() {
     this.errors = {};
-    const breakpointInputs = Editor.getComponentBreakpointInputs(this.component);
-
     try {
       await Promise.all(
-          Object.entries(breakpointInputs).map(([inputName]) =>
-              this.traitInputHandler(
-                  Editor.getComponentBreakpointInput(this.component, inputName),
-                  inputName
-              )
+        Object.entries(Editor.getComponentBreakpointInputs(this.component)).map(
+          ([inputName]) => this.traitInputHandler(
+            Editor.getComponentBreakpointInput(this.component, inputName),
+            inputName
           )
+        )
       );
     } catch (e) {
       console.log(e);
@@ -212,9 +181,9 @@ export class BaseElementBlock extends LitElement {
     if (this.component?.styleHandlers) {
       this.stylesHandlersValue = {};
       await Promise.all(
-          Object.entries(this.component.styleHandlers).map(([name, style]) =>
-              this.traitStyleHandler(style, name)
-          )
+        Object.entries(this.component.styleHandlers).map(
+          ([name, style]) => this.traitStyleHandler(style, name)
+        )
       );
     }
     this.calculateStyles();
@@ -237,17 +206,15 @@ export class BaseElementBlock extends LitElement {
     }
 
     const { width, height, cursor, flex } = this.calculatedStyles;
-
     if (width && Utils.extractUnit(width) === "%") this.style.width = width;
     if (flex) this.style.flex = flex;
     if (cursor) this.style.cursor = cursor;
   }
 
-
   override async update(changedProperties: PropertyValueMap<any>) {
     super.update(changedProperties);
 
-    changedProperties.forEach( (_old, prop) => {
+    changedProperties.forEach((_old, prop) => {
       if (prop !== "component") return;
 
       const prev = changedProperties.get("component");
@@ -269,6 +236,7 @@ export class BaseElementBlock extends LitElement {
     this.selectComponentAction(e);
     e.preventDefault();
     e.stopPropagation();
+    
     const rect = this.inputRef.value?.getBoundingClientRect();
     if (rect) {
       Object.assign(e, {
@@ -283,54 +251,50 @@ export class BaseElementBlock extends LitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
+    
     if(!this.isViewMode) {
-    const sub2 = Utils.createStoreObservable($hoveredComponent).subscribe((hoveredComponent: any) => {
-      this.hoveredComponent = hoveredComponent;
-    });
-    this.subscription.add(sub2);
-
-    // @todo:eventleak
-   const sub3 = eventDispatcher.on('Vars:selectedComponents', ()=>{
-      this.currentSelection = Array.from(ExecuteInstance.Vars.selectedComponents ).map(
-        (c:any)=> c.uuid
+      this.subscription.add(
+        Utils.createStoreObservable($hoveredComponent).subscribe((hoveredComponent: any) => {
+          this.hoveredComponent = hoveredComponent;
+        })
       );
-      EditorInstance.currentSelection = this.currentSelection ;;
-    })
-    this.subscription.add(sub3)
-  }
-    const styleSubscription = $runtimeStylescomponentStyleByID(this.component?.uuid).subscribe((styles) => {
-      this.runtimeStyles = styles;
-      this.requestUpdate();
-    });
-    this.subscription.add(styleSubscription);
 
-    // Subscribe to component property changes
-    const propertySubscription = eventDispatcher.on(
-      `component-property-changed:${String(this.component.name)}`,
-      async() => {
-         this.traitInputsHandlers();
-        this.traitStylesHandlers();
-
-      }
+      this.subscription.add(
+        eventDispatcher.on('Vars:selectedComponents', () => {
+          this.currentSelection = Array.from(ExecuteInstance.Vars.selectedComponents).map((c:any) => c.uuid);
+          EditorInstance.currentSelection = this.currentSelection;
+        })
+      );
+    }
+    
+    // Subscribe to runtime styles
+    this.subscription.add(
+      $runtimeStylescomponentStyleByID(this.component?.uuid).subscribe((styles) => {
+        this.runtimeStyles = styles;
+        this.requestUpdate();
+      })
     );
-    this.subscription.add(propertySubscription);
 
-    // Subscribe to component updates
-    const updateSubscription = eventDispatcher.on(
-      `component-updated:${String(this.component.uuid)}`,
-      async (data) => {
+    // Subscribe to property changes and updates
+    this.subscription.add(
+      eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, async() => {
+        this.traitInputsHandlers();
+        this.traitStylesHandlers();
+      })
+    );
+    
+    this.subscription.add(
+      eventDispatcher.on(`component-updated:${String(this.component.uuid)}`, async () => {
         setTimeout(() => {
           this.traitInputsHandlers();
           this.traitStylesHandlers();
-        this.requestUpdate();
+          this.requestUpdate();
         }, 0);
-      }
+      })
     );
-    this.subscription.add(updateSubscription);
 
-    // Add event listeners using the bound references
+    // Set up event listeners
     this.closestGenericComponentWrapper = this.closest('generik-component-wrapper');
-
     this.eventsManager = [
       ["contextmenu", this.onContextMenuBound],
       ["mouseenter", this.mouseEnterHandlerBound],
@@ -344,62 +308,58 @@ export class BaseElementBlock extends LitElement {
     this.eventsManager.forEach(([event, handler]) => this.addEventListener(event, handler));
 
     // Subscribe to keydown events
-    const keydownSubscription = eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
-      if (key === "Enter") {
-        if (selectedComponents.length === 1 && this.component.uuid === selectedComponents[0]) {
+    this.subscription.add(
+      eventDispatcher.on("keydown", ({ key, selectedComponents }) => {
+        if (key === "Enter" && selectedComponents.length === 1 && 
+            this.component.uuid === selectedComponents[0]) {
           this.isEditable = true;
         }
-      }
-    });
-    this.subscription.add(keydownSubscription);
+      })
+    );
   }
+
   scrollToTarget() {
     if (this.inputRef.value) {
       this.inputRef.value.scrollIntoView({ behavior: 'smooth' });
     }
   }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
-
     this.subscription.unsubscribe();
-
     this.isConnected2 = false;
-
     this.eventsManager.forEach(([event, handler]) => this.removeEventListener(event, handler));
   }
 
-  private mouseEnterHandler(e: Event) {
-    if (!this.isViewMode) {
-      setHoveredComponentAction(this.component);
-    }
+  // Event handlers consolidated for brevity
+  private mouseEnterHandler() {
+    if (!this.isViewMode) setHoveredComponentAction(this.component);
   }
 
-  private mouseLeaveHandler(e: Event) {
-    if (!this.isViewMode) {
-      setHoveredComponentAction(null);
-    }
+  private mouseLeaveHandler() {
+    if (!this.isViewMode) setHoveredComponentAction(null);
+  }
+
+  private handleDragEvent(eventType: string) {
+    this.shadowRoot?.querySelectorAll('drag-wrapper')?.forEach(wrapper =>
+      wrapper.dispatchEvent(new CustomEvent(eventType, { bubbles: true, composed: true }))
+    );
   }
 
   private dragEnterHandler() {
-    this.shadowRoot?.querySelectorAll('drag-wrapper')?.forEach(wrapper =>
-        wrapper.dispatchEvent(new CustomEvent("drag-over-component", { bubbles: true, composed: true }))
-    );
+    this.handleDragEvent("drag-over-component");
   }
 
   private dropHandler() {
-    this.shadowRoot?.querySelectorAll('drag-wrapper')?.forEach(wrapper =>
-        wrapper.dispatchEvent(new CustomEvent("drag-leave-component", { bubbles: true, composed: true }))
-    );
+    this.handleDragEvent("drag-leave-component");
   }
 
   private dragLeaveHandler() {
-    this.shadowRoot?.querySelectorAll('drag-wrapper')?.forEach(wrapper =>
-        wrapper.dispatchEvent(new CustomEvent("drag-leave-component", { bubbles: true, composed: true }))
-    );
+    this.handleDragEvent("drag-leave-component");
   }
 
   protected get shouldDisplay(): boolean {
-    return ( this.inputHandlersValue?.display === undefined || this.inputHandlersValue?.display);
+    return (this.inputHandlersValue?.display === undefined || this.inputHandlersValue?.display);
   }
 
   renderComponent() {
@@ -408,19 +368,15 @@ export class BaseElementBlock extends LitElement {
 
   getStyles() {
     const width = Editor.getComponentStyle(this.component, "width");
-
     return {
       ...Editor.getComponentStyles(this.component),
       ...this.stylesHandlersValue,
-      width:
-        width === "auto"
-          ? "auto"
-          : Utils.extractUnit(width) === "%"
-          ? "100%"
-          : width ?? "auto",
+      width: width === "auto" ? "auto" : 
+             Utils.extractUnit(width) === "%" ? "100%" : width ?? "auto",
       ...this.runtimeStyles,
     };
   }
+
   executeEvent(eventName: string, event?: Event, data?: any) {
     if (this.isViewMode) {
       const code = this.component.event?.[eventName];
@@ -435,71 +391,13 @@ export class BaseElementBlock extends LitElement {
       return;
     }
   
-    if (eventName === "onClick" && event) {
-      this.selectComponentAction(event);
-    }
+    if (eventName === "onClick" && event) this.selectComponentAction(event);
   }
 
   selectComponentAction(_e: Event) {
     this.currentSelection = Array.from([this.component.uuid]);
-    EditorInstance.currentSelection = Array.from([this.component.uuid]);;
-    ExecuteInstance.VarsProxy.selectedComponents = Array.from([this.component])
-  }
-  protected render(): unknown {
-    if (!this.shouldDisplay) return nothing;
-    this.componentStyles = this.calculatedStyles || {};
-    const labelStyleHandlers = this.component?.styleHandlers
-      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
-      : {};
-
-    this.componentStyles = {
-      ...this.componentStyles,
-      ...labelStyleHandlers
-    };
-
-    return html`
-    ${!this.isViewMode ? html`
-      ${this.renderError()}
-      ${[0, undefined].includes(this.item?.index) ? html`
-        <component-title
-          @click=${(e) => this.executeEvent("onclick", e)}
-          @dragInit=${(e) => {
-            this.isDragInitiator = e.detail.value;
-            this.setAttribute("draggable", "true");
-          }}
-          @dragend=${() => { this.isDragInitiator = false; }}
-          .component=${this.component}
-          .selectedComponent=${{ ...this.selectedComponent }}
-          .display=${EditorInstance.currentSelection.includes(this.component.uuid)}
-        ></component-title>
-        <resize-wrapper
-          .hoveredComponent=${{ ...this.hoveredComponent }}
-          .isSelected=${EditorInstance.currentSelection.includes(this.component.uuid)}
-          .component=${{ ...this.component }}
-          .selectedComponent=${{ ...this.selectedComponent }}
-          .inputRef=${this.inputRef}
-          style="width: fit-content; height: fit-content;"
-        ></resize-wrapper>
-        <drag-wrapper
-          .where=${"before"}
-          .message=${"Drop before"}
-          .component=${{ ...this.component }}
-          .inputRef=${this.inputRef}
-          .isDragInitiator=${this.isDragInitiator}
-        ></drag-wrapper>
-      ` : nothing}
-    ` : nothing}
-    ${this.renderComponent()}
-    ${!this.isViewMode ? html`
-      <drag-wrapper
-        .where=${"after"}
-        .message=${"Drop after"}
-        .component=${{ ...this.component }}
-        .inputRef=${this.inputRef}
-        .isDragInitiator=${this.isDragInitiator}
-      ></drag-wrapper>
-    ` : nothing}
-  `;
+    EditorInstance.currentSelection = Array.from([this.component.uuid]);
+    ExecuteInstance.VarsProxy.selectedComponents = Array.from([this.component]);
   }
 
   renderError(): unknown {
@@ -507,19 +405,57 @@ export class BaseElementBlock extends LitElement {
     if (hasOnlyEmptyObjects(error ?? {})) return nothing;
   
     return html`
-      <div
-        @mouseenter=${() => this.displayErrorPanel = true}
-        @mouseleave=${() => this.displayErrorPanel = false}
-        style="position:absolute"
-      >
-        <hy-icon
-          name="info-circle"
-          style=" z-index: 1000;  --hybrid-icon-width: 20px; --hybrid-icon-height: 25px; --hybrid-icon-color: red; position: absolute; ">Error</hy-icon>
-        
-        ${this.displayErrorPanel ? html`
-          <handler-component-error-block .error=${error}></handler-component-error-block>
-        ` : nothing}
+      <div @mouseenter=${() => this.displayErrorPanel = true}
+           @mouseleave=${() => this.displayErrorPanel = false}
+           style="position:absolute">
+        <hy-icon name="info-circle" 
+                 style="z-index: 1000; --hybrid-icon-width: 20px; --hybrid-icon-height: 25px; --hybrid-icon-color: red; position: absolute;">Error</hy-icon>
+        ${this.displayErrorPanel ? html`<handler-component-error-block .error=${error}></handler-component-error-block>` : nothing}
       </div>
+    `;
+  }
+
+  protected render(): unknown {
+    if (!this.shouldDisplay) return nothing;
+    
+    this.componentStyles = this.calculatedStyles || {};
+    const labelStyleHandlers = this.component?.styleHandlers
+      ? Object.fromEntries(Object.entries(this.component?.styleHandlers)?.filter(([key, value]) => value))
+      : {};
+
+    this.componentStyles = {...this.componentStyles, ...labelStyleHandlers};
+    return html`
+      ${!this.isViewMode ? html`
+        ${this.renderError()}
+        ${[0, undefined].includes(this.item?.index) ? html`
+          <component-title
+            @click=${(e) => this.executeEvent("onclick", e)}
+            @dragInit=${(e) => {
+              this.isDragInitiator = e.detail.value;
+              this.setAttribute("draggable", "true");
+            }}
+            @dragend=${() => { this.isDragInitiator = false; }}
+            .component=${this.component}
+            .selectedComponent=${{ ...this.selectedComponent }}
+            .display=${EditorInstance.currentSelection.includes(this.component.uuid)}
+          ></component-title>
+          <resize-wrapper
+            .hoveredComponent=${{ ...this.hoveredComponent }}
+            .isSelected=${EditorInstance.currentSelection.includes(this.component.uuid)}
+            .component=${{ ...this.component }}
+            .selectedComponent=${{ ...this.selectedComponent }}
+            .inputRef=${this.inputRef}
+            style="width: fit-content; height: fit-content;"
+          ></resize-wrapper>
+          <drag-wrapper .where=${"before"} .message=${"Drop before"} .component=${{ ...this.component }}
+            .inputRef=${this.inputRef} .isDragInitiator=${this.isDragInitiator}></drag-wrapper>
+        ` : nothing}
+      ` : nothing}
+      ${this.renderComponent()}
+      ${!this.isViewMode ? html`
+        <drag-wrapper .where=${"after"} .message=${"Drop after"} .component=${{ ...this.component }}
+          .inputRef=${this.inputRef} .isDragInitiator=${this.isDragInitiator}></drag-wrapper>
+      ` : nothing}
     `;
   }
 }
