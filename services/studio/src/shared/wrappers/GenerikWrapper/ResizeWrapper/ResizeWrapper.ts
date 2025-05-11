@@ -104,6 +104,8 @@ export class ResizeWrapper extends LitElement {
       }, 200);
     }
   }
+  private _debounceComponent: ReturnType<typeof setTimeout> | undefined;
+  private _debounceInputRef: ReturnType<typeof setTimeout> | undefined;
 
   // Helpers
   observeInputRef() {
