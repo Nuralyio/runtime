@@ -18,4 +18,9 @@ export class Utils {
           return () => unsubscribe();
         });
       }
+
+      public static  isPromise(value) {
+        return Boolean(value && typeof value.then === "function");
+    }
+
 }
