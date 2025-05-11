@@ -80,8 +80,8 @@ export default [
                 
                 
                 let fontSize;
-                if(currentPlatform.platform !== "desktop"){
-                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]['--hybrid-select-label-font-size']?.split('')
+                if(Editor.currentPlatform.platform !== "desktop"){
+                    fontSize = currentComponent?.breakpoints?.[Editor.currentPlatform.width]['--hybrid-select-label-font-size']?.split('')
                 }else{
                     fontSize =selectedComponent.style && selectedComponent.style['--hybrid-select-label-font-size']?.split('')
                 }

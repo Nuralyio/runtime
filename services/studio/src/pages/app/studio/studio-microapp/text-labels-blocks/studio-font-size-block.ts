@@ -72,8 +72,8 @@ export default [
                 
                 
                 let fontSize ;
-                if(currentPlatform.platform !== "desktop"){
-                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]?.fontSize?.split('') || selectedComponent.style && selectedComponent.style['fontSize']?.split('')
+                if(Editor.currentPlatform.platform !== "desktop"){
+                    fontSize = currentComponent?.breakpoints?.[Editor.currentPlatform.width]?.fontSize?.split('') || selectedComponent.style && selectedComponent.style['fontSize']?.split('')
                 }else{
                     fontSize =selectedComponent.style && selectedComponent.style?.fontSize?.split('')
                 }
