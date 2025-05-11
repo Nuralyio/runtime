@@ -67,7 +67,7 @@ export default [
         value: /* js */`
         
           const selectedComponent = Utils.first(Vars.selectedComponents);
-          if (true) {
+          if (selectedComponent) {
             
             const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
             const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
@@ -115,7 +115,7 @@ export default [
         value: /* js */`
         
           const selectedComponent = Utils.first(Vars.selectedComponents);
-          if (true) {
+          if (selectedComponent) {
               
               const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
               const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);

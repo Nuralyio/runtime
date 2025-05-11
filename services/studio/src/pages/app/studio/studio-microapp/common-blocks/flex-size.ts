@@ -78,15 +78,13 @@ export default [
             const selectedComponent = Utils.first(Vars.selectedComponents);
                 
                 
-                let fontSize;
-                if(currentPlatform.platform !== "desktop"){
-                    fontSize = currentComponent?.breakpoints?.[currentPlatform.width]['flex']?.split('')
+                let fontSize = 0;
+                if(Editor.currentPlatform.platform !== "desktop"){
+                    fontSize = currentComponent?.breakpoints?.[Editor.currentPlatform.width]['flex']?.split('')
                 }else{
-                    fontSize =selectedComponent.style && selectedComponent.style['flex']?.split('')
+                    fontSize =selectedComponent?.style && selectedComponent?.style['flex']?.split('')
                 }
-             
-                    else 
-                       return [0,'']
+                       return [fontSize,'']
 
         
             `

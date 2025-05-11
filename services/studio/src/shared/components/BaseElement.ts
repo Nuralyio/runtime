@@ -121,6 +121,8 @@ export class BaseElementBlock extends LitElement {
         this.callbacks?.[inputName]?.(result);
       } catch (e) {
         this.errors[inputName] = { error: e.message };
+        console.error(getNestedAttribute(this.component, `input.${inputName}`).value);
+        throw e;
         console.error(e);
       }
     } else {

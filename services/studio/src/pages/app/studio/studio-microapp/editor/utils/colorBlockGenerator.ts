@@ -59,9 +59,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
         valueChange: /* js */ `
                     
                         const selectedComponent = Utils.first(Vars.selectedComponents);
-                        if (true) {
-                            
-                            ;
+                        if (selectedComponent) {
                             updateStyle(selectedComponent, "${cssVar}", EventData.value);
                         }
                    

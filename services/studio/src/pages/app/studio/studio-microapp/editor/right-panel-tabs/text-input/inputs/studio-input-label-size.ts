@@ -76,7 +76,7 @@ export default [
         value: /* js */`
             
             const selectedComponent = Utils.first(Vars.selectedComponents);
-                
+                if(!selectedComponent) return
                 
                 const fontSize =selectedComponent.style && selectedComponent.style['--hybrid-input-label-font-size']?.split('')
                 if(fontSize) 
