@@ -220,6 +220,7 @@ class Executor {
   registerApplications() {
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
+
     const loadedApplications = $applications.get();
     const loadedApplicationObj: Record<string, string> = {};
 
@@ -229,25 +230,40 @@ class Executor {
 
     componentsList.forEach((component: any) => {
       const application_id = component.application_id || component.application_id;
-
+  
       if (!this.context[application_id]) {
         this.context[application_id] = {};
       }
-
+  
       if (!this.context[application_id][component.uuid]) {
         this.context[application_id][component.uuid] = { ...component };
       }
-
+  
       if (!this.applications[application_id]) {
         this.applications[application_id] = {};
       }
       if (!this.Apps[loadedApplicationObj[application_id]]) {
         this.Apps[loadedApplicationObj[application_id]] = {};
       }
-      this.Apps[loadedApplicationObj[application_id]][component.name] = { ...component };
-
-      this.applications[application_id][component.name] = { ...component };
+      
+      component.children = [];
+      
+      this.Apps[loadedApplicationObj[application_id]][component.name] = component;
+      this.applications[application_id][component.name] = component;
     });
+  
+    componentsList.forEach((component: any) => {
+      if (component.childrenIds && Array.isArray(component.childrenIds) && component.childrenIds.length > 0) {
+        component.childrenIds.forEach((childId: string) => {
+          const childComponent = componentsList.find((c: any) => c.uuid === childId);
+          if (childComponent) {
+            component.children.push(childComponent);
+            childComponent.parent = component;
+          }
+        });
+      }
+    });
+    
     Editor.components = componentsList;
     this.PropertiesProxy = componentsList;
     this.updateEditorContext()
@@ -303,7 +319,7 @@ class Executor {
   }
 
   private flattenedComponents(componentsStore: any): any[] {
-    return Object.values(componentsStore).flat().filter((component: any) => !component.parent);
+    return Object.values(componentsStore).flat();
   }
 }
 
@@ -321,21 +337,40 @@ const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
 
   ExecuteInstance.Current = component;
+  if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
+    component.children = [];
+    
+    const allComponents = Editor.components;
+    
+    component.childrenIds.forEach((childId: string) => {
+      const childComponent = allComponents.find((c: any) => c.uuid === childId);
+      if (childComponent) {
+        component.children.push(childComponent);
+      }
+    });
+    
+    if (!component.parent && component.parentId) {
+      const parentComponent = allComponents.find((c: any) => c.uuid === component.parentId);
+      if (parentComponent) {
+        component.parent = parentComponent;
+      }
+    }
+  }
+
+
   ExecuteInstance.Event = EventData.event;
 ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
 
 // Only create the proxy once
 
-// TODO: Implement the Current.values proxy to manage scoped data.
-// TODO: Add support for accessing and modifying parent values.
 if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   const newProxy = observe(ExecuteInstance.Current.style, (target,prop, value) => {
     ExecuteInstance.setcomponentRuntimeStyleAttribute(
-      ExecuteInstance.Current.uuid,
+      ExecuteInstance.Current.uniqueUUID,
       prop,
       value);
     
-    console.log(`Detected change: ${prop} = ${value}`);
+    //console.log(`Detected change: ${prop} = ${value}`);
   });
 
   ExecuteInstance.Current.style = newProxy;

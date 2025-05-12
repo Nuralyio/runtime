@@ -347,7 +347,7 @@ export class BaseElementBlock extends LitElement {
     
     // Subscribe to runtime styles
     this.subscription.add(
-      $runtimeStylescomponentStyleByID(this.component?.uuid).subscribe((styles) => {
+      $runtimeStylescomponentStyleByID(this.uniqueUUID).subscribe((styles) => {
         this.runtimeStyles = styles;
         this.requestUpdate();
       })
@@ -514,7 +514,7 @@ export class BaseElementBlock extends LitElement {
     // }
     handleComponentEvent({
       isViewMode: this.isViewMode,
-      component: this.component,
+      component:{ ...this.component, uniqueUUID : this.uniqueUUID},
       item: this.item,
       eventName,
       event,
