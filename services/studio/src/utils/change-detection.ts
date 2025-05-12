@@ -1,3 +1,4 @@
+import { setupChangeDetection } from '@shared/components/BaseElement/base-change-detection';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { share } from 'rxjs/operators';
 
@@ -56,3 +57,4 @@ class EventDispatcher {
 }
 
 export const eventDispatcher = EventDispatcher.getInstance();
+setupChangeDetection();
