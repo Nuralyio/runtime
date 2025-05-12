@@ -109,3 +109,79 @@ export const $runtimeStylescomponentStyleByID = ($componentId: string) => comput
 export const clearComponentRuntimeStyleAttributes = () => {
   $runtimeStyles.set({});
 }
+/**
+ * Get all descendant components of a component recursively
+ * @param applicationId - The ID of the application
+ * @param componentId - Optional: The ID of the parent component. If not provided, returns all components with their descendants
+ * @returns An array of components including the parent and all its descendants
+ */
+export const getAllChildrenRecursive = ($application_id: string, componentId?: string) => computed(
+  [$applicationComponents($application_id)],
+  (components: ComponentElement[]) => {
+    // Create a map for faster component lookup by UUID
+    const componentMap = new Map<string, ComponentElement>();
+    components.forEach(component => componentMap.set(component.uuid, component));
+    
+    // Helper function to recursively collect descendants
+    const collectDescendants = (component: ComponentElement): ComponentElement[] => {
+      if (!component.childrenIds || component.childrenIds.length === 0) {
+        return [];
+      }
+      
+      const children: ComponentElement[] = [];
+      
+      // Get all direct children
+      for (const childId of component.childrenIds) {
+        const childComponent = componentMap.get(childId);
+        if (childComponent) {
+          children.push(childComponent);
+          // Recursively get descendants of this child
+          children.push(...collectDescendants(childComponent));
+        }
+      }
+      
+      return children;
+    };
+    
+    // If componentId is provided, find descendants of that specific component
+    if (componentId) {
+      const parentComponent = componentMap.get(componentId);
+      if (!parentComponent) return []; // Component not found
+      
+      return [parentComponent, ...collectDescendants(parentComponent)];
+    }
+    
+    // If no componentId is provided, get all root components with their descendants
+    const rootComponents = components.filter(component => !component.parent);
+    const result: ComponentElement[] = [];
+    
+    for (const rootComponent of rootComponents) {
+      result.push(rootComponent);
+      result.push(...collectDescendants(rootComponent));
+    }
+    
+    return result;
+  }
+);
+
+/**
+ * Get only the direct children of a component
+ * @param applicationId - The ID of the application
+ * @param componentId - The ID of the parent component
+ * @returns An array of direct children components
+ */
+export const getDirectChildren = ($application_id: string, componentId: string) => computed(
+  [$applicationComponents($application_id)],
+  (components: ComponentElement[]) => {
+    // Find the parent component
+    const parentComponent = components.find(component => component.uuid === componentId);
+    if (!parentComponent || !parentComponent.childrenIds) {
+      return [];
+    }
+    
+    // Return all components that match the childrenIds
+    return components.filter(component => 
+      parentComponent.childrenIds.includes(component.uuid)
+    );
+  }
+);

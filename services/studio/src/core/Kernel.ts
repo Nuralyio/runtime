@@ -117,7 +117,7 @@ class Executor {
 
               if (oldValue !== valueNested) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested });
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested, ctx :self.Current });
                 });
               }
 
@@ -130,7 +130,7 @@ class Executor {
               const result = Reflect.deleteProperty(targetNested, propNested);
               if (result) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop , ctx :self.Current});
                 });
               }
               return result;
@@ -156,7 +156,7 @@ class Executor {
 
         if (oldValue !== value) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
+            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop ,ctx :self.Current });
           });
         }
 
@@ -169,7 +169,7 @@ class Executor {
         const result = Reflect.deleteProperty(target, prop);
         if (result) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop });
+            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx :self.Current });
           });
         }
         return result;

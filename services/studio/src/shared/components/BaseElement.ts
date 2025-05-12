@@ -167,6 +167,7 @@ export class BaseElementBlock extends LitElement {
     this.ExecuteInstance = ExecuteInstance;
     this.currentPlatform = ExecuteInstance.Vars.currentPlatform ?? getInitPlatform();
     this.handleHash = () => setupHashScroll(this.inputRef as Ref<HTMLInputElement>, this.id, () => scrollToTarget(this.inputRef as Ref<HTMLInputElement>));
+    
   }
 
   /**
@@ -203,16 +204,27 @@ export class BaseElementBlock extends LitElement {
   
     this.handleHash();
     window.addEventListener("hashchange", this.handleHash);
-  
+  this.subscription.add(
     eventDispatcher.on("Vars:currentPlatform", () => {
       this.traitInputsHandlers();
       this.traitStylesHandlers();
-    });
+    })
+  )
+
+  this.subscription.add(
+    eventDispatcher.on(`component-input-refresh-request:${this.component.uuid}`, () => {
+      console.log((`component-input-refresh-request:${this.component.name}`))
+      this.traitInputsHandlers();
+      this.traitStylesHandlers();
+    })
+  )
+  this.subscription.add(
   
     eventDispatcher.on("Vars:currentEditingMode", () => {
       const code = getNestedAttribute(this.component, `event.onInit`);
       if (code) executeCodeWithClosure(this.component, code, {}, { ...this.item });
-    });
+    }))
+
   }
 
   /**
