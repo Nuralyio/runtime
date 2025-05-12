@@ -25,6 +25,8 @@ import { calculateStyles } from "./BaseElement/calculateStyles.ts";
 import { handleMouseEnter, handleMouseLeave } from "./BaseElement/interactions.helpers.ts";
 import { handleComponentEvent } from "./BaseElement/execute-event.helpers.ts";
 import type { ComponentElement } from "$store/component/interface.ts";
+import { v4 as uuidv4 } from "uuid";
+
 
 /**
  * Base component class that serves as the foundation for all renderable components
@@ -105,6 +107,8 @@ export class BaseElementBlock extends LitElement {
   /** @type {Array} List of event handlers */
   eventsManager = [];
 
+  uniqueUUID = uuidv4();
+
   // Bound event handlers
   /**
    * @type {Function} Bound mouse enter event handler
@@ -167,7 +171,7 @@ export class BaseElementBlock extends LitElement {
     this.ExecuteInstance = ExecuteInstance;
     this.currentPlatform = ExecuteInstance.Vars.currentPlatform ?? getInitPlatform();
     this.handleHash = () => setupHashScroll(this.inputRef as Ref<HTMLInputElement>, this.id, () => scrollToTarget(this.inputRef as Ref<HTMLInputElement>));
-    
+    this.uniqueUUID = uuidv4();
   }
 
   /**
@@ -213,7 +217,6 @@ export class BaseElementBlock extends LitElement {
 
   this.subscription.add(
     eventDispatcher.on(`component-input-refresh-request:${this.component.uuid}`, () => {
-      console.log((`component-input-refresh-request:${this.component.name}`))
       this.traitInputsHandlers();
       this.traitStylesHandlers();
     })
@@ -506,6 +509,9 @@ export class BaseElementBlock extends LitElement {
    * @param {any} [data] - Additional data for event
    */
   executeEvent(eventName, event, data= {}) {
+    // if(event?.unique !== this.uniqueUUID && eventName == "onMouseEnter") {
+    //   return false;
+    // }
     handleComponentEvent({
       isViewMode: this.isViewMode,
       component: this.component,
