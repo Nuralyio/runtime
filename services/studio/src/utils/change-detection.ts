@@ -1,11 +1,10 @@
-import { Subject, Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, Subscription } from 'rxjs';
 import { share } from 'rxjs/operators';
 
 class EventDispatcher {
   private static instance: EventDispatcher;
   private subjects: { [key: string]: Subject<any> } = {};
   private subscriptions: { [key: string]: Map<Function, Subscription> } = {};
-  private debounceSubjects: { [key: string]: BehaviorSubject<any> } = {};
 
   private globalEventSubject = new Subject<{ eventName: string; data: any }>();
   public readonly allEvents$: Observable<{ eventName: string; data: any }>;

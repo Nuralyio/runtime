@@ -16,11 +16,8 @@ export class ResizeWrapper extends LitElement {
   
   // Component type lists
   onlyWidthResizableComponents = [
-    ComponentType.TextInput, 
-    ComponentType.Select, 
-    ComponentType.DatePicker, 
-    ComponentType.Button, 
-    ComponentType.Checkbox
+    ComponentType.TextInput, ComponentType.Select, ComponentType.DatePicker, 
+    ComponentType.Button, ComponentType.Checkbox
   ];
   notResizableComponents = [];
   
@@ -29,49 +26,28 @@ export class ResizeWrapper extends LitElement {
   @property({ type: Object }) selectedComponent: ComponentElement;
   @property({ type: Boolean }) isSelected = false;
   @property({ type: Object }) hoveredComponent: ComponentElement;
-  @property({ type: Object }) inputRef: Ref<HTMLInputElement> = createRef();
+  @property({ type: Object }) inputRef: Ref<Element> = createRef();
   
-  // State
-  @state() styles: any = {
-    lines: {
-      top: { width: "0" },
-      bottom: { width: "0", marginTop: "0" },
-      left: { width: "0", marginTop: "0" },
-      right: { height: "0", marginLeft: "0" }
-    },
-    points: {
-      leftTop: {}, rightTop: {}, middleTop: {},
-      leftBottom: {}, rightBottom: {}, middleBottom: {}
-    }
-  };
-
-  // Config and state values
+  // State and config
+  @state() styles = { lines: {}, points: {} };
   minimum_size = 20;
-  @state() original_width = 0;
-  @state() original_height = 0;
-  @state() original_x = 0;
-  @state() original_y = 0;
-  @state() original_mouse_x = 0;
-  @state() original_mouse_y = 0;
+  @state() original = { width: 0, height: 0, x: 0, y: 0, mouse_x: 0, mouse_y: 0 };
   @state() slotDOMRect: DOMRect;
   @state() currentResizer;
   @state() zoomLevel;
   @state() showBorder = false;
+  private _debounceComponent: ReturnType<typeof setTimeout>;
+  private _debounceInputRef: ReturnType<typeof setTimeout>;
 
   constructor() {
     super();
-    $showBorder.subscribe((showBorder) => {
-      this.showBorder = showBorder;
-    });
+    $showBorder.subscribe(showBorder => this.showBorder = showBorder);
   }
 
   // Lifecycle methods
   connectedCallback(): void {
     super.connectedCallback();
-    eventDispatcher.on("refresh:resize"+this.component.uuid, () => {
-      this.firstUpdated();
-    });
-
+    eventDispatcher.on("refresh:resize"+this.component.uuid, () => this.firstUpdated());
     window.addEventListener("mouseup", this.stopResize);
     $pageZoom.subscribe((pageZoom: string) => {
       this.zoomLevel = Number(pageZoom);
@@ -89,39 +65,31 @@ export class ResizeWrapper extends LitElement {
 
   updated(changedProperties) {
     super.updated(changedProperties);
-
+    
     if (changedProperties.has("inputRef")) {
       clearTimeout(this._debounceInputRef);
-      this._debounceInputRef = setTimeout(() => {
-        this.observeInputRef();
-      }, 200);
+      this._debounceInputRef = setTimeout(() => this.observeInputRef(), 200);
     }
 
     if (changedProperties.has("component")) {
       clearTimeout(this._debounceComponent);
-      this._debounceComponent = setTimeout(() => {
-        this.firstUpdated();
-      }, 200);
+      this._debounceComponent = setTimeout(() => this.firstUpdated(), 200);
     }
   }
-  private _debounceComponent: ReturnType<typeof setTimeout> | undefined;
-  private _debounceInputRef: ReturnType<typeof setTimeout> | undefined;
 
   // Helpers
   observeInputRef() {
     if (this.inputRef?.value) {
       const observer = new MutationObserver(() => this.firstUpdated());
       observer.observe(this.inputRef.value, { 
-        attributes: true, 
-        childList: true, 
-        subtree: true 
+        attributes: true, childList: true, subtree: true 
       });
     }
   }
 
   extractNumber(str) {
     const match = str?.match(/\d+/);
-    return match ? Number(match[0]) : null;
+    return match ? Number(match[0]) : 0;
   }
 
   // Resize handlers
@@ -131,58 +99,43 @@ export class ResizeWrapper extends LitElement {
     
     const resizer = this.currentResizer.classList;
     const el = this.inputRef.value;
-    const width = this.original_width + (e.pageX - this.original_mouse_x);
-    const height = this.original_height + (e.pageY - this.original_mouse_y);
-    const inverseWidth = this.original_width - (e.pageX - this.original_mouse_x);
-    const inverseHeight = this.original_height - (e.pageY - this.original_mouse_y);
+    const { width, height, x, y, mouse_x, mouse_y } = this.original;
+    const newWidth = width + (e.pageX - mouse_x);
+    const newHeight = height + (e.pageY - mouse_y);
+    const invWidth = width - (e.pageX - mouse_x);
+    const invHeight = height - (e.pageY - mouse_y);
     const canResizeHeight = !this.onlyWidthResizableComponents.includes(this.component.component_type);
     
-    if (resizer.contains("resizer-point-right-bottom")) {
-      if (width > this.minimum_size) el.style.width = width + "px";
-      if (height > this.minimum_size && canResizeHeight) {
-        el.style.height = height + "px";
-      }
-    } else if (resizer.contains("resizer-point-left-bottom")) {
-      if (height > this.minimum_size && canResizeHeight) {
-        el.style.height = height + "px";
-      }
-      if (inverseWidth > this.minimum_size) {
-        el.style.width = inverseWidth + "px";
-        el.style.left = this.original_x + (e.pageX - this.original_mouse_x) + "px";
-      }
-    } else if (
-      resizer.contains("resizer-line-bottom") ||
-      resizer.contains("resizer-point-middle-top") ||
-      resizer.contains("resizer-point-middle-bottom")
-    ) {
-      if (height > this.minimum_size && canResizeHeight) {
-        el.style.height = height + "px";
-      }
-    } else if (resizer.contains("resizer-point-left-top")) {
-      if (inverseWidth > this.minimum_size) {
-        el.style.width = inverseWidth + "px";
-        el.style.left = this.original_x + (e.pageX - this.original_mouse_x) + "px";
-      }
-      if (inverseHeight > this.minimum_size && canResizeHeight) {
-        el.style.height = inverseHeight + "px";
-        el.style.top = this.original_y + (e.pageY - this.original_mouse_y) + "px";
-      }
-    } else if (resizer.contains("resizer-point-right-top")) {
-      if (width > this.minimum_size) {
-        el.style.width = width + "px";
-      }
-      if (inverseHeight > this.minimum_size && canResizeHeight) {
-        el.style.height = inverseHeight + "px";
-        el.style.top = this.original_y + (e.pageY - this.original_mouse_y) + "px";
+    const isRightBottom = resizer.contains("resizer-point-right-bottom");
+    const isLeftBottom = resizer.contains("resizer-point-left-bottom");
+    const isVertical = resizer.contains("resizer-line-bottom") || 
+                       resizer.contains("resizer-point-middle-top") || 
+                       resizer.contains("resizer-point-middle-bottom");
+    const isLeftTop = resizer.contains("resizer-point-left-top");
+    const isRightTop = resizer.contains("resizer-point-right-top");
+    
+    // Apply width changes
+    if ((isRightBottom || isRightTop) && newWidth > this.minimum_size) {
+      el.style.width = `${newWidth}px`;
+    } else if ((isLeftBottom || isLeftTop) && invWidth > this.minimum_size) {
+      el.style.width = `${invWidth}px`;
+      el.style.left = `${x + (e.pageX - mouse_x)}px`;
+    }
+    
+    // Apply height changes if allowed
+    if (canResizeHeight) {
+      if ((isRightBottom || isLeftBottom || isVertical) && newHeight > this.minimum_size) {
+        el.style.height = `${newHeight}px`;
+      } else if ((isLeftTop || isRightTop) && invHeight > this.minimum_size) {
+        el.style.height = `${invHeight}px`;
+        el.style.top = `${y + (e.pageY - mouse_y)}px`;
       }
     }
 
     setTimeout(() => {
       this.firstUpdated();
+      setTimeout(() => this.applyResize(), 500);
     });
-    setTimeout(() => {
-      this.applyResize();
-    }, 1000);
   };
 
   stopResize = () => {
@@ -195,12 +148,17 @@ export class ResizeWrapper extends LitElement {
     e.stopPropagation();
     setResizing(true);
     this.currentResizer = e.target;
-    this.original_width = this.inputRef.value.offsetWidth;
-    this.original_height = this.inputRef.value.offsetHeight;
-    this.original_x = this.inputRef.value.getBoundingClientRect().left;
-    this.original_y = this.inputRef.value.getBoundingClientRect().top;
-    this.original_mouse_x = e.pageX;
-    this.original_mouse_y = e.pageY;
+    const el = this.inputRef.value;
+    const rect = el.getBoundingClientRect();
+    
+    this.original = {
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+      x: rect.left,
+      y: rect.top,
+      mouse_x: e.pageX,
+      mouse_y: e.pageY
+    };
 
     if (!this.notResizableComponents.includes(this.component.component_type)) {
       window.addEventListener("mousemove", this.resize);
@@ -208,36 +166,37 @@ export class ResizeWrapper extends LitElement {
   };
 
   // Updates
-  firstUpdated() {
-    const marginLeft = this.extractNumber(this.component.style?.['margin-left']); 
-    const marginRight = this.extractNumber(this.component.style?.['margin-right']); 
-    const marginTop = this.extractNumber(this.component.style?.['margin-top']);
-    const marginBottom = this.extractNumber(this.component.style?.['margin-bottom']);
+  override firstUpdated() {
+    const style = this.component.style || {};
+    const margins = {
+      left: this.extractNumber(style['margin-left']),
+      right: this.extractNumber(style['margin-right']),
+      top: this.extractNumber(style['margin-top']),
+      bottom: this.extractNumber(style['margin-bottom'])
+    };
      
     requestAnimationFrame(() => {
-      this.slotDOMRect = this.inputRef.value?.getBoundingClientRect();
-      const originalWidth = this.inputRef.value?.offsetWidth + marginLeft + marginRight;
-      const originalHeight = this.inputRef.value?.offsetHeight + marginTop + marginBottom;
+      if (!this.inputRef.value) return;
       
-      const width = originalWidth;
-      const height = originalHeight;
-      const widthPixel = `${width}px`;
-      const heightPixel = `${height}px`;
+      this.slotDOMRect = this.inputRef.value.getBoundingClientRect();
+      const width = this.inputRef.value.offsetWidth + margins.left + margins.right;
+      const height = this.inputRef.value.offsetHeight + margins.top + margins.bottom;
+      const halfWidth = width / 2 - 3;
       
       this.styles = {
         lines: {
-          top: { width: widthPixel },
-          bottom: { width: widthPixel, marginTop: heightPixel },
-          right: { height: heightPixel, marginLeft: widthPixel },
-          left: { height: heightPixel }
+          top: { width: `${width}px` },
+          bottom: { width: `${width}px`, marginTop: `${height}px` },
+          right: { height: `${height}px`, marginLeft: `${width}px` },
+          left: { height: `${height}px` }
         },
         points: {
           leftTop: { marginLeft: "-1px" },
           rightTop: { marginLeft: `${width - 3}px` },
-          middleTop: { marginLeft: `${width / 2 - 3}px` },
-          leftBottom: { marginTop: `${height - 2}px`, marginLeft: `-1px` },
+          middleTop: { marginLeft: `${halfWidth}px` },
+          leftBottom: { marginTop: `${height - 2}px`, marginLeft: "-1px" },
           rightBottom: { marginLeft: `${width - 3}px`, marginTop: `${height - 2}px` },
-          middleBottom: { marginLeft: `${width / 2 - 3}px`, marginTop: `${height - 2}px` }
+          middleBottom: { marginLeft: `${halfWidth}px`, marginTop: `${height - 2}px` }
         }
       };
       
@@ -247,61 +206,50 @@ export class ResizeWrapper extends LitElement {
 
   applyResize = () => {
     const el = this.inputRef.value;
-    const type = this.component.component_type;
-    const uuid = this.component.uuid;
-    const appId = this.component.application_id;
+    const { component_type: type, uuid, application_id: appId } = this.component;
+    const styleUpdates = {};
     
-    if (type === ComponentType.Button) {
-      updateComponentAttributes(appId, uuid, "style", {
-        "--hybrid-button-width": el.style.width
-      });
-    } else if (type === ComponentType.Icon) {
-      updateComponentAttributes(appId, uuid, "style", {
-        "--hybrid-icon-width": el.style.width,
-        "--hybrid-icon-height": el.style.height
-      });
-    } else if (type === ComponentType.Select) {
-      updateComponentAttributes(appId, uuid, "style", {
-        "--hybrid-select-width": el.style.width
-      });
-    } else if (type === ComponentType.TextInput || type === ComponentType.DatePicker) {
-      updateComponentAttributes(appId, uuid, "style", {
-        width: el.style.width
-      });
-    } else {
-      updateComponentAttributes(appId, uuid, "style", {
-        width: el.style.width,
-        height: el.style.height
-      });
+    switch(type) {
+      case ComponentType.Button:
+        styleUpdates["--hybrid-button-width"] = el.style.width;
+        break;
+      case ComponentType.Icon:
+        styleUpdates["--hybrid-icon-width"] = el.style.width;
+        styleUpdates["--hybrid-icon-height"] = el.style.height;
+        break;
+      case ComponentType.Select:
+        styleUpdates["--hybrid-select-width"] = el.style.width;
+        break;
+      case ComponentType.TextInput:
+      case ComponentType.DatePicker:
+        styleUpdates.width = el.style.width;
+        break;
+      default:
+        styleUpdates.width = el.style.width;
+        styleUpdates.height = el.style.height;
     }
+    
+    updateComponentAttributes(appId, uuid, "style", styleUpdates);
   };
 
   // Render
-  render() {
+  override render() {
+    const { points, lines } = this.styles;
+    const isHovered = this.hoveredComponent?.uuid === this.component.uuid && !this.isSelected;
+    
     return html`
-      <div class=${classMap({
-        element: true,
-        hovered: this.hoveredComponent?.uuid === this.component.uuid && !this.isSelected,
-        bordered: this.showBorder,
-        selected: this.isSelected
-      })}>
-        <div @mousedown=${this.mouseDown} class="resizer-point-left-top" 
-             style=${styleMap(this.styles.points?.leftTop)}></div>
-        <div @mousedown=${this.mouseDown} class="resizer-point-right-top" 
-             style=${styleMap(this.styles.points?.rightTop)}></div>
-        <div @mousedown=${this.mouseDown} class="resizer-point-middle-top" 
-             style=${styleMap(this.styles.points?.middleTop)}></div>
-        <div @mousedown=${this.mouseDown} class="resizer-point-left-bottom" 
-             style=${styleMap(this.styles.points?.leftBottom)}></div>
-        <div @mousedown=${this.mouseDown} class="resizer-point-right-bottom" 
-             style=${styleMap(this.styles.points?.rightBottom)}></div>
-        <div @mousedown=${this.mouseDown} class="resizer-point-middle-bottom" 
-             style=${styleMap(this.styles.points?.middleBottom)}></div>
+      <div class=${classMap({ element: true, hovered: isHovered, bordered: this.showBorder, selected: this.isSelected })}>
+        <div @mousedown=${this.mouseDown} class="resizer-point-left-top" style=${styleMap(points?.leftTop || {})}></div>
+        <div @mousedown=${this.mouseDown} class="resizer-point-right-top" style=${styleMap(points?.rightTop || {})}></div>
+        <div @mousedown=${this.mouseDown} class="resizer-point-middle-top" style=${styleMap(points?.middleTop || {})}></div>
+        <div @mousedown=${this.mouseDown} class="resizer-point-left-bottom" style=${styleMap(points?.leftBottom || {})}></div>
+        <div @mousedown=${this.mouseDown} class="resizer-point-right-bottom" style=${styleMap(points?.rightBottom || {})}></div>
+        <div @mousedown=${this.mouseDown} class="resizer-point-middle-bottom" style=${styleMap(points?.middleBottom || {})}></div>
         
-        <div class="resizer-line-top" style=${styleMap(this.styles.lines.top)}></div>
-        <div class="resizer-line-bottom" style=${styleMap(this.styles.lines.bottom)}></div>
-        <div class="resizer-line-right" style=${styleMap(this.styles.lines.right)}></div>
-        <div class="resizer-line-left" style=${styleMap(this.styles.lines.left)}></div>
+        <div class="resizer-line-top" style=${styleMap(lines?.top || {})}></div>
+        <div class="resizer-line-bottom" style=${styleMap(lines?.bottom || {})}></div>
+        <div class="resizer-line-right" style=${styleMap(lines?.right || {})}></div>
+        <div class="resizer-line-left" style=${styleMap(lines?.left || {})}></div>
         
         <slot @slotchange="${() => {}}"></slot>
       </div>

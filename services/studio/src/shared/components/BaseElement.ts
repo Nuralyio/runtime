@@ -1,58 +1,151 @@
+/**
+ * @file BaseElementBlock.ts
+ * @description Base component class that handles component rendering, events, and styles in the editor
+ * @module components/base
+ */
+
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
-import { type ComponentElement, type DraggingComponentInfo } from "$store/component/interface.ts";
 import { eventDispatcher } from "@utils/change-detection.ts";
 import { executeCodeWithClosure, ExecuteInstance } from "../../core/Kernel.ts";
 import { getNestedAttribute, hasOnlyEmptyObjects } from "@utils/object.utils.ts";
-import { isServer } from "@utils/envirement.ts";
 import Editor from "core/Editor.ts";
 import EditorInstance, { getInitPlatform } from "core/Editor.ts";
 import { createRef, type Ref } from "lit/directives/ref.js";
 import { $hoveredComponent, $runtimeStylescomponentStyleByID } from "$store/component/store.ts";
-import { setHoveredComponentAction } from "$store/actions/component/setHoveredComponentAction.ts";
 import "../wrappers/GenerikWrapper/DragWrapper/DragWrapper.ts";
 import { Utils } from "core/Utils.ts";
 import { setContextMenuEvent } from "$store/actions/page/setContextMenuEvent.ts";
 import { addlogDebug } from "$store/actions/debug/store.ts";
 import { $debug } from "$store/debug.ts";
 import { Subscription } from "rxjs";
-import "./ZBase/HandlerComponentError.ts";
+import "./BaseElement/handler-component-error.ts";
+import { scrollToTarget, setupHashScroll, traitInputHandler, traitStyleHandler } from "./BaseElement/input-handler.helpers.ts";
+import { calculateStyles } from "./BaseElement/calculateStyles.ts";
+import { handleMouseEnter, handleMouseLeave } from "./BaseElement/interactions.helpers.ts";
+import { handleComponentEvent } from "./BaseElement/execute-event.helpers.ts";
+import type { ComponentElement } from "$store/component/interface.ts";
 
+/**
+ * Base component class that serves as the foundation for all renderable components
+ * in the editor. Handles component styling, events, interactions, and rendering.
+ * 
+ * @extends {LitElement}
+ */
 export class BaseElementBlock extends LitElement {
-  @property({ type: Object }) component: ComponentElement;
-  @property({ type: Object, reflect: true }) item: any;
+  /** @property {ComponentElement} The component data */
+  @property({ type: Object }) component;
+  
+  /** @property {any} Data item being rendered (for lists/loops) */
+  @property({ type: Object, reflect: true }) item;
+  
+  /** @property {boolean} Whether component is in view-only mode */
   @property({ type: Boolean }) isViewMode = false;
   
-  @state() inputHandlersValue: any = {};
-  @state() stylesHandlersValue: any = {};
-  @state() callbacks: any = {};
-  @state() isEditable = false;
-  @state() hoveredComponent: ComponentElement;
-  @state() isDragInitiator = false;
-  @state() closestGenericComponentWrapper: HTMLElement;
-  @state() selectedComponent: ComponentElement;
-  @state() draggingComponentInfo: DraggingComponentInfo;
-  @state() currentSelection: any = [];
-  @state() calculatedStyles: any = {};
-  @state() isConnected2 = false;
-  @state() displayErrorPanel: any;
-  @state() errors: any = {};
-  @state() runtimeStyles: any = {};
-  @state() inputRef: Ref<HTMLInputElement> = createRef();
+  /** @state {Object} Values from input handlers */
+  @state() inputHandlersValue: { display?: boolean } = {};
   
-  ExecuteInstance: any;
-  currentPlatform: any;
-  componentStyles: any = {};
+  /** @state {Object} Values from style handlers */
+  @state() stylesHandlersValue = {};
+  
+  /** @state {Object} Registered callbacks for input handlers */
+  @state() callbacks = {};
+  
+  /** @state {boolean} Whether component is in editable state */
+  @state() isEditable = false;
+  
+  /** @state {ComponentElement} Currently hovered component */
+  @state() hoveredComponent;
+  
+  /** @state {boolean} Whether this component initiated drag */
+  @state() isDragInitiator = false;
+  
+  /** @state {HTMLElement} Reference to closest wrapper element */
+  @state() closestGenericComponentWrapper;
+  
+  /** @state {ComponentElement} Currently selected component */
+  @state() selectedComponent;
+  
+  /** @state {DraggingComponentInfo} Information about dragging state */
+  @state() draggingComponentInfo;
+  
+  /** @state {Array} Currently selected components */
+  @state() currentSelection = [];
+  
+  /** @state {Object} Calculated component styles */
+  @state() calculatedStyles = {};
+  
+  /** @state {boolean} Whether component is connected to DOM */
+  @state() isConnected2 = false;
+  
+  /** @state {boolean} Whether to display error panel */
+  @state() displayErrorPanel;
+  
+  /** @state {Object} Component errors */
+  @state() errors = {};
+  
+  /** @state {Object} Runtime styles */
+  @state() runtimeStyles = {};
+  
+  /** @state {Ref<Element>} Reference to main input element */
+  @state() inputRef = createRef();
+  
+  /** @type {any} Instance of execution environment */
+  ExecuteInstance;
+  
+  /** @type {any} Current platform information */
+  currentPlatform;
+  
+  /** @type {Object} Component style definitions */
+  componentStyles = {};
+  
+  /** @type {Subscription} RxJS subscription for cleanup */
   private subscription = new Subscription();
+  
+  /** @type {Array} List of event handlers */
   eventsManager = [];
 
   // Bound event handlers
+  /**
+   * @type {Function} Bound mouse enter event handler
+   * @private
+   */
   private mouseEnterHandlerBound = this.mouseEnterHandler.bind(this);
+  
+  /**
+   * @type {Function} Bound mouse leave event handler
+   * @private
+   */
   private mouseLeaveHandlerBound = this.mouseLeaveHandler.bind(this);
+  
+  /**
+   * @type {Function} Bound drag enter event handler
+   * @private
+   */
   private dragEnterHandlerBound = this.dragEnterHandler.bind(this);
+  
+  /**
+   * @type {Function} Bound drop event handler
+   * @private
+   */
   private dropHandlerBound = this.dropHandler.bind(this);
+  
+  /**
+   * @type {Function} Bound drag leave event handler
+   * @private
+   */
   private dragLeaveHandlerBound = this.dragLeaveHandler.bind(this);
+  
+  /**
+   * @type {Function} Bound context menu event handler
+   * @private
+   */
   private onContextMenuBound = this.onContextMenu.bind(this);
+  
+  /**
+   * @type {Function} Bound component selection handler
+   * @private
+   */
   private selectComponentActionClickBound = (e) => {
     if (!this.isViewMode) {
       this.selectComponentAction(e);
@@ -60,160 +153,118 @@ export class BaseElementBlock extends LitElement {
       e.stopPropagation();
     }
   };
+  
+  /**
+   * @type {Function} Hash change handler for scrolling
+   */
+  handleHash;
 
+  /**
+   * Constructor for BaseElementBlock
+   */
   constructor() {
     super();
     this.ExecuteInstance = ExecuteInstance;
     this.currentPlatform = ExecuteInstance.Vars.currentPlatform ?? getInitPlatform();
+    this.handleHash = () => setupHashScroll(this.inputRef as Ref<HTMLInputElement>, this.id, () => scrollToTarget(this.inputRef as Ref<HTMLInputElement>));
   }
 
-  registerCallback(inputName: string, callback: any) {
+  /**
+   * Registers a callback function for a specific input
+   * 
+   * @param {string} inputName - Name of the input to register callback for
+   * @param {Function} callback - Callback function to register
+   */
+  registerCallback(inputName, callback) {
     this.callbacks[inputName] = callback;
   }
 
-  unregisterCallback(inputName: string) {
+  /**
+   * Unregisters a callback function for a specific input
+   * 
+   * @param {string} inputName - Name of the input to unregister callback for
+   */
+  unregisterCallback(inputName) {
     delete this.callbacks[inputName];
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
+  /**
+   * Handles first component update after initialization
+   * 
+   * @param {PropertyValues} _ - Changed properties
+   * @protected
+   * @override
+   */
+  protected firstUpdated(_) {
+    super.firstUpdated(_);
     this.isConnected2 = true;
     this.traitInputsHandlers();
     this.traitStylesHandlers();
-    
-    const hash = window.location.hash.replace("#", "");
-    if(hash && this.id == hash) this.scrollToTarget();
-
-    window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.replace("#", "");
-      if(hash && this.id == hash) this.scrollToTarget();
-    });
-
+  
+    this.handleHash();
+    window.addEventListener("hashchange", this.handleHash);
+  
     eventDispatcher.on("Vars:currentPlatform", () => {
       this.traitInputsHandlers();
       this.traitStylesHandlers();
     });
-
+  
     eventDispatcher.on("Vars:currentEditingMode", () => {
-      if(getNestedAttribute(this.component, `event.onInit`)) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onInit`), {}, {...this.item});
-      }
+      const code = getNestedAttribute(this.component, `event.onInit`);
+      if (code) executeCodeWithClosure(this.component, code, {}, { ...this.item });
     });
   }
 
-  async traitInputHandler(input: any, inputName: string): Promise<void> {
-    if (isServer || !input) return;
-
-    const proxy = this.ExecuteInstance.PropertiesProxy;
-    proxy[this.component.name] ??= {};
-
-    if (input.type === "handler") {
-      try {
-        const rawValue = getNestedAttribute(this.component, `input.${inputName}`).value;
-        const fn = executeCodeWithClosure(this.component, rawValue, undefined, { ...this.item });
-        const result = Utils.isPromise(fn) ? await fn : fn;
-        
-        if (this.inputHandlersValue[inputName] !== result) {
-          this.inputHandlersValue[inputName] = result;
-          proxy[this.component.name][inputName] = result;
-        }
-
-        this.callbacks?.[inputName]?.(result);
-      } catch (e) {
-        this.errors[inputName] = { error: e.message };
-        console.error(getNestedAttribute(this.component, `input.${inputName}`).value);
-        throw e;
-        console.error(e);
-      }
-    } else {
-      const { value } = input;
-      if (this.inputHandlersValue[inputName] !== value) {
-        this.inputHandlersValue[inputName] = value;
-        proxy[this.component.name][inputName] = value;
-      }
-
-      if (inputName === "id") this.id = value;
-      this.callbacks?.[inputName]?.(value);
-    }
-  }
-
+  /**
+   * Processes component input handlers
+   * 
+   * @returns {Promise<void>}
+   */
   async traitInputsHandlers() {
     this.errors = {};
-    try {
-      await Promise.all(
-        Object.entries(Editor.getComponentBreakpointInputs(this.component)).map(
-          ([inputName]) => this.traitInputHandler(
-            Editor.getComponentBreakpointInput(this.component, inputName),
-            inputName
-          )
-        )
-      );
-    } catch (e) {
-      console.log(e);
-    }
-
+    const inputs = Editor.getComponentBreakpointInputs(this.component);
+    await Promise.all(Object.keys(inputs).map(name =>
+      traitInputHandler(this, inputs[name], name)
+    ));
+  
     addlogDebug({
-      errors: {
-        component: {
-          ...this.component,
-          errors: { ...this.errors },
-        },
-      },
+      errors: { component: { ...this.component, errors: { ...this.errors } } },
     });
   }
 
-  async traitStyleHandler(style: any, styleName: string): Promise<void> {
-    if (isServer || !style) return;
-
-    if (style.startsWith("return ")) {
-      try {
-        const fn = executeCodeWithClosure(this.component, style);
-        if (fn && this.stylesHandlersValue[styleName] !== fn) {
-          this.stylesHandlersValue[styleName] = fn;
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    } else {
-      this.stylesHandlersValue[styleName] = style;
-    }
-  }
-
+  /**
+   * Processes component style handlers
+   * 
+   * @returns {Promise<void>}
+   */
   async traitStylesHandlers() {
     if (this.component?.styleHandlers) {
       this.stylesHandlersValue = {};
       await Promise.all(
         Object.entries(this.component.styleHandlers).map(
-          ([name, style]) => this.traitStyleHandler(style, name)
+          ([name, style]) => traitStyleHandler(this, style, name)
         )
       );
     }
     this.calculateStyles();
   }
 
+  /**
+   * Calculates and updates component styles
+   * 
+   * @private
+   */
   private calculateStyles() {
-    this.calculatedStyles = { ...Editor.getComponentStyles(this.component), ...this.calculatedStyles };
-    const { innerAlignment } = this.inputHandlersValue;
-
-    if (innerAlignment) {
-      this.style.removeProperty("align-self");
-      this.style.removeProperty("margin");
-      this.style.removeProperty("margin-left");
-
-      if (innerAlignment === "end") this.style.setProperty("margin-left", "auto");
-      else if (innerAlignment === "middle") {
-        this.style.setProperty("align-self", "center");
-        this.style.setProperty("margin", "auto");
-      }
-    }
-
-    const { width, height, cursor, flex } = this.calculatedStyles;
-    if (width && Utils.extractUnit(width) === "%") this.style.width = width;
-    if (flex) this.style.flex = flex;
-    if (cursor) this.style.cursor = cursor;
+    calculateStyles(this);
   }
 
-  override async update(changedProperties: PropertyValueMap<any>) {
+  /**
+   * Handles component updates
+   * 
+   * @param {PropertyValueMap<any>} changedProperties - Map of changed properties
+   * @override
+   */
+  override async update(changedProperties) {
     super.update(changedProperties);
 
     changedProperties.forEach((_old, prop) => {
@@ -233,7 +284,12 @@ export class BaseElementBlock extends LitElement {
     });
   }
 
-  onContextMenu(e: MouseEvent) {
+  /**
+   * Handles context menu events
+   * 
+   * @param {MouseEvent} e - Context menu event
+   */
+  onContextMenu(e) {
     if (this.isViewMode) return;
     this.selectComponentAction(e);
     e.preventDefault();
@@ -251,19 +307,24 @@ export class BaseElementBlock extends LitElement {
     }
   }
 
+  /**
+   * Lifecycle method when component is connected to DOM
+   * 
+   * @override
+   */
   override async connectedCallback() {
     super.connectedCallback();
     
     if(!this.isViewMode) {
       this.subscription.add(
-        Utils.createStoreObservable($hoveredComponent).subscribe((hoveredComponent: any) => {
+        Utils.createStoreObservable($hoveredComponent).subscribe((hoveredComponent) => {
           this.hoveredComponent = hoveredComponent;
         })
       );
 
       this.subscription.add(
         eventDispatcher.on('Vars:selectedComponents', () => {
-          this.currentSelection = Array.from(ExecuteInstance.Vars.selectedComponents).map((c:any) => c.uuid);
+          this.currentSelection = Array.from(ExecuteInstance.Vars.selectedComponents).map((comppnent :ComponentElement) => comppnent.uuid);
           EditorInstance.currentSelection = this.currentSelection;
         })
       );
@@ -320,12 +381,11 @@ export class BaseElementBlock extends LitElement {
     );
   }
 
-  scrollToTarget() {
-    if (this.inputRef.value) {
-      this.inputRef.value.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
+  /**
+   * Lifecycle method when component is disconnected from DOM
+   * 
+   * @override
+   */
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.subscription.unsubscribe();
@@ -333,41 +393,88 @@ export class BaseElementBlock extends LitElement {
     this.eventsManager.forEach(([event, handler]) => this.removeEventListener(event, handler));
   }
 
-  // Event handlers consolidated for brevity
+  /**
+   * Handles mouse enter events
+   * 
+   * @private
+   */
   private mouseEnterHandler() {
-    if (!this.isViewMode) setHoveredComponentAction(this.component);
+    handleMouseEnter(this.isViewMode, this.component);
   }
-
+  
+  /**
+   * Handles mouse leave events
+   * 
+   * @private
+   */
   private mouseLeaveHandler() {
-    if (!this.isViewMode) setHoveredComponentAction(null);
+    handleMouseLeave(this.isViewMode);
   }
 
-  private handleDragEvent(eventType: string) {
+  /**
+   * Handles drag events by dispatching to child wrappers
+   * 
+   * @param {string} eventType - Type of drag event
+   * @private
+   */
+  private handleDragEvent(eventType) {
     this.shadowRoot?.querySelectorAll('drag-wrapper')?.forEach(wrapper =>
       wrapper.dispatchEvent(new CustomEvent(eventType, { bubbles: true, composed: true }))
     );
   }
 
+  /**
+   * Handles drag enter events
+   * 
+   * @private
+   */
   private dragEnterHandler() {
     this.handleDragEvent("drag-over-component");
   }
 
+  /**
+   * Handles drop events
+   * 
+   * @private
+   */
   private dropHandler() {
     this.handleDragEvent("drag-leave-component");
   }
 
+  /**
+   * Handles drag leave events
+   * 
+   * @private
+   */
   private dragLeaveHandler() {
     this.handleDragEvent("drag-leave-component");
   }
 
-  protected get shouldDisplay(): boolean {
+  /**
+   * Determines if component should be displayed
+   * 
+   * @returns {boolean} Whether component should be displayed
+   * @protected
+   */
+  protected get shouldDisplay() {
     return (this.inputHandlersValue?.display === undefined || this.inputHandlersValue?.display);
   }
 
+  /**
+   * Renders the component content
+   * To be implemented by child classes
+   * 
+   * @returns {unknown}
+   */
   renderComponent() {
     // Implementation in child classes
   }
 
+  /**
+   * Gets computed component styles
+   * 
+   * @returns {Object} Component styles
+   */
   getStyles() {
     const width = Editor.getComponentStyle(this.component, "width");
     return {
@@ -379,30 +486,42 @@ export class BaseElementBlock extends LitElement {
     };
   }
 
-  executeEvent(eventName: string, event?: Event, data?: any) {
-    if (this.isViewMode) {
-      const code = this.component.event?.[eventName];
-      if (code) {
-        executeCodeWithClosure(
-          this.component,
-          getNestedAttribute(this.component, `event.${eventName}`),
-          { event, ...data },
-          this.item
-        );
-      }
-      return;
-    }
-  
-    if (eventName === "onClick" && event) this.selectComponentAction(event);
+  /**
+   * Executes a component event
+   * 
+   * @param {string} eventName - Name of event to execute
+   * @param {Event} [event] - DOM event that triggered this
+   * @param {any} [data] - Additional data for event
+   */
+  executeEvent(eventName, event, data= {}) {
+    handleComponentEvent({
+      isViewMode: this.isViewMode,
+      component: this.component,
+      item: this.item,
+      eventName,
+      event,
+      data,
+      onSelect: this.selectComponentAction.bind(this),
+    });
   }
 
-  selectComponentAction(_e: Event) {
+  /**
+   * Selects this component in the editor
+   * 
+   * @param {Event} _e - Event that triggered selection
+   */
+  selectComponentAction(_e) {
     this.currentSelection = Array.from([this.component.uuid]);
     EditorInstance.currentSelection = Array.from([this.component.uuid]);
     ExecuteInstance.VarsProxy.selectedComponents = Array.from([this.component]);
   }
 
-  renderError(): unknown {
+  /**
+   * Renders error indicator and panel if component has errors
+   * 
+   * @returns {unknown} Error UI template
+   */
+  renderError() {
     const error = $debug.get()?.error?.components?.[this.component.uuid]?.errors;
     if (hasOnlyEmptyObjects(error ?? {})) return nothing;
   
@@ -417,7 +536,14 @@ export class BaseElementBlock extends LitElement {
     `;
   }
 
-  protected render(): unknown {
+  /**
+   * Main render method for component
+   * 
+   * @returns {unknown} Component template
+   * @protected
+   * @override
+   */
+  protected render() {
     if (!this.shouldDisplay) return nothing;
     
     this.componentStyles = this.calculatedStyles || {};
