@@ -80,7 +80,7 @@ export default [
                 
                 let fontSize = 0;
                 if(Editor.currentPlatform.platform !== "desktop"){
-                    fontSize = currentComponent?.breakpoints?.[Editor.currentPlatform.width]['flex']?.split('')
+                    fontSize = selectedComponent?.breakpoints?.[Editor.currentPlatform.width]['flex']?.split('')
                 }else{
                     fontSize =selectedComponent?.style && selectedComponent?.style['flex']?.split('')
                 }
