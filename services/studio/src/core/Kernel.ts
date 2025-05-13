@@ -3,7 +3,13 @@
 import { GenerateName } from "utils/naming-generator";
 
 import { $applications } from "$store/apps";
-import { $components, setcomponentRuntimeStyleAttribute } from "$store/component/store.ts";
+import {
+  $components,
+  setcomponentRuntimeStyleAttribute,
+  $runtimeValues,
+  setComponentRuntimeValue,
+  setComponentRuntimeValues
+} from "$store/component/store.ts";
 import type { ComponentElement } from "$store/component/interface";
 import { $context, getVar, setVar } from "$store/context";
 import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
@@ -44,21 +50,22 @@ class Executor {
   VarsProxy: Record<string, any> = {};
   Current: Record<string, any> = {};
   private functionCache: Record<string, Function> = {};
-  currentPlatform: any ;
+  currentPlatform: any;
 
   private listeners: Record<string, Set<string>> = {};
-   proxyCache: WeakMap<object, any> = new WeakMap();
   styleProxyCache = new WeakMap();
+  valuesProxyCache = new WeakMap();
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   GetVar: (symbol: string) => any;
-  GetContextVar:  any;
+  GetContextVar: any;
   Event: Event;
+  
   private constructor() {
     if(isServer){
       return;
     }
     this.PropertiesProxy = this.createProxy(this.Properties);
-    this.VarsProxy = this.createProxy(this.Vars, 'Vars' );
+    this.VarsProxy = this.createProxy(this.Vars, 'Vars');
     this.registerContext();
     $applications.subscribe(() => this.registerApplications());
     $components.subscribe(() => this.registerApplications());
@@ -73,11 +80,12 @@ class Executor {
   updateEditorContext() {
     const selectedComponensIds = this.Vars.selectedComponents || []
     const currentEditingApplicationUUID = getVar("global", "currentEditingApplication")?.value?.uuid;
-    Editor.Vars = Editor.Vars ??{}
+    Editor.Vars = Editor.Vars ?? {}
     Editor.selectedComponents = this.createProxy(Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid)));
-
   }
-  createProxy(target: any,scope?): any {
+
+  // Keep the createProxy method for other purposes, but don't use it for values
+  createProxy(target: any, scope?): any {
     const self = this;
 
     if (typeof target !== "object" || target === null) {
@@ -86,7 +94,6 @@ class Executor {
 
     return new Proxy(target, {
       get(target, prop, receiver) {
-       
         if (DEBUG) {
           console.log(`[DEBUG] Accessing property '${String(prop)}'`);
         }
@@ -100,10 +107,6 @@ class Executor {
         }
 
         if (typeof value === "object" && value !== null) {
-          if (self.proxyCache.has(value)) {
-            return self.proxyCache.get(value);
-          }
-
           const nestedProxy = new Proxy(value, {
             set(targetNested, propNested, valueNested, receiverNested) {
               const oldValue = targetNested[propNested as string];
@@ -117,7 +120,7 @@ class Executor {
 
               if (oldValue !== valueNested) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested, ctx :self.Current });
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested, ctx: self.Current });
                 });
               }
 
@@ -130,14 +133,13 @@ class Executor {
               const result = Reflect.deleteProperty(targetNested, propNested);
               if (result) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop , ctx :self.Current});
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx: self.Current });
                 });
               }
               return result;
             },
           });
 
-          self.proxyCache.set(value, nestedProxy);
           return nestedProxy;
         }
         return value;
@@ -147,7 +149,7 @@ class Executor {
         const result = Reflect.set(target, prop, value, receiver);
         if(scope){
           eventDispatcher.emit(
-            `${scope}:${(String(prop))}`, {value, ctx :self.Current}
+            `${scope}:${(String(prop))}`, {value, ctx: self.Current}
           )
         }
         if (DEBUG) {
@@ -156,7 +158,7 @@ class Executor {
 
         if (oldValue !== value) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop ,ctx :self.Current });
+            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx: self.Current });
           });
         }
 
@@ -169,7 +171,7 @@ class Executor {
         const result = Reflect.deleteProperty(target, prop);
         if (result) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx :self.Current });
+            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx: self.Current });
           });
         }
         return result;
@@ -177,6 +179,96 @@ class Executor {
     });
   }
 
+  /**
+   * Attaches a values property to the component that is backed by $runtimeValues
+   * @param component The component to attach the values property to
+   */
+  attachValuesProperty(component: any) {
+    const componentId = component.uniqueUUID;
+    
+    if (!componentId) {
+      console.error('Cannot attach values property: component uniqueUUID is undefined');
+      return;
+    }
+    
+    // If we already created a proxy for this component, return it
+    if (this.valuesProxyCache.has(component)) {
+      component.values = this.valuesProxyCache.get(component);
+      return;
+    }
+    
+    // Create a proxy object that reads/writes to the runtime values store
+    const valuesProxy = new Proxy({}, {
+      get: (target, prop) => {
+        // Get the current values from the store
+        const runtimeValues = $runtimeValues.get();
+        const componentValues = runtimeValues[componentId] || {};
+        return componentValues[prop];
+      },
+      
+      set: (target, prop, value) => {
+        // Set the value in the store
+        setComponentRuntimeValue(componentId, prop.toString(), value);
+        console.log(`component:value:set:${componentId}`)
+        eventDispatcher.emit(`component:value:set:${componentId}`)
+        return true;
+      },
+      
+      deleteProperty: (target, prop) => {
+        // Clear the specific value from the store
+        const runtimeValues = $runtimeValues.get();
+        const componentValues = { ...(runtimeValues[componentId] || {}) };
+        
+        if (prop in componentValues) {
+          delete componentValues[prop];
+          setComponentRuntimeValues(componentId, componentValues);
+          
+          // Emit an event
+          eventDispatcher.emit('component:value:remove', {
+            componentId,
+            key: prop
+          });
+        }
+        
+        return true;
+      },
+      
+      // Support iterating over values with Object.keys, for...in, etc.
+      ownKeys: (target) => {
+        const runtimeValues = $runtimeValues.get();
+        const componentValues = runtimeValues[componentId] || {};
+        return Reflect.ownKeys(componentValues);
+      },
+      
+      getOwnPropertyDescriptor: (target, prop) => {
+        const runtimeValues = $runtimeValues.get();
+        const componentValues = runtimeValues[componentId] || {};
+        
+        if (prop in componentValues) {
+          return {
+            value: componentValues[prop],
+            writable: true,
+            enumerable: true,
+            configurable: true
+          };
+        }
+        
+        return undefined;
+      },
+      
+      has: (target, prop) => {
+        const runtimeValues = $runtimeValues.get();
+        const componentValues = runtimeValues[componentId] || {};
+        return prop in componentValues;
+      }
+    });
+    
+    // Cache the proxy
+    this.valuesProxyCache.set(component, valuesProxy);
+    
+    // Attach the proxy to the component
+    component.values = valuesProxy;
+  }
 
   watchStyleChanges(target, callback) {
     if (typeof target !== "object" || target === null) {
@@ -220,6 +312,7 @@ class Executor {
   registerApplications() {
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
+    const runtimeValues = $runtimeValues.get();
 
     const loadedApplications = $applications.get();
     const loadedApplicationObj: Record<string, string> = {};
@@ -251,12 +344,24 @@ class Executor {
       this.Apps[loadedApplicationObj[application_id]][component.name] = component;
       this.applications[application_id][component.name] = component;
       
-
-      component.values = component.values || {};
-      component.values = this.createProxy(component.values, `values:${component.uuid}`);
-
-
-
+      // Initialize runtime values if they don't exist
+      if (component.uniqueUUID) {
+        // Get existing values or use empty object
+        const existingValues = runtimeValues[component.uniqueUUID] || {};
+        // If component has any initial values not yet in runtime store, add them
+        const initialValues = component.values || {};
+        
+        // Merge any new initial values with existing runtime values
+        if (Object.keys(initialValues).length > 0) {
+          const mergedValues = { ...existingValues, ...initialValues };
+          if (JSON.stringify(existingValues) !== JSON.stringify(mergedValues)) {
+            setComponentRuntimeValues(component.uniqueUUID, mergedValues);
+          }
+        }
+        
+        // Create a special property on the component that connects to the runtime store
+        this.attachValuesProperty(component);
+      }
     });
   
     componentsList.forEach((component: any) => {
@@ -273,8 +378,7 @@ class Executor {
     
     Editor.components = componentsList;
     this.PropertiesProxy = componentsList;
-    this.updateEditorContext()
-
+    this.updateEditorContext();
   }
 
   prepareClosureFunction(code: string): Function {
@@ -333,6 +437,7 @@ class Executor {
 export const ExecuteInstance = Executor.getInstance();
 ExecuteInstance.setcomponentRuntimeStyleAttribute = setcomponentRuntimeStyleAttribute;
 const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
+
 /**
  * Executes the given code within a closure, providing access to various context and application data.
  * @param {any} component - The component to execute the code for.
@@ -342,61 +447,44 @@ const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
  * @returns {any} The result of executing the closure function.
  */
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
-  // @todo: add values to component so we can use it in the closure and access to it with parent and children
   ExecuteInstance.Current = component;
+  
   if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
     component.children = [];
+    // Children will be populated in registerApplications
+  }
+  
+  // Ensure the values property is attached to the component
+  if (component.uniqueUUID) {
+    ExecuteInstance.attachValuesProperty(component);
     
-    const allComponents = Editor.components;
-    
-    component.childrenIds.forEach((childId: string) => {
-      const childComponent = allComponents.find((c: any) => c.uuid === childId);
-      if (childComponent) {
-        if (!childComponent.values) {
-          childComponent.values = ExecuteInstance.createProxy({}, `values:${childComponent.uuid}`);
-        }
-        component.children.push(childComponent);
+    // Also attach values to parent components recursively
+    let parentComponent = component.parent;
+    while (parentComponent) {
+      if (parentComponent.uniqueUUID) {
+        ExecuteInstance.attachValuesProperty(parentComponent);
       }
-    });
-    
-    if (!component.parent && component.parentId) {
-      const parentComponent = allComponents.find((c: any) => c.uuid === component.parentId);
-      if (parentComponent) {
-        if (!parentComponent.values) {
-          parentComponent.values = ExecuteInstance.createProxy({}, `values:${parentComponent.uuid}`);
-        }
-        component.parent = parentComponent;
-      }
+      parentComponent = parentComponent.parent;
     }
   }
-  if (!component.values) {
-    component.values = ExecuteInstance.createProxy({}, `values:${component.uuid}`);
-  } else if (!ExecuteInstance.proxyCache.has(component.values)) {
-    // If values exist but aren't proxied, create proxy
-    component.values = ExecuteInstance.createProxy(component.values, `values:${component.uuid}`);
-  }
-
+  
   ExecuteInstance.Event = EventData.event;
-ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
+  ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
 
-// Only create the proxy once
+  // Style handling remains the same
+  if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
+    const newProxy = observe(ExecuteInstance.Current.style, (target, prop, value) => {
+      ExecuteInstance.setcomponentRuntimeStyleAttribute(
+        ExecuteInstance.Current.uniqueUUID,
+        prop,
+        value
+      );
+    });
 
-if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
-  const newProxy = observe(ExecuteInstance.Current.style, (target,prop, value) => {
-    ExecuteInstance.setcomponentRuntimeStyleAttribute(
-      ExecuteInstance.Current.uniqueUUID,
-      prop,
-      value);
-    
-    //console.log(`Detected change: ${prop} = ${value}`);
-  });
-
-  ExecuteInstance.Current.style = newProxy;
-} else {
-  // If a proxy already exists, keep the existing one
-  ExecuteInstance.Current.style = ExecuteInstance.styleProxyCache.get(ExecuteInstance.Current.style);
-}
-
+    ExecuteInstance.Current.style = newProxy;
+  } else {
+    ExecuteInstance.Current.style = ExecuteInstance.styleProxyCache.get(ExecuteInstance.Current.style);
+  }
 
   if (isServer) {
     return;
@@ -411,6 +499,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   const Current = ExecuteInstance.Current;
   const currentPlatform = ExecuteInstance.currentPlatform;
   const Event = ExecuteInstance.Event;
+  
   function SetVar(symbol: string, value: any): void {
     setVar("global", symbol, value);
   }
@@ -423,10 +512,9 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     });
   }
 
-  function TraitCompoentFromSchema(text){
+  function TraitCompoentFromSchema(text) {
     traitCompoentFromSchema(text);
   }
-
 
   function updatePage(page: any): Promise<any> {
     return new Promise((resolve) => {
@@ -448,15 +536,14 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     return null;
   }
 
-  function UpdateApplication( application){
+  function UpdateApplication(application) {
     updateSepecificApplication(application);
   }
 
-   function GetVar(symbol: string): any {
+  function GetVar(symbol: string): any {
     if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
       return context["global"][symbol].value;
     }
-    
   }
 
   ExecuteInstance.GetVar = GetVar;
@@ -492,12 +579,13 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
   }
 
   function CopyComponentToClipboard(component: ComponentElement) {
-    copyCpmponentToClipboard(component)
+    copyCpmponentToClipboard(component);
   }
 
   function PasteComponentFromClipboard() {
     pasteComponentFromClipboard();
   }
+  
   function DeleteComponentAction(component: ComponentElement) {
     const userInput = confirm("Are you sure you want to delete this component?");
     if (userInput) {
@@ -506,10 +594,7 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
         component.application_id,
       );
     }
-
   }
-
-
 
   function updateName(component: ComponentElement, componentName: string) {
     updateComponentName(component.application_id, component.uuid, componentName);
@@ -527,10 +612,10 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
 
   async function InvokeFunction(name: string, payload: any = {}) {
     if(!ExecuteInstance.Vars.studio_functions){
-      const functions=  await loadFunctionsHandler();
+      const functions = await loadFunctionsHandler();
       ExecuteInstance.VarsProxy.studio_functions = [...functions]
     }
-   const targetFunction =  (ExecuteInstance.Vars.studio_functions ?? []).find(_function => _function.label ===name )
+    const targetFunction = (ExecuteInstance.Vars.studio_functions ?? []).find(_function => _function.label === name)
     try {
       const result = await invokeFunctionHandler(targetFunction.id, payload);
 
@@ -544,14 +629,15 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
         const textData = await result.text();
         console.log("Text Response:", textData);
         return textData;
-
       }
     } catch (error) {
       console.error("Error in InvokeFunctionHandler:", error);
     }
   }
+  
   const closureFunction = ExecuteInstance.prepareClosureFunction(code);
 
+  // Execute the closure with all the needed context
   return closureFunction(
     FileStorage,
     eventDispatcher,
@@ -594,4 +680,3 @@ if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
     Utils
   );
 }
-

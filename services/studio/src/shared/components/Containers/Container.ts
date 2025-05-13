@@ -36,6 +36,7 @@ export class VerticalContainer extends BaseElementBlock {
   }
 
   override updated(changedProperties: Map<string, any>) {
+    super.updated(changedProperties);
     if (changedProperties.has("component")) {
       this.updateChildrenComponents();
     }
@@ -70,7 +71,7 @@ export class VerticalContainer extends BaseElementBlock {
         @click="${(e: Event) => this.executeEvent("onClick", e)}"
       >
         ${this.childrenComponents.length
-          ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode)
+          ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode, {...this.component, uniqueUUID : this.uniqueUUID})
           : nothing}
       </div>
     `;
@@ -102,7 +103,7 @@ export class VerticalContainer extends BaseElementBlock {
               })}
             >
               ${this.childrenComponents.length
-                ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode)
+                ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode, {...this.component, uniqueUUID : this.uniqueUUID})
                 : html`
                     <div
                       class="empty-message"

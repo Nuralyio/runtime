@@ -42,50 +42,50 @@ import "@shared/components/Document/Document.ts";
 import "@shared/components/Video/Video.ts";
 
 // Reusable templates for common components
-const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></select-block>`;
-const iconButtonTemplate = (props: any, isViewMode: boolean)  => html`<icon-button-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></icon-button-block>`;
-const colorPickerTemplate = (props: any, isViewMode: boolean)  => html`<color-picker-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></color-picker-block>`;
-const numberInputTemplate = (props: any, isViewMode: boolean)  => html`<number-input-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></number-input-block>`;
-const shadowBoxTemplate = (props: any, isViewMode: boolean)  => html`<attribute-box-shadow-value .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></attribute-box-shadow-value>`;
-const borderRadiusTemplate = (props: any, isViewMode: boolean)  => html`<attribute-border-value .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></attribute-border-value>`;
-const eventTemplate = (props: any, isViewMode: boolean)  => html`<parameter-event-handler .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></parameter-event-handler>`;
-const tableTemplate = (props: any, isViewMode: boolean)  => html`<table-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></table-block>`;
-const textInputTemplate = (props: any, isViewMode: boolean)  => html`<text-input-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></text-input-block>`;
-const textLabelTemplate = (props: any, isViewMode: boolean)  => html`<text-label-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></text-label-block>`;
-const buttonTemplate = (props: any, isViewMode: boolean)  => html`<button-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></button-block>`;
-const tabsTemplate = (props: any, isViewMode: boolean)  => html`<tabs-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></tabs-block>`;
-const menuTemplate = (props: any, isViewMode: boolean)  => html`<menu-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></menu-block>`;
-const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<vertical-container-block .isViewMode=${isViewMode}  .item=${props.item} .component=${props.component}></vertical-container-block>`;
-const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<collection-viewer .isViewMode=${isViewMode} .component=${props.component}></collection-viewer>`;
-const checkboxTemplate = (props: any, isViewMode: boolean)  => html`<checkbox-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></checkbox-block>`;
-const datePickerTemplate = (props: any, isViewMode: boolean)  => html`<date-picker-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></date-picker-block>`;
-const iconTemplate = (props: any, isViewMode: boolean)  => html`<icon-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></icon-block>`;
-const imageTemplate = (props: any, isViewMode: boolean)  => html`<image-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></image-block>`;
-const radioButtonTemplate = (props: any, isViewMode: boolean)  => html`<radio-button-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></radio-button-block>`;
-const aiTemplate = (props: any, isViewMode: boolean)  => html`<ai-chat-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></ai-chat-block>`;
-const iconPickerTemplate = (props: any, isViewMode: boolean)  => html`<icon-picker-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></icon-picker-block>`;
-const usersDropdownTemplate = (props: any, isViewMode: boolean)  => html`<users-dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></users-dropdown-block>`;
-const insertDropdownTemplate = (props: any, isViewMode: boolean)  => html`<insert-dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
-const microAppTemplate = (props: any, isViewMode: boolean)  => html`<micro-app-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></micro-app-block>`;
-const collapseTemplate = (props: any, isViewMode: boolean)  => html`<collapse-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></collapse-block>`;
-const dividerTemplate = (props: any, isViewMode: boolean)  => html`<divider-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></divider-block>`;
-const handlersTemplate = (props: any, isViewMode: boolean)  => html`<handler-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></handler-block>`;
-const dropDownTemplate = (props: any, isViewMode: boolean)  => html`<dropdown-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></dropdown-block>`;
-const refComponentTemplate = (props: any, isViewMode: boolean)  => html`<ref-component-container-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></ref-component-container-block>`;
-const codeTemplate = (props: any, isViewMode: boolean)  => html`<code-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></code-block>`;
-const richTextTemplate = (props: any, isViewMode: boolean)  => html`<rich-text-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></rich-text-block>`;
-const embedURLTemplate = (props: any, isViewMode: boolean)  => html`<embed-url-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></embed-url-block>`;
-const linkTemplate = (props: any, isViewMode: boolean)  => html`<link-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></link-block>`;
-const fileUploadTemplate = (props: any, isViewMode: boolean)  => html`<file-upload-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></file-upload-block>`;
-const videoTemplate = (props: any, isViewMode: boolean)  => html`<video-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></video-block>`;
-const documentTemplate = (props: any, isViewMode: boolean)  => html`<document-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></document-block>`;
+const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></select-block>`;
+const iconButtonTemplate = (props: any, isViewMode: boolean)  => html`<icon-button-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></icon-button-block>`;
+const colorPickerTemplate = (props: any, isViewMode: boolean)  => html`<color-picker-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></color-picker-block>`;
+const numberInputTemplate = (props: any, isViewMode: boolean)  => html`<number-input-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></number-input-block>`;
+const shadowBoxTemplate = (props: any, isViewMode: boolean)  => html`<attribute-box-shadow-value .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></attribute-box-shadow-value>`;
+const borderRadiusTemplate = (props: any, isViewMode: boolean)  => html`<attribute-border-value .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></attribute-border-value>`;
+const eventTemplate = (props: any, isViewMode: boolean)  => html`<parameter-event-handler .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></parameter-event-handler>`;
+const tableTemplate = (props: any, isViewMode: boolean)  => html`<table-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></table-block>`;
+const textInputTemplate = (props: any, isViewMode: boolean)  => html`<text-input-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></text-input-block>`;
+const textLabelTemplate = (props: any, isViewMode: boolean)  => html`<text-label-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></text-label-block>`;
+const buttonTemplate = (props: any, isViewMode: boolean)  => html`<button-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></button-block>`;
+const tabsTemplate = (props: any, isViewMode: boolean)  => html`<tabs-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></tabs-block>`;
+const menuTemplate = (props: any, isViewMode: boolean)  => html`<menu-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></menu-block>`;
+const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<vertical-container-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></vertical-container-block>`;
+const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<collection-viewer .isViewMode=${isViewMode} .parentcomponent=${props.parent} .component=${props.component}></collection-viewer>`;
+const checkboxTemplate = (props: any, isViewMode: boolean)  => html`<checkbox-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></checkbox-block>`;
+const datePickerTemplate = (props: any, isViewMode: boolean)  => html`<date-picker-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></date-picker-block>`;
+const iconTemplate = (props: any, isViewMode: boolean)  => html`<icon-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></icon-block>`;
+const imageTemplate = (props: any, isViewMode: boolean)  => html`<image-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></image-block>`;
+const radioButtonTemplate = (props: any, isViewMode: boolean)  => html`<radio-button-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></radio-button-block>`;
+const aiTemplate = (props: any, isViewMode: boolean)  => html`<ai-chat-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></ai-chat-block>`;
+const iconPickerTemplate = (props: any, isViewMode: boolean)  => html`<icon-picker-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></icon-picker-block>`;
+const usersDropdownTemplate = (props: any, isViewMode: boolean)  => html`<users-dropdown-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></users-dropdown-block>`;
+const insertDropdownTemplate = (props: any, isViewMode: boolean)  => html`<insert-dropdown-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></insert-dropdown-block>`;
+const microAppTemplate = (props: any, isViewMode: boolean)  => html`<micro-app-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></micro-app-block>`;
+const collapseTemplate = (props: any, isViewMode: boolean)  => html`<collapse-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></collapse-block>`;
+const dividerTemplate = (props: any, isViewMode: boolean)  => html`<divider-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></divider-block>`;
+const handlersTemplate = (props: any, isViewMode: boolean)  => html`<handler-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></handler-block>`;
+const dropDownTemplate = (props: any, isViewMode: boolean)  => html`<dropdown-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></dropdown-block>`;
+const refComponentTemplate = (props: any, isViewMode: boolean)  => html`<ref-component-container-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></ref-component-container-block>`;
+const codeTemplate = (props: any, isViewMode: boolean)  => html`<code-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></code-block>`;
+const richTextTemplate = (props: any, isViewMode: boolean)  => html`<rich-text-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></rich-text-block>`;
+const embedURLTemplate = (props: any, isViewMode: boolean)  => html`<embed-url-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></embed-url-block>`;
+const linkTemplate = (props: any, isViewMode: boolean)  => html`<link-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></link-block>`;
+const fileUploadTemplate = (props: any, isViewMode: boolean)  => html`<file-upload-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></file-upload-block>`;
+const videoTemplate = (props: any, isViewMode: boolean)  => html`<video-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></video-block>`;
+const documentTemplate = (props: any, isViewMode: boolean)  => html`<document-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></document-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
-  <invoke-function-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></invoke-function-block>
+  <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
 
 
 const importExportTemplate = (props: any, isViewMode: boolean)  => html`
-  <export-import-block .isViewMode=${isViewMode} .item=${props.item} .component=${props.component}></export-import-block>
+  <export-import-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></export-import-block>
 `;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
@@ -178,12 +178,12 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
   }
 }
 
-export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean): TemplateResult {
+export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean, parent?:ComponentElement ): TemplateResult {
   if (!components || !components.length) return html``;
   return html`
     ${components.map((component: ComponentElement) => {
-    const commonProps = { item: { ...item }, component };
-    return renderComponentElement(component, commonProps, isViewMode);
+    const commonProps = { item: { ...item }, component , parent : { ...parent } };
+    return renderComponentElement(component, commonProps, isViewMode );
   })}
   `;
 }
