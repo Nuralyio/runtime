@@ -47,7 +47,7 @@ class Executor {
   currentPlatform: any ;
 
   private listeners: Record<string, Set<string>> = {};
-  private proxyCache: WeakMap<object, any> = new WeakMap();
+   proxyCache: WeakMap<object, any> = new WeakMap();
   styleProxyCache = new WeakMap();
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   GetVar: (symbol: string) => any;
@@ -77,7 +77,7 @@ class Executor {
     Editor.selectedComponents = this.createProxy(Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid)));
 
   }
-  private createProxy(target: any,scope?): any {
+  createProxy(target: any,scope?): any {
     const self = this;
 
     if (typeof target !== "object" || target === null) {
@@ -147,7 +147,7 @@ class Executor {
         const result = Reflect.set(target, prop, value, receiver);
         if(scope){
           eventDispatcher.emit(
-            `${scope}:${(String(prop))}`,
+            `${scope}:${(String(prop))}`, {value, ctx :self.Current}
           )
         }
         if (DEBUG) {
@@ -250,6 +250,13 @@ class Executor {
       
       this.Apps[loadedApplicationObj[application_id]][component.name] = component;
       this.applications[application_id][component.name] = component;
+      
+
+      component.values = component.values || {};
+      component.values = this.createProxy(component.values, `values:${component.uuid}`);
+
+
+
     });
   
     componentsList.forEach((component: any) => {
@@ -335,7 +342,7 @@ const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
  * @returns {any} The result of executing the closure function.
  */
 export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
-
+  // @todo: add values to component so we can use it in the closure and access to it with parent and children
   ExecuteInstance.Current = component;
   if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
     component.children = [];
@@ -345,6 +352,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     component.childrenIds.forEach((childId: string) => {
       const childComponent = allComponents.find((c: any) => c.uuid === childId);
       if (childComponent) {
+        if (!childComponent.values) {
+          childComponent.values = ExecuteInstance.createProxy({}, `values:${childComponent.uuid}`);
+        }
         component.children.push(childComponent);
       }
     });
@@ -352,11 +362,19 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     if (!component.parent && component.parentId) {
       const parentComponent = allComponents.find((c: any) => c.uuid === component.parentId);
       if (parentComponent) {
+        if (!parentComponent.values) {
+          parentComponent.values = ExecuteInstance.createProxy({}, `values:${parentComponent.uuid}`);
+        }
         component.parent = parentComponent;
       }
     }
   }
-
+  if (!component.values) {
+    component.values = ExecuteInstance.createProxy({}, `values:${component.uuid}`);
+  } else if (!ExecuteInstance.proxyCache.has(component.values)) {
+    // If values exist but aren't proxied, create proxy
+    component.values = ExecuteInstance.createProxy(component.values, `values:${component.uuid}`);
+  }
 
   ExecuteInstance.Event = EventData.event;
 ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
