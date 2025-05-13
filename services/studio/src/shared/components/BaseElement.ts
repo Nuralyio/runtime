@@ -49,6 +49,8 @@ export class BaseElementBlock extends LitElement {
   
   /** @state {Object} Values from style handlers */
   @state() stylesHandlersValue = {};
+
+  @property({ type: Object }) parentcomponent: ComponentElement;
   
   /** @state {Object} Registered callbacks for input handlers */
   @state() callbacks = {};
@@ -291,6 +293,8 @@ export class BaseElementBlock extends LitElement {
       if (prev?.event?.onInit !== curr?.event?.onInit) {
         executeCodeWithClosure(curr, getNestedAttribute(curr, "event.onInit"), {}, this.item);
       }
+      this.component.uniqueUUID = this.uniqueUUID;
+      this.component.parent = this.parentcomponent;
 
       if (prev?.uuid !== curr?.uuid) {
         this.traitInputsHandlers();
@@ -352,12 +356,41 @@ export class BaseElementBlock extends LitElement {
         this.requestUpdate();
       })
     );
+    this.subscription.add(
+    eventDispatcher.on(`component:value:set:${this.uniqueUUID}`, () => {
+      this.traitInputsHandlers();
+      // @todo: activate this when trigger chidlren rending 
+      this.component.childrenIds?.forEach((childId) => {
+        eventDispatcher.emit(`component:request:refresh:${childId}`)
+      })
+
+   })   )
+   this.subscription.add(
+   eventDispatcher.on(`component:request:refresh:${this.component.uuid}`, () => {
+    this.traitInputsHandlers();
+    this.component.childrenIds?.forEach((childId) => {
+      eventDispatcher.emit(`component:request:refresh:${childId}`)
+    })
+   })
+  )
+       
+  //  this.subscription.add(
+  //     $componentRuntimeValuesById(this.uniqueUUID).subscribe((styles) => {
+  //     // @todo: disable this when trigger chidlren rending 
+
+  //      this.traitInputsHandlers();
+  //     })
+  //   );
 
     // Subscribe to property changes and updates
     this.subscription.add(
       eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, async() => {
         this.traitInputsHandlers();
         this.traitStylesHandlers();
+         /** @todo:  check for event leak */
+        this.component.childrenIds?.forEach((childId) => {
+          eventDispatcher.emit(`component:request:refresh:${childId}`)
+        })
       })
     );
     

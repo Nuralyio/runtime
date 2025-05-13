@@ -13,6 +13,7 @@ export async function traitInputHandler(
     errors?: Record<string, any>;
     ExecuteInstance: any;
     id?: string;
+    uniqueUUID?: string;
   },
   input: any,
   inputName: string
@@ -31,7 +32,7 @@ export async function traitInputHandler(
   if (input.type === "handler") {
     try {
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-      const fn = executeCodeWithClosure(ctx.component, raw, undefined, { ...ctx.item });
+      const fn = executeCodeWithClosure({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
       const result = Utils.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {

@@ -109,6 +109,136 @@ export const $runtimeStylescomponentStyleByID = ($componentId: string) => comput
 export const clearComponentRuntimeStyleAttributes = () => {
   $runtimeStyles.set({});
 }
+
+// Define the type for runtime values
+export interface RuntimeValuesStore {
+  [key: string]: {
+    [key: string]: any;
+  }
+}
+
+// Initialize with empty object
+export const $runtimeValues = deepMap<RuntimeValuesStore>({});
+
+/**
+ * Set a runtime value for a component
+ * @param componentId - The ID of the component
+ * @param key - The key for the value
+ * @param value - The value to set
+ */
+export const setComponentRuntimeValue = (componentId: string, key: string, value: any) => {
+  if (!componentId) {
+    console.error('Cannot set runtime value: componentId is undefined');
+    return;
+  }else{
+    console.log('setComponentRuntimeValue', componentId, key, value)
+  }
+  $runtimeValues.setKey(componentId, {
+    ...$runtimeValues.get()[componentId],
+    [key]: value
+  });
+  console.log( $runtimeValues.get()[componentId])
+  
+  // Emit an event to notify subscribers about the change
+  eventDispatcher.emit('component:value:change', {
+    componentId,
+    key,
+    value
+  });
+};
+
+/**
+ * Set multiple runtime values for a component at once
+ * @param componentId - The ID of the component
+ * @param values - Object containing key-value pairs to set
+ */
+export const setComponentRuntimeValues = (componentId: string, values: Record<string, any>) => {
+  $runtimeValues.setKey(componentId, {
+    ...$runtimeValues.get()[componentId],
+    ...values
+  });
+  
+  // Emit an event to notify subscribers about the changes
+  eventDispatcher.emit('component:values:change', {
+    componentId,
+    values
+  });
+};
+
+/**
+ * Get a computed store of all runtime values for a specific component
+ * @param componentId - The ID of the component
+ * @returns A computed store with the component's runtime values
+ */
+export const $componentRuntimeValuesById = (componentId: string) => computed(
+  [$runtimeValues],
+  (values) => {
+    return values[componentId] || {};
+  }
+);
+
+/**
+ * Get a computed store for a specific runtime value of a component
+ * @param componentId - The ID of the component
+ * @param key - The key of the value to get
+ * @returns A computed store with the specific runtime value
+ */
+export const $componentRuntimeValueByKey = (componentId: string, key: string) => computed(
+  [$runtimeValues],
+  (values) => {
+    const componentValues = values[componentId] || {};
+    return componentValues[key];
+  }
+);
+
+/**
+ * Clear all runtime values for a specific component
+ * @param componentId - The ID of the component
+ */
+export const clearComponentRuntimeValues = (componentId: string) => {
+  $runtimeValues.setKey(componentId, {});
+  
+  // Emit an event to notify subscribers about the clear operation
+  eventDispatcher.emit('component:values:clear', {
+    componentId
+  });
+};
+
+/**
+ * Clear a specific runtime value for a component
+ * @param componentId - The ID of the component
+ * @param key - The key of the value to clear
+ */
+export const clearComponentRuntimeValue = (componentId: string, key: string) => {
+  const currentValues = { ...$runtimeValues.get()[componentId] };
+  if (currentValues && key in currentValues) {
+    delete currentValues[key];
+    $runtimeValues.setKey(componentId, currentValues);
+    
+    // Emit an event to notify subscribers about the removal
+    eventDispatcher.emit('component:value:remove', {
+      componentId,
+      key
+    });
+  }
+};
+
+/**
+ * Clear all runtime values for all components
+ */
+export const clearAllRuntimeValues = () => {
+  $runtimeValues.set({});
+  
+  // Emit an event to notify subscribers that all values have been cleared
+  eventDispatcher.emit('component:values:clear:all');
+};
+
+// Subscribe to changes in runtime values for debugging or side effects
+$runtimeValues.subscribe((values) => {
+  // This can be used for logging or triggering other side effects
+  // when runtime values change
+});
+
 /**
  * Get all descendant components of a component recursively
  * @param applicationId - The ID of the application

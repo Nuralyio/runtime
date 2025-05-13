@@ -68,6 +68,7 @@ export interface ComponentElement {
   childrenIds?: string[];
   pageId?: string;
   application_id?: string;
+  uniqueUUID?: string;
 }
 
 export default {};
