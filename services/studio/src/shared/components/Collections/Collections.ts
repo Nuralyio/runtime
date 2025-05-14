@@ -43,7 +43,6 @@ export class CollectionViewer extends BaseElementBlock {
   override async connectedCallback() {
     await super.connectedCallback();
     this.updateChildrenComponents();
-    
     if (this.component?.event?.onInit) {
       executeCodeWithClosure(
         this.component,

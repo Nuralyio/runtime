@@ -38,10 +38,10 @@ export async function traitInputHandler(
     } catch (error: any) {
       ctx.errors[inputName] = { error: error.message };
       const code = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-      console.log("inputName >",inputName , "| component uuid >", ctx.component.uuid )
-      console.log( formatCodeWithErrorHighlight(code, error,))
-     // console.log(pointToErrorInCode(e, getNestedAttribute(ctx.component, `input.${inputName}`).value));
 
+      // add selector so it can used to select component in the editor
+      console.log(`${ctx.component.name} > inputName > ${inputName} | component uuid > ${ctx.component.uuid}` )
+      console.log( formatCodeWithErrorHighlight(code, error,))
       throw error;
     }
   } else {

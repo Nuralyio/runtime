@@ -11,8 +11,8 @@ import { type ComponentElement, type DraggingComponentInfo } from "$store/compon
 import { $applicationComponents, $draggingComponentInfo } from "$store/component/store.ts";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { $applicationPages, $currentPage, $currentPageViewPort } from "$store/page";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
 import { getVar } from "$store/context";
@@ -27,6 +27,10 @@ import { updatePageInfo } from "$store/actions/page/updatePageInfo.ts";
 import { setEnvirementMode } from "$store/actions/editor/setEnvirementMode";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@utils/clipboard-utils";
 import { ExecuteInstance } from "core/Kernel";
+import type { LogPanel } from "../LogPanel/LogPanel";
+import { Subscription } from "rxjs";
+import Convert from "ansi-to-html";
+var convert = new Convert();
 
 @customElement("content-page")
 export class PageContent extends LitElement {
@@ -40,6 +44,14 @@ export class PageContent extends LitElement {
   mode: ViewMode = ViewMode.Edit;
   @state() zoomLevel = 100;
   @state() currentPlatform: any;
+
+
+  /** @type {Subscription} RxJS subscription for cleanup */
+  private subscription = new Subscription();
+
+
+  @query("log-panel")
+  private logPanel!: LogPanel;
 
   constructor() {
     super();
@@ -98,6 +110,7 @@ export class PageContent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+
     $applicationPages($currentApplication.get()?.uuid).subscribe((pages: PageElement[]) => {
       this.refreshComponent();
     })
@@ -182,6 +195,12 @@ export class PageContent extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("keydown", this.handleEscapeKey.bind(this));
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this.subscription.add(eventDispatcher.on("kernel:log", (logsMessage) => {
+      this.logPanel.addLogEntry(typeof logsMessage =="string" ?convert.toHtml(logsMessage) : logsMessage );
+    }))
   }
 
   handleEscapeKey(e) {
@@ -344,6 +363,10 @@ export class PageContent extends LitElement {
                 
               </div>`}
       </div>
+      ${!this.isPreviewMode() ? html`
+        <log-panel></log-panel>
+      ` : nothing}
+
       <!-- </rectangle-selection> -->
     `;
   }

@@ -124,6 +124,10 @@ class Editor {
     return { ...baseInput, ...breakpointInput };
   }
 
+  log(log){
+    eventDispatcher.emit("kernel:log",log)
+  }
+
 
 
 }
