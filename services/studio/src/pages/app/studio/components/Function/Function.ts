@@ -27,7 +27,6 @@ export class FunctionContent extends LitElement {
   @property({ type: Object })
   detail: { handler: string; uuid?: string } = { handler: "" };
 
-  // Use @query to get a reference to the log-panel component
   @query("log-panel")
   private logPanel!: LogPanel;
 

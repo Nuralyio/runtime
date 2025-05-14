@@ -1,6 +1,7 @@
 // Executor.ts
 
 import { GenerateName } from "utils/naming-generator";
+import deepEqual from "fast-deep-equal";
 
 import { $applications } from "$store/apps";
 import {
@@ -87,93 +88,114 @@ class Executor {
   // Keep the createProxy method for other purposes, but don't use it for values
   createProxy(target: any, scope?): any {
     const self = this;
-
+  
     if (typeof target !== "object" || target === null) {
       return target;
     }
-
+  
     return new Proxy(target, {
       get(target, prop, receiver) {
         if (DEBUG) {
           console.log(`[DEBUG] Accessing property '${String(prop)}'`);
         }
+  
         const value = Reflect.get(target, prop, receiver);
+  
         if (!self.listeners[String(prop)]) {
           self.listeners[String(prop)] = new Set<string>();
         }
-
+  
         if (self.Current.name) {
           self.listeners[String(prop)].add(self.Current.name);
         }
-
+  
         if (typeof value === "object" && value !== null) {
           const nestedProxy = new Proxy(value, {
             set(targetNested, propNested, valueNested, receiverNested) {
               const oldValue = targetNested[propNested as string];
               const result = Reflect.set(targetNested, propNested, valueNested, receiverNested);
-
+  
               if (DEBUG) {
                 console.log(
                   `[DEBUG] Updated nested property '${String(propNested)}' from '${oldValue}' to '${valueNested}'`
                 );
               }
-
-              if (oldValue !== valueNested) {
+  
+              if (!deepEqual(oldValue, valueNested)) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, value: valueNested, ctx: self.Current });
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, {
+                    prop,
+                    value: valueNested,
+                    ctx: self.Current
+                  });
                 });
               }
-
+  
               return result;
             },
             deleteProperty(targetNested, propNested) {
               if (DEBUG) {
                 console.log(`[DEBUG] Deleting nested property '${String(propNested)}'`);
               }
+  
               const result = Reflect.deleteProperty(targetNested, propNested);
               if (result) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx: self.Current });
+                  eventDispatcher.emit(`component-property-changed:${componentName}`, {
+                    prop,
+                    ctx: self.Current
+                  });
                 });
               }
               return result;
             },
           });
-
+  
           return nestedProxy;
         }
+  
         return value;
       },
+  
       set(target, prop, value, receiver) {
         const oldValue = target[prop as string];
         const result = Reflect.set(target, prop, value, receiver);
-        if(scope){
-          eventDispatcher.emit(
-            `${scope}:${(String(prop))}`, {value, ctx: self.Current}
-          )
+  
+        if (scope) {
+          eventDispatcher.emit(`${scope}:${String(prop)}`, { value, ctx: self.Current });
         }
+  
         if (DEBUG) {
           console.log(`[DEBUG] Set property '${String(prop)}' from '${oldValue}' to '${value}'`);
         }
-
-        if (oldValue !== value) {
+  
+        if (!deepEqual(oldValue, value)) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx: self.Current });
+            eventDispatcher.emit(`component-property-changed:${componentName}`, {
+              prop,
+              ctx: self.Current
+            });
           });
         }
-
+  
         return result;
       },
+  
       deleteProperty(target, prop) {
         if (DEBUG) {
           console.log(`[DEBUG] Deleting property '${String(prop)}'`);
         }
+  
         const result = Reflect.deleteProperty(target, prop);
         if (result) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, { prop, ctx: self.Current });
+            eventDispatcher.emit(`component-property-changed:${componentName}`, {
+              prop,
+              ctx: self.Current
+            });
           });
         }
+  
         return result;
       },
     });
@@ -382,6 +404,7 @@ class Executor {
   }
 
   prepareClosureFunction(code: string): Function {
+    console.log= Editor.log;
     if (!this.functionCache[code]) {
       this.functionCache[code] = new Function(
         "FileStorage",

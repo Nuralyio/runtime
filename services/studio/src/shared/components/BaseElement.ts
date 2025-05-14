@@ -45,7 +45,7 @@ export class BaseElementBlock extends LitElement {
   @property({ type: Boolean }) isViewMode = false;
   
   /** @state {Object} Values from input handlers */
-  @state() inputHandlersValue: { display?: boolean } = {};
+  @state() inputHandlersValue: any = {};
   
   /** @state {Object} Values from style handlers */
   @state() stylesHandlersValue = {};
@@ -373,15 +373,6 @@ export class BaseElementBlock extends LitElement {
     })
    })
   )
-       
-  //  this.subscription.add(
-  //     $componentRuntimeValuesById(this.uniqueUUID).subscribe((styles) => {
-  //     // @todo: disable this when trigger chidlren rending 
-
-  //      this.traitInputsHandlers();
-  //     })
-  //   );
-
     // Subscribe to property changes and updates
     this.subscription.add(
       eventDispatcher.on(`component-property-changed:${String(this.component.name)}`, async() => {

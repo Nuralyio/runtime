@@ -1,6 +1,8 @@
 import { customElement, state, query } from "lit/decorators.js";
 import { repeat } from 'lit/directives/repeat.js';
 import { css, html, LitElement, type TemplateResult } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { LocalStorageService } from "core/localStorageService";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
@@ -8,7 +10,7 @@ export class LogPanel extends LitElement {
   private logContent: any[] = [html`Log output will appear here...`];
 
   @state()
-  private showLog: boolean = true;
+  private showLog: boolean = LocalStorageService.get<boolean>('logPanelVisible', false);
 
   // Use @query to get a reference to the log-content div
   @query('.log-content')
@@ -34,6 +36,8 @@ export class LogPanel extends LitElement {
     :host {
       width: 100%;
       display: block;
+      position: relative; /* Allow absolute positioning of children */
+      min-height: 40px; /* Space for the show log button */
       /* Define CSS variables for light theme */
       --background-color: #f9f9f9;
       --header-background: #ddd;
@@ -56,20 +60,27 @@ export class LogPanel extends LitElement {
     }
 
     .log-container {
+      position: fixed; /* Fixed position relative to viewport */
+      bottom: 0;
+      left: 0;
+      right: 0;
       width: 100%;
-      height: 300px; /* Initial height */
+      height: 500px; /* Initial height */
       background-color: var(--background-color);
       border-top: 1px solid var(--border-color);
       box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
       overflow: auto;
       display: flex;
       flex-direction: column;
-      min-height: 150px; /* Optional: Minimum height */
-      transition: height 0.2s ease, background-color 0.3s, color 0.3s;
+      min-height: 150px;
+      z-index: 1000; /* Ensure it appears above other content */
+      transition: height 0.02s ease;
       color: var(--text-color);
     }
+    
     .log-header {
       display: flex;
+      font-size: 14px;
       justify-content: space-between;
       align-items: center;
       padding: 8px;
@@ -79,32 +90,42 @@ export class LogPanel extends LitElement {
       cursor: row-resize; /* Change cursor to indicate draggable */
       user-select: none; /* Prevent text selection during drag */
     }
+    
     .log-content {
       padding: 8px;
       font-family: monospace;
-      font-size: 14px;
       white-space: pre-wrap;
       overflow-wrap: break-word;
       flex: 1;
       overflow: auto;
       color: var(--text-color);
     }
+    
     button.close-button {
       border: none;
       background: none;
       cursor: pointer;
-      font-size: 16px;
       line-height: 1;
       color: var(--button-color);
       transition: color 0.3s;
     }
+    
     button.close-button:hover {
       color: var(--button-hover);
     }
+    
     .show-log-button {
-      margin: 8px;
+      position: fixed; /* Fixed position for the button too */
+      bottom: 8px;
+      right: 8px;
+      z-index: 999; /* Just below the panel but above other content */
+      background-color: var(--header-background);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    /* Remove theme-toggle styles since the toggle button is removed */
   `;
 
   constructor() {
@@ -118,7 +139,6 @@ export class LogPanel extends LitElement {
     // Listen for changes in the system color scheme
     this.colorSchemeMedia.addEventListener('change', this.handleColorSchemeChange);
     window.addEventListener('add-log' , (e) => {
-
       this.addLogEntry(e.detail.result)
     });
   }
@@ -146,11 +166,16 @@ export class LogPanel extends LitElement {
    */
   public addLogEntry(entry: string | TemplateResult) {
     if (typeof entry === 'string') {
-      this.logContent = [...this.logContent, html`${entry}`];
-    } else {
+      this.logContent = [...this.logContent, html`${unsafeHTML(entry)}`];
+    } else  if(typeof entry === "object"){
+      entry = JSON.stringify(entry, null, 2);
       this.logContent = [...this.logContent, entry];
     }
     this.requestUpdate(); // Ensure the component updates
+    
+    // Scroll to bottom whenever a new entry is added
+    // Use setTimeout to ensure scrolling happens after DOM update
+    setTimeout(() => this.scrollToBottom(), 0);
   }
 
   /**
@@ -158,6 +183,10 @@ export class LogPanel extends LitElement {
    */
   private toggleLog() {
     this.showLog = !this.showLog;
+    LocalStorageService.set('logPanelVisible', this.showLog);
+    if( this.showLog){
+     setTimeout(() => this.scrollToBottom(), 0);
+    }
   }
 
   /**
@@ -184,10 +213,15 @@ export class LogPanel extends LitElement {
    * @param event Mouse down event.
    */
   private onMouseDown(event: MouseEvent) {
+    if (!event.target || (event.target as HTMLElement).closest('button')) {
+      return; // Don't start resize when clicking the close button
+    }
+    
     this.isResizing = true;
     this.startY = event.clientY;
     const computedStyle = window.getComputedStyle(this.logContainer);
     this.startHeight = parseInt(computedStyle.height, 10);
+    
     window.addEventListener('mousemove', this.onMouseMove);
     window.addEventListener('mouseup', this.onMouseUp);
     event.preventDefault(); // Prevent text selection
@@ -195,16 +229,22 @@ export class LogPanel extends LitElement {
 
   /**
    * Handle the resizing while the mouse is moving.
+   * Resizes from bottom edge (moving up makes panel larger)
    * @param event Mouse move event.
    */
   private onMouseMove = (event: MouseEvent) => {
     if (!this.isResizing) return;
+    
+    // Calculate how much the mouse moved from the starting position
     const dy = this.startY - event.clientY;
+    // Add dy to startHeight to make panel larger when moving up
     let newHeight = this.startHeight + dy;
+    
     // Optional: Enforce min and max heights
     const minHeight = 150;
-    const maxHeight = 700;
+    const maxHeight = window.innerHeight * 0.8; // Max 80% of viewport height
     newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+    
     this.logContainer.style.height = `${newHeight}px`;
   }
 
@@ -225,7 +265,7 @@ export class LogPanel extends LitElement {
         ? html`
           <div class="log-container">
             <div class="log-header" @mousedown=${this.onMouseDown}>
-              <span>Log</span>
+              <span>Console</span>
               <button class="close-button" @click=${this.toggleLog}>✖</button>
             </div>
             <div class="log-content">
@@ -235,7 +275,7 @@ export class LogPanel extends LitElement {
         `
         : html`
           <hy-button class="show-log-button" @click=${this.toggleLog}>
-            Show Log
+            Console
           </hy-button>
         `}
     `;

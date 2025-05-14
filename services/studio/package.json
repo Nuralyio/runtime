@@ -64,6 +64,7 @@
     "@webcomponents/template-shadowroot": "^0.2.1",
     "acorn": "^8.12.1",
     "acorn-walk": "^8.3.4",
+    "ansi-to-html": "^0.7.2",
     "astro": "^4.16.14",
     "astro-compressor": "^1.0.0",
     "astrojs-service-worker": "^2.0.0",
