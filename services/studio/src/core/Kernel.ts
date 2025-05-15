@@ -1,6 +1,5 @@
 // Executor.ts
 
-import { GenerateName } from "utils/naming-generator";
 import deepEqual from "fast-deep-equal";
 
 import { $applications } from "$store/apps";
@@ -12,26 +11,12 @@ import {
   setComponentRuntimeValues
 } from "$store/component/store.ts";
 import type { ComponentElement } from "$store/component/interface";
-import { $context, getVar, setVar } from "$store/context";
-import { addPageHandler, updatePageHandler } from "$store/handlers/pages/handler";
+import { $context, getVar } from "$store/context";
 import { isServer } from "utils/envirement";
-import { addComponentAction } from "$store/actions/component/addComponentAction.ts";
-import { updateComponentAttributes } from "$store/actions/component/updateComponentAttributes.ts";
-import { openEditorTab } from "$store/actions/editor/openEditorTab.ts";
-import { setCurrentEditorTab } from "$store/actions/editor/setCurrentEditorTab.ts";
 import { eventDispatcher } from "@utils/change-detection";
-import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler";
-import { Utils } from "./Utils";
 import Editor from "./Editor";
-import { Navigation } from "./Navigation";
-import { updateComponentName } from "$store/actions/component/update-component-name";
-import { copyCpmponentToClipboard, pasteComponentFromClipboard, traitCompoentFromSchema } from "@utils/clipboard-utils";
-import { deleteComponentAction } from "$store/actions/component/deleteComponentAction";
-import type { PageElement } from "$store/handlers/pages/interfaces/interface";
-import { deletePageAction } from "$store/actions/page/deletePageAction";
-import { updateSepecificApplication } from "$store/actions/application/updateApplication";
-import { loadFunctionsHandler } from "$store/handlers/functions/load-functions-handler";
-import { FileStorage } from "./Storage";
+import { executeCodeWithClosure } from "./ExecuteCode";
+
 const DEBUG = false;
 
 /**
@@ -50,7 +35,6 @@ class Executor {
   PropertiesProxy: Record<string, any> = {};
   VarsProxy: Record<string, any> = {};
   Current: Record<string, any> = {};
-  private functionCache: Record<string, Function> = {};
   currentPlatform: any;
 
   private listeners: Record<string, Set<string>> = {};
@@ -224,14 +208,13 @@ class Executor {
       get: (target, prop) => {
         // Get the current values from the store
         const runtimeValues = $runtimeValues.get();
-        const componentValues = runtimeValues[componentId] || {};
+        const componentValues :any= runtimeValues[componentId] || {};
         return componentValues[prop];
       },
       
       set: (target, prop, value) => {
         // Set the value in the store
         setComponentRuntimeValue(componentId, prop.toString(), value);
-        console.log(`component:value:set:${componentId}`)
         eventDispatcher.emit(`component:value:set:${componentId}`)
         return true;
       },
@@ -239,7 +222,7 @@ class Executor {
       deleteProperty: (target, prop) => {
         // Clear the specific value from the store
         const runtimeValues = $runtimeValues.get();
-        const componentValues = { ...(runtimeValues[componentId] || {}) };
+        const componentValues : any = { ...(runtimeValues[componentId] || {}) };
         
         if (prop in componentValues) {
           delete componentValues[prop];
@@ -264,7 +247,7 @@ class Executor {
       
       getOwnPropertyDescriptor: (target, prop) => {
         const runtimeValues = $runtimeValues.get();
-        const componentValues = runtimeValues[componentId] || {};
+        const componentValues :any= runtimeValues[componentId] || {};
         
         if (prop in componentValues) {
           return {
@@ -403,55 +386,6 @@ class Executor {
     this.updateEditorContext();
   }
 
-  prepareClosureFunction(code: string): Function {
-    console.log= Editor.log;
-    if (!this.functionCache[code]) {
-      this.functionCache[code] = new Function(
-        "FileStorage",
-        "eventHandler",
-        "Components",
-        "Editor",
-        "Event",
-        "Item",
-        "Current",
-        "currentPlatform",
-        "Values",
-        "Apps",
-        "Vars",
-        "SetVar",
-        "GetContextVar",
-        "UpdateApplication",
-        "GetVar",
-        "GetComponent",
-        "GetComponents",
-        "AddComponent",
-        "SetContextVar",
-        "AddPage",
-        "TraitCompoentFromSchema",
-        "Navigation",
-        "UpdatePage",
-        "context",
-        "applications",
-        "updateInput",
-        "deletePage",
-        "CopyComponentToClipboard",
-        "PasteComponentFromClipboard",
-        "DeleteComponentAction",
-        "updateName",
-        "updateEvent",
-        "updateStyleHandlers",
-        "EventData",
-        "updateStyle",
-        "openEditorTab",
-        "setCurrentEditorTab",
-        "InvokeFunction",
-        "Utils",
-        `return (function() { ${code} }).apply(this);`
-      );
-    }
-    return this.functionCache[code];
-  }
-
   private flattenedComponents(componentsStore: any): any[] {
     return Object.values(componentsStore).flat();
   }
@@ -459,247 +393,6 @@ class Executor {
 
 export const ExecuteInstance = Executor.getInstance();
 ExecuteInstance.setcomponentRuntimeStyleAttribute = setcomponentRuntimeStyleAttribute;
-const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) })
 
-/**
- * Executes the given code within a closure, providing access to various context and application data.
- * @param {any} component - The component to execute the code for.
- * @param {string} code - The code string to execute.
- * @param {any} [EventData={}] - Optional. Event data to pass to the closure function.
- * @param {any} [item={}] - Optional. Item data to pass to the closure function.
- * @returns {any} The result of executing the closure function.
- */
-export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
-  ExecuteInstance.Current = component;
-  
-  if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
-    component.children = [];
-    // Children will be populated in registerApplications
-  }
-  
-  // Ensure the values property is attached to the component
-  if (component.uniqueUUID) {
-    ExecuteInstance.attachValuesProperty(component);
-    
-    // Also attach values to parent components recursively
-    let parentComponent = component.parent;
-    while (parentComponent) {
-      if (parentComponent.uniqueUUID) {
-        ExecuteInstance.attachValuesProperty(parentComponent);
-      }
-      parentComponent = parentComponent.parent;
-    }
-  }
-  
-  ExecuteInstance.Event = EventData.event;
-  ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
-
-  // Style handling remains the same
-  if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
-    const newProxy = observe(ExecuteInstance.Current.style, (target, prop, value) => {
-      ExecuteInstance.setcomponentRuntimeStyleAttribute(
-        ExecuteInstance.Current.uniqueUUID,
-        prop,
-        value
-      );
-    });
-
-    ExecuteInstance.Current.style = newProxy;
-  } else {
-    ExecuteInstance.Current.style = ExecuteInstance.styleProxyCache.get(ExecuteInstance.Current.style);
-  }
-
-  if (isServer) {
-    return;
-  }
-
-  const context = ExecuteInstance.context;
-  const applications = ExecuteInstance.applications;
-  const Apps = ExecuteInstance.Apps;
-  const Values = ExecuteInstance.Values;
-  const PropertiesProxy = ExecuteInstance.PropertiesProxy;
-  const VarsProxy = ExecuteInstance.VarsProxy;
-  const Current = ExecuteInstance.Current;
-  const currentPlatform = ExecuteInstance.currentPlatform;
-  const Event = ExecuteInstance.Event;
-  
-  function SetVar(symbol: string, value: any): void {
-    setVar("global", symbol, value);
-  }
-
-  function AddPage(page: any): Promise<any> {
-    return new Promise((resolve) => {
-      addPageHandler(page, (page: any) => {
-        resolve(page);
-      });
-    });
-  }
-
-  function TraitCompoentFromSchema(text) {
-    traitCompoentFromSchema(text);
-  }
-
-  function updatePage(page: any): Promise<any> {
-    return new Promise((resolve) => {
-      updatePageHandler(page, (page) => {
-        resolve(page);
-      });
-    });
-  }
-
-  function updateStyleHandlers(component: ComponentElement, symbol: string, value: any) {
-    updateComponentAttributes(component.application_id, component.uuid, "styleHandlers", { [symbol]: value });
-  }
-
-  function GetContextVar(symbol: string, customContentId: string | null, component: any): any {
-    const contentId = customContentId || component?.application_id;
-    if (context && context[contentId] && context[contentId]?.[symbol] && "value" in context[contentId]?.[symbol]) {
-      return context[contentId]?.[symbol]?.value;
-    }
-    return null;
-  }
-
-  function UpdateApplication(application) {
-    updateSepecificApplication(application);
-  }
-
-  function GetVar(symbol: string): any {
-    if (context && context["global"] && context["global"][symbol] && "value" in context["global"][symbol]) {
-      return context["global"][symbol].value;
-    }
-  }
-
-  ExecuteInstance.GetVar = GetVar;
-  ExecuteInstance.GetContextVar = GetContextVar;
-
-  function GetComponent(componentUuid: string, application_id: string): any {
-    return Editor.components.find((c: ComponentElement) => c.uuid === componentUuid);
-  }
-
-  function AddComponent({ application_id, pageId, componentType, additionalData }): any {
-    const generatedName = GenerateName(componentType);
-    addComponentAction({ name: generatedName, component_type: componentType, ...additionalData }, pageId, application_id);
-  }
-
-  function GetComponents(componentIds: string[]): any[] {
-    return Object.values(applications).flat().filter((c: any) => componentIds.includes(c.uuid));
-  }
-
-  function SetContextVar(symbol: string, value: any, component: any) {
-    setVar(component.application_id, symbol, value);
-  }
-
-  function updateInput(component: ComponentElement, inputName: string, handlerType: string, handlerValue: any) {
-    const eventData = { [inputName]: { type: handlerType, value: handlerValue } };
-    updateComponentAttributes(component.application_id, component.uuid, "input", eventData);
-  }
-
-  function deletePage(page: PageElement) {
-    const userInput = confirm("Are you sure you want to delete this page?");
-    if (userInput) {
-      deletePageAction(page);
-    }
-  }
-
-  function CopyComponentToClipboard(component: ComponentElement) {
-    copyCpmponentToClipboard(component);
-  }
-
-  function PasteComponentFromClipboard() {
-    pasteComponentFromClipboard();
-  }
-  
-  function DeleteComponentAction(component: ComponentElement) {
-    const userInput = confirm("Are you sure you want to delete this component?");
-    if (userInput) {
-      deleteComponentAction(
-        component.uuid,
-        component.application_id,
-      );
-    }
-  }
-
-  function updateName(component: ComponentElement, componentName: string) {
-    updateComponentName(component.application_id, component.uuid, componentName);
-  }
-
-  function updateEvent(component: ComponentElement, symbol: string, value: any) {
-    const eventData = { [symbol]: value };
-    updateComponentAttributes(component.application_id, component.uuid, "event", eventData);
-  }
-
-  function updateStyle(component: ComponentElement, symbol: string, value: any) {
-    const eventData = { [symbol]: value };
-    updateComponentAttributes(component.application_id, component.uuid, "style", eventData);
-  }
-
-  async function InvokeFunction(name: string, payload: any = {}) {
-    if(!ExecuteInstance.Vars.studio_functions){
-      const functions = await loadFunctionsHandler();
-      ExecuteInstance.VarsProxy.studio_functions = [...functions]
-    }
-    const targetFunction = (ExecuteInstance.Vars.studio_functions ?? []).find(_function => _function.label === name)
-    try {
-      const result = await invokeFunctionHandler(targetFunction.id, payload);
-
-      const contentType = result.headers?.get("Content-Type") || "";
-
-      if (contentType.includes("application/json")) {
-        const jsonData = await result.json();
-        console.log("JSON Response:", jsonData);
-        return jsonData;
-      } else {
-        const textData = await result.text();
-        console.log("Text Response:", textData);
-        return textData;
-      }
-    } catch (error) {
-      console.error("Error in InvokeFunctionHandler:", error);
-    }
-  }
-  
-  const closureFunction = ExecuteInstance.prepareClosureFunction(code);
-
-  // Execute the closure with all the needed context
-  return closureFunction(
-    FileStorage,
-    eventDispatcher,
-    PropertiesProxy,
-    Editor,
-    Event,
-    JSON.parse(JSON.stringify(item ?? {})),
-    Current,
-    currentPlatform,
-    Values,
-    Apps,
-    VarsProxy,
-    SetVar,
-    GetContextVar,
-    UpdateApplication,
-    GetVar,
-    GetComponent,
-    GetComponents,
-    AddComponent,
-    SetContextVar,
-    AddPage,
-    TraitCompoentFromSchema,
-    Navigation,
-    updatePage,
-    context,
-    applications,
-    updateInput,
-    deletePage,
-    CopyComponentToClipboard,
-    PasteComponentFromClipboard,
-    DeleteComponentAction,
-    updateName,
-    updateEvent,
-    updateStyleHandlers,
-    EventData,
-    updateStyle,
-    openEditorTab,
-    setCurrentEditorTab,
-    InvokeFunction,
-    Utils
-  );
-}
+// Export the imported function
+export { executeCodeWithClosure };
