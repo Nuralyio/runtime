@@ -1,5 +1,3 @@
-// Executor.ts
-
 import deepEqual from "fast-deep-equal";
 
 import { $applications } from "$store/apps";
@@ -20,31 +18,76 @@ import { executeCodeWithClosure } from "./ExecuteCode";
 const DEBUG = false;
 
 /**
- * The Executor class manages the context and applications for a system.
- * It provides methods to register context and applications, flatten components,
- * and prepare closure functions for code execution.
+ * The Executor class manages the component runtime system.
+ * It provides a centralized state management system for components,
+ * applications, and their values.
+ * 
+ * It handles:
+ * - Context and application registration
+ * - Component hierarchy management
+ * - Reactive property management with proxy-based tracking
+ * - Runtime value management for components
+ * - Event dispatching for component changes
  */
 class Executor {
+  /** Singleton instance of the Executor */
   static instance: Executor;
+  
+  /** Global context registry */
   context: Record<string, any> = {};
+  
+  /** Applications registry by ID */
   applications: Record<string, any> = {};
+  
+  /** Applications registry by name */
   Apps: Record<string, any> = {};
+  
+  /** Component values registry */
   Values: Record<string, any> = {};
+  
+  /** Component properties registry */
   Properties: Record<string, any> = {};
+  
+  /** Variables registry */
   Vars: Record<string, any> = {};
+  
+  /** Reactive proxy for component properties */
   PropertiesProxy: Record<string, any> = {};
+  
+  /** Reactive proxy for variables */
   VarsProxy: Record<string, any> = {};
+  
+  /** Currently active component context */
   Current: Record<string, any> = {};
+  
+  /** Current platform information */
   currentPlatform: any;
 
+  /** Property change listeners map */
   private listeners: Record<string, Set<string>> = {};
+  
+  /** Cache for style proxies to avoid recreation */
   styleProxyCache = new WeakMap();
+  
+  /** Cache for values proxies to avoid recreation */
   valuesProxyCache = new WeakMap();
+  
+  /** Function to set component runtime style attributes */
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
+  
+  /** Function to retrieve variable values */
   GetVar: (symbol: string) => any;
+  
+  /** Function to retrieve context variables */
   GetContextVar: any;
+  
+  /** Event object */
   Event: Event;
   
+  /**
+   * Private constructor to enforce singleton pattern.
+   * Initializes the executor system and sets up event listeners.
+   */
   private constructor() {
     if(isServer){
       return;
@@ -62,6 +105,10 @@ class Executor {
     }
   }
 
+  /**
+   * Updates the editor context with selected components.
+   * Filters the current application's components based on selection state.
+   */
   updateEditorContext() {
     const selectedComponensIds = this.Vars.selectedComponents || []
     const currentEditingApplicationUUID = getVar("global", "currentEditingApplication")?.value?.uuid;
@@ -69,7 +116,14 @@ class Executor {
     Editor.selectedComponents = this.createProxy(Object.values(this.applications[currentEditingApplicationUUID] || {}).filter((c: ComponentElement) => selectedComponensIds.includes(c.uuid)));
   }
 
-  // Keep the createProxy method for other purposes, but don't use it for values
+  /**
+   * Creates a reactive proxy for the target object.
+   * Tracks property access and changes, triggers events on property updates.
+   * 
+   * @param target - Object to be proxied
+   * @param scope - Optional scope name for event namespacing
+   * @returns Reactive proxy for the target object
+   */
   createProxy(target: any, scope?): any {
     const self = this;
   
@@ -186,8 +240,10 @@ class Executor {
   }
 
   /**
-   * Attaches a values property to the component that is backed by $runtimeValues
-   * @param component The component to attach the values property to
+   * Attaches a values property to the component that is backed by $runtimeValues.
+   * Creates a reactive proxy that interacts with the global runtime values store.
+   * 
+   * @param component - The component to attach the values property to
    */
   attachValuesProperty(component: any) {
     const componentId = component.uniqueUUID;
@@ -275,6 +331,14 @@ class Executor {
     component.values = valuesProxy;
   }
 
+  /**
+   * Creates a proxy for style objects that tracks changes to style properties.
+   * Uses a cache to avoid recreating proxies for the same target objects.
+   * 
+   * @param target - The style object to watch
+   * @param callback - Function to call when a style property changes
+   * @returns A proxy that watches for style property changes
+   */
   watchStyleChanges(target, callback) {
     if (typeof target !== "object" || target === null) {
       return target;
@@ -301,6 +365,12 @@ class Executor {
     return proxy;
   }
 
+  /**
+   * Gets the singleton instance of the Executor class.
+   * Creates it if it doesn't exist yet.
+   * 
+   * @returns The singleton Executor instance
+   */
   static getInstance(): Executor {
     if (!Executor.instance) {
       Executor.instance = new Executor();
@@ -308,12 +378,21 @@ class Executor {
     return Executor.instance;
   }
 
+  /**
+   * Registers the global context.
+   * Sets up a listener for context changes and updates the internal context.
+   */
   registerContext() {
     $context.listen((context: any) => {
       Object.assign(this.context, context);
     });
   }
 
+  /**
+   * Registers all applications and their components.
+   * Builds the component hierarchy, initializes runtime values,
+   * and sets up component relationships.
+   */
   registerApplications() {
     const components = $components.get();
     const componentsList = this.flattenedComponents(components);
@@ -386,6 +465,12 @@ class Executor {
     this.updateEditorContext();
   }
 
+  /**
+   * Flattens the components store into a simple array.
+   * 
+   * @param componentsStore - The components store to flatten
+   * @returns An array of all components
+   */
   private flattenedComponents(componentsStore: any): any[] {
     return Object.values(componentsStore).flat();
   }
