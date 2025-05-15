@@ -11,7 +11,7 @@ import { type ComponentElement, type DraggingComponentInfo } from "$store/compon
 import { $applicationComponents, $draggingComponentInfo } from "$store/component/store.ts";
 import { type PageElement } from "$store/handlers/pages/interfaces/interface";
 import { $applicationPages, $currentPage, $currentPageViewPort } from "$store/page";
-import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent } from "utils/render-util";
@@ -199,7 +199,7 @@ export class PageContent extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this.subscription.add(eventDispatcher.on("kernel:log", (logsMessage) => {
-      this.logPanel.addLogEntry(typeof logsMessage =="string" ?convert.toHtml(logsMessage) : logsMessage );
+      this.logPanel?.addLogEntry(typeof logsMessage =="string" ?convert.toHtml(logsMessage) : logsMessage );
     }))
   }
 
@@ -363,9 +363,7 @@ export class PageContent extends LitElement {
                 
               </div>`}
       </div>
-      ${!this.isPreviewMode() ? html`
-        <log-panel></log-panel>
-      ` : nothing}
+      <log-panel></log-panel>
 
       <!-- </rectangle-selection> -->
     `;
