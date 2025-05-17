@@ -3,6 +3,7 @@ import type { AddComponentRequest } from "./interfaces/add-component.request";
 
 export const addComponentHandler = ({ component }: AddComponentRequest, currentApplicatinId) => {
   delete component.parent;
+  delete component.children ;
   delete component.childrens;
   fetch(FRONT_API_URLS.COMPONENTS, {
     method: "POST",
