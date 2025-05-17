@@ -1,7 +1,7 @@
-import { FileStorage } from './Storage';
-import { Navigation } from './Navigation';
-import { Utils } from './Utils';
-import { ExecuteInstance } from './Kernel';
+import { FileStorage } from '../Storage';
+import { Navigation } from '../Navigation';
+import { Utils } from '../Utils';
+import { ExecuteInstance } from '../Kernel';
 import { isServer } from 'utils/envirement';
 import { setVar } from '$store/context';
 import { addPageHandler, updatePageHandler } from '$store/handlers/pages/handler';
@@ -20,7 +20,7 @@ import { GenerateName } from 'utils/naming-generator';
 import { eventDispatcher } from '@utils/change-detection';
 import type { ComponentElement } from '$store/component/interface';
 import type { PageElement } from '$store/handlers/pages/interfaces/interface';
-import Editor from './Editor';
+import Editor from '../Editor';
 import { invokeFunctionHandler } from '$store/handlers/functions/invoke-function-handler';
 
 // Helper function needed by executeCodeWithClosure
