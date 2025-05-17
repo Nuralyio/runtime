@@ -30,7 +30,7 @@ export const createHandlersFromEvents = (
         "--hy-collapse-content-small-size-padding": "5px",
         "--hy-collapse-font-weight": "normal",
         "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
+        "--hy-collapse-width": "280px",
         "--hy-collapse-border": "none",
         "--hy-collapse-border-bottom": "1px solid #636363",
         "--hy-collapse-local-header-background-color": "#3d3d3d"

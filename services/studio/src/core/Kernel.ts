@@ -254,7 +254,7 @@ class Executor {
     
     // If we already created a proxy for this component, return it
     if (this.valuesProxyCache.has(component)) {
-      component.values = this.valuesProxyCache.get(component);
+      component.Instance = this.valuesProxyCache.get(component);
       return;
     }
     
@@ -327,7 +327,7 @@ class Executor {
     this.valuesProxyCache.set(component, valuesProxy);
     
     // Attach the proxy to the component
-    component.values = valuesProxy;
+    component.Instance = valuesProxy;
   }
 
   /**
@@ -432,7 +432,7 @@ class Executor {
         // Get existing values or use empty object
         const existingValues = runtimeValues[component.uniqueUUID] || {};
         // If component has any initial values not yet in runtime store, add them
-        const initialValues = component.values || {};
+        const initialValues = component.Instance || {};
         
         // Merge any new initial values with existing runtime values
         if (Object.keys(initialValues).length > 0) {
