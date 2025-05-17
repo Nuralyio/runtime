@@ -7,5 +7,7 @@ export const StudioFileUploadCollapseContainer = generateDynamicContainer("FileU
   "FileUpload_src_text_block",
   "FileUpload_fallback_text_block",
   "size_collapse_container",
+  "size_collapse_container",
+  "border_collapse_container",
   "display_block"
 ]);
