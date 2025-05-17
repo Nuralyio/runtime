@@ -88,11 +88,6 @@ export class SmartAttributeHandler extends LitElement {
       this.component.uuid !== this.previousComponentId
     ) {
       this.previousComponentId = this.component.uuid;
-      this.view = false;
-      setTimeout(() => {
-        this.view = true;
-      }, 0);
-
     }
 
     this.smartValue = this.getAttributeValue();
