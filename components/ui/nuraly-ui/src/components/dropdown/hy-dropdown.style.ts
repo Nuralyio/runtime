@@ -30,7 +30,7 @@ const dropdownStyle = css`
     --hybrid-dropdown-only-text-padding-left: 18px;
     --hybrid-dropdown-icon-and-text-padding-left: 4px;
     --hybrid-dropdown-menu-children-top: 0px;
-    --hybrid-dropdown-menu-children-offset: -2px;
+    --hybrid-dropdown-menu-children-offset: 0px;
     --hybrid-dropdown-menu-children-z-index: 2;
       --hybrid-dropdown-font-size-local: 13px;
       --hybrid-dropdown-border-radius   : 0px;
