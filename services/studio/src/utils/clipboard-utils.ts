@@ -1,16 +1,21 @@
 import { addComponentAction } from "$store/actions/component/addComponentAction";
 import { $currentApplication } from "$store/apps";
 import { extractAllChildrenIds } from "$store/component/helper";
-import type { ComponentElement } from "$store/component/interface";
 import { $applicationComponents } from "$store/component/store";
 import { ExecuteInstance } from "core/Kernel";
 
-export function copyCpmponentToClipboard(component : ComponentElement) {
+export function copyCpmponentToClipboard(component : any) {
+    delete component.parent;
+    delete component.children;
+    delete component.childrens;
     const application_id = component.application_id;
     const currentApplicationComponents = $applicationComponents(application_id).get();
-    const currentComponent = currentApplicationComponents.find(c => c.uuid === component.uuid);
+    const currentComponent :any = currentApplicationComponents.find(c => c.uuid === component.uuid);
     const componentChildrenIDs = extractAllChildrenIds(currentApplicationComponents, currentComponent);
     const childrenComponents = componentChildrenIDs.map(childId => currentApplicationComponents.find(c => c.uuid === childId));
+    delete currentComponent.parent;
+    delete currentComponent.children;
+    delete currentComponent.childrens;
     const schema = generateNuralyClipboardStructure(currentComponent, childrenComponents);
     navigator.clipboard.writeText(JSON.stringify(schema, null, 2)).then(() => {
         console.log("Text copied!");
