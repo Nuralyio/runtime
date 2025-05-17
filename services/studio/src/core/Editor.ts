@@ -127,6 +127,24 @@ class Editor {
   log(log){
     eventDispatcher.emit("kernel:log",log)
   }
+  Console = {
+    log: (log: any) => {
+      this.log(log)
+    },
+    error: (log: any) => {
+      this.log(log)
+    },
+    warn: (log: any) => {
+      this.log(log)
+    },
+    info: (log: any) => {
+      this.log(log)
+    },
+    debug: (log: any) => {
+      this.log(log)
+    }
+  }
+  
 
 
 

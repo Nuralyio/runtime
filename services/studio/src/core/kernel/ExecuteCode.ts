@@ -37,7 +37,6 @@ const functionCache: Record<string, Function> = {};
  * @returns {Function} The prepared closure function.
  */
 export function prepareClosureFunction(code: string): Function {
-  console.log = Editor.log;
   if (!functionCache[code]) {
     functionCache[code] = new Function(
       "FileStorage",
@@ -79,6 +78,7 @@ export function prepareClosureFunction(code: string): Function {
       "setCurrentEditorTab",
       "InvokeFunction",
       "Utils",
+      "console",
       `return (function() { ${code} }).apply(this);`
     );
   }
@@ -284,6 +284,14 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   
   // Use the extracted prepareClosureFunction
   const closureFunction = prepareClosureFunction(code);
+  const customConsole = {
+    log: Editor.Console.log,
+    warn: Editor.Console.warn,
+    error: Editor.Console.error,
+    info: Editor.Console.info,
+    debug: Editor.Console.debug,
+  };
+  
 
   // Execute the closure with all the needed context
   return closureFunction(
@@ -325,6 +333,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     openEditorTab,
     setCurrentEditorTab,
     InvokeFunction,
-    Utils
+    Utils,
+    customConsole
   );
 }
