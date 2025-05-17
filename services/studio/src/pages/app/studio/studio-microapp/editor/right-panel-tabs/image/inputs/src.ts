@@ -61,7 +61,9 @@ export default [
       onFilesChanged :/* js */ `
       (async () => {
         const {files} = EventData;
-        const uploadedFile = await FileStorage.upload({ files });
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        Vars.mainFolder = currentEditingApplication.uuid;
+        const uploadedFile = await FileStorage.upload({ files  , folderPath: Vars.mainFolder });
         const url = "/api/v1/storage/preview/" + uploadedFile.path;
         const selectedComponent = Utils.first(Vars.selectedComponents);
         updateInput(selectedComponent,'src','string',url);
