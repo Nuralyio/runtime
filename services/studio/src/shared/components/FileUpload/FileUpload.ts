@@ -3,6 +3,7 @@ import { css, html } from "lit";
 import { BaseElementBlock } from "@shared/components/BaseElement.ts";
 import "@nuralyui/file-upload";
 import { ref } from "lit/directives/ref.js";
+import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("file-upload-block")
 export class FileUploadBlock extends BaseElementBlock {
@@ -19,6 +20,12 @@ export class FileUploadBlock extends BaseElementBlock {
   override renderComponent() {
     return html`
       <nr-file-upload
+      style=${
+         styleMap({
+          ...this.getStyles(),
+       })
+      }
+      
         ${ref(this.inputRef)}
         accept="*/*"
         drag
