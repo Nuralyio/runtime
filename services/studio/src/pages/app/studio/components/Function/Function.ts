@@ -98,15 +98,13 @@ export class FunctionContent extends LitElement {
    * @param value The new code value.
    */
   private async handleCodeChange(value: string) {
-    console.log(value)
+    (value)
     // Adding a rich HTML log entry with syntax highlighting or other features
     const richEntry: TemplateResult = html`<strong>Code updated:</strong> <code>${value}</code>`;
     const currentFunction = ExecuteInstance.Vars.studio_functions.find((item: any) => item.id === this.detail.uuid);
 
     if (currentFunction) {
       currentFunction.handler = value;
-      console.log("🔧 Updating function:", currentFunction);
-
       this.logPanel.addLogEntry("💾 Saving function ...");
 
       try {

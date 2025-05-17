@@ -54,7 +54,6 @@ export default [
                 const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
                 const newPage = {...currentPage,name:newPageName};
                 UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
-                    console.log("Page Updated");
                 }).catch((e) => {
                     console.error(e);
                 })

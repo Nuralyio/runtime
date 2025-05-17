@@ -98,7 +98,6 @@ export class AiChat extends BaseElementBlock {
       const aiResponse = (await response.json()).response;
       this.messages.push({ type: "ai", content: aiResponse });
 
-      console.log(this.selectedComponent);
       this.structureComponent = [];
       const result = aiResponse.components ?? aiResponse;
       if (Array.isArray(result)) {

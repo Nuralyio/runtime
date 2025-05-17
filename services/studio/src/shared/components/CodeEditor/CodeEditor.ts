@@ -33,7 +33,6 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 // Make sure Monaco uses the right workers:
 (self as any).MonacoEnvironment = {
   getWorker(_: any, label: string) {
-    console.log(label)
     if (label === "typescript" || label === "javascript") {
       return new tsWorker();
     }

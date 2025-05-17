@@ -56,7 +56,6 @@ export default [
           "--hybrid-page-background-color": newPageName
         }};
         UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
-            console.log("Page Updated");
         }).catch((e) => {
             console.error(e);
         })
