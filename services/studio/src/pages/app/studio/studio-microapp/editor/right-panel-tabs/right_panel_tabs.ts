@@ -221,6 +221,9 @@ export default {
                             handlers =[
                                 "studio_FileUpload_handler"
                             ] 
+                            parameters=[
+                                "FileUpload_input_collapse_container"
+                            ]
                             break;
                             
                             case "video":
