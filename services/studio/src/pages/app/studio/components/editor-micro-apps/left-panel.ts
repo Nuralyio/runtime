@@ -154,7 +154,6 @@ export default [{
                 component_ids : []
             };
             AddPage(newPage, currentEditingApplication.uuid).then(() => {
-                console.log("Page added");
             }).catch((e) => {
                 console.error(e);
             })

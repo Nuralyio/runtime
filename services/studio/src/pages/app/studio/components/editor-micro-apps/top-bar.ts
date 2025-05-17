@@ -1070,7 +1070,6 @@ export default [{
     onInput : /* js */`
     const currentEditingApplication = GetVar("currentEditingApplication");
     currentEditingApplication.name = EventData.value.value;
-    console.log(currentEditingApplication)
     currentEditingApplication.uuid
     UpdateApplication({...currentEditingApplication});
     EventData.event.preventDefault();

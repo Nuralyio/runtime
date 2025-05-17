@@ -65,7 +65,6 @@ export default [
         const url = "/api/v1/storage/preview/" + uploadedFile.path;
         const selectedComponent = Utils.first(Vars.selectedComponents);
         updateInput(selectedComponent,'src','string',url);
-        console.log(url)
       })();
       `
     }

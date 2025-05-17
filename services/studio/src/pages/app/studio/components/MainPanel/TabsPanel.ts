@@ -143,7 +143,6 @@ export class TabsPanel extends LitElement {
 
         }}
           @tabTilteClick=${(e: CustomEvent) => {
-          console.log("tabTilteClick", $editorState.get().tabs[e.detail.index])
           setCurrentEditorTab($editorState.get().tabs[e.detail.index]);
         }
         }

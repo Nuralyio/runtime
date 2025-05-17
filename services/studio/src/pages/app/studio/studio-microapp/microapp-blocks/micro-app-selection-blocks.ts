@@ -60,7 +60,6 @@ export default [
                     selectedMicroApplication = options.find((option)=> option.value == appUUID.value);   
                  }
                 resolve([options,[selectedMicroApplication? selectedMicroApplication.label : ""]])
-                console.log('op',options)
             })
             .catch(err=>{
                 reject(err)

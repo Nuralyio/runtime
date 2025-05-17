@@ -18,7 +18,6 @@ export function copyCpmponentToClipboard(component : any) {
     delete currentComponent.childrens;
     const schema = generateNuralyClipboardStructure(currentComponent, childrenComponents);
     navigator.clipboard.writeText(JSON.stringify(schema, null, 2)).then(() => {
-        console.log("Text copied!");
     }).catch(err => {
         console.error("Error while copying:", err);
     });

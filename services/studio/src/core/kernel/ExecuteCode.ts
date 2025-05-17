@@ -270,11 +270,9 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
 
       if (contentType.includes("application/json")) {
         const jsonData = await result.json();
-        console.log("JSON Response:", jsonData);
         return jsonData;
       } else {
         const textData = await result.text();
-        console.log("Text Response:", textData);
         return textData;
       }
     } catch (error) {

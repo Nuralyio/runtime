@@ -115,7 +115,6 @@ export class PageContent extends LitElement {
       this.refreshComponent();
     })
     const currentPage = ExecuteInstance.Vars.currentPage;
-    console.log("window.__URL__", window.__URL__);
     if (!currentPage && $currentApplication.get()) {
       if(window.__URL__){
         const page = $applicationPages($currentApplication.get()?.uuid).get().find((page: PageElement) => {

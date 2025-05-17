@@ -14,7 +14,6 @@ export class Navigation {
   }
 
   static toHash(hash:string) {
-    console.log(hash);
     window.location.hash = hash;
     if (hash) {
       const element = document.querySelector(hash);

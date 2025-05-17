@@ -54,9 +54,7 @@ export default [
             ...currentPage.style || {},
           "--hybrid-page-background-color-dark": newPageName
         }};
-        console.log(newPage)
         UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
-            console.log("Page Updated");
         }).catch((e) => {
             console.error(e);
         })
