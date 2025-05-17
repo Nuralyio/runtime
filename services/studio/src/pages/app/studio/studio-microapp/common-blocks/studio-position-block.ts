@@ -50,7 +50,7 @@ export default [
           if (selectedComponent?.styleHandlers?.position) {
             isDisabled = true;
           } else {
-            currentPosition = selectedComponent?.style?.['position'] || 'static';
+            currentPosition = Editor.getComponentStyle(selectedComponent, 'position') || 'static';
           }
 
           const options = [
