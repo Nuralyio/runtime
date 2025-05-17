@@ -2,6 +2,7 @@ import { customElement } from "lit/decorators.js";
 import { css, html } from "lit";
 import { BaseElementBlock } from "@shared/components/BaseElement.ts";
 import "@nuralyui/file-upload";
+import { ref } from "lit/directives/ref.js";
 
 @customElement("file-upload-block")
 export class FileUploadBlock extends BaseElementBlock {
@@ -18,6 +19,7 @@ export class FileUploadBlock extends BaseElementBlock {
   override render() {
     return html`
       <nr-file-upload
+        ${ref(this.inputRef)}
         accept="*/*"
         drag
         limit="5"
