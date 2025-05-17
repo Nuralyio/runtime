@@ -16,7 +16,7 @@ export class FileUploadBlock extends BaseElementBlock {
   ];
 
 
-  override render() {
+  override renderComponent() {
     return html`
       <nr-file-upload
         ${ref(this.inputRef)}
