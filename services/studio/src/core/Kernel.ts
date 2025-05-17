@@ -13,7 +13,7 @@ import { $context, getVar } from "$store/context";
 import { isServer } from "utils/envirement";
 import { eventDispatcher } from "@utils/change-detection";
 import Editor from "./Editor";
-import { executeCodeWithClosure } from "./ExecuteCode";
+import { executeCodeWithClosure } from "./kernel/ExecuteCode";
 
 const DEBUG = false;
 
@@ -233,7 +233,6 @@ class Executor {
             });
           });
         }
-  
         return result;
       },
     });
@@ -395,7 +394,7 @@ class Executor {
    */
   registerApplications() {
     const components = $components.get();
-    const componentsList = this.flattenedComponents(components);
+    const componentsList = Object.values(components).flat();
     const runtimeValues = $runtimeValues.get();
 
     const loadedApplications = $applications.get();
@@ -442,8 +441,6 @@ class Executor {
             setComponentRuntimeValues(component.uniqueUUID, mergedValues);
           }
         }
-        
-        // Create a special property on the component that connects to the runtime store
         this.attachValuesProperty(component);
       }
     });
@@ -463,16 +460,6 @@ class Executor {
     Editor.components = componentsList;
     this.PropertiesProxy = componentsList;
     this.updateEditorContext();
-  }
-
-  /**
-   * Flattens the components store into a simple array.
-   * 
-   * @param componentsStore - The components store to flatten
-   * @returns An array of all components
-   */
-  private flattenedComponents(componentsStore: any): any[] {
-    return Object.values(componentsStore).flat();
   }
 }
 
