@@ -329,7 +329,8 @@ export default [{
                 const componentParentPage = EventData.page;
                 const currentPage =  Vars.currentPage;
                 if(componentParentPage != currentPage ){
-                    Vars.currentPage = componentParentPage;
+                 // TODO: This triggers an error when the new component is selected; it navigates to the last page.
+                    //Vars.currentPage = componentParentPage;
                 }
                 const selectedComponent = Editor.components.find(
                   component => component.uuid == EventData.id
