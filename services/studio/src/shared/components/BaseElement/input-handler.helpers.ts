@@ -3,6 +3,7 @@ import { executeCodeWithClosure } from "core/Kernel.ts";
 import { Utils } from "core/Utils.ts";
 import { isServer } from "@utils/envirement.ts";
 import type { Ref } from "lit/directives/ref.js";
+import EditorInstance from "core/Editor";
 
 export async function traitInputHandler(
   ctx: {
@@ -38,11 +39,10 @@ export async function traitInputHandler(
     } catch (error: any) {
       ctx.errors[inputName] = { error: error.message };
       const code = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-
-      // add selector so it can used to select component in the editor
-      console.log(`${ctx.component.name} > inputName > ${inputName} | component uuid > ${ctx.component.uuid}` )
-      console.log( formatCodeWithErrorHighlight(code, error,))
-      throw error;
+      EditorInstance.Console.log(
+        `${ctx.component.name} > inputName > ${inputName} | component uuid > ${ctx.component.uuid}`)
+      EditorInstance.Console.log(formatCodeWithErrorHighlight(code, error,))
+      //throw error;
     }
   } else {
     const { value } = input;
