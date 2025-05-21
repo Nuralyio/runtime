@@ -105,6 +105,16 @@ export class TabsPanel extends LitElement {
                                 </editor-interactive-panel>`
               });
               break;
+            case "flow":
+              this.editableTabs.push({
+                id: tab.id,
+                label: tab.label,
+                content: html`
+                                  <editor-interactive-panel>
+                                    <flow-page .detail=${tab.detail}></flow-page>
+                                </editor-interactive-panel>`
+              });
+              break;
           }
         }
       });
