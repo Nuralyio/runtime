@@ -40,7 +40,7 @@ export async function traitInputHandler(
       ctx.errors[inputName] = { error: error.message };
       const code = getNestedAttribute(ctx.component, `input.${inputName}`).value;
       EditorInstance.Console.log(
-        `${ctx.component.name} > inputName > ${inputName} | component uuid > ${ctx.component.uuid}`)
+        `<i style="cursor:pointer" data-uuid="${ctx.component.uuid}" data-application_uuid="${ctx.component.application_id}"><b>${ctx.component.name}</b><i> > inputName > ${inputName} | component uuid > ${ctx.component.uuid}`)
       EditorInstance.Console.log(formatCodeWithErrorHighlight(code, error,))
       //throw error;
     }

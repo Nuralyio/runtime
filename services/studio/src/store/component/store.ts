@@ -315,3 +315,9 @@ export const getDirectChildren = ($application_id: string, componentId: string) 
     );
   }
 );
+
+export const $componentById = ($application_id: string, componentId: string) => computed(
+  [$applicationComponents($application_id)],
+  (components: ComponentElement[]) =>
+    components.find(component => component.uuid === componentId) || null
+);

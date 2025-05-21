@@ -3,6 +3,9 @@ import { repeat } from 'lit/directives/repeat.js';
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { LocalStorageService } from "core/localStorageService";
+import EditorInstance from "core/Editor";
+import { ExecuteInstance } from "core/Kernel";
+import { $componentById } from "$store/component/store";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
@@ -172,7 +175,27 @@ export class LogPanel extends LitElement {
       this.logContent = [...this.logContent, entry];
     }
     this.requestUpdate(); // Ensure the component updates
-    
+   setTimeout(() =>{
+    const uuidElements = this.shadowRoot.querySelectorAll('[data-uuid]');
+    console.log(uuidElements);
+    uuidElements.forEach(el => {
+      if (!el.classList.contains('listener-added')) {
+        const uuid = el.getAttribute('data-uuid');
+        const application_id = el.getAttribute('data-application_uuid');
+        if (uuid) {
+          el.classList.add('listener-added');
+          el.addEventListener('click', () => {
+            console.log(`Clicked UUID: ${uuid}`);
+            EditorInstance.currentSelection = Array.from([uuid]);
+            const component= $componentById( application_id, uuid).get();
+            ExecuteInstance.VarsProxy.selectedComponents = Array.from([component]);
+            this.dispatchEvent(new CustomEvent('uuid-clicked', { detail: uuid }));
+          });
+        }
+      }
+    });
+   }, 0); // Scroll to bottom
+  
     // Scroll to bottom whenever a new entry is added
     // Use setTimeout to ensure scrolling happens after DOM update
     setTimeout(() => this.scrollToBottom(), 0);
