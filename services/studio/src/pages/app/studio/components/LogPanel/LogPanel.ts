@@ -4,8 +4,10 @@ import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { LocalStorageService } from "core/localStorageService";
 import EditorInstance from "core/Editor";
-import { ExecuteInstance } from "core/Kernel";
+import { executeCodeWithClosure, ExecuteInstance } from "core/Kernel";
 import { $componentById } from "$store/component/store";
+import Editor from "core/Editor";
+import { formatCodeWithErrorHighlight } from "@shared/components/BaseElement/input-handler.helpers";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
@@ -130,6 +132,15 @@ export class LogPanel extends LitElement {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
   `;
+  @state()
+  code: string;
+  
+  // Add state properties for command history
+  @state()
+  private commandHistory: string[] = [];
+  
+  @state()
+  private historyPosition: number = -1;
 
   constructor() {
     super();
@@ -294,10 +305,71 @@ export class LogPanel extends LitElement {
             <div class="log-content">
               ${repeat(this.logContent, (entry, index) => index, (entry) => html`<div>${entry}</div>`)}
             </div>
+            <code-editor
+            .language=${'javascript'}
+            .code=${this.code}
+            @change=${(e: CustomEvent) => {
+              this.code = e.detail.value;
+            }}
+            @editor-keydown=${(e: CustomEvent) => {
+              // Handle up/down arrow keys for history navigation
+              if (e.detail.key === 'ArrowUp') {
+                // Navigate backward in history
+                if (this.historyPosition < this.commandHistory.length - 1) {
+                  this.historyPosition++;
+                  this.code = this.commandHistory[this.historyPosition];
+                }
+                e.detail.event.preventDefault();
+              } else if (e.detail.key === 'ArrowDown') {
+                // Navigate forward in history
+                if (this.historyPosition > 0) {
+                  this.historyPosition--;
+                  this.code = this.commandHistory[this.historyPosition];
+                } else if (this.historyPosition === 0) {
+                  // When reaching the end of history, clear the input
+                  this.historyPosition = -1;
+                  this.code = '';
+                }
+                e.detail.event.preventDefault();
+              }
+              // detect enter key
+              else if (e.detail.key === 'Enter' && !e.detail.shiftKey) {
+                try {
+                  // Save current code to history before execution
+                  if (this.code.trim()) {
+                    // Insert at beginning of array (newest first)
+                    this.commandHistory.unshift(this.code);
+                    // Optionally limit history size
+                    if (this.commandHistory.length > 100) {
+                      this.commandHistory.pop();
+                    }
+                    // Reset history position
+                    this.historyPosition = -1;
+                  }
+                  
+                  //if not starting with return add "return" at the beginning
+                  if (!this.code.startsWith('return')) {
+                    this.code = 'return ' + this.code;
+                  }
+                  const fn = executeCodeWithClosure({}, this.code, {
+                  });
+                  console.log(fn);
+                  Editor.Console.log(String(fn));
+                          
+                } catch(error) {
+                  EditorInstance.Console.log(formatCodeWithErrorHighlight(this.code, error,))
+                }
+                this.code = ''; // Clear the input after pressing enter
+                e.detail.event.preventDefault();
+                e.preventDefault();
+              }
+            }}
+            style="--editor-height : 30px"></code-editor>
           </div>
         `
         : html`
-          <hy-button class="show-log-button" @click=${this.toggleLog}>
+          <hy-button 
+          class="show-log-button" @click=${this.toggleLog}>
             Console
           </hy-button>
         `}
