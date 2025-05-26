@@ -121,7 +121,7 @@ export class CodeEditor extends LitElement {
       language: this.getLang(),
       // Your API endpoint for handling completion requests
       endpoint: '/api/v1/copilot/completion',
-  });
+    });
 
     // Listen for content changes and re-dispatch an event:
     this.editor.getModel()?.onDidChangeContent(() => {
@@ -130,12 +130,54 @@ export class CodeEditor extends LitElement {
       );
     });
 
+    // Add keyboard event listeners
+    this.registerKeyboardEvents();
+
     // Re-apply the theme if the user changes OS-level dark/light preferences
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
         monaco.editor.setTheme(this.getTheme());
       });
+  }
+
+  /**
+   * Register keyboard event handlers for the editor
+   */
+  private registerKeyboardEvents() {
+    if (!this.editor) return;
+    
+    this.editor.onKeyDown((e: monaco.IKeyboardEvent) => {
+      this.dispatchEvent(
+        new CustomEvent("editor-keydown", { 
+          detail: { 
+            event: e,
+            key: e.browserEvent.key,
+            code: e.browserEvent.code,
+            ctrlKey: e.browserEvent.ctrlKey,
+            shiftKey: e.browserEvent.shiftKey,
+            altKey: e.browserEvent.altKey,
+            metaKey: e.browserEvent.metaKey
+          } 
+        })
+      );
+    });
+
+    this.editor.onKeyUp((e: monaco.IKeyboardEvent) => {
+      this.dispatchEvent(
+        new CustomEvent("editor-keyup", { 
+          detail: { 
+            event: e,
+            key: e.browserEvent.key,
+            code: e.browserEvent.code,
+            ctrlKey: e.browserEvent.ctrlKey,
+            shiftKey: e.browserEvent.shiftKey,
+            altKey: e.browserEvent.altKey,
+            metaKey: e.browserEvent.metaKey
+          } 
+        })
+      );
+    });
   }
 
   /**

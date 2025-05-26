@@ -80,7 +80,7 @@ export async function traitStyleHandler(
  * @param {number} options.lineOffset - Adjust reported line numbers by this offset (e.g., -1 to align browser vs editor line numbers)
  * @returns {string} - Formatted text with highlighted error
  */
-function formatCodeWithErrorHighlight(code, error, options :any= {} ) {
+export function formatCodeWithErrorHighlight(code, error, options :any= {} ) {
     // Default options
     const {
       useColors = true,
