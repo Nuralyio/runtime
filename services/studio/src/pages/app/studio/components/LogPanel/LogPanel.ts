@@ -8,6 +8,7 @@ import { executeCodeWithClosure, ExecuteInstance } from "core/Kernel";
 import { $componentById } from "$store/component/store";
 import Editor from "core/Editor";
 import { formatCodeWithErrorHighlight } from "@shared/components/BaseElement/input-handler.helpers";
+import { Utils } from "core/Utils";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
@@ -131,6 +132,29 @@ export class LogPanel extends LitElement {
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+    
+    /* Add styles for JSON syntax highlighting */
+    .json-highlight {
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    
+    .json-string { color: #22863a; }
+    .json-number { color: #005cc5; }
+    .json-boolean { color: #d73a49; }
+    .json-null { color: #6f42c1; }
+    .json-key { color: #032f62; font-weight: bold; }
+    
+    @media (prefers-color-scheme: dark) {
+      .json-string { color: #85e89d; }
+      .json-number { color: #79b8ff; }
+      .json-boolean { color: #f97583; }
+      .json-null { color: #b392f0; }
+      .json-key { color: #79b8ff; font-weight: bold; }
+    }
   `;
   @state()
   code: string;
@@ -174,21 +198,52 @@ export class LogPanel extends LitElement {
   }
 
   /**
+   * Simple JSON syntax highlighter
+   */
+  private highlightJSON(jsonString: string): string {
+    return jsonString
+      .replace(/("([^"\\]|\\.)*")\s*:/g, '<span class="json-key">$1</span>:')
+      .replace(/:\s*("([^"\\]|\\.)*")/g, ': <span class="json-string">$1</span>')
+      .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="json-number">$1</span>')
+      .replace(/:\s*(true|false)/g, ': <span class="json-boolean">$1</span>')
+      .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>');
+  }
+
+  /**
    * Adds a new entry to the log.
    * Accepts either a string or a TemplateResult for rich content.
    * @param entry The log message to add.
    */
   public addLogEntry(entry: string | TemplateResult) {
+    let logEntry: TemplateResult;
+    
     if (typeof entry === 'string') {
-      this.logContent = [...this.logContent, html`${unsafeHTML(entry)}`];
-    } else  if(typeof entry === "object"){
-      entry = JSON.stringify(entry, null, 2);
-      this.logContent = [...this.logContent, entry];
+      logEntry = html`${unsafeHTML(entry)}`;
+    } else if (typeof entry === "object" && entry !== null) {
+      const jsonString = JSON.stringify(entry, null, 2);
+      const highlightedJson = this.highlightJSON(jsonString);
+      logEntry = html`<div class="json-highlight">${unsafeHTML(highlightedJson)}</div>`;
+    } else {
+      logEntry = entry as TemplateResult;
     }
-    this.requestUpdate(); // Ensure the component updates
-   setTimeout(() =>{
-    const uuidElements = this.shadowRoot.querySelectorAll('[data-uuid]');
-    console.log(uuidElements);
+    
+    // Update log content reactively
+    this.logContent = [...this.logContent, logEntry];
+    
+    // Schedule DOM interactions for next update cycle
+    this.updateComplete.then(() => {
+      this.handleUuidElements();
+      this.scrollToBottom();
+    });
+  }
+
+  /**
+   * Handle UUID element interactions after DOM update
+   */
+  private handleUuidElements() {
+    const uuidElements = this.shadowRoot?.querySelectorAll('[data-uuid]');
+    if (!uuidElements) return;
+    
     uuidElements.forEach(el => {
       if (!el.classList.contains('listener-added')) {
         const uuid = el.getAttribute('data-uuid');
@@ -198,18 +253,13 @@ export class LogPanel extends LitElement {
           el.addEventListener('click', () => {
             console.log(`Clicked UUID: ${uuid}`);
             EditorInstance.currentSelection = Array.from([uuid]);
-            const component= $componentById( application_id, uuid).get();
+            const component = $componentById(application_id!, uuid).get();
             ExecuteInstance.VarsProxy.selectedComponents = Array.from([component]);
             this.dispatchEvent(new CustomEvent('uuid-clicked', { detail: uuid }));
           });
         }
       }
     });
-   }, 0); // Scroll to bottom
-  
-    // Scroll to bottom whenever a new entry is added
-    // Use setTimeout to ensure scrolling happens after DOM update
-    setTimeout(() => this.scrollToBottom(), 0);
   }
 
   /**
@@ -218,8 +268,8 @@ export class LogPanel extends LitElement {
   private toggleLog() {
     this.showLog = !this.showLog;
     LocalStorageService.set('logPanelVisible', this.showLog);
-    if( this.showLog){
-     setTimeout(() => this.scrollToBottom(), 0);
+    if (this.showLog) {
+      this.updateComplete.then(() => this.scrollToBottom());
     }
   }
 
@@ -234,9 +284,9 @@ export class LogPanel extends LitElement {
 
   /**
    * LitElement lifecycle method called after each update.
-   * @param changedProperties Map of changed properties.
    */
-  override updated(changedProperties: Map<string | number | symbol, unknown>) {
+  protected updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
     if (changedProperties.has("logContent") && this.showLog) {
       this.scrollToBottom();
     }
@@ -293,7 +343,7 @@ export class LogPanel extends LitElement {
     }
   }
 
-  override render() {
+  protected render() {
     return html`
       ${this.showLog
         ? html`
@@ -306,70 +356,70 @@ export class LogPanel extends LitElement {
               ${repeat(this.logContent, (entry, index) => index, (entry) => html`<div>${entry}</div>`)}
             </div>
             <code-editor
-            .language=${'javascript'}
-            .code=${this.code}
-            @change=${(e: CustomEvent) => {
-              this.code = e.detail.value;
-            }}
-            @editor-keydown=${(e: CustomEvent) => {
-              // Handle up/down arrow keys for history navigation
-              if (e.detail.key === 'ArrowUp') {
-                // Navigate backward in history
-                if (this.historyPosition < this.commandHistory.length - 1) {
-                  this.historyPosition++;
-                  this.code = this.commandHistory[this.historyPosition];
-                }
-                e.detail.event.preventDefault();
-              } else if (e.detail.key === 'ArrowDown') {
-                // Navigate forward in history
-                if (this.historyPosition > 0) {
-                  this.historyPosition--;
-                  this.code = this.commandHistory[this.historyPosition];
-                } else if (this.historyPosition === 0) {
-                  // When reaching the end of history, clear the input
-                  this.historyPosition = -1;
-                  this.code = '';
-                }
-                e.detail.event.preventDefault();
-              }
-              // detect enter key
-              else if (e.detail.key === 'Enter' && !e.detail.shiftKey) {
-                try {
-                  // Save current code to history before execution
-                  if (this.code.trim()) {
-                    // Insert at beginning of array (newest first)
-                    this.commandHistory.unshift(this.code);
-                    // Optionally limit history size
-                    if (this.commandHistory.length > 100) {
-                      this.commandHistory.pop();
-                    }
-                    // Reset history position
+              .language=${'javascript'}
+              .code=${this.code}
+              @change=${(e: CustomEvent) => {
+                this.code = e.detail.value;
+              }}
+              @editor-keydown=${async (e: CustomEvent) => {
+                // Handle up/down arrow keys for history navigation
+                if (e.detail.key === 'ArrowUp') {
+                  if (this.historyPosition < this.commandHistory.length - 1) {
+                    this.historyPosition++;
+                    this.code = this.commandHistory[this.historyPosition];
+                  }
+                  e.detail.event.preventDefault();
+                } else if (e.detail.key === 'ArrowDown') {
+                  if (this.historyPosition > 0) {
+                    this.historyPosition--;
+                    this.code = this.commandHistory[this.historyPosition];
+                  } else if (this.historyPosition === 0) {
                     this.historyPosition = -1;
+                    this.code = '';
                   }
-                  
-                  //if not starting with return add "return" at the beginning
-                  if (!this.code.startsWith('return')) {
-                    this.code = 'return ' + this.code;
-                  }
-                  const fn = executeCodeWithClosure({}, this.code, {
-                  });
-                  console.log(fn);
-                  Editor.Console.log(String(fn));
-                          
-                } catch(error) {
-                  EditorInstance.Console.log(formatCodeWithErrorHighlight(this.code, error,))
+                  e.detail.event.preventDefault();
                 }
-                this.code = ''; // Clear the input after pressing enter
-                e.detail.event.preventDefault();
-                e.preventDefault();
-              }
-            }}
-            style="--editor-height : 30px"></code-editor>
+                // detect enter key
+                else if (e.detail.key === 'Enter' && !e.detail.shiftKey) {
+                  try {
+                    // Save current code to history before execution
+                    if (this.code.trim()) {
+                      this.commandHistory.unshift(this.code);
+                      if (this.commandHistory.length > 100) {
+                        this.commandHistory.pop();
+                      }
+                      this.historyPosition = -1;
+                    }
+                    
+                    // Process the code
+                    let processedCode = this.code;
+                    if (!processedCode.startsWith('return')) {
+                      processedCode = 'return ' + processedCode;
+                    }
+                    processedCode = `return (async () => { ${processedCode} })()`;
+                    
+                    console.log(processedCode);
+                    const fn = executeCodeWithClosure({}, processedCode, {});
+                    const result = Utils.isPromise(fn) ? await fn : fn;
+                    console.log('result', result);
+                    Editor.Console.log(result);
+                            
+                  } catch(error) {
+                    EditorInstance.Console.log(formatCodeWithErrorHighlight(this.code, error));
+                  }
+                  this.code = '';
+                  e.detail.event.preventDefault();
+                  e.preventDefault();
+                }
+              }}
+              style="--editor-height: 30px">
+            </code-editor>
           </div>
         `
         : html`
           <hy-button 
-          class="show-log-button" @click=${this.toggleLog}>
+            class="show-log-button" 
+            @click=${this.toggleLog}>
             Console
           </hy-button>
         `}

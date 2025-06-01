@@ -22,6 +22,7 @@ import type { ComponentElement } from '$store/component/interface';
 import type { PageElement } from '$store/handlers/pages/interfaces/interface';
 import Editor from '../Editor';
 import { invokeFunctionHandler } from '$store/handlers/functions/invoke-function-handler';
+import Database from 'core/DatabaseClient';
 
 // Helper function needed by executeCodeWithClosure
 const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) });
@@ -40,6 +41,7 @@ export function prepareClosureFunction(code: string): Function {
   if (!functionCache[code]) {
     functionCache[code] = new Function(
       "FileStorage",
+      "Database",
       "eventHandler",
       "Components",
       "Editor",
@@ -294,6 +296,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   // Execute the closure with all the needed context
   return closureFunction(
     FileStorage,
+    Database,
     eventDispatcher,
     PropertiesProxy,
     Editor,
