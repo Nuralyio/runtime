@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="https://nuraly.io">
-    <img src="https://via.placeholder.com/200x80/4F46E5/FFFFFF?text=Nuraly+UI" alt="Nuraly UI Logo" />
-  </a>
+ 
 </p>
 
 <h1 align="center">Nuraly UI</h1>
