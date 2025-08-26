@@ -2,8 +2,16 @@
   "name": "@nuralyui/workspace",
   "private": true,
   "version": "1.0.5",
-  "description": "A entreprise web component",
+  "description": "A comprehensive collection of enterprise-class web components built with Lit and TypeScript",
   "type": "module",
+  "homepage": "https://github.com/NuralyUI/NuralyUI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuralyUI/NuralyUI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NuralyUI/NuralyUI/issues"
+  },
   "scripts": {
     "start": "concurrently 'npm:build:watch' 'npm:serve'",
     "build": "tsc",
@@ -28,7 +36,17 @@
     "web-components",
     "lit-element",
     "typescript",
-    "lit"
+    "lit",
+    "ui-library",
+    "design-system",
+    "components",
+    "enterprise",
+    "accessibility",
+    "responsive",
+    "react",
+    "vue",
+    "angular",
+    "framework-agnostic"
   ],
   "author": "Laabidi Aymen",
   "license": "BSD-3-Clause",
