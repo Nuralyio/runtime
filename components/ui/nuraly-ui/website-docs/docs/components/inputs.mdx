@@ -1,0 +1,349 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@hybridui/icon";
+import "@hybridui/button";
+import "@hybridui/input";
+import { useState } from "react";
+import { BlockPicker } from "react-color";
+import { HyInput } from "@hybridui/input/react";
+import { HyIcon } from "@hybridui/icon/react";
+import { HyButton } from "@hybridui/button/react";
+
+# Input
+
+The text field is a basic interface element that is commonly used to receive user input.
+Input can be provided or modified using either a keyboard or a mouse.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @hybridui/input
+```
+
+</TabItem>
+ <TabItem value="uarn" label="yarn">
+
+```shell
+yarn add @hybridui/input
+```
+
+</TabItem>
+</Tabs>
+
+export const DefaultColor = ({ color }) => {
+  return (
+    <>
+      <div
+        style={{
+          display: "inline-block",
+          verticalAlign: "super",
+          marginRight: "5px",
+        }}
+      >
+        {color}
+      </div>
+      <div
+        style={{
+          height: "35px",
+          width: "75px",
+          backgroundColor: color,
+          margin: "-1 auto ",
+          display: "inline-block",
+        }}
+      ></div>
+    </>
+  );
+};
+
+export const ColorPicket = ({ children, color, cssVariableName }) => {
+  const [updateColor, setUpdateColor] = useState(color);
+  const [displayPicker, setdisplayPicker] = useState(false);
+  const handleChangeComplete = (_color) => {
+    setUpdateColor(_color.hex);
+    document.documentElement.style.setProperty(cssVariableName, _color.hex);
+  };
+  const toogleDisplayPicker = () => {
+    setdisplayPicker(!displayPicker);
+  };
+  return (
+    <>
+      <div
+        style={{
+          height: "35px",
+          width: "35px",
+          backgroundColor: updateColor,
+          cursor: "pointer ",
+          margin: "0 auto 20px",
+        }}
+        onClick={toogleDisplayPicker}
+      ></div>
+      {displayPicker && (
+        <BlockPicker
+          color={updateColor}
+          onChangeComplete={handleChangeComplete}
+        />
+      )}
+    </>
+  );
+};
+
+export const InputPicket = ({ children, value, cssVariableName, unit }) => {
+  const [updateValue, setUpdateValue] = useState(value);
+  const [displayPicker, setdisplayPicker] = useState(false);
+  const handleChangeComplete = (e) => {
+    setUpdateValue(e.target.value);
+    document.documentElement.style.setProperty(
+      cssVariableName,
+      `${e.target.value}${unit}`
+    );
+  };
+  const toogleDisplayPicker = () => {
+    setdisplayPicker(!displayPicker);
+  };
+  return (
+    <>
+      <input
+        type="number"
+        style={{ width: "60px", display: "inline-block" }}
+        onChange={handleChangeComplete}
+        value={updateValue}
+      />
+      <div>{unit}</div>
+    </>
+  );
+};
+
+export const TextInputBasicExample = ({ children, color }) => {
+  return (
+    <>
+      <HyInput placeholder="Basic text field"></HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="large">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="small">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="small">
+        <span slot="suffix">
+          <HyIcon name="check"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="small">
+        <span slot="suffix">
+          <HyIcon name="times-circle"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+        <span slot="suffix">
+          <HyIcon name="times-circle"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+        <span slot="suffix">
+          <HyIcon name="spinner"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="suffix">
+          <HyIcon name="copy"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="post">
+          <HyIcon name="copy"></HyIcon>
+        </span>
+      </HyInput>
+    </>
+  );
+};
+
+export const TextInputSizeExample = ({ children, color }) => {
+  return (
+    <>
+      <HyInput placeholder="Basic text field"></HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="large">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="small">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="small">
+        <span slot="suffix">
+          <HyIcon name="check"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder" size="small">
+        <span slot="suffix">
+          <HyIcon name="times-circle"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+        <span slot="suffix">
+          <HyIcon name="times-circle"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="prefix">
+          <HyIcon name="user"></HyIcon>
+        </span>
+        <span slot="suffix">
+          <HyIcon name="spinner"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="suffix">
+          <HyIcon name="copy"></HyIcon>
+        </span>
+      </HyInput>
+      <br />
+      <HyInput placeholder="text placeholder">
+        <span slot="post">
+          <HyIcon name="copy"></HyIcon>
+        </span>
+      </HyInput>
+    </>
+  );
+};
+
+## When To Use
+
+- Input from the user is required in the form field.
+- A search input is required
+
+### Basic usage
+
+<HyInput placeholder="Basic text field"></HyInput>
+
+<details style={{backgroundColor : 'transparent', border : 'none'}}>
+  <summary>CSS Varibale</summary>
+  
+{/* prettier-ignore-start */}
+#### Default
+
+| Attribute                                       | Value                           |
+| ----------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
+| --hybrid-input-container-background-color       | <DefaultColor color="#fff"/>    | <ColorPicket color="#fff" cssVariableName="--hybrid-input-container-background-color"/>       |
+| --hybrid-input-container-border-color           | <DefaultColor color="#d9d9d9"/> | <ColorPicket color="#d9d9d9" cssVariableName="--hybrid-input-container-border-color"/>        |
+| --hybrid-input-hover-container-border-color     | <DefaultColor color="#1277e1"/> | <ColorPicket color="#1277e1" cssVariableName="--hybrid-input-hover-container-border-color"/>  |
+| --hybrid-input-hover-container-background-color | <DefaultColor color="#fff"/>    | <ColorPicket color="#fff" cssVariableName="--hybrid-input-hover-container-background-color"/> |
+| --hybrid-input-container-font-size              | 14px                            | <InputPicket value="14" unit="px" cssVariableName="--hybrid-input-container-font-size"/>      |
+
+</details>
+{/* prettier-ignore-end */}
+
+### Size
+
+<HyInput placeholder="Small input field" size="small"></HyInput>
+<br />
+<HyInput placeholder="Default input field"></HyInput>
+<br />
+<HyInput placeholder="Large input field" size="large"></HyInput>
+
+### Suffix/Pefix
+
+<HyInput placeholder="Input with prefix">
+  <HyIcon slot="prefix" name="user"></HyIcon>
+</HyInput>
+<br />
+<HyInput placeholder="Input with suffix (clear icon)">
+  <HyIcon slot="suffix" name="times-circle"></HyIcon>
+</HyInput>
+<br />
+<HyInput placeholder="Input with suffix (copy icon)">
+  <HyIcon name="copy" slot="suffix"></HyIcon>
+</HyInput>
+<br />
+<HyInput placeholder="Input with suffix (loading icon)">
+  <HyIcon slot="suffix" name="spinner"></HyIcon>
+</HyInput>
+
+<br />
+<HyInput placeholder="Input with suffix and prefix ">
+  <HyIcon slot="suffix" name="times-circle"></HyIcon>
+  <HyIcon slot="prefix" name="user"></HyIcon>
+</HyInput>
+
+### Post/Pre
+
+<HyInput placeholder="Search ">
+  <HyButton slot="post" icon="search"></HyButton>
+</HyInput>
+<br />
+<HyInput placeholder="Search ">
+  <HyButton slot="post" icon="search"></HyButton>
+  <HyIcon slot="suffix" name="spinner"></HyIcon>
+</HyInput>
+<br />
+<HyInput placeholder="Search ">
+  <HyIcon slot="prefix" name="spinner"></HyIcon>
+  <HyButton slot="post" type="primary">
+    search
+  </HyButton>
+</HyInput>
+<br />
+<HyInput placeholder="Search ">
+  <HyButton slot="post" type="primary">
+    search
+  </HyButton>
+</HyInput>
+<br />
+<HyInput placeholder="Search ">
+  <HyButton slot="post" type="primary" danger icon="times-circle"></HyButton>
+</HyInput>
+
+<br />
+<HyInput placeholder="www.google.com ">
+  <HyButton slot="pre">Https</HyButton>
+  <HyButton slot="post">.com</HyButton>
+</HyInput>
