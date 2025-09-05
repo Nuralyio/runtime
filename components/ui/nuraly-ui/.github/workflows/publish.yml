@@ -54,7 +54,7 @@ jobs:
             button datepicker icon input dropdown image tabs document menu \
             radio select tooltips colorpicker modal checkbox video table \
             slider-input collapse label divider canvas chatbot file-upload \
-            card carousel console toast; do
+            card carousel toast; do
             cd dist/components/$dir
             publish-if-not-published -- --access=public
             cd - >/dev/null
