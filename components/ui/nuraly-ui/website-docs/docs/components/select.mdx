@@ -1,0 +1,367 @@
+---
+sidebar_position: 11
+---
+
+# Select
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/select";
+import { HySelect } from "@nuralyui/select/react";
+import { useState } from "react";
+
+The Select component allows users to choose one or multiple options from a dropdown list. It supports various configurations including single/multi-select, different sizes, and custom styling.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/select
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/select
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/select';
+</script>
+
+<hy-select 
+  placeholder="Select an option"
+  options='[{"label": "Option 1", "value": "opt1"}, {"label": "Option 2", "value": "opt2"}]'>
+</hy-select>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HySelect } from '@nuralyui/select/react';
+
+const options = [
+  { label: 'Option 1', value: 'opt1' },
+  { label: 'Option 2', value: 'opt2' },
+  { label: 'Option 3', value: 'opt3' }
+];
+
+function App() {
+  return (
+    <HySelect 
+      placeholder="Select an option"
+      options={options}
+      onSelectionChange={(selectedValues) => console.log(selectedValues)}
+    />
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Basic Example
+
+export const BasicSelectExample = () => {
+  const options = [
+    { label: 'Apple', value: 'apple' },
+    { label: 'Banana', value: 'banana' },
+    { label: 'Orange', value: 'orange' },
+    { label: 'Grape', value: 'grape' }
+  ];
+
+  return (
+    <div style={{ width: '200px' }}>
+      <HySelect 
+        placeholder="Select a fruit"
+        options={options}
+        onSelectionChange={(values) => console.log('Selected:', values)}
+      />
+    </div>
+  );
+};
+
+<BasicSelectExample />
+
+## Multiple Selection
+
+export const MultiSelectExample = () => {
+  const options = [
+    { label: 'React', value: 'react' },
+    { label: 'Vue', value: 'vue' },
+    { label: 'Angular', value: 'angular' },
+    { label: 'Svelte', value: 'svelte' },
+    { label: 'Lit', value: 'lit' }
+  ];
+
+  return (
+    <div style={{ width: '250px' }}>
+      <HySelect 
+        placeholder="Select frameworks"
+        options={options}
+        selectionMode="multiple"
+        onSelectionChange={(values) => console.log('Selected frameworks:', values)}
+      />
+    </div>
+  );
+};
+
+<MultiSelectExample />
+
+## Different Sizes
+
+export const SelectSizeExample = () => {
+  const options = [
+    { label: 'Small', value: 'small' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'Large', value: 'large' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '200px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Small Size</label>
+        <HySelect 
+          placeholder="Small select"
+          options={options}
+          size="small"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Medium Size (Default)</label>
+        <HySelect 
+          placeholder="Medium select"
+          options={options}
+          size="medium"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Large Size</label>
+        <HySelect 
+          placeholder="Large select"
+          options={options}
+          size="large"
+        />
+      </div>
+    </div>
+  );
+};
+
+<SelectSizeExample />
+
+## Status Variants
+
+export const SelectStatusExample = () => {
+  const options = [
+    { label: 'Option 1', value: 'opt1' },
+    { label: 'Option 2', value: 'opt2' },
+    { label: 'Option 3', value: 'opt3' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '200px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Default</label>
+        <HySelect 
+          placeholder="Default status"
+          options={options}
+          status="default"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Error</label>
+        <HySelect 
+          placeholder="Error status"
+          options={options}
+          status="error"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Warning</label>
+        <HySelect 
+          placeholder="Warning status"
+          options={options}
+          status="warning"
+        />
+      </div>
+    </div>
+  );
+};
+
+<SelectStatusExample />
+
+## Disabled State
+
+export const DisabledSelectExample = () => {
+  const options = [
+    { label: 'Option 1', value: 'opt1' },
+    { label: 'Option 2', value: 'opt2' },
+    { label: 'Option 3', value: 'opt3' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: '16px' }}>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Enabled</label>
+        <HySelect 
+          placeholder="Select an option"
+          options={options}
+        />
+      </div>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Disabled</label>
+        <HySelect 
+          placeholder="Select an option"
+          options={options}
+          disabled={true}
+        />
+      </div>
+    </div>
+  );
+};
+
+<DisabledSelectExample />
+
+## With Default Selection
+
+export const DefaultSelectionExample = () => {
+  const options = [
+    { label: 'JavaScript', value: 'js' },
+    { label: 'TypeScript', value: 'ts' },
+    { label: 'Python', value: 'py' },
+    { label: 'Java', value: 'java' },
+    { label: 'C++', value: 'cpp' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: '16px' }}>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Single Default</label>
+        <HySelect 
+          placeholder="Select language"
+          options={options}
+          defaultSelected={['ts']}
+        />
+      </div>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Multiple Default</label>
+        <HySelect 
+          placeholder="Select languages"
+          options={options}
+          selectionMode="multiple"
+          defaultSelected={['js', 'ts']}
+        />
+      </div>
+    </div>
+  );
+};
+
+<DefaultSelectionExample />
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `options` | `IOption[]` | `[]` | Array of options to display |
+| `placeholder` | `string` | `'Select an option'` | Placeholder text when no option is selected |
+| `disabled` | `boolean` | `false` | Whether the select is disabled |
+| `selectionMode` | `'single' \| 'multiple'` | `'single'` | Selection mode for the select |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size of the select component |
+| `status` | `'default' \| 'error' \| 'warning'` | `'default'` | Status variant of the select |
+| `type` | `'default' \| 'borderless'` | `'default'` | Style type of the select |
+| `defaultSelected` | `string[]` | `[]` | Array of default selected option values |
+| `show` | `boolean` | `false` | Controls whether the dropdown is open |
+
+### Types
+
+#### IOption
+
+```typescript
+interface IOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+```
+
+### Events
+
+| Event | Description | Event Detail |
+|-------|-------------|--------------|
+| `selectionChange` | Fired when selection changes | `{ selectedValues: string[], selectedOptions: IOption[] }` |
+
+### CSS Custom Properties
+
+You can customize the select appearance using CSS custom properties:
+
+```css
+hy-select {
+  --select-background: #ffffff;
+  --select-border: 1px solid #d9d9d9;
+  --select-border-radius: 6px;
+  --select-border-hover: #40a9ff;
+  --select-border-focus: #1890ff;
+  --select-padding: 4px 11px;
+  --select-font-size: 14px;
+  --select-placeholder-color: #bfbfbf;
+  --select-option-hover-background: #f5f5f5;
+  --select-option-selected-background: #e6f7ff;
+  --select-dropdown-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+}
+```
+
+## Examples
+
+### Grouped Options
+
+```html
+<hy-select placeholder="Select option">
+  <optgroup label="Fruits">
+    <option value="apple">Apple</option>
+    <option value="banana">Banana</option>
+  </optgroup>
+  <optgroup label="Vegetables">
+    <option value="carrot">Carrot</option>
+    <option value="broccoli">Broccoli</option>
+  </optgroup>
+</hy-select>
+```
+
+### With Search/Filter
+
+```javascript
+const searchableOptions = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Apricot', value: 'apricot' },
+  { label: 'Banana', value: 'banana' },
+  { label: 'Blueberry', value: 'blueberry' },
+  { label: 'Cherry', value: 'cherry' }
+];
+
+// The component automatically filters options based on typed text
+```
+
+### Custom Option Rendering
+
+```javascript
+const optionsWithIcons = [
+  { label: '🍎 Apple', value: 'apple' },
+  { label: '🍌 Banana', value: 'banana' },
+  { label: '🍊 Orange', value: 'orange' }
+];
+```

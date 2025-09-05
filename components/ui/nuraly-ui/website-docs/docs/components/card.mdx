@@ -1,0 +1,206 @@
+---
+sidebar_position: 9
+---
+
+# Card
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/card";
+import { HyCard } from "@nuralyui/card/react";
+import { useState } from "react";
+
+The Card component is a flexible container for displaying content in a visually appealing and organized way. It's perfect for showcasing information, images, or any other content that needs to be grouped together.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/card
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/card
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/card';
+</script>
+
+<hy-card header="Card Title">
+  <div slot="content">
+    <p>This is the card content area where you can place any content.</p>
+  </div>
+</hy-card>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HyCard } from '@nuralyui/card/react';
+
+function App() {
+  return (
+    <HyCard header="Card Title">
+      <div slot="content">
+        <p>This is the card content area where you can place any content.</p>
+      </div>
+    </HyCard>
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Basic Example
+
+export const BasicCardExample = () => {
+  return (
+    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+      <HyCard header="Default Card">
+        <div slot="content">
+          <p>This is a basic card with default styling.</p>
+        </div>
+      </HyCard>
+    </div>
+  );
+};
+
+<BasicCardExample />
+
+## Card Sizes
+
+The card component supports different sizes: small, default, and large.
+
+export const CardSizeExample = () => {
+  return (
+    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+      <HyCard header="Small Card" size="small">
+        <div slot="content">
+          <p>Small card content</p>
+        </div>
+      </HyCard>
+      <HyCard header="Default Card" size="default">
+        <div slot="content">
+          <p>Default card content</p>
+        </div>
+      </HyCard>
+      <HyCard header="Large Card" size="large">
+        <div slot="content">
+          <p>Large card content</p>
+        </div>
+      </HyCard>
+    </div>
+  );
+};
+
+<CardSizeExample />
+
+## With Rich Content
+
+export const RichContentCardExample = () => {
+  return (
+    <HyCard header="Product Card">
+      <div slot="content">
+        <img 
+          src="https://via.placeholder.com/200x120" 
+          alt="Product" 
+          style={{ width: '100%', marginBottom: '12px', borderRadius: '4px' }}
+        />
+        <h3 style={{ margin: '0 0 8px 0', fontSize: '18px' }}>Premium Product</h3>
+        <p style={{ margin: '0 0 12px 0', color: '#666' }}>
+          This is a premium product with excellent features and quality.
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#1890ff' }}>$99.99</span>
+          <button style={{ 
+            padding: '8px 16px', 
+            backgroundColor: '#1890ff', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}>
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </HyCard>
+  );
+};
+
+<RichContentCardExample />
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `header` | `string` | `undefined` | The title/header text for the card |
+| `size` | `'small' \| 'default' \| 'large'` | `'default'` | The size of the card |
+
+### Slots
+
+| Slot | Description |
+|------|-------------|
+| `content` | The main content area of the card |
+
+### CSS Custom Properties
+
+You can customize the card appearance using CSS custom properties:
+
+```css
+hy-card {
+  --card-background: #ffffff;
+  --card-border: 1px solid #d9d9d9;
+  --card-border-radius: 6px;
+  --card-header-background: #fafafa;
+  --card-header-padding: 12px 16px;
+  --card-content-padding: 16px;
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Examples
+
+### Card with Actions
+
+```html
+<hy-card header="Settings">
+  <div slot="content">
+    <p>Manage your account settings</p>
+    <div style="margin-top: 16px;">
+      <button>Edit Profile</button>
+      <button>Change Password</button>
+    </div>
+  </div>
+</hy-card>
+```
+
+### Statistics Card
+
+```html
+<hy-card header="Total Sales" size="small">
+  <div slot="content">
+    <h2 style="margin: 0; color: #52c41a;">$12,345</h2>
+    <p style="margin: 8px 0 0 0; color: #666;">+12% from last month</p>
+  </div>
+</hy-card>
+```

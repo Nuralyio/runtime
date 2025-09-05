@@ -1,0 +1,455 @@
+---
+sidebar_position: 13
+---
+
+# DatePicker
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/datepicker";
+import { HyDatePicker } from "@nuralyui/datepicker/react";
+import { useState } from "react";
+
+The DatePicker component allows users to select dates from a calendar interface. It supports single date selection, date ranges, different formats, and localization.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/datepicker
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/datepicker
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/datepicker';
+</script>
+
+<hy-datepicker 
+  placeholder="Select a date"
+  format="YYYY-MM-DD">
+</hy-datepicker>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HyDatePicker } from '@nuralyui/datepicker/react';
+
+function App() {
+  return (
+    <HyDatePicker 
+      placeholder="Select a date"
+      format="YYYY-MM-DD"
+      onChange={(date) => console.log('Selected date:', date)}
+    />
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Basic Example
+
+export const BasicDatePickerExample = () => {
+  return (
+    <div style={{ width: '250px' }}>
+      <HyDatePicker 
+        placeholder="Select a date"
+        onChange={(date) => console.log('Selected date:', date)}
+      />
+    </div>
+  );
+};
+
+<BasicDatePickerExample />
+
+## Date Range Selection
+
+export const DateRangeExample = () => {
+  return (
+    <div style={{ width: '300px' }}>
+      <HyDatePicker 
+        placeholder="Select date range"
+        range={true}
+        onChange={(dates) => console.log('Selected range:', dates)}
+      />
+    </div>
+  );
+};
+
+<DateRangeExample />
+
+## Different Formats
+
+export const DateFormatExample = () => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '250px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Default Format (YYYY-MM-DD)
+        </label>
+        <HyDatePicker 
+          placeholder="YYYY-MM-DD"
+          format="YYYY-MM-DD"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          US Format (MM/DD/YYYY)
+        </label>
+        <HyDatePicker 
+          placeholder="MM/DD/YYYY"
+          format="MM/DD/YYYY"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          European Format (DD.MM.YYYY)
+        </label>
+        <HyDatePicker 
+          placeholder="DD.MM.YYYY"
+          format="DD.MM.YYYY"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Long Format (MMMM D, YYYY)
+        </label>
+        <HyDatePicker 
+          placeholder="MMMM D, YYYY"
+          format="MMMM D, YYYY"
+        />
+      </div>
+    </div>
+  );
+};
+
+<DateFormatExample />
+
+## Different Modes
+
+export const DateModeExample = () => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '250px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Day Mode (Default)
+        </label>
+        <HyDatePicker 
+          placeholder="Select day"
+          mode="day"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Month Mode
+        </label>
+        <HyDatePicker 
+          placeholder="Select month"
+          mode="month"
+          format="YYYY-MM"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Year Mode
+        </label>
+        <HyDatePicker 
+          placeholder="Select year"
+          mode="year"
+          format="YYYY"
+        />
+      </div>
+    </div>
+  );
+};
+
+<DateModeExample />
+
+## With Default Value
+
+export const DefaultValueExample = () => {
+  const today = new Date().toISOString().split('T')[0];
+  
+  return (
+    <div style={{ display: 'flex', gap: '16px' }}>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          With Today's Date
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+          value={today}
+        />
+      </div>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          No Default Value
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+        />
+      </div>
+    </div>
+  );
+};
+
+<DefaultValueExample />
+
+## Disabled States
+
+export const DisabledDatePickerExample = () => {
+  return (
+    <div style={{ display: 'flex', gap: '16px' }}>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Enabled
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+        />
+      </div>
+      <div style={{ width: '200px' }}>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Disabled
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+          disabled={true}
+        />
+      </div>
+    </div>
+  );
+};
+
+<DisabledDatePickerExample />
+
+## Size Variants
+
+export const DatePickerSizeExample = () => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '250px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Small Size
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+          size="small"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Medium Size (Default)
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+          size="medium"
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+          Large Size
+        </label>
+        <HyDatePicker 
+          placeholder="Select date"
+          size="large"
+        />
+      </div>
+    </div>
+  );
+};
+
+<DatePickerSizeExample />
+
+## Form Integration
+
+export const DatePickerFormExample = () => {
+  const [formData, setFormData] = useState({
+    startDate: '',
+    endDate: '',
+    birthDate: ''
+  });
+
+  const handleDateChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  return (
+    <form style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '400px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+          Start Date *
+        </label>
+        <HyDatePicker 
+          placeholder="Select start date"
+          value={formData.startDate}
+          onChange={(value) => handleDateChange('startDate', value)}
+          required
+        />
+      </div>
+      
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+          End Date *
+        </label>
+        <HyDatePicker 
+          placeholder="Select end date"
+          value={formData.endDate}
+          onChange={(value) => handleDateChange('endDate', value)}
+          required
+        />
+      </div>
+      
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+          Birth Date
+        </label>
+        <HyDatePicker 
+          placeholder="Select birth date"
+          value={formData.birthDate}
+          onChange={(value) => handleDateChange('birthDate', value)}
+          format="MM/DD/YYYY"
+        />
+      </div>
+      
+      <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+        <strong>Form Data:</strong>
+        <pre style={{ margin: '8px 0 0 0', fontSize: '12px' }}>
+          {JSON.stringify(formData, null, 2)}
+        </pre>
+      </div>
+    </form>
+  );
+};
+
+<DatePickerFormExample />
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `placeholder` | `string` | `'Select a date'` | Placeholder text for the input |
+| `value` | `string` | `undefined` | Current selected date value |
+| `format` | `string` | `'YYYY-MM-DD'` | Date format pattern |
+| `mode` | `'day' \| 'month' \| 'year'` | `'day'` | Selection mode |
+| `range` | `boolean` | `false` | Enable date range selection |
+| `disabled` | `boolean` | `false` | Whether the datepicker is disabled |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size of the input |
+| `locale` | `string` | `'en'` | Locale for date formatting |
+| `minDate` | `string` | `undefined` | Minimum selectable date |
+| `maxDate` | `string` | `undefined` | Maximum selectable date |
+| `openedCalendar` | `boolean` | `false` | Controls calendar visibility |
+| `name` | `string` | `undefined` | Name attribute for form usage |
+
+### Events
+
+| Event | Description | Event Detail |
+|-------|-------------|--------------|
+| `change` | Fired when date selection changes | `{ value: string \| string[], formattedValue: string }` |
+| `open` | Fired when calendar opens | `{}` |
+| `close` | Fired when calendar closes | `{}` |
+
+### CSS Custom Properties
+
+You can customize the datepicker appearance using CSS custom properties:
+
+```css
+hy-datepicker {
+  --datepicker-input-background: #ffffff;
+  --datepicker-input-border: 1px solid #d9d9d9;
+  --datepicker-input-border-focus: #1890ff;
+  --datepicker-input-border-radius: 6px;
+  --datepicker-input-padding: 4px 11px;
+  --datepicker-calendar-background: #ffffff;
+  --datepicker-calendar-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+  --datepicker-today-color: #1890ff;
+  --datepicker-selected-background: #1890ff;
+  --datepicker-selected-color: #ffffff;
+  --datepicker-hover-background: #f5f5f5;
+  --datepicker-disabled-color: #00000040;
+}
+```
+
+## Format Patterns
+
+The datepicker supports various format patterns based on Day.js:
+
+| Pattern | Description | Example |
+|---------|-------------|---------|
+| `YYYY` | 4-digit year | 2023 |
+| `YY` | 2-digit year | 23 |
+| `MM` | Month with leading zero | 01-12 |
+| `M` | Month without leading zero | 1-12 |
+| `MMMM` | Full month name | January |
+| `MMM` | Short month name | Jan |
+| `DD` | Day with leading zero | 01-31 |
+| `D` | Day without leading zero | 1-31 |
+| `dddd` | Full day name | Monday |
+| `ddd` | Short day name | Mon |
+
+## Examples
+
+### Birthday Picker
+
+```html
+<hy-datepicker 
+  placeholder="Enter your birthday"
+  format="MMMM D, YYYY"
+  maxDate="2023-12-31">
+</hy-datepicker>
+```
+
+### Event Date Range
+
+```html
+<hy-datepicker 
+  placeholder="Select event dates"
+  range="true"
+  format="MM/DD/YYYY">
+</hy-datepicker>
+```
+
+### Booking System
+
+```html
+<div>
+  <label>Check-in Date:</label>
+  <hy-datepicker 
+    name="checkin"
+    placeholder="Check-in"
+    minDate="2023-01-01">
+  </hy-datepicker>
+  
+  <label>Check-out Date:</label>
+  <hy-datepicker 
+    name="checkout"
+    placeholder="Check-out"
+    minDate="2023-01-02">
+  </hy-datepicker>
+</div>
+```

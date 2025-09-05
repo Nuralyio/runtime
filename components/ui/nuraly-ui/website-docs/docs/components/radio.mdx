@@ -1,0 +1,382 @@
+---
+sidebar_position: 12
+---
+
+# Radio
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/radio";
+import { HyRadio } from "@nuralyui/radio/react";
+import { useState } from "react";
+
+The Radio component allows users to select one option from a set of mutually exclusive options. It's perfect for forms where only one choice should be made from multiple alternatives.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/radio
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/radio
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/radio';
+</script>
+
+<hy-radio-input 
+  options='[{"label": "Option 1", "value": "opt1"}, {"label": "Option 2", "value": "opt2"}]'
+  defaultValue="opt1">
+</hy-radio-input>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HyRadio } from '@nuralyui/radio/react';
+
+const options = [
+  { label: 'Option 1', value: 'opt1' },
+  { label: 'Option 2', value: 'opt2' },
+  { label: 'Option 3', value: 'opt3' }
+];
+
+function App() {
+  return (
+    <HyRadio 
+      options={options}
+      defaultValue="opt1"
+      onChange={(value) => console.log('Selected:', value)}
+    />
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Basic Example
+
+export const BasicRadioExample = () => {
+  const options = [
+    { label: 'Apple', value: 'apple' },
+    { label: 'Banana', value: 'banana' },
+    { label: 'Orange', value: 'orange' }
+  ];
+
+  return (
+    <HyRadio 
+      options={options}
+      defaultValue="apple"
+      onChange={(value) => console.log('Selected fruit:', value)}
+    />
+  );
+};
+
+<BasicRadioExample />
+
+## Radio Button Types
+
+export const RadioTypeExample = () => {
+  const options = [
+    { label: 'Option A', value: 'a' },
+    { label: 'Option B', value: 'b' },
+    { label: 'Option C', value: 'c' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Default Type</h4>
+        <HyRadio 
+          options={options}
+          type="default"
+          defaultValue="a"
+        />
+      </div>
+      <div>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Button Type</h4>
+        <HyRadio 
+          options={options}
+          type="button"
+          defaultValue="b"
+        />
+      </div>
+    </div>
+  );
+};
+
+<RadioTypeExample />
+
+## Direction and Position
+
+export const RadioLayoutExample = () => {
+  const options = [
+    { label: 'Option 1', value: '1' },
+    { label: 'Option 2', value: '2' },
+    { label: 'Option 3', value: '3' }
+  ];
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Vertical Direction</h4>
+        <HyRadio 
+          options={options}
+          direction="vertical"
+          defaultValue="1"
+        />
+      </div>
+      <div>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Horizontal Direction</h4>
+        <HyRadio 
+          options={options}
+          direction="horizontal"
+          defaultValue="2"
+        />
+      </div>
+      <div>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Label on Left</h4>
+        <HyRadio 
+          options={options}
+          position="left"
+          defaultValue="1"
+        />
+      </div>
+      <div>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Label on Right</h4>
+        <HyRadio 
+          options={options}
+          position="right"
+          defaultValue="2"
+        />
+      </div>
+    </div>
+  );
+};
+
+<RadioLayoutExample />
+
+## Disabled Options
+
+export const DisabledRadioExample = () => {
+  const options = [
+    { label: 'Available Option', value: 'available' },
+    { label: 'Disabled Option', value: 'disabled', disabled: true },
+    { label: 'Another Available', value: 'available2' },
+    { label: 'Also Disabled', value: 'disabled2', disabled: true }
+  ];
+
+  return (
+    <HyRadio 
+      options={options}
+      defaultValue="available"
+      onChange={(value) => console.log('Selected:', value)}
+    />
+  );
+};
+
+<DisabledRadioExample />
+
+## Form Integration
+
+export const FormRadioExample = () => {
+  const [selectedValue, setSelectedValue] = useState('medium');
+  
+  const sizeOptions = [
+    { label: 'Small', value: 'small' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'Large', value: 'large' },
+    { label: 'Extra Large', value: 'xl' }
+  ];
+
+  const colorOptions = [
+    { label: 'Red', value: 'red' },
+    { label: 'Blue', value: 'blue' },
+    { label: 'Green', value: 'green' }
+  ];
+
+  return (
+    <form style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+          Select Size:
+        </label>
+        <HyRadio 
+          options={sizeOptions}
+          defaultValue="medium"
+          onChange={(value) => setSelectedValue(value)}
+        />
+      </div>
+      
+      <div>
+        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+          Select Color:
+        </label>
+        <HyRadio 
+          options={colorOptions}
+          type="button"
+          direction="horizontal"
+          defaultValue="red"
+        />
+      </div>
+      
+      <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+        <strong>Selected Size:</strong> {selectedValue}
+      </div>
+    </form>
+  );
+};
+
+<FormRadioExample />
+
+## Payment Method Example
+
+export const PaymentRadioExample = () => {
+  const paymentOptions = [
+    { label: '💳 Credit Card', value: 'credit' },
+    { label: '🏦 Bank Transfer', value: 'bank' },
+    { label: '📱 PayPal', value: 'paypal' },
+    { label: '💰 Cash on Delivery', value: 'cod' }
+  ];
+
+  return (
+    <div style={{ maxWidth: '300px' }}>
+      <h4 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Choose Payment Method</h4>
+      <HyRadio 
+        options={paymentOptions}
+        defaultValue="credit"
+        onChange={(value) => console.log('Payment method:', value)}
+      />
+    </div>
+  );
+};
+
+<PaymentRadioExample />
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `options` | `RadioButtonOption[]` | `[]` | Array of radio options |
+| `type` | `'default' \| 'button'` | `'default'` | Style type of the radio buttons |
+| `position` | `'left' \| 'right'` | `'left'` | Position of the radio button relative to label |
+| `direction` | `'vertical' \| 'horizontal'` | `'vertical'` | Layout direction of the radio group |
+| `defaultValue` | `string` | `undefined` | Default selected value |
+
+### Types
+
+#### RadioButtonOption
+
+```typescript
+interface RadioButtonOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+```
+
+### Events
+
+| Event | Description | Event Detail |
+|-------|-------------|--------------|
+| `change` | Fired when selection changes | `{ value: string }` |
+
+### CSS Custom Properties
+
+You can customize the radio appearance using CSS custom properties:
+
+```css
+hy-radio-input {
+  --radio-size: 16px;
+  --radio-border: 1px solid #d9d9d9;
+  --radio-border-checked: #1890ff;
+  --radio-background-checked: #1890ff;
+  --radio-dot-color: #ffffff;
+  --radio-label-margin: 8px;
+  --radio-disabled-color: #00000040;
+  --radio-disabled-background: #f5f5f5;
+  
+  /* Button type specific */
+  --radio-button-background: #ffffff;
+  --radio-button-border: 1px solid #d9d9d9;
+  --radio-button-checked-background: #1890ff;
+  --radio-button-checked-color: #ffffff;
+  --radio-button-hover-border: #40a9ff;
+}
+```
+
+## Examples
+
+### Survey Question
+
+```html
+<div>
+  <h3>How satisfied are you with our service?</h3>
+  <hy-radio-input 
+    options='[
+      {"label": "Very Satisfied", "value": "very-satisfied"},
+      {"label": "Satisfied", "value": "satisfied"},
+      {"label": "Neutral", "value": "neutral"},
+      {"label": "Dissatisfied", "value": "dissatisfied"},
+      {"label": "Very Dissatisfied", "value": "very-dissatisfied"}
+    ]'
+    direction="vertical">
+  </hy-radio-input>
+</div>
+```
+
+### Settings Panel
+
+```html
+<div>
+  <h3>Theme Preference</h3>
+  <hy-radio-input 
+    type="button"
+    direction="horizontal"
+    options='[
+      {"label": "🌞 Light", "value": "light"},
+      {"label": "🌙 Dark", "value": "dark"},
+      {"label": "🖥️ System", "value": "system"}
+    ]'
+    defaultValue="system">
+  </hy-radio-input>
+</div>
+```
+
+### Product Options
+
+```html
+<div>
+  <h3>Select Package</h3>
+  <hy-radio-input 
+    options='[
+      {"label": "Basic - $9.99/month", "value": "basic"},
+      {"label": "Pro - $19.99/month", "value": "pro"},
+      {"label": "Enterprise - $49.99/month", "value": "enterprise"},
+      {"label": "Contact Sales", "value": "contact", "disabled": true}
+    ]'
+    defaultValue="basic">
+  </hy-radio-input>
+</div>
+```

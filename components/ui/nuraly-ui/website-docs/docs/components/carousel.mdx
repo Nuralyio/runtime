@@ -1,0 +1,638 @@
+---
+sidebar_position: 15
+---
+
+# Carousel
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/carousel";
+import { HyCarousel } from "@nuralyui/carousel/react";
+import { useState } from "react";
+
+The Carousel component allows you to display a series of content in a rotating slideshow format. Perfect for showcasing images, testimonials, product features, or any content that benefits from a sequential presentation.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/carousel
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/carousel
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/carousel';
+</script>
+
+<hy-carousel autoplay="true" interval="3000">
+  <div slot="slide">
+    <img src="image1.jpg" alt="Slide 1" />
+  </div>
+  <div slot="slide">
+    <img src="image2.jpg" alt="Slide 2" />
+  </div>
+  <div slot="slide">
+    <img src="image3.jpg" alt="Slide 3" />
+  </div>
+</hy-carousel>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HyCarousel } from '@nuralyui/carousel/react';
+
+const slides = [
+  { id: 1, content: <img src="image1.jpg" alt="Slide 1" /> },
+  { id: 2, content: <img src="image2.jpg" alt="Slide 2" /> },
+  { id: 3, content: <img src="image3.jpg" alt="Slide 3" /> }
+];
+
+function App() {
+  return (
+    <HyCarousel 
+      slides={slides}
+      autoplay={true}
+      interval={3000}
+      showDots={true}
+      showArrows={true}
+    />
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Basic Example
+
+export const BasicCarouselExample = () => {
+  const slides = [
+    {
+      id: 1,
+      content: (
+        <div style={{
+          height: '300px',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          Slide 1
+        </div>
+      )
+    },
+    {
+      id: 2,
+      content: (
+        <div style={{
+          height: '300px',
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          Slide 2
+        </div>
+      )
+    },
+    {
+      id: 3,
+      content: (
+        <div style={{
+          height: '300px',
+          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          Slide 3
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <HyCarousel 
+        slides={slides}
+        showDots={true}
+        showArrows={true}
+      />
+    </div>
+  );
+};
+
+<BasicCarouselExample />
+
+## Auto-play Carousel
+
+export const AutoplayCarouselExample = () => {
+  const slides = [
+    {
+      id: 1,
+      content: (
+        <div style={{
+          height: '250px',
+          background: '#ff6b6b',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '20px'
+        }}>
+          Auto-play Slide 1
+        </div>
+      )
+    },
+    {
+      id: 2,
+      content: (
+        <div style={{
+          height: '250px',
+          background: '#4ecdc4',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '20px'
+        }}>
+          Auto-play Slide 2
+        </div>
+      )
+    },
+    {
+      id: 3,
+      content: (
+        <div style={{
+          height: '250px',
+          background: '#45b7d1',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '20px'
+        }}>
+          Auto-play Slide 3
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+      <HyCarousel 
+        slides={slides}
+        autoplay={true}
+        interval={2000}
+        showDots={true}
+        pauseOnHover={true}
+      />
+    </div>
+  );
+};
+
+<AutoplayCarouselExample />
+
+## Image Carousel
+
+export const ImageCarouselExample = () => {
+  const imageSlides = [
+    {
+      id: 1,
+      content: (
+        <div style={{ position: 'relative' }}>
+          <img 
+            src="https://via.placeholder.com/600x300/FF6B6B/FFFFFF?text=Product+1" 
+            alt="Product 1"
+            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+          />
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '20px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            padding: '12px 16px',
+            borderRadius: '4px'
+          }}>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '18px' }}>Amazing Product 1</h3>
+            <p style={{ margin: '0', fontSize: '14px' }}>Perfect for your needs</p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 2,
+      content: (
+        <div style={{ position: 'relative' }}>
+          <img 
+            src="https://via.placeholder.com/600x300/4ECDC4/FFFFFF?text=Product+2" 
+            alt="Product 2"
+            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+          />
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '20px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            padding: '12px 16px',
+            borderRadius: '4px'
+          }}>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '18px' }}>Incredible Product 2</h3>
+            <p style={{ margin: '0', fontSize: '14px' }}>High quality and affordable</p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 3,
+      content: (
+        <div style={{ position: 'relative' }}>
+          <img 
+            src="https://via.placeholder.com/600x300/45B7D1/FFFFFF?text=Product+3" 
+            alt="Product 3"
+            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+          />
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '20px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            padding: '12px 16px',
+            borderRadius: '4px'
+          }}>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '18px' }}>Outstanding Product 3</h3>
+            <p style={{ margin: '0', fontSize: '14px' }}>Best seller of the year</p>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <HyCarousel 
+        slides={imageSlides}
+        autoplay={true}
+        interval={4000}
+        showDots={true}
+        showArrows={true}
+        infinite={true}
+      />
+    </div>
+  );
+};
+
+<ImageCarouselExample />
+
+## Testimonials Carousel
+
+export const TestimonialsCarouselExample = () => {
+  const testimonials = [
+    {
+      id: 1,
+      content: (
+        <div style={{
+          padding: '40px 20px',
+          textAlign: 'center',
+          background: '#f8f9fa',
+          height: '250px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <p style={{ 
+            fontSize: '18px', 
+            fontStyle: 'italic', 
+            margin: '0 0 20px 0',
+            color: '#555'
+          }}>
+            "This product has completely transformed our workflow. Highly recommended!"
+          </p>
+          <div>
+            <strong style={{ fontSize: '16px', color: '#333' }}>Sarah Johnson</strong>
+            <p style={{ margin: '4px 0 0 0', color: '#666', fontSize: '14px' }}>
+              CEO, TechCorp
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 2,
+      content: (
+        <div style={{
+          padding: '40px 20px',
+          textAlign: 'center',
+          background: '#f8f9fa',
+          height: '250px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <p style={{ 
+            fontSize: '18px', 
+            fontStyle: 'italic', 
+            margin: '0 0 20px 0',
+            color: '#555'
+          }}>
+            "Exceptional quality and outstanding customer service. Five stars!"
+          </p>
+          <div>
+            <strong style={{ fontSize: '16px', color: '#333' }}>Mike Chen</strong>
+            <p style={{ margin: '4px 0 0 0', color: '#666', fontSize: '14px' }}>
+              Designer, Creative Studio
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 3,
+      content: (
+        <div style={{
+          padding: '40px 20px',
+          textAlign: 'center',
+          background: '#f8f9fa',
+          height: '250px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <p style={{ 
+            fontSize: '18px', 
+            fontStyle: 'italic', 
+            margin: '0 0 20px 0',
+            color: '#555'
+          }}>
+            "The best investment we've made for our business this year."
+          </p>
+          <div>
+            <strong style={{ fontSize: '16px', color: '#333' }}>Emily Davis</strong>
+            <p style={{ margin: '4px 0 0 0', color: '#666', fontSize: '14px' }}>
+              Marketing Director, Growth Inc
+            </p>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+      <HyCarousel 
+        slides={testimonials}
+        autoplay={true}
+        interval={5000}
+        showDots={true}
+        showArrows={false}
+        fade={true}
+      />
+    </div>
+  );
+};
+
+<TestimonialsCarouselExample />
+
+## Vertical Carousel
+
+export const VerticalCarouselExample = () => {
+  const slides = [
+    {
+      id: 1,
+      content: (
+        <div style={{
+          height: '150px',
+          background: '#e74c3c',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '18px'
+        }}>
+          Vertical Slide 1
+        </div>
+      )
+    },
+    {
+      id: 2,
+      content: (
+        <div style={{
+          height: '150px',
+          background: '#3498db',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '18px'
+        }}>
+          Vertical Slide 2
+        </div>
+      )
+    },
+    {
+      id: 3,
+      content: (
+        <div style={{
+          height: '150px',
+          background: '#2ecc71',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '18px'
+        }}>
+          Vertical Slide 3
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+      <HyCarousel 
+        slides={slides}
+        direction="vertical"
+        height="150px"
+        showDots={true}
+        showArrows={true}
+      />
+    </div>
+  );
+};
+
+<VerticalCarouselExample />
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `slides` | `CarouselSlide[]` | `[]` | Array of slides to display |
+| `autoplay` | `boolean` | `false` | Enable automatic slide progression |
+| `interval` | `number` | `3000` | Auto-play interval in milliseconds |
+| `showDots` | `boolean` | `true` | Show navigation dots |
+| `showArrows` | `boolean` | `true` | Show navigation arrows |
+| `infinite` | `boolean` | `true` | Enable infinite loop |
+| `pauseOnHover` | `boolean` | `true` | Pause autoplay on hover |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slide direction |
+| `effect` | `'slide' \| 'fade'` | `'slide'` | Transition effect |
+| `height` | `string` | `'auto'` | Carousel height |
+| `speed` | `number` | `500` | Transition speed in milliseconds |
+| `touchSwipe` | `boolean` | `true` | Enable touch/swipe navigation |
+
+### Types
+
+#### CarouselSlide
+
+```typescript
+interface CarouselSlide {
+  id: string | number;
+  content: React.ReactNode | string;
+  alt?: string;
+  caption?: string;
+}
+```
+
+### Events
+
+| Event | Description | Event Detail |
+|-------|-------------|--------------|
+| `slide-change` | Fired when active slide changes | `{ currentSlide: number, previousSlide: number }` |
+| `autoplay-start` | Fired when autoplay starts | `{}` |
+| `autoplay-stop` | Fired when autoplay stops | `{}` |
+
+### Methods
+
+| Method | Parameters | Description |
+|--------|------------|-------------|
+| `goToSlide(index)` | `index: number` | Navigate to specific slide |
+| `nextSlide()` | None | Go to next slide |
+| `previousSlide()` | None | Go to previous slide |
+| `startAutoplay()` | None | Start autoplay |
+| `stopAutoplay()` | None | Stop autoplay |
+
+### CSS Custom Properties
+
+You can customize the carousel appearance using CSS custom properties:
+
+```css
+hy-carousel {
+  --carousel-background: #ffffff;
+  --carousel-border-radius: 6px;
+  --carousel-arrow-color: #ffffff;
+  --carousel-arrow-background: rgba(0, 0, 0, 0.5);
+  --carousel-arrow-hover-background: rgba(0, 0, 0, 0.7);
+  --carousel-dot-color: rgba(255, 255, 255, 0.5);
+  --carousel-dot-active-color: #ffffff;
+  --carousel-dot-size: 12px;
+  --carousel-transition-duration: 0.5s;
+  --carousel-transition-easing: ease-in-out;
+}
+```
+
+## Examples
+
+### News Carousel
+
+```html
+<hy-carousel autoplay="true" interval="4000">
+  <div slot="slide">
+    <article>
+      <img src="news1.jpg" alt="Breaking News">
+      <h3>Breaking: Major Technology Breakthrough</h3>
+      <p>Scientists achieve unprecedented milestone...</p>
+    </article>
+  </div>
+  <div slot="slide">
+    <article>
+      <img src="news2.jpg" alt="Sports News">
+      <h3>Championship Finals Set</h3>
+      <p>Two teams prepare for ultimate showdown...</p>
+    </article>
+  </div>
+</hy-carousel>
+```
+
+### Product Showcase
+
+```html
+<hy-carousel show-arrows="true" infinite="true">
+  <div slot="slide">
+    <div class="product-card">
+      <img src="product1.jpg" alt="Premium Headphones">
+      <h3>Premium Headphones</h3>
+      <p class="price">$299.99</p>
+      <button>Add to Cart</button>
+    </div>
+  </div>
+  <div slot="slide">
+    <div class="product-card">
+      <img src="product2.jpg" alt="Smart Watch">
+      <h3>Smart Watch</h3>
+      <p class="price">$199.99</p>
+      <button>Add to Cart</button>
+    </div>
+  </div>
+</hy-carousel>
+```
+
+### Hero Banner
+
+```html
+<hy-carousel 
+  autoplay="true" 
+  interval="5000" 
+  effect="fade"
+  show-dots="false">
+  <div slot="slide">
+    <div class="hero-slide" style="background-image: url('hero1.jpg')">
+      <div class="hero-content">
+        <h1>Welcome to Our Store</h1>
+        <p>Discover amazing products</p>
+        <button class="cta-button">Shop Now</button>
+      </div>
+    </div>
+  </div>
+  <div slot="slide">
+    <div class="hero-slide" style="background-image: url('hero2.jpg')">
+      <div class="hero-content">
+        <h1>Summer Sale</h1>
+        <p>Up to 50% off selected items</p>
+        <button class="cta-button">Shop Sale</button>
+      </div>
+    </div>
+  </div>
+</hy-carousel>
+```
