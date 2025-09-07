@@ -1,12 +1,18 @@
 {
   "name": "@nuralyui/button",
   "version": "0.0.10",
-  "description": "",
+  "description": "Button component for NuralyUI library",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Labidi Aymen",
-  "license": "ISC"
+  "license": "ISC",
+  "nuralyui": {
+    "requiredComponents": ["hy-icon"]
+  },
+  "peerDependencies": {
+    "@nuralyui/icon": "^0.0.1"
+  }
 }
