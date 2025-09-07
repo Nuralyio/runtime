@@ -9,8 +9,11 @@ export default {
   style: {
     width: "100%",
     height: "100%",
-    display: "grid",
+    display: "flex",
+    "flex-direction": "column",
     "--hybrid-tabs-content-padding": "0px",
+    "--hybrid-tabs-content-height": "calc(100vh - 200px)",
+    "--hybrid-tabs-content-overflow": "auto",
     "--hybrid-button-font-size": "12px",
     "--text-label-dark-color": "#c2c2c2",
     "--hybrid-tabs-container-box-shadow":"0px 0px 4px 0px #dbdbdbbf",

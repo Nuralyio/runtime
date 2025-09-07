@@ -11,8 +11,17 @@ import { EMPTY_STRING } from "@utils/constants.ts";
 export class TabsBlock extends BaseElementBlock {
   static override styles = css`
       :host {
-          display: block;
+          display: flex;
+          flex-direction: column;
           height: 100%;
+          overflow: hidden;
+      }
+      
+      hy-tabs {
+          height: 100%;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
       }
   `;
   @property({ type: Object, reflect: false })

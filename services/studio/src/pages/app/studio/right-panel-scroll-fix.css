@@ -1,0 +1,40 @@
+/* Fix for right panel scroll height */
+/* Override hy-tabs content to ensure proper scrolling */
+hy-tabs::part(content) {
+  max-height: calc(100vh - 160px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Ensure micro-app in control panel has proper height */
+control-panel micro-app {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Fix for tabs content area */
+micro-app hy-tabs {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Ensure tabs content scrolls */
+micro-app hy-tabs [slot="content"] {
+  height: calc(100vh - 160px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex: 1 !important;
+}
+
+/* Right panel container fixes */
+right-panel aside {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+right-panel control-panel {
+  height: 100% !important;
+  overflow: hidden !important;
+}
