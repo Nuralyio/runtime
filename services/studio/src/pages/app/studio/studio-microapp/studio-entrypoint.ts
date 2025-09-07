@@ -1,18 +1,8 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "./helper/common_attributes.ts";
-import studioFontColorBlock from "./text-labels-blocks/studio-font-color-block.ts";
-import studioAlignementBlock from "./text-labels-blocks/studio-alignement-block.ts";
-import studioVerticalAlignementBlock from "./text-labels-blocks/studio-vertical-alignement-block.ts";
-import studioFontWeightBlock from "./text-labels-blocks/studio-font-weight-block.ts";
-import studioFontStyleBlock from "./text-labels-blocks/studio-font-style-block.ts";
-import studioTextDecorationBlock from "./text-labels-blocks/studio-text-decoration-block.ts";
 import studioBackgroundcolorBlock from "./text-labels-blocks/studio-backgroundcolor-block.ts";
 import studioBoxShadowBlock from "./text-labels-blocks/studio-box-shadow-block.ts";
 import studioBorderRadiusBlock from "./text-labels-blocks/studio-border-radius-block.ts";
-import studioFontFamilyBlock from "./text-labels-blocks/studio-font-family-block.ts";
-import studioFontSizeBlock from "./text-labels-blocks/studio-font-size-block.ts";
-import studioLetterSpacingBlock from "./text-labels-blocks/studio-letter-spacing-block.ts";
-import studioLineHeightBlock from "./text-labels-blocks/studio-line-height-block.ts";
 import studioClickEvent from "./text-labels-blocks/studio-click-event.ts";
 import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event.ts";
 import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event.ts";
@@ -304,22 +294,12 @@ export default [
   ...tableFilterBlock,
   ...studioDatepickerLocaleBlock,
   ...studioDatepickerFormatBlock,
-  ...studioFontSizeBlock,
-  ...studioFontColorBlock,
-  ...studioFontFamilyBlock,
   ...studioBackgroundcolorBlock,
-  ...studioAlignementBlock,
-  ...studioVerticalAlignementBlock,
   ...studioWidthBlock,
   ...studioFLexBlock,
   ...studioHeightBlock,
-  ...studioFontWeightBlock,
-  ...studioFontStyleBlock,
-  ...studioTextDecorationBlock,
   ...studioBoxShadowBlock,
   ...studioBorderRadiusBlock,
-  ...studioLetterSpacingBlock,
-  ...studioLineHeightBlock,
   ...studioDisplayBlock,
   ...studioPlaceholderBlock,
   ...studioHelperTextBlock,

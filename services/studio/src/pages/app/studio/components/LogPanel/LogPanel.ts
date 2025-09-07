@@ -362,14 +362,14 @@ export class LogPanel extends LitElement {
                 this.code = e.detail.value;
               }}
               @editor-keydown=${async (e: CustomEvent) => {
-                // Handle up/down arrow keys for history navigation
-                if (e.detail.key === 'ArrowUp') {
+                // Handle up/down arrow keys for history navigation (with or without Ctrl)
+                if ((e.detail.key === 'ArrowUp' && e.detail.shiftKey) ) {
                   if (this.historyPosition < this.commandHistory.length - 1) {
                     this.historyPosition++;
                     this.code = this.commandHistory[this.historyPosition];
                   }
                   e.detail.event.preventDefault();
-                } else if (e.detail.key === 'ArrowDown') {
+                } else if ((e.detail.key === 'ArrowDown' && e.detail.shiftKey)) {
                   if (this.historyPosition > 0) {
                     this.historyPosition--;
                     this.code = this.commandHistory[this.historyPosition];
