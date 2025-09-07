@@ -7,6 +7,26 @@
 import { LitElement } from 'lit';
 
 /**
+ * Checks if the current environment is development mode using Lit's development detection
+ * @returns boolean indicating if we're in development mode
+ */
+const isDevelopmentMode = (): boolean => {
+  // Use Lit's built-in development detection
+  // Check for Lit development mode indicators
+  return (
+    // Check if Lit development version is loaded (litElementVersions exists in dev)
+    (globalThis as any).litElementVersions !== undefined ||
+    // Standard NODE_ENV check
+    (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') ||
+    // Fallback: check for localhost
+    (typeof window !== 'undefined' && (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1'
+    ))
+  );
+};
+
+/**
  * Interface for components that need dependency validation
  */
 export interface DependencyAware {
@@ -46,9 +66,15 @@ export const DependencyValidationMixin = <T extends Constructor<LitElement>>(sup
 
     /**
      * Validates that all required component dependencies are available
+     * Only runs in development mode for performance
      * @throws {Error} When required components are not registered
      */
     validateDependencies(): void {
+      // Only validate dependencies in development mode
+      if (!isDevelopmentMode()) {
+        return;
+      }
+
       for (const componentName of this.requiredComponents) {
         if (!this.isComponentAvailable(componentName)) {
           throw new Error(
@@ -62,10 +88,16 @@ export const DependencyValidationMixin = <T extends Constructor<LitElement>>(sup
 
     /**
      * Validates dependencies with custom error handling
+     * Only runs in development mode for performance
      * @param onError - Custom error handler function
      * @returns boolean indicating if all dependencies are available
      */
     validateDependenciesWithHandler(onError?: (componentName: string, error: Error) => void): boolean {
+      // Only validate dependencies in development mode
+      if (!isDevelopmentMode()) {
+        return true; // Assume all dependencies are available in production
+      }
+
       let allAvailable = true;
       
       for (const componentName of this.requiredComponents) {

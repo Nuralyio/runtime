@@ -8,11 +8,10 @@ import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ButtonType, EMPTY_STRING, IconPosition } from './hy-button.types.js';
 import { styles } from './hy-button.style.js';
-import { ThemeAwareMixin } from '../../shared/theme-mixin.js';
-import { DependencyValidationMixin } from '../../shared/dependency-mixin.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
 @customElement('hy-button')
-export class HyButtonElement extends DependencyValidationMixin(ThemeAwareMixin(LitElement)) {
+export class HyButtonElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Boolean})
   disabled = false;
 
