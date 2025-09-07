@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, PropertyValueMap, html, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './radio.style.js';
-import {RadioButtonType, RadioButtonOption, RadioButtonPosition, RadioButtonDirection} from './radio.type.js';
-import {choose} from 'lit/directives/choose.js';
-import {classMap} from 'lit/directives/class-map.js';
+import { LitElement, PropertyValueMap, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { styles } from './radio.style.js';
+import { RadioButtonType, RadioButtonOption, RadioButtonPosition, RadioButtonDirection } from './radio.type.js';
+import { choose } from 'lit/directives/choose.js';
+import { classMap } from 'lit/directives/class-map.js';
 @customElement('hy-radio-input')
 export class HyRadioComponent extends LitElement {
   static override styles = styles;
@@ -90,13 +90,13 @@ export class HyRadioComponent extends LitElement {
     return html`<div class="type-button">
       ${this.options.map(
         (option: RadioButtonOption) => html`
-          <hy-button
+          <nr-button
             .icon=${option.icon ? [option.icon] : []}
             .disabled=${option.disabled || this.isAllDisabled}
             .type="${option.value == this.selectedOption || this.isAllDisabled ? 'primary' : ''}"
             @click="${() => option.value != this.selectedOption && this.handleChange(option)}"
           >
-            ${option.label}</hy-button
+            ${option.label}</nr-button
           >
         `
       )}

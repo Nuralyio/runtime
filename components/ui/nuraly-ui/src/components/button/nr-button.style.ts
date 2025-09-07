@@ -1,9 +1,9 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 /**
  * Button component styles for the Hybrid UI Library
  * 
- * This file contains all the styling for the hy-button component, including:
+ * This file contains all the styling for the nr-button component, including:
  * - Base button styles with CSS custom properties for theming
  * - Multiple button variants (primary, secondary, ghost, danger)
  * - Size variations (small, large)
@@ -570,7 +570,7 @@ const buttonStyles = css`
 `;
 
 /**
- * Exported styles for the hy-button component
+ * Exported styles for the nr-button component
  * 
  * @description
  * This export provides the complete styling system for the button component,
@@ -579,7 +579,7 @@ const buttonStyles = css`
  * @usage
  * Import and use in the component's styles property:
  * ```typescript
- * import { styles } from './hy-button.style.ts';
+ * import { styles } from './nr-button.style.ts';
  * 
  * @Component({
  *   styles: styles

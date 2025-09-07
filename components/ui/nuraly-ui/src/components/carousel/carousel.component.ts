@@ -1,7 +1,7 @@
-import {html, LitElement, nothing} from 'lit';
-import {styles} from './carousel.style.js';
-import {customElement, property, queryAssignedElements, state} from 'lit/decorators.js';
-import {repeat} from 'lit/directives/repeat.js';
+import { html, LitElement, nothing } from 'lit';
+import { styles } from './carousel.style.js';
+import { customElement, property, queryAssignedElements, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 
 @customElement('hy-carousel')
 export class CarouselComponent extends LitElement {
@@ -80,20 +80,20 @@ export class CarouselComponent extends LitElement {
           !this.autoPlay
             ? html`
                 <div class="controls">
-                  <hy-button
+                  <nr-button
                     @click="${this.prev}"
                     type="ghost"
                     size="small"
                     class="button-control"
                     .icon="${['chevron-left']}"
-                  ></hy-button>
-                  <hy-button
+                  ></nr-button>
+                  <nr-button
                     @click="${this.next}"
                     type="ghost"
                     size="small"
                     class="button-control"
                     .icon="${['chevron-right']}"
-                  ></hy-button>
+                  ></nr-button>
                 </div>
               `
             : nothing

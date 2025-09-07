@@ -1,9 +1,9 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {HyButtonElement} from './hy-button.component.js';
-export const HyButton = createComponent({
-  tagName: 'hy-button',
-  elementClass: HyButtonElement,
+import { NrButtonElement } from './nr-button.component.js';
+export const NrButton = createComponent({
+  tagName: 'nr-button',
+  elementClass: NrButtonElement,
   react: React,
   events: {
     click: 'click',

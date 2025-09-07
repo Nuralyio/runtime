@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {html, LitElement, nothing, PropertyValueMap} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './tooltips.style.js';
-import {EMPTY_STRING, TooltipAlignment, TooltipPosition} from './tooltips.constant.js';
+import { html, LitElement, nothing, PropertyValueMap } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { styles } from './tooltips.style.js';
+import { EMPTY_STRING, TooltipAlignment, TooltipPosition } from './tooltips.constant.js';
 @customElement('hy-tooltip')
 export class TooltipElement extends LitElement {
   static override styles = styles;
@@ -268,11 +268,11 @@ export class TooltipElement extends LitElement {
             <p class="popconfirm-title">${this.popConfirmTitle}</p>
             <p class="popconfirm-description">${this.popConfirmDescription}</p>
             <div class="btn-block">
-              <hy-button .size=${'small'} type=${'primary'} @click=${this.onPopConfirmConfirm}
-                >${this.okText}</hy-button
+              <nr-button .size=${'small'} type=${'primary'} @click=${this.onPopConfirmConfirm}
+                >${this.okText}</nr-button
               >
-              <hy-button .size=${'small'} type=${'danger'} @click=${this.onPopConfirmCancel}
-                >${this.cancelText}</hy-button
+              <nr-button .size=${'small'} type=${'danger'} @click=${this.onPopConfirmCancel}
+                >${this.cancelText}</nr-button
               >
             </div>
           </div>

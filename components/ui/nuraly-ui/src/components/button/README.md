@@ -32,30 +32,30 @@ bun add @nuralyui/button
   import '@nuralyui/button';
 </script>
 
-<hy-button>Click me</hy-button>
-<hy-button type="primary">Primary Button</hy-button>
-<hy-button type="secondary">Secondary Button</hy-button>
+<nr-button>Click me</nr-button>
+<nr-button type="primary">Primary Button</nr-button>
+<nr-button type="secondary">Secondary Button</nr-button>
 ```
 
 ### React Integration
 
 ```jsx
-import { HyButton } from '@nuralyui/button/react';
+import { NrButton } from '@nuralyui/button/react';
 
 function App() {
   return (
     <div>
-      <HyButton onClick={() => alert('Clicked!')}>
+      <NrButton onClick={() => alert('Clicked!')}>
         Click me
-      </HyButton>
+      </NrButton>
       
-      <HyButton type="primary" disabled>
+      <NrButton type="primary" disabled>
         Disabled Button
-      </HyButton>
+      </NrButton>
       
-      <HyButton type="danger" loading>
+      <NrButton type="danger" loading>
         Loading...
-      </HyButton>
+      </NrButton>
     </div>
   );
 }
@@ -66,9 +66,9 @@ function App() {
 ```vue
 <template>
   <div>
-    <hy-button @click="handleClick">Click me</hy-button>
-    <hy-button type="primary" :disabled="isDisabled">Primary</hy-button>
-    <hy-button type="secondary" :loading="isLoading">Loading</hy-button>
+    <nr-button @click="handleClick">Click me</nr-button>
+    <nr-button type="primary" :disabled="isDisabled">Primary</nr-button>
+    <nr-button type="secondary" :loading="isLoading">Loading</nr-button>
   </div>
 </template>
 
@@ -123,53 +123,53 @@ export default {
 
 ```html
 <!-- Default button -->
-<hy-button>Default</hy-button>
+<nr-button>Default</nr-button>
 
 <!-- Primary button -->
-<hy-button type="primary">Primary</hy-button>
+<nr-button type="primary">Primary</nr-button>
 
 <!-- Secondary button -->
-<hy-button type="secondary">Secondary</hy-button>
+<nr-button type="secondary">Secondary</nr-button>
 
 <!-- Danger button -->
-<hy-button type="danger">Delete</hy-button>
+<nr-button type="danger">Delete</nr-button>
 
 <!-- Ghost button -->
-<hy-button type="ghost">Ghost</hy-button>
+<nr-button type="ghost">Ghost</nr-button>
 ```
 
 ### Button Sizes
 
 ```html
-<hy-button size="small">Small</hy-button>
-<hy-button size="default">Default</hy-button>
-<hy-button size="large">Large</hy-button>
+<nr-button size="small">Small</nr-button>
+<nr-button size="default">Default</nr-button>
+<nr-button size="large">Large</nr-button>
 ```
 
 ### Buttons with Icons
 
 ```html
 <!-- Single icon on the left -->
-<hy-button icon='["plus"]'>Add Item</hy-button>
+<nr-button icon='["plus"]'>Add Item</nr-button>
 
 <!-- Single icon on the right -->
-<hy-button icon='["arrow-right"]' icon-position="right">Next</hy-button>
+<nr-button icon='["arrow-right"]' icon-position="right">Next</nr-button>
 
 <!-- Icons on both sides -->
-<hy-button icon='["arrow-left", "arrow-right"]'>Navigate</hy-button>
+<nr-button icon='["arrow-left", "arrow-right"]'>Navigate</nr-button>
 ```
 
 ### Button States
 
 ```html
 <!-- Disabled button -->
-<hy-button disabled>Disabled</hy-button>
+<nr-button disabled>Disabled</nr-button>
 
 <!-- Loading button -->
-<hy-button loading>Loading...</hy-button>
+<nr-button loading>Loading...</nr-button>
 
 <!-- Dashed border button -->
-<hy-button dashed>Dashed Border</hy-button>
+<nr-button dashed>Dashed Border</nr-button>
 ```
 
 ### Interactive Example
@@ -191,9 +191,9 @@ export default {
   });
 </script>
 
-<hy-button id="interactive-btn" type="secondary">
+<nr-button id="interactive-btn" type="secondary">
   Click me
-</hy-button>
+</nr-button>
 ```
 
 ## Styling
@@ -203,39 +203,39 @@ export default {
 The button component supports extensive customization through CSS custom properties:
 
 ```css
-hy-button {
+nr-button {
   /* Colors */
-  --hy-button-primary-bg: #4F46E5;
-  --hy-button-primary-color: white;
-  --hy-button-primary-border: #4F46E5;
+  --nr-button-primary-bg: #4F46E5;
+  --nr-button-primary-color: white;
+  --nr-button-primary-border: #4F46E5;
   
-  --hy-button-secondary-bg: transparent;
-  --hy-button-secondary-color: #4F46E5;
-  --hy-button-secondary-border: #4F46E5;
+  --nr-button-secondary-bg: transparent;
+  --nr-button-secondary-color: #4F46E5;
+  --nr-button-secondary-border: #4F46E5;
   
-  --hy-button-danger-bg: #DC2626;
-  --hy-button-danger-color: white;
-  --hy-button-danger-border: #DC2626;
+  --nr-button-danger-bg: #DC2626;
+  --nr-button-danger-color: white;
+  --nr-button-danger-border: #DC2626;
   
   /* Sizes */
-  --hy-button-padding-small: 4px 8px;
-  --hy-button-padding-default: 8px 16px;
-  --hy-button-padding-large: 12px 24px;
+  --nr-button-padding-small: 4px 8px;
+  --nr-button-padding-default: 8px 16px;
+  --nr-button-padding-large: 12px 24px;
   
-  --hy-button-font-size-small: 12px;
-  --hy-button-font-size-default: 14px;
-  --hy-button-font-size-large: 16px;
+  --nr-button-font-size-small: 12px;
+  --nr-button-font-size-default: 14px;
+  --nr-button-font-size-large: 16px;
   
   /* Border */
-  --hy-button-border-radius: 6px;
-  --hy-button-border-width: 1px;
+  --nr-button-border-radius: 6px;
+  --nr-button-border-width: 1px;
   
   /* States */
-  --hy-button-disabled-opacity: 0.5;
-  --hy-button-hover-opacity: 0.9;
+  --nr-button-disabled-opacity: 0.5;
+  --nr-button-hover-opacity: 0.9;
   
   /* Spacing */
-  --hy-button-icon-gap: 8px;
+  --nr-button-icon-gap: 8px;
 }
 ```
 
@@ -243,18 +243,18 @@ hy-button {
 
 ```css
 @media (prefers-color-scheme: dark) {
-  hy-button {
-    --hy-button-primary-bg: #6366F1;
-    --hy-button-secondary-color: #A5B4FC;
-    --hy-button-secondary-border: #A5B4FC;
+  nr-button {
+    --nr-button-primary-bg: #6366F1;
+    --nr-button-secondary-color: #A5B4FC;
+    --nr-button-secondary-border: #A5B4FC;
   }
 }
 
 /* Manual dark theme */
-[data-theme="dark"] hy-button {
-  --hy-button-primary-bg: #6366F1;
-  --hy-button-secondary-color: #A5B4FC;
-  --hy-button-secondary-border: #A5B4FC;
+[data-theme="dark"] nr-button {
+  --nr-button-primary-bg: #6366F1;
+  --nr-button-secondary-color: #A5B4FC;
+  --nr-button-secondary-border: #A5B4FC;
 }
 ```
 
@@ -263,10 +263,10 @@ hy-button {
 ```css
 /* Custom button style */
 .my-custom-button {
-  --hy-button-primary-bg: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-  --hy-button-border-radius: 20px;
-  --hy-button-padding-default: 12px 32px;
-  --hy-button-font-size-default: 16px;
+  --nr-button-primary-bg: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+  --nr-button-border-radius: 20px;
+  --nr-button-padding-default: 12px 32px;
+  --nr-button-font-size-default: 16px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -274,9 +274,9 @@ hy-button {
 ```
 
 ```html
-<hy-button type="primary" class="my-custom-button">
+<nr-button type="primary" class="my-custom-button">
   Custom Style
-</hy-button>
+</nr-button>
 ```
 
 ## Accessibility
