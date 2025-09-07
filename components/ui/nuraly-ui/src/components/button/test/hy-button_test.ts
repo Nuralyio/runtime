@@ -1,6 +1,6 @@
-import {html, fixture, expect} from '@open-wc/testing';
-import {HyButtonElement} from '../hy-button.component';
-import {ButtonSize, ButtonType, EMPTY_STRING} from '../hy-button.constants.js';
+import { html, fixture, expect } from '@open-wc/testing';
+import { HyButtonElement } from '../hy-button.component';
+import { ButtonSize, ButtonType, EMPTY_STRING } from '../hy-button.types.js';
 import '../hy-button.component';
 
 suite('HyButtonElement', () => {

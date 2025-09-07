@@ -9,7 +9,7 @@ export const enum ButtonType {
 export const enum ButtonSize {
   Small = 'small',
   Default = 'default',
-  Large = 'Large',
+  Large = 'large',
 }
 
 export const enum IconPosition {
