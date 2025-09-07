@@ -9,6 +9,123 @@ import TabItem from "@theme/TabItem";
 import "@nuralyui/radio";
 import { HyRadio } from "@nuralyui/radio/react";
 import { useState } from "react";
+import { BlockPicker } from "react-color";
+
+export const DefaultColor = ({ color }) => {
+  return (
+    <>
+      <div
+        style={{
+          display: "inline-block",
+          verticalAlign: "super",
+          marginRight: "5px",
+        }}
+      >
+        {color}
+      </div>
+      <div
+        style={{
+          height: "35px",
+          width: "75px",
+          backgroundColor: color,
+          margin: "-1 auto ",
+          display: "inline-block",
+        }}
+      ></div>
+    </>
+  );
+};
+
+export const ColorPicket = ({ children, color, cssVariableName }) => {
+  const [updateColor, setUpdateColor] = useState(color);
+  const [displayPicker, setdisplayPicker] = useState(false);
+  const handleChangeComplete = (_color) => {
+    setUpdateColor(_color.hex);
+    // Handle special cases for border variables that need full border syntax
+    if (cssVariableName.includes('border') && !cssVariableName.includes('color')) {
+      if (cssVariableName === '--hybrid-radio-button-error-border') {
+        document.documentElement.style.setProperty(cssVariableName, `1px solid ${_color.hex}`);
+      } else if (cssVariableName === '--hybrid-radio-button-focus-border') {
+        document.documentElement.style.setProperty(cssVariableName, `2px solid ${_color.hex}`);
+      } else {
+        document.documentElement.style.setProperty(cssVariableName, `1px solid ${_color.hex}`);
+      }
+    } else {
+      document.documentElement.style.setProperty(cssVariableName, _color.hex);
+    }
+  };
+  const toogleDisplayPicker = () => {
+    setdisplayPicker(!displayPicker);
+  };
+  return (
+    <>
+      <div
+        style={{
+          height: "35px",
+          width: "35px",
+          backgroundColor: updateColor,
+          cursor: "pointer ",
+          margin: "0 auto 20px",
+        }}
+        onClick={toogleDisplayPicker}
+      ></div>
+      {displayPicker && (
+        <BlockPicker
+          color={updateColor}
+          onChangeComplete={handleChangeComplete}
+        />
+      )}
+    </>
+  );
+};
+
+export const InputPicket = ({ children, value, cssVariableName, unit }) => {
+  const [updateValue, setUpdateValue] = useState(value);
+  const [displayPicker, setdisplayPicker] = useState(false);
+  const handleChangeComplete = (e) => {
+    setUpdateValue(e.target.value);
+    document.documentElement.style.setProperty(
+      cssVariableName,
+      `${e.target.value}${unit}`
+    );
+  };
+  const toogleDisplayPicker = () => {
+    setdisplayPicker(!displayPicker);
+  };
+  return (
+    <>
+      <input
+        type="number"
+        style={{ width: "60px", display: "inline-block" }}
+        onChange={handleChangeComplete}
+        value={updateValue}
+      />
+      <div>{unit}</div>
+    </>
+  );
+};
+
+export const InputTextPicket = ({ children, value, cssVariableName }) => {
+  const [updateValue, setUpdateValue] = useState(value);
+  const [displayPicker, setdisplayPicker] = useState(false);
+  const handleChangeComplete = (e) => {
+    setUpdateValue(e.target.value);
+    document.documentElement.style.setProperty(cssVariableName, e.target.value);
+  };
+  const toogleDisplayPicker = () => {
+    setdisplayPicker(!displayPicker);
+  };
+  return (
+    <>
+      <input
+        type="text"
+        style={{ width: "120px", display: "inline-block" }}
+        onChange={handleChangeComplete}
+        value={updateValue}
+      />
+    </>
+  );
+};
 
 export const BasicRadioDemo = () => {
   const [selectedValue, setSelectedValue] = useState("");
@@ -712,4 +829,64 @@ const options = [
 
 </TabItem>
 </Tabs>
+</details>
+
+<details style={{backgroundColor : 'transparent', border : 'none'}}>
+  <summary>CSS Variables</summary>
+  
+{/* prettier-ignore-start */}
+#### Default
+
+| Attribute                                                      | Value                           | Control                                                                                           |
+| -------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------- |
+| --hybrid-radio-button-size                                    | 14px                            | <InputPicket value="14" unit="px" cssVariableName="--hybrid-radio-button-size"/>                 |
+| --hybrid-radio-button-dot-size                                | 3px                             | <InputPicket value="3" unit="px" cssVariableName="--hybrid-radio-button-dot-size"/>              |
+| --hybrid-radio-button-dot-color                               | <DefaultColor color="#000000"/> | <ColorPicket color="#000000" cssVariableName="--hybrid-radio-button-dot-color"/>                 |
+| --hybrid-radio-button-border                                  | 1px solid black                 | <InputTextPicket value="1px solid black" cssVariableName="--hybrid-radio-button-border"/>        |
+| --hybrid-radio-button-error-border                            | 1px solid #da1e28               | <ColorPicket color="#da1e28" cssVariableName="--hybrid-radio-button-error-border"/>              |
+| --hybrid-radio-button-focus-border                            | 2px solid #0f62fe               | <ColorPicket color="#0f62fe" cssVariableName="--hybrid-radio-button-focus-border"/>              |
+| --hybrid-radio-button-focus-dot-size                          | 2px                             | <InputPicket value="2" unit="px" cssVariableName="--hybrid-radio-button-focus-dot-size"/>        |
+| --hybrid-radio-button-margin-right                            | 10px                            | <InputPicket value="10" unit="px" cssVariableName="--hybrid-radio-button-margin-right"/>         |
+| --hybrid-radio-button-container-margin-top                    | 10px                            | <InputPicket value="10" unit="px" cssVariableName="--hybrid-radio-button-container-margin-top"/> |
+| --hybrid-radio-button-disabled-opacity                        | 0.5                             | <InputPicket value="0.5" unit="" cssVariableName="--hybrid-radio-button-disabled-opacity"/>      |
+| --hybrid-radio-button-label-font-size                         | 15px                            | <InputPicket value="15" unit="px" cssVariableName="--hybrid-radio-button-label-font-size"/>      |
+| --hybrid-radio-button-message-font-size                       | 12px                            | <InputPicket value="12" unit="px" cssVariableName="--hybrid-radio-button-message-font-size"/>    |
+
+#### Position Right
+
+| Attribute                                                      | Value                           | Control                                                                                                   |
+| -------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| --hybrid-radio-button-position-right-margin-right             | 0px                             | <InputPicket value="0" unit="px" cssVariableName="--hybrid-radio-button-position-right-margin-right"/>   |
+| --hybrid-radio-button-position-right-margin-left              | 10px                            | <InputPicket value="10" unit="px" cssVariableName="--hybrid-radio-button-position-right-margin-left"/>   |
+
+#### Horizontal Direction
+
+| Attribute                                                      | Value                           | Control                                                                                                           |
+| -------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| --hybrid-radio-button-direction-horizontal-container-margin-top | 0px                           | <InputPicket value="0" unit="px" cssVariableName="--hybrid-radio-button-direction-horizontal-container-margin-top"/> |
+
+#### Error & Warning States
+
+| Attribute                                                      | Value                           | Control                                                                                               |
+| -------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| --hybrid-radio-button-error-icon-color                        | <DefaultColor color="#da1e28"/> | <ColorPicket color="#da1e28" cssVariableName="--hybrid-radio-button-error-icon-color"/>              |
+| --hybrid-radio-button-error-text-color                        | <DefaultColor color="#da1e28"/> | <ColorPicket color="#da1e28" cssVariableName="--hybrid-radio-button-error-text-color"/>              |
+| --hybrid-radio-button-warning-icon-color                      | <DefaultColor color="#f0c300"/> | <ColorPicket color="#f0c300" cssVariableName="--hybrid-radio-button-warning-icon-color"/>            |
+
+#### Border Radius
+
+| Attribute                                                      | Value                           | Control                                                                                                       |
+| -------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| --hybrid-radio-button-border-top-left-radius                  | 4px                             | <InputPicket value="4" unit="px" cssVariableName="--hybrid-radio-button-border-top-left-radius"/>            |
+| --hybrid-radio-button-border-top-right-radius                 | 4px                             | <InputPicket value="4" unit="px" cssVariableName="--hybrid-radio-button-border-top-right-radius"/>           |
+| --hybrid-radio-button-border-bottom-left-radius               | 4px                             | <InputPicket value="4" unit="px" cssVariableName="--hybrid-radio-button-border-bottom-left-radius"/>         |
+| --hybrid-radio-button-border-bottom-right-radius              | 4px                             | <InputPicket value="4" unit="px" cssVariableName="--hybrid-radio-button-border-bottom-right-radius"/>        |
+
+#### Typography
+
+| Attribute                                                      | Value                           | Control                                                                                               |
+| -------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| --hybrid-radio-button-font-family                             | Inter, ui-sans-serif, system-ui... | <InputTextPicket value="Inter, ui-sans-serif, system-ui" cssVariableName="--hybrid-radio-button-font-family"/> |
+{/* prettier-ignore-end */}
+
 </details>
