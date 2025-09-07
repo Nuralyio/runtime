@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import "@nuralyui/icon";
@@ -8,21 +8,6 @@ import "@nuralyui/button";
 
 @customElement("screen-structure-editor")
 export class ScreenStructureEditor extends LitElement {
-  static styles = css`
-    :host {
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    micro-app {
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-  `;
 
   constructor() {
     super();
