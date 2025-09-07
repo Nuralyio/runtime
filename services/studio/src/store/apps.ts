@@ -109,7 +109,17 @@ export const $editorState = atom({
       id: "0",
       label: "Page editor",
       type: "page"
-    }
+    },
+    // {
+    //   id: "2",
+    //   label: "flow editor",
+    //   type: "flow"
+    // },
+    // {
+    //   id: "3",
+    //   label: "Database manager",
+    //   type: "database"
+    // }
   ]
 });
 

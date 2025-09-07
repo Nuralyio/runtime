@@ -1,6 +1,7 @@
 import "../Page/Page.ts";
 import "../Flow/Flow.ts";
 import "../Function/Function.ts";
+import "../Database/Database.ts";
 import "../Files/Files.ts";
 import "./EditorInteractivePanel.ts";
 import { $editorState } from "$store/apps.ts";
@@ -114,6 +115,16 @@ export class TabsPanel extends LitElement {
                                     <flow-page .detail=${tab.detail}></flow-page>
                                 </editor-interactive-panel>`
               });
+              break;
+                   case "database":
+                    this.editableTabs.push({
+                      id: tab.id,
+                      label: tab.label,
+                      content: html`
+                                        <editor-interactive-panel>
+                                          <databse-page .detail=${tab.detail}></databse-page>
+                                      </editor-interactive-panel>`
+                    });
               break;
           }
         }

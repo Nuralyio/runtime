@@ -13,22 +13,11 @@ import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 // @ts-ignore
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
-/**
- * @todo: add worker for those
- *    { label: "JS/Typescript", value: "javascript" },
-                { label: "Python", value: "python" },
-                { label: "Java", value: "java" },
-                { label: "C#", value: "csharp" },
-                { label: "C++", value: "cpp" },
-                { label: "Go", value: "go" },
-                { label: "Rust", value: "rust" },
-                { label: "PHP", value: "php" },
-                { label: "Ruby", value: "ruby" },
-                { label: "HTML/CSS", value: "html" },
-                { label: "SQL", value: "sql" }      
-                
- */
+// @ts-ignore
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
+
+// Import custom type definitions
+import { databaseTypeDefinitions } from "../../types/database.types";
 
 // Make sure Monaco uses the right workers:
 (self as any).MonacoEnvironment = {
@@ -92,6 +81,160 @@ export class CodeEditor extends LitElement {
   }
 
   /**
+   * Set up custom IntelliSense for TypeScript/JavaScript
+   */
+  private setupCustomIntelliSense() {
+    // Add custom type definitions to TypeScript compiler
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(
+      databaseTypeDefinitions,
+      'database-types.d.ts'
+    );
+    
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      databaseTypeDefinitions,
+      'database-types.d.ts'
+    );
+
+    // Configure TypeScript compiler options for better IntelliSense
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2020,
+      allowNonTsExtensions: true,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      module: monaco.languages.typescript.ModuleKind.CommonJS,
+      noEmit: true,
+      esModuleInterop: true,
+      jsx: monaco.languages.typescript.JsxEmit.React,
+      reactNamespace: "React",
+      allowJs: true,
+      typeRoots: ["node_modules/@types"]
+    });
+
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2020,
+      allowNonTsExtensions: true,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      module: monaco.languages.typescript.ModuleKind.CommonJS,
+      noEmit: true,
+      esModuleInterop: true,
+      allowJs: true,
+      checkJs: false
+    });
+
+    // Register custom completion provider for enhanced Database suggestions
+    monaco.languages.registerCompletionItemProvider(['javascript', 'typescript'], {
+      provideCompletionItems: (model, position) => {
+        const suggestions: monaco.languages.CompletionItem[] = [];
+        
+        // Add Database class completion
+        suggestions.push({
+          label: 'Database',
+          kind: monaco.languages.CompletionItemKind.Class,
+          insertText: 'Database',
+          documentation: 'Static Database Client for Nuraly Database Manager',
+          detail: 'class Database'
+        });
+
+        // Common Database operations with snippets
+        const dbOperations = [
+          {
+            label: 'Database.select',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.select(${1:"tableName"}, {${2:}})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Select data from a table with optional criteria and relations',
+            detail: '(method) Database.select(tableName: string, options?: SelectOptions): Promise<any>'
+          },
+          {
+            label: 'Database.insert',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.insert(${1:"tableName"}, ${2:{}})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Insert data into a table',
+            detail: '(method) Database.insert(tableName: string, data: Record<string, any>): Promise<any>'
+          },
+          {
+            label: 'Database.update',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.update(${1:"tableName"}, ${2:{}}, ${3:{}})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Update data in a table',
+            detail: '(method) Database.update(tableName: string, data: Record<string, any>, criteria: Record<string, any>): Promise<any>'
+          },
+          {
+            label: 'Database.delete',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.delete(${1:"tableName"}, ${2:{}})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Delete data from a table',
+            detail: '(method) Database.delete(tableName: string, criteria: Record<string, any>): Promise<any>'
+          },
+          {
+            label: 'Database.createTable',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.createTable(${1:"tableName"}, {\n  ${2:field}: { type: ${3:"varchar"}, nullable: ${4:false} }\n})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Create a new table with specified schema',
+            detail: '(method) Database.createTable(tableName: string, schema: TableSchema, options?: Record<string, any>): Promise<any>'
+          },
+          {
+            label: 'Database.paginate',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.paginate(${1:"tableName"}, ${2:1}, ${3:10}, ${4:{}})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Get paginated results with metadata',
+            detail: '(method) Database.paginate(tableName: string, page?: number, pageSize?: number, options?: SelectOptions): Promise<PaginationResult<any>>'
+          },
+          {
+            label: 'Database.schemaQuery',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.schemaQuery(${1:"LIST_TABLES"}${2:, "tableName"})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Execute schema queries for database introspection',
+            detail: '(method) Database.schemaQuery(type: string, tableName?: string): Promise<any>'
+          },
+          {
+            label: 'Database.join',
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: 'Database.join(${1:"mainTable"}, [\n  { table: ${2:"joinTable"}, on: ${3:"field1 = field2"}, type: ${4:"inner"} }\n], ${5:{}})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Perform complex join queries',
+            detail: '(method) Database.join(mainTable: string, joins: JoinDefinition[], options?: Record<string, any>): Promise<any>'
+          }
+        ];
+
+        suggestions.push(...dbOperations);
+
+        return { suggestions };
+      }
+    });
+
+    // Register hover provider for detailed documentation
+    monaco.languages.registerHoverProvider(['javascript', 'typescript'], {
+      provideHover: (model, position) => {
+        const word = model.getWordAtPosition(position);
+        if (!word) return;
+
+        const hoverDocs: Record<string, monaco.languages.Hover> = {
+          'Database': {
+            contents: [
+              { value: '**Database**' },
+              { value: 'Static Database Client for Nuraly Database Manager' },
+              { value: 'Provides a comprehensive interface for database operations including:' },
+              { value: '- Table management (create, drop, schema operations)' },
+              { value: '- Data operations (select, insert, update, delete)' },
+              { value: '- Advanced queries (joins, aggregations, pagination)' },
+              { value: '- Schema introspection and management' },
+              { value: '```typescript\n// Configure the client\nDatabase.configure("/api/v1/database");\n\n// Create a table\nawait Database.createTable("users", {\n  name: { type: "varchar", nullable: false },\n  email: { type: "varchar", nullable: false }\n});\n\n// Insert data\nawait Database.insert("users", {\n  name: "John Doe",\n  email: "john@example.com"\n});\n```' }
+            ]
+          }
+        };
+
+        return hoverDocs[word.word] || null;
+      }
+    });
+  }
+
+  /**
    * Create the Monaco editor once the element has rendered
    */
   firstUpdated() {
@@ -117,6 +260,10 @@ export class CodeEditor extends LitElement {
       automaticLayout: true,
       readOnly: this.readonly ?? false,
     });
+
+    // Set up custom IntelliSense
+    this.setupCustomIntelliSense();
+
     registerCompletion(monaco, this.editor, {
       language: this.getLang(),
       // Your API endpoint for handling completion requests
@@ -250,7 +397,7 @@ export class CodeEditor extends LitElement {
   }
 
   /**
-   * If the user hasn’t passed any `code`, we look for a <script> child
+   * If the user hasn't passed any `code`, we look for a <script> child
    * or fallback to an empty string
    */
   private getCode() {
@@ -260,7 +407,7 @@ export class CodeEditor extends LitElement {
   }
 
   /**
-   * If the user hasn’t passed any `language`, we look for a <script> child
+   * If the user hasn't passed any `language`, we look for a <script> child
    * or fallback to "plaintext"
    */
   private getLang() {

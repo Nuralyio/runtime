@@ -1,6 +1,7 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { CollapseHeaderTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { allTypographyBlocks } from "../config/typography-configs.ts";
 
 export default [
   {
@@ -61,5 +62,7 @@ export default [
       "text_vertical_alignement_block",
       "text_decoration_block"
     ]
-  }
+  },
+  // Include all factory-generated typography blocks
+  ...allTypographyBlocks
 ];
