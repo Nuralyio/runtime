@@ -3,7 +3,6 @@ import { customElement, state } from "lit/decorators.js";
 import { $environment, type Environment, ViewMode } from "$store/environment.ts";
 
 import "../ControlPanel/ControlPanelTabs.ts";
-import { $context, getVar } from "$store/context.ts";
 
 @customElement("right-panel")
 export class RightPanel extends LitElement {
