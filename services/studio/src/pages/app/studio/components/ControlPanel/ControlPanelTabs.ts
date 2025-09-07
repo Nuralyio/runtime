@@ -21,12 +21,28 @@ export class ParametersPanel extends LitElement {
    */
   static styles = css`
 
-  :host{}
+  :host{
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
       /* ===============================
          Micro-App Styles
          =============================== */
 
       micro-app {
+          height: 100%;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          
+          /* Override hy-tabs styles for better scrolling */
+          --hybrid-tabs-content-height: calc(100vh - 110px);
+          --hybrid-tabs-content-overflow-y: auto;
+          --hybrid-tabs-content-overflow-x: hidden;
+          --hybrid-tabs-content-max-height: calc(100vh - 110px);
+          
           /* Input Styles */
           --hybrid-input-border-radius: 5px;
           /* --hybrid-input-border-bottom: 1px solid #a8a8a8;
@@ -108,7 +124,7 @@ export class ParametersPanel extends LitElement {
    */
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];
-  @state() currentTab = {  };
+  @state() currentTab: { type?: string } = {};  
 
   /**
    * Constructor
