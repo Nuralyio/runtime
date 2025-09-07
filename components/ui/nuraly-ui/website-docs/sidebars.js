@@ -22,7 +22,25 @@ const sidebars = {
     {
       type: 'category',
       label: 'Components',
-      items: ['components/buttons','components/inputs', 'components/calendar', 'components/tabs','components/dropdown','components/icons', 'components/checkbox'],
+      items: [
+        'components/buttons',
+        'components/calendar',
+        'components/card',
+        'components/carousel',
+        'components/checkbox',
+        'components/collapse',
+        'components/colorpicker',
+        'components/dropdown',
+        'components/icons',
+        'components/inputs',
+        'components/menu',
+        'components/modal',
+        'components/radio',
+        'components/select',
+        'components/table',
+        'components/tabs',
+        'components/toast'
+      ],
     },
   ],
 };

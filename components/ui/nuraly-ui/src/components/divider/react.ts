@@ -1,4 +1,4 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
 
 export const HyDivider = createComponent({

@@ -1,0 +1,121 @@
+---
+sidebar_position: 16
+---
+
+# Colorpicker
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/colorpicker";
+import { HyColorpicker } from "@nuralyui/colorpicker/react";
+
+The Colorpicker component provides an intuitive interface for selecting colors. Perfect for design tools, customization interfaces, and any application requiring color selection.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/colorpicker
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/colorpicker
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/colorpicker';
+</script>
+
+<hy-colorpicker 
+  value="#ff0000"
+  format="hex">
+</hy-colorpicker>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HyColorpicker } from '@nuralyui/colorpicker/react';
+
+function App() {
+  return (
+    <HyColorpicker 
+      value="#ff0000"
+      format="hex"
+    />
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `'#000000'` | The current color value |
+| `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | The color format to use |
+| `disabled` | `boolean` | `false` | Whether the colorpicker is disabled |
+| `showAlpha` | `boolean` | `false` | Whether to show alpha channel control |
+| `presets` | `string[]` | `[]` | Array of preset colors to display |
+
+### Events
+
+| Event | Description |
+|-------|-------------|
+| `change` | Fired when the color value changes |
+| `input` | Fired during color selection |
+
+## Examples
+
+### Basic Colorpicker
+
+```html
+<hy-colorpicker value="#3498db"></hy-colorpicker>
+```
+
+### With Alpha Channel
+
+```html
+<hy-colorpicker 
+  value="rgba(52, 152, 219, 0.8)" 
+  format="rgb" 
+  showAlpha="true">
+</hy-colorpicker>
+```
+
+### RGB Format
+
+```html
+<hy-colorpicker 
+  value="rgb(255, 0, 0)" 
+  format="rgb">
+</hy-colorpicker>
+```
+
+### HSL Format
+
+```html
+<hy-colorpicker 
+  value="hsl(120, 100%, 50%)" 
+  format="hsl">
+</hy-colorpicker>
+```

@@ -1,6 +1,6 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {HyTable} from './table.component.js';
+import { HyTable } from './table.component.js';
 
 export const HyTableComponent = createComponent({
   tagName: 'hy-table',
