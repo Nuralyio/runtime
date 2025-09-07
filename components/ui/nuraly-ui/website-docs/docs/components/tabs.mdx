@@ -10,6 +10,44 @@ import { html } from "lit";
 import "@nuralyui/icon";
 import { HyButton } from "@nuralyui/button/react";
 
+A comprehensive tab component that provides navigation between different views and content sections. The tabs component supports various orientations, alignment options, and interactive features like drag-and-drop reordering, inline editing, and dynamic tab management.
+
+## Installation
+
+```bash
+npm install @nuralyui/tabs
+```
+
+## Usage
+
+### React
+
+```jsx
+import { HyTabsComponent } from "@nuralyui/tabs/react";
+
+function App() {
+  const [tabs] = useState([
+    { label: "Tab 1", content: "Content for Tab 1" },
+    { label: "Tab 2", content: "Content for Tab 2" },
+    { label: "Tab 3", content: "Content for Tab 3" }
+  ]);
+
+  return (
+    <HyTabsComponent tabs={tabs} activeTab={0} />
+  );
+}
+```
+
+### Web Components
+
+```html
+<hy-tabs active-tab="0">
+  <div label="Tab 1">Content for Tab 1</div>
+  <div label="Tab 2">Content for Tab 2</div>
+  <div label="Tab 3">Content for Tab 3</div>
+</hy-tabs>
+```
+
 export const swapElements = (arr, index1, index2) => {
   arr = arr;
   const temp = arr[index1];
@@ -52,6 +90,7 @@ export const SimpleTabExample = ({
     <>
       <HyTabsComponent
         activeTab={activeTab}
+        tabs={editableTabs}
         tabOrderChange={function (e) {
           setEditableTabs([
             ...swapElements(
@@ -79,75 +118,108 @@ export const SimpleTabExample = ({
             },
           ]);
         }}
-      >
-        {editableTabs.map(function (tab, index) {
-          return (
-            <div key={index} label={tab.label}>
-              {tab.content}
-            </div>
-          );
-        })}
-      </HyTabsComponent>
+      />
     </>
   );
 };
 
-### When To Use
+## When To Use
 
-Tabs provide a convenient way to transition effortlessly between various views.
+- **Content Organization**: When you need to organize related content into logical sections
+- **Space Efficiency**: When you want to display multiple views in a limited space
+- **Navigation**: When users need to switch between different but related information
+- **Dashboard Layouts**: For organizing different data views or functional areas
+- **Settings Panels**: For grouping configuration options into categories
+
+## Examples
 
 ### Basic
 
-<SimpleTabExample> </SimpleTabExample>
+A simple tab component with horizontal layout and basic navigation functionality.
 
-<br />
+<SimpleTabExample />
+
+## Props/Attributes
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `activeTab` | `number` | `0` | Index of the currently active tab |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout orientation of the tabs |
+| `tabsAlign` | `'left' \| 'center' \| 'right'` | `'left'` | Alignment of the tab headers |
+| `editable` | `TabEditable` | `{}` | Configuration for interactive tab features |
+| `tabs` | `TabItem[]` | `[]` | Array of tab data objects |
+
+### TabEditable Interface
+
+```typescript
+interface TabEditable {
+  canDeleteTab?: boolean;    // Allow removing tabs
+  canEditTabTitle?: boolean; // Allow inline editing of tab titles
+  canAddTab?: boolean;       // Show add tab button
+  canMove?: boolean;         // Allow drag-and-drop reordering
+}
+```
+
+### TabItem Interface
+
+```typescript
+interface TabItem {
+  label: string;           // Tab title
+  content: React.ReactNode; // Tab content
+  editable?: TabEditable;  // Per-tab editable settings (overrides global)
+}
+```
+
+## Events
+
+| Event | Description | Detail |
+|-------|-------------|--------|
+| `removeTab` | Fired when a tab is removed | `{ index: number }` |
+| `tabEdited` | Fired when a tab title is edited | `{ tab: { label: string, index: number } }` |
+| `tabTilteClick` | Fired when a tab header is clicked | `{ index: number }` |
+| `tabOrderChange` | Fired when tabs are reordered | `{ sourceIndex: number, targetIndex: number, sourceTab: Element, targetTab: Element }` |
+| `addTab` | Fired when the add tab button is clicked | `{}` |
+
+## Features
 
 ### Orientation
 
-Unleash the power of tab components by exploring different orientations, enabling seamless navigation in both vertical and horizontal layouts for enhanced user experience.
+Switch between horizontal and vertical layouts to fit your design needs.
 
-<SimpleTabExample orientation={"vertical"}> </SimpleTabExample>
+<SimpleTabExample orientation={"vertical"} />
 
-### Alignement
+### Alignment
 
-#### Left
+#### Left Alignment (Default)
 
-Unlock the versatility of tab components with flexible alignment options, allowing you to perfectly position and organize your tabs, ensuring a visually appealing and user-friendly interface.
+Tabs are aligned to the left side of the container.
 
-<br />
-<SimpleTabExample> </SimpleTabExample>
+<SimpleTabExample />
 
-<br />
-<br />
+#### Center Alignment
 
-#### Center
+Tabs are centered within the container.
 
-<SimpleTabExample tabsAlign={"center"}> </SimpleTabExample>
+<SimpleTabExample tabsAlign={"center"} />
 
-<br />
-<br />
+#### Right Alignment
 
-#### Right
+Tabs are aligned to the right side of the container.
 
-<SimpleTabExample tabsAlign={"right"}> </SimpleTabExample>
+<SimpleTabExample tabsAlign={"right"} />
 
-<br />
-<br />
+#### Vertical with Right Alignment
 
-#### Vertical Right
-
-You have the flexibility to combine Alignment and Orientation, empowering you to create tab components that offer seamless navigation while perfectly organizing content in your desired layout.
-
-<br />
+Combine orientation and alignment for maximum flexibility.
 
 <SimpleTabExample
   tabsAlign={"right"}
   orientation={"vertical"}
-></SimpleTabExample>
+/>
 
-### Dynmaic tabs
+### Dynamic Tab Management
 
-Gain the ability to effortlessly add and close tabs within your tab components, offering dynamic content management and enabling a customizable and interactive user experience.
+Enable users to add and remove tabs dynamically for flexible content organization.
 
 <SimpleTabExample
   editable={{
@@ -156,11 +228,11 @@ Gain the ability to effortlessly add and close tabs within your tab components, 
     canAddTab: true,
     canMove: false,
   }}
-></SimpleTabExample>
+/>
 
-### Editing tabs
+### Inline Tab Editing
 
-You also have the option to modify the labels of tabs, granting you the ability to customize and personalize the displayed label text within your tab components.
+Allow users to edit tab titles directly by clicking on them.
 
 <SimpleTabExample
   editable={{
@@ -169,11 +241,11 @@ You also have the option to modify the labels of tabs, granting you the ability 
     canAddTab: false,
     canMove: false,
   }}
-></SimpleTabExample>
+/>
 
-### Tab order
+### Drag and Drop Reordering
 
-By simply dragging the tab labels, you can easily rearrange the order of tabs within your tab components, providing a convenient way to customize the sequence and organization of your content.
+Enable tab reordering through intuitive drag-and-drop interactions.
 
 <SimpleTabExample
   editable={{
@@ -182,16 +254,15 @@ By simply dragging the tab labels, you can easily rearrange the order of tabs wi
     canAddTab: false,
     canMove: true,
   }}
-></SimpleTabExample>
+/>
 
-<br />
-<br />
-
-:::note
-Enabling Simultaneous Label Editing and Reordering May Result in Unexpected Outcomes
+:::warning
+Enabling both inline editing (`canEditTabTitle`) and drag-and-drop (`canMove`) simultaneously may result in conflicting interactions and unexpected behavior.
 :::
 
-### Interactive complete example
+### Interactive Complete Example
+
+Explore all features combined in this interactive demo:
 
 export const InteractiveTabExample = ({}) => {
   const [editing, setEditing] = useState(false);
@@ -202,56 +273,56 @@ export const InteractiveTabExample = ({}) => {
   const [orientation, setOrientation] = useState("horizontal");
   return (
     <>
-      <HyButton
-        type={editing ? "primary" : ""}
-        onClick={() => {
-          setEditing(!editing);
-        }}
-      >
-        {editing ? "Disable" : "Enable"} editing
-      </HyButton>
-      <HyButton
-        type={closing ? "primary" : ""}
-        onClick={() => {
-          setClosing(!closing);
-        }}
-      >
-        {closing ? "Disable" : "Enable"} closing
-      </HyButton>
-      <HyButton
-        type={adding ? "primary" : ""}
-        onClick={() => {
-          setAdding(!adding);
-        }}
-      >
-        {adding ? "Disable" : "Enable"} Adding
-      </HyButton>
-      <HyButton
-        type={moving ? "primary" : ""}
-        onClick={() => {
-          setMoving(!moving);
-        }}
-      >
-        {moving ? "Disable" : "Enable"} Moving
-      </HyButton>
-      <HyButton
-        onClick={() => {
-          setTabsAlign(tabsAlign == "left" ? "right" : "left");
-        }}
-      >
-        {tabsAlign == "left" ? "Left" : "Right"} align
-      </HyButton>
-      <HyButton
-        onClick={() => {
-          setOrientation(
-            orientation == "horizontal" ? "vertical" : "horizontal"
-          );
-        }}
-      >
-        {orientation == "horizontal" ? "Horizontal" : "Vertical"} align
-      </HyButton>
-      <br />
-      <br />
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <HyButton
+          type={editing ? "primary" : ""}
+          onClick={() => {
+            setEditing(!editing);
+          }}
+        >
+          {editing ? "Disable" : "Enable"} editing
+        </HyButton>
+        <HyButton
+          type={closing ? "primary" : ""}
+          onClick={() => {
+            setClosing(!closing);
+          }}
+        >
+          {closing ? "Disable" : "Enable"} closing
+        </HyButton>
+        <HyButton
+          type={adding ? "primary" : ""}
+          onClick={() => {
+            setAdding(!adding);
+          }}
+        >
+          {adding ? "Disable" : "Enable"} Adding
+        </HyButton>
+        <HyButton
+          type={moving ? "primary" : ""}
+          onClick={() => {
+            setMoving(!moving);
+          }}
+        >
+          {moving ? "Disable" : "Enable"} Moving
+        </HyButton>
+        <HyButton
+          onClick={() => {
+            setTabsAlign(tabsAlign == "left" ? "center" : tabsAlign == "center" ? "right" : "left");
+          }}
+        >
+          Align: {tabsAlign}
+        </HyButton>
+        <HyButton
+          onClick={() => {
+            setOrientation(
+              orientation == "horizontal" ? "vertical" : "horizontal"
+            );
+          }}
+        >
+          {orientation}
+        </HyButton>
+      </div>
       <SimpleTabExample
         tabsAlign={tabsAlign}
         orientation={orientation}
@@ -261,9 +332,34 @@ export const InteractiveTabExample = ({}) => {
           canAddTab: adding,
           canMove: moving,
         }}
-      ></SimpleTabExample>
+      />
     </>
   );
 };
 
-<InteractiveTabExample> </InteractiveTabExample>
+<InteractiveTabExample />
+
+## Accessibility
+
+The tabs component includes built-in accessibility features:
+
+- **Keyboard Navigation**: Use arrow keys to navigate between tabs and Enter/Space to activate
+- **ARIA Attributes**: Proper ARIA roles and labels for screen readers
+- **Focus Management**: Clear visual focus indicators and logical tab order
+- **Semantic HTML**: Uses appropriate HTML elements for better accessibility
+
+## Best Practices
+
+1. **Limit Tab Count**: Keep the number of tabs reasonable (typically 3-7) to avoid overwhelming users
+2. **Clear Labels**: Use concise, descriptive tab labels that clearly indicate the content
+3. **Consistent Content**: Ensure related content is grouped logically within tabs
+4. **Responsive Design**: Consider how tabs will behave on smaller screens
+5. **Loading States**: Provide feedback when tab content is loading asynchronously
+
+## Styling
+
+The tabs component can be customized using CSS custom properties and standard CSS selectors. Refer to the theme documentation for available customization options.
+
+## Browser Support
+
+The tabs component works in all modern browsers that support Web Components and ES6 features.
