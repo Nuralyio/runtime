@@ -9,11 +9,8 @@ export default css`
     display: flex;
     width: fit-content;
     min-height: 300px;
-    max-height: inherit;
     flex-wrap: wrap;
     background-color: var(--container-bg-color-local, var(--container-bg-color));
-    overflow-y: auto;
-    overflow-x: hidden;
 }
 
 .boxed{

@@ -9,17 +9,12 @@ export class LeftPanel extends LitElement {
     css`
       hy-tabs {
         font-size: 12px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
+        
       }
       :host{
         --hybrid-tabs-content-padding: 20px;
         --hybrid-tabs-content-maring: 10px;
         --hybrid-tabs-container-background-color : white;
-        --hybrid-tabs-content-height: calc(100vh - 100px);
-        --hybrid-tabs-content-overflow-y: auto;
-        --hybrid-tabs-content-max-height: calc(100vh - 100px);
       }
        
       @media (prefers-color-scheme: dark) {
@@ -34,26 +29,9 @@ export class LeftPanel extends LitElement {
       }
       aside {
         display: none;
-        height: 100vh;
-        max-height: 100vh;
-        overflow: hidden;
       }
       aside.visible {
         display: flex;
-      }
-      
-      screen-structure-editor {
-        height: 100%;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-      
-      micro-app {
-        height: 100%;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
       }
     `
   ];
@@ -77,12 +55,12 @@ export class LeftPanel extends LitElement {
     return html`
       <aside
         class="flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
-        style="height: 100vh; width: 300px; max-height: 100vh; overflow: hidden;"
+        style="height: 100%;width : 300px;"
       >
         <div class="w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"> </span>
         </div>
-        <screen-structure-editor style="height: calc(100vh - 60px); overflow: hidden;" class="flex-grow"></screen-structure-editor>
+        <screen-structure-editor style="height: 100%;" class="flex-grow"></screen-structure-editor>
       </aside>
     `;
   }

@@ -11,11 +11,8 @@ export default [{
   style: {
     width: "100%",
     height: "100%",
-    display: "flex",
-    "flex-direction": "column",
-    "--hybrid-tabs-content-padding": "0px",
-    "--hybrid-tabs-content-height": "calc(100vh - 200px)",
-    "--hybrid-tabs-content-overflow": "auto"
+    display: "grid",
+    "--hybrid-tabs-content-padding": "0px"
   },
   input: {
     tabs: {
