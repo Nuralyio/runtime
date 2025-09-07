@@ -22,7 +22,7 @@ import type { ComponentElement } from '$store/component/interface';
 import type { PageElement } from '$store/handlers/pages/interfaces/interface';
 import Editor from '../Editor';
 import { invokeFunctionHandler } from '$store/handlers/functions/invoke-function-handler';
-import Database from 'core/DatabaseClient';
+import Database from '@nuraly/dbclient';
 
 // Helper function needed by executeCodeWithClosure
 const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) });
