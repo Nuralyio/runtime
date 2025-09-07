@@ -6,20 +6,20 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html, nothing, PropertyValues, TemplateResult} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import { LitElement, html, nothing, PropertyValues, TemplateResult } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import dayjs from 'dayjs';
-import {getMonthDetails} from './core/month.helper.js';
-import {styles} from './date-picker.style.js';
-import {IDayPresentation, INavigationDate, Mode} from './datepicker.types.js';
-import {renderMonthsTemplate} from './templates/months.template.js';
-import {renderYearsTemplate} from './templates/years.template.js';
-import {renderDays} from './templates/days.template.js';
-import {oneToTwoDigit} from './core/formatter.js';
-import {capitalizeFirstLetter} from './core/string.helper.js';
+import { getMonthDetails } from './core/month.helper.js';
+import { styles } from './date-picker.style.js';
+import { IDayPresentation, INavigationDate, Mode } from './datepicker.types.js';
+import { renderMonthsTemplate } from './templates/months.template.js';
+import { renderYearsTemplate } from './templates/years.template.js';
+import { renderDays } from './templates/days.template.js';
+import { oneToTwoDigit } from './core/formatter.js';
+import { capitalizeFirstLetter } from './core/string.helper.js';
 import './core/locale.helper.js';
-import {INPUT_SIZE, INPUT_STATE} from '../input/input.constant.js';
-import {EMPTY_STRING} from './constants.js';
+import { INPUT_SIZE, INPUT_STATE } from '../input/input.constant.js';
+import { EMPTY_STRING } from './constants.js';
 @customElement('hy-datepicker')
 export class HyDatePickerElement extends LitElement {
   today = dayjs();
@@ -422,22 +422,22 @@ export class HyDatePickerElement extends LitElement {
       <div class="year-month-header">
         ${
           this.mode !== Mode.Year
-            ? html`<hy-button @click=${this.toggleMonthView} class="toggle-month-view">
+            ? html`<nr-button @click=${this.toggleMonthView} class="toggle-month-view">
                 ${capitalizeFirstLetter(this.months[this.navigationDates.start.month - 1])}
                 ${this.range && this.prevMode === Mode.Day
                   ? ' - ' + capitalizeFirstLetter(this.months[this.navigationDates.start.month])
                   : nothing}
-              </hy-button> `
+              </nr-button> `
             : nothing
         }  
         
         <div class="current-year-container">
-          <hy-button class="toggle-year-view" @click=${this.toggleYearView}>${
+          <nr-button class="toggle-year-view" @click=${this.toggleYearView}>${
       this.navigationDates.start.year
-    }</hy-button>
+    }</nr-button>
           <div class="year-icons-toggler">
-            <hy-button class="next-year" .icon=${['caret-up']} @click=${() => this.nextYear()}></hy-button>
-            <hy-button class="previous-year" .icon=${['caret-down']}  @click=${() => this.prevYear()}></hy-button>
+            <nr-button class="next-year" .icon=${['caret-up']} @click=${() => this.nextYear()}></nr-button>
+            <nr-button class="previous-year" .icon=${['caret-down']}  @click=${() => this.prevYear()}></nr-button>
           </div>
           </div>
         </div>
@@ -450,20 +450,20 @@ export class HyDatePickerElement extends LitElement {
       class="calendar-container ${this.range && this.prevMode === Mode.Day ? 'calendar-container-range' : EMPTY_STRING}"
     >
       <div class="calendar-header">
-        <hy-button
+        <nr-button
           type="text"
           class="header-prev-button prev-month"
           .icon="${['angle-left']}"
           @click=${() => this.prevMonth()}
-        ></hy-button>
+        ></nr-button>
         ${this.renderCalendarHeader()}
 
-        <hy-button
+        <nr-button
           type="text"
           class="header-next-button next-month"
           .icon="${['angle-right']}"
           @click=${() => this.nextMonth()}
-        ></hy-button>
+        ></nr-button>
       </div>
       <span class="day-containers">
         ${this.renderContainer()}

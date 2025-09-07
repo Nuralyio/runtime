@@ -6,12 +6,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, html} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import { LitElement, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 
 import '../select.component';
 import '../../dropdown/hy-dropdown.component';
-import '../../button/hy-button.component';
+import '../../button/nr-button.component';
 import '../../tabs/tabs.component';
 import '../../input/input.component';
 

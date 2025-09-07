@@ -291,7 +291,7 @@ export class FileUpload extends LitElement {
             ${this.tip ? html`<div class="upload-tip">${this.tip}</div>` : ''}
           </div>
         ` : html`
-        <hy-button  @click=${this._onClick}>Upload File</hy-button>
+        <nr-button  @click=${this._onClick}>Upload File</nr-button>
           ${this.tip ? html`<div class="upload-tip">${this.tip}</div>` : ''}
         `}
 

@@ -6,12 +6,12 @@
 
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { ButtonType, EMPTY_STRING, IconPosition } from './hy-button.types.js';
-import { styles } from './hy-button.style.js';
+import { ButtonType, EMPTY_STRING, IconPosition } from './nr-button.types.js';
+import { styles } from './nr-button.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
-@customElement('hy-button')
-export class HyButtonElement extends NuralyUIBaseMixin(LitElement) {
+@customElement('nr-button')
+export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Boolean})
   disabled = false;
 

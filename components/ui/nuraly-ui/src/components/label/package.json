@@ -1,13 +1,12 @@
 {
-    "name": "@nuralyui/label",
-    "version": "0.0.12",
-    "description": "",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Labidi Aymen",
-    "license": "ISC"
-  }
-  
+  "name": "@nuralyui/label",
+  "version": "0.0.13",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "ISC"
+}

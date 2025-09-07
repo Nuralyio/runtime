@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const calendarStyles = css`
   :host {
@@ -14,7 +14,7 @@ const calendarStyles = css`
     position: absolute;
     background-color: var(--hybrid-datepicker-background-color);
   }
-  hy-button {
+  nr-button {
     --hybrid-button-border-top: 1px solid transparent;
     --hybrid-button-border-bottom: 1px solid transparent;
     --hybrid-button-border-left: 1px solid transparent;
