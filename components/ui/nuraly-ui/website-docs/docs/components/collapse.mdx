@@ -1,0 +1,121 @@
+---
+sidebar_position: 15
+---
+
+# Collapse
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import "@nuralyui/collapse";
+import { HyCollapse } from "@nuralyui/collapse/react";
+
+The Collapse component provides an expandable/collapsible content area. Perfect for FAQ sections, accordions, and any content that needs to be hidden or shown on demand.
+
+## How to use it
+
+<Tabs>
+  <TabItem value="npm" label="npm">
+
+```shell
+npm install @nuralyui/collapse
+```
+
+</TabItem>
+ <TabItem value="yarn" label="yarn">
+
+```shell
+yarn add @nuralyui/collapse
+```
+
+</TabItem>
+</Tabs>
+
+## Import
+
+<Tabs>
+  <TabItem value="html" label="HTML">
+
+```html
+<script type="module">
+  import '@nuralyui/collapse';
+</script>
+
+<hy-collapse 
+  title="Click to expand"
+  open="false">
+  <p>This is the collapsible content that can be shown or hidden.</p>
+</hy-collapse>
+```
+
+</TabItem>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HyCollapse } from '@nuralyui/collapse/react';
+
+function App() {
+  return (
+    <HyCollapse 
+      title="Click to expand"
+      open={false}>
+      <p>This is the collapsible content that can be shown or hidden.</p>
+    </HyCollapse>
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## API Reference
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `title` | `string` | `undefined` | The title text for the collapse header |
+| `open` | `boolean` | `false` | Whether the collapse is initially open |
+| `disabled` | `boolean` | `false` | Whether the collapse is disabled |
+| `icon` | `string` | `undefined` | Icon to display in the header |
+
+### Events
+
+| Event | Description |
+|-------|-------------|
+| `toggle` | Fired when the collapse state changes |
+| `open` | Fired when the collapse opens |
+| `close` | Fired when the collapse closes |
+
+## Examples
+
+### Basic Collapse
+
+```html
+<hy-collapse title="Basic Collapse">
+  <p>This is some collapsible content.</p>
+</hy-collapse>
+```
+
+### Initially Open
+
+```html
+<hy-collapse title="Open by Default" open="true">
+  <p>This collapse starts in the open state.</p>
+</hy-collapse>
+```
+
+### With Custom Content
+
+```html
+<hy-collapse title="Rich Content">
+  <div>
+    <h3>Nested Content</h3>
+    <p>You can put any HTML content inside the collapse.</p>
+    <ul>
+      <li>Item 1</li>
+      <li>Item 2</li>
+      <li>Item 3</li>
+    </ul>
+  </div>
+</hy-collapse>
+```

@@ -1,6 +1,6 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {HyCheckBox} from './checkbox.component.js';
+import { HyCheckBox } from './checkbox.component.js';
 
 export const HyCheckbox = createComponent({
   tagName: 'hy-checkbox',

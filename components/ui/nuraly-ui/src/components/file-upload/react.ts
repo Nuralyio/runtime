@@ -1,6 +1,6 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {FileUpload} from './file-upload.component.js';
+import { FileUpload } from './file-upload.component.js';
 
 export const HyFileUpload = createComponent({
   tagName: 'nr-file-upload',

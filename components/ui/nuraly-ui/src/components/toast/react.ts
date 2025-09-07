@@ -1,6 +1,6 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {LitToast} from './toast.component.js';
+import { LitToast } from './toast.component.js';
 
 export const HyToast = createComponent({
   tagName: 'hy-toast',

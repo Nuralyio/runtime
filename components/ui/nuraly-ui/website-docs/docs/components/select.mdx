@@ -10,6 +10,113 @@ import "@nuralyui/select";
 import { HySelect } from "@nuralyui/select/react";
 import { useState } from "react";
 
+export const BasicSelectDemo = () => {
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  
+  const options = [
+    { value: 'apple', label: '🍎 Apple' },
+    { value: 'banana', label: '🍌 Banana' },
+    { value: 'orange', label: '🍊 Orange' },
+    { value: 'grape', label: '🍇 Grape' }
+  ];
+  
+  const handleChange = (e) => {
+    setSelectedOptions(e.detail.value);
+  };
+  
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <HySelect 
+        placeholder="Choose an option"
+        options={options}
+        onChanged={handleChange}
+        style={{ width: "200px" }}
+      />
+      {selectedOptions.length > 0 && (
+        <div style={{ marginTop: "10px", color: "#666" }}>
+          Selected: {selectedOptions.join(", ")}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const MultiSelectDemo = () => {
+  const [selectedValues, setSelectedValues] = useState([]);
+  
+  const options = [
+    { value: 'red', label: '🔴 Red' },
+    { value: 'green', label: '🟢 Green' },
+    { value: 'blue', label: '🔵 Blue' },
+    { value: 'yellow', label: '🟡 Yellow' },
+    { value: 'purple', label: '🟣 Purple' }
+  ];
+  
+  const handleChange = (e) => {
+    setSelectedValues(e.detail.value);
+  };
+  
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <HySelect 
+        selectionMode="multiple"
+        placeholder="Select multiple options"
+        options={options}
+        onChanged={handleChange}
+        style={{ width: "200px" }}
+      />
+      {selectedValues.length > 0 && (
+        <div style={{ marginTop: "10px", color: "#666" }}>
+          Selected: {selectedValues.join(", ")}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const SizeSelectDemo = () => {
+  const options = [
+    { value: '1', label: 'Option 1' },
+    { value: '2', label: 'Option 2' },
+    { value: '3', label: 'Option 3' }
+  ];
+  return (
+    <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
+      <div>
+        <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>Small Size:</label>
+        <HySelect size="small" placeholder="Small select" options={options} style={{ width: "150px" }} />
+      </div>
+      <div>
+        <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>Medium Size (Default):</label>
+        <HySelect placeholder="Medium select" options={options} style={{ width: "180px" }} />
+      </div>
+      <div>
+        <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>Large Size:</label>
+        <HySelect size="large" placeholder="Large select" options={options} style={{ width: "220px" }} />
+      </div>
+    </div>
+  );
+};
+
+export const DisabledSelectDemo = () => {
+  const options = [
+    { value: '1', label: 'Option 1' },
+    { value: '2', label: 'Option 2' }
+  ];
+  return (
+    <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
+      <div>
+        <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>Enabled Select:</label>
+        <HySelect placeholder="This is enabled" options={options} style={{ width: "200px" }} />
+      </div>
+      <div>
+        <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>Disabled Select:</label>
+        <HySelect disabled placeholder="This is disabled" options={options} style={{ width: "200px" }} />
+      </div>
+    </div>
+  );
+};
+
 The Select component allows users to choose one or multiple options from a dropdown list. It supports various configurations including single/multi-select, different sizes, and custom styling.
 
 ## How to use it
@@ -41,10 +148,21 @@ yarn add @nuralyui/select
   import '@nuralyui/select';
 </script>
 
-<hy-select 
-  placeholder="Select an option"
-  options='[{"label": "Option 1", "value": "opt1"}, {"label": "Option 2", "value": "opt2"}]'>
-</hy-select>
+<script>
+const options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'orange', label: 'Orange' }
+];
+
+const selectElement = document.querySelector('hy-select');
+selectElement.options = options;
+selectElement.addEventListener('changed', (e) => {
+  console.log('Selected:', e.detail.value);
+});
+</script>
+
+<hy-select placeholder="Choose an option"></hy-select>
 ```
 
 </TabItem>
@@ -53,18 +171,22 @@ yarn add @nuralyui/select
 ```jsx
 import { HySelect } from '@nuralyui/select/react';
 
-const options = [
-  { label: 'Option 1', value: 'opt1' },
-  { label: 'Option 2', value: 'opt2' },
-  { label: 'Option 3', value: 'opt3' }
-];
-
 function App() {
+  const options = [
+    { value: 'apple', label: 'Apple' },
+    { value: 'banana', label: 'Banana' },
+    { value: 'orange', label: 'Orange' }
+  ];
+
+  const handleChange = (e) => {
+    console.log('Selected:', e.detail.value);
+  };
+
   return (
     <HySelect 
-      placeholder="Select an option"
+      placeholder="Choose an option"
       options={options}
-      onSelectionChange={(selectedValues) => console.log(selectedValues)}
+      onChanged={handleChange}
     />
   );
 }
@@ -73,295 +195,285 @@ function App() {
 </TabItem>
 </Tabs>
 
-## Basic Example
-
-export const BasicSelectExample = () => {
-  const options = [
-    { label: 'Apple', value: 'apple' },
-    { label: 'Banana', value: 'banana' },
-    { label: 'Orange', value: 'orange' },
-    { label: 'Grape', value: 'grape' }
-  ];
-
-  return (
-    <div style={{ width: '200px' }}>
-      <HySelect 
-        placeholder="Select a fruit"
-        options={options}
-        onSelectionChange={(values) => console.log('Selected:', values)}
-      />
-    </div>
-  );
-};
-
-<BasicSelectExample />
-
-## Multiple Selection
-
-export const MultiSelectExample = () => {
-  const options = [
-    { label: 'React', value: 'react' },
-    { label: 'Vue', value: 'vue' },
-    { label: 'Angular', value: 'angular' },
-    { label: 'Svelte', value: 'svelte' },
-    { label: 'Lit', value: 'lit' }
-  ];
-
-  return (
-    <div style={{ width: '250px' }}>
-      <HySelect 
-        placeholder="Select frameworks"
-        options={options}
-        selectionMode="multiple"
-        onSelectionChange={(values) => console.log('Selected frameworks:', values)}
-      />
-    </div>
-  );
-};
-
-<MultiSelectExample />
-
-## Different Sizes
-
-export const SelectSizeExample = () => {
-  const options = [
-    { label: 'Small', value: 'small' },
-    { label: 'Medium', value: 'medium' },
-    { label: 'Large', value: 'large' }
-  ];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '200px' }}>
-      <div>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Small Size</label>
-        <HySelect 
-          placeholder="Small select"
-          options={options}
-          size="small"
-        />
-      </div>
-      <div>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Medium Size (Default)</label>
-        <HySelect 
-          placeholder="Medium select"
-          options={options}
-          size="medium"
-        />
-      </div>
-      <div>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Large Size</label>
-        <HySelect 
-          placeholder="Large select"
-          options={options}
-          size="large"
-        />
-      </div>
-    </div>
-  );
-};
-
-<SelectSizeExample />
-
-## Status Variants
-
-export const SelectStatusExample = () => {
-  const options = [
-    { label: 'Option 1', value: 'opt1' },
-    { label: 'Option 2', value: 'opt2' },
-    { label: 'Option 3', value: 'opt3' }
-  ];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '200px' }}>
-      <div>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Default</label>
-        <HySelect 
-          placeholder="Default status"
-          options={options}
-          status="default"
-        />
-      </div>
-      <div>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Error</label>
-        <HySelect 
-          placeholder="Error status"
-          options={options}
-          status="error"
-        />
-      </div>
-      <div>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Warning</label>
-        <HySelect 
-          placeholder="Warning status"
-          options={options}
-          status="warning"
-        />
-      </div>
-    </div>
-  );
-};
-
-<SelectStatusExample />
-
-## Disabled State
-
-export const DisabledSelectExample = () => {
-  const options = [
-    { label: 'Option 1', value: 'opt1' },
-    { label: 'Option 2', value: 'opt2' },
-    { label: 'Option 3', value: 'opt3' }
-  ];
-
-  return (
-    <div style={{ display: 'flex', gap: '16px' }}>
-      <div style={{ width: '200px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Enabled</label>
-        <HySelect 
-          placeholder="Select an option"
-          options={options}
-        />
-      </div>
-      <div style={{ width: '200px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Disabled</label>
-        <HySelect 
-          placeholder="Select an option"
-          options={options}
-          disabled={true}
-        />
-      </div>
-    </div>
-  );
-};
-
-<DisabledSelectExample />
-
-## With Default Selection
-
-export const DefaultSelectionExample = () => {
-  const options = [
-    { label: 'JavaScript', value: 'js' },
-    { label: 'TypeScript', value: 'ts' },
-    { label: 'Python', value: 'py' },
-    { label: 'Java', value: 'java' },
-    { label: 'C++', value: 'cpp' }
-  ];
-
-  return (
-    <div style={{ display: 'flex', gap: '16px' }}>
-      <div style={{ width: '200px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Single Default</label>
-        <HySelect 
-          placeholder="Select language"
-          options={options}
-          defaultSelected={['ts']}
-        />
-      </div>
-      <div style={{ width: '200px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Multiple Default</label>
-        <HySelect 
-          placeholder="Select languages"
-          options={options}
-          selectionMode="multiple"
-          defaultSelected={['js', 'ts']}
-        />
-      </div>
-    </div>
-  );
-};
-
-<DefaultSelectionExample />
-
 ## API Reference
 
 ### Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `options` | `IOption[]` | `[]` | Array of options to display |
-| `placeholder` | `string` | `'Select an option'` | Placeholder text when no option is selected |
+| `placeholder` | `string` | `undefined` | Placeholder text when no option is selected |
+| `options` | `Array<{value: string, label: string}>` | `[]` | Array of option objects with value and label |
+| `selectionMode` | `'single' \| 'multiple'` | `'single'` | Whether single or multiple selections are allowed |
+| `defaultSelected` | `string[]` | `[]` | Array of default selected values |
 | `disabled` | `boolean` | `false` | Whether the select is disabled |
-| `selectionMode` | `'single' \| 'multiple'` | `'single'` | Selection mode for the select |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size of the select component |
-| `status` | `'default' \| 'error' \| 'warning'` | `'default'` | Status variant of the select |
-| `type` | `'default' \| 'borderless'` | `'default'` | Style type of the select |
-| `defaultSelected` | `string[]` | `[]` | Array of default selected option values |
-| `show` | `boolean` | `false` | Controls whether the dropdown is open |
-
-### Types
-
-#### IOption
-
-```typescript
-interface IOption {
-  label: string;
-  value: string;
-  disabled?: boolean;
-}
-```
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | The size of the select |
+| `status` | `'default' \| 'error' \| 'warning'` | `'default'` | The status/validation state |
 
 ### Events
 
-| Event | Description | Event Detail |
-|-------|-------------|--------------|
-| `selectionChange` | Fired when selection changes | `{ selectedValues: string[], selectedOptions: IOption[] }` |
-
-### CSS Custom Properties
-
-You can customize the select appearance using CSS custom properties:
-
-```css
-hy-select {
-  --select-background: #ffffff;
-  --select-border: 1px solid #d9d9d9;
-  --select-border-radius: 6px;
-  --select-border-hover: #40a9ff;
-  --select-border-focus: #1890ff;
-  --select-padding: 4px 11px;
-  --select-font-size: 14px;
-  --select-placeholder-color: #bfbfbf;
-  --select-option-hover-background: #f5f5f5;
-  --select-option-selected-background: #e6f7ff;
-  --select-dropdown-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
-}
-```
+| Event | Description |
+|-------|-------------|
+| `changed` | Fired when the selection changes, returns `e.detail.value` array |
 
 ## Examples
 
-### Grouped Options
+### Basic Select
+
+Try selecting different options to see the component in action:
+
+<BasicSelectDemo />
+
+<details style={{backgroundColor : 'transparent', border : 'none'}}>
+  <summary>Show code</summary>
+<Tabs>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HySelect } from "@nuralyui/select/react";
+import { useState } from "react";
+
+export default function App() {
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  
+  const options = [
+    { value: 'apple', label: '🍎 Apple' },
+    { value: 'banana', label: '🍌 Banana' },
+    { value: 'orange', label: '🍊 Orange' },
+    { value: 'grape', label: '🍇 Grape' }
+  ];
+  
+  const handleChange = (e) => {
+    setSelectedOptions(e.detail.value);
+  };
+  
+  return (
+    <div>
+      <HySelect 
+        placeholder="Choose an option"
+        options={options}
+        onChanged={handleChange}
+      />
+      {selectedOptions.length > 0 && (
+        <div>Selected: {selectedOptions.join(", ")}</div>
+      )}
+    </div>
+  );
+}
+```
+
+</TabItem>
+<TabItem value="Html/Angular" label="Html/Angular">
 
 ```html
-<hy-select placeholder="Select option">
-  <optgroup label="Fruits">
-    <option value="apple">Apple</option>
-    <option value="banana">Banana</option>
-  </optgroup>
-  <optgroup label="Vegetables">
-    <option value="carrot">Carrot</option>
-    <option value="broccoli">Broccoli</option>
-  </optgroup>
+<script>
+const options = [
+  { value: 'apple', label: '🍎 Apple' },
+  { value: 'banana', label: '🍌 Banana' },
+  { value: 'orange', label: '🍊 Orange' },
+  { value: 'grape', label: '🍇 Grape' }
+];
+
+const selectElement = document.querySelector('hy-select');
+selectElement.options = options;
+selectElement.addEventListener('changed', (e) => {
+  console.log('Selected:', e.detail.value);
+});
+</script>
+
+<hy-select placeholder="Choose an option"></hy-select>
+```
+
+</TabItem>
+</Tabs>
+</details>
+
+### Multi-Select
+
+Select multiple options by holding Ctrl (or Cmd on Mac):
+
+<MultiSelectDemo />
+
+<details style={{backgroundColor : 'transparent', border : 'none'}}>
+  <summary>Show code</summary>
+<Tabs>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HySelect } from "@nuralyui/select/react";
+import { useState } from "react";
+
+export default function App() {
+  const [selectedValues, setSelectedValues] = useState([]);
+  
+  const handleChange = (e) => {
+    const value = Array.from(e.target.selectedOptions, option => option.value);
+    setSelectedValues(value);
+  };
+  
+  return (
+    <div>
+      <HySelect 
+        multiple 
+        placeholder="Select multiple options"
+        onChange={handleChange}
+      >
+        <option value="red">🔴 Red</option>
+        <option value="green">🟢 Green</option>
+        <option value="blue">🔵 Blue</option>
+        <option value="yellow">🟡 Yellow</option>
+        <option value="purple">🟣 Purple</option>
+      </HySelect>
+      {selectedValues.length > 0 && (
+        <div>Selected: {selectedValues.join(", ")}</div>
+      )}
+    </div>
+  );
+}
+```
+
+</TabItem>
+<TabItem value="Html/Angular" label="Html/Angular">
+
+```html
+<hy-select multiple placeholder="Select multiple options">
+  <option value="red">🔴 Red</option>
+  <option value="green">🟢 Green</option>
+  <option value="blue">🔵 Blue</option>
+  <option value="yellow">🟡 Yellow</option>
+  <option value="purple">🟣 Purple</option>
 </hy-select>
 ```
 
-### With Search/Filter
+</TabItem>
+</Tabs>
+</details>
 
-```javascript
-const searchableOptions = [
-  { label: 'Apple', value: 'apple' },
-  { label: 'Apricot', value: 'apricot' },
-  { label: 'Banana', value: 'banana' },
-  { label: 'Blueberry', value: 'blueberry' },
-  { label: 'Cherry', value: 'cherry' }
-];
+### Different Sizes
 
-// The component automatically filters options based on typed text
+The select component supports different sizes for various use cases:
+
+<SizeSelectDemo />
+
+<details style={{backgroundColor : 'transparent', border : 'none'}}>
+  <summary>Show code</summary>
+<Tabs>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HySelect } from "@nuralyui/select/react";
+
+export default function App() {
+  return (
+    <div>
+      <div>
+        <label>Small Size:</label>
+        <HySelect size="small" placeholder="Small select">
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+          <option value="3">Option 3</option>
+        </HySelect>
+      </div>
+      
+      <div>
+        <label>Medium Size (Default):</label>
+        <HySelect placeholder="Medium select">
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+          <option value="3">Option 3</option>
+        </HySelect>
+      </div>
+      
+      <div>
+        <label>Large Size:</label>
+        <HySelect size="large" placeholder="Large select">
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+          <option value="3">Option 3</option>
+        </HySelect>
+      </div>
+    </div>
+  );
+}
 ```
 
-### Custom Option Rendering
+</TabItem>
+<TabItem value="Html/Angular" label="Html/Angular">
 
-```javascript
-const optionsWithIcons = [
-  { label: '🍎 Apple', value: 'apple' },
-  { label: '🍌 Banana', value: 'banana' },
-  { label: '🍊 Orange', value: 'orange' }
-];
+```html
+<hy-select size="small" placeholder="Small select">
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+</hy-select>
+
+<hy-select placeholder="Medium select (default)">
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+</hy-select>
+
+<hy-select size="large" placeholder="Large select">
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+</hy-select>
 ```
+
+</TabItem>
+</Tabs>
+</details>
+
+### Disabled State
+
+Compare enabled vs disabled select components:
+
+<DisabledSelectDemo />
+
+<details style={{backgroundColor : 'transparent', border : 'none'}}>
+  <summary>Show code</summary>
+<Tabs>
+  <TabItem value="react" label="React">
+
+```jsx
+import { HySelect } from "@nuralyui/select/react";
+
+export default function App() {
+  return (
+    <div>
+      <div>
+        <label>Enabled Select:</label>
+        <HySelect placeholder="This is enabled">
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+        </HySelect>
+      </div>
+      
+      <div>
+        <label>Disabled Select:</label>
+        <HySelect disabled placeholder="This is disabled">
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+        </HySelect>
+      </div>
+    </div>
+  );
+}
+```
+
+</TabItem>
+<TabItem value="Html/Angular" label="Html/Angular">
+
+```html
+<!-- Enabled -->
+<hy-select placeholder="This is enabled">
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+</hy-select>
+
+<!-- Disabled -->
+<hy-select disabled placeholder="This is disabled">
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+</hy-select>
+```
+
+</TabItem>
+</Tabs>
+</details>
