@@ -645,11 +645,11 @@ It is recommended to set the properties in the following order: `type` -> `shape
 | href     | Sets the redirect URL for a link button                                                                                                                            | string                           | -         |         |
 | htmlType | Sets the original HTML `type` attribute of the button. See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type) for more information. | string                           | `button`  |         |
 | icon     | Sets the icon component for the button                                                                                                                             | ReactNode                        | -         |         |
-| loading  | Sets the loading state of the button                                                                                                                               | boolean \| { delay: number }     | false     |         |
-| shape    | Sets the shape of the button                                                                                                                                       | `default` \| `circle` \| `round` | `default` |         |
-| size     | Sets the size of the button                                                                                                                                        | `large` \| `middle` \| `small`   | `middle`  |         |
+| loading  | Sets the loading state of the button                                                                                                                               | `boolean` or `{ delay: number }`     | false     |         |
+| shape    | Sets the shape of the button                                                                                                                                       | `default`, `circle`, `round` | `default` |         |
+| size     | Sets the size of the button                                                                                                                                        | `large`, `middle`, `small`   | `middle`  |         |
 | target   | Sets the `target` attribute of a link button. Works only when `href` is specified.                                                                                 | string                           | -         |         |
-| type     | Sets the type of button. Available options are `primary`, `ghost`, `dashed`, `link`, `text`, `default`                                                             |
+| type     | Sets the type of button. Available options are `primary`, `ghost`, `dashed`, `link`, `text`, `default`                                                             | string                           | `default` |         |
 | onClick  | Set the handler to handle `click` event                                                                                                                            | (event: MouseEvent) => void      | -         |         |
 
 ```

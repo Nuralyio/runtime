@@ -15,10 +15,10 @@
     "update": "ncu --color --cacheClear \"/^@nuralyui.*$/\" -u"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.4.1",
-    "@docusaurus/preset-classic": "^2.4.1",
+    "@docusaurus/core": "^3.8.1",
+    "@docusaurus/preset-classic": "^3.8.1",
     "@lit-labs/react": "^1.1.1",
-    "@mdx-js/react": "^1.6.22",
+    "@mdx-js/react": "^3.1.1",
     "@nuralyui/button": "^0.0.9",
     "@nuralyui/canvas": "^0.0.3",
     "@nuralyui/card": "^0.0.4",
@@ -49,14 +49,14 @@
     "clsx": "^1.2.1",
     "lit": "^2.6.1",
     "prism-react-renderer": "^1.3.5",
-    "react": "^17.0.2",
+    "react": "^18.3.1",
     "react-color": "^2.19.3",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.3.1",
     "react-viewport-list": "^7.1.1",
     "react-virtualized": "^9.22.5"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^2.4.1",
+    "@docusaurus/module-type-aliases": "^3.8.1",
     "babel-preset-es2017": "^6.24.1",
     "npm-check-updates": "^16.10.12"
   },
