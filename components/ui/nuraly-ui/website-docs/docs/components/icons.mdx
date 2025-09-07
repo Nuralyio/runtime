@@ -7,7 +7,7 @@ import TabItem from "@theme/TabItem";
 import "@nuralyui/icon";
 import "@nuralyui/button";
 import "@nuralyui/input";
-import { useState } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { BlockPicker } from "react-color";
 import { HyInput } from "@nuralyui/input/react";
 import { HyIcon } from "@nuralyui/icon/react";
@@ -17,6 +17,12 @@ import { HyButton } from "@nuralyui/button/react";
 
 export const IconBrowser = ({ color }) => {
   const [currentFilter, setCurrentFilter] = useState("");
+  const [displayedCount, setDisplayedCount] = useState(50);
+  const [itemsPerLoad] = useState(50);
+  const containerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const sentinelRef = useRef(null);
+  
   const icons = [
     "ad",
     "address-book",
@@ -1463,36 +1469,115 @@ export const IconBrowser = ({ color }) => {
     "youtube-square",
     "zhihu",
   ];
+  // Filter icons based on search input
+  const filteredIcons = useMemo(() => {
+    return icons.filter(icon => 
+      icon.toLowerCase().includes(currentFilter.toLowerCase())
+    );
+  }, [icons, currentFilter]);
+  // Get visible icons based on current display count
+  const visibleIcons = useMemo(() => {
+    return filteredIcons.slice(0, displayedCount);
+  }, [filteredIcons, displayedCount]);
+    // Reset displayed count when filter changes
+  useEffect(() => {
+    setDisplayedCount(50);
+  }, [currentFilter]);
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    if (!sentinelRef.current || isLoading || displayedCount >= filteredIcons.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !isLoading && displayedCount < filteredIcons.length) {
+          setIsLoading(true);
+          setTimeout(() => {
+            setDisplayedCount(prev => Math.min(prev + itemsPerLoad, filteredIcons.length));
+            setIsLoading(false);
+          }, 300);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px'
+      }
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [displayedCount, filteredIcons.length, itemsPerLoad, isLoading]);
   const filterHandler = (e) => {
     setCurrentFilter(e.detail.value);
   };
   return (
     <>
-      <HyInput valueChange={filterHandler}>
+      <HyInput valueChange={filterHandler} placeholder="Search icons...">
         <HyIcon name="search" slot="prefix"></HyIcon>
       </HyInput>
-      {icons
-        .filter(function (icon) {
-          return icon.includes(currentFilter);
-        })
-        .map(function (icon) {
-          return (
-            <>
-              <div
-                style={{
-                  display: "inline-block",
-                  width: "235px",
-                  textAlign: "center",
-                }}
-              >
-                <HyIcon style={{ fontSize: "30px" }} name={icon}></HyIcon>
-                <div style={{ fontSize: "13px" }}>
-                  <pre>{`<hy-icon name="${icon}"></hy-icon>`}</pre>
-                </div>
-              </div>
-            </>
-          );
-        })}
+      <div style={{ margin: "20px 0", fontSize: "14px", color: "#666" }}>
+        Showing {visibleIcons.length} of {filteredIcons.length} icons
+        {currentFilter && ` (filtered from ${icons.length} total)`}
+      </div>
+      <div 
+        ref={containerRef}
+        style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fill, minmax(235px, 1fr))",
+          gap: "20px",
+          marginBottom: "20px"
+        }}
+      >
+        {visibleIcons.map((icon, index) => (
+          <div
+            key={`${icon}-${index}`}
+            style={{
+              textAlign: "center",
+              padding: "15px",
+              border: "1px solid #e0e0e0",
+              borderRadius: "8px",
+              backgroundColor: "#fafafa"
+            }}
+          >
+            <HyIcon style={{ fontSize: "30px", marginBottom: "10px" }} name={icon}></HyIcon>
+            <div style={{ fontSize: "12px", fontFamily: "monospace" }}>
+              <code>{`<hy-icon name="${icon}"></hy-icon>`}</code>
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* Sentinel element for Intersection Observer */}
+      {displayedCount < filteredIcons.length && (
+        <div 
+          ref={sentinelRef}
+          style={{ 
+            height: "20px",
+            margin: "20px 0"
+          }}
+        />
+      )}
+      {/* Loading indicator */}
+      {isLoading && (
+        <div style={{ 
+          textAlign: "center", 
+          padding: "20px",
+          fontSize: "14px",
+          color: "#666"
+        }}>
+          Loading more icons...
+        </div>
+      )}
+      {/* End of results indicator */}
+      {displayedCount >= filteredIcons.length && filteredIcons.length > 0 && (
+        <div style={{ 
+          textAlign: "center", 
+          padding: "20px",
+          fontSize: "14px",
+          color: "#666",
+          borderTop: "1px solid #e0e0e0",
+          marginTop: "20px"
+        }}>
+          You've reached the end! All {filteredIcons.length} icons are loaded.
+        </div>
+      )}
     </>
   );
 };
