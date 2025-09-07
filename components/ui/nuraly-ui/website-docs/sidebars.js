@@ -24,7 +24,7 @@ const sidebars = {
       label: 'Components',
       items: [
         'components/buttons',
-        'components/calendar',
+        'components/datepicker',
         'components/card',
         'components/carousel',
         'components/checkbox',
