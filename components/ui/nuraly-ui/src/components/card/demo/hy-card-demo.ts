@@ -1,6 +1,6 @@
-import {css, html, LitElement} from 'lit';
-import '../card.component';
-import {customElement} from 'lit/decorators.js';
+import { css, html, LitElement } from 'lit';
+import '../card.component.js';
+import { customElement } from 'lit/decorators.js';
 import '../../button/demo/hy-buttons-demo';
 
 @customElement('hy-card-demo')
