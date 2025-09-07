@@ -1,10 +1,10 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { createBaseComponent, createTextLabel } from "./component-builders.ts";
 import {
-    createRadioInput,
-    createColorInput,
-    createNumberInput,
-    createSelectInput
+  createRadioInput,
+  createColorInput,
+  createNumberInput,
+  createSelectInput
 } from "./input-components/index.ts";
 
 // Simplified style block factory using modular input components
