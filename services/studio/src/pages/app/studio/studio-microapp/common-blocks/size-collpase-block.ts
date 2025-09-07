@@ -1,6 +1,7 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { CollapseHeaderTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
+import { allSizeBlocks } from "../config/size-configs.ts";
 
 export default [
   {
@@ -52,6 +53,17 @@ export default [
     component_type: ComponentType.Container,
     ...COMMON_ATTRIBUTES,
     style: {},
-    childrenIds: ["width_vertical_container", "height_vertical_container",  "position_block","inner_container_alignement_block", "cursor_block" , "flex_font_size_vertical_container"]
-  }
+    childrenIds: [
+      "width_vertical_container",
+      "height_vertical_container", 
+      "position_block",
+      "inner_container_alignement_block",
+      "cursor_block",
+      "flex_font_size_vertical_container"
+    ]
+  },
+  // Include all factory-generated size blocks
+  ...allSizeBlocks
 ];
+
+//clean up the childrenDIS component file = []
