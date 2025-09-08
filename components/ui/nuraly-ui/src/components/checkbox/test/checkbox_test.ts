@@ -67,12 +67,12 @@ suite('hy-checkbox', () => {
     expect(inputContent).to.equal('""');
   });
 
-  test('should dispatch "checkbox-changed" event on change', async () => {
+  test('should dispatch "nr-change" event on change', async () => {
     const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`)!;
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     let checkboxChangedDispatched = false;
 
-    el.addEventListener('checkbox-changed', () => {
+    el.addEventListener('nr-change', () => {
       checkboxChangedDispatched = true;
     });
 
@@ -81,12 +81,12 @@ suite('hy-checkbox', () => {
     expect(checkboxChangedDispatched).to.be.true;
   });
 
-  test('should not dispatch "checkbox-changed" event on change when checkbox is disabled', async () => {
+  test('should not dispatch "nr-change" event on change when checkbox is disabled', async () => {
     const el: HyCheckBox = await fixture(html`<hy-checkbox disabled></hy-checkbox>`)!;
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     let checkboxChangedDispatched = false;
 
-    el.addEventListener('checkbox-changed', () => {
+    el.addEventListener('nr-change', () => {
       checkboxChangedDispatched = true;
     });
 
