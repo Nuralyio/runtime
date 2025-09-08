@@ -1,5 +1,5 @@
 import { css } from 'lit';
-import { styleVariables } from './input.style.variable..js';
+import { styleVariables } from './input.style.variable.js';
 
 /**
  * Input component styles for the Hybrid UI Library
