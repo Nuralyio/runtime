@@ -31,7 +31,9 @@
     "test:prod:watch": "MODE=prod wtr --watch",
     "roll": "rollup -c ; ",
     "link": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm link', { stdio: 'inherit' }));\"",
-    "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm unlink @nuralyui/' + dir, { stdio: 'inherit' }));\""
+    "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/components/' + dir + ' && npm unlink @nuralyui/' + dir, { stdio: 'inherit' }));\"",
+    "storybook": "cd storybook-demo && npm run dev",
+    "storybook:build": "npm run build && cd storybook-demo && npm run build-storybook"
   },
   "keywords": [
     "web-components",
