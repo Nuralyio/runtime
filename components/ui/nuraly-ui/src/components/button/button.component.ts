@@ -45,6 +45,9 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: String})
   target = EMPTY_STRING;
 
+  @property({type: Boolean})
+  ripple = true;
+
   /**
    * Required components that must be registered for this component to work properly
    * Can be overridden by parent implementations
@@ -129,6 +132,45 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
     return html`<hy-icon name=${iconName}></hy-icon>`;
   }
 
+  /**
+   * Creates ripple effect on button click
+   * @param event - The click event
+   */
+  private createRipple(event: MouseEvent) {
+    if (!this.ripple || this.disabled) return;
+
+    const button = event.currentTarget as HTMLElement;
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+
+    // Remove any existing ripples
+    const existingRipples = button.querySelectorAll('.ripple');
+    existingRipples.forEach(r => r.remove());
+
+    button.appendChild(ripple);
+
+    // Remove ripple after animation
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
+  }
+
+  /**
+   * Handle click events with ripple effect
+   * @param event - The click event
+   */
+  private handleClick(event: MouseEvent) {
+    this.createRipple(event);
+  }
+
   override render() {
     const elementTag = this.getElementTag();
     const attributes = this.getElementAttributes();
@@ -175,6 +217,7 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
         aria-disabled="${attributes['aria-disabled']}"
         aria-label="${attributes['aria-label']}"
         aria-describedby="${attributes['aria-describedby']}"
+        @click="${this.handleClick}"
       >
         <span id="container">
           ${this.icon?.length ? this.renderIcon(this.icon[0]) : nothing}

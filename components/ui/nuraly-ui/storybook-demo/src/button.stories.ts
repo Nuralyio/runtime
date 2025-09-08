@@ -47,6 +47,10 @@ const meta: Meta = {
       options: ['_self', '_blank', '_parent', '_top'],
       description: 'Link target',
     },
+    ripple: {
+      control: { type: 'boolean' },
+      description: 'Enable ripple effect on click',
+    },
     slot: {
       control: { type: 'text' },
       description: 'Button text content',
@@ -59,6 +63,7 @@ const meta: Meta = {
     disabled: false,
     loading: false,
     block: false,
+    ripple: true,
     slot: 'Button Text',
   },
 };
@@ -78,6 +83,7 @@ export const Default: Story = {
       ?disabled="${args.disabled}"
       ?loading="${args.loading}"
       ?block="${args.block}"
+      ?ripple="${args.ripple}"
       href="${args.href || ''}"
       target="${args.target || ''}"
     >
@@ -99,6 +105,9 @@ export const Primary: Story = {
       ?disabled="${args.disabled}"
       ?loading="${args.loading}"
       ?block="${args.block}"
+      ?ripple="${args.ripple}"
+      href="${args.href || ''}"
+      target="${args.target || ''}"
     >
       ${args.slot}
     </nr-button>
