@@ -32,7 +32,7 @@ suite('HyTableFilterComponent', () => {
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
 
     let valueChangeDispatched = false;
-    el.addEventListener('value-change', () => {
+    el.addEventListener('nr-input', () => {
       valueChangeDispatched = true;
     });
     input.dispatchEvent(new Event('input'));

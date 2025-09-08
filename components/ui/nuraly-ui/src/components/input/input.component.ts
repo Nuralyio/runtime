@@ -5,14 +5,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, PropertyValues, html, nothing} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {styles} from './input.style.js';
-import {INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING} from './input.constant.js';
-import {choose} from 'lit/directives/choose.js';
+import { LitElement, PropertyValues, html, nothing } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { styles } from './input.style.js';
+import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING } from './input.constant.js';
+import { choose } from 'lit/directives/choose.js';
+import '../icon/icon.component.js';
 
-@customElement('hy-input')
-export class HyInputElement extends LitElement {
+@customElement('nr-input')
+export class NrInputElement extends LitElement {
 
   @property({type: Boolean, reflect: true})
   disabled = false;
@@ -30,13 +31,13 @@ export class HyInputElement extends LitElement {
   type = INPUT_TYPE.TEXT;
 
   @property({type: String})
-  step!: string;
+  step?: string;
 
   @property({type: String})
-  min!: string;
+  min?: string;
 
   @property({type: String})
-  max!: string;
+  max?: string;
 
   @property({type: String})
   placeholder = EMPTY_STRING;
@@ -44,7 +45,7 @@ export class HyInputElement extends LitElement {
   @property({type: String})
   autocomplete = 'off';
 
-  @property()
+  @property({type: Boolean, reflect: true})
   withCopy = false;
 
   @state()
@@ -56,60 +57,153 @@ export class HyInputElement extends LitElement {
   override willUpdate(_changedProperties: PropertyValues): void {
     if (_changedProperties.has('type')) {
       this.inputType = this.type;
-      if (this.inputType == INPUT_TYPE.NUMBER) if (this.min && !this.value) this.value = this.min;
+      if (this.inputType === INPUT_TYPE.NUMBER && this.min && !this.value) {
+        this.value = this.min;
+      }
+    }
+  }
+
+  override updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('step') || _changedProperties.has('min') || _changedProperties.has('max')) {
+      const input = this.input;
+      if (input) {
+        if (this.step) input.setAttribute('step', this.step);
+        else input.removeAttribute('step');
+        
+        if (this.min) input.setAttribute('min', this.min);
+        else input.removeAttribute('min');
+        
+        if (this.max) input.setAttribute('max', this.max);
+        else input.removeAttribute('max');
+      }
     }
   }
 
   private _increment() {
     this.input.stepUp();
+    this.value = this.input.value; // Sync the property
     this.dispatchEvent(
-      new CustomEvent('valueChange', {
-        detail: this.input,
+      new CustomEvent('nr-input', {
+        detail: { 
+          value: this.value, 
+          target: this.input,
+          action: 'increment'
+        },
+        bubbles: true
       })
     );
   }
   private _decrement() {
     this.input.stepDown();
+    this.value = this.input.value; // Sync the property
     this.dispatchEvent(
-      new CustomEvent('valueChange', {
-        detail: this.input,
+      new CustomEvent('nr-input', {
+        detail: { 
+          value: this.value, 
+          target: this.input,
+          action: 'decrement'
+        },
+        bubbles: true
       })
     );
   }
 
   private _valueChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    this.value = target.value;
+    
     this.dispatchEvent(
-      new CustomEvent('valueChange', {
-        detail: e.target,
+      new CustomEvent('nr-input', {
+        detail: { 
+          value: this.value, 
+          target: target,
+          originalEvent: e 
+        },
+        bubbles: true
       })
     );
   }
   private handleKeyDown(keyDownEvent: KeyboardEvent) {
     if (keyDownEvent.key === 'Enter') {
       this.dispatchEvent(
-        new CustomEvent('enter-pressed', {
-          detail: keyDownEvent.target,
+        new CustomEvent('nr-enter', {
+          detail: {
+            target: keyDownEvent.target,
+            value: this.value,
+            originalEvent: keyDownEvent
+          },
+          bubbles: true
         })
       );
     }
   }
-  private onCopy() {
-    const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
-    input.select();
-    navigator.clipboard.writeText(input.value);
+
+  private _handleIconKeydown(keyDownEvent: KeyboardEvent) {
+    if (keyDownEvent.key === 'Enter' || keyDownEvent.key === ' ') {
+      keyDownEvent.preventDefault();
+      const target = keyDownEvent.target as HTMLElement;
+      
+      if (target.id === 'copy-icon') {
+        this.onCopy();
+      } else if (target.id === 'password-icon') {
+        this._togglePasswordIcon();
+      } else if (target.closest('#number-icons')) {
+        if (target.getAttribute('name') === 'plus') {
+          this._increment();
+        } else if (target.getAttribute('name') === 'minus') {
+          this._decrement();
+        }
+      }
+    }
+  }
+  private async onCopy() {
+    try {
+      const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
+      input.select();
+      await navigator.clipboard.writeText(input.value);
+      
+      this.dispatchEvent(new CustomEvent('nr-copy-success', {
+        detail: { value: input.value },
+        bubbles: true
+      }));
+    } catch (error) {
+      this.dispatchEvent(new CustomEvent('nr-copy-error', {
+        detail: { error },
+        bubbles: true
+      }));
+    }
+  }
+
+  private _getAriaDescribedBy(): string {
+    const describedBy: string[] = [];
+    
+    // Check if helper text slot has content
+    const helperSlot = this.shadowRoot?.querySelector('slot[name="helper-text"]');
+    if (helperSlot && (helperSlot as HTMLSlotElement).assignedNodes().length > 0) {
+      describedBy.push('helper-text');
+    }
+    
+    return describedBy.join(' ') || '';
   }
 
   private _focusEvent(e: Event) {
     this.dispatchEvent(
-      new CustomEvent('focused', {
-        detail: e.target,
+      new CustomEvent('nr-focus', {
+        detail: {
+          target: e.target,
+          value: this.value
+        },
+        bubbles: true
       })
     );
   }
 
   _togglePasswordIcon() {
-    if (this.inputType == INPUT_TYPE.PASSWORD) this.inputType = INPUT_TYPE.TEXT;
-    else if (this.inputType == INPUT_TYPE.TEXT) this.inputType = INPUT_TYPE.PASSWORD;
+    if (this.inputType === INPUT_TYPE.PASSWORD) {
+      this.inputType = INPUT_TYPE.TEXT;
+    } else if (this.inputType === INPUT_TYPE.TEXT && this.type === INPUT_TYPE.PASSWORD) {
+      this.inputType = INPUT_TYPE.PASSWORD;
+    }
   }
 
   override render() {
@@ -121,11 +215,10 @@ export class HyInputElement extends LitElement {
           .disabled=${this.disabled}
           .value=${this.value}
           .placeholder=${this.placeholder}
-          .step=${this.step ? this.step : nothing}
-          .min=${this.min ? this.min : nothing}
-          .max=${this.max ? this.max : nothing}
           .type="${this.inputType}"
           .autocomplete=${this.autocomplete}
+          aria-invalid=${this.state === INPUT_STATE.Error ? 'true' : 'false'}
+          aria-describedby=${this._getAriaDescribedBy()}
           @input=${this._valueChange}
           @focus=${this._focusEvent}
           @keydown=${this.handleKeyDown}
@@ -135,7 +228,11 @@ export class HyInputElement extends LitElement {
             name="copy"
             type="regular"
             id="copy-icon"
+            role="button"
+            aria-label="Copy input value"
+            tabindex="0"
             @click=${!this.disabled ? this.onCopy : nothing}
+            @keydown=${this._handleIconKeydown}
           ></hy-icon>`
           : nothing}
         ${choose(this.state, [
@@ -155,7 +252,11 @@ export class HyInputElement extends LitElement {
                   name="eye-slash"
                   type="regular"
                   id="password-icon"
+                  role="button"
+                  aria-label="Hide password"
+                  tabindex="0"
                   @click=${!this.disabled ? this._togglePasswordIcon : nothing}
+                  @keydown=${this._handleIconKeydown}
                 ></hy-icon>`,
             ],
             [
@@ -165,7 +266,11 @@ export class HyInputElement extends LitElement {
                   name="eye"
                   type="regular"
                   id="password-icon"
+                  role="button"
+                  aria-label="Show password"
+                  tabindex="0"
                   @click=${!this.disabled ? this._togglePasswordIcon : nothing}
+                  @keydown=${this._handleIconKeydown}
                 ></hy-icon>`,
             ],
           ])
@@ -189,14 +294,14 @@ export class HyInputElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'hy-input': HyInputElement;
+    'nr-input': NrInputElement;
   }
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'hy-input':
-        | React.DetailedHTMLProps<React.HTMLAttributes<HyInputElement>, HyInputElement>
-        | Partial<HyInputElement>;
+      'nr-input':
+        | React.DetailedHTMLProps<React.HTMLAttributes<NrInputElement>, NrInputElement>
+        | Partial<NrInputElement>;
     }
   }
 }

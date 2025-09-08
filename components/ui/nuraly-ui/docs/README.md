@@ -94,18 +94,18 @@ Welcome to the comprehensive documentation for Nuraly UI, a modern web component
 </script>
 
 <hy-button type="primary">Get Started</hy-button>
-<hy-input placeholder="Enter your name"></hy-input>
+<nr-input placeholder="Enter your name"></nr-input>
 ```
 
 ### React Integration
 ```jsx
-import { HyButton, HyInput } from '@nuralyui/react';
+import { HyButton, NrInput } from '@nuralyui/react';
 
 function App() {
   return (
     <div>
       <HyButton type="primary">Get Started</HyButton>
-      <HyInput placeholder="Enter your name" />
+      <NrInput placeholder="Enter your name" />
     </div>
   );
 }
@@ -116,7 +116,7 @@ function App() {
 <template>
   <div>
     <hy-button type="primary">Get Started</hy-button>
-    <hy-input placeholder="Enter your name" />
+    <nr-input placeholder="Enter your name" />
   </div>
 </template>
 

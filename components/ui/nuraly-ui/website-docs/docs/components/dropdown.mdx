@@ -10,7 +10,7 @@ import "@nuralyui/input";
 import "@nuralyui/dropdown";
 import { useState } from "react";
 import { BlockPicker } from "react-color";
-import { HyInput } from "@nuralyui/input/react";
+import { NrInput } from "@nuralyui/input/react";
 import { HyIcon } from "@nuralyui/icon/react";
 import { HyButton } from "@nuralyui/button/react";
 import { HyDropdown } from "@nuralyui/dropdown/react";
@@ -173,7 +173,7 @@ export const SearchInDropdown = ({ children, color }) => {
         options={options}
       >
         {search}
-        <HyInput
+        <NrInput
           placeholder="Type to search"
           slot="label"
           icon="ellipsis-v"
@@ -189,7 +189,7 @@ export const SearchInDropdown = ({ children, color }) => {
               }}
             ></hy-icon>{" "}
           </span>
-        </HyInput>
+        </NrInput>
       </HyDropdown>
     </>
   );
@@ -423,7 +423,7 @@ export const BasicDropdowCustomTemplate = ({ children, color }) => {
     {
       label: "Option 1",
       template: function (item) {
-        return html`<div style="display: flex"><hy-input style="width: 80%; text: red !important" value="${item.label} "> </hy-input><hy-button style="width: 19%" @click=${clickHandler} > ok</hy-button></span> </div>`;
+        return html`<div style="display: flex"><nr-input style="width: 80%; text: red !important" value="${item.label} "> </nr-input><hy-button style="width: 19%" @click=${clickHandler} > ok</hy-button></span> </div>`;
       },
     },
     {

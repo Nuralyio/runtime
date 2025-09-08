@@ -9,7 +9,7 @@ import "@nuralyui/button";
 import "@nuralyui/input";
 import { useState } from "react";
 import { BlockPicker } from "react-color";
-import { HyInput } from "@nuralyui/input/react";
+import { NrInput } from "@nuralyui/input/react";
 import { HyIcon } from "@nuralyui/icon/react";
 import { HyButton } from "@nuralyui/button/react";
 
@@ -123,67 +123,67 @@ export const InputPicket = ({ children, value, cssVariableName, unit }) => {
 export const TextInputBasicExample = ({ children, color }) => {
   return (
     <>
-      <HyInput placeholder="Basic text field"></HyInput>
+      <NrInput placeholder="Basic text field"></NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="large">
+      <NrInput placeholder="text placeholder" size="large">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="small">
+      <NrInput placeholder="text placeholder" size="small">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="small">
+      <NrInput placeholder="text placeholder" size="small">
         <span slot="suffix">
           <HyIcon name="check"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="small">
+      <NrInput placeholder="text placeholder" size="small">
         <span slot="suffix">
           <HyIcon name="times-circle"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
         <span slot="suffix">
           <HyIcon name="times-circle"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
         <span slot="suffix">
           <HyIcon name="spinner"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="suffix">
           <HyIcon name="copy"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="post">
           <HyIcon name="copy"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
     </>
   );
 };
@@ -191,67 +191,67 @@ export const TextInputBasicExample = ({ children, color }) => {
 export const TextInputSizeExample = ({ children, color }) => {
   return (
     <>
-      <HyInput placeholder="Basic text field"></HyInput>
+      <NrInput placeholder="Basic text field"></NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="large">
+      <NrInput placeholder="text placeholder" size="large">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="small">
+      <NrInput placeholder="text placeholder" size="small">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="small">
+      <NrInput placeholder="text placeholder" size="small">
         <span slot="suffix">
           <HyIcon name="check"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder" size="small">
+      <NrInput placeholder="text placeholder" size="small">
         <span slot="suffix">
           <HyIcon name="times-circle"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
         <span slot="suffix">
           <HyIcon name="times-circle"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="prefix">
           <HyIcon name="user"></HyIcon>
         </span>
         <span slot="suffix">
           <HyIcon name="spinner"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="suffix">
           <HyIcon name="copy"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
       <br />
-      <HyInput placeholder="text placeholder">
+      <NrInput placeholder="text placeholder">
         <span slot="post">
           <HyIcon name="copy"></HyIcon>
         </span>
-      </HyInput>
+      </NrInput>
     </>
   );
 };
@@ -263,7 +263,7 @@ export const TextInputSizeExample = ({ children, color }) => {
 
 ### Basic usage
 
-<HyInput placeholder="Basic text field"></HyInput>
+<NrInput placeholder="Basic text field"></NrInput>
 
 <details style={{backgroundColor : 'transparent', border : 'none'}}>
   <summary>CSS Varibale</summary>
@@ -284,66 +284,66 @@ export const TextInputSizeExample = ({ children, color }) => {
 
 ### Size
 
-<HyInput placeholder="Small input field" size="small"></HyInput>
+<NrInput placeholder="Small input field" size="small"></NrInput>
 <br />
-<HyInput placeholder="Default input field"></HyInput>
+<NrInput placeholder="Default input field"></NrInput>
 <br />
-<HyInput placeholder="Large input field" size="large"></HyInput>
+<NrInput placeholder="Large input field" size="large"></NrInput>
 
 ### Suffix/Pefix
 
-<HyInput placeholder="Input with prefix">
+<NrInput placeholder="Input with prefix">
   <HyIcon slot="prefix" name="user"></HyIcon>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Input with suffix (clear icon)">
+<NrInput placeholder="Input with suffix (clear icon)">
   <HyIcon slot="suffix" name="times-circle"></HyIcon>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Input with suffix (copy icon)">
+<NrInput placeholder="Input with suffix (copy icon)">
   <HyIcon name="copy" slot="suffix"></HyIcon>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Input with suffix (loading icon)">
+<NrInput placeholder="Input with suffix (loading icon)">
   <HyIcon slot="suffix" name="spinner"></HyIcon>
-</HyInput>
+</NrInput>
 
 <br />
-<HyInput placeholder="Input with suffix and prefix ">
+<NrInput placeholder="Input with suffix and prefix ">
   <HyIcon slot="suffix" name="times-circle"></HyIcon>
   <HyIcon slot="prefix" name="user"></HyIcon>
-</HyInput>
+</NrInput>
 
 ### Post/Pre
 
-<HyInput placeholder="Search ">
+<NrInput placeholder="Search ">
   <HyButton slot="post" icon="search"></HyButton>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Search ">
+<NrInput placeholder="Search ">
   <HyButton slot="post" icon="search"></HyButton>
   <HyIcon slot="suffix" name="spinner"></HyIcon>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Search ">
+<NrInput placeholder="Search ">
   <HyIcon slot="prefix" name="spinner"></HyIcon>
   <HyButton slot="post" type="primary">
     search
   </HyButton>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Search ">
+<NrInput placeholder="Search ">
   <HyButton slot="post" type="primary">
     search
   </HyButton>
-</HyInput>
+</NrInput>
 <br />
-<HyInput placeholder="Search ">
+<NrInput placeholder="Search ">
   <HyButton slot="post" type="primary" danger icon="times-circle"></HyButton>
-</HyInput>
+</NrInput>
 
 <br />
-<HyInput placeholder="www.google.com ">
+<NrInput placeholder="www.google.com ">
   <HyButton slot="pre">Https</HyButton>
   <HyButton slot="post">.com</HyButton>
-</HyInput>
+</NrInput>

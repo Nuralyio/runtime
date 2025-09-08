@@ -1,11 +1,11 @@
-import {html, fixture, expect} from '@open-wc/testing';
-import {HyInputElement} from '../input.component';
-import {INPUT_STATE, INPUT_SIZE, INPUT_TYPE, EMPTY_STRING} from '../input.constant';
+import { html, fixture, expect } from '@open-wc/testing';
+import { NrInputElement } from '../input.component';
+import { INPUT_STATE, INPUT_SIZE, INPUT_TYPE, EMPTY_STRING } from '../input.constant';
 import '../input.component';
-import {HyIconElement} from '../../icon';
-suite('HyInputElement', () => {
+import { HyIconElement } from '../../icon';
+suite('NrInputElement', () => {
   test('default properties', async () => {
-    const el: HyInputElement = await fixture(html`<hy-input> </hy-input>`);
+    const el: NrInputElement = await fixture(html`<nr-input> </nr-input>`);
     const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
     const input = el.shadowRoot!.querySelector('input')!;
     const slot = el.shadowRoot!.querySelector('slot');
@@ -36,7 +36,7 @@ suite('HyInputElement', () => {
   });
 
   test('input type password', async () => {
-    const el: HyInputElement = await fixture(html`<hy-input type="password"> </hy-input>`);
+    const el: NrInputElement = await fixture(html`<nr-input type="password"> </nr-input>`);
     const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
     let passwordIcon: HyIconElement = inputContainer.querySelector('#password-icon')!;
     expect(inputContainer.querySelector('#number-icons')).to.be.null;
@@ -54,8 +54,8 @@ suite('HyInputElement', () => {
       const step = 5;
       const min = 10;
       const max = 100;
-      const el: HyInputElement = await fixture(
-        html`<hy-input type="number" step=${step} min=${min} max=${max}> </hy-input>`
+      const el: NrInputElement = await fixture(
+        html`<nr-input type="number" step=${step} min=${min} max=${max}> </nr-input>`
       );
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       const input = el.shadowRoot!.querySelector('input')!;
@@ -70,7 +70,7 @@ suite('HyInputElement', () => {
     test('increment number', async () => {
       const step = 5;
       const min = 10;
-      const el: HyInputElement = await fixture(html`<hy-input type="number" step=${step} min=${min}> </hy-input>`);
+      const el: NrInputElement = await fixture(html`<nr-input type="number" step=${step} min=${min}> </nr-input>`);
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       const input = el.shadowRoot!.querySelector('input')!;
       const numberIcon = inputContainer.querySelector('#number-icons');
@@ -80,7 +80,7 @@ suite('HyInputElement', () => {
     });
     test('decrement number', async () => {
       const step = 5;
-      const el: HyInputElement = await fixture(html`<hy-input type="number" step=${step}> </hy-input>`);
+      const el: NrInputElement = await fixture(html`<nr-input type="number" step=${step}> </nr-input>`);
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       const input = el.shadowRoot!.querySelector('input')!;
       const inputValue = input.value;
@@ -94,14 +94,14 @@ suite('HyInputElement', () => {
   suite('input with state', () => {
     test('warning input', async () => {
       const inputState = INPUT_STATE.Warning;
-      const el: HyInputElement = await fixture(html`<hy-input state=${inputState}> </hy-input>`);
+      const el: NrInputElement = await fixture(html`<nr-input state=${inputState}> </nr-input>`);
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       expect(inputContainer.querySelector('#warning-icon')).to.exist;
       expect(inputContainer.querySelector('#error-icon')).to.not.exist;
     });
     test('error input', async () => {
       const inputState = INPUT_STATE.Error;
-      const el: HyInputElement = await fixture(html`<hy-input state=${inputState}> </hy-input>`);
+      const el: NrInputElement = await fixture(html`<nr-input state=${inputState}> </nr-input>`);
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       expect(inputContainer.querySelector('#warning-icon')).to.not.exist;
       expect(inputContainer.querySelector('#error-icon')).to.exist;
@@ -110,27 +110,27 @@ suite('HyInputElement', () => {
   suite('input with size', () => {
     test('large input', async () => {
       const inputSize = INPUT_SIZE.Large;
-      const el: HyInputElement = await fixture(html`<hy-input size=${inputSize}> </hy-input>`);
+      const el: NrInputElement = await fixture(html`<nr-input size=${inputSize}> </nr-input>`);
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       expect(inputContainer).to.have.attribute('data-size', inputSize);
     });
     test('medium input', async () => {
       const inputSize = INPUT_SIZE.Medium;
-      const el: HyInputElement = await fixture(html`<hy-input size=${inputSize}> </hy-input>`);
+      const el: NrInputElement = await fixture(html`<nr-input size=${inputSize}> </nr-input>`);
       const inputContainer = el.shadowRoot!.querySelector('#input-container')!;
       expect(inputContainer).to.have.attribute('data-size', inputSize);
     });
   });
   test('input with placeholder', async () => {
     const placeholder = 'text of placeholder';
-    const el: HyInputElement = await fixture(html`<hy-input placeholder=${placeholder}> </hy-input>`);
+    const el: NrInputElement = await fixture(html`<nr-input placeholder=${placeholder}> </nr-input>`);
     const input = el.shadowRoot!.querySelector('input')!;
     expect(input).to.have.attribute('placeholder', placeholder);
   });
 
   test('input with label', async () => {
     const inputLabel = 'input label';
-    const el: HyInputElement = await fixture(html`<hy-input> <span slot="label">${inputLabel}</span> </hy-input>`);
+    const el: NrInputElement = await fixture(html`<nr-input> <span slot="label">${inputLabel}</span> </nr-input>`);
     const slot = el.shadowRoot!.querySelector('slot');
     const assignedNode = slot!.assignedNodes();
     expect(assignedNode[0]).to.have.attribute('slot', 'label');
@@ -139,8 +139,8 @@ suite('HyInputElement', () => {
 
   test('input with helper text', async () => {
     const inputHelper = 'input helper';
-    const el: HyInputElement = await fixture(
-      html`<hy-input> <span slot="helper-text">${inputHelper}</span> </hy-input>`
+    const el: NrInputElement = await fixture(
+      html`<nr-input> <span slot="helper-text">${inputHelper}</span> </nr-input>`
     );
     const slot = el.shadowRoot!.querySelectorAll('slot');
     const assignedNode = slot[1].assignedNodes();
@@ -149,7 +149,7 @@ suite('HyInputElement', () => {
   });
 
   test('input disabled', async () => {
-    const el: HyInputElement = await fixture(html`<hy-input disabled></hy-input>`);
+    const el: NrInputElement = await fixture(html`<nr-input disabled></nr-input>`);
     const input = el.shadowRoot!.querySelector('input')!;
     expect(input.disabled).to.be.true;
     let inputFocus = false;
