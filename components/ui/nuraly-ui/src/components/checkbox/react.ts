@@ -1,12 +1,12 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import { HyCheckBox } from './checkbox.component.js';
+import { NrCheckboxElement } from './checkbox.component.js';
 
-export const HyCheckbox = createComponent({
-  tagName: 'hy-checkbox',
-  elementClass: HyCheckBox,
+export const NrCheckbox = createComponent({
+  tagName: 'nr-checkbox',
+  elementClass: NrCheckboxElement,
   react: React,
   events: {
-    change: 'change',
+    'nr-change': 'nr-change',
   },
 });

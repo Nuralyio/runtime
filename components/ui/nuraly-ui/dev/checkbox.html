@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>&lt;hy-button> Demo</title>
+    <title>&lt;nr-checkbox> Demo</title>
     <link href="https://fonts.googleapis.com/css?family=Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange" rel="stylesheet" />
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
@@ -11,16 +11,142 @@
     <script type="module" src="../dist/components/checkbox/index.js"></script>
     <script type="module" src="../dist/components/checkbox/demo/checkbox-demo.js"></script>
     <style>
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: black;
-          color: #ffffff;
-        }
+      :root {
+        --theme-bg: #ffffff;
+        --theme-color: #000000;
+        --theme-border: #cccccc;
+        --theme-toggle-bg: #f0f0f0;
+        --theme-toggle-color: #333333;
+      }
+
+      [data-theme="dark"] {
+        --theme-bg: #1a1a1a;
+        --theme-color: #ffffff;
+        --theme-border: #666666;
+        --theme-toggle-bg: #333333;
+        --theme-toggle-color: #ffffff;
+      }
+
+      body {
+        background-color: var(--theme-bg);
+        color: var(--theme-color);
+        margin: 0;
+        padding: 20px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .theme-controls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--theme-toggle-bg);
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid var(--theme-border);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--theme-border);
+        color: var(--theme-toggle-color);
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .theme-toggle:hover {
+        background-color: var(--theme-border);
+      }
+
+      .theme-toggle.active {
+        background-color: #0066cc;
+        color: white;
+        border-color: #0066cc;
+      }
+
+      .demo-container {
+        margin-top: 60px;
+      }
+
+      h1 {
+        color: var(--theme-color);
+        margin-bottom: 20px;
       }
     </style>
   </head>
 
   <body>
-    <hy-checkbox-demo></hy-checkbox-demo>
+    <div class="theme-controls">
+      <span>Theme:</span>
+      <button class="theme-toggle active" id="lightBtn" onclick="setTheme('light')">
+        <i class="fas fa-sun"></i> Light
+      </button>
+      <button class="theme-toggle" id="darkBtn" onclick="setTheme('dark')">
+        <i class="fas fa-moon"></i> Dark
+      </button>
+      <button class="theme-toggle" id="systemBtn" onclick="setTheme('system')">
+        <i class="fas fa-desktop"></i> System
+      </button>
+    </div>
+    
+    <div class="demo-container">
+      <h1>nr-checkbox Component Demo</h1>
+      <nr-checkbox-demo></nr-checkbox-demo>
+    </div>
+
+    <script>
+      let currentTheme = 'light';
+      
+      function setTheme(theme) {
+        currentTheme = theme;
+        
+        // Update button states
+        document.querySelectorAll('.theme-toggle').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(theme + 'Btn').classList.add('active');
+        
+        if (theme === 'system') {
+          // Use system preference
+          const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', systemTheme);
+          document.body.setAttribute('data-theme', systemTheme);
+          document.querySelector('.demo-container').setAttribute('data-theme', systemTheme);
+        } else {
+          // Use selected theme
+          document.documentElement.setAttribute('data-theme', theme);
+          document.body.setAttribute('data-theme', theme);
+          document.querySelector('.demo-container').setAttribute('data-theme', theme);
+        }
+        
+        // Store preference
+        localStorage.setItem('theme-preference', theme);
+      }
+      
+      // Listen for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (currentTheme === 'system') {
+          const newTheme = e.matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', newTheme);
+          document.body.setAttribute('data-theme', newTheme);
+          document.querySelector('.demo-container').setAttribute('data-theme', newTheme);
+        }
+      });
+      
+      // Initialize theme on load
+      window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme-preference') || 'light';
+        setTheme(savedTheme);
+      });
+    </script>
   </body>
 </html>

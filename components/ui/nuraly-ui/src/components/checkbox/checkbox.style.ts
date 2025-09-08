@@ -8,7 +8,7 @@ const checkBoxStyles = css`
     flex-wrap: wrap;
     gap: var(--hybrid-checkbox-gap);
     font-family: var(--hybrid-checkbox-font-family);
-    color:var(--hybrid-checkbox-color)
+    color: var(--hybrid-checkbox-color);
   }
 
   :host(:not([checked]):not([indeterminate]):not([disabled])) input {
