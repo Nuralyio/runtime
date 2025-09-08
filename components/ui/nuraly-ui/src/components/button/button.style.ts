@@ -1,5 +1,5 @@
 import { css } from 'lit';
-import { buttonVariables } from './nr-button.style.variables.js';
+import { buttonVariables } from './button.style.variables.js';
 
 /**
  * Button component styles for the Hybrid UI Library

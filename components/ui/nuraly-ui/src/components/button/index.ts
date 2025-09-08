@@ -1,1 +1,1 @@
-export * from './nr-button.component.js';
+export * from './button.component.js';

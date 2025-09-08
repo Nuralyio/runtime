@@ -6,7 +6,7 @@
 
 import { LitElement, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import '../nr-button.component';
+import '../button.component';
 import '../../../helpers/ThemeHandler';
 @customElement('nr-buttons-demo')
 export class ElButtonDemoElement extends LitElement {

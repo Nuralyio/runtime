@@ -1,7 +1,7 @@
 import { html, fixture, expect } from '@open-wc/testing';
-import { NrButtonElement } from '../nr-button.component';
-import { ButtonSize, ButtonType, EMPTY_STRING } from '../nr-button.types.js';
-import '../nr-button.component';
+import { NrButtonElement } from '../button.component';
+import { ButtonSize, ButtonType, EMPTY_STRING } from '../button.types.js';
+import '../button.component';
 
 suite('NrButtonElement', () => {
   test('has default properties', async () => {
