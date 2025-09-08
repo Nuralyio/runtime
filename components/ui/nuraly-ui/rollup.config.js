@@ -5,19 +5,23 @@
  */
 
 import summary from 'rollup-plugin-summary';
-import {terser} from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
-import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
-import url from '@rollup/plugin-url';
-import virtual from '@rollup/plugin-virtual';
 
-export default {
-  input: 'dist/components/button/hy-button.js',
+const components = [
+  'button', 'input', 'datepicker', 'icon', 'dropdown', 'image', 'tabs', 
+  'document', 'menu', 'radio', 'select', 'tooltips', 'colorpicker', 'modal', 
+  'checkbox', 'video', 'table', 'slider-input', 'collapse', 'label', 
+  'divider', 'canvas', 'chatbot', 'file-upload', 'card', 'carousel', 'toast'
+];
+
+const createConfig = (component) => ({
+  input: `dist/components/${component}/index.js`,
   output: {
-    file: 'hy-button.bundled.js',
+    file: `dist/components/${component}/bundle.js`,
     format: 'esm',
+    inlineDynamicImports: true,
   },
   onwarn(warning) {
     if (warning.code !== 'THIS_IS_UNDEFINED') {
@@ -38,6 +42,7 @@ export default {
       },
     }),
     summary(),
-    
   ],
-};
+});
+
+export default components.map(createConfig);
