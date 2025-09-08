@@ -183,7 +183,7 @@ export const Search: Story = {
 
 export const Sizes: Story = {
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 1rem; width: 300px;">
+    <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
       <nr-input size="small" label="Small Input" placeholder="Small size"></nr-input>
       <nr-input size="medium" label="Medium Input" placeholder="Medium size"></nr-input>
       <nr-input size="large" label="Large Input" placeholder="Large size"></nr-input>
@@ -193,7 +193,7 @@ export const Sizes: Story = {
 
 export const States: Story = {
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 1rem; width: 300px;">
+    <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
       <nr-input label="Normal" placeholder="Normal input"></nr-input>
       <nr-input label="Disabled" placeholder="Disabled input" disabled></nr-input>
       <nr-input label="Readonly" value="Readonly value" readonly></nr-input>
@@ -204,7 +204,7 @@ export const States: Story = {
 
 export const FormExample: Story = {
   render: () => html`
-    <form style="display: flex; flex-direction: column; gap: 1rem; width: 300px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px;">
+    <form style="display: flex; flex-direction: column; gap: 1rem; width: 500px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px;">
       <h3>User Registration</h3>
       <nr-input type="text" label="Full Name" placeholder="Enter your full name" required></nr-input>
       <nr-input type="email" label="Email" placeholder="Enter your email" required></nr-input>

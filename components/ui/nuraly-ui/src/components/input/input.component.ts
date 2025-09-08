@@ -10,10 +10,11 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import { styles } from './input.style.js';
 import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING } from './input.constant.js';
 import { choose } from 'lit/directives/choose.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import '../icon/icon.component.js';
 
 @customElement('nr-input')
-export class NrInputElement extends LitElement {
+export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
 
   @property({type: Boolean, reflect: true})
   disabled = false;
@@ -53,6 +54,19 @@ export class NrInputElement extends LitElement {
 
   @query('#input')
   input!: HTMLInputElement;
+
+  /**
+   * Required components that must be registered for this component to work properly
+   */
+  override requiredComponents = ['hy-icon'];
+
+  /**
+   * Check for required dependencies when component is connected to DOM
+   */
+  override connectedCallback() {
+    super.connectedCallback();
+    this.validateDependencies();
+  }
 
   override willUpdate(_changedProperties: PropertyValues): void {
     if (_changedProperties.has('type')) {

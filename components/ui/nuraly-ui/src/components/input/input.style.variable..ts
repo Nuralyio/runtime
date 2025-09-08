@@ -40,10 +40,10 @@ export const styleVariables = css`
     --hybrid-input-local-number-icons-color: #000000;
     --hybrid-input-local-password-icon-padding-left: 8px;
     --hybrid-input-local-password-icon-padding-right: 8px;
-    --hybrid-input-local-number-icons-sperator-color: #e0e0e0;
-    --hybrid-input-local-number-icons-sperator-padding-bottom: 4px;
-    --hybrid-input-local-number-icons-sperator-padding-left: 5px;
-    --hybrid-input-local-number-icons-sperator-padding-right: 5px;
+    --hybrid-input-local-number-icons-separator-color: #e0e0e0;
+    --hybrid-input-local-number-icons-separator-padding-bottom: 4px;
+    --hybrid-input-local-number-icons-separator-padding-left: 5px;
+    --hybrid-input-local-number-icons-separator-padding-right: 5px;
     --hybrid-input-local-copy-icon-padding-right:5px;
 
     --hybrid-input-local-number-icons-container-width: 70px;
@@ -71,26 +71,29 @@ export const styleVariables = css`
     --hybrid-input-local-small-padding-right: 4px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --hybrid-input-local-background-color: #393939;
-      --hybrid-input-local-focus-border: 2px solid #ffffff;
-      --hybrid-input-local-text-color: #ffffff;
-      --hybrid-input-local-error-border: 2px solid #fa4d56;
-      --hybrid-input-local-error-helper-text-color: #ffb3b8;
-      --hybrid-input-local-disabled-background-color: #393939;
-      --hybrid-input-local-disabled-placeholder-color: #6f6f6f;
-      --hybrid-input-local-disabled-helper-text-color: #6f6f6f;
-      --hybrid-input-local-disabled-label-color: #6f6f6f;
-      --hybrid-input-local-warning-icon-color: #f0c300;
-      --hybrid-input-local-error-icon-color: #da1e28;
-      --hybrid-input-local-password-icon-color: #ffffff;
-      --hybrid-input-local-number-icons-color: #ffffff;
-      --hybrid-input-local-label-color: #c6c6c6;
-      --hybrid-input-local-helper-text-color: #c6c6c6;
-      --hybrid-input-local-number-icon-sperator-color: #525252;
-      --hybrid-input-local-calendar-icon-color: #ffffff;
-      --hybrid-input-local-copy-icon-color: #ffffff;
-    }
+  /* 
+   * Dark theme styles using data-theme attribute on host element
+   * These override the light theme defaults when data-theme="dark" is applied
+   * This provides explicit theme control via JavaScript or HTML attributes
+   */
+  :host([data-theme="dark"]) {
+    --hybrid-input-local-background-color: #393939;
+    --hybrid-input-local-focus-border: 2px solid #ffffff;
+    --hybrid-input-local-text-color: #ffffff;
+    --hybrid-input-local-error-border: 2px solid #fa4d56;
+    --hybrid-input-local-error-helper-text-color: #ffb3b8;
+    --hybrid-input-local-disabled-background-color: #393939;
+    --hybrid-input-local-disabled-placeholder-color: #6f6f6f;
+    --hybrid-input-local-disabled-helper-text-color: #6f6f6f;
+    --hybrid-input-local-disabled-label-color: #6f6f6f;
+    --hybrid-input-local-warning-icon-color: #f0c300;
+    --hybrid-input-local-error-icon-color: #da1e28;
+    --hybrid-input-local-password-icon-color: #ffffff;
+    --hybrid-input-local-number-icons-color: #ffffff;
+    --hybrid-input-local-label-color: #c6c6c6;
+    --hybrid-input-local-helper-text-color: #c6c6c6;
+    --hybrid-input-local-number-icons-separator-color: #525252;
+    --hybrid-input-local-calendar-icon-color: #ffffff;
+    --hybrid-input-local-copy-icon-color: #ffffff;
   }
 `;
