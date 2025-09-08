@@ -1,4 +1,5 @@
 import { css } from 'lit';
+import { buttonVariables } from './nr-button.style.variables.js';
 
 /**
  * Button component styles for the Hybrid UI Library
@@ -360,140 +361,10 @@ const buttonStyles = css`
   }
 
   /* ========================================
-   * CSS CUSTOM PROPERTIES (Design Tokens)
+   * VARIANT STYLES
    * ======================================== */
-  /* ========================================
-   * CSS CUSTOM PROPERTIES (Design Tokens)
-   * ======================================== */
-  :host {
-    /* ----------------------------------------
-     * DEFAULT BUTTON STYLES
-     * ---------------------------------------- */
-    --hybrid-button-local-border-top: 2px solid #d0d0d0;
-    --hybrid-button-local-border-bottom: 2px solid #d0d0d0;
-    --hybrid-button-local-border-left: 2px solid #d0d0d0;
-    --hybrid-button-local-border-right: 2px solid #d0d0d0;
-    --hybrid-button-local-border-top-left-radius: 0px;
-    --hybrid-button-local-border-top-right-radius: 0px;
-    --hybrid-button-local-border-bottom-left-radius: 0px;
-    --hybrid-button-local-border-bottom-right-radius: 0px;
-    --hybrid-button-local-background-color: #f9f9f9;
-    --hybrid-button-local-text-color: #393939;
-    --hybrid-button-local-hover-border-color: #1677ff;
-    --hybrid-button-local-hover-color: #1677ff;
-    --hybrid-button-local-font-size: 0.9rem;
-    --hybrid-button-local-font-weight: normal;
-    --hybrid-button-local-text-transform: none;
-    --hybrid-button-local-active-border-color: #1661b1;
-    --hybrid-button-local-active-color: #184d86;
-    --hybrid-button-local-disabled-background-color: #c6c6c6;
-    --hybrid-button-local-disabled-text-color: #8d8d8d;
-    --hybrid-button-local-disabled-border-color: #bbb;
-    --hybrid-button-local-height: auto;
-    --hybrid-button-local-width: auto;
-    --hybrid-button-local-padding-y: 0.5rem;
-    --hybrid-button-local-padding-x: 0.6rem;
-    --hybrid-button-local-icon-width: 18px;
-    --hybrid-button-local-icon-height: 14px;
 
-    /* ----------------------------------------
-     * PRIMARY BUTTON STYLES
-     * ---------------------------------------- */
-    /* ----------------------------------------
-     * PRIMARY BUTTON STYLES
-     * ---------------------------------------- */
-    --hybrid-button-local-primary-border-color: #0f62fe;
-    --hybrid-button-local-primary-background-color: #0f62fe;
-    --hybrid-button-local-primary-text-color: #ffffff;
-    --hybrid-button-local-primary-outline: 1px solid white;
-    --hybrid-button-local-primary-outline-offset: -3px;
-    --hybrid-button-local-primary-hover-background-color: #0353e9;
-    --hybrid-button-local-primary-hover-border-color: #0353e9;
-    --hybrid-button-local-primary-active-background-color: #0f62fe;
-    --hybrid-button-local-primary-active-border-color: #0f62fe;
-    --hybrid-button-local-primary-disabled-text-color: #8d8d8d;
-    --hybrid-button-local-primary-disabled-background-color: #c6c6c6;
-    --hybrid-button-local-primary-disabled-border-color: #c6c6c6;
-    --hybrid-button-local-primary-dashed-border-color: #ffffff;
-
-    /* ----------------------------------------
-     * DANGER BUTTON STYLES
-     * ---------------------------------------- */
-    /* ----------------------------------------
-     * DANGER BUTTON STYLES
-     * ---------------------------------------- */
-    --hybrid-button-local-danger-background-color: #da1e28;
-    --hybrid-button-local-danger-text-color: #ffffff;
-    --hybrid-button-local-danger-border-color: #da1e28;
-    --hybrid-button-local-danger-outline: 1px solid white;
-    --hybrid-button-local-danger-outline-offset: -3px;
-    --hybrid-button-local-danger-hover-background-color: #ba1b23;
-    --hybrid-button-local-danger-hover-border-color: #ba1b23;
-    --hybrid-button-local-danger-active-background-color: #da1e28;
-    --hybrid-button-local-danger-active-border-color: #0f62fe;
-    --hybrid-button-local-danger-disabled-background-color: #c6c6c6;
-    --hybrid-button-local-danger-disabled-text-color: #8d8d8d;
-    --hybrid-button-local-danger-disabled-border-color: #c6c6c6;
-    --hybrid-button-local-danger-dashed-border-color: #ffffff;
-
-    /* ----------------------------------------
-     * GHOST BUTTON STYLES
-     * ---------------------------------------- */
-    /* ----------------------------------------
-     * GHOST BUTTON STYLES
-     * ---------------------------------------- */
-    --hybrid-button-local-ghost-background-color: #ffffff;
-    --hybrid-button-local-ghost-text-color: #0f62fe;
-    --hybrid-button-local-ghost-border-color: #ffffff;
-    --hybrid-button-local-ghost-active-background-color: #ffffff;
-    --hybrid-button-local-ghost-active-text-color: #054ada;
-    --hybrid-button-local-ghost-active-border-color: #0f62fe;
-    --hybrid-button-local-ghost-hover-background-color: #e5e5e5;
-    --hybrid-button-local-ghost-hover-border-color: #e5e5e5;
-    --hybrid-button-local-ghost-hover-text-color: #054ada;
-    --hybrid-button-local-ghost-disabled-background-color: #ffffff;
-    --hybrid-button-local-ghost-disabled-text-color: #c6c6c6;
-    --hybrid-button-local-ghost-disabled-border-color: #ffffff;
-    --hybrid-button-local-ghost-dashed-border-color: #c6c6c6;
-
-    /* ----------------------------------------
-     * SECONDARY BUTTON STYLES
-     * ---------------------------------------- */
-
-    /* ----------------------------------------
-     * SECONDARY BUTTON STYLES
-     * ---------------------------------------- */
-    --hybrid-button-local-secondary-background-color: #393939;
-    --hybrid-button-local-secondary-border-color: #393939;
-    --hybrid-button-local-secondary-text-color: #ffffff;
-    --hybrid-button-local-secondary-outline: 1px solid white;
-    --hybrid-button-local-secondary-outline-offset: -3px;
-    --hybrid-button-local-secondary-hover-background-color: #4c4c4c;
-    --hybrid-button-local-secondary-hover-border-color: #4c4c4c;
-    --hybrid-button-local-secondary-active-background-color: #393939;
-    --hybrid-button-local-secondary-active-border-color: #0f62fe;
-    --hybrid-button-local-secondary-disabled-background-color: #c6c6c6;
-    --hybrid-button-local-secondary-disabled-text-color: #8d8d8d;
-    --hybrid-button-local-secondary-disabled-border-color: #c6c6c6;
-    --hybrid-button-local-secondary-dashed-border-color: #ffffff;
-
-    /* ----------------------------------------
-     * SIZE VARIANTS
-     * ---------------------------------------- */
-
-    /* ----------------------------------------
-     * SIZE VARIANTS
-     * ---------------------------------------- */
-    /* Large button sizing */
-    --hybrid-large-button-local-padding-y: 0.5rem;
-    --hybrid-large-button-local-padding-x: 0.9rem;
-    --hybrid-large-button-local-font-size: 1rem;
-
-    /* Small button sizing */
-    --hybrid-small-button-local-padding-y: 0.5rem;
-    --hybrid-small-button-local-padding-x: 0.4rem;
-    --hybrid-small-button-local-font-size: 0.7rem;
-  }
+  /* Primary button variant */
 
   /* ========================================
    * DARK THEME OVERRIDES
@@ -574,7 +445,7 @@ const buttonStyles = css`
  * 
  * @description
  * This export provides the complete styling system for the button component,
- * including all variants, states, sizes, and theme support.
+ * including all variants, states, sizes, theme support, and CSS custom properties.
  * 
  * @usage
  * Import and use in the component's styles property:
@@ -586,4 +457,4 @@ const buttonStyles = css`
  * })
  * ```
  */
-export const styles = [buttonStyles];
+export const styles = [buttonStyles, buttonVariables];

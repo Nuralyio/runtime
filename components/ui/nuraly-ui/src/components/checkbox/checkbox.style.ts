@@ -1,5 +1,5 @@
 import {css} from 'lit';
-import {styleVariables} from './checkbox.variables.js';
+import {styleVariables} from './checkbox.style.variables.js';
 
 const checkBoxStyles = css`
   :host {
