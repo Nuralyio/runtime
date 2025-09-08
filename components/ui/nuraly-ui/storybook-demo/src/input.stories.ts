@@ -66,6 +66,11 @@ const meta: Meta = {
       control: { type: 'number' },
       description: 'Maximum character length',
     },
+    variant: {
+      control: { type: 'select' },
+      options: ['outlined', 'filled', 'borderless', 'underlined'],
+      description: 'Input visual variant',
+    },
   },
   args: {
     type: 'text',
@@ -81,6 +86,7 @@ const meta: Meta = {
     allowClear: false,
     showCount: false,
     maxLength: undefined,
+    variant: 'underlined',
   },
 };
 
@@ -100,11 +106,14 @@ export const Default: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
       ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -123,10 +132,14 @@ export const WithValue: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -145,10 +158,14 @@ export const Password: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -168,10 +185,14 @@ export const Email: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -190,10 +211,14 @@ export const Number: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -212,10 +237,14 @@ export const Search: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -256,10 +285,14 @@ export const ErrorState: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -279,10 +312,14 @@ export const WarningState: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -301,10 +338,14 @@ export const WithCopyButton: Story = {
       value="${args.value}"
       size="${args.size}"
       state="${args.state}"
+      variant="${args.variant}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
+      ?showCount="${args.showCount}"
+      maxLength="${args.maxLength}"
     ></nr-input>
   `,
 };
@@ -430,7 +471,7 @@ export const ClearFunctionality: Story = {
     },
   },
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 2rem; padding: 1rem;">
+    <div style="display: flex; flex-direction: column; gap: 2rem; padding: 1rem; width : 400px">
       <div>
         <h3>Clear Examples</h3>
         <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -611,6 +652,448 @@ export const CharacterCount: Story = {
             <span slot="prefix">@</span>
             <span slot="suffix">.com</span>
           </nr-input>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
+export const InputVariants: Story = {
+  name: 'Input Variants',
+  render: () => html`
+    <div style="max-width: 600px; padding: 20px;">
+      <h3 style="margin-bottom: 20px; color: #333;">Input Variants</h3>
+      
+      <!-- Outlined Variant -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin-bottom: 15px; color: #666;">Outlined (Full Border)</h4>
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+          <nr-input
+            variant="outlined"
+            label="Outlined Input"
+            placeholder="Enter text..."
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+          <nr-input
+            variant="outlined"
+            label="With Prefix"
+            placeholder="Enter username"
+            style="flex: 1; min-width: 200px;"
+          >
+            <span slot="prefix">@</span>
+          </nr-input>
+          <nr-input
+            variant="outlined"
+            label="Error State"
+            placeholder="Enter text..."
+            state="error"
+            helper-text="This field is required"
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+        </div>
+      </div>
+
+      <!-- Filled Variant -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin-bottom: 15px; color: #666;">Filled (Background + Bottom Border)</h4>
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+          <nr-input
+            variant="filled"
+            label="Filled Input"
+            placeholder="Enter text..."
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+          <nr-input
+            variant="filled"
+            label="With Suffix"
+            placeholder="Enter amount"
+            style="flex: 1; min-width: 200px;"
+          >
+            <span slot="suffix">USD</span>
+          </nr-input>
+          <nr-input
+            variant="filled"
+            label="Warning State"
+            placeholder="Enter text..."
+            state="warning"
+            helper-text="Please check your input"
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+        </div>
+      </div>
+
+      <!-- Borderless Variant -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin-bottom: 15px; color: #666;">Borderless (Focus Outline Only)</h4>
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+          <nr-input
+            variant="borderless"
+            label="Borderless Input"
+            placeholder="Enter text..."
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+          <nr-input
+            variant="borderless"
+            label="With Clear"
+            placeholder="Enter text..."
+            value="Sample text"
+            allow-clear
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+          <nr-input
+            variant="borderless"
+            label="Disabled"
+            placeholder="Enter text..."
+            disabled
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+        </div>
+      </div>
+
+      <!-- Underlined Variant (Default) -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin-bottom: 15px; color: #666;">Underlined (Bottom Border Only)</h4>
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+          <nr-input
+            variant="underlined"
+            label="Underlined Input"
+            placeholder="Enter text..."
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+          <nr-input
+            variant="underlined"
+            label="With Character Count"
+            placeholder="Enter text..."
+            show-count
+            max-length="50"
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+          <nr-input
+            variant="underlined"
+            label="Password Type"
+            type="password"
+            placeholder="Enter password..."
+            style="flex: 1; min-width: 200px;"
+          ></nr-input>
+        </div>
+      </div>
+
+      <!-- Size Variations with Different Variants -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin-bottom: 15px; color: #666;">Size Variations Across Variants</h4>
+        
+        <!-- Small Size -->
+        <div style="margin-bottom: 15px;">
+          <p style="margin-bottom: 10px; font-weight: 500;">Small Size:</p>
+          <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+            <nr-input
+              variant="outlined"
+              size="small"
+              label="Small Outlined"
+              placeholder="Small..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+            <nr-input
+              variant="filled"
+              size="small"
+              label="Small Filled"
+              placeholder="Small..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+            <nr-input
+              variant="borderless"
+              size="small"
+              label="Small Borderless"
+              placeholder="Small..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+            <nr-input
+              variant="underlined"
+              size="small"
+              label="Small Underlined"
+              placeholder="Small..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+          </div>
+        </div>
+
+        <!-- Large Size -->
+        <div style="margin-bottom: 15px;">
+          <p style="margin-bottom: 10px; font-weight: 500;">Large Size:</p>
+          <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+            <nr-input
+              variant="outlined"
+              size="large"
+              label="Large Outlined"
+              placeholder="Large..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+            <nr-input
+              variant="filled"
+              size="large"
+              label="Large Filled"
+              placeholder="Large..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+            <nr-input
+              variant="borderless"
+              size="large"
+              label="Large Borderless"
+              placeholder="Large..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+            <nr-input
+              variant="underlined"
+              size="large"
+              label="Large Underlined"
+              placeholder="Large..."
+              style="flex: 1; min-width: 140px;"
+            ></nr-input>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combined Features -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="margin-bottom: 15px; color: #666;">Combined Features</h4>
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+          <nr-input
+            variant="outlined"
+            label="Full Featured"
+            placeholder="Enter username..."
+            show-count
+            max-length="20"
+            allow-clear
+            style="flex: 1; min-width: 200px;"
+          >
+            <span slot="prefix">@</span>
+            <span slot="suffix">.com</span>
+          </nr-input>
+          <nr-input
+            variant="filled"
+            label="Addons + Count"
+            placeholder="Enter amount..."
+            show-count
+            max-length="10"
+            style="flex: 1; min-width: 200px;"
+          >
+            <span slot="addon-before">$</span>
+            <span slot="addon-after">USD</span>
+          </nr-input>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
+export const FocusManagement: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Advanced focus management with cursor positioning, text selection, and programmatic focus control.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 2rem; padding: 1rem;">
+      <div>
+        <h3>Focus Management Examples</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            id="focus-basic" 
+            type="text" 
+            label="Basic Focus" 
+            placeholder="Click buttons to test focus"
+            value="Sample text for testing"
+          ></nr-input>
+          
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button 
+              onclick="document.getElementById('focus-basic').focus();"
+            >Focus</button>
+            
+            <button 
+              onclick="document.getElementById('focus-basic').focus({ preventScroll: true });"
+            >Focus (No Scroll)</button>
+            
+            <button 
+              onclick="document.getElementById('focus-basic').focus({ cursor: 'start' });"
+            >Focus at Start</button>
+            
+            <button 
+              onclick="document.getElementById('focus-basic').focus({ cursor: 'end' });"
+            >Focus at End</button>
+            
+            <button 
+              onclick="document.getElementById('focus-basic').focus({ cursor: 5 });"
+            >Focus at Position 5</button>
+            
+            <button 
+              onclick="document.getElementById('focus-basic').focus({ select: true });"
+            >Focus & Select All</button>
+            
+            <button 
+              onclick="document.getElementById('focus-basic').blur();"
+            >Blur</button>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Text Selection Methods</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            id="selection-test" 
+            type="text" 
+            label="Selection Test" 
+            placeholder="Text selection methods"
+            value="This is a sample text for selection testing"
+          ></nr-input>
+          
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button 
+              onclick="document.getElementById('selection-test').selectAll();"
+            >Select All</button>
+            
+            <button 
+              onclick="document.getElementById('selection-test').selectRange(5, 15);"
+            >Select Range (5-15)</button>
+            
+            <button 
+              onclick="document.getElementById('selection-test').setCursorPosition('start');"
+            >Cursor to Start</button>
+            
+            <button 
+              onclick="document.getElementById('selection-test').setCursorPosition('end');"
+            >Cursor to End</button>
+            
+            <button 
+              onclick="document.getElementById('selection-test').setCursorPosition(10);"
+            >Cursor to Position 10</button>
+            
+            <button 
+              onclick="alert('Selected: ' + document.getElementById('selection-test').getSelectedText());"
+            >Get Selected Text</button>
+            
+            <button 
+              onclick="alert('Cursor Position: ' + document.getElementById('selection-test').getCursorPosition());"
+            >Get Cursor Position</button>
+          </div>
+            >Cursor to End</button>
+            
+            <button 
+              @click=${() => {
+                const input = document.getElementById('selection-test') as any;
+                input?.setCursorPosition(10);
+              }}
+            >Cursor to Position 10</button>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Focus State Information</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            id="focus-info" 
+            type="text" 
+            label="Focus Info Test" 
+            placeholder="Focus to see state information"
+            value="Test focus state tracking"
+          ></nr-input>
+          
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button 
+              @click=${() => {
+                const input = document.getElementById('focus-info') as any;
+                const pos = input?.getCursorPosition();
+                alert(`Cursor position: ${pos}`);
+              }}
+            >Get Cursor Position</button>
+            
+            <button 
+              @click=${() => {
+                const input = document.getElementById('focus-info') as any;
+                const text = input?.getSelectedText();
+                alert(`Selected text: "${text}"`);
+              }}
+            >Get Selected Text</button>
+            
+            <button 
+              @click=${() => {
+                const input = document.getElementById('focus-info') as any;
+                const focused = input?.isFocused();
+                alert(`Is focused: ${focused}`);
+              }}
+            >Check Focus State</button>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Advanced Focus Options</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            id="advanced-focus" 
+            type="text" 
+            label="Advanced Focus Options" 
+            placeholder="Test advanced focus features"
+            value="Advanced focus management testing"
+          ></nr-input>
+          
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button 
+              @click=${() => {
+                const input = document.getElementById('advanced-focus') as any;
+                input?.focus({ cursor: 'all' });
+              }}
+            >Focus & Select All</button>
+            
+            <button 
+              @click=${() => {
+                const input = document.getElementById('advanced-focus') as any;
+                input?.blur({ restoreCursor: true });
+                setTimeout(() => input?.focus(), 1000);
+              }}
+            >Blur & Restore (1s delay)</button>
+            
+            <button 
+              @click=${() => {
+                const input = document.getElementById('advanced-focus') as any;
+                input?.focus({ 
+                  preventScroll: true, 
+                  cursor: 15,
+                  select: false 
+                });
+              }}
+            >Focus (No Scroll, Pos 15)</button>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Focus Events Demo</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            id="focus-events" 
+            type="text" 
+            label="Focus Events" 
+            placeholder="Focus/blur to see events in console"
+            value="Event tracking demo"
+            @nr-focus-change=${(e: CustomEvent) => {
+              console.log('Focus change event:', e.detail);
+            }}
+            @nr-focus=${(e: CustomEvent) => {
+              console.log('Focus event:', e.detail);
+            }}
+            @nr-blur=${(e: CustomEvent) => {
+              console.log('Blur event:', e.detail);
+            }}
+          ></nr-input>
+          
+          <p style="font-size: 0.875rem; color: #666; margin: 0;">
+            Open browser console to see focus change events with cursor position and selection details.
+          </p>
         </div>
       </div>
     </div>

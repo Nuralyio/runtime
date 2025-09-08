@@ -287,6 +287,90 @@ const inputStyle = css`
   }
 
   /* ========================================
+   * INPUT VARIANT STYLES
+   * ======================================== */
+
+  /* 
+   * Outlined variant - full border around input
+   * Default: light border, focus: blue border
+   */
+  :host([variant='outlined']) #input-container {
+    border: var(--hybrid-input-outlined-border, var(--hybrid-input-local-outlined-border));
+    border-radius: var(--hybrid-input-outlined-border-radius, var(--hybrid-input-local-outlined-border-radius));
+    background-color: var(--hybrid-input-outlined-background, var(--hybrid-input-local-outlined-background));
+  }
+
+  :host([variant='outlined']) .input-wrapper {
+    background-color: transparent;
+  }
+
+  :host([variant='outlined']:not([state='error'])) #input-container:focus-within {
+    border: var(--hybrid-input-outlined-focus-border, var(--hybrid-input-local-outlined-focus-border));
+  }
+
+  /* 
+   * Filled variant - background with bottom border only
+   * Subtle background with bottom border indication
+   */
+  :host([variant='filled']) #input-container {
+    background-color: var(--hybrid-input-filled-background, var(--hybrid-input-local-filled-background));
+    border-radius: var(--hybrid-input-filled-border-radius, var(--hybrid-input-local-filled-border-radius));
+    border-bottom: var(--hybrid-input-filled-border-bottom, var(--hybrid-input-local-filled-border-bottom));
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  :host([variant='filled']) .input-wrapper {
+    background-color: transparent;
+  }
+
+  :host([variant='filled']:not([state='error'])) #input-container:focus-within {
+    border-bottom: var(--hybrid-input-filled-focus-border-bottom, var(--hybrid-input-local-filled-focus-border-bottom));
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  /* 
+   * Borderless variant - no borders, focus with outline
+   * Clean appearance with focus indication via outline
+   */
+  :host([variant='borderless']) #input-container {
+    background-color: var(--hybrid-input-borderless-background, var(--hybrid-input-local-borderless-background));
+    border: none;
+    border-radius: var(--hybrid-input-borderless-border-radius, var(--hybrid-input-local-borderless-border-radius));
+  }
+
+  :host([variant='borderless']) .input-wrapper {
+    background-color: transparent;
+  }
+
+  :host([variant='borderless']:not([state='error'])) #input-container:focus-within {
+    outline: var(--hybrid-input-borderless-focus-outline, var(--hybrid-input-local-borderless-focus-outline));
+    border: none;
+  }
+
+  /* 
+   * Underlined variant - bottom border only (default/current behavior)
+   * Maintains existing behavior as default
+   */
+  :host([variant='underlined']) #input-container {
+    border-bottom: var(--hybrid-input-underlined-border-bottom, var(--hybrid-input-local-underlined-border-bottom));
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+
+  :host([variant='underlined']:not([state='error'])) #input-container:focus-within {
+    border-bottom: var(--hybrid-input-underlined-focus-border-bottom, var(--hybrid-input-local-underlined-focus-border-bottom));
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  /* ========================================
    * INPUT ELEMENT STYLES
    * ======================================== */
 
@@ -320,19 +404,26 @@ const inputStyle = css`
    * ======================================== */
 
   /* 
-   * Error state styling
+   * Error state styling - works with all variants
    * Applied when state='error' and not disabled
    */
-  :host(:not([disabled])[state='error']) > #input-container {
-    border: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border));
+  :host(:not([disabled])[state='error']) #input-container {
+    border: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border)) !important;
+    outline: none !important;
   }
 
-  /* 
-   * Focus state styling
-   * Applied when input receives focus and not in error state
-   */
-  :host(:not([state='error'])) > #input-container:focus-within {
-    border: var(--hybrid-input-focus-border, var(--hybrid-input-local-focus-border));
+  /* Override variant-specific error state styling */
+  :host([variant='borderless'][state='error']) #input-container {
+    border: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border)) !important;
+    outline: none !important;
+  }
+
+  :host([variant='underlined'][state='error']) #input-container,
+  :host([variant='filled'][state='error']) #input-container {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border)) !important;
   }
 
   /* 
