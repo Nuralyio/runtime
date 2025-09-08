@@ -2,8 +2,9 @@ import {css} from 'lit';
 
 export const styleVariables = css`
   :host {
+    /* Light theme defaults */
     --hybrid-checkbox-filled-background-color: #161616;
-    --hybrid-checkbox-color:#000000;
+    --hybrid-checkbox-color: #000000;
     --hybrid-checkbox-empty-background-color: #ffffff;
     --hybrid-checkbox-disabled-background-color: #c6c6c6;
     --hybrid-checkbox-disabled-text-color: #c6c6c6;
@@ -15,6 +16,7 @@ export const styleVariables = css`
     --hybrid-checkbox-border-radius: 1px;
     --hybrid-checkbox-gap: 5px;
 
+    /* Size variables */
     --hybrid-checkbox-medium-width: 20px;
     --hybrid-checkbox-medium-height: 20px;
     --hybrid-checkbox-small-width: 15px;
@@ -33,17 +35,20 @@ export const styleVariables = css`
     --hybrid-checkbox-large-checked-width: 4px;
     --hybrid-checkbox-large-checked-height: 10px;
   }
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --hybrid-checkbox-empty-border: 1px solid #ffffff;
-      --hybrid-checkbox-empty-background-color: #161616;
-      --hybrid-checkbox-filled-background-color: #ffffff;
-      --hybrid-checkbox-symbol-color: #161616;
-      --hybrid-checkbox-focus-outline: 2px solid #ffffff;
-      --hybrid-checkbox-focus-border: 2px solid #161616;
-      --hybrid-checkbox-disabled-background-color: #6f6f6f;
-      --hybrid-checkbox-disabled-text-color: #6f6f6f;
-      --hybrid-checkbox-color:#ffffff;
-    }
+
+  /* Dark theme overrides using data-theme attribute */
+  input[data-theme="dark"] {
+    --hybrid-checkbox-empty-border: 1px solid #ffffff;
+    --hybrid-checkbox-empty-background-color: #161616;
+    --hybrid-checkbox-filled-background-color: #ffffff;
+    --hybrid-checkbox-symbol-color: #161616;
+    --hybrid-checkbox-focus-outline: 2px solid #ffffff;
+    --hybrid-checkbox-focus-border: 2px solid #161616;
+    --hybrid-checkbox-disabled-background-color: #6f6f6f;
+    --hybrid-checkbox-disabled-text-color: #6f6f6f;
+  }
+
+  :host([data-theme="dark"]) {
+    --hybrid-checkbox-color: #ffffff;
   }
 `;

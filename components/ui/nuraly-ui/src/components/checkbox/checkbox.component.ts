@@ -1,10 +1,17 @@
-import {LitElement, html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {styles} from './checkbox.style.js';
-import {CheckboxSize} from './checkbox.types.js';
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
 
-@customElement('hy-checkbox')
-export class HyCheckBox extends LitElement {
+import { LitElement, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { styles } from './checkbox.style.js';
+import { CheckboxSize } from './checkbox.types.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+
+@customElement('nr-checkbox')
+export class NrCheckboxElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
   @property({type: Boolean, reflect: true})
   checked = false;
@@ -36,7 +43,28 @@ export class HyCheckBox extends LitElement {
   @property({type: String})
   value?: string;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.updateThemeFromParent();
+  }
+
+  override updated(changedProperties: Map<string, any>) {
+    super.updated(changedProperties);
+    this.updateThemeFromParent();
+  }
+
+  private updateThemeFromParent() {
+    // Check for parent container theme first
+    const parentTheme = this.closest('[data-theme]')?.getAttribute('data-theme');
+    const effectiveTheme = parentTheme || this.currentTheme;
+    this.setAttribute('data-theme', effectiveTheme);
+  }
+
   override render() {
+    // Check for parent container theme first
+    const parentTheme = this.closest('[data-theme]')?.getAttribute('data-theme');
+    const effectiveTheme = parentTheme || this.currentTheme;
+    
     return html`
       <input 
         type="checkbox" 
@@ -45,6 +73,7 @@ export class HyCheckBox extends LitElement {
         .indeterminate=${this.indeterminate}
         name=${this.name ?? ''}
         value=${this.value ?? ''}
+        data-theme="${effectiveTheme}"
         aria-checked=${this.indeterminate ? 'mixed' : (this.checked ? 'true' : 'false')}
         @change=${this.onChange} 
       />

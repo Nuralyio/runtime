@@ -1,10 +1,10 @@
-import {html, fixture, expect} from '@open-wc/testing';
+import { html, fixture, expect } from '@open-wc/testing';
 import '../checkbox.component';
-import {HyCheckBox} from '../checkbox.component';
+import { NrCheckboxElement } from '../checkbox.component';
 
-suite('hy-checkbox', () => {
+suite('nr-checkbox', () => {
   test('init checkbox', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`)!;
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox></nr-checkbox>`)!;
     const input = el.shadowRoot!.querySelector('input[type="checkbox"]')!;
     const inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
     expect(el.disabled).to.be.false;
@@ -15,7 +15,7 @@ suite('hy-checkbox', () => {
   });
 
   test('should reflect the checked attribute', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox checked></hy-checkbox>`);
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox checked></nr-checkbox>`);
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     const inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
     expect(el.checked).to.be.true;
@@ -26,14 +26,14 @@ suite('hy-checkbox', () => {
   });
 
   test('should reflect the disabled attribute', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox disabled></hy-checkbox>`)!;
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox disabled></nr-checkbox>`)!;
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     expect(el.disabled).to.be.true;
     expect(input.disabled).to.be.true;
   });
 
   test('should reflect indeterminate attribubute', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox indeterminate></hy-checkbox>`);
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox indeterminate></nr-checkbox>`);
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     const inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
 
@@ -44,7 +44,7 @@ suite('hy-checkbox', () => {
   });
 
   test('should toggle checked state on change', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`);
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox></nr-checkbox>`);
     let input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     let inputContent = window.getComputedStyle(input, '::after').getPropertyValue('content');
 
@@ -68,7 +68,7 @@ suite('hy-checkbox', () => {
   });
 
   test('should dispatch "nr-change" event on change', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox></hy-checkbox>`)!;
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox></nr-checkbox>`)!;
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     let checkboxChangedDispatched = false;
 
@@ -82,7 +82,7 @@ suite('hy-checkbox', () => {
   });
 
   test('should not dispatch "nr-change" event on change when checkbox is disabled', async () => {
-    const el: HyCheckBox = await fixture(html`<hy-checkbox disabled></hy-checkbox>`)!;
+    const el: NrCheckboxElement = await fixture(html`<nr-checkbox disabled></nr-checkbox>`)!;
     const input: HTMLInputElement = el.shadowRoot!.querySelector('input')!;
     let checkboxChangedDispatched = false;
 
