@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { html, nothing, TemplateResult } from 'lit';
+import { html, TemplateResult, nothing } from 'lit';
 import { INPUT_TYPE, INPUT_STATE } from '../input.types.js';
 
 /**
@@ -30,6 +30,34 @@ export class InputRenderUtils {
     return html`
       <div class="input-suffix">
         <slot name="suffix"></slot>
+      </div>
+    `;
+  }
+
+  /**
+   * Renders addon before slot content (outside input borders)
+   * Only renders if hasAddonBefore is true
+   */
+  static renderAddonBefore(hasAddonBefore: boolean, onSlotChange: (e: Event) => void): TemplateResult | typeof nothing {
+    if (!hasAddonBefore) return nothing;
+    
+    return html`
+      <div class="input-addon-before">
+        <slot name="addon-before" @slotchange=${onSlotChange}></slot>
+      </div>
+    `;
+  }
+
+  /**
+   * Renders addon after slot content (outside input borders)  
+   * Only renders if hasAddonAfter is true
+   */
+  static renderAddonAfter(hasAddonAfter: boolean, onSlotChange: (e: Event) => void): TemplateResult | typeof nothing {
+    if (!hasAddonAfter) return nothing;
+    
+    return html`
+      <div class="input-addon-after">
+        <slot name="addon-after" @slotchange=${onSlotChange}></slot>
       </div>
     `;
   }
