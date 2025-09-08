@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import '../card.component.js';
 import { customElement } from 'lit/decorators.js';
-import '../../button/demo/nr-buttons-demo';
+import '../../button/demo/buttons-demo.js';
 
 @customElement('hy-card-demo')
 export class HyCardDemo extends LitElement {

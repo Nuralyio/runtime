@@ -83,6 +83,10 @@ const buttonStyles = css`
     padding-right: var(--hybrid-button-padding-x,var(--hybrid-button-local-padding-x));
     padding-left: var(--hybrid-button-padding-x,var(--hybrid-button-local-padding-x));
     font-size: var(--hybrid-button-font-size,var(--hybrid-button-local-font-size));
+
+    /* Positioning for ripple effect */
+    position: relative;
+    overflow: hidden;
   }
   
   /* Icon styling within button - inherits text color and size */
@@ -572,6 +576,45 @@ const buttonStyles = css`
     --hybrid-button-local-link-disabled-background-color: transparent;
     --hybrid-button-local-link-disabled-text-color: #6f6f6f;
     --hybrid-button-local-link-disabled-border-color: transparent;
+  }
+
+  /* ========================================
+   * RIPPLE EFFECT STYLES
+   * ======================================== */
+
+  /* Ripple effect animation */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+  }
+
+  /* Darker ripple for light buttons */
+  button[data-type='default'] .ripple,
+  button[data-type='ghost'] .ripple {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Lighter ripple for dark buttons */
+  button[data-type='primary'] .ripple,
+  button[data-type='danger'] .ripple {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Ripple animation keyframes */
+  @keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* Disable ripple when component is disabled */
+  button:disabled .ripple {
+    display: none;
   }
 `;
 
