@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 export const styleVariables = css`
   :host {
@@ -78,14 +78,18 @@ export const styleVariables = css`
     --hybrid-input-local-suffix-font-size: 13px;
     --hybrid-input-local-suffix-padding-left: 8px;
     --hybrid-input-local-disabled-prefix-suffix-color: #c6c6c6;
+
+    /* Addon Before/After styling variables */
+    --hybrid-input-local-addon-background-color: #e8e8e8;
+    --hybrid-input-local-addon-color: #525252;
+    --hybrid-input-local-addon-padding: 8px 12px;
   }
 
   /* 
-   * Dark theme styles using data-theme attribute on host element
    * These override the light theme defaults when data-theme="dark" is applied
    * This provides explicit theme control via JavaScript or HTML attributes
    */
-  :host([data-theme="dark"]) {
+  .input-wrapper[data-theme="dark"] {
     --hybrid-input-local-background-color: #393939;
     --hybrid-input-local-focus-border: 2px solid #ffffff;
     --hybrid-input-local-text-color: #ffffff;
@@ -109,5 +113,9 @@ export const styleVariables = css`
     --hybrid-input-local-prefix-color: #c6c6c6;
     --hybrid-input-local-suffix-color: #c6c6c6;
     --hybrid-input-local-disabled-prefix-suffix-color: #6f6f6f;
+
+    /* Dark theme addon colors */
+    --hybrid-input-local-addon-background-color: #525252;
+    --hybrid-input-local-addon-color: #c6c6c6;
   }
 `;

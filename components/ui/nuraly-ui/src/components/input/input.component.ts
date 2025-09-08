@@ -56,6 +56,12 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   @state()
   inputType = EMPTY_STRING;
 
+  @state()
+  hasAddonBefore = false;
+
+  @state()
+  hasAddonAfter = false;
+
   @query('#input')
   input!: HTMLInputElement;
 
@@ -102,6 +108,37 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
         if (this.max) input.setAttribute('max', this.max);
         else input.removeAttribute('max');
       }
+    }
+  }
+
+  override firstUpdated(): void {
+    this._checkInitialSlotContent();
+  }
+
+  /**
+   * Check initial slot content on first render
+   */
+  private _checkInitialSlotContent(): void {
+    // Check for addon-before content
+    const addonBeforeElements = this.querySelectorAll('[slot="addon-before"]');
+    this.hasAddonBefore = addonBeforeElements.length > 0;
+
+    // Check for addon-after content  
+    const addonAfterElements = this.querySelectorAll('[slot="addon-after"]');
+    this.hasAddonAfter = addonAfterElements.length > 0;
+  }
+
+  /**
+   * Handle slot changes to determine addon visibility
+   */
+  private _handleSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement;
+    const slotName = slot.name;
+    
+    if (slotName === 'addon-before') {
+      this.hasAddonBefore = slot.assignedElements().length > 0;
+    } else if (slotName === 'addon-after') {
+      this.hasAddonAfter = slot.assignedElements().length > 0;
     }
   }
 
@@ -307,49 +344,53 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   override render() {
     return html`
       <slot name="label"></slot>
-      <div data-size=${this.size} id="input-container">
-        ${InputRenderUtils.renderPrefix()}
-        <input
-          id="input"
-          .disabled=${this.disabled}
-          .readOnly=${this.readonly}
-          .value=${this.value}
-          .placeholder=${this.placeholder}
-          .type="${this.inputType}"
-          .autocomplete=${this.autocomplete}
-          aria-invalid=${this.state === INPUT_STATE.Error ? 'true' : 'false'}
-          aria-describedby=${this._getAriaDescribedBy()}
-          @input=${this._valueChange}
-          @focus=${this._focusEvent}
-          @keydown=${this._handleKeyDown}
-        />
-        ${InputRenderUtils.renderSuffix()}
-        ${InputRenderUtils.renderCopyIcon(
-          this.withCopy,
-          this.disabled,
-          this.readonly,
-          () => this._onCopy(),
-          (e: KeyboardEvent) => this._handleIconKeydown(e)
-        )}
-        ${InputRenderUtils.renderStateIcon(this.state)}
-        ${InputRenderUtils.renderCalendarIcon(this.state, this.type)}
-        ${InputRenderUtils.renderPasswordIcon(
-          this.type,
-          this.inputType,
-          this.disabled,
-          this.readonly,
-          () => this._togglePasswordIcon(),
-          (e: KeyboardEvent) => this._handleIconKeydown(e)
-        )}
-        ${InputRenderUtils.renderNumberIcons(
-          this.type,
-          this.state,
-          this.disabled,
-          this.readonly,
-          () => this._increment(),
-          () => this._decrement(),
-          (e: KeyboardEvent) => this._handleIconKeydown(e)
-        )}
+      <div class="input-wrapper" data-theme="${this.currentTheme}">
+        ${InputRenderUtils.renderAddonBefore(this.hasAddonBefore, (e: Event) => this._handleSlotChange(e))}
+        <div data-size=${this.size} id="input-container">
+          ${InputRenderUtils.renderPrefix()}
+          <input
+            id="input"
+            .disabled=${this.disabled}
+            .readOnly=${this.readonly}
+            .value=${this.value}
+            .placeholder=${this.placeholder}
+            .type="${this.inputType}"
+            .autocomplete=${this.autocomplete}
+            aria-invalid=${this.state === INPUT_STATE.Error ? 'true' : 'false'}
+            aria-describedby=${this._getAriaDescribedBy()}
+            @input=${this._valueChange}
+            @focus=${this._focusEvent}
+            @keydown=${this._handleKeyDown}
+          />
+          ${InputRenderUtils.renderSuffix()}
+          ${InputRenderUtils.renderCopyIcon(
+            this.withCopy,
+            this.disabled,
+            this.readonly,
+            () => this._onCopy(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
+          ${InputRenderUtils.renderStateIcon(this.state)}
+          ${InputRenderUtils.renderCalendarIcon(this.state, this.type)}
+          ${InputRenderUtils.renderPasswordIcon(
+            this.type,
+            this.inputType,
+            this.disabled,
+            this.readonly,
+            () => this._togglePasswordIcon(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
+          ${InputRenderUtils.renderNumberIcons(
+            this.type,
+            this.state,
+            this.disabled,
+            this.readonly,
+            () => this._increment(),
+            () => this._decrement(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
+        </div>
+        ${InputRenderUtils.renderAddonAfter(this.hasAddonAfter, (e: Event) => this._handleSlotChange(e))}
       </div>
       <slot name="helper-text"></slot>
     `;
@@ -358,16 +399,3 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'nr-input': NrInputElement;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'nr-input':
-        | React.DetailedHTMLProps<React.HTMLAttributes<NrInputElement>, NrInputElement>
-        | Partial<NrInputElement>;
-    }
-  }
-}

@@ -29,22 +29,29 @@ const inputStyle = css`
   }
 
   /* 
-   * Base input container and input element styles
+   * Base input wrapper and input element styles
+   * Background applied to wrapper to cover entire container including addons
    * Uses CSS custom properties with fallbacks for comprehensive theming support
    * Properties follow the pattern: --hybrid-input-{property}, --hybrid-input-local-{property}
    */
-  :host > #input-container,
-  #input-container > input {
+  .input-wrapper {
     background-color: var(--hybrid-input-background-color, var(--hybrid-input-local-background-color));
   }
 
+  #input-container > input {
+    background-color: transparent;
+  }
+
   /* 
-   * Disabled state styles for container and input
+   * Disabled state styles for wrapper and input
    * Applied when input is disabled - removes interactivity and applies muted colors
    */
-  :host([disabled]) > #input-container,
-  :host([disabled]) > #input-container > input {
+  :host([disabled]) .input-wrapper {
     background-color: var(--hybrid-input-disabled-background-color, var(--hybrid-input-local-disabled-background-color));
+  }
+
+  :host([disabled]) #input-container > input {
+    background-color: transparent;
     cursor: not-allowed;
   }
 
@@ -168,6 +175,72 @@ const inputStyle = css`
    * ======================================== */
 
   /* 
+   * Input wrapper - contains addons and input container
+   * Provides horizontal layout for addon before/after elements
+   */
+  .input-wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  /* 
+   * Addon before element - content before input (outside borders)
+   * Styled to visually connect with input
+   */
+  .input-addon-before {
+    background-color: var(--hybrid-input-addon-background-color, var(--hybrid-input-local-addon-background-color));
+    border: var(--hybrid-input-border, var(--hybrid-input-local-border));
+    border-right: none;
+    border-top-left-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
+    border-bottom-left-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
+    padding: var(--hybrid-input-addon-padding, var(--hybrid-input-local-addon-padding));
+    display: flex;
+    align-items: center;
+    color: var(--hybrid-input-addon-color, var(--hybrid-input-local-addon-color));
+    font-size: var(--hybrid-input-font-size, var(--hybrid-input-local-font-size));
+    white-space: nowrap;
+    min-width: 0; /* Allow shrinking */
+    flex-shrink: 0; /* Prevent shrinking */
+  }
+
+  /* 
+   * Addon after element - content after input (outside borders)
+   * Styled to visually connect with input
+   */
+  .input-addon-after {
+    background-color: var(--hybrid-input-addon-background-color, var(--hybrid-input-local-addon-background-color));
+    border: var(--hybrid-input-border, var(--hybrid-input-local-border));
+    border-left: none;
+    border-top-right-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
+    border-bottom-right-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
+    padding: var(--hybrid-input-addon-padding, var(--hybrid-input-local-addon-padding));
+    display: flex;
+    align-items: center;
+    color: var(--hybrid-input-addon-color, var(--hybrid-input-local-addon-color));
+    font-size: var(--hybrid-input-font-size, var(--hybrid-input-local-font-size));
+    white-space: nowrap;
+    min-width: 0; /* Allow shrinking */
+    flex-shrink: 0; /* Prevent shrinking */
+  }
+
+  /* 
+   * Input container border radius adjustments when addons are present
+   * Removes border radius on sides where addons are attached
+   */
+  .input-wrapper:has(.input-addon-before) #input-container {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+  }
+
+  .input-wrapper:has(.input-addon-after) #input-container {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+  }
+
+  /* 
    * Main input container element
    * Uses CSS custom properties for comprehensive border and layout control
    */
@@ -188,6 +261,8 @@ const inputStyle = css`
     /* Layout */
     display: flex;
     position: relative;
+    flex: 1; /* Take available space in wrapper */
+    min-width: 0; /* Allow shrinking below content size */
   }
 
   /* 

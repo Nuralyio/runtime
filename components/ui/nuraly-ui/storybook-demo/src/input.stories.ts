@@ -296,32 +296,68 @@ export const WithCopyButton: Story = {
 export const WithPrefixSuffix: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
-      <h3>Prefix & Suffix Examples</h3>
+      <h3>Prefix and Suffix Examples</h3>
       
-      <nr-input label="Text Prefix" placeholder="Enter amount">
+      <!-- Text prefix/suffix -->
+      <nr-input label="Price" placeholder="Enter amount">
         <span slot="prefix">$</span>
-      </nr-input>
-      
-      <nr-input label="Text Suffix" placeholder="Enter website">
-        <span slot="suffix">.com</span>
-      </nr-input>
-      
-      <nr-input label="Icon Prefix" placeholder="Enter username">
-        <hy-icon slot="prefix" name="user"></hy-icon>
-      </nr-input>
-      
-      <nr-input label="Icon Suffix" placeholder="Search...">
-        <hy-icon slot="suffix" name="search"></hy-icon>
-      </nr-input>
-      
-      <nr-input label="Both Prefix & Suffix" placeholder="Enter URL">
-        <span slot="prefix">https://</span>
-        <span slot="suffix">.com</span>
-      </nr-input>
-      
-      <nr-input label="Icon + Text" placeholder="Enter price">
-        <hy-icon slot="prefix" name="dollar-sign"></hy-icon>
         <span slot="suffix">USD</span>
+      </nr-input>
+
+      <!-- Icon prefix/suffix -->
+      <nr-input label="Search" placeholder="Type to search">
+        <hy-icon slot="prefix" name="search"></hy-icon>
+        <hy-icon slot="suffix" name="close"></hy-icon>
+      </nr-input>
+
+      <!-- Email with icon -->
+      <nr-input type="email" label="Email" placeholder="Enter your email">
+        <hy-icon slot="prefix" name="envelope"></hy-icon>
+      </nr-input>
+
+      <!-- Password with lock icon -->
+      <nr-input type="password" label="Password" placeholder="Enter password">
+        <hy-icon slot="prefix" name="lock"></hy-icon>
+      </nr-input>
+    </div>
+  `,
+};
+
+export const AddonBeforeAfterExamples: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
+      <h3>Addon Before/After Examples</h3>
+      
+      <!-- URL with protocol addon before -->
+      <nr-input label="Website URL" placeholder="mysite">
+        <span slot="addon-before">https://</span>
+        <span slot="addon-after">.com</span>
+      </nr-input>
+
+      <!-- Phone with country code -->
+      <nr-input label="Phone Number" placeholder="555-1234">
+        <span slot="addon-before">+1</span>
+      </nr-input>
+
+      <!-- Currency input -->
+      <nr-input type="number" label="Amount" placeholder="0.00">
+        <span slot="addon-before">$</span>
+        <span slot="addon-after">USD</span>
+      </nr-input>
+
+      <!-- File path -->
+      <nr-input label="File Path" placeholder="filename">
+        <span slot="addon-before">/home/user/</span>
+        <span slot="addon-after">.txt</span>
+      </nr-input>
+
+      <!-- Combined with icons in addons -->
+      <nr-input label="Search with Button" placeholder="Search term">
+        <div slot="addon-before" style="display: flex; align-items: center; gap: 4px;">
+          <hy-icon name="search"></hy-icon>
+          <span>Find:</span>
+        </div>
+        <button slot="addon-after" style="border: none; background: #0f62fe; color: white; padding: 4px 8px; cursor: pointer;">Go</button>
       </nr-input>
     </div>
   `,
