@@ -1,15 +1,29 @@
 {
-  "name": "@nuralyui/chatbot",
-  "version": "0.0.5",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Labidi Aymen",
-  "license": "ISC",
-  "dependencies": {
-    "dayjs": "^1.11.13"
-  }
+    "name": "@nuralyui/chatbot",
+    "version": "0.0.5",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Labidi Aymen",
+    "license": "ISC",
+    "dependencies": {
+        "dayjs": "^1.11.13"
+    },
+    "exports": {
+        ".": {
+            "import": "./index.js"
+        },
+        "./bundle": {
+            "import": "./bundle.js"
+        }
+    },
+    "files": [
+        "bundle.js",
+        "*.js",
+        "*.d.ts",
+        "*.js.map"
+    ]
 }
