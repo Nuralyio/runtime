@@ -92,6 +92,28 @@ export const styleVariables = css`
     --hybrid-input-local-character-count-color: #8c8c8c;
     --hybrid-input-local-character-count-margin-top: 4px;
     --hybrid-input-local-character-count-over-limit-color: #da1e28;
+
+    /* Input Variant Variables */
+    /* Outlined variant - full border */
+    --hybrid-input-local-outlined-border: 1px solid #d0d0d0;
+    --hybrid-input-local-outlined-border-radius: 6px;
+    --hybrid-input-local-outlined-focus-border: 2px solid #0f62fe;
+    --hybrid-input-local-outlined-background: #ffffff;
+
+    /* Filled variant - background with subtle border */
+    --hybrid-input-local-filled-background: #f4f4f4;
+    --hybrid-input-local-filled-border-bottom: 2px solid transparent;
+    --hybrid-input-local-filled-focus-border-bottom: 2px solid #0f62fe;
+    --hybrid-input-local-filled-border-radius: 6px 6px 0 0;
+
+    /* Borderless variant - no borders */
+    --hybrid-input-local-borderless-background: transparent;
+    --hybrid-input-local-borderless-focus-outline: 2px solid #0f62fe;
+    --hybrid-input-local-borderless-border-radius: 6px;
+
+    /* Underlined variant - bottom border only (current default) */
+    --hybrid-input-local-underlined-border-bottom: 2px solid #a8a8a8;
+    --hybrid-input-local-underlined-focus-border-bottom: 2px solid #0f62fe;
   }
 
   /* 
@@ -131,5 +153,22 @@ export const styleVariables = css`
     /* Dark theme character count colors */
     --hybrid-input-local-character-count-color: #8c8c8c;
     --hybrid-input-local-character-count-over-limit-color: #fa4d56;
+
+    /* Dark theme input variant variables */
+    /* Outlined variant - dark theme */
+    --hybrid-input-local-outlined-border: 1px solid #525252;
+    --hybrid-input-local-outlined-focus-border: 2px solid #ffffff;
+    --hybrid-input-local-outlined-background: #393939;
+
+    /* Filled variant - dark theme */
+    --hybrid-input-local-filled-background: #525252;
+    --hybrid-input-local-filled-focus-border-bottom: 2px solid #ffffff;
+
+    /* Borderless variant - dark theme */
+    --hybrid-input-local-borderless-background: transparent;
+    --hybrid-input-local-borderless-focus-outline: 2px solid #ffffff;
+
+    /* Underlined variant - dark theme */
+    --hybrid-input-local-underlined-focus-border-bottom: 2px solid #ffffff;
   }
 `;

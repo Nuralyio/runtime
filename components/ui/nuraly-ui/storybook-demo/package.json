@@ -9,18 +9,20 @@
     "build-storybook": "storybook build",
     "serve-storybook": "npx http-server storybook-static",
     "build-components": "cd .. && npm run build",
-    "dev": "npm run build-components && npm run storybook"
+    "dev": "npm run build-components && npm run storybook",
+    "chromatic": "npx chromatic --project-token=chpt_f284a5800be7060"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.0.0",
-    "@storybook/addon-links": "^8.0.0",
     "@storybook/addon-interactions": "^8.0.0",
+    "@storybook/addon-links": "^8.0.0",
     "@storybook/blocks": "^8.0.0",
     "@storybook/web-components": "^8.0.0",
     "@storybook/web-components-vite": "^8.0.0",
+    "chromatic": "^13.1.4",
+    "lit": "^2.2.4",
     "storybook": "^8.0.0",
-    "vite": "^5.0.0",
-    "lit": "^2.2.4"
+    "vite": "^5.0.0"
   },
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.6.0"

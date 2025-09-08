@@ -8,7 +8,7 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { styles } from './input.style.js';
-import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING } from './input.types.js';
+import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, INPUT_VARIANT, EMPTY_STRING, FocusOptions, BlurOptions, FocusChangeEvent } from './input.types.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { InputValidationUtils } from './utils/input-validation.utils.js';
 import { InputRenderUtils } from './utils/input-renderers.js';
@@ -31,6 +31,9 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
 
   @property({type: String})
   size = INPUT_SIZE.Medium;
+
+  @property({type: String, reflect: true})
+  variant = INPUT_VARIANT.Underlined;
 
   @property({reflect: true})
   type = INPUT_TYPE.TEXT;
@@ -70,6 +73,9 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   hasAddonAfter = false;
+
+  @state()
+  focused = false;
 
   @query('#input')
   input!: HTMLInputElement;
@@ -170,6 +176,150 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     } else if (slotName === 'addon-after') {
       this.hasAddonAfter = slot.assignedElements().length > 0;
     }
+  }
+
+  // ========================================
+  // FOCUS MANAGEMENT METHODS
+  // ========================================
+
+  /**
+   * Focus the input with advanced options
+   */
+  override focus(options?: FocusOptions): void {
+    if (!this.input) return;
+
+    const focusOptions: FocusOptions = { preventScroll: false, ...options };
+    
+    // Focus the input element
+    this.input.focus({ preventScroll: focusOptions.preventScroll });
+
+    // Handle cursor positioning
+    if (focusOptions.cursor !== undefined) {
+      this.setCursorPosition(focusOptions.cursor);
+    }
+
+    // Handle text selection
+    if (focusOptions.select) {
+      this.selectAll();
+    }
+  }
+
+  /**
+   * Blur the input with advanced options
+   */
+  override blur(options?: BlurOptions): void {
+    if (!this.input) return;
+
+    const currentPosition = this.getCursorPosition();
+    
+    this.input.blur();
+
+    // Restore cursor position if requested
+    if (options?.restoreCursor && currentPosition !== -1) {
+      // We'll restore it on next focus
+      this.input.dataset.restoreCursor = currentPosition.toString();
+    }
+  }
+
+  /**
+   * Select all text in the input
+   */
+  selectAll(): void {
+    if (!this.input) return;
+    
+    // Ensure the input is focused first
+    if (document.activeElement !== this.input) {
+      this.input.focus();
+    }
+    
+    // Wait for next frame to ensure focus is complete
+    requestAnimationFrame(() => {
+      if (!this.input) return;
+      this.input.select();
+    });
+  }
+
+  /**
+   * Select a range of text in the input
+   */
+  selectRange(start: number, end: number): void {
+    if (!this.input) return;
+    
+    // Ensure the input is focused first
+    if (document.activeElement !== this.input) {
+      this.input.focus();
+    }
+    
+    // Wait for next frame to ensure focus is complete
+    requestAnimationFrame(() => {
+      if (!this.input) return;
+      
+      const maxLength = this.input.value.length;
+      const validStart = Math.max(0, Math.min(start, maxLength));
+      const validEnd = Math.max(validStart, Math.min(end, maxLength));
+      
+      this.input.setSelectionRange(validStart, validEnd);
+    });
+  }
+
+  /**
+   * Get the current cursor position
+   */
+  getCursorPosition(): number {
+    if (!this.input) return -1;
+    return this.input.selectionStart || 0;
+  }
+
+  /**
+   * Set the cursor position
+   */
+  setCursorPosition(position: number | 'start' | 'end' | 'all'): void {
+    if (!this.input) return;
+    
+    // Ensure the input is focused first
+    if (document.activeElement !== this.input) {
+      this.input.focus();
+    }
+    
+    requestAnimationFrame(() => {
+      if (!this.input) return;
+
+      let pos: number;
+      const valueLength = this.value.length;
+
+      switch (position) {
+        case 'start':
+          pos = 0;
+          break;
+        case 'end':
+          pos = valueLength;
+          break;
+        case 'all':
+          this.selectAll();
+          return;
+        default:
+          pos = typeof position === 'number' ? Math.min(Math.max(0, position), valueLength) : 0;
+      }
+
+      this.input.setSelectionRange(pos, pos);
+    });
+  }
+
+  /**
+   * Get the currently selected text
+   */
+  getSelectedText(): string {
+    if (!this.input) return '';
+    const start = this.input.selectionStart || 0;
+    const end = this.input.selectionEnd || 0;
+    return this.value.substring(start, end);
+  }
+
+  /**
+   * Check if the input is currently focused
+   */
+  isFocused(): boolean {
+    return this.focused && document.activeElement === this.input;
   }
 
   // ========================================
@@ -280,10 +430,47 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private _focusEvent(e: Event) {
+    this.focused = true;
+    
+    // Handle cursor restoration if requested
+    const input = e.target as HTMLInputElement;
+    if (input.dataset.restoreCursor) {
+      const position = parseInt(input.dataset.restoreCursor, 10);
+      this.setCursorPosition(position);
+      delete input.dataset.restoreCursor;
+    }
+    
+    const focusDetail: FocusChangeEvent = {
+      focused: true,
+      cursorPosition: this.getCursorPosition(),
+      selectedText: this.getSelectedText()
+    };
+    
     this._dispatchInputEvent('nr-focus', {
       target: e.target,
-      value: this.value
+      value: this.value,
+      ...focusDetail
     });
+    
+    this._dispatchInputEvent('nr-focus-change', focusDetail);
+  }
+
+  private _blurEvent(e: Event) {
+    this.focused = false;
+    
+    const focusDetail: FocusChangeEvent = {
+      focused: false,
+      cursorPosition: this.getCursorPosition(),
+      selectedText: this.getSelectedText()
+    };
+    
+    this._dispatchInputEvent('nr-blur', {
+      target: e.target,
+      value: this.value,
+      ...focusDetail
+    });
+    
+    this._dispatchInputEvent('nr-focus-change', focusDetail);
   }
 
   private _handleIconKeydown(keyDownEvent: KeyboardEvent) {
@@ -429,6 +616,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
             aria-describedby=${this._getAriaDescribedBy()}
             @input=${this._valueChange}
             @focus=${this._focusEvent}
+            @blur=${this._blurEvent}
             @keydown=${this._handleKeyDown}
           />
           ${InputRenderUtils.renderSuffix()}
