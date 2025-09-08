@@ -87,6 +87,31 @@ export class InputRenderUtils {
   }
 
   /**
+   * Renders the clear icon when allowClear is enabled and there's content
+   */
+  static renderClearIcon(
+    allowClear: boolean,
+    value: string,
+    disabled: boolean,
+    readonly: boolean,
+    onClear: () => void,
+    onKeydown: (e: KeyboardEvent) => void
+  ): TemplateResult | typeof nothing {
+    if (!allowClear || !value || disabled || readonly) return nothing;
+    
+    return html`<hy-icon
+      name="times-circle"
+      type="regular"
+      id="clear-icon"
+      role="button"
+      aria-label="Clear input value"
+      tabindex="0"
+      @click=${onClear}
+      @keydown=${onKeydown}
+    ></hy-icon>`;
+  }
+
+  /**
    * Renders state-based icons (warning, error)
    */
   static renderStateIcon(state: string): TemplateResult | typeof nothing {

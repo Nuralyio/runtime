@@ -36,6 +36,9 @@ export const styleVariables = css`
     --hybrid-input-local-password-icon-color: #000000;
     --hybrid-input-local-calendar-icon-color: #000000;
     --hybrid-input-local-copy-icon-color: #000000;
+    --hybrid-input-local-copy-icon-padding-right:5px;
+    --hybrid-input-local-clear-icon-color: #000000;
+    --hybrid-input-local-clear-icon-padding-right: 5px;
     --hybrid-input-local-disabled-icon-opacity: 0.4;
     --hybrid-input-local-number-icons-color: #000000;
     --hybrid-input-local-password-icon-padding-left: 8px;
@@ -108,6 +111,7 @@ export const styleVariables = css`
     --hybrid-input-local-number-icons-separator-color: #525252;
     --hybrid-input-local-calendar-icon-color: #ffffff;
     --hybrid-input-local-copy-icon-color: #ffffff;
+    --hybrid-input-local-clear-icon-color: #ffffff;
     
     /* Dark theme prefix and suffix colors */
     --hybrid-input-local-prefix-color: #c6c6c6;
