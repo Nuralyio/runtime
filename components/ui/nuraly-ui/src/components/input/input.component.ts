@@ -12,66 +12,96 @@ import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { InputValidationUtils, InputRenderUtils } from './utils/index.js';
 import { SelectionMixin, FocusMixin, NumberMixin } from './mixins/index.js';
 
+/**
+ * Versatile input component with validation, multiple types, and interactive features.
+ * 
+ * @example
+ * ```html
+ * <nr-input type="text" placeholder="Enter name"></nr-input>
+ * <nr-input type="password"></nr-input>
+ * <nr-input type="number" min="0" max="100"></nr-input>
+ * ```
+ * 
+ * @fires nr-input - Value changes
+ * @fires nr-focus - Input focused
+ * @fires nr-blur - Input blurred  
+ * @fires nr-enter - Enter key pressed
+ * @fires nr-clear - Clear button clicked
+ * 
+ * @slot label - Input label
+ * @slot helper-text - Helper text
+ * @slot addon-before - Content before input
+ * @slot addon-after - Content after input
+ */
 const InputBaseMixin = NumberMixin(FocusMixin(SelectionMixin(NuralyUIBaseMixin(LitElement))));
 @customElement('nr-input')
 export class NrInputElement extends InputBaseMixin {
   static override styles = styles;
 
-  // ========================================
-  // PROPERTIES
-  // ========================================
-
+  /** Disables the input */
   @property({type: Boolean, reflect: true})
   disabled = false;
 
+  /** Makes the input read-only */
   @property({type: Boolean, reflect: true})
   readonly = false;
 
+  /** Visual state (default, success, warning, error) */
   @property({type: String, reflect: true})
   state = INPUT_STATE.Default;
 
+  /** Current input value */
   @property({type: String})
   value = EMPTY_STRING;
 
+  /** Input size (small, medium, large) */
   @property({type: String})
   size = INPUT_SIZE.Medium;
 
+  /** Visual variant (outlined, underlined, filled) */
   @property({type: String, reflect: true})
   variant = INPUT_VARIANT.Underlined;
 
+  /** Input type (text, password, number, email, etc.) */
   @property({reflect: true})
   type = INPUT_TYPE.TEXT;
 
+  /** Step value for number inputs */
   @property({type: String})
   step?: string;
 
+  /** Minimum value for number inputs */
   @property({type: String})
   min?: string;
 
+  /** Maximum value for number inputs */
   @property({type: String})
   max?: string;
 
+  /** Placeholder text */
   @property({type: String})
   placeholder = EMPTY_STRING;
 
+  /** HTML autocomplete attribute */
   @property({type: String})
   autocomplete = 'off';
 
+  /** Shows copy button */
   @property({type: Boolean, reflect: true})
   withCopy = false;
 
+  /** Shows clear button */
   @property({type: Boolean, reflect: true})
   allowClear = false;
 
+  /** Shows character counter */
   @property({type: Boolean, reflect: true})
   showCount = false;
 
+  /** Maximum character limit */
   @property({type: Number})
   maxLength?: number;
 
-  // ========================================
-  // STATE
-  // ========================================
 
   @state()
   inputType = EMPTY_STRING;
@@ -85,18 +115,11 @@ export class NrInputElement extends InputBaseMixin {
   @state()
   focused = false;
 
-  // Use manual query instead of @query decorator to avoid TypeScript mixin issues
   private get _input(): HTMLInputElement {
     return this.shadowRoot!.querySelector('#input') as HTMLInputElement;
   }
 
-  // ========================================
-  // COMPUTED PROPERTIES
-  // ========================================
 
-  /**
-   * Get the character count display text
-   */
   get characterCountDisplay(): string {
     const currentLength = this.value.length;
     if (this.maxLength) {
@@ -105,43 +128,22 @@ export class NrInputElement extends InputBaseMixin {
     return `${currentLength}`;
   }
 
-  /**
-   * Check if character count is over the limit
-   */
   get isOverCharacterLimit(): boolean {
     return this.maxLength ? this.value.length > this.maxLength : false;
   }
 
-  // ========================================
-  // COMPUTED PROPERTIES
-  // ========================================
-
-  /**
-   * Get the input element
-   */
   protected get input(): HTMLInputElement {
     return this._input;
   }
 
-  /**
-   * Override inputElement getter from mixins to use our @query property
-   */
   protected get inputElement(): HTMLInputElement {
     return this._input;
   }
 
-  // ========================================
-  // LIFECYCLE METHODS
-  // ========================================
 
-  /**
-   * Required components that must be registered for this component to work properly
-   */
+
   override requiredComponents = ['nr-icon'];
 
-  /**
-   * Check for required dependencies when component is connected to DOM
-   */
   override connectedCallback() {
     super.connectedCallback();
   }
@@ -149,19 +151,16 @@ export class NrInputElement extends InputBaseMixin {
   override willUpdate(_changedProperties: PropertyValues): void {
     super.willUpdate(_changedProperties);
 
-    // Initialize inputType when type changes or on first render
     if (_changedProperties.has('type') || !this.inputType) {
       this.inputType = this.type;
     }
 
-    // Set default value for number inputs with min
     if (_changedProperties.has('type') || _changedProperties.has('min')) {
       if (this.type === INPUT_TYPE.NUMBER && this.min && !this.value) {
         this.value = this.min;
       }
     }
 
-    // Validate numeric properties when they change
     if (_changedProperties.has('type') || 
         _changedProperties.has('min') || 
         _changedProperties.has('max') || 
@@ -192,26 +191,15 @@ export class NrInputElement extends InputBaseMixin {
     this._checkInitialSlotContent();
   }
 
-  // ========================================
-  // PRIVATE METHODS
-  // ========================================
 
-  /**
-   * Check initial slot content on first render
-   */
   private _checkInitialSlotContent(): void {
-    // Check for addon-before content
     const addonBeforeElements = this.querySelectorAll('[slot="addon-before"]');
     this.hasAddonBefore = addonBeforeElements.length > 0;
 
-    // Check for addon-after content  
     const addonAfterElements = this.querySelectorAll('[slot="addon-after"]');
     this.hasAddonAfter = addonAfterElements.length > 0;
   }
 
-  /**
-   * Handle slot changes to determine addon visibility
-   */
   private _handleSlotChange(e: Event): void {
     const slot = e.target as HTMLSlotElement;
     const slotName = slot.name;
@@ -223,26 +211,13 @@ export class NrInputElement extends InputBaseMixin {
     }
   }
 
-  // ========================================
-  // FOCUS MANAGEMENT METHODS
-  // ========================================
-
-  // Focus methods are provided by InputMixin
-
-  // ========================================
-  // EVENT HANDLING METHODS
-  // ========================================
-
-  // Event handling methods moved to EventHandlerMixin
 
   private _handleKeyDown(keyDownEvent: KeyboardEvent): void {
-    // Prevent all key input when readonly - use mixin utility
     if (this.readonly && !this.isReadonlyKeyAllowed(keyDownEvent)) {
       keyDownEvent.preventDefault();
       return;
     }
 
-    // Handle Enter key
     if (keyDownEvent.key === 'Enter') {
       this.dispatchCustomEvent('nr-enter', {
         target: keyDownEvent.target,
@@ -252,7 +227,6 @@ export class NrInputElement extends InputBaseMixin {
       return;
     }
 
-    // Prevent non-numeric input for number type
     if (this.type === INPUT_TYPE.NUMBER) {
       InputValidationUtils.preventNonNumericInput(keyDownEvent, this.min);
       
@@ -276,7 +250,6 @@ export class NrInputElement extends InputBaseMixin {
     const target = e.target as HTMLInputElement;
     const newValue = target.value;
     
-    // Check character limit
     if (this.maxLength && newValue.length > this.maxLength) {
       this.dispatchCustomEvent('nr-character-limit-exceeded', {
         value: newValue,
@@ -284,14 +257,13 @@ export class NrInputElement extends InputBaseMixin {
         limit: this.maxLength,
         originalEvent: e
       });
-      // Note: HTML maxlength attribute usually prevents this, but we dispatch event for awareness
     }
     
     if (this.type === INPUT_TYPE.NUMBER && newValue) {
       const validation = InputValidationUtils.validateNumericValue(newValue, this.min, this.max);
       
       if (!validation.isValid) {
-        console.warn(validation.warnings[0]);
+        console.warn(`[nr-input] ${validation.warnings[0]}`);
         this.dispatchValidationEvent('nr-validation-error', {
           value: newValue,
           target: target,
@@ -302,9 +274,8 @@ export class NrInputElement extends InputBaseMixin {
         return;
       }
       
-      validation.warnings.forEach(warning => console.warn(warning));
+      validation.warnings.forEach(warning => console.warn(`[nr-input] ${warning}`));
     }
-    
     this.value = newValue;
     this.dispatchInputEvent('nr-input', {
       value: this.value, 
@@ -316,7 +287,6 @@ export class NrInputElement extends InputBaseMixin {
   private _focusEvent(e: Event): void {
     this.focused = true;
     
-    // Handle cursor restoration if requested
     const input = e.target as HTMLInputElement;
     if (input.dataset.restoreCursor) {
       const position = parseInt(input.dataset.restoreCursor, 10);
@@ -389,6 +359,7 @@ export class NrInputElement extends InputBaseMixin {
         action: 'copy'
       });
     } catch (error) {
+      console.warn('[nr-input] Copy operation failed:', error);
       this.dispatchCustomEvent('nr-copy-error', { error });
     }
   }
@@ -401,7 +372,6 @@ export class NrInputElement extends InputBaseMixin {
     const previousValue = this.value;
     this.value = EMPTY_STRING;
     
-    // Update the input element value
     if (this.input) {
       this.input.value = EMPTY_STRING;
     }
@@ -412,8 +382,6 @@ export class NrInputElement extends InputBaseMixin {
       target: this.input,
       action: 'clear'
     });
-
-    // Also dispatch input event for consistency
     this.dispatchInputEvent('nr-input', {
       value: this.value,
       target: this.input,
@@ -421,9 +389,6 @@ export class NrInputElement extends InputBaseMixin {
     });
   }
 
-  // ========================================
-  // OPERATION METHODS
-  // ========================================
 
   private _increment(): void {
     this.increment();
@@ -459,12 +424,13 @@ export class NrInputElement extends InputBaseMixin {
   override render() {
     return html`
       <slot name="label"></slot>
-      <div class="input-wrapper" data-theme="${this.currentTheme}">
+      <div class="input-wrapper" part="input-wrapper" data-theme="${this.currentTheme}">
         ${InputRenderUtils.renderAddonBefore(this.hasAddonBefore, (e: Event) => this._handleSlotChange(e))}
-        <div data-size=${this.size} id="input-container">
+        <div data-size=${this.size} id="input-container" part="input-container">
           ${InputRenderUtils.renderPrefix()}
           <input
             id="input"
+            part="input"
             .disabled=${this.disabled}
             .readOnly=${this.readonly}
             .value=${this.value}
@@ -518,7 +484,7 @@ export class NrInputElement extends InputBaseMixin {
       </div>
       <slot name="helper-text"></slot>
       ${this.showCount ? html`
-        <div class="character-count" ?data-over-limit=${this.isOverCharacterLimit}>
+        <div class="character-count" part="character-count" ?data-over-limit=${this.isOverCharacterLimit}>
           ${this.characterCountDisplay}
         </div>
       ` : ''}
