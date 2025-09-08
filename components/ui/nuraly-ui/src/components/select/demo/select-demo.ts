@@ -11,7 +11,7 @@ import { customElement, state } from 'lit/decorators.js';
 
 import '../select.component';
 import '../../dropdown/hy-dropdown.component';
-import '../../button/nr-button.component';
+import '../../button/button.component';
 import '../../tabs/tabs.component';
 import '../../input/input.component';
 

@@ -6,8 +6,8 @@
 
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { ButtonType, EMPTY_STRING, IconPosition } from './nr-button.types.js';
-import { styles } from './nr-button.style.js';
+import { ButtonType, EMPTY_STRING, IconPosition } from './button.types.js';
+import { styles } from './button.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
 @customElement('nr-button')

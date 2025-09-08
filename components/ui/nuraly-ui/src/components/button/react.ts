@@ -1,6 +1,6 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import { NrButtonElement } from './nr-button.component.js';
+import { NrButtonElement } from './button.component.js';
 export const NrButton = createComponent({
   tagName: 'nr-button',
   elementClass: NrButtonElement,
