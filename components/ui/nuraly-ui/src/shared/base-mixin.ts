@@ -7,11 +7,12 @@
 import { LitElement } from 'lit';
 import { ThemeAwareMixin, ThemeAware } from './theme-mixin.js';
 import { DependencyValidationMixin, DependencyAware } from './dependency-mixin.js';
+import { EventHandlerMixin, EventHandlerCapable } from './event-handler-mixin.js';
 
 /**
- * Base interface combining both theme awareness and dependency validation
+ * Base interface combining theme awareness, dependency validation, and event handling
  */
-export interface NuralyUIBaseElement extends ThemeAware, DependencyAware {}
+export interface NuralyUIBaseElement extends ThemeAware, DependencyAware, EventHandlerCapable {}
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
@@ -36,9 +37,9 @@ type Constructor<T = {}> = new (...args: any[]) => T;
  * ```
  */
 export const NuralyUIBaseMixin = <T extends Constructor<LitElement>>(superClass: T) => {
-  // Apply both mixins in the correct order:
-  // DependencyValidationMixin first, then ThemeAwareMixin
-  return DependencyValidationMixin(ThemeAwareMixin(superClass));
+  // Apply all base mixins in the correct order:
+  // EventHandlerMixin first, then DependencyValidationMixin, then ThemeAwareMixin
+  return DependencyValidationMixin(ThemeAwareMixin(EventHandlerMixin(superClass)));
 };
 
 /**
