@@ -33,35 +33,35 @@ bun add @nuralyui/input
   import '@nuralyui/input';
 </script>
 
-<hy-input placeholder="Enter your name"></hy-input>
-<hy-input type="password" placeholder="Enter password"></hy-input>
-<hy-input type="number" placeholder="Enter number" min="0" max="100"></hy-input>
+<nr-input placeholder="Enter your name"></nr-input>
+<nr-input type="password" placeholder="Enter password"></nr-input>
+<nr-input type="number" placeholder="Enter number" min="0" max="100"></nr-input>
 ```
 
 ### React Integration
 
 ```jsx
-import { HyInput } from '@nuralyui/input/react';
+import { NrInput } from '@nuralyui/input/react';
 
 function App() {
   const [value, setValue] = useState('');
 
   return (
     <div>
-      <HyInput
+      <NrInput
         placeholder="Enter your name"
         value={value}
         onInput={(e) => setValue(e.target.value)}
       />
       
-      <HyInput
+      <NrInput
         type="password"
         placeholder="Password"
         state="error"
-        onValueChange={(e) => console.log(e.detail.value)}
+        onNrInput={(e) => console.log(e.detail.value)}
       />
       
-      <HyInput
+      <NrInput
         type="number"
         min="0"
         max="100"
@@ -78,17 +78,17 @@ function App() {
 ```vue
 <template>
   <div>
-    <hy-input
+    <nr-input
       v-model="inputValue"
       placeholder="Enter text"
-      @input="handleInput"
+      @nr-input="handleInput"
     />
     
-    <hy-input
+    <nr-input
       type="password"
       placeholder="Password"
       :state="validationState"
-      @value-change="handleValueChange"
+      @nr-input="handleValueChange"
     />
   </div>
 </template>
@@ -137,11 +137,11 @@ export default {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `input` | `Event` | Fired on every input change |
-| `change` | `Event` | Fired when input loses focus after value change |
-| `valueChange` | `{ value: string, target: HTMLInputElement }` | Custom event with input details |
-| `focus` | `FocusEvent` | Fired when input gains focus |
-| `blur` | `FocusEvent` | Fired when input loses focus |
+| `nr-input` | `{ value: string, target: HTMLInputElement, originalEvent?: Event, action?: string }` | Main input change event |
+| `nr-focus` | `{ target: EventTarget, value: string }` | Input gains focus |
+| `nr-enter` | `{ target: EventTarget, value: string, originalEvent: KeyboardEvent }` | Enter key pressed |
+| `nr-copy-success` | `{ value: string }` | Copy to clipboard succeeded |
+| `nr-copy-error` | `{ error: Error }` | Copy to clipboard failed |
 
 ### Methods
 
@@ -157,61 +157,61 @@ export default {
 
 ```html
 <!-- Text input -->
-<hy-input type="text" placeholder="Enter text"></hy-input>
+<nr-input type="text" placeholder="Enter text"></nr-input>
 
 <!-- Password input with visibility toggle -->
-<hy-input type="password" placeholder="Enter password"></hy-input>
+<nr-input type="password" placeholder="Enter password"></nr-input>
 
 <!-- Number input with controls -->
-<hy-input 
+<nr-input 
   type="number" 
   min="0" 
   max="100" 
   step="5" 
   placeholder="Enter number">
-</hy-input>
+</nr-input>
 ```
 
 ### Input Sizes
 
 ```html
-<hy-input size="small" placeholder="Small input"></hy-input>
-<hy-input size="medium" placeholder="Medium input"></hy-input>
-<hy-input size="large" placeholder="Large input"></hy-input>
+<nr-input size="small" placeholder="Small input"></nr-input>
+<nr-input size="medium" placeholder="Medium input"></nr-input>
+<nr-input size="large" placeholder="Large input"></nr-input>
 ```
 
 ### Validation States
 
 ```html
 <!-- Default state -->
-<hy-input placeholder="Default state"></hy-input>
+<nr-input placeholder="Default state"></nr-input>
 
 <!-- Error state -->
-<hy-input state="error" placeholder="Error state" value="Invalid input"></hy-input>
+<nr-input state="error" placeholder="Error state" value="Invalid input"></nr-input>
 
 <!-- Warning state -->
-<hy-input state="warning" placeholder="Warning state" value="Check this"></hy-input>
+<nr-input state="warning" placeholder="Warning state" value="Check this"></nr-input>
 ```
 
 ### Advanced Features
 
 ```html
 <!-- Input with copy functionality -->
-<hy-input 
+<nr-input 
   value="https://example.com/api/token" 
   with-copy
   placeholder="API Token">
-</hy-input>
+</nr-input>
 
 <!-- Disabled input -->
-<hy-input disabled value="Cannot edit this" placeholder="Disabled"></hy-input>
+<nr-input disabled value="Cannot edit this" placeholder="Disabled"></nr-input>
 
 <!-- Input with autocomplete -->
-<hy-input 
+<nr-input 
   autocomplete="email" 
   placeholder="Enter email"
   type="text">
-</hy-input>
+</nr-input>
 ```
 
 ### Form Integration
@@ -220,32 +220,32 @@ export default {
 <form id="user-form">
   <div class="form-group">
     <label for="username">Username:</label>
-    <hy-input 
+    <nr-input 
       id="username"
       placeholder="Enter username"
       required>
-    </hy-input>
+    </nr-input>
   </div>
 
   <div class="form-group">
     <label for="password">Password:</label>
-    <hy-input 
+    <nr-input 
       id="password"
       type="password"
       placeholder="Enter password"
       required>
-    </hy-input>
+    </nr-input>
   </div>
 
   <div class="form-group">
     <label for="age">Age:</label>
-    <hy-input 
+    <nr-input 
       id="age"
       type="number"
       min="18"
       max="120"
       placeholder="Enter age">
-    </hy-input>
+    </nr-input>
   </div>
 </form>
 
@@ -280,11 +280,11 @@ export default {
   });
 </script>
 
-<hy-input 
+<nr-input 
   id="email-input"
   type="text"
   placeholder="Enter email address">
-</hy-input>
+</nr-input>
 ```
 
 ## Styling
@@ -292,41 +292,41 @@ export default {
 ### CSS Custom Properties
 
 ```css
-hy-input {
+nr-input {
   /* Colors */
-  --hy-input-bg: #ffffff;
-  --hy-input-border: #d1d5db;
-  --hy-input-border-focus: #4f46e5;
-  --hy-input-color: #111827;
-  --hy-input-placeholder: #6b7280;
+  --nr-input-bg: #ffffff;
+  --nr-input-border: #d1d5db;
+  --nr-input-border-focus: #4f46e5;
+  --nr-input-color: #111827;
+  --nr-input-placeholder: #6b7280;
   
   /* Error state */
-  --hy-input-border-error: #dc2626;
-  --hy-input-bg-error: #fef2f2;
+  --nr-input-border-error: #dc2626;
+  --nr-input-bg-error: #fef2f2;
   
   /* Warning state */
-  --hy-input-border-warning: #d97706;
-  --hy-input-bg-warning: #fffbeb;
+  --nr-input-border-warning: #d97706;
+  --nr-input-bg-warning: #fffbeb;
   
   /* Sizes */
-  --hy-input-padding-small: 6px 8px;
-  --hy-input-padding-medium: 8px 12px;
-  --hy-input-padding-large: 12px 16px;
+  --nr-input-padding-small: 6px 8px;
+  --nr-input-padding-medium: 8px 12px;
+  --nr-input-padding-large: 12px 16px;
   
-  --hy-input-font-size-small: 12px;
-  --hy-input-font-size-medium: 14px;
-  --hy-input-font-size-large: 16px;
+  --nr-input-font-size-small: 12px;
+  --nr-input-font-size-medium: 14px;
+  --nr-input-font-size-large: 16px;
   
   /* Border */
-  --hy-input-border-radius: 6px;
-  --hy-input-border-width: 1px;
+  --nr-input-border-radius: 6px;
+  --nr-input-border-width: 1px;
   
   /* Focus */
-  --hy-input-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  --nr-input-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.1);
   
   /* Disabled */
-  --hy-input-disabled-bg: #f9fafb;
-  --hy-input-disabled-color: #6b7280;
+  --nr-input-disabled-bg: #f9fafb;
+  --nr-input-disabled-color: #6b7280;
 }
 ```
 
@@ -334,15 +334,15 @@ hy-input {
 
 ```css
 @media (prefers-color-scheme: dark) {
-  hy-input {
-    --hy-input-bg: #1f2937;
-    --hy-input-border: #374151;
-    --hy-input-border-focus: #6366f1;
-    --hy-input-color: #f9fafb;
-    --hy-input-placeholder: #9ca3af;
+  nr-input {
+    --nr-input-bg: #1f2937;
+    --nr-input-border: #374151;
+    --nr-input-border-focus: #6366f1;
+    --nr-input-color: #f9fafb;
+    --nr-input-placeholder: #9ca3af;
     
-    --hy-input-disabled-bg: #111827;
-    --hy-input-disabled-color: #6b7280;
+    --nr-input-disabled-bg: #111827;
+    --nr-input-disabled-color: #6b7280;
   }
 }
 ```
@@ -352,10 +352,10 @@ hy-input {
 ```css
 /* Custom input style */
 .my-custom-input {
-  --hy-input-border-radius: 12px;
-  --hy-input-border-focus: #8b5cf6;
-  --hy-input-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.1);
-  --hy-input-padding-medium: 12px 16px;
+  --nr-input-border-radius: 12px;
+  --nr-input-border-focus: #8b5cf6;
+  --nr-input-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  --nr-input-padding-medium: 12px 16px;
 }
 
 .my-custom-input:focus-within {
@@ -389,12 +389,12 @@ The component automatically handles:
 ```html
 <!-- Explicit labeling -->
 <label for="username">Username:</label>
-<hy-input id="username" placeholder="Enter username"></hy-input>
+<nr-input id="username" placeholder="Enter username"></nr-input>
 
 <!-- Wrapped labeling -->
 <label>
   Email Address:
-  <hy-input type="text" placeholder="Enter email"></hy-input>
+  <nr-input type="text" placeholder="Enter email"></nr-input>
 </label>
 ```
 

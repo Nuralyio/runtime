@@ -1,9 +1,9 @@
-import {LitElement, PropertyValues, html, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import { LitElement, PropertyValues, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import './color-holder.component.js';
 import './default-color-sets.component.js';
 import styles from './color-picker.style.js';
-import {ColorPickerSize} from './color-picker.types.js';
+import { ColorPickerSize } from './color-picker.types.js';
 
 @customElement('hy-color-picker')
 export class ColorPicker extends LitElement {
@@ -136,7 +136,7 @@ export class ColorPicker extends LitElement {
           color="${this.color}"
           @color-changed="${(colorChangedEvent: CustomEvent) => this.handleColorChanged(colorChangedEvent)}"
         ></hex-color-picker>
-        <hy-input type="text" .value="${this.color}" @valueChange="${this.onInputChange}" withCopy=${true} .state=${!this.isValidColor?'error':nothing}> </hy-input>
+        <nr-input type="text" .value="${this.color}" @nr-input="${this.onInputChange}" ?withCopy=${true} .state=${!this.isValidColor?'error':nothing}> </nr-input>
       </div>
     </div> `;
   }

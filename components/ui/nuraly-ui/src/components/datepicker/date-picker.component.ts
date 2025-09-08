@@ -479,19 +479,19 @@ export class HyDatePickerElement extends LitElement {
 
   override render(): TemplateResult {
     return html`
-      <hy-input
+      <nr-input
         id="date-input"
         .type=${this.INPUT_TYPE}
         .value=${this.inputFieldValue}
         .size=${this.size}
         .state=${this.state}
         .disabled=${this.disabled}
-        @valueChange=${this.inputChanged}
+        @nr-input=${this.inputChanged}
         @focus=${this.onFocus}
       >
         ${this.label ? html` <span slot="label">${this.label}</span> ` : nothing}
         ${this.helper ? html` <span slot="helper-text">${this.helper}</span> ` : nothing}
-      </hy-input>
+      </nr-input>
       ${this.openedCalendar ? this.renderCalendar() : nothing}
     `;
   }

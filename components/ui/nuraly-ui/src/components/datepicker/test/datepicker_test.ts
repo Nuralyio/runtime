@@ -1,7 +1,7 @@
-import {expect, fixture, html} from '@open-wc/testing';
+import { expect, fixture, html } from '@open-wc/testing';
 import '../date-picker.component';
-import {HyDatePickerElement} from '../date-picker.component';
-import {Mode} from '../datepicker.types';
+import { HyDatePickerElement } from '../date-picker.component';
+import { Mode } from '../datepicker.types';
 
 suite('HyDatePickerElement', () => {
   test('should be defined', async () => {
@@ -11,7 +11,7 @@ suite('HyDatePickerElement', () => {
 
   test('should open the calendar when input is focused', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
-    const input = el.shadowRoot!.querySelector('hy-input');
+    const input = el.shadowRoot!.querySelector('nr-input');
     input!.dispatchEvent(new Event('focus'));
     expect(el.openedCalendar).to.be.true;
   });

@@ -66,7 +66,7 @@ bun add @nuralyui/button @nuralyui/input @nuralyui/datepicker
 3. **Use in your HTML:**
    ```html
    <hy-button type="primary">Click me</hy-button>
-   <hy-input placeholder="Enter text"></hy-input>
+   <nr-input placeholder="Enter text"></nr-input>
    ```
 
 ### React
@@ -80,7 +80,7 @@ bun add @nuralyui/button @nuralyui/input @nuralyui/datepicker
 2. **Import React components:**
    ```jsx
    import { HyButton } from '@nuralyui/button/react';
-   import { HyInput } from '@nuralyui/input/react';
+   import { NrInput } from '@nuralyui/input/react';
    ```
 
 3. **Use in your JSX:**
@@ -89,7 +89,7 @@ bun add @nuralyui/button @nuralyui/input @nuralyui/datepicker
      return (
        <div>
          <HyButton type="primary">Click me</HyButton>
-         <HyInput placeholder="Enter text" />
+         <NrInput placeholder="Enter text" />
        </div>
      );
    }
@@ -128,7 +128,7 @@ bun add @nuralyui/button @nuralyui/input @nuralyui/datepicker
      <hy-button type="primary" @click="handleClick">
        Click me
      </hy-button>
-     <hy-input placeholder="Enter text" v-model="inputValue" />
+     <nr-input placeholder="Enter text" v-model="inputValue" />
    </template>
 
    <script>
@@ -181,8 +181,8 @@ bun add @nuralyui/button @nuralyui/input @nuralyui/datepicker
        <hy-button type="primary" (click)="handleClick()">
          Click me
        </hy-button>
-       <hy-input placeholder="Enter text" [(ngModel)]="inputValue">
-       </hy-input>
+       <nr-input placeholder="Enter text" [(ngModel)]="inputValue">
+       </nr-input>
      `
    })
    export class AppComponent {
@@ -217,7 +217,7 @@ bun add @nuralyui/button @nuralyui/input @nuralyui/datepicker
    <hy-button type="primary" on:click={handleClick}>
      Click me
    </hy-button>
-   <hy-input placeholder="Enter text" bind:value={inputValue} />
+   <nr-input placeholder="Enter text" bind:value={inputValue} />
    ```
 
 ## 🎨 Adding Styles
@@ -335,7 +335,7 @@ For quick prototyping or simple projects, you can use components via CDN:
 </head>
 <body>
   <hy-button type="primary">Click me</hy-button>
-  <hy-input placeholder="Enter text"></hy-input>
+  <nr-input placeholder="Enter text"></nr-input>
 </body>
 </html>
 ```
@@ -379,7 +379,7 @@ Create a simple test page to verify everything is working:
 <body>
   <div class="test-container">
     <h1>Nuraly UI Installation Test</h1>
-    <hy-input placeholder="Enter some text..."></hy-input>
+    <nr-input placeholder="Enter some text..."></nr-input>
     <hy-button type="primary">Test Button</hy-button>
   </div>
 </body>

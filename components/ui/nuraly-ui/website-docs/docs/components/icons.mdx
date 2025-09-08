@@ -9,7 +9,7 @@ import "@nuralyui/button";
 import "@nuralyui/input";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { BlockPicker } from "react-color";
-import { HyInput } from "@nuralyui/input/react";
+import { NrInput } from "@nuralyui/input/react";
 import { HyIcon } from "@nuralyui/icon/react";
 import { HyButton } from "@nuralyui/button/react";
 
@@ -1510,9 +1510,9 @@ export const IconBrowser = ({ color }) => {
   };
   return (
     <>
-      <HyInput valueChange={filterHandler} placeholder="Search icons...">
+      <NrInput valueChange={filterHandler} placeholder="Search icons...">
         <HyIcon name="search" slot="prefix"></HyIcon>
-      </HyInput>
+      </NrInput>
       <div style={{ margin: "20px 0", fontSize: "14px", color: "#666" }}>
         Showing {visibleIcons.length} of {filteredIcons.length} icons
         {currentFilter && ` (filtered from ${icons.length} total)`}

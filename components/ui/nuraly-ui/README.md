@@ -137,7 +137,7 @@ bun add @nuralyui/datepicker
 
 <!-- Use the components -->
 <hy-button variant="primary">Click me</hy-button>
-<hy-input placeholder="Enter your name" label="Name"></hy-input>
+<nr-input placeholder="Enter your name" label="Name"></nr-input>
 <hy-datepicker 
   field-format="DD/MM/YYYY"
   date-value="20/11/2024"
@@ -149,7 +149,7 @@ bun add @nuralyui/datepicker
 
 ```jsx
 import { HyButton } from "@nuralyui/button/react";
-import { HyInput } from "@nuralyui/input/react";
+import { NrInput } from "@nuralyui/input/react";
 import { HyDatepicker } from "@nuralyui/datepicker/react";
 
 export default function App() {
@@ -159,7 +159,7 @@ export default function App() {
         Click me
       </HyButton>
       
-      <HyInput 
+      <NrInput 
         placeholder="Enter your name" 
         label="Name"
         onInput={(e) => console.log(e.target.value)}
@@ -185,7 +185,7 @@ export default function App() {
       Click me
     </hy-button>
     
-    <hy-input 
+    <nr-input 
       placeholder="Enter your name" 
       label="Name"
       @input="handleInput"
