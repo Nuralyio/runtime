@@ -54,6 +54,10 @@ const meta: Meta = {
       control: { type: 'boolean' },
       description: 'Show copy button',
     },
+    allowClear: {
+      control: { type: 'boolean' },
+      description: 'Show clear button when input has content',
+    },
   },
   args: {
     type: 'text',
@@ -66,6 +70,7 @@ const meta: Meta = {
     size: 'medium',
     state: 'default',
     withCopy: false,
+    allowClear: false,
   },
 };
 
@@ -89,6 +94,7 @@ export const Default: Story = {
       ?readonly="${args.readonly}"
       ?required="${args.required}"
       ?withCopy="${args.withCopy}"
+      ?allowClear="${args.allowClear}"
     ></nr-input>
   `,
 };
@@ -402,5 +408,88 @@ export const FormExample: Story = {
       <nr-input type="tel" label="Phone" placeholder="Enter your phone number"></nr-input>
       <nr-input type="url" label="Website" placeholder="Your website URL"></nr-input>
     </form>
+  `,
+};
+
+export const ClearFunctionality: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Input with clear functionality - shows a clear icon when there\'s content that allows users to quickly clear the input value.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 2rem; padding: 1rem;">
+      <div>
+        <h3>Clear Examples</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            type="text" 
+            label="Basic Clear Input" 
+            placeholder="Type something to see clear icon"
+            value="Sample text"
+            allowClear
+          ></nr-input>
+          
+          <nr-input 
+            type="email" 
+            label="Email with Clear" 
+            placeholder="Enter your email"
+            value="user@example.com"
+            allowClear
+          ></nr-input>
+          
+          <nr-input 
+            type="url" 
+            label="URL with Clear" 
+            placeholder="Enter website URL"
+            value="https://example.com"
+            allowClear
+          ></nr-input>
+          
+          <nr-input 
+            type="search" 
+            label="Search with Clear" 
+            placeholder="Search products..."
+            value="laptop"
+            allowClear
+          ></nr-input>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Clear + Copy Combination</h3>
+        <nr-input 
+          type="text" 
+          label="Both Clear and Copy" 
+          placeholder="Type something..."
+          value="This text can be cleared or copied"
+          allowClear
+          withCopy
+        ></nr-input>
+      </div>
+      
+      <div>
+        <h3>Disabled/Readonly States</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            type="text" 
+            label="Disabled with Clear (no icon shown)" 
+            value="Can't clear when disabled"
+            allowClear
+            disabled
+          ></nr-input>
+          
+          <nr-input 
+            type="text" 
+            label="Readonly with Clear (no icon shown)" 
+            value="Can't clear when readonly"
+            allowClear
+            readonly
+          ></nr-input>
+        </div>
+      </div>
+    </div>
   `,
 };

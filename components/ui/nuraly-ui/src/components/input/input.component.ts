@@ -53,6 +53,9 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Boolean, reflect: true})
   withCopy = false;
 
+  @property({type: Boolean, reflect: true})
+  allowClear = false;
+
   @state()
   inputType = EMPTY_STRING;
 
@@ -252,6 +255,8 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
       
       if (target.id === 'copy-icon') {
         this._onCopy();
+      } else if (target.id === 'clear-icon') {
+        this._onClear();
       } else if (target.id === 'password-icon') {
         this._togglePasswordIcon();
       } else if (target.closest('#number-icons')) {
@@ -274,6 +279,32 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     } catch (error) {
       this._dispatchInputEvent('nr-copy-error', { error });
     }
+  }
+
+  private _onClear() {
+    if (this.disabled || this.readonly) {
+      return;
+    }
+
+    const previousValue = this.value;
+    this.value = EMPTY_STRING;
+    
+    // Update the input element value
+    if (this.input) {
+      this.input.value = EMPTY_STRING;
+    }
+
+    this._dispatchInputEvent('nr-clear', {
+      previousValue,
+      target: this.input
+    });
+
+    // Also dispatch input event for consistency
+    this._dispatchInputEvent('nr-input', {
+      value: this.value,
+      target: this.input,
+      action: 'clear'
+    });
   }
 
   // ========================================
@@ -368,6 +399,14 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
             this.disabled,
             this.readonly,
             () => this._onCopy(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
+          ${InputRenderUtils.renderClearIcon(
+            this.allowClear,
+            this.value,
+            this.disabled,
+            this.readonly,
+            () => this._onClear(),
             (e: KeyboardEvent) => this._handleIconKeydown(e)
           )}
           ${InputRenderUtils.renderStateIcon(this.state)}

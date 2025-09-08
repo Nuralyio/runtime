@@ -116,6 +116,13 @@ const inputStyle = css`
     cursor: pointer;
   }
 
+  /* Clear functionality icon */
+  #clear-icon {
+    padding-right: var(--hybrid-input-clear-icon-padding-right, var(--hybrid-input-local-clear-icon-padding-right));
+    --hybrid-icon-color: var(--hybrid-input-clear-icon-color, var(--hybrid-input-local-clear-icon-color));
+    cursor: pointer;
+  }
+
   /* 
    * Number input increment/decrement icons container
    * Positioned absolutely for overlay on input
@@ -159,14 +166,16 @@ const inputStyle = css`
   :host([disabled]) #warning-icon,
   :host([disabled]) #number-icons,
   :host([disabled]) #calendar-icon,
-  :host([disabled]) #copy-icon {
+  :host([disabled]) #copy-icon,
+  :host([disabled]) #clear-icon {
     opacity: var(--hybrid-input-disabled-icon-opacity, var(--hybrid-input-local-disabled-icon-opacity));
   }
 
   /* Disabled icons cursor override */
   :host([disabled]) #password-icon,
   :host([disabled]) #number-icons,
-  :host([disabled]) #copy-icon {
+  :host([disabled]) #copy-icon,
+  :host([disabled]) #clear-icon {
     cursor: not-allowed;
   }
 
