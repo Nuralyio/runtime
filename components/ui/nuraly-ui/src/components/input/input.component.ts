@@ -33,73 +33,78 @@ import { SelectionMixin, FocusMixin, NumberMixin } from './mixins/index.js';
  * @slot addon-before - Content before input
  * @slot addon-after - Content after input
  */
-const InputBaseMixin = NumberMixin(FocusMixin(SelectionMixin(NuralyUIBaseMixin(LitElement))));
 @customElement('nr-input')
-export class NrInputElement extends InputBaseMixin {
+export class NrInputElement extends NumberMixin(
+  FocusMixin(
+    SelectionMixin(
+      NuralyUIBaseMixin(LitElement)
+    ) 
+  )
+) {
   static override styles = styles;
 
   /** Disables the input */
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   disabled = false;
 
   /** Makes the input read-only */
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   readonly = false;
 
   /** Visual state (default, success, warning, error) */
-  @property({type: String, reflect: true})
+  @property({ type: String, reflect: true })
   state = INPUT_STATE.Default;
 
   /** Current input value */
-  @property({type: String})
+  @property({ type: String })
   value = EMPTY_STRING;
 
   /** Input size (small, medium, large) */
-  @property({type: String})
+  @property({ type: String })
   size = INPUT_SIZE.Medium;
 
   /** Visual variant (outlined, underlined, filled) */
-  @property({type: String, reflect: true})
+  @property({ type: String, reflect: true })
   variant = INPUT_VARIANT.Underlined;
 
   /** Input type (text, password, number, email, etc.) */
-  @property({reflect: true})
+  @property({ reflect: true })
   type = INPUT_TYPE.TEXT;
 
   /** Step value for number inputs */
-  @property({type: String})
+  @property({ type: String })
   step?: string;
 
   /** Minimum value for number inputs */
-  @property({type: String})
+  @property({ type: String })
   min?: string;
 
   /** Maximum value for number inputs */
-  @property({type: String})
+  @property({ type: String })
   max?: string;
 
   /** Placeholder text */
-  @property({type: String})
+  @property({ type: String })
   placeholder = EMPTY_STRING;
 
   /** HTML autocomplete attribute */
-  @property({type: String})
+  @property({ type: String })
   autocomplete = 'off';
 
   /** Shows copy button */
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   withCopy = false;
 
   /** Shows clear button */
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   allowClear = false;
 
   /** Shows character counter */
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   showCount = false;
 
   /** Maximum character limit */
-  @property({type: Number})
+  @property({ type: Number })
   maxLength?: number;
 
 
@@ -161,10 +166,10 @@ export class NrInputElement extends InputBaseMixin {
       }
     }
 
-    if (_changedProperties.has('type') || 
-        _changedProperties.has('min') || 
-        _changedProperties.has('max') || 
-        _changedProperties.has('step')) {
+    if (_changedProperties.has('type') ||
+      _changedProperties.has('min') ||
+      _changedProperties.has('max') ||
+      _changedProperties.has('step')) {
       InputValidationUtils.validateNumericProperties(this.type, this.min, this.max, this.step);
     }
   }
@@ -174,10 +179,10 @@ export class NrInputElement extends InputBaseMixin {
       const input = this.input;
       if (input) {
         this.setStep(this.step);
-        
+
         if (this.min) input.setAttribute('min', this.min);
         else input.removeAttribute('min');
-        
+
         if (this.max) input.setAttribute('max', this.max);
         else input.removeAttribute('max');
 
@@ -203,7 +208,7 @@ export class NrInputElement extends InputBaseMixin {
   private _handleSlotChange(e: Event): void {
     const slot = e.target as HTMLSlotElement;
     const slotName = slot.name;
-    
+
     if (slotName === 'addon-before') {
       this.hasAddonBefore = slot.assignedElements().length > 0;
     } else if (slotName === 'addon-after') {
@@ -229,7 +234,7 @@ export class NrInputElement extends InputBaseMixin {
 
     if (this.type === INPUT_TYPE.NUMBER) {
       InputValidationUtils.preventNonNumericInput(keyDownEvent, this.min);
-      
+
       if (keyDownEvent.defaultPrevented) {
         this.dispatchCustomEvent('nr-invalid-key', {
           key: keyDownEvent.key,
@@ -249,7 +254,7 @@ export class NrInputElement extends InputBaseMixin {
 
     const target = e.target as HTMLInputElement;
     const newValue = target.value;
-    
+
     if (this.maxLength && newValue.length > this.maxLength) {
       this.dispatchCustomEvent('nr-character-limit-exceeded', {
         value: newValue,
@@ -258,10 +263,10 @@ export class NrInputElement extends InputBaseMixin {
         originalEvent: e
       });
     }
-    
+
     if (this.type === INPUT_TYPE.NUMBER && newValue) {
       const validation = InputValidationUtils.validateNumericValue(newValue, this.min, this.max);
-      
+
       if (!validation.isValid) {
         console.warn(`[nr-input] ${validation.warnings[0]}`);
         this.dispatchValidationEvent('nr-validation-error', {
@@ -273,57 +278,57 @@ export class NrInputElement extends InputBaseMixin {
         });
         return;
       }
-      
+
       validation.warnings.forEach(warning => console.warn(`[nr-input] ${warning}`));
     }
     this.value = newValue;
     this.dispatchInputEvent('nr-input', {
-      value: this.value, 
+      value: this.value,
       target: target,
-      originalEvent: e 
+      originalEvent: e
     });
   }
 
   private _focusEvent(e: Event): void {
     this.focused = true;
-    
+
     const input = e.target as HTMLInputElement;
     if (input.dataset.restoreCursor) {
       const position = parseInt(input.dataset.restoreCursor, 10);
       this.setCursorPosition(position);
       delete input.dataset.restoreCursor;
     }
-    
+
     const focusDetail: FocusChangeEvent = {
       focused: true,
       cursorPosition: this.getCursorPosition() ?? undefined,
       selectedText: this.getSelectedText()
     };
-    
+
     this.dispatchFocusEvent('nr-focus', {
       target: e.target,
       value: this.value,
       ...focusDetail
     });
-    
+
     this.dispatchFocusEvent('nr-focus-change', focusDetail);
   }
 
   private _blurEvent(e: Event): void {
     this.focused = false;
-    
+
     const focusDetail: FocusChangeEvent = {
       focused: false,
       cursorPosition: this.getCursorPosition() ?? undefined,
       selectedText: this.getSelectedText()
     };
-    
+
     this.dispatchFocusEvent('nr-blur', {
       target: e.target,
       value: this.value,
       ...focusDetail
     });
-    
+
     this.dispatchFocusEvent('nr-focus-change', focusDetail);
   }
 
@@ -331,7 +336,7 @@ export class NrInputElement extends InputBaseMixin {
     if (this.isActivationKey(keyDownEvent)) {
       keyDownEvent.preventDefault();
       const target = keyDownEvent.target as HTMLElement;
-      
+
       if (target.id === 'copy-icon') {
         this._onCopy();
       } else if (target.id === 'clear-icon') {
@@ -353,8 +358,8 @@ export class NrInputElement extends InputBaseMixin {
       const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
       input.select();
       await navigator.clipboard.writeText(input.value);
-      
-      this.dispatchActionEvent('nr-copy-success', { 
+
+      this.dispatchActionEvent('nr-copy-success', {
         value: input.value,
         action: 'copy'
       });
@@ -371,7 +376,7 @@ export class NrInputElement extends InputBaseMixin {
 
     const previousValue = this.value;
     this.value = EMPTY_STRING;
-    
+
     if (this.input) {
       this.input.value = EMPTY_STRING;
     }
@@ -408,12 +413,12 @@ export class NrInputElement extends InputBaseMixin {
 
   private _getAriaDescribedBy(): string {
     const describedBy: string[] = [];
-    
+
     const helperSlot = this.shadowRoot?.querySelector('slot[name="helper-text"]');
     if (helperSlot && (helperSlot as HTMLSlotElement).assignedNodes().length > 0) {
       describedBy.push('helper-text');
     }
-    
+
     return describedBy.join(' ') || '';
   }
 
@@ -446,39 +451,39 @@ export class NrInputElement extends InputBaseMixin {
           />
           ${InputRenderUtils.renderSuffix()}
           ${InputRenderUtils.renderCopyIcon(
-            this.withCopy,
-            this.disabled,
-            this.readonly,
-            () => this._onCopy(),
-            (e: KeyboardEvent) => this._handleIconKeydown(e)
-          )}
+      this.withCopy,
+      this.disabled,
+      this.readonly,
+      () => this._onCopy(),
+      (e: KeyboardEvent) => this._handleIconKeydown(e)
+    )}
           ${InputRenderUtils.renderClearIcon(
-            this.allowClear,
-            this.value,
-            this.disabled,
-            this.readonly,
-            () => this._onClear(),
-            (e: KeyboardEvent) => this._handleIconKeydown(e)
-          )}
+      this.allowClear,
+      this.value,
+      this.disabled,
+      this.readonly,
+      () => this._onClear(),
+      (e: KeyboardEvent) => this._handleIconKeydown(e)
+    )}
           ${InputRenderUtils.renderStateIcon(this.state)}
           ${InputRenderUtils.renderCalendarIcon(this.state, this.type)}
           ${InputRenderUtils.renderPasswordIcon(
-            this.type,
-            this.inputType,
-            this.disabled,
-            this.readonly,
-            () => this._togglePasswordIcon(),
-            (e: KeyboardEvent) => this._handleIconKeydown(e)
-          )}
+      this.type,
+      this.inputType,
+      this.disabled,
+      this.readonly,
+      () => this._togglePasswordIcon(),
+      (e: KeyboardEvent) => this._handleIconKeydown(e)
+    )}
           ${InputRenderUtils.renderNumberIcons(
-            this.type,
-            this.state,
-            this.disabled,
-            this.readonly,
-            () => this._increment(),
-            () => this._decrement(),
-            (e: KeyboardEvent) => this._handleIconKeydown(e)
-          )}
+      this.type,
+      this.state,
+      this.disabled,
+      this.readonly,
+      () => this._increment(),
+      () => this._decrement(),
+      (e: KeyboardEvent) => this._handleIconKeydown(e)
+    )}
         </div>
         ${InputRenderUtils.renderAddonAfter(this.hasAddonAfter, (e: Event) => this._handleSlotChange(e))}
       </div>
