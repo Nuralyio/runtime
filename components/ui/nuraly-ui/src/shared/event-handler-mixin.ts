@@ -20,9 +20,9 @@ export interface EventHandlerCapable {
   dispatchCustomEvent(eventName: string, detail: any): void;
   
   /**
-   * Dispatch enhanced events with metadata
+   * Dispatch events with metadata
    */
-  dispatchEnhancedEvent(eventName: string, detail: any): void;
+  dispatchEventWithMetadata(eventName: string, detail: any): void;
   
   /**
    * Dispatch input-related events
@@ -87,17 +87,17 @@ export const EventHandlerMixin = <T extends Constructor<LitElement>>(superClass:
     }
 
     /**
-     * Enhanced event dispatcher with additional metadata
+     * Event dispatcher with additional metadata
      * Adds common properties like timestamp and component info
      */
-    dispatchEnhancedEvent(eventName: string, detail: any): void {
-      const enhancedDetail = {
+    dispatchEventWithMetadata(eventName: string, detail: any): void {
+      const eventDetail = {
         ...detail,
         timestamp: Date.now(),
         componentName: this.tagName?.toLowerCase() || 'unknown'
       };
       
-      this.dispatchCustomEvent(eventName, enhancedDetail);
+      this.dispatchCustomEvent(eventName, eventDetail);
     }
 
     /**
