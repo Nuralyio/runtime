@@ -9,48 +9,74 @@ import { customElement, property } from 'lit/decorators.js';
 import { ButtonType, ButtonShape, EMPTY_STRING, IconPosition } from './button.types.js';
 import { styles } from './button.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { RippleMixin, KeyboardMixin, LinkMixin } from './mixins/index.js';
 
+/**
+ * - NuralyUIBaseMixin: Core functionality (theme, dependencies, events)
+ * - RippleMixin: Ripple effect handling
+ * - KeyboardMixin: Keyboard interaction (Enter/Space activation)
+ * - LinkMixin: Link-specific behavior for ButtonType.Link
+ */
 @customElement('nr-button')
-export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
-  @property({type: Boolean})
-  disabled = false;
+export class NrButtonElement extends RippleMixin(
+  KeyboardMixin(
+    LinkMixin(
+      NuralyUIBaseMixin(LitElement)
+    )
+  )
+) {
+  // Button state properties
+  @property({ type: Boolean })
+  override disabled = false;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   loading = false;
 
-  @property({type: String})
+  @property({ type: String })
   size = EMPTY_STRING;
 
-  @property({type: String})
-  type: ButtonType = ButtonType.Default;
+  @property({ type: String })
+  override type: ButtonType = ButtonType.Default;
 
-  @property({type: String})
+  @property({ type: String })
   shape: ButtonShape = ButtonShape.Default;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   block = false;
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   dashed = false;
 
-  @property({type: Array})
+  // Icon properties
+  @property({ type: Array })
   icon: string[] = [];
 
-  @property({reflect: true})
+  @property({ reflect: true })
   iconPosition = IconPosition.Left;
 
-  @property({type: String})
-  href = EMPTY_STRING;
+  // Link properties (inherited from LinkMixin)
+  @property({ type: String })
+  override href = EMPTY_STRING;
 
-  @property({type: String})
-  target = EMPTY_STRING;
+  @property({ type: String })
+  override target = EMPTY_STRING;
 
-  @property({type: Boolean})
-  ripple = true;
+  // Ripple property (inherited from RippleMixin)
+  @property({ type: Boolean })
+  override ripple = true;
+
+  // Accessibility properties
+  @property({ type: String })
+  buttonAriaLabel = EMPTY_STRING;
+
+  @property({ type: String })
+  ariaDescribedBy = EMPTY_STRING;
+
+  @property({ type: String })
+  htmlType = EMPTY_STRING;
 
   /**
    * Required components that must be registered for this component to work properly
-   * Can be overridden by parent implementations
    */
   override requiredComponents = ['hy-icon'];
 
@@ -63,58 +89,23 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Get the appropriate element tag based on button type
+   * Get common attributes for both button and anchor elements
    */
-  private getElementTag() {
-    return this.type === ButtonType.Link && this.href ? 'a' : 'button';
-  }
-
-  /**
-   * Get attributes for accessibility and functionality
-   */
-  private getElementAttributes() {
-    const attributes: any = {
-      '?disabled': this.disabled && this.type !== ButtonType.Link,
+  private getCommonAttributes() {
+    return {
       'data-type': this.type,
       'data-shape': this.shape,
-      'data-size': this.size ? this.size : nothing,
+      'data-size': this.size || nothing,
       'data-state': this.loading ? 'loading' : nothing,
       'data-theme': this.currentTheme,
       'data-block': this.block ? 'true' : nothing,
       'class': this.dashed ? 'button-dashed' : '',
-      'role': this.type === ButtonType.Link ? 'link' : 'button',
       'aria-disabled': this.disabled ? 'true' : 'false',
       'aria-label': this.buttonAriaLabel || nothing,
       'aria-describedby': this.ariaDescribedBy || nothing,
+      'tabindex': this.disabled ? '-1' : '0'
     };
-
-    // Add link-specific attributes
-    if (this.type === ButtonType.Link && this.href) {
-      attributes.href = this.href;
-      if (this.target) {
-        attributes.target = this.target;
-      }
-      if (this.target === '_blank') {
-        attributes.rel = 'noopener noreferrer';
-      }
-    }
-
-    // Add button-specific attributes
-    if (this.type !== ButtonType.Link) {
-      attributes.type = this.htmlType || 'button';
-    }
-
-    return attributes;
   }
-
-  @property({type: String})
-  buttonAriaLabel = EMPTY_STRING;
-
-  @property({type: String})
-  ariaDescribedBy = EMPTY_STRING;
-
-  @property({type: String})
-  htmlType = EMPTY_STRING;
 
   /**
    * Renders an icon if the hy-icon component is available
@@ -133,97 +124,95 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Creates ripple effect on button click
-   * @param event - The click event
-   */
-  private createRipple(event: MouseEvent) {
-    if (!this.ripple || this.disabled) return;
-
-    const button = event.currentTarget as HTMLElement;
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
-
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple';
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-
-    // Remove any existing ripples
-    const existingRipples = button.querySelectorAll('.ripple');
-    existingRipples.forEach(r => r.remove());
-
-    button.appendChild(ripple);
-
-    // Remove ripple after animation
-    setTimeout(() => {
-      ripple.remove();
-    }, 600);
-  }
-
-  /**
-   * Handle click events with ripple effect
-   * @param event - The click event
+   * Handle comprehensive click events with proper event dispatching
    */
   private handleClick(event: MouseEvent) {
-    this.createRipple(event);
+    if (this.disabled) {
+      event.preventDefault();
+      return;
+    }
+
+    // Use RippleMixin method
+    this.handleRippleClick(event);
+    
+    // Handle link navigation if it's a link type
+    if (this.isLinkType()) {
+      this.dispatchCustomEvent('link-navigation', {
+        href: this.href,
+        target: this.target,
+        timestamp: Date.now(),
+        originalEvent: event
+      });
+    }
+    
+    // Dispatch button event with metadata using EventHandlerMixin
+    this.dispatchEventWithMetadata('button-clicked', {
+      type: this.type,
+      disabled: this.disabled,
+      loading: this.loading,
+      href: this.href || null
+    });
   }
 
   override render() {
-    const elementTag = this.getElementTag();
-    const attributes = this.getElementAttributes();
+    const elementTag = this.getElementTag(); // From LinkMixin
+    const commonAttributes = this.getCommonAttributes();
+    const linkAttributes = this.getLinkAttributes(); // From LinkMixin
+    
+    const content = html`
+      <span id="container">
+        ${this.icon?.length ? this.renderIcon(this.icon[0]) : nothing}
+        <slot id="slot"></slot>
+        ${this.icon?.length === 2 ? this.renderIcon(this.icon[1]) : nothing}
+      </span>
+    `;
     
     if (elementTag === 'a') {
       return html`
         <a
-          href="${attributes.href}"
-          target="${attributes.target || nothing}"
-          rel="${attributes.rel || nothing}"
-          data-type="${attributes['data-type']}"
-          data-shape="${attributes['data-shape']}"
-          data-size="${attributes['data-size']}"
-          data-state="${attributes['data-state']}"
-          data-theme="${attributes['data-theme']}"
-          data-block="${attributes['data-block']}"
-          class="${attributes.class}"
-          role="${attributes.role}"
-          aria-disabled="${attributes['aria-disabled']}"
-          aria-label="${attributes['aria-label']}"
-          aria-describedby="${attributes['aria-describedby']}"
+          href="${linkAttributes.href}"
+          target="${linkAttributes.target || nothing}"
+          rel="${linkAttributes.rel || nothing}"
+          role="${linkAttributes.role}"
+          data-type="${commonAttributes['data-type']}"
+          data-shape="${commonAttributes['data-shape']}"
+          data-size="${commonAttributes['data-size']}"
+          data-state="${commonAttributes['data-state']}"
+          data-theme="${commonAttributes['data-theme']}"
+          data-block="${commonAttributes['data-block']}"
+          class="${commonAttributes.class}"
+          aria-disabled="${this.disabled}"
+          aria-label="${this.buttonAriaLabel || nothing}"
+          aria-describedby="${this.ariaDescribedBy || nothing}"
+          tabindex="${this.disabled ? -1 : 0}"
+          @click="${this.handleClick}"
+          @keydown="${this.handleKeydown}"
         >
-          <span id="container">
-            ${this.icon?.length ? this.renderIcon(this.icon[0]) : nothing}
-            <slot id="slot"></slot>
-            ${this.icon?.length == 2 ? this.renderIcon(this.icon[1]) : nothing}
-          </span>
+          ${content}
         </a>
       `;
     }
     
     return html`
       <button
-        ?disabled="${attributes['?disabled']}"
-        type="${attributes.type || nothing}"
-        data-type="${attributes['data-type']}"
-        data-shape="${attributes['data-shape']}"
-        data-size="${attributes['data-size']}"
-        data-state="${attributes['data-state']}"
-        data-theme="${attributes['data-theme']}"
-        data-block="${attributes['data-block']}"
-        class="${attributes.class}"
-        role="${attributes.role}"
-        aria-disabled="${attributes['aria-disabled']}"
-        aria-label="${attributes['aria-label']}"
-        aria-describedby="${attributes['aria-describedby']}"
+        ?disabled="${this.disabled}"
+        type="${(this.htmlType || 'button') as 'button' | 'submit' | 'reset'}"
+        role="${linkAttributes.role}"
+        data-type="${commonAttributes['data-type']}"
+        data-shape="${commonAttributes['data-shape']}"
+        data-size="${commonAttributes['data-size']}" 
+        data-state="${commonAttributes['data-state']}"
+        data-theme="${commonAttributes['data-theme']}"
+        data-block="${commonAttributes['data-block']}"
+        class="${commonAttributes.class}"
+        aria-disabled="${this.disabled}"
+        aria-label="${this.buttonAriaLabel || nothing}"
+        aria-describedby="${this.ariaDescribedBy || nothing}"
+        tabindex="${this.disabled ? -1 : 0}"
         @click="${this.handleClick}"
+        @keydown="${this.handleKeydown}"
       >
-        <span id="container">
-          ${this.icon?.length ? this.renderIcon(this.icon[0]) : nothing}
-          <slot id="slot"></slot>
-          ${this.icon?.length == 2 ? this.renderIcon(this.icon[1]) : nothing}
-        </span>
+        ${content}
       </button>
     `;
   }
