@@ -18,7 +18,7 @@ import { renderDays } from './templates/days.template.js';
 import { oneToTwoDigit } from './core/formatter.js';
 import { capitalizeFirstLetter } from './core/string.helper.js';
 import './core/locale.helper.js';
-import { INPUT_SIZE, INPUT_STATE } from '../input/input.constant.js';
+import { INPUT_SIZE, INPUT_STATE } from '../input/input.types.js';
 import { EMPTY_STRING } from './constants.js';
 @customElement('hy-datepicker')
 export class HyDatePickerElement extends LitElement {
