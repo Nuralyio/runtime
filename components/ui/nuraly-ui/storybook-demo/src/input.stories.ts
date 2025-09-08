@@ -45,6 +45,15 @@ const meta: Meta = {
       options: ['small', 'medium', 'large'],
       description: 'Input size',
     },
+    state: {
+      control: { type: 'select' },
+      options: ['default', 'error', 'warning'],
+      description: 'Input state',
+    },
+    withCopy: {
+      control: { type: 'boolean' },
+      description: 'Show copy button',
+    },
   },
   args: {
     type: 'text',
@@ -55,6 +64,8 @@ const meta: Meta = {
     readonly: false,
     required: false,
     size: 'medium',
+    state: 'default',
+    withCopy: false,
   },
 };
 
@@ -73,9 +84,11 @@ export const Default: Story = {
       label="${args.label}"
       value="${args.value}"
       size="${args.size}"
+      state="${args.state}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
     ></nr-input>
   `,
 };
@@ -93,9 +106,11 @@ export const WithValue: Story = {
       label="${args.label}"
       value="${args.value}"
       size="${args.size}"
+      state="${args.state}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
     ></nr-input>
   `,
 };
@@ -113,9 +128,11 @@ export const Password: Story = {
       label="${args.label}"
       value="${args.value}"
       size="${args.size}"
+      state="${args.state}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
     ></nr-input>
   `,
 };
@@ -134,9 +151,11 @@ export const Email: Story = {
       label="${args.label}"
       value="${args.value}"
       size="${args.size}"
+      state="${args.state}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
     ></nr-input>
   `,
 };
@@ -154,9 +173,11 @@ export const Number: Story = {
       label="${args.label}"
       value="${args.value}"
       size="${args.size}"
+      state="${args.state}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
     ></nr-input>
   `,
 };
@@ -174,9 +195,11 @@ export const Search: Story = {
       label="${args.label}"
       value="${args.value}"
       size="${args.size}"
+      state="${args.state}"
       ?disabled="${args.disabled}"
       ?readonly="${args.readonly}"
       ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
     ></nr-input>
   `,
 };
@@ -199,6 +222,103 @@ export const States: Story = {
       <nr-input label="Readonly" value="Readonly value" readonly></nr-input>
       <nr-input label="Required" placeholder="Required input" required></nr-input>
     </div>
+  `,
+};
+
+export const ErrorState: Story = {
+  args: {
+    state: 'error',
+    label: 'Error Input',
+    placeholder: 'This input has an error',
+    value: 'Invalid value',
+  },
+  render: (args) => html`
+    <nr-input
+      type="${args.type}"
+      placeholder="${args.placeholder}"
+      label="${args.label}"
+      value="${args.value}"
+      size="${args.size}"
+      state="${args.state}"
+      ?disabled="${args.disabled}"
+      ?readonly="${args.readonly}"
+      ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
+    ></nr-input>
+  `,
+};
+
+export const WarningState: Story = {
+  args: {
+    state: 'warning',
+    label: 'Warning Input',
+    placeholder: 'This input has a warning',
+    value: 'Check this value',
+  },
+  render: (args) => html`
+    <nr-input
+      type="${args.type}"
+      placeholder="${args.placeholder}"
+      label="${args.label}"
+      value="${args.value}"
+      size="${args.size}"
+      state="${args.state}"
+      ?disabled="${args.disabled}"
+      ?readonly="${args.readonly}"
+      ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
+    ></nr-input>
+  `,
+};
+
+export const WithCopyButton: Story = {
+  args: {
+    label: 'Input with Copy',
+    value: 'This text can be copied',
+    withCopy: true,
+  },
+  render: (args) => html`
+    <nr-input
+      type="${args.type}"
+      placeholder="${args.placeholder}"
+      label="${args.label}"
+      value="${args.value}"
+      size="${args.size}"
+      state="${args.state}"
+      ?disabled="${args.disabled}"
+      ?readonly="${args.readonly}"
+      ?required="${args.required}"
+      ?withCopy="${args.withCopy}"
+    ></nr-input>
+  `,
+};
+
+export const AllStates: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
+      <h3>Input States</h3>
+      <nr-input state="default" label="Default State" placeholder="Default input" value="Normal text"></nr-input>
+      <nr-input state="error" label="Error State" placeholder="Error input" value="Invalid email format"></nr-input>
+      <nr-input state="warning" label="Warning State" placeholder="Warning input" value="Password might be weak"></nr-input>
+      
+      <h3>Combined States</h3>
+      <nr-input state="error" label="Error + Required" placeholder="Required field" required></nr-input>
+      <nr-input state="warning" label="Warning + Disabled" placeholder="Disabled field" disabled></nr-input>
+      <nr-input state="default" label="Default + Copy" value="Text to copy" withCopy></nr-input>
+    </div>
+  `,
+};
+
+export const FormWithValidation: Story = {
+  render: () => html`
+    <form style="display: flex; flex-direction: column; gap: 1rem; width: 500px; padding: 1rem; border: 1px solid #ccc; border-radius: 8px;">
+      <h3>Form with Validation States</h3>
+      <nr-input type="text" label="Full Name" placeholder="Enter your full name" required state="default"></nr-input>
+      <nr-input type="email" label="Email" placeholder="Enter your email" value="invalid-email" state="error" required></nr-input>
+      <nr-input type="password" label="Password" placeholder="Create a password" value="123" state="warning" required></nr-input>
+      <nr-input type="tel" label="Phone" placeholder="Enter your phone number" value="+1 (555) 123-4567" state="default" withCopy></nr-input>
+      <nr-input type="number" label="Age" placeholder="Your age" min="18" max="120" state="default"></nr-input>
+    </form>
   `,
 };
 
