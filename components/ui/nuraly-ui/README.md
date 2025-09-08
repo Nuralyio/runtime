@@ -4,7 +4,14 @@
 
 <h1 align="center">Nuraly UI</h1>
 
-<div align="center">
+<div align="c## 🔗 Links & Resources
+
+- **[Live Demo](http://localhost:8000)** - Interactive component playground
+- **[Storybook Demo](http://localhost:6006)** - Comprehensive component documentation and playground
+- **[Documentation](https://hybridui.github.io/docs/docs/components/buttons)** - Comprehensive API docs
+- **[GitHub Repository](https://github.com/NuralyUI/NuralyUI)** - Source code and issues
+- **[NPM Organization](https://www.npmjs.com/org/nuralyui)** - Published packages
+- **[Contributing Guide](#-contributing)** - How to contribute to the project
 
 A comprehensive collection of enterprise-class web components built with Lit and TypeScript. Create beautiful, responsive user interfaces that work seamlessly with any web framework or as standalone components.
 
