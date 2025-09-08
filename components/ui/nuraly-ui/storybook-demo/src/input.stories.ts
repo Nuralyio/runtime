@@ -58,6 +58,14 @@ const meta: Meta = {
       control: { type: 'boolean' },
       description: 'Show clear button when input has content',
     },
+    showCount: {
+      control: { type: 'boolean' },
+      description: 'Show character count',
+    },
+    maxLength: {
+      control: { type: 'number' },
+      description: 'Maximum character length',
+    },
   },
   args: {
     type: 'text',
@@ -71,6 +79,8 @@ const meta: Meta = {
     state: 'default',
     withCopy: false,
     allowClear: false,
+    showCount: false,
+    maxLength: undefined,
   },
 };
 
@@ -488,6 +498,119 @@ export const ClearFunctionality: Story = {
             allowClear
             readonly
           ></nr-input>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
+export const CharacterCount: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Input with character count functionality - shows character count and enforces character limits with visual feedback.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 2rem; padding: 1rem;">
+      <div>
+        <h3>Character Count Examples</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            type="text" 
+            label="Basic Character Count" 
+            placeholder="Type to see character count"
+            value="Sample text"
+            showCount
+          ></nr-input>
+          
+          <nr-input 
+            type="text" 
+            label="With Character Limit (50)" 
+            placeholder="Maximum 50 characters"
+            value="This text has exactly fifty characters in total!"
+            showCount
+            maxLength="50"
+          ></nr-input>
+          
+          <nr-input 
+            type="text" 
+            label="Over Limit Example (20)" 
+            placeholder="Maximum 20 characters"
+            value="This text exceeds the limit"
+            showCount
+            maxLength="20"
+          ></nr-input>
+          
+          <nr-input 
+            type="textarea" 
+            label="Description with Limit (200)" 
+            placeholder="Enter your description..."
+            value="A longer description that shows how character counting works with longer text content. This helps users understand when they're approaching or exceeding the character limit."
+            showCount
+            maxLength="200"
+          ></nr-input>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Different Input Types with Count</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            type="email" 
+            label="Email (30 chars max)" 
+            placeholder="Enter email"
+            value="user@example.com"
+            showCount
+            maxLength="30"
+          ></nr-input>
+          
+          <nr-input 
+            type="url" 
+            label="Website URL (100 chars max)" 
+            placeholder="Enter website URL"
+            value="https://www.example-website.com"
+            showCount
+            maxLength="100"
+          ></nr-input>
+          
+          <nr-input 
+            type="search" 
+            label="Search Query (50 chars max)" 
+            placeholder="Search products..."
+            value="laptop computers"
+            showCount
+            maxLength="50"
+          ></nr-input>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Combined Features</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-input 
+            type="text" 
+            label="Count + Clear + Copy" 
+            placeholder="All features combined"
+            value="Text with multiple features"
+            showCount
+            maxLength="40"
+            allowClear
+            withCopy
+          ></nr-input>
+          
+          <nr-input 
+            type="text" 
+            label="Count + Prefix/Suffix" 
+            placeholder="Username"
+            value="johndoe"
+            showCount
+            maxLength="15"
+          >
+            <span slot="prefix">@</span>
+            <span slot="suffix">.com</span>
+          </nr-input>
         </div>
       </div>
     </div>

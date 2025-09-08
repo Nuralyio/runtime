@@ -86,6 +86,12 @@ export const styleVariables = css`
     --hybrid-input-local-addon-background-color: #e8e8e8;
     --hybrid-input-local-addon-color: #525252;
     --hybrid-input-local-addon-padding: 8px 12px;
+
+    /* Character count styling variables */
+    --hybrid-input-local-character-count-font-size: 12px;
+    --hybrid-input-local-character-count-color: #8c8c8c;
+    --hybrid-input-local-character-count-margin-top: 4px;
+    --hybrid-input-local-character-count-over-limit-color: #da1e28;
   }
 
   /* 
@@ -121,5 +127,9 @@ export const styleVariables = css`
     /* Dark theme addon colors */
     --hybrid-input-local-addon-background-color: #525252;
     --hybrid-input-local-addon-color: #c6c6c6;
+
+    /* Dark theme character count colors */
+    --hybrid-input-local-character-count-color: #8c8c8c;
+    --hybrid-input-local-character-count-over-limit-color: #fa4d56;
   }
 `;

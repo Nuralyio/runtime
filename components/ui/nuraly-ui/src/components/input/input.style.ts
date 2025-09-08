@@ -462,6 +462,23 @@ const sizeInputStyle = css`
     padding-left: var(--hybrid-input-small-padding-left, var(--hybrid-input-local-small-padding-left));
     padding-right: var(--hybrid-input-small-padding-right, var(--hybrid-input-local-small-padding-right));
   }
+
+  /* 
+   * Character count display
+   * Shows character count and limit information
+   */
+  .character-count {
+    font-size: var(--hybrid-input-character-count-font-size, var(--hybrid-input-local-character-count-font-size));
+    color: var(--hybrid-input-character-count-color, var(--hybrid-input-local-character-count-color));
+    text-align: right;
+    margin-top: var(--hybrid-input-character-count-margin-top, var(--hybrid-input-local-character-count-margin-top));
+    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
+  }
+
+  /* Character count over limit styling */
+  .character-count[data-over-limit] {
+    color: var(--hybrid-input-character-count-over-limit-color, var(--hybrid-input-local-character-count-over-limit-color));
+  }
 `;
 
 export const styles = [inputStyle, sizeInputStyle, styleVariables];

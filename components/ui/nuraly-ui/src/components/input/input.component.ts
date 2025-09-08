@@ -56,6 +56,12 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Boolean, reflect: true})
   allowClear = false;
 
+  @property({type: Boolean, reflect: true})
+  showCount = false;
+
+  @property({type: Number})
+  maxLength?: number;
+
   @state()
   inputType = EMPTY_STRING;
 
@@ -67,6 +73,24 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
 
   @query('#input')
   input!: HTMLInputElement;
+
+  /**
+   * Get the character count display text
+   */
+  get characterCountDisplay(): string {
+    const currentLength = this.value.length;
+    if (this.maxLength) {
+      return `${currentLength}/${this.maxLength}`;
+    }
+    return `${currentLength}`;
+  }
+
+  /**
+   * Check if character count is over the limit
+   */
+  get isOverCharacterLimit(): boolean {
+    return this.maxLength ? this.value.length > this.maxLength : false;
+  }
 
   /**
    * Required components that must be registered for this component to work properly
@@ -99,7 +123,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   override updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has('step') || _changedProperties.has('min') || _changedProperties.has('max')) {
+    if (_changedProperties.has('step') || _changedProperties.has('min') || _changedProperties.has('max') || _changedProperties.has('maxLength')) {
       const input = this.input;
       if (input) {
         if (this.step) input.setAttribute('step', this.step);
@@ -110,6 +134,9 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
         
         if (this.max) input.setAttribute('max', this.max);
         else input.removeAttribute('max');
+
+        if (this.maxLength) input.setAttribute('maxlength', this.maxLength.toString());
+        else input.removeAttribute('maxlength');
       }
     }
   }
@@ -215,6 +242,17 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
 
     const target = e.target as HTMLInputElement;
     const newValue = target.value;
+    
+    // Check character limit
+    if (this.maxLength && newValue.length > this.maxLength) {
+      this._dispatchInputEvent('nr-character-limit-exceeded', {
+        value: newValue,
+        target: target,
+        limit: this.maxLength,
+        originalEvent: e
+      });
+      // Note: HTML maxlength attribute usually prevents this, but we dispatch event for awareness
+    }
     
     if (this.type === INPUT_TYPE.NUMBER && newValue) {
       const validation = InputValidationUtils.validateNumericValue(newValue, this.min, this.max);
@@ -432,6 +470,11 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
         ${InputRenderUtils.renderAddonAfter(this.hasAddonAfter, (e: Event) => this._handleSlotChange(e))}
       </div>
       <slot name="helper-text"></slot>
+      ${this.showCount ? html`
+        <div class="character-count" ?data-over-limit=${this.isOverCharacterLimit}>
+          ${this.characterCountDisplay}
+        </div>
+      ` : ''}
     `;
   }
 
