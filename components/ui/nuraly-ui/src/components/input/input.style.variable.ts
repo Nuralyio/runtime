@@ -69,6 +69,15 @@ export const styleVariables = css`
     --hybrid-input-local-small-padding-bottom: 4px;
     --hybrid-input-local-small-padding-left: 9px;
     --hybrid-input-local-small-padding-right: 4px;
+
+    /* Prefix and Suffix styling variables */
+    --hybrid-input-local-prefix-color: #525252;
+    --hybrid-input-local-prefix-font-size: 13px;
+    --hybrid-input-local-prefix-padding-right: 8px;
+    --hybrid-input-local-suffix-color: #525252;
+    --hybrid-input-local-suffix-font-size: 13px;
+    --hybrid-input-local-suffix-padding-left: 8px;
+    --hybrid-input-local-disabled-prefix-suffix-color: #c6c6c6;
   }
 
   /* 
@@ -95,5 +104,10 @@ export const styleVariables = css`
     --hybrid-input-local-number-icons-separator-color: #525252;
     --hybrid-input-local-calendar-icon-color: #ffffff;
     --hybrid-input-local-copy-icon-color: #ffffff;
+    
+    /* Dark theme prefix and suffix colors */
+    --hybrid-input-local-prefix-color: #c6c6c6;
+    --hybrid-input-local-suffix-color: #c6c6c6;
+    --hybrid-input-local-disabled-prefix-suffix-color: #6f6f6f;
   }
 `;

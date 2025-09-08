@@ -308,6 +308,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     return html`
       <slot name="label"></slot>
       <div data-size=${this.size} id="input-container">
+        ${InputRenderUtils.renderPrefix()}
         <input
           id="input"
           .disabled=${this.disabled}
@@ -322,6 +323,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
           @focus=${this._focusEvent}
           @keydown=${this._handleKeyDown}
         />
+        ${InputRenderUtils.renderSuffix()}
         ${InputRenderUtils.renderCopyIcon(
           this.withCopy,
           this.disabled,

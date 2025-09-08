@@ -293,6 +293,40 @@ export const WithCopyButton: Story = {
   `,
 };
 
+export const WithPrefixSuffix: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
+      <h3>Prefix & Suffix Examples</h3>
+      
+      <nr-input label="Text Prefix" placeholder="Enter amount">
+        <span slot="prefix">$</span>
+      </nr-input>
+      
+      <nr-input label="Text Suffix" placeholder="Enter website">
+        <span slot="suffix">.com</span>
+      </nr-input>
+      
+      <nr-input label="Icon Prefix" placeholder="Enter username">
+        <hy-icon slot="prefix" name="user"></hy-icon>
+      </nr-input>
+      
+      <nr-input label="Icon Suffix" placeholder="Search...">
+        <hy-icon slot="suffix" name="search"></hy-icon>
+      </nr-input>
+      
+      <nr-input label="Both Prefix & Suffix" placeholder="Enter URL">
+        <span slot="prefix">https://</span>
+        <span slot="suffix">.com</span>
+      </nr-input>
+      
+      <nr-input label="Icon + Text" placeholder="Enter price">
+        <hy-icon slot="prefix" name="dollar-sign"></hy-icon>
+        <span slot="suffix">USD</span>
+      </nr-input>
+    </div>
+  `,
+};
+
 export const AllStates: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">

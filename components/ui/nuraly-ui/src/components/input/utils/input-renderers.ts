@@ -13,6 +13,28 @@ import { INPUT_TYPE, INPUT_STATE } from '../input.types.js';
 export class InputRenderUtils {
 
   /**
+   * Renders prefix slot content
+   */
+  static renderPrefix(): TemplateResult {
+    return html`
+      <div class="input-prefix">
+        <slot name="prefix"></slot>
+      </div>
+    `;
+  }
+
+  /**
+   * Renders suffix slot content  
+   */
+  static renderSuffix(): TemplateResult {
+    return html`
+      <div class="input-suffix">
+        <slot name="suffix"></slot>
+      </div>
+    `;
+  }
+
+  /**
    * Renders the copy icon when withCopy is enabled
    */
   static renderCopyIcon(

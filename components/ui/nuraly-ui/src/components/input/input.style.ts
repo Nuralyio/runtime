@@ -308,6 +308,42 @@ const inputStyle = css`
   :host([disabled]) ::slotted([slot='label']) {
     color: var(--hybrid-input-disabled-label-color, var(--hybrid-input-local-disabled-label-color));
   }
+
+  /* 
+   * Prefix slot styling
+   * Applied to slotted prefix content (icons, text, etc.)
+   */
+  ::slotted([slot='prefix']) {
+    display: flex;
+    align-items: center;
+    padding-right: var(--hybrid-input-prefix-padding-right, var(--hybrid-input-local-prefix-padding-right));
+    color: var(--hybrid-input-prefix-color, var(--hybrid-input-local-prefix-color));
+    font-size: var(--hybrid-input-prefix-font-size, var(--hybrid-input-local-prefix-font-size));
+    flex-shrink: 0;
+  }
+
+  /* 
+   * Suffix slot styling
+   * Applied to slotted suffix content (icons, text, etc.)
+   */
+  ::slotted([slot='suffix']) {
+    display: flex;
+    align-items: center;
+    padding-left: var(--hybrid-input-suffix-padding-left, var(--hybrid-input-local-suffix-padding-left));
+    color: var(--hybrid-input-suffix-color, var(--hybrid-input-local-suffix-color));
+    font-size: var(--hybrid-input-suffix-font-size, var(--hybrid-input-local-suffix-font-size));
+    flex-shrink: 0;
+  }
+
+  /* 
+   * Disabled state for prefix and suffix slots
+   * Applied when input is disabled
+   */
+  :host([disabled]) ::slotted([slot='prefix']),
+  :host([disabled]) ::slotted([slot='suffix']) {
+    opacity: var(--hybrid-input-disabled-icon-opacity, var(--hybrid-input-local-disabled-icon-opacity));
+    color: var(--hybrid-input-disabled-prefix-suffix-color, var(--hybrid-input-local-disabled-prefix-suffix-color));
+  }
 `;
 
 /**
