@@ -1,21 +1,25 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @license
- * Copyright 2023 Google Laabidi Aymen
+ * Copyright 2023 Nuraly, Laabidi Aymen
  * SPDX-License-Identifier: MIT
  */
 
 import { LitElement, PropertyValues, html } from 'lit';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './input.style.js';
-import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, INPUT_VARIANT, EMPTY_STRING, FocusOptions, BlurOptions, FocusChangeEvent } from './input.types.js';
+import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, INPUT_VARIANT, EMPTY_STRING, FocusChangeEvent } from './input.types.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
-import { InputValidationUtils } from './utils/input-validation.utils.js';
-import { InputRenderUtils } from './utils/input-renderers.js';
-import '../icon/icon.component.js';
+import { InputValidationUtils, InputRenderUtils } from './utils/index.js';
+import { SelectionMixin, FocusMixin, NumberMixin } from './mixins/index.js';
 
+const InputBaseMixin = NumberMixin(FocusMixin(SelectionMixin(NuralyUIBaseMixin(LitElement))));
 @customElement('nr-input')
-export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
+export class NrInputElement extends InputBaseMixin {
+  static override styles = styles;
+
+  // ========================================
+  // PROPERTIES
+  // ========================================
 
   @property({type: Boolean, reflect: true})
   disabled = false;
@@ -65,6 +69,10 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Number})
   maxLength?: number;
 
+  // ========================================
+  // STATE
+  // ========================================
+
   @state()
   inputType = EMPTY_STRING;
 
@@ -77,8 +85,14 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   @state()
   focused = false;
 
-  @query('#input')
-  input!: HTMLInputElement;
+  // Use manual query instead of @query decorator to avoid TypeScript mixin issues
+  private get _input(): HTMLInputElement {
+    return this.shadowRoot!.querySelector('#input') as HTMLInputElement;
+  }
+
+  // ========================================
+  // COMPUTED PROPERTIES
+  // ========================================
 
   /**
    * Get the character count display text
@@ -98,27 +112,55 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     return this.maxLength ? this.value.length > this.maxLength : false;
   }
 
+  // ========================================
+  // COMPUTED PROPERTIES
+  // ========================================
+
+  /**
+   * Get the input element
+   */
+  protected get input(): HTMLInputElement {
+    return this._input;
+  }
+
+  /**
+   * Override inputElement getter from mixins to use our @query property
+   */
+  protected get inputElement(): HTMLInputElement {
+    return this._input;
+  }
+
+  // ========================================
+  // LIFECYCLE METHODS
+  // ========================================
+
   /**
    * Required components that must be registered for this component to work properly
    */
-  override requiredComponents = ['hy-icon'];
+  override requiredComponents = ['nr-icon'];
 
   /**
    * Check for required dependencies when component is connected to DOM
    */
   override connectedCallback() {
     super.connectedCallback();
-    this.validateDependencies();
   }
 
   override willUpdate(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has('type')) {
+    super.willUpdate(_changedProperties);
+
+    // Initialize inputType when type changes or on first render
+    if (_changedProperties.has('type') || !this.inputType) {
       this.inputType = this.type;
-      if (this.inputType === INPUT_TYPE.NUMBER && this.min && !this.value) {
+    }
+
+    // Set default value for number inputs with min
+    if (_changedProperties.has('type') || _changedProperties.has('min')) {
+      if (this.type === INPUT_TYPE.NUMBER && this.min && !this.value) {
         this.value = this.min;
       }
     }
-    
+
     // Validate numeric properties when they change
     if (_changedProperties.has('type') || 
         _changedProperties.has('min') || 
@@ -132,8 +174,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     if (_changedProperties.has('step') || _changedProperties.has('min') || _changedProperties.has('max') || _changedProperties.has('maxLength')) {
       const input = this.input;
       if (input) {
-        if (this.step) input.setAttribute('step', this.step);
-        else input.removeAttribute('step');
+        this.setStep(this.step);
         
         if (this.min) input.setAttribute('min', this.min);
         else input.removeAttribute('min');
@@ -150,6 +191,10 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   override firstUpdated(): void {
     this._checkInitialSlotContent();
   }
+
+  // ========================================
+  // PRIVATE METHODS
+  // ========================================
 
   /**
    * Check initial slot content on first render
@@ -182,186 +227,24 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   // FOCUS MANAGEMENT METHODS
   // ========================================
 
-  /**
-   * Focus the input with advanced options
-   */
-  override focus(options?: FocusOptions): void {
-    if (!this.input) return;
-
-    const focusOptions: FocusOptions = { preventScroll: false, ...options };
-    
-    // Focus the input element
-    this.input.focus({ preventScroll: focusOptions.preventScroll });
-
-    // Handle cursor positioning
-    if (focusOptions.cursor !== undefined) {
-      this.setCursorPosition(focusOptions.cursor);
-    }
-
-    // Handle text selection
-    if (focusOptions.select) {
-      this.selectAll();
-    }
-  }
-
-  /**
-   * Blur the input with advanced options
-   */
-  override blur(options?: BlurOptions): void {
-    if (!this.input) return;
-
-    const currentPosition = this.getCursorPosition();
-    
-    this.input.blur();
-
-    // Restore cursor position if requested
-    if (options?.restoreCursor && currentPosition !== -1) {
-      // We'll restore it on next focus
-      this.input.dataset.restoreCursor = currentPosition.toString();
-    }
-  }
-
-  /**
-   * Select all text in the input
-   */
-  selectAll(): void {
-    if (!this.input) return;
-    
-    // Ensure the input is focused first
-    if (document.activeElement !== this.input) {
-      this.input.focus();
-    }
-    
-    // Wait for next frame to ensure focus is complete
-    requestAnimationFrame(() => {
-      if (!this.input) return;
-      this.input.select();
-    });
-  }
-
-  /**
-   * Select a range of text in the input
-   */
-  selectRange(start: number, end: number): void {
-    if (!this.input) return;
-    
-    // Ensure the input is focused first
-    if (document.activeElement !== this.input) {
-      this.input.focus();
-    }
-    
-    // Wait for next frame to ensure focus is complete
-    requestAnimationFrame(() => {
-      if (!this.input) return;
-      
-      const maxLength = this.input.value.length;
-      const validStart = Math.max(0, Math.min(start, maxLength));
-      const validEnd = Math.max(validStart, Math.min(end, maxLength));
-      
-      this.input.setSelectionRange(validStart, validEnd);
-    });
-  }
-
-  /**
-   * Get the current cursor position
-   */
-  getCursorPosition(): number {
-    if (!this.input) return -1;
-    return this.input.selectionStart || 0;
-  }
-
-  /**
-   * Set the cursor position
-   */
-  setCursorPosition(position: number | 'start' | 'end' | 'all'): void {
-    if (!this.input) return;
-    
-    // Ensure the input is focused first
-    if (document.activeElement !== this.input) {
-      this.input.focus();
-    }
-    
-    requestAnimationFrame(() => {
-      if (!this.input) return;
-
-      let pos: number;
-      const valueLength = this.value.length;
-
-      switch (position) {
-        case 'start':
-          pos = 0;
-          break;
-        case 'end':
-          pos = valueLength;
-          break;
-        case 'all':
-          this.selectAll();
-          return;
-        default:
-          pos = typeof position === 'number' ? Math.min(Math.max(0, position), valueLength) : 0;
-      }
-
-      this.input.setSelectionRange(pos, pos);
-    });
-  }
-
-  /**
-   * Get the currently selected text
-   */
-  getSelectedText(): string {
-    if (!this.input) return '';
-    const start = this.input.selectionStart || 0;
-    const end = this.input.selectionEnd || 0;
-    return this.value.substring(start, end);
-  }
-
-  /**
-   * Check if the input is currently focused
-   */
-  isFocused(): boolean {
-    return this.focused && document.activeElement === this.input;
-  }
+  // Focus methods are provided by InputMixin
 
   // ========================================
   // EVENT HANDLING METHODS
   // ========================================
 
-  /**
-   * Centralized event dispatcher to ensure consistent event structure
-   */
-  private _dispatchInputEvent(eventName: string, detail: any): void {
-    this.dispatchEvent(
-      new CustomEvent(eventName, {
-        detail,
-        bubbles: true
-      })
-    );
-  }
+  // Event handling methods moved to EventHandlerMixin
 
-  private _handleKeyDown(keyDownEvent: KeyboardEvent) {
-    // Prevent all key input when readonly
-    if (this.readonly) {
-      const allowedReadonlyKeys = [
-        'Tab', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
-        'Home', 'End', 'PageUp', 'PageDown'
-      ];
-      
-      if (keyDownEvent.ctrlKey || keyDownEvent.metaKey) {
-        const allowedCombinations = ['KeyA', 'KeyC'];
-        if (allowedCombinations.includes(keyDownEvent.code)) {
-          return;
-        }
-      }
-      
-      if (!allowedReadonlyKeys.includes(keyDownEvent.key)) {
-        keyDownEvent.preventDefault();
-        return;
-      }
+  private _handleKeyDown(keyDownEvent: KeyboardEvent): void {
+    // Prevent all key input when readonly - use mixin utility
+    if (this.readonly && !this.isReadonlyKeyAllowed(keyDownEvent)) {
+      keyDownEvent.preventDefault();
+      return;
     }
 
     // Handle Enter key
     if (keyDownEvent.key === 'Enter') {
-      this._dispatchInputEvent('nr-enter', {
+      this.dispatchCustomEvent('nr-enter', {
         target: keyDownEvent.target,
         value: this.value,
         originalEvent: keyDownEvent
@@ -374,7 +257,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
       InputValidationUtils.preventNonNumericInput(keyDownEvent, this.min);
       
       if (keyDownEvent.defaultPrevented) {
-        this._dispatchInputEvent('nr-invalid-key', {
+        this.dispatchCustomEvent('nr-invalid-key', {
           key: keyDownEvent.key,
           target: keyDownEvent.target,
           value: this.value,
@@ -384,7 +267,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
-  private _valueChange(e: Event) {
+  private _valueChange(e: Event): void {
     if (this.readonly) {
       e.preventDefault();
       return;
@@ -395,7 +278,7 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     
     // Check character limit
     if (this.maxLength && newValue.length > this.maxLength) {
-      this._dispatchInputEvent('nr-character-limit-exceeded', {
+      this.dispatchCustomEvent('nr-character-limit-exceeded', {
         value: newValue,
         target: target,
         limit: this.maxLength,
@@ -409,11 +292,12 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
       
       if (!validation.isValid) {
         console.warn(validation.warnings[0]);
-        this._dispatchInputEvent('nr-validation-error', {
+        this.dispatchValidationEvent('nr-validation-error', {
           value: newValue,
           target: target,
           error: validation.warnings[0],
-          originalEvent: e
+          originalEvent: e,
+          isValid: false
         });
         return;
       }
@@ -422,14 +306,14 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     }
     
     this.value = newValue;
-    this._dispatchInputEvent('nr-input', {
+    this.dispatchInputEvent('nr-input', {
       value: this.value, 
       target: target,
       originalEvent: e 
     });
   }
 
-  private _focusEvent(e: Event) {
+  private _focusEvent(e: Event): void {
     this.focused = true;
     
     // Handle cursor restoration if requested
@@ -442,39 +326,39 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     
     const focusDetail: FocusChangeEvent = {
       focused: true,
-      cursorPosition: this.getCursorPosition(),
+      cursorPosition: this.getCursorPosition() ?? undefined,
       selectedText: this.getSelectedText()
     };
     
-    this._dispatchInputEvent('nr-focus', {
+    this.dispatchFocusEvent('nr-focus', {
       target: e.target,
       value: this.value,
       ...focusDetail
     });
     
-    this._dispatchInputEvent('nr-focus-change', focusDetail);
+    this.dispatchFocusEvent('nr-focus-change', focusDetail);
   }
 
-  private _blurEvent(e: Event) {
+  private _blurEvent(e: Event): void {
     this.focused = false;
     
     const focusDetail: FocusChangeEvent = {
       focused: false,
-      cursorPosition: this.getCursorPosition(),
+      cursorPosition: this.getCursorPosition() ?? undefined,
       selectedText: this.getSelectedText()
     };
     
-    this._dispatchInputEvent('nr-blur', {
+    this.dispatchFocusEvent('nr-blur', {
       target: e.target,
       value: this.value,
       ...focusDetail
     });
     
-    this._dispatchInputEvent('nr-focus-change', focusDetail);
+    this.dispatchFocusEvent('nr-focus-change', focusDetail);
   }
 
-  private _handleIconKeydown(keyDownEvent: KeyboardEvent) {
-    if (keyDownEvent.key === 'Enter' || keyDownEvent.key === ' ') {
+  private _handleIconKeydown(keyDownEvent: KeyboardEvent): void {
+    if (this.isActivationKey(keyDownEvent)) {
       keyDownEvent.preventDefault();
       const target = keyDownEvent.target as HTMLElement;
       
@@ -494,19 +378,22 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
-  private async _onCopy() {
+  private async _onCopy(): Promise<void> {
     try {
       const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
       input.select();
       await navigator.clipboard.writeText(input.value);
       
-      this._dispatchInputEvent('nr-copy-success', { value: input.value });
+      this.dispatchActionEvent('nr-copy-success', { 
+        value: input.value,
+        action: 'copy'
+      });
     } catch (error) {
-      this._dispatchInputEvent('nr-copy-error', { error });
+      this.dispatchCustomEvent('nr-copy-error', { error });
     }
   }
 
-  private _onClear() {
+  private _onClear(): void {
     if (this.disabled || this.readonly) {
       return;
     }
@@ -519,13 +406,15 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
       this.input.value = EMPTY_STRING;
     }
 
-    this._dispatchInputEvent('nr-clear', {
+    this.dispatchActionEvent('nr-clear', {
       previousValue,
-      target: this.input
+      newValue: this.value,
+      target: this.input,
+      action: 'clear'
     });
 
     // Also dispatch input event for consistency
-    this._dispatchInputEvent('nr-input', {
+    this.dispatchInputEvent('nr-input', {
       value: this.value,
       target: this.input,
       action: 'clear'
@@ -536,45 +425,15 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
   // OPERATION METHODS
   // ========================================
 
-  private _increment() {
-    try {
-      this.input.stepUp();
-      this.value = this.input.value;
-      this._dispatchInputEvent('nr-input', {
-        value: this.value, 
-        target: this.input,
-        action: 'increment'
-      });
-    } catch (error) {
-      console.warn('Failed to increment value:', error);
-      this._dispatchInputEvent('nr-increment-error', {
-        error,
-        value: this.value,
-        target: this.input
-      });
-    }
+  private _increment(): void {
+    this.increment();
   }
 
-  private _decrement() {
-    try {
-      this.input.stepDown();
-      this.value = this.input.value;
-      this._dispatchInputEvent('nr-input', {
-        value: this.value, 
-        target: this.input,
-        action: 'decrement'
-      });
-    } catch (error) {
-      console.warn('Failed to decrement value:', error);
-      this._dispatchInputEvent('nr-decrement-error', {
-        error,
-        value: this.value,
-        target: this.input
-      });
-    }
+  private _decrement(): void {
+    this.decrement();
   }
 
-  private _togglePasswordIcon() {
+  private _togglePasswordIcon(): void {
     if (this.inputType === INPUT_TYPE.PASSWORD) {
       this.inputType = INPUT_TYPE.TEXT;
     } else if (this.inputType === INPUT_TYPE.TEXT && this.type === INPUT_TYPE.PASSWORD) {
@@ -665,7 +524,5 @@ export class NrInputElement extends NuralyUIBaseMixin(LitElement) {
       ` : ''}
     `;
   }
-
-  static override styles = styles;
 }
 

@@ -8,3 +8,4 @@
 export { NuralyUIBaseMixin, BaseMixin, type NuralyUIBaseElement } from './base-mixin.js';
 export { ThemeAwareMixin, type ThemeAware } from './theme-mixin.js';
 export { DependencyValidationMixin, type DependencyAware } from './dependency-mixin.js';
+export { EventHandlerMixin, type EventHandlerCapable } from './event-handler-mixin.js';
