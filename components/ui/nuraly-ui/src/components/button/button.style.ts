@@ -361,6 +361,113 @@ const buttonStyles = css`
   }
 
   /* ========================================
+   * NEW BUTTON TYPES
+   * ======================================== */
+
+  /* TEXT BUTTON VARIANT */
+  button[data-type='text'] {
+    background-color: var(--hybrid-button-text-background-color, var(--hybrid-button-local-text-background-color, transparent));
+    color: var(--hybrid-button-text-text-color, var(--hybrid-button-local-text-text-color, #1890ff));
+    border: none;
+    box-shadow: none;
+  }
+
+  button[data-type='text'] hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-text-text-color, var(--hybrid-button-local-text-text-color, #1890ff));
+  }
+
+  button[data-type='text']:hover:not(:disabled) {
+    background-color: var(--hybrid-button-text-hover-background-color, var(--hybrid-button-local-text-hover-background-color, rgba(24, 144, 255, 0.06)));
+    color: var(--hybrid-button-text-hover-text-color, var(--hybrid-button-local-text-hover-text-color, #40a9ff));
+  }
+
+  button[data-type='text']:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-text-hover-text-color, var(--hybrid-button-local-text-hover-text-color, #40a9ff));
+  }
+
+  button[data-type='text']:active:not(:disabled) {
+    background-color: var(--hybrid-button-text-active-background-color, var(--hybrid-button-local-text-active-background-color, rgba(24, 144, 255, 0.15)));
+    color: var(--hybrid-button-text-active-text-color, var(--hybrid-button-local-text-active-text-color, #096dd9));
+  }
+
+  button[data-type='text']:disabled {
+    background-color: transparent;
+    color: var(--hybrid-button-text-disabled-text-color, var(--hybrid-button-local-text-disabled-text-color, rgba(0, 0, 0, 0.25)));
+    border: none;
+  }
+
+  /* LINK BUTTON VARIANT */
+  a[data-type='link'], button[data-type='link'] {
+    background-color: transparent;
+    color: var(--hybrid-button-link-text-color, var(--hybrid-button-local-link-text-color, #1890ff));
+    border: none;
+    box-shadow: none;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  a[data-type='link'] hy-icon, button[data-type='link'] hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-link-text-color, var(--hybrid-button-local-link-text-color, #1890ff));
+  }
+
+  a[data-type='link']:hover, button[data-type='link']:hover:not(:disabled) {
+    color: var(--hybrid-button-link-hover-text-color, var(--hybrid-button-local-link-hover-text-color, #40a9ff));
+  }
+
+  a[data-type='link']:hover hy-icon, button[data-type='link']:hover:not(:disabled) hy-icon {
+    --hybrid-icon-color: var(--hybrid-button-link-hover-text-color, var(--hybrid-button-local-link-hover-text-color, #40a9ff));
+  }
+
+  a[data-type='link']:active, button[data-type='link']:active:not(:disabled) {
+    color: var(--hybrid-button-link-active-text-color, var(--hybrid-button-local-link-active-text-color, #096dd9));
+  }
+
+  button[data-type='link']:disabled {
+    color: var(--hybrid-button-link-disabled-text-color, var(--hybrid-button-local-link-disabled-text-color, rgba(0, 0, 0, 0.25)));
+    text-decoration: none;
+    cursor: not-allowed;
+  }
+
+  /* ========================================
+   * SHAPE VARIANTS
+   * ======================================== */
+
+  /* Circle button shape */
+  button[data-shape='circle'], a[data-shape='circle'] {
+    border-radius: 50%;
+    width: var(--hybrid-button-circle-size, var(--hybrid-button-local-circle-size, 32px));
+    height: var(--hybrid-button-circle-size, var(--hybrid-button-local-circle-size, 32px));
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button[data-shape='circle'][data-size='small'], a[data-shape='circle'][data-size='small'] {
+    width: var(--hybrid-button-circle-size-small, var(--hybrid-button-local-circle-size-small, 24px));
+    height: var(--hybrid-button-circle-size-small, var(--hybrid-button-local-circle-size-small, 24px));
+  }
+
+  button[data-shape='circle'][data-size='large'], a[data-shape='circle'][data-size='large'] {
+    width: var(--hybrid-button-circle-size-large, var(--hybrid-button-local-circle-size-large, 40px));
+    height: var(--hybrid-button-circle-size-large, var(--hybrid-button-local-circle-size-large, 40px));
+  }
+
+  /* Round button shape */
+  button[data-shape='round'], a[data-shape='round'] {
+    border-radius: var(--hybrid-button-round-border-radius, var(--hybrid-button-local-round-border-radius, 16px));
+  }
+
+  /* ========================================
+   * BLOCK BUTTON
+   * ======================================== */
+
+  button[data-block='true'], a[data-block='true'] {
+    width: 100%;
+    display: block;
+  }
+
+  /* ========================================
    * VARIANT STYLES
    * ======================================== */
 
@@ -437,6 +544,34 @@ const buttonStyles = css`
     --hybrid-button-local-danger-disabled-text-color: #8d8d8d;
     --hybrid-button-local-danger-disabled-border-color: #6f6f6f;
     --hybrid-button-local-danger-dashed-border-color: #ffffff;
+
+    /* Text button dark theme overrides */
+    --hybrid-button-local-text-background-color: transparent;
+    --hybrid-button-local-text-text-color: #ffffff;
+    --hybrid-button-local-text-border-color: transparent;
+    --hybrid-button-local-text-hover-background-color: rgba(255, 255, 255, 0.1);
+    --hybrid-button-local-text-hover-text-color: #ffffff;
+    --hybrid-button-local-text-hover-border-color: transparent;
+    --hybrid-button-local-text-active-background-color: rgba(255, 255, 255, 0.15);
+    --hybrid-button-local-text-active-text-color: #ffffff;
+    --hybrid-button-local-text-active-border-color: transparent;
+    --hybrid-button-local-text-disabled-background-color: transparent;
+    --hybrid-button-local-text-disabled-text-color: #6f6f6f;
+    --hybrid-button-local-text-disabled-border-color: transparent;
+
+    /* Link button dark theme overrides */
+    --hybrid-button-local-link-background-color: transparent;
+    --hybrid-button-local-link-text-color: #78a9ff;
+    --hybrid-button-local-link-border-color: transparent;
+    --hybrid-button-local-link-hover-background-color: transparent;
+    --hybrid-button-local-link-hover-text-color: #a6c8ff;
+    --hybrid-button-local-link-hover-border-color: transparent;
+    --hybrid-button-local-link-active-background-color: transparent;
+    --hybrid-button-local-link-active-text-color: #a6c8ff;
+    --hybrid-button-local-link-active-border-color: transparent;
+    --hybrid-button-local-link-disabled-background-color: transparent;
+    --hybrid-button-local-link-disabled-text-color: #6f6f6f;
+    --hybrid-button-local-link-disabled-border-color: transparent;
   }
 `;
 

@@ -41,6 +41,8 @@ export class ElButtonDemoElement extends LitElement {
               <td>Ghost</td>
               <td>Danger</td>
               <td>Default</td>
+              <td>Text</td>
+              <td>Link</td>
             </tr>
             <tr>
               <td>Default</td>
@@ -59,6 +61,12 @@ export class ElButtonDemoElement extends LitElement {
               <td>
                 <nr-button><span>Default Button</span></nr-button>
               </td>
+              <td>
+                <nr-button type="text"><span>Text Button</span></nr-button>
+              </td>
+              <td>
+                <nr-button type="link" href="https://example.com"><span>Link Button</span></nr-button>
+              </td>
             </tr>
             <tr>
               <td>Dashed</td>
@@ -76,6 +84,12 @@ export class ElButtonDemoElement extends LitElement {
               </td>
               <td>
                 <nr-button ?dashed=${true}><span>Default dashed</span></nr-button>
+              </td>
+              <td>
+                <nr-button type="text" ?dashed=${true}><span>Text dashed</span></nr-button>
+              </td>
+              <td>
+                <nr-button type="link" href="https://example.com" ?dashed=${true}><span>Link dashed</span></nr-button>
               </td>
             </tr>
             <tr>
@@ -193,9 +207,57 @@ export class ElButtonDemoElement extends LitElement {
               <td><nr-button type="ghost" .icon="${['search']}"></nr-button></td>
               <td><nr-button type="danger" .icon="${['search']}"></nr-button></td>
               <td><nr-button .icon="${['search']}"></nr-button></td>
+              <td><nr-button type="text" .icon="${['search']}"></nr-button></td>
+              <td><nr-button type="link" href="https://example.com" .icon="${['search']}"></nr-button></td>
             </tr>
           </tbody>
         </table>
+
+        <h1>Button Shapes</h1>
+        <br />
+        <h3>Default Shape</h3>
+        <nr-button type="primary">Default Button</nr-button>
+        <nr-button type="primary" .icon="${['search']}">With Icon</nr-button>
+        <nr-button type="primary" .icon="${['search']}"></nr-button>
+        
+        <h3>Round Shape</h3>
+        <nr-button type="primary" shape="round">Round Button</nr-button>
+        <nr-button type="primary" shape="round" .icon="${['search']}">Round With Icon</nr-button>
+        <nr-button type="primary" shape="round" .icon="${['search']}"></nr-button>
+        
+        <h3>Circle Shape</h3>
+        <nr-button type="primary" shape="circle" .icon="${['search']}"></nr-button>
+        <nr-button type="secondary" shape="circle" .icon="${['user']}"></nr-button>
+        <nr-button type="danger" shape="circle" .icon="${['trash']}"></nr-button>
+
+        <h3>Circle Shape - Different Sizes</h3>
+        <nr-button type="primary" shape="circle" size="small" .icon="${['search']}"></nr-button>
+        <nr-button type="primary" shape="circle" .icon="${['search']}"></nr-button>
+        <nr-button type="primary" shape="circle" size="large" .icon="${['search']}"></nr-button>
+
+        <h1>Block Buttons</h1>
+        <br />
+        <nr-button type="primary" block>Primary Block Button</nr-button>
+        <br />
+        <nr-button type="secondary" block>Secondary Block Button</nr-button>
+        <br />
+        <nr-button type="text" block>Text Block Button</nr-button>
+        <br />
+        <nr-button type="link" href="https://example.com" block>Link Block Button</nr-button>
+        <br />
+
+        <h1>Link Buttons with Target</h1>
+        <br />
+        <nr-button type="link" href="https://example.com">Same Tab Link</nr-button>
+        <nr-button type="link" href="https://example.com" target="_blank">New Tab Link</nr-button>
+        <nr-button type="link" href="https://example.com" target="_blank" .icon="${['external-link']}">External Link</nr-button>
+        <br />
+
+        <h1>Accessibility Examples</h1>
+        <br />
+        <nr-button type="primary" buttonAriaLabel="Save document">Save</nr-button>
+        <nr-button type="danger" buttonAriaLabel="Delete item permanently" .icon="${['trash']}">Delete</nr-button>
+        <nr-button type="text" buttonAriaLabel="Close dialog" .icon="${['close']}"></nr-button>
       </theme-handler>
     `;
   }

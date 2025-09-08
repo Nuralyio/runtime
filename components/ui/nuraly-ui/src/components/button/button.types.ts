@@ -4,12 +4,20 @@ export const enum ButtonType {
   Danger = 'danger',
   Ghost = 'ghost',
   Default = 'default',
+  Text = 'text',
+  Link = 'link',
 }
 
 export const enum ButtonSize {
   Small = 'small',
   Default = 'default',
   Large = 'large',
+}
+
+export const enum ButtonShape {
+  Default = 'default',
+  Circle = 'circle',
+  Round = 'round',
 }
 
 export const enum IconPosition {
