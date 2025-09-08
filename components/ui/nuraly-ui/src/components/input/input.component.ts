@@ -8,7 +8,7 @@
 import { LitElement, PropertyValues, html, nothing } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { styles } from './input.style.js';
-import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING } from './input.constant.js';
+import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, EMPTY_STRING } from './input.types.js';
 import { choose } from 'lit/directives/choose.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import '../icon/icon.component.js';

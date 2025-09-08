@@ -1,6 +1,6 @@
 import { html, fixture, expect } from '@open-wc/testing';
 import { NrInputElement } from '../input.component';
-import { INPUT_STATE, INPUT_SIZE, INPUT_TYPE, EMPTY_STRING } from '../input.constant';
+import { INPUT_STATE, INPUT_SIZE, INPUT_TYPE, EMPTY_STRING } from '../input.types';
 import '../input.component';
 import { HyIconElement } from '../../icon';
 suite('NrInputElement', () => {
