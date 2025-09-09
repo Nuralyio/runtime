@@ -7,6 +7,7 @@
 export { RadioGroupMixin } from './radio-group-mixin.js';
 export { RadioDisplayMixin } from './radio-display-mixin.js';
 export { RadioKeyboardMixin } from './radio-keyboard-mixin.js';
+export { RadioFocusMixin } from './radio-focus-mixin.js';
 
 export type { RadioGroupCapable } from './radio-group-mixin.js';
 export type { RadioDisplayCapable } from './radio-display-mixin.js';
