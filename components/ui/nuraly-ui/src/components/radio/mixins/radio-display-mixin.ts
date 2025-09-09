@@ -6,7 +6,7 @@
 
 import { LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { RadioButtonType, RadioButtonPosition, RadioButtonDirection } from '../radio.type.js';
+import { RadioButtonType, RadioButtonPosition, RadioButtonDirection, RadioButtonSize, RadioButtonVariant } from '../radio.type.js';
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
@@ -17,6 +17,8 @@ export interface RadioDisplayCapable {
   type: RadioButtonType;
   position: RadioButtonPosition;
   direction: RadioButtonDirection;
+  size: RadioButtonSize;
+  variant: RadioButtonVariant;
   getDisplayClasses(): Record<string, boolean>;
   isButtonType(): boolean;
   isDefaultType(): boolean;
@@ -50,6 +52,12 @@ export const RadioDisplayMixin = <T extends Constructor<LitElement>>(superClass:
     @property({ type: String, reflect: true })
     direction: RadioButtonDirection = RadioButtonDirection.Vertical;
 
+    @property({ type: String, reflect: true })
+    size: RadioButtonSize = RadioButtonSize.Medium;
+
+    @property({ type: String, reflect: true })
+    variant: RadioButtonVariant = RadioButtonVariant.Default;
+
     /**
      * Get CSS classes based on current display configuration
      */
@@ -60,7 +68,12 @@ export const RadioDisplayMixin = <T extends Constructor<LitElement>>(superClass:
         'position-left': this.position === RadioButtonPosition.Left,
         'position-right': this.position === RadioButtonPosition.Right,
         'direction-horizontal': this.direction === RadioButtonDirection.Horizontal,
-        'direction-vertical': this.direction === RadioButtonDirection.Vertical
+        'direction-vertical': this.direction === RadioButtonDirection.Vertical,
+        'size-small': this.size === RadioButtonSize.Small,
+        'size-medium': this.size === RadioButtonSize.Medium,
+        'size-large': this.size === RadioButtonSize.Large,
+        'variant-default': this.variant === RadioButtonVariant.Default,
+        'variant-solid': this.variant === RadioButtonVariant.Solid
       };
     }
 

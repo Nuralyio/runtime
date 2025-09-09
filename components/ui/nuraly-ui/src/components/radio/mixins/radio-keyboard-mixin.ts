@@ -18,7 +18,6 @@ export interface RadioKeyboardCapable {
   navigateToPreviousOption(): void;
   selectCurrentOption(): void;
   getCurrentOptionIndex(): number;
-  setFocusedOption(index: number): void;
 }
 
 /**
@@ -40,17 +39,15 @@ export interface RadioKeyboardCapable {
  */
 export const RadioKeyboardMixin = <T extends Constructor<LitElement>>(superClass: T) => {
   class RadioKeyboardMixinClass extends superClass implements RadioKeyboardCapable {
-    
-    private focusedOptionIndex: number = -1;
 
     /**
      * Handle keyboard events for radio group navigation
      */
     handleKeyDown(event: KeyboardEvent): void {
-      // Check if this is an activation key using the event handler mixin
-      if ('isActivationKey' in this && typeof (this as any).isActivationKey === 'function' && (this as any).isActivationKey(event)) {
+      // Handle activation keys (Space, Enter)
+      if (event.key === ' ' || event.key === 'Enter') {
         event.preventDefault();
-        (this as any).selectCurrentOption();
+        this.selectCurrentOption();
         return;
       }
 
@@ -69,13 +66,17 @@ export const RadioKeyboardMixin = <T extends Constructor<LitElement>>(superClass
         
         case 'Home':
           event.preventDefault();
-          this.setFocusedOption(0);
+          if ('setFocusedOption' in this) {
+            (this as any).setFocusedOption(0);
+          }
           break;
         
         case 'End':
           event.preventDefault();
           const options = this.getAvailableOptions();
-          this.setFocusedOption(options.length - 1);
+          if ('setFocusedOption' in this) {
+            (this as any).setFocusedOption(options.length - 1);
+          }
           break;
       }
     }
@@ -92,7 +93,9 @@ export const RadioKeyboardMixin = <T extends Constructor<LitElement>>(superClass
         nextIndex = 0; // Wrap to beginning
       }
 
-      this.setFocusedOption(nextIndex);
+      if ('setFocusedOption' in this) {
+        (this as any).setFocusedOption(nextIndex);
+      }
     }
 
     /**
@@ -107,7 +110,9 @@ export const RadioKeyboardMixin = <T extends Constructor<LitElement>>(superClass
         previousIndex = options.length - 1; // Wrap to end
       }
 
-      this.setFocusedOption(previousIndex);
+      if ('setFocusedOption' in this) {
+        (this as any).setFocusedOption(previousIndex);
+      }
     }
 
     /**
@@ -126,28 +131,13 @@ export const RadioKeyboardMixin = <T extends Constructor<LitElement>>(superClass
     }
 
     /**
-     * Get the current focused option index
+     * Get the current focused option index - delegates to focus mixin
      */
     getCurrentOptionIndex(): number {
-      return this.focusedOptionIndex;
-    }
-
-    /**
-     * Set focus to a specific option by index
-     */
-    setFocusedOption(index: number): void {
-      const options = this.getAvailableOptions();
-      if (index < 0 || index >= options.length) return;
-
-      this.focusedOptionIndex = index;
-      
-      // Focus the actual input element
-      this.updateComplete.then(() => {
-        const radioInputs = this.shadowRoot?.querySelectorAll('input[type="radio"]');
-        if (radioInputs && radioInputs[index]) {
-          (radioInputs[index] as HTMLInputElement).focus();
-        }
-      });
+      if ('focusedOptionIndex' in this) {
+        return (this as any).focusedOptionIndex;
+      }
+      return -1;
     }
 
     /**
