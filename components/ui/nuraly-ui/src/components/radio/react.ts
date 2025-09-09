@@ -6,11 +6,11 @@
 
 import React from 'react';
 import { createComponent } from '@lit-labs/react';
-import { HyRadioComponent } from './radio.component.js';
+import { NrRadioElement } from './radio.component.js';
 
-export const HyRadio = createComponent({
-  tagName: 'hy-radio-input',
-  elementClass: HyRadioComponent,
+export const NrRadio = createComponent({
+  tagName: 'nr-radio',
+  elementClass: NrRadioElement,
   react: React,
   events: {
     onChanged: 'change'

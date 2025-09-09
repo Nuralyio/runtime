@@ -234,6 +234,7 @@ const buttonStyles = css`
   /* Primary button base styles and icon */
   button[data-type='primary'] hy-icon {
     --hybrid-icon-color: var(--hybrid-button-primary-text-color,var(--hybrid-button-local-primary-text-color));
+    --hybrid-icon-local-color: var(--hybrid-button-primary-text-color,var(--hybrid-button-local-primary-text-color));
   }
   button[data-type='primary'] {
     border-color: var(--hybrid-button-primary-border-color,var(--hybrid-button-local-primary-border-color));
@@ -261,6 +262,7 @@ const buttonStyles = css`
   }
   button[data-type='primary']:hover:not(:disabled) hy-icon {
     --hybrid-icon-color: var(--hybrid-button-primary-text-color,var(--hybrid-button-local-primary-text-color));
+    --hybrid-icon-local-color: var(--hybrid-button-primary-text-color,var(--hybrid-button-local-primary-text-color));
   }
   
   /* Primary button active state */

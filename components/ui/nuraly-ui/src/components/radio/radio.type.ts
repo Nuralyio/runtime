@@ -5,6 +5,7 @@ export type RadioButtonOption = {
   disabled?: boolean;
   state?: RadioButtonState;
   message?: string;
+  htmlContent?: string; // Support for HTML content instead of plain label
 };
 export type RadioButtonState = 'error' | 'warning';
 export enum RadioButtonDirection {
@@ -20,4 +21,5 @@ export enum RadioButtonPosition {
 export enum RadioButtonType {
   Default = 'default',
   Button = 'button',
+  Slot = 'slot',
 }
