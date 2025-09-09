@@ -9,3 +9,6 @@ export { NuralyUIBaseMixin, BaseMixin, type NuralyUIBaseElement } from './base-m
 export { ThemeAwareMixin, type ThemeAware } from './theme-mixin.js';
 export { DependencyValidationMixin, type DependencyAware } from './dependency-mixin.js';
 export { EventHandlerMixin, type EventHandlerCapable } from './event-handler-mixin.js';
+
+// Export utility functions
+export { throttle, debounce, rafThrottle } from './utils.js';
