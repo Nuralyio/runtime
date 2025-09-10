@@ -936,6 +936,408 @@ export const Playground: Story = {
   `,
 };
 
+// Font selection example - practical use case with common fonts
+export const FontSelection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'A practical example showing font family selection with searchable options and preview functionality.'
+      }
+    }
+  },
+  render: () => html`
+    <style>
+      /* Make disabled category headers stand out */
+      .category-font-select .option[disabled] { 
+        font-weight: bold; 
+        background-color: #f5f5f5;
+        font-family: inherit;
+      }
+    </style>
+    <div style="padding: 20px; max-width: 600px;">
+      <h2>Font Family Selection</h2>
+      <p>Select fonts with live preview and search functionality - uses rich options to display font names in their actual typefaces</p>
+      
+      <div style="display: grid; gap: 20px;">
+        <!-- Single Font Selection with Preview -->
+        <div>
+          <h3>Choose Your Font</h3>
+          <hy-select
+            .options=${[
+              { 
+                label: 'Arial', 
+                value: 'Arial, sans-serif',
+                htmlContent: '<span style="font-family: Arial, sans-serif;">Arial</span>'
+              },
+              { 
+                label: 'Times New Roman', 
+                value: 'Times New Roman, serif',
+                htmlContent: '<span style="font-family: Times New Roman, serif;">Times New Roman</span>'
+              },
+              { 
+                label: 'Helvetica', 
+                value: 'Helvetica, Arial, sans-serif',
+                htmlContent: '<span style="font-family: Helvetica, Arial, sans-serif;">Helvetica</span>'
+              },
+              { 
+                label: 'Georgia', 
+                value: 'Georgia, serif',
+                htmlContent: '<span style="font-family: Georgia, serif;">Georgia</span>'
+              },
+              { 
+                label: 'Verdana', 
+                value: 'Verdana, sans-serif',
+                htmlContent: '<span style="font-family: Verdana, sans-serif;">Verdana</span>'
+              },
+              { 
+                label: 'Courier New', 
+                value: 'Courier New, monospace',
+                content: html`<span style="font-family: Courier New, monospace;">Courier New</span>`
+              },
+              { 
+                label: 'Trebuchet MS', 
+                value: 'Trebuchet MS, sans-serif',
+                content: html`<span style="font-family: Trebuchet MS, sans-serif;">Trebuchet MS</span>`
+              },
+              { 
+                label: 'Palatino', 
+                value: 'Palatino, serif',
+                content: html`<span style="font-family: Palatino, serif;">Palatino</span>`
+              },
+              { 
+                label: 'Impact', 
+                value: 'Impact, sans-serif',
+                content: html`<span style="font-family: Impact, sans-serif;">Impact</span>`
+              },
+              { 
+                label: 'Comic Sans MS', 
+                value: 'Comic Sans MS, cursive',
+                content: html`<span style="font-family: Comic Sans MS, cursive;">Comic Sans MS</span>`
+              },
+              { 
+                label: 'Lucida Console', 
+                value: 'Lucida Console, monospace',
+                content: html`<span style="font-family: Lucida Console, monospace;">Lucida Console</span>`
+              },
+              { 
+                label: 'Tahoma', 
+                value: 'Tahoma, sans-serif',
+                content: html`<span style="font-family: Tahoma, sans-serif;">Tahoma</span>`
+              },
+              { 
+                label: 'System UI', 
+                value: 'system-ui, -apple-system, sans-serif',
+                content: html`<span style="font-family: system-ui, -apple-system, sans-serif;">System UI</span>`
+              },
+              { 
+                label: 'Inter', 
+                value: 'Inter, sans-serif',
+                content: html`<span style="font-family: Inter, sans-serif;">Inter</span>`
+              },
+              { 
+                label: 'Roboto', 
+                value: 'Roboto, sans-serif',
+                content: html`<span style="font-family: Roboto, sans-serif;">Roboto</span>`
+              }
+            ]}
+            placeholder="Select a font family..."
+            searchable
+            search-placeholder="Search fonts..."
+            @change=${(e: any) => {
+              const selectedFont = e.detail?.value;
+              const previewText = document.getElementById('font-preview');
+              if (previewText && selectedFont) {
+                previewText.style.fontFamily = selectedFont;
+                previewText.textContent = `This text is displayed in ${e.detail.label}`;
+                console.log('Font changed to:', selectedFont);
+              }
+            }}
+          ></hy-select>
+          
+          <div 
+            id="font-preview" 
+            style="
+              margin-top: 16px; 
+              padding: 20px; 
+              border: 2px dashed #ddd; 
+              border-radius: 8px;
+              font-size: 18px;
+              line-height: 1.5;
+              min-height: 60px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              background: #fafafa;
+              color: #333;
+              transition: font-family 0.3s ease;
+            "
+          >
+            Select a font to see the preview here
+          </div>
+        </div>
+
+        <!-- Multiple Font Stack Selection -->
+        <div>
+          <h3>Font Stack Selection</h3>
+          <p>Select multiple fonts to create a fallback stack</p>
+          <hy-select
+            .options=${[
+              { 
+                label: 'Arial', 
+                value: 'Arial',
+                content: html`<span style="font-family: Arial, sans-serif;">Arial</span>`
+              },
+              { 
+                label: 'Helvetica', 
+                value: 'Helvetica',
+                content: html`<span style="font-family: Helvetica, Arial, sans-serif;">Helvetica</span>`
+              },
+              { 
+                label: 'Times New Roman', 
+                value: 'Times New Roman',
+                content: html`<span style="font-family: Times New Roman, serif;">Times New Roman</span>`
+              },
+              { 
+                label: 'Georgia', 
+                value: 'Georgia',
+                content: html`<span style="font-family: Georgia, serif;">Georgia</span>`
+              },
+              { 
+                label: 'Verdana', 
+                value: 'Verdana',
+                content: html`<span style="font-family: Verdana, sans-serif;">Verdana</span>`
+              },
+              { 
+                label: 'Courier New', 
+                value: 'Courier New',
+                content: html`<span style="font-family: Courier New, monospace;">Courier New</span>`
+              },
+              { 
+                label: 'Trebuchet MS', 
+                value: 'Trebuchet MS',
+                content: html`<span style="font-family: Trebuchet MS, sans-serif;">Trebuchet MS</span>`
+              },
+              { 
+                label: 'Palatino', 
+                value: 'Palatino',
+                content: html`<span style="font-family: Palatino, serif;">Palatino</span>`
+              },
+              { 
+                label: 'sans-serif', 
+                value: 'sans-serif',
+                content: html`<span style="font-family: sans-serif; font-style: italic; opacity: 0.8;">sans-serif</span>`
+              },
+              { 
+                label: 'serif', 
+                value: 'serif',
+                content: html`<span style="font-family: serif; font-style: italic; opacity: 0.8;">serif</span>`
+              },
+              { 
+                label: 'monospace', 
+                value: 'monospace',
+                content: html`<span style="font-family: monospace; font-style: italic; opacity: 0.8;">monospace</span>`
+              },
+              { 
+                label: 'cursive', 
+                value: 'cursive',
+                content: html`<span style="font-family: cursive; font-style: italic; opacity: 0.8;">cursive</span>`
+              },
+              { 
+                label: 'fantasy', 
+                value: 'fantasy',
+                content: html`<span style="font-family: fantasy; font-style: italic; opacity: 0.8;">fantasy</span>`
+              }
+            ]}
+            placeholder="Build your font stack..."
+            multiple
+            searchable
+            search-placeholder="Search font families..."
+            @change=${(e: any) => {
+              const selectedFonts = e.detail?.value || [];
+              const stackPreview = document.getElementById('stack-preview');
+              const stackDisplay = document.getElementById('stack-display');
+              
+              if (stackPreview && stackDisplay && selectedFonts.length > 0) {
+                const fontStack = selectedFonts.join(', ');
+                stackPreview.style.fontFamily = fontStack;
+                stackPreview.textContent = `Font stack: ${fontStack}`;
+                stackDisplay.textContent = `CSS: font-family: ${fontStack};`;
+              } else if (stackPreview && stackDisplay) {
+                stackPreview.textContent = 'Select fonts to build your stack';
+                stackDisplay.textContent = 'CSS: font-family: /* your stack will appear here */';
+              }
+            }}
+          ></hy-select>
+          
+          <div 
+            id="stack-preview"
+            style="
+              margin-top: 16px; 
+              padding: 16px; 
+              border: 1px solid #ddd; 
+              border-radius: 6px;
+              font-size: 16px;
+              background: white;
+              transition: font-family 0.3s ease;
+            "
+          >
+            Select fonts to build your stack
+          </div>
+          
+          <code 
+            id="stack-display"
+            style="
+              display: block;
+              margin-top: 8px; 
+              padding: 12px; 
+              background: #f5f5f5; 
+              border-radius: 4px;
+              font-size: 14px;
+              color: #666;
+              border: 1px solid #e0e0e0;
+            "
+          >
+            CSS: font-family: /* your stack will appear here */
+          </code>
+        </div>
+
+        <!-- Web-Safe Fonts Category -->
+        <div>
+          <h3>Web-Safe Font Categories</h3>
+          <hy-select
+            .options=${[
+              { 
+                label: 'Sans-Serif Fonts', 
+                value: 'sans-serif',
+                description: 'Clean, modern fonts without decorative strokes',
+                disabled: true,
+                content: html`<strong style="color: #666;">Sans-Serif Fonts</strong>`
+              },
+              { 
+                label: '→ Arial', 
+                value: 'Arial, sans-serif',
+                content: html`<span style="font-family: Arial, sans-serif;">→ Arial</span>`
+              },
+              { 
+                label: '→ Helvetica', 
+                value: 'Helvetica, Arial, sans-serif',
+                content: html`<span style="font-family: Helvetica, Arial, sans-serif;">→ Helvetica</span>`
+              },
+              { 
+                label: '→ Verdana', 
+                value: 'Verdana, sans-serif',
+                content: html`<span style="font-family: Verdana, sans-serif;">→ Verdana</span>`
+              },
+              { 
+                label: '→ Tahoma', 
+                value: 'Tahoma, sans-serif',
+                content: html`<span style="font-family: Tahoma, sans-serif;">→ Tahoma</span>`
+              },
+              { 
+                label: '→ Trebuchet MS', 
+                value: 'Trebuchet MS, sans-serif',
+                content: html`<span style="font-family: Trebuchet MS, sans-serif;">→ Trebuchet MS</span>`
+              },
+              { 
+                label: 'Serif Fonts', 
+                value: 'serif',
+                description: 'Traditional fonts with decorative strokes',
+                disabled: true,
+                content: html`<strong style="color: #666;">Serif Fonts</strong>`
+              },
+              { 
+                label: '→ Times New Roman', 
+                value: 'Times New Roman, serif',
+                content: html`<span style="font-family: Times New Roman, serif;">→ Times New Roman</span>`
+              },
+              { 
+                label: '→ Georgia', 
+                value: 'Georgia, serif',
+                content: html`<span style="font-family: Georgia, serif;">→ Georgia</span>`
+              },
+              { 
+                label: '→ Palatino', 
+                value: 'Palatino, serif',
+                content: html`<span style="font-family: Palatino, serif;">→ Palatino</span>`
+              },
+              { 
+                label: 'Monospace Fonts', 
+                value: 'monospace',
+                description: 'Fixed-width fonts for code and data',
+                disabled: true,
+                content: html`<strong style="color: #666;">Monospace Fonts</strong>`
+              },
+              { 
+                label: '→ Courier New', 
+                value: 'Courier New, monospace',
+                content: html`<span style="font-family: Courier New, monospace;">→ Courier New</span>`
+              },
+              { 
+                label: '→ Lucida Console', 
+                value: 'Lucida Console, monospace',
+                content: html`<span style="font-family: Lucida Console, monospace;">→ Lucida Console</span>`
+              },
+              { 
+                label: 'Display Fonts', 
+                value: 'display',
+                description: 'Bold fonts for headlines and emphasis',
+                disabled: true,
+                content: html`<strong style="color: #666;">Display Fonts</strong>`
+              },
+              { 
+                label: '→ Impact', 
+                value: 'Impact, sans-serif',
+                content: html`<span style="font-family: Impact, sans-serif;">→ Impact</span>`
+              },
+              { 
+                label: '→ Comic Sans MS', 
+                value: 'Comic Sans MS, cursive',
+                content: html`<span style="font-family: Comic Sans MS, cursive;">→ Comic Sans MS</span>`
+              }
+            ]}
+            placeholder="Browse fonts by category..."
+            searchable
+            search-placeholder="Search font categories..."
+            @change=${(e: any) => {
+              const selectedFont = e.detail?.value;
+              const categoryPreview = document.getElementById('category-preview');
+              if (categoryPreview && selectedFont && !e.detail?.disabled) {
+                categoryPreview.style.fontFamily = selectedFont;
+                categoryPreview.innerHTML = `
+                  <strong>${e.detail.label.replace('→ ', '')}</strong><br>
+                  <span style="font-size: 14px; opacity: 0.8;">${selectedFont}</span><br>
+                  <span style="font-size: 16px; margin-top: 8px; display: block;">
+                    The quick brown fox jumps over the lazy dog
+                  </span>
+                `;
+              }
+            }}
+          ></hy-select>
+          
+          <div 
+            id="category-preview"
+            style="
+              margin-top: 16px; 
+              padding: 20px; 
+              border: 1px solid #ddd; 
+              border-radius: 6px;
+              background: white;
+              min-height: 80px;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              transition: font-family 0.3s ease;
+            "
+          >
+            Select a font to see the preview
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
 // Comprehensive showcase of all select component features
 export const AllFeatures: Story = {
   parameters: {
