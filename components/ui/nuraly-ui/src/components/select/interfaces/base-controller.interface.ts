@@ -26,8 +26,18 @@ export interface SelectHost {
   multiple: boolean;
   placeholder: string;
   show: boolean;
+  searchable: boolean;
+  searchPlaceholder: string;
+  searchQuery: string;
   requestUpdate(): void;
   dispatchEvent(event: Event): boolean;
+  closeDropdown(): void;
+  focus(): void;
+  toggleDropdown(): void;
+  selectOption(option: SelectOption): void;
+  unselectOption(option: SelectOption): void;
+  clearSelection(): void;
+  contains(element: Element): boolean;
 }
 
 /**
@@ -98,9 +108,25 @@ export interface ValidationController extends SelectBaseController {
 export interface SearchController extends SelectBaseController {
   search(query: string): void;
   clearSearch(): void;
-  getFilteredOptions(): SelectOption[];
+  getFilteredOptions(options: SelectOption[]): SelectOption[];
   readonly searchQuery: string;
   readonly hasSearch: boolean;
+}
+
+/**
+ * Event controller interface for handling component events
+ */
+export interface EventController extends SelectBaseController {
+  handleTriggerClick(event: Event): void;
+  handleOptionClick(event: Event, option: SelectOption): void;
+  handleTagRemove(event: Event, option: SelectOption): void;
+  handleClearAll(event: Event): void;
+  handleKeyDown(event: KeyboardEvent): void;
+  handleFocus(): void;
+  handleBlur(): void;
+  handleWindowClick(event: Event): void;
+  setupEventListeners(): void;
+  removeEventListeners(): void;
 }
 
 /**

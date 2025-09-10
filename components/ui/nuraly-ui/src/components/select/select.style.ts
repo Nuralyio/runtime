@@ -10,6 +10,7 @@ export const styles = css`
     font-family: var(--hybrid-select-font-family, var(--hybrid-select-local-font-family));
     font-size: var(--hybrid-select-font-size, var(--hybrid-select-local-font-size));
     line-height: var(--hybrid-select-line-height, var(--hybrid-select-local-line-height));
+    margin: var(--hybrid-select-margin, var(--hybrid-select-local-wrapper-margin));
   }
 
   /* Host attribute selectors for configuration */
@@ -43,19 +44,31 @@ export const styles = css`
   :host([size='small']) .wrapper {
     min-height: var(--hybrid-select-small-height, var(--hybrid-select-local-small-height));
     font-size: var(--hybrid-select-small-font-size, var(--hybrid-select-local-small-font-size));
-    padding: 0;
+  }
+
+  :host([size='small']) .select-trigger {
+    padding: var(--hybrid-select-small-padding, var(--hybrid-select-local-small-padding));
+    padding-right: calc(var(--hybrid-select-icon-size, var(--hybrid-select-local-icon-size)) + 20px);
   }
 
   :host([size='medium']) .wrapper {
     min-height: var(--hybrid-select-medium-height, var(--hybrid-select-local-medium-height));
     font-size: var(--hybrid-select-medium-font-size, var(--hybrid-select-local-medium-font-size));
-    padding: 0;
+  }
+
+  :host([size='medium']) .select-trigger {
+    padding: var(--hybrid-select-medium-padding, var(--hybrid-select-local-medium-padding));
+    padding-right: calc(var(--hybrid-select-icon-size, var(--hybrid-select-local-icon-size)) + 20px);
   }
 
   :host([size='large']) .wrapper {
     min-height: var(--hybrid-select-large-height, var(--hybrid-select-local-large-height));
     font-size: var(--hybrid-select-large-font-size, var(--hybrid-select-local-large-font-size));
-    padding: 0;
+  }
+
+  :host([size='large']) .select-trigger {
+    padding: var(--hybrid-select-large-padding, var(--hybrid-select-local-large-padding));
+    padding-right: calc(var(--hybrid-select-icon-size, var(--hybrid-select-local-icon-size)) + 20px);
   }
 
   /* Status variants */
@@ -99,6 +112,10 @@ export const styles = css`
                 var(--hybrid-select-transition-timing, var(--hybrid-select-local-transition-timing));
     cursor: pointer;
     outline: none;
+    margin: var(--hybrid-select-wrapper-margin, 0);
+    min-height: var(--hybrid-select-min-height, var(--hybrid-select-local-min-height));
+    /* Ensure dropdown can overflow the wrapper */
+    overflow: visible;
   }
 
   .wrapper:hover:not(:disabled) {
@@ -115,14 +132,16 @@ export const styles = css`
   .select {
     display: flex;
     flex-direction: column;
-    position: relative;
   }
 
   /* Select trigger (main display area) */
   .select-trigger {
     display: flex;
     align-items: center;
-    padding: 0 calc(var(--hybrid-select-icon-size, var(--hybrid-select-local-icon-size)) + 20px) 0 12px;
+    padding: var(--hybrid-select-padding-top, var(--hybrid-select-local-padding-top)) 
+             calc(var(--hybrid-select-icon-size, var(--hybrid-select-local-icon-size)) + 20px) 
+             var(--hybrid-select-padding-bottom, var(--hybrid-select-local-padding-bottom)) 
+             var(--hybrid-select-padding-left, var(--hybrid-select-local-padding-left));
     color: var(--hybrid-select-text-color, var(--hybrid-select-local-text-color));
     font-size: inherit;
     line-height: inherit;
@@ -212,6 +231,7 @@ export const styles = css`
     /* Default positioning - will be overridden by controller when opened */
     position: absolute;
     top: 100%;
+    margin-top: 1px;
     left: 0;
     right: 0;
     background-color: var(--hybrid-select-dropdown-background, var(--hybrid-select-local-dropdown-background));
@@ -219,7 +239,7 @@ export const styles = css`
             var(--hybrid-select-dropdown-border-color, var(--hybrid-select-local-dropdown-border-color));
     border-radius: var(--hybrid-select-border-radius, var(--hybrid-select-local-border-radius));
     box-shadow: var(--hybrid-select-dropdown-shadow, var(--hybrid-select-local-dropdown-shadow));
-    z-index: 1000;
+    z-index: var(--hybrid-select-dropdown-z-index, var(--hybrid-select-local-dropdown-z-index));
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -229,11 +249,20 @@ export const styles = css`
     /* Ensure proper containment and exact wrapper width */
     box-sizing: border-box;
     width: 100%;
+    /* Create new stacking context to prevent layering issues */
+    isolation: isolate;
+    /* Ensure solid background to prevent visual bleed-through */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    /* Force above other elements */
+    transform: translateZ(0);
   }
 
   .options.placement-top {
     top: auto;
     bottom: 100%;
+    margin-bottom: 1px;
+    margin-top: 0;
     animation: dropdown-enter-top var(--hybrid-select-dropdown-animation-duration, var(--hybrid-select-local-dropdown-animation-duration)) ease-out;
   }
 

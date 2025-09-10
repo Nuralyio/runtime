@@ -9,8 +9,11 @@ export const selectVariables = css`
     /* Layout and sizing */
     --hybrid-select-local-width: 300px;
     --hybrid-select-local-min-height: 40px;
+    --hybrid-select-local-padding-top: 8px;
+    --hybrid-select-local-padding-bottom: 8px;
     --hybrid-select-local-padding-left: 12px;
     --hybrid-select-local-padding-right: 12px;
+    --hybrid-select-local-wrapper-margin: 0;
     --hybrid-select-local-border-radius: 6px;
     --hybrid-select-local-border-width: 1px;
     
@@ -29,6 +32,7 @@ export const selectVariables = css`
     --hybrid-select-local-dropdown-background: #ffffff;
     --hybrid-select-local-dropdown-border-color: #d9d9d9;
     --hybrid-select-local-dropdown-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+    --hybrid-select-local-dropdown-z-index: 9999;
     --hybrid-select-local-option-hover-background: #f5f5f5;
     --hybrid-select-local-option-selected-background: #e6f7ff;
     --hybrid-select-local-option-selected-color: #1677ff;
