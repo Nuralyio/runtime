@@ -489,6 +489,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
           'wrapper': true,
           ...validationClasses
         })}"
+        data-theme="${this.currentTheme}"
         tabindex="0"
         role="combobox"
         aria-expanded="${this.show}"

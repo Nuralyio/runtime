@@ -26,18 +26,66 @@ export const styles = css`
     cursor: not-allowed;
   }
 
-  /* Theme-specific styles */
-  :host([theme='dark']) {
+  /* 
+   * Light theme styles using data-theme attribute on wrapper element
+   * These are explicit light theme overrides when data-theme="light" is applied
+   */
+  .wrapper[data-theme="light"] {
+    /* Select wrapper light theme overrides */
+    --hybrid-select-local-background-color: #ffffff;
+    --hybrid-select-local-border-color: #d9d9d9;
+    --hybrid-select-local-text-color: #262626;
+    --hybrid-select-local-placeholder-color: #8c8c8c;
+    --hybrid-select-local-hover-border-color: #1677ff;
+    --hybrid-select-local-focus-border-color: #1677ff;
+    
+    /* Dropdown light theme overrides */
+    --hybrid-select-local-dropdown-background: #ffffff;
+    --hybrid-select-local-dropdown-border-color: #d9d9d9;
+    --hybrid-select-local-option-hover-background: #f5f5f5;
+    --hybrid-select-local-option-selected-background: #e6f7ff;
+    --hybrid-select-local-option-selected-color: #1677ff;
+    
+    /* Tag styles for multi-select light theme */
+    --hybrid-select-local-tag-background: #f0f0f0;
+    --hybrid-select-local-tag-color: #262626;
+    --hybrid-select-local-tag-close-color: #8c8c8c;
+    --hybrid-select-local-tag-close-hover-color: #da1e28;
+    
+    /* Icon colors for light theme */
+    --hybrid-select-local-icon-color: #8c8c8c;
+    --hybrid-select-local-icon-hover-color: #1677ff;
+  }
+
+  /* 
+   * Dark theme styles using data-theme attribute on wrapper element
+   * These override the light theme defaults when data-theme="dark" is applied
+   */
+  .wrapper[data-theme="dark"] {
+    /* Select wrapper dark theme overrides */
     --hybrid-select-local-background-color: #262626;
     --hybrid-select-local-border-color: #424242;
     --hybrid-select-local-text-color: #ffffff;
     --hybrid-select-local-placeholder-color: #8c8c8c;
+    --hybrid-select-local-hover-border-color: #4096ff;
+    --hybrid-select-local-focus-border-color: #4096ff;
+    
+    /* Dropdown dark theme overrides */
     --hybrid-select-local-dropdown-background: #262626;
     --hybrid-select-local-dropdown-border-color: #424242;
     --hybrid-select-local-option-hover-background: #393939;
     --hybrid-select-local-option-selected-background: #1e3a5f;
-    --hybrid-select-local-hover-border-color: #4096ff;
-    --hybrid-select-local-focus-border-color: #4096ff;
+    --hybrid-select-local-option-selected-color: #4096ff;
+    
+    /* Tag styles for multi-select dark theme */
+    --hybrid-select-local-tag-background: #393939;
+    --hybrid-select-local-tag-color: #ffffff;
+    --hybrid-select-local-tag-close-color: #8c8c8c;
+    --hybrid-select-local-tag-close-hover-color: #ff4d4f;
+    
+    /* Icon colors for dark theme */
+    --hybrid-select-local-icon-color: #8c8c8c;
+    --hybrid-select-local-icon-hover-color: #4096ff;
   }
 
   /* Size variants */
