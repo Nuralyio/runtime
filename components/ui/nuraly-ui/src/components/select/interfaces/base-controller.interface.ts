@@ -27,6 +27,7 @@ export interface SelectHost {
   placeholder: string;
   show: boolean;
   searchable: boolean;
+  clearable: boolean;
   searchPlaceholder: string;
   searchQuery: string;
   requestUpdate(): void;

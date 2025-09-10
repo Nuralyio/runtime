@@ -288,7 +288,7 @@ export const styles = css`
     border-radius: var(--hybrid-select-border-radius, var(--hybrid-select-local-border-radius));
     box-shadow: var(--hybrid-select-dropdown-shadow, var(--hybrid-select-local-dropdown-shadow));
     z-index: var(--hybrid-select-dropdown-z-index, var(--hybrid-select-local-dropdown-z-index));
-    max-height: 200px;
+    max-height: var(--hybrid-select-dropdown-max-height, var(--hybrid-select-local-dropdown-max-height));
     overflow-y: auto;
     overflow-x: hidden;
     display: none;

@@ -12,3 +12,6 @@ export { EventHandlerMixin, type EventHandlerCapable } from './event-handler-mix
 
 // Export utility functions
 export { throttle, debounce, rafThrottle } from './utils.js';
+
+// Export shared controllers
+export * from './controllers/index.js';

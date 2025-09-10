@@ -60,6 +60,9 @@ import { SelectHost } from './interfaces/index.js';
  * 
  * <!-- With search functionality -->
  * <hy-select searchable search-placeholder="Search options..."></hy-select>
+ * 
+ * <!-- Without clear button -->
+ * <hy-select clearable="false"></hy-select>
  * ```
  * 
  * @fires nr-change - Selection changed
@@ -78,6 +81,7 @@ import { SelectHost } from './interfaces/index.js';
  * @cssproperty --select-text-color - Text color
  * @cssproperty --select-focus-color - Focus indicator color
  * @cssproperty --select-dropdown-shadow - Dropdown shadow
+ * @cssproperty --select-dropdown-max-height - Maximum height of dropdown
  * @cssproperty --select-no-options-color - No options message text color
  * @cssproperty --select-no-options-icon-color - No options icon color
  * @cssproperty --select-no-options-padding - Padding for no options message
@@ -152,6 +156,10 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   @property({ type: Boolean, reflect: true })
   searchable: boolean = false;
   
+  /** Enable clear button to clear all selections */
+  @property({ type: Boolean, reflect: true })
+  clearable: boolean = true;
+  
   /** Placeholder text for the search input */
   @property({ type: String, attribute: 'search-placeholder' })
   searchPlaceholder: string = 'Search options...';
@@ -159,6 +167,10 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   /** Current search query */
   @property({ type: String })
   searchQuery: string = '';
+
+  /** Maximum height of the options dropdown */
+  @property({ type: String, attribute: 'max-height' })
+  maxHeight: string = '';
 
   /** Options dropdown container element */
   @query('.options') 
@@ -520,6 +532,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
             class="options"
             role="listbox"
             aria-multiselectable="${this.multiple}"
+            style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
           >
             ${this.searchable ? this.renderSearchInput() : nothing}
             ${this.renderSelectOptions()}
@@ -559,7 +572,11 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
         <hy-icon name="angle-down" class="arrow-icon"></hy-icon>
       </button>
       
-      <div class="options" role="listbox">
+      <div 
+        class="options" 
+        role="listbox"
+        style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
+      >
         ${this.searchable ? this.renderSearchInput() : nothing}
         ${this.renderSelectOptions()}
       </div>
@@ -572,7 +589,11 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   private renderSlot() {
     return html`
       <slot name="trigger" @click=${this.handleTriggerClick}></slot>
-      <div class="options" role="listbox">
+      <div 
+        class="options" 
+        role="listbox"
+        style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
+      >
         ${this.searchable ? this.renderSearchInput() : nothing}
         ${this.renderSelectOptions()}
       </div>
@@ -624,7 +645,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
    * Renders the clear all selections button when applicable
    */
   private renderClearButton(selectedOptions: SelectOption[]) {
-    if (selectedOptions.length === 0 || this.disabled) {
+    if (!this.clearable || selectedOptions.length === 0 || this.disabled) {
       return nothing;
     }
 

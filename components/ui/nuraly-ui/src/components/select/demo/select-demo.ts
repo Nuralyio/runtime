@@ -237,6 +237,25 @@ export class SlectDemoElement extends LitElement {
       >
         <span slot="label">large select</span>
       </hy-select>
+      <br /><br />
+      <br /><br />
+
+      <hr />
+      <br /><br />
+      <h3>Without clear button (clearable=false)</h3>
+      <hy-select
+        .clearable=${false}
+        multiple
+        .defaultValue="${['Abuja', 'Nairobi']}"
+        .options=${this.options}
+        @nr-change=${(e: any) => {
+          this.selectedOptions = e.detail.value;
+          console.log(this.selectedOptions);
+        }}
+      >
+        <span slot="label">No clear button available</span>
+        <span slot="helper-text">The clear button is hidden even when options are selected</span>
+      </hy-select>
     `;
   }
 }

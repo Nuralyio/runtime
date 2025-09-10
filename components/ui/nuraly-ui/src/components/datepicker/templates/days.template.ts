@@ -1,5 +1,5 @@
 import {html, TemplateResult} from 'lit';
-import {DateRawObject, IDayPresentation, INavigationDate} from '../datepicker.types.js';
+import {DateRawObject, IDayPresentation, INavigationDate} from '../datepicker.type.js';
 import {todayIsTheDay} from '../core/day.helper.js';
 import {capitalizeFirstLetter} from '../core/string.helper.js';
 import {getMonthDetails} from '../core/month.helper.js';
@@ -24,22 +24,34 @@ export const renderDays = (
     days
   );
 
-  const dayHeaderItem = (shortDay: string) =>
-    html`<div class="day-header-item">${capitalizeFirstLetter(shortDay)}</div>`;
-
   const dayContainer = (day: IDayPresentation) => {
     const active = todayIsTheDay(day, dateRawObject, isRange) && day.valid;
     const isToday = currentYear == day.year && currentMonth == day.month + 1 && currentDay == day.date;
 
     return html`<div
-      class="day-container ${classMap({'day-active': active, 'day-invalid': !day.valid, today: isToday})}"
+      class="day-cell ${classMap({
+        'selected': active, 
+        'disabled': !day.valid, 
+        'today': isToday,
+        'in-range': isRange && active
+      })}"
       @click=${() => selectDay(day)}
+      role="gridcell"
+      tabindex="-1"
+      aria-label="${day.date}"
     >
       ${day.date}
     </div>`;
   };
 
-  return html`<div class="days-container">
-    ${weekdaysShort.map(dayHeaderItem)} ${daysPresentation?.map(dayContainer)}
+  return html`<div class="days-grid" role="grid" aria-label="Calendar days">
+    <div class="weekdays-header" role="row">
+      ${weekdaysShort.map((shortDay) => 
+        html`<div class="weekday-header" role="columnheader">${capitalizeFirstLetter(shortDay)}</div>`
+      )}
+    </div>
+    <div class="days-body" role="rowgroup">
+      ${daysPresentation?.map(dayContainer)}
+    </div>
   </div>`;
 };
