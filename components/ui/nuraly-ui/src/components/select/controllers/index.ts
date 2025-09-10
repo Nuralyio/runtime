@@ -4,3 +4,5 @@ export { SelectKeyboardController } from './keyboard.controller.js';
 export { SelectDropdownController } from './dropdown.controller.js';
 export { SelectFocusController } from './focus.controller.js';
 export { SelectValidationController } from './validation.controller.js';
+export { SelectSearchController } from './search.controller.js';
+export { SelectEventController } from './event.controller.js';

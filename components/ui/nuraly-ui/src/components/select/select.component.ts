@@ -14,8 +14,8 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
 // Import types
-import { 
-  SelectOption, 
+import {
+  SelectOption,
   SelectType,
   SelectSize,
   SelectStatus
@@ -27,7 +27,9 @@ import {
   SelectKeyboardController,
   SelectDropdownController,
   SelectFocusController,
-  SelectValidationController
+  SelectValidationController,
+  SelectSearchController,
+  SelectEventController
 } from './controllers/index.js';
 
 // Import interfaces
@@ -88,11 +90,8 @@ import { SelectHost } from './interfaces/index.js';
 export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements SelectHost {
   static override styles = styles;
   
-  // Temporarily disable dependency validation
-  override requiredComponents = [];
+  override requiredComponents = [ "nr-input", "hy-icon" ];
 
-  // === Properties ===
-  
   /** Array of options to display in the select dropdown */
   @property({ type: Array }) 
   options: SelectOption[] = [];
@@ -161,8 +160,6 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   @property({ type: String })
   searchQuery: string = '';
 
-  // === Query selectors ===
-  
   /** Options dropdown container element */
   @query('.options') 
   optionsElement!: HTMLElement;
@@ -175,8 +172,6 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   @query('.search-input')
   searchInput?: HTMLInputElement;
 
-  // === Controller instances ===
-  
   /** Handles option selection logic */
   private selectionController = new SelectSelectionController(this);
   
@@ -191,15 +186,18 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   
   /** Handles validation logic */
   private validationController = new SelectValidationController(this, this.selectionController);
-
-  // === Lifecycle methods ===
   
+  /** Handles search/filter functionality */
+  private searchController = new SelectSearchController(this);
+  
+  /** Handles all event management */
+  private eventController = new SelectEventController(this);
+
   /**
    * Component connected to DOM - initialize base functionality
    */
   override connectedCallback(): void {
     super.connectedCallback();
-    // Window click listener is setup only when dropdown opens for better performance
   }
 
   /**
@@ -207,7 +205,6 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
    */
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.removeEventListeners();
   }
 
   /**
@@ -351,151 +348,121 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     this.validationController.setCustomValidity(message);
   }
 
-  // === Private Event Handlers ===
+  /**
+   * Searches for options with the given query
+   * @param query - Search query string
+   */
+  searchOptions(query: string): void {
+    this.searchController.search(query);
+  }
+
+  /**
+   * Clears the current search query
+   */
+  clearSearch(): void {
+    this.searchController.clearSearch();
+  }
+
+  /**
+   * Gets the filtered options based on current search
+   * @returns Array of filtered options
+   */
+  getSearchFilteredOptions(): SelectOption[] {
+    return this.searchController.getFilteredOptions(this.options);
+  }
+
+  /**
+   * Gets the current search query
+   * @returns Current search query string
+   */
+  getCurrentSearchQuery(): string {
+    return this.searchController.searchQuery;
+  }
+
+  /**
+   * Manually trigger setup of global event listeners
+   */
+  setupGlobalEventListeners(): void {
+    this.eventController.setupEventListeners();
+  }
+
+  /**
+   * Manually trigger removal of global event listeners
+   */
+  removeGlobalEventListeners(): void {
+    this.eventController.removeEventListeners();
+  }
+
   
   /**
    * Handles clicks on the select trigger element
    */
   private handleTriggerClick = (event: Event): void => {
-    if (this.disabled) return;
-    event.preventDefault();
-    event.stopPropagation(); // Prevent window click handler from interfering
-    this.toggleDropdown();
+    this.eventController.handleTriggerClick(event);
   };
 
   /**
    * Handles clicks on individual options
    */
   private handleOptionClick = (event: Event, option: SelectOption): void => {
-    event.stopPropagation();
-    if (option.disabled) return;
-    
-    this.selectOption(option);
-    
-    // Auto-close dropdown for single selection mode
-    if (!this.multiple) {
-      this.closeDropdown();
-    }
+    this.eventController.handleOptionClick(event, option);
   };
 
   /**
    * Handles removal of selected tags in multiple selection mode
    */
   private handleTagRemove = (event: Event, option: SelectOption): void => {
-    event.stopPropagation();
-    this.unselectOption(option);
+    this.eventController.handleTagRemove(event, option);
   };
 
   /**
    * Handles the clear all selections button
    */
   private handleClearAll = (event: Event): void => {
-    event.stopPropagation();
-    this.clearSelection();
+    this.eventController.handleClearAll(event);
   };
 
   /**
    * Handles keyboard navigation and interactions
    */
   private handleKeyDown = (event: KeyboardEvent): void => {
-    this.keyboardController.handleKeyDown(event);
+    this.eventController.handleKeyDown(event);
   };
 
   /**
    * Handles focus events
    */
   private handleFocus = (): void => {
-    this.focusController.handleFocus();
+    this.eventController.handleFocus();
   };
 
   /**
    * Handles blur events
    */
   private handleBlur = (): void => {
-    this.focusController.handleBlur();
-    // Dropdown closing is managed by window click handler for better UX
-  };
-
-  /**
-   * Handles clicks outside the component to close dropdown
-   */
-  private handleWindowClick = (event: Event): void => {
-    const target = event.target as Element;
-    if (!this.contains(target)) {
-      this.closeDropdown();
-    }
-  };
-
-  /**
-   * Handles search input changes
-   */
-  private handleSearchInput = (event: CustomEvent): void => {
-    this.searchQuery = event.detail.value || '';
-    this.requestUpdate();
-  };
-
-  /**
-   * Handles search clear button click
-   */
-  private handleSearchClear = (): void => {
-    this.searchQuery = '';
-    this.requestUpdate();
-  };
-
-  /**
-   * Handles search input key events
-   */
-  private handleSearchKeyDown = (event: KeyboardEvent): void => {
-    // Handle navigation keys by passing them to keyboard controller
-    if (['ArrowDown', 'ArrowUp', 'Enter', 'Home', 'End'].includes(event.key)) {
-      // Don't stop propagation for navigation keys - let keyboard controller handle them
-      this.keyboardController.handleKeyDown(event);
-      return;
-    }
-    
-    // Stop propagation for other keys to prevent them from bubbling up
-    event.stopPropagation();
-    
-    // Handle escape to close dropdown
-    if (event.key === 'Escape') {
-      this.closeDropdown();
-      this.focus();
-    }
+    this.eventController.handleBlur();
   };
 
   /**
    * Filters options based on search query
    */
   private getFilteredOptions(): SelectOption[] {
-    if (!this.searchable || !this.searchQuery.trim()) {
-      return this.options;
-    }
-
-    const query = this.searchQuery.toLowerCase().trim();
-    return this.options.filter(option => 
-      option.label.toLowerCase().includes(query) ||
-      option.value.toLowerCase().includes(query) ||
-      (option.description && option.description.toLowerCase().includes(query))
-    );
+    return this.searchController.getFilteredOptions(this.options);
   };
 
-  // === Event Listener Management ===
-  
   /**
    * Sets up global event listeners (called when dropdown opens)
    */
   public setupEventListeners(): void {
-    window.addEventListener('click', this.handleWindowClick);
+    this.eventController.setupEventListeners();
   }
 
   /**
    * Removes global event listeners (called on disconnect or dropdown close)
    */
   public removeEventListeners(): void {
-    window.removeEventListener('click', this.handleWindowClick);
+    this.eventController.removeEventListeners();
   }
-
-  // === Main Render Method ===
   
   /**
    * Main render method that delegates to specific type renderers
@@ -508,9 +475,6 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
       [SelectType.Slot, () => this.renderSlot()],
     ])}`;
   }
-
-  // === Type-Specific Render Methods ===
-  
   /**
    * Renders the default select appearance with full features
    */
@@ -614,8 +578,6 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     `;
   }
 
-  // === Helper Render Methods ===
-  
   /**
    * Renders the selected content in the trigger area
    */
@@ -699,19 +661,8 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     }
     
     // Show "no results" message when search returns no results
-    if (this.searchable && this.searchQuery.trim() && filteredOptions.length === 0) {
-      return html`
-        <div class="no-options" role="option" aria-disabled="true">
-          <div class="no-options-content">
-            <hy-icon 
-              name="search" 
-              class="no-options-icon"
-              aria-hidden="true">
-            </hy-icon>
-            <span class="no-options-text">No results found for "${this.searchQuery}"</span>
-          </div>
-        </div>
-      `;
+    if (this.searchController.hasNoResults(this.options)) {
+      return this.searchController.renderNoResults();
     }
     
     // Cache the focused option to avoid multiple controller accesses
@@ -762,28 +713,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
    * Renders the search input when searchable is enabled
    */
   private renderSearchInput() {
-    return html`
-      <div class="search-container">
-        <nr-input
-          type="text"
-          class="search-input"
-          placeholder="${this.searchPlaceholder}"
-          .value="${this.searchQuery}"
-          allowClear
-          @nr-input="${this.handleSearchInput}"
-          @nr-clear="${this.handleSearchClear}"
-          @keydown="${this.handleSearchKeyDown}"
-          @click="${(e: Event) => e.stopPropagation()}"
-        >
-          <hy-icon 
-            name="search" 
-            class="search-icon" 
-            slot="prefix"
-            aria-hidden="true">
-          </hy-icon>
-        </nr-input>
-      </div>
-    `;
+    return this.searchController.renderSearchInput();
   }
 
   /**
