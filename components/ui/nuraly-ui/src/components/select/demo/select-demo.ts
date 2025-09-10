@@ -34,8 +34,9 @@ export class SlectDemoElement extends LitElement {
     return html`
       <h3>Default: single selection without default values</h3>
       <hy-select
+        placeholder="Choose a city..."
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -50,8 +51,8 @@ export class SlectDemoElement extends LitElement {
 
       <hy-select
         .options=${this.options}
-        .defaultSelected="${['Duplin']}"
-        @changed=${(e: any) => {
+        .defaultValue="${['Duplin']}"
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -67,7 +68,7 @@ export class SlectDemoElement extends LitElement {
       <hy-select
         .options=${this.options}
         .disabled=${true}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -83,9 +84,9 @@ export class SlectDemoElement extends LitElement {
       <h3>Multiple selection without default values</h3>
 
       <hy-select
-        selectionMode="multiple"
+        multiple
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -99,9 +100,9 @@ export class SlectDemoElement extends LitElement {
       <h3>single selection with default value</h3>
 
       <hy-select
-        .defaultSelected="${['Abuja']}"
+        .defaultValue="${['Abuja']}"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -114,11 +115,11 @@ export class SlectDemoElement extends LitElement {
       <br /><br />
       <h3>Multiple selection with default values and empty placeholder</h3>
       <hy-select
-        selectionMode="multiple"
+        multiple
         placeholder=""
-        .defaultSelected="${['Abuja', 'Nairobi']}"
+        .defaultValue="${['Abuja', 'Nairobi']}"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -133,7 +134,7 @@ export class SlectDemoElement extends LitElement {
       <hy-select
         status="warning"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -147,7 +148,7 @@ export class SlectDemoElement extends LitElement {
         status="warning"
         .disabled=${true}
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -162,7 +163,7 @@ export class SlectDemoElement extends LitElement {
       <hy-select
         status="error"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -178,7 +179,7 @@ export class SlectDemoElement extends LitElement {
         .disabled=${true}
         status="error"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -195,7 +196,7 @@ export class SlectDemoElement extends LitElement {
       <hy-select
         type="inline"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -213,7 +214,7 @@ export class SlectDemoElement extends LitElement {
       <hy-select
         size="small"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}
@@ -229,7 +230,7 @@ export class SlectDemoElement extends LitElement {
       <hy-select
         size="large"
         .options=${this.options}
-        @changed=${(e: any) => {
+        @nr-change=${(e: any) => {
           this.selectedOptions = e.detail.value;
           console.log(this.selectedOptions);
         }}

@@ -1,9 +1,21 @@
 {
     "name": "@nuralyui/select",
-    "version": "0.0.5",
-    "description": "",
+    "version": "0.1.0",
+    "description": "A comprehensive select component with advanced features including multi-selection, keyboard navigation, validation, and accessibility support.",
     "main": "index.js",
     "type": "module",
+    "keywords": [
+        "select",
+        "dropdown",
+        "combobox",
+        "multi-select",
+        "web-components",
+        "lit-element",
+        "typescript",
+        "accessibility",
+        "validation",
+        "keyboard-navigation"
+    ],
     "dependencies": {
         "dayjs": "^1.11.7"
     },
