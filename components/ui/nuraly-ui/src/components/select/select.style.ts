@@ -336,6 +336,62 @@ export const styles = css`
     }
   }
 
+  /* Search container - sticky at top of dropdown */
+  .search-container {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--hybrid-select-dropdown-background, var(--hybrid-select-local-dropdown-background));
+    border-bottom: var(--hybrid-select-border-width, var(--hybrid-select-local-border-width)) solid 
+                   var(--hybrid-select-dropdown-border-color, var(--hybrid-select-local-dropdown-border-color));
+    padding: 8px;
+    margin: 0;
+    /* Ensure it stays above options during scroll */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    /* Ensure proper stacking and smooth scrolling */
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Search input styling */
+  .search-container .search-input {
+    width: 100%;
+    --hybrid-input-border-radius: var(--hybrid-select-border-radius, var(--hybrid-select-local-border-radius));
+    --hybrid-input-background-color: var(--hybrid-select-background-color, var(--hybrid-select-local-background-color));
+    --hybrid-input-border-color: var(--hybrid-select-border-color, var(--hybrid-select-local-border-color));
+    --hybrid-input-text-color: var(--hybrid-select-text-color, var(--hybrid-select-local-text-color));
+    --hybrid-input-placeholder-color: var(--hybrid-select-placeholder-color, var(--hybrid-select-local-placeholder-color));
+  }
+
+  /* Search icon in the search input */
+  .search-container .search-icon {
+    --hybrid-icon-color: var(--hybrid-select-icon-color, var(--hybrid-select-local-icon-color));
+  }
+
+  /* Dark theme overrides for search container */
+  .wrapper[data-theme="dark"] .search-container {
+    background-color: var(--hybrid-select-local-dropdown-background);
+    border-bottom-color: var(--hybrid-select-local-dropdown-border-color);
+  }
+
+  .wrapper[data-theme="dark"] .search-container .search-input {
+    --hybrid-input-background-color: var(--hybrid-select-local-background-color);
+    --hybrid-input-border-color: var(--hybrid-select-local-border-color);
+    --hybrid-input-text-color: var(--hybrid-select-local-text-color);
+    --hybrid-input-placeholder-color: var(--hybrid-select-local-placeholder-color);
+  }
+
+  .wrapper[data-theme="dark"] .search-container .search-icon {
+    --hybrid-icon-color: var(--hybrid-select-local-icon-color);
+  }
+
+  /* Options list container - ensure proper scroll behavior with sticky search */
+  .options:has(.search-container) {
+    /* Add small padding-top when search is present to ensure proper separation */
+    padding-top: 0;
+  }
+
   /* Option items */
   .option {
     display: flex;
@@ -347,6 +403,11 @@ export const styles = css`
     cursor: pointer;
     transition: background-color var(--hybrid-select-transition-duration, var(--hybrid-select-local-transition-duration));
     position: relative;
+  }
+
+  /* First option after search container should have no extra margin */
+  .search-container + .option {
+    margin-top: 0;
   }
 
   .option:hover {
