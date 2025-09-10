@@ -992,52 +992,52 @@ export const FontSelection: Story = {
               { 
                 label: 'Courier New', 
                 value: 'Courier New, monospace',
-                content: html`<span style="font-family: Courier New, monospace;">Courier New</span>`
+                htmlContent: '<span style="font-family: Courier New, monospace;">Courier New</span>'
               },
               { 
                 label: 'Trebuchet MS', 
                 value: 'Trebuchet MS, sans-serif',
-                content: html`<span style="font-family: Trebuchet MS, sans-serif;">Trebuchet MS</span>`
+                htmlContent: '<span style="font-family: Trebuchet MS, sans-serif;">Trebuchet MS</span>'
               },
               { 
                 label: 'Palatino', 
                 value: 'Palatino, serif',
-                content: html`<span style="font-family: Palatino, serif;">Palatino</span>`
+                htmlContent: '<span style="font-family: Palatino, serif;">Palatino</span>'
               },
               { 
                 label: 'Impact', 
                 value: 'Impact, sans-serif',
-                content: html`<span style="font-family: Impact, sans-serif;">Impact</span>`
+                htmlContent: '<span style="font-family: Impact, sans-serif;">Impact</span>'
               },
               { 
                 label: 'Comic Sans MS', 
                 value: 'Comic Sans MS, cursive',
-                content: html`<span style="font-family: Comic Sans MS, cursive;">Comic Sans MS</span>`
+                htmlContent: '<span style="font-family: Comic Sans MS, cursive;">Comic Sans MS</span>'
               },
               { 
                 label: 'Lucida Console', 
                 value: 'Lucida Console, monospace',
-                content: html`<span style="font-family: Lucida Console, monospace;">Lucida Console</span>`
+                htmlContent: '<span style="font-family: Lucida Console, monospace;">Lucida Console</span>'
               },
               { 
                 label: 'Tahoma', 
                 value: 'Tahoma, sans-serif',
-                content: html`<span style="font-family: Tahoma, sans-serif;">Tahoma</span>`
+                htmlContent: '<span style="font-family: Tahoma, sans-serif;">Tahoma</span>'
               },
               { 
                 label: 'System UI', 
                 value: 'system-ui, -apple-system, sans-serif',
-                content: html`<span style="font-family: system-ui, -apple-system, sans-serif;">System UI</span>`
+                htmlContent: '<span style="font-family: system-ui, -apple-system, sans-serif;">System UI</span>'
               },
               { 
                 label: 'Inter', 
                 value: 'Inter, sans-serif',
-                content: html`<span style="font-family: Inter, sans-serif;">Inter</span>`
+                htmlContent: '<span style="font-family: Inter, sans-serif;">Inter</span>'
               },
               { 
                 label: 'Roboto', 
                 value: 'Roboto, sans-serif',
-                content: html`<span style="font-family: Roboto, sans-serif;">Roboto</span>`
+                htmlContent: '<span style="font-family: Roboto, sans-serif;">Roboto</span>'
               }
             ]}
             placeholder="Select a font family..."
