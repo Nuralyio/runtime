@@ -3,6 +3,7 @@ import { html } from 'lit';
 import '../../dist/components/input/index.js';
 import '../../dist/components/button/index.js';
 import '../../dist/components/icon/index.js';
+import '../../dist/components/select/index.js';
 import '../../dist/components/datepicker/index.js';
 
 const meta: Meta = {
