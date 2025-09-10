@@ -1,7 +1,7 @@
 import { expect, fixture, html } from '@open-wc/testing';
-import '../date-picker.component';
-import { HyDatePickerElement } from '../date-picker.component';
-import { Mode } from '../datepicker.types';
+import '../datepicker.component';
+import { HyDatePickerElement } from '../datepicker.component';
+import { DatePickerMode } from '../datepicker.type';
 
 suite('HyDatePickerElement', () => {
   test('should be defined', async () => {
@@ -96,12 +96,14 @@ suite('HyDatePickerElement', () => {
     const dayInTheMonth = 2;
     (days[dayInTheMonth] as HTMLElement).click();
     await el.updateComplete;
-    expect(el.inputFieldValue).to.equal(`03/02/2023`);
+    // Access the input field value through the input element instead of private property
+    const input = el.shadowRoot!.querySelector('hy-input') as any;
+    expect(input.value).to.equal(`03/02/2023`);
   });
   test('should select a month correctly', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
     el.openedCalendar = true;
-    el.prevMode = Mode.Month;
+    el.mode = DatePickerMode.Month;
     await el.updateComplete;
     const months = el.shadowRoot!.querySelectorAll('.month-container')!;
     const monthIndex = 1;
@@ -111,7 +113,7 @@ suite('HyDatePickerElement', () => {
   test('should select a year correctly', async () => {
     const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
     el.openedCalendar = true;
-    el.prevMode = Mode.Year;
+    el.mode = DatePickerMode.Year;
     await el.updateComplete;
     const years = el.shadowRoot!.querySelectorAll('.year-container')!;
     const yearIndex = 1;

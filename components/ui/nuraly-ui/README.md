@@ -195,7 +195,7 @@ export default function App() {
       field-format="DD/MM/YYYY"
       date-value="20/11/2024"
       date-placeholder="Select date"
-      @date-change="handleDateChange"
+      @nr-date-change="handleDateChange"
     />
   </div>
 </template>

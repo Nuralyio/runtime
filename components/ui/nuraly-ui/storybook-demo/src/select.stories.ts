@@ -818,6 +818,106 @@ export const LargeDataset: Story = {
   `,
 };
 
+// Max height examples for dropdown control
+export const MaxHeightExamples: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Demonstrates how to control the maximum height of the dropdown options list. Useful for large datasets where you want to limit the dropdown size and add scrolling.'
+      }
+    }
+  },
+  args: {
+    searchable: true,
+    multiple: false,
+    placeholder: 'Select an option',
+  },
+  render: (args) => html`
+    <div style="display: grid; gap: 2rem; max-width: 600px;">
+      <div>
+        <h4 style="margin-bottom: 1rem; color: #333;">Default Height (200px)</h4>
+        <hy-select
+          .options=${Array.from({ length: 20 }, (_, i) => ({
+            label: `Option ${i + 1} - ${['Short', 'Medium length option', 'Very long option with lots of text'][i % 3]}`,
+            value: `option${i + 1}`,
+            description: `Description for option ${i + 1}`
+          }))}
+          placeholder=${args.placeholder}
+          ?searchable=${args.searchable}
+          ?multiple=${args.multiple}
+          max-height="200px"
+
+        ></hy-select>
+        <small style="color: #666; font-size: 0.875rem;">Default max-height: 200px</small>
+      </div>
+      
+      <div>
+        <h4 style="margin-bottom: 1rem; color: #333;">Compact Height (120px)</h4>
+        <hy-select
+          .options=${Array.from({ length: 20 }, (_, i) => ({
+            label: `Compact Option ${i + 1}`,
+            value: `compact${i + 1}`,
+            icon: ['star', 'heart', 'bookmark'][i % 3],
+            description: `Compact option ${i + 1}`
+          }))}
+          placeholder=${args.placeholder}
+          ?searchable=${args.searchable}
+          ?multiple=${args.multiple}
+          max-height="120px"
+        ></hy-select>
+        <small style="color: #666; font-size: 0.875rem;">max-height: 120px - More compact dropdown</small>
+      </div>
+      
+      <div>
+        <h4 style="margin-bottom: 1rem; color: #333;">Tall Height (350px)</h4>
+        <hy-select
+          .options=${Array.from({ length: 30 }, (_, i) => ({
+            label: `Extended Option ${i + 1}`,
+            value: `extended${i + 1}`,
+            icon: ['settings', 'user', 'folder', 'file', 'database'][i % 5],
+            description: `This is an extended option ${i + 1} with more detailed information`
+          }))}
+          placeholder=${args.placeholder}
+          ?searchable=${args.searchable}
+          ?multiple=${args.multiple}
+          max-height="350px"
+        ></hy-select>
+        <small style="color: #666; font-size: 0.875rem;">max-height: 350px - Taller dropdown shows more options</small>
+      </div>
+      
+      <div>
+        <h4 style="margin-bottom: 1rem; color: #333;">CSS Units Examples</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">rem units (8rem)</label>
+            <hy-select
+              .options=${Array.from({ length: 15 }, (_, i) => ({
+                label: `Rem Option ${i + 1}`,
+                value: `rem${i + 1}`
+              }))}
+              placeholder="8rem height"
+              max-height="8rem"
+            ></hy-select>
+          </div>
+          
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">vh units (20vh)</label>
+            <hy-select
+              .options=${Array.from({ length: 15 }, (_, i) => ({
+                label: `Viewport Option ${i + 1}`,
+                value: `vh${i + 1}`
+              }))}
+              placeholder="20vh height"
+              max-height="20vh"
+            ></hy-select>
+          </div>
+        </div>
+        <small style="color: #666; font-size: 0.875rem;">Supports any CSS unit: px, rem, em, vh, %</small>
+      </div>
+    </div>
+  `,
+};
+
 // Interactive example with events
 export const EventHandling: Story = {
   parameters: {
@@ -927,7 +1027,7 @@ export const Playground: Story = {
         ?invalid=${args.invalid}
         .errorMessage=${args.errorMessage}
         size=${args.size}
-        .maxHeight=${args.maxHeight}
+        max-height=${args.maxHeight}
         @change=${(e: any) => {
           console.log('Playground selection changed:', e.detail);
         }}

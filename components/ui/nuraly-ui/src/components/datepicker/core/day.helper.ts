@@ -1,4 +1,4 @@
-import {DateRawObject, IDayInfo, IDayPresentation} from '../datepicker.types.js';
+import {DateRawObject, IDayInfo, IDayPresentation} from '../datepicker.type.js';
 
 export const getDayDetails = ({dayIndex, month, year, numberOfDays, firstDay, days}: IDayInfo): IDayPresentation => {
   const date = dayIndex - firstDay;
@@ -47,7 +47,7 @@ export const todayIsTheDay = (day: IDayPresentation, dateRawObject: DateRawObjec
   let isTheDate = false;
   if (!isRange) {
     isTheDate =
-      day.year === dateRawObject.curentYear &&
+      day.year === dateRawObject.currentYear &&
       dateRawObject.currentMonth === day.month + 1 &&
       day.date === dateRawObject.currentDay;
   }

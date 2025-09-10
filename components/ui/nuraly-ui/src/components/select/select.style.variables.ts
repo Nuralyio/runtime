@@ -33,6 +33,7 @@ export const selectVariables = css`
     --hybrid-select-local-dropdown-border-color: #d9d9d9;
     --hybrid-select-local-dropdown-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
     --hybrid-select-local-dropdown-z-index: 9999;
+    --hybrid-select-local-dropdown-max-height: 200px;
     --hybrid-select-local-option-hover-background: #f5f5f5;
     --hybrid-select-local-option-selected-background: #e6f7ff;
     --hybrid-select-local-option-selected-color: #1677ff;

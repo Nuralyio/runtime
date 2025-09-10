@@ -1,14 +1,32 @@
-import { DropdownController, DropdownPosition, DropdownSpace } from '../interfaces/index.js';
-import { BaseSelectController } from './base.controller.js';
+import { ReactiveController, ReactiveControllerHost } from 'lit';
+import { DropdownController, DropdownHost, DropdownPosition, DropdownSpace } from './dropdown.interface.js';
 
 /**
- * Dropdown controller manages dropdown positioning, visibility, and interactions
+ * Shared dropdown controller for components that need dropdown functionality
+ * Based on the select component's dropdown controller but generalized for reuse
  */
-export class SelectDropdownController extends BaseSelectController implements DropdownController {
+export class SharedDropdownController implements ReactiveController, DropdownController {
+  private _host: ReactiveControllerHost & DropdownHost;
   private _isOpen: boolean = false;
   private _position: DropdownPosition = { top: 0, left: 0, width: 0, placement: 'bottom' };
   private _dropdownElement: HTMLElement | null = null;
   private _triggerElement: HTMLElement | null = null;
+
+  constructor(host: ReactiveControllerHost & DropdownHost) {
+    this._host = host;
+    this._host.addController(this);
+  }
+
+  hostConnected(): void {
+    window.addEventListener('resize', this.handleResize);
+    window.addEventListener('scroll', this.handleScroll, true);
+  }
+
+  hostDisconnected(): void {
+    this.close();
+    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('scroll', this.handleScroll, true);
+  }
 
   /**
    * Check if dropdown is open
@@ -31,8 +49,8 @@ export class SelectDropdownController extends BaseSelectController implements Dr
     try {
       if (!this._isOpen) {
         this._isOpen = true;
-        (this.host as any).show = true;
-        this.requestUpdate();
+        (this._host as any).show = true;
+        this._host.requestUpdate();
         
         // Always refresh elements before calculating position
         this.findElements();
@@ -42,18 +60,15 @@ export class SelectDropdownController extends BaseSelectController implements Dr
           this.calculatePosition();
         }, 10);
 
-        // Notify host to setup event listeners
-        if (this.host && typeof (this.host as any).setupEventListeners === 'function') {
+        // Notify host to setup event listeners if available
+        if (this._host && typeof (this._host as any).setupEventListeners === 'function') {
           setTimeout(() => {
-            (this.host as any).setupEventListeners();
+            (this._host as any).setupEventListeners();
           }, 50);
         }
 
-        // Focus search input if searchable
-        this.focusSearchInput();
-
-        this.dispatchEvent(
-          new CustomEvent('nr-dropdown-open', {
+        this._host.dispatchEvent(
+          new CustomEvent('dropdown-open', {
             bubbles: true,
             composed: true,
           })
@@ -71,17 +86,17 @@ export class SelectDropdownController extends BaseSelectController implements Dr
     try {
       if (this._isOpen) {
         this._isOpen = false;
-        (this.host as any).show = false;
+        (this._host as any).show = false;
         this.resetPosition();
-        this.requestUpdate();
+        this._host.requestUpdate();
 
-        // Notify host to remove event listeners
-        if (this.host && typeof (this.host as any).removeEventListeners === 'function') {
-          (this.host as any).removeEventListeners();
+        // Notify host to remove event listeners if available
+        if (this._host && typeof (this._host as any).removeEventListeners === 'function') {
+          (this._host as any).removeEventListeners();
         }
 
-        this.dispatchEvent(
-          new CustomEvent('nr-dropdown-close', {
+        this._host.dispatchEvent(
+          new CustomEvent('dropdown-close', {
             bubbles: true,
             composed: true,
           })
@@ -100,28 +115,6 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       this.close();
     } else {
       this.open();
-    }
-  }
-
-  /**
-   * Focus the search input if searchable is enabled
-   */
-  private focusSearchInput(): void {
-    try {
-      // Check if the host has searchable enabled
-      const host = this.host as any;
-      if (host && host.searchable) {
-        // Wait for the DOM to update and the input to be rendered
-        setTimeout(() => {
-          const searchInput = host.shadowRoot?.querySelector('.search-input') as any;
-          if (searchInput && typeof searchInput.focus === 'function') {
-            searchInput.focus();
-          }
-        }, 100); // Slightly longer delay to ensure the input is fully rendered
-      }
-    } catch (error) {
-      // Silently handle any focus errors to avoid breaking the dropdown
-      console.warn('Failed to focus search input:', error);
     }
   }
 
@@ -145,9 +138,27 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       const spaceBelow = viewportHeight - triggerRect.bottom;
       const spaceAbove = triggerRect.top;
 
-      // Determine optimal placement (we'll use a default height for calculation)
-      const estimatedDropdownHeight = 200; // Reasonable default
-      const placement = this.determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
+      // Get the actual height of the dropdown element for accurate placement calculation
+      let dropdownHeight = 200; // fallback
+      if (this._dropdownElement) {
+        // Temporarily make it visible to measure height
+        const originalDisplay = this._dropdownElement.style.display;
+        const originalVisibility = this._dropdownElement.style.visibility;
+        const originalPosition = this._dropdownElement.style.position;
+        
+        this._dropdownElement.style.visibility = 'hidden';
+        this._dropdownElement.style.display = 'block';
+        this._dropdownElement.style.position = 'absolute';
+        
+        dropdownHeight = this._dropdownElement.offsetHeight || this._dropdownElement.scrollHeight || 200;
+        
+        // Restore original styles
+        this._dropdownElement.style.display = originalDisplay;
+        this._dropdownElement.style.visibility = originalVisibility;
+        this._dropdownElement.style.position = originalPosition;
+      }
+      
+      const placement = this.determineOptimalPlacement(dropdownHeight, spaceAbove, spaceBelow);
       
       // Store the placement for applyPosition to use
       this._position = {
@@ -174,13 +185,7 @@ export class SelectDropdownController extends BaseSelectController implements Dr
         this._dropdownElement.style.removeProperty('top');
         this._dropdownElement.style.removeProperty('left');
         this._dropdownElement.style.removeProperty('width');
-        
-        // Only remove max-height if host doesn't have a custom maxHeight
-        const customMaxHeight = (this.host as any).maxHeight;
-        if (!customMaxHeight) {
-          this._dropdownElement.style.removeProperty('max-height');
-        }
-        
+        this._dropdownElement.style.removeProperty('max-height');
         this._dropdownElement.style.removeProperty('min-height');
         this._dropdownElement.style.removeProperty('height');
         this._dropdownElement.style.removeProperty('overflow-y');
@@ -209,6 +214,11 @@ export class SelectDropdownController extends BaseSelectController implements Dr
    */
   private findElements(): void {
     try {
+      // If elements are already set via setElements(), don't override them
+      if (this._dropdownElement && this._triggerElement) {
+        return;
+      }
+      
       const hostElement = this._host as any;
       
       // First priority: use the elements that were explicitly set via setElements()
@@ -221,8 +231,8 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       
       // Fallback: try to find from shadow DOM (but this can be problematic with multiple instances)
       if (hostElement.shadowRoot) {
-        this._dropdownElement = hostElement.shadowRoot.querySelector('.options');
-        this._triggerElement = hostElement.shadowRoot.querySelector('.wrapper');
+        this._dropdownElement = hostElement.shadowRoot.querySelector('.calendar-container, .month-dropdown, .year-dropdown');
+        this._triggerElement = hostElement.shadowRoot.querySelector('.datepicker-input, .toggle-month-view, .toggle-year-view');
       }
       
     } catch (error) {
@@ -262,8 +272,6 @@ export class SelectDropdownController extends BaseSelectController implements Dr
         return;
       }
 
-      // Check if host has a custom maxHeight set
-      const hostMaxHeight = (this.host as any).maxHeight;
       const { placement } = this._position;
       
       // Get the exact wrapper width including borders
@@ -277,21 +285,19 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       this._dropdownElement.style.width = `${wrapperWidth}px`; // Exact wrapper width in pixels
       this._dropdownElement.style.zIndex = '1000';
       this._dropdownElement.style.height = 'auto';
-      
-      // Only set maxHeight to 'none' if host doesn't have a custom maxHeight
-      if (!hostMaxHeight) {
-        this._dropdownElement.style.maxHeight = 'none';
-      }
-      
+      this._dropdownElement.style.maxHeight = 'none';
       this._dropdownElement.style.minHeight = 'auto';
       
       // Set position based on placement
+      console.log(`Applying ${placement} placement to dropdown`);
       if (placement === 'bottom') {
         this._dropdownElement.style.top = '100%';
         this._dropdownElement.style.bottom = 'auto';
+        console.log('Applied bottom placement: top=100%, bottom=auto');
       } else {
         this._dropdownElement.style.top = 'auto';
         this._dropdownElement.style.bottom = '100%';
+        console.log('Applied top placement: top=auto, bottom=100%');
       }
       
       // Force a layout to get the natural content height
@@ -310,21 +316,15 @@ export class SelectDropdownController extends BaseSelectController implements Dr
         availableSpace = triggerBounds.top - 10; // 10px margin from top
       }
       
-      if (hostMaxHeight) {
-        // Use the host's custom maxHeight and enable scrolling
-        this._dropdownElement.style.maxHeight = hostMaxHeight;
+      // Apply the calculated constraints
+      if (naturalHeight > availableSpace) {
+        // Content is larger than available space, so constrain and add scrolling
+        this._dropdownElement.style.maxHeight = `${availableSpace}px`;
         this._dropdownElement.style.overflowY = 'auto';
       } else {
-        // Apply the calculated constraints based on available space
-        if (naturalHeight > availableSpace) {
-          // Content is larger than available space, so constrain and add scrolling
-          this._dropdownElement.style.maxHeight = `${availableSpace}px`;
-          this._dropdownElement.style.overflowY = 'auto';
-        } else {
-          // Content fits, so use natural height with auto overflow for consistency
-          this._dropdownElement.style.maxHeight = `${naturalHeight}px`;
-          this._dropdownElement.style.overflowY = 'auto';
-        }
+        // Content fits, so use natural height with auto overflow for consistency
+        this._dropdownElement.style.maxHeight = `${naturalHeight}px`;
+        this._dropdownElement.style.overflowY = 'auto';
       }
       
       // Add placement class for styling
@@ -385,18 +385,9 @@ export class SelectDropdownController extends BaseSelectController implements Dr
   };
 
   /**
-   * Host connected lifecycle
+   * Handle errors with fallback
    */
-  override hostConnected(): void {
-    window.addEventListener('resize', this.handleResize);
-    window.addEventListener('scroll', this.handleScroll, true);
-  }
-
-  /**
-   * Host disconnected lifecycle
-   */
-  override hostDisconnected(): void {
-    window.removeEventListener('resize', this.handleResize);
-    window.removeEventListener('scroll', this.handleScroll, true);
+  private handleError(error: Error, context: string): void {
+    console.warn(`SharedDropdownController [${context}]:`, error);
   }
 }
