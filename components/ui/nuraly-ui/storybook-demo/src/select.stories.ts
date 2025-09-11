@@ -8,7 +8,7 @@ const meta: Meta = {
   title: 'Components/Select',
   component: 'hy-select',
   parameters: {
-    layout: 'padded',
+    layout: 'centered',
     docs: {
       description: {
         component: `
