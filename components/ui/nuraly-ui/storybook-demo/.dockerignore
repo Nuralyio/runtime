@@ -1,0 +1,45 @@
+# Node modules
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# SSL certificates (if using)
+ssl/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+build-storybook.log
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts (they will be built inside container)
+storybook-static
+dist
+build
+
+# Documentation
+DOCKER.md
+README.md
