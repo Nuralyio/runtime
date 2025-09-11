@@ -10,7 +10,12 @@
     "serve-storybook": "npx http-server storybook-static",
     "build-components": "cd .. && npm run build",
     "dev": "npm run build-components && npm run storybook",
-    "chromatic": "npx chromatic --project-token=chpt_f284a5800be7060"
+    "chromatic": "npx chromatic --project-token=chpt_f284a5800be7060",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker compose up --build",
+    "docker:build": "docker compose build",
+    "docker:stop": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.0.0",
