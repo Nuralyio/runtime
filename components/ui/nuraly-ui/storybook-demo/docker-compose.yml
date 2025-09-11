@@ -10,26 +10,9 @@ services:
       - "6001:80"
     environment:
       - NODE_ENV=production
-    restart: unless-stopped
+    restart: always
     networks:
       - storybook-network
-
-  # Optional: Add a reverse proxy for SSL and domain management
-  nginx-proxy:
-    image: nginx:alpine
-    container_name: storybook-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx-proxy.conf:/etc/nginx/conf.d/default.conf
-      - ./ssl:/etc/ssl/certs
-    depends_on:
-      - storybook
-    networks:
-      - storybook-network
-    profiles:
-      - production
 
 networks:
   storybook-network:
