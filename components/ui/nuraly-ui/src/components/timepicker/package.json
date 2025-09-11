@@ -1,0 +1,63 @@
+{
+  "name": "@nuralyui/timepicker",
+  "version": "0.1.1",
+  "description": "NuralyUI TimePicker - A comprehensive time selection component with clock interface, multiple formats, and validation",
+  "type": "module",
+  "main": "./index.js",
+  "module": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./timepicker.component.js": {
+      "types": "./timepicker.component.d.ts", 
+      "default": "./timepicker.component.js"
+    }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "controllers/",
+    "interfaces/",
+    "utils/",
+    "demo/",
+    "test/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "wtr \"**/*.test.js\" --node-resolve",
+    "test:watch": "wtr \"**/*.test.js\" --node-resolve --watch",
+    "demo": "wds --open demo/ --node-resolve"
+  },
+  "keywords": [
+    "timepicker",
+    "time",
+    "clock",
+    "web-components",
+    "lit",
+    "nuraly",
+    "ui-components",
+    "time-selector",
+    "12h-format",
+    "24h-format"
+  ],
+  "author": "Nuraly Team <team@nuraly.io>",
+  "license": "MIT",
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@nuraly/shared": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/timepicker"
+  },
+  "bugs": {
+    "url": "https://github.com/Nuralyio/NuralyUI/issues"
+  },
+  "homepage": "https://nuralyui.com/components/timepicker"
+}
