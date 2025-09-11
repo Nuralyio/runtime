@@ -58,13 +58,13 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
         // Calculate position after DOM update
         setTimeout(() => {
           this.calculatePosition();
-        }, 10);
+        }, 0);
 
         // Notify host to setup event listeners if available
         if (this._host && typeof (this._host as any).setupEventListeners === 'function') {
           setTimeout(() => {
             (this._host as any).setupEventListeners();
-          }, 50);
+          }, 0);
         }
 
         this._host.dispatchEvent(

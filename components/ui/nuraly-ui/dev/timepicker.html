@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimePicker Development - NuralyUI</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f8fafc;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .demo-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .demo-card h3 {
+      margin: 0 0 1rem 0;
+      color: #1f2937;
+    }
+
+    nr-timepicker {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .output {
+      background: #f3f4f6;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      border: 1px solid #d1d5db;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    [data-theme="dark"] {
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    [data-theme="dark"] .container {
+      background: #1f2937;
+      color: #f9fafb;
+    }
+
+    [data-theme="dark"] .demo-card {
+      border-color: #374151;
+      background: #111827;
+    }
+
+    [data-theme="dark"] .output {
+      background: #374151;
+      border-color: #4b5563;
+      color: #f3f4f6;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Toggle Theme</button>
+  
+  <div class="container">
+    <h1>NuralyUI TimePicker - Development</h1>
+    <p>Testing the extracted TimePicker component with various configurations.</p>
+    
+    <div class="demo-grid">
+      <!-- Basic Usage -->
+      <div class="demo-card">
+        <h3>Basic 24-hour Format</h3>
+        <nr-timepicker 
+          id="basic"
+          label="Select Time"
+          helper-text="24-hour format">
+        </nr-timepicker>
+        <div class="output" id="basic-output">No time selected</div>
+      </div>
+
+      <!-- 12-hour Format -->
+      <div class="demo-card">
+        <h3>12-hour Format</h3>
+        <nr-timepicker 
+          id="twelve-hour"
+          label="Meeting Time"
+          format="12h"
+          helper-text="12-hour format with AM/PM">
+        </nr-timepicker>
+        <div class="output" id="twelve-hour-output">No time selected</div>
+      </div>
+
+      <!-- With Seconds -->
+      <div class="demo-card">
+        <h3>With Seconds</h3>
+        <nr-timepicker 
+          id="with-seconds"
+          label="Precise Time"
+          show-seconds
+          helper-text="Includes seconds">
+        </nr-timepicker>
+        <div class="output" id="with-seconds-output">No time selected</div>
+      </div>
+
+      <!-- 12h with Seconds -->
+      <div class="demo-card">
+        <h3>12h with Seconds</h3>
+        <nr-timepicker 
+          id="twelve-hour-seconds"
+          label="Full Format"
+          format="12h"
+          show-seconds
+          helper-text="12-hour format with seconds">
+        </nr-timepicker>
+        <div class="output" id="twelve-hour-seconds-output">No time selected</div>
+      </div>
+
+      <!-- Time Range -->
+      <div class="demo-card">
+        <h3>Time Range Constraints</h3>
+        <nr-timepicker 
+          id="time-range"
+          label="Business Hours"
+          min-time="09:00"
+          max-time="17:00"
+          helper-text="Between 9 AM and 5 PM">
+        </nr-timepicker>
+        <div class="output" id="time-range-output">No time selected</div>
+      </div>
+
+      <!-- Custom Intervals -->
+      <div class="demo-card">
+        <h3>15-minute Intervals</h3>
+        <nr-timepicker 
+          id="intervals"
+          label="Appointment Time"
+          minute-interval="15"
+          helper-text="15-minute steps">
+        </nr-timepicker>
+        <div class="output" id="intervals-output">No time selected</div>
+      </div>
+
+      <!-- Different Sizes -->
+      <div class="demo-card">
+        <h3>Different Sizes</h3>
+        <nr-timepicker 
+          id="small-size"
+          label="Small Size"
+          size="small"
+          style="margin-bottom: 0.5rem;">
+        </nr-timepicker>
+        <nr-timepicker 
+          id="large-size"
+          label="Large Size"
+          size="large">
+        </nr-timepicker>
+        <div class="output" id="size-output">Size variations</div>
+      </div>
+
+      <!-- Variants -->
+      <div class="demo-card">
+        <h3>Style Variants</h3>
+        <nr-timepicker 
+          id="outlined"
+          label="Outlined"
+          variant="outlined"
+          style="margin-bottom: 0.5rem;">
+        </nr-timepicker>
+        <nr-timepicker 
+          id="filled"
+          label="Filled"
+          variant="filled">
+        </nr-timepicker>
+        <div class="output" id="variant-output">Style variants</div>
+      </div>
+
+      <!-- States -->
+      <div class="demo-card">
+        <h3>Component States</h3>
+        <nr-timepicker 
+          id="required"
+          label="Required Field"
+          required
+          style="margin-bottom: 0.5rem;">
+        </nr-timepicker>
+        <nr-timepicker 
+          id="disabled"
+          label="Disabled"
+          value="12:00"
+          disabled
+          style="margin-bottom: 0.5rem;">
+        </nr-timepicker>
+        <nr-timepicker 
+          id="readonly"
+          label="Read Only"
+          value="15:30"
+          readonly>
+        </nr-timepicker>
+        <div class="output" id="states-output">Different states</div>
+      </div>
+
+      <!-- Preset Values -->
+      <div class="demo-card">
+        <h3>Preset Values</h3>
+        <nr-timepicker 
+          id="preset1"
+          label="Morning Meeting"
+          value="09:30"
+          style="margin-bottom: 0.5rem;">
+        </nr-timepicker>
+        <nr-timepicker 
+          id="preset2"
+          label="Lunch Time"
+          format="12h"
+          value="12:30 PM">
+        </nr-timepicker>
+        <div class="output" id="preset-output">Preset values</div>
+      </div>
+
+      <!-- API Testing -->
+      <div class="demo-card">
+        <h3>API Testing</h3>
+        <nr-timepicker 
+          id="api-test"
+          label="API Control">
+        </nr-timepicker>
+        <div style="margin: 1rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button onclick="setToNow()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Set to Now</button>
+          <button onclick="clearTime()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Clear</button>
+          <button onclick="openClock()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Open Clock</button>
+          <button onclick="setCustomTime()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Set 14:45</button>
+        </div>
+        <div class="output" id="api-test-output">Use buttons to test API</div>
+      </div>
+
+      <!-- Without Clock -->
+      <div class="demo-card">
+        <h3>Input Only (No Clock)</h3>
+        <nr-timepicker 
+          id="no-clock"
+          label="Input Only"
+          show-clock="false"
+          helper-text="No visual clock interface">
+        </nr-timepicker>
+        <div class="output" id="no-clock-output">Input only mode</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../timepicker.component.js"></script>
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // API testing functions
+    function setToNow() {
+      const picker = document.getElementById('api-test');
+      picker.setToNow();
+    }
+
+    function clearTime() {
+      const picker = document.getElementById('api-test');
+      picker.clear();
+    }
+
+    function openClock() {
+      const picker = document.getElementById('api-test');
+      picker.openClock();
+    }
+
+    function setCustomTime() {
+      const picker = document.getElementById('api-test');
+      picker.value = '14:45';
+    }
+
+    // Set up event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Setting up TimePicker event listeners...');
+      
+      const pickers = document.querySelectorAll('nr-timepicker');
+      pickers.forEach(picker => {
+        const outputId = getOutputId(picker.id);
+        const outputElement = document.getElementById(outputId);
+        
+        if (outputElement) {
+          // Initial value display
+          updateOutput(picker, outputElement);
+          
+          // Listen for time changes
+          picker.addEventListener('nr-time-change', (event) => {
+            console.log('Time changed:', picker.id, event.detail);
+            updateOutput(picker, outputElement, event.detail);
+          });
+
+          // Listen for clock events
+          picker.addEventListener('nr-clock-open', () => {
+            console.log('Clock opened:', picker.id);
+          });
+
+          picker.addEventListener('nr-clock-close', () => {
+            console.log('Clock closed:', picker.id);
+          });
+
+          // Listen for focus/blur
+          picker.addEventListener('nr-focus', () => {
+            console.log('Focus:', picker.id);
+          });
+
+          picker.addEventListener('nr-blur', () => {
+            console.log('Blur:', picker.id);
+          });
+        }
+      });
+    });
+
+    function getOutputId(pickerId) {
+      const mapping = {
+        'basic': 'basic-output',
+        'twelve-hour': 'twelve-hour-output',
+        'with-seconds': 'with-seconds-output',
+        'twelve-hour-seconds': 'twelve-hour-seconds-output',
+        'time-range': 'time-range-output',
+        'intervals': 'intervals-output',
+        'small-size': 'size-output',
+        'large-size': 'size-output',
+        'outlined': 'variant-output',
+        'filled': 'variant-output',
+        'required': 'states-output',
+        'disabled': 'states-output',
+        'readonly': 'states-output',
+        'preset1': 'preset-output',
+        'preset2': 'preset-output',
+        'api-test': 'api-test-output',
+        'no-clock': 'no-clock-output'
+      };
+      return mapping[pickerId] || pickerId + '-output';
+    }
+
+    function updateOutput(picker, outputElement, eventDetail = null) {
+      const value = picker.value || 'No time selected';
+      const format = picker.format || '24h';
+      const showSeconds = picker.showSeconds || false;
+      
+      let html = `<strong>Value:</strong> ${value}<br>`;
+      html += `<strong>Format:</strong> ${format}<br>`;
+      html += `<strong>Show Seconds:</strong> ${showSeconds}`;
+      
+      if (eventDetail) {
+        html += `<br><strong>Event:</strong> ${JSON.stringify(eventDetail, null, 2)}`;
+      }
+      
+      outputElement.innerHTML = html;
+    }
+
+    // Log all events for debugging
+    document.addEventListener('nr-time-change', (e) => {
+      console.log('Global time change event:', e.detail);
+    });
+
+    // Test programmatic setting after load
+    setTimeout(() => {
+      console.log('Testing programmatic values...');
+      
+      const basicPicker = document.getElementById('basic');
+      if (basicPicker && !basicPicker.value) {
+        basicPicker.value = '10:30';
+        console.log('Set basic picker to 10:30');
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
