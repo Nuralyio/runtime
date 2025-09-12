@@ -460,7 +460,6 @@ export const styles = css`
     --hybrid-icon-color: var(--hybrid-select-option-selected-color, var(--hybrid-select-local-option-selected-color));
   }
 
-  /* No options message - styled like Ant Design */
   .no-options {
     display: flex;
     align-items: center;

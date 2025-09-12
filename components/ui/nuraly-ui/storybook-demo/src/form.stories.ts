@@ -15,7 +15,7 @@ const meta: Meta = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Form component with Ant Design-like API for validation and data management'
+        component: 'Form component with comprehensive API for validation and data management'
       }
     }
   },
@@ -377,13 +377,13 @@ export const RealTimeFormData: Story = {
 };
 
 /**
- * Programmatic form manipulation (Ant Design style)
+ * Programmatic form manipulation
  */
 export const ProgrammaticFormAPI: Story = {
   render: () => {
     return html`
       <div style="max-width: 800px; margin: 0 auto;">
-        <h3>Programmatic Form Control (Ant Design API)</h3>
+        <h3>Programmatic Form Control</h3>
         
         <div style="margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 8px;">
           <nr-button onclick="fillForm()" size="small">Fill Form</nr-button>

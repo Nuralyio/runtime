@@ -20,11 +20,11 @@ import {
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { InputValidationUtils, InputRenderUtils } from './utils/index.js';
 import { SelectionMixin, FocusMixin, NumberMixin } from './mixins/index.js';
-import { 
-  InputValidationController, 
-  InputValidationHost, 
-  InputEventController, 
-  InputEventHost 
+import {
+  InputValidationController,
+  InputValidationHost,
+  InputEventController,
+  InputEventHost
 } from './controllers/index.js';
 
 /**

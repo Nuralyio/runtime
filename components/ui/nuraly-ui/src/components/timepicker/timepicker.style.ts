@@ -8,7 +8,6 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    /* Ant Design inspired color palette - matching select component */
     --timepicker-font-family: var(--hybrid-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
     --timepicker-font-size: var(--hybrid-font-size-medium, 14px);
     --timepicker-line-height: var(--hybrid-line-height-medium, 1.5715);
@@ -33,13 +32,11 @@ export const styles = css`
     --timepicker-control-item-bg-hover: #f5f5f5;
     --timepicker-control-item-bg-active: #e6f7ff;
     
-    /* Sizes following Ant Design */
     --timepicker-border-radius: var(--hybrid-border-radius, 6px);
     --timepicker-padding: var(--hybrid-padding-medium, 4px 11px);
     --timepicker-height: var(--hybrid-input-height, 32px);
     --timepicker-font-weight: 400;
     
-    /* Clock specific - Ant Design inspired */
     --timepicker-clock-size: 224px;
     --timepicker-clock-background: var(--hybrid-background-color, #ffffff);
     --timepicker-clock-border: var(--hybrid-border-color, #f0f0f0);

@@ -171,7 +171,6 @@ export const styles = css`
     --hybrid-button-border-bottom-right-radius: var(--hybrid-radio-button-border-radius, var(--hybrid-radio-local-button-border-radius));
   }
 
-  /* Border collapse handling like Ant Design */
   .type-button nr-button:not(:last-child) {
     margin-right: -1px;
   }
@@ -181,7 +180,6 @@ export const styles = css`
     z-index: 1;
   }
 
-  /* Ant Design approach - clean hover borders for unselected buttons */
   .type-button nr-button[type="default"]:hover {
     --hybrid-button-color: var(--hybrid-radio-hover-border-color, var(--hybrid-radio-local-hover-border-color));
     --hybrid-button-border-color: var(--hybrid-radio-hover-border-color, var(--hybrid-radio-local-hover-border-color));
