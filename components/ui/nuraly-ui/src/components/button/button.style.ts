@@ -3,18 +3,15 @@ import { buttonVariables } from './button.style.variables.js';
 
 /**
  * Button component styles for the Hybrid UI Library
+ * Following Carbon Design System specifications
  * 
  * This file contains all the styling for the nr-button component, including:
- * - Base button styles with CSS custom properties for theming
- * - Multiple button variants (primary, secondary, ghost, danger)
- * - Size variations (small, large)
- * - State styles (hover, active, disabled, loading)
- * - Dark theme support
- * - Icon positioning and styling
- * - Responsive design considerations
- * 
- * The styling system uses CSS custom properties with fallbacks to allow
- * for both global and local customization of button appearance.
+ * - Carbon Design System compliant button variants
+ * - Proper sizing following Carbon's scale
+ * - Focus states with Carbon's focus indicators
+ * - Hover and active states matching Carbon patterns
+ * - Icon positioning and spacing
+ * - Accessibility features
  */
 const buttonStyles = css`
   /* Container for button content and icon positioning */
@@ -24,6 +21,7 @@ const buttonStyles = css`
     align-items: center;
     width: 100%;
     height: 100%;
+    gap: var(--hybrid-button-local-icon-margin, 0.5rem);
   }
 
   /* Icon positioned to the right of text when iconPosition='right' */
@@ -36,116 +34,295 @@ const buttonStyles = css`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2px;
+    flex-shrink: 0;
   }
 
   /* 
-   * Base button element styles
-   * Uses CSS custom properties with fallbacks for comprehensive theming support
-   * Properties follow the pattern: --hybrid-button-{property}, --hybrid-button-local-{property}
-   */
-
-  /* 
-   * Base button element styles
-   * Uses CSS custom properties with fallbacks for comprehensive theming support
-   * Properties follow the pattern: --hybrid-button-{property}, --hybrid-button-local-{property}
+   * Base button element styles following Carbon Design System
    */
   button {
-    /* Dimensions */
-    height: var(--hybrid-button-height,var(--hybrid-button-local-height));
-    width: var(--hybrid-button-width,var(--hybrid-button-local-width));
-    
-    /* Border properties - individual sides for granular control */
-    border-left: var(--hybrid-button-border-left,var(--hybrid-button-local-border-left));
-    border-right: var(--hybrid-button-border-right,var(--hybrid-button-local-border-right));
-    border-top: var(--hybrid-button-border-top,var(--hybrid-button-local-border-top));
-    border-bottom: var(--hybrid-button-border-bottom,var(--hybrid-button-local-border-bottom));
-    
-    /* Border radius - individual corners for design flexibility */
-    border-top-left-radius:var(--hybrid-button-border-top-left-radius,var(--hybrid-button-local-border-top-left-radius)) ;
-    border-top-right-radius: var(--hybrid-button-border-top-right-radius,var(--hybrid-button-local-border-top-right-radius));
-    border-bottom-left-radius: var(--hybrid-button-border-bottom-left-radius,var(--hybrid-button-local-border-bottom-left-radius));
-    border-bottom-right-radius: var(--hybrid-button-border-bottom-right-radius,var(--hybrid-button-local-border-bottom-right-radius));
-    
-    /* Colors */
-    background-color: var(--hybrid-button-background-color,var(--hybrid-button-local-background-color));
-    color: var(--hybrid-button-text-color,var(--hybrid-button-local-text-color));
-    
-    /* Typography */
-    font-size: var(--hybrid-button-font-size,var(--hybrid-button-local-font-size));
-    font-weight: var(--hybrid-button-font-weight,var(--hybrid-button-local-font-weight));
-    text-transform: var(--hybrid-button-text-transform,var(--hybrid-button-local-text-transform));
-    
-    /* Spacing */
-    padding-top: var(--hybrid-button-padding-y,var(--hybrid-button-local-padding-y));
-    margin-top: var(--hybrid-button-margin-y,var(--hybrid-button-local-margin-y));
-    padding-bottom: var(--hybrid-button-padding-y,var(--hybrid-button-local-padding-y));
-    padding-right: var(--hybrid-button-padding-x,var(--hybrid-button-local-padding-x));
-    padding-left: var(--hybrid-button-padding-x,var(--hybrid-button-local-padding-x));
-    font-size: var(--hybrid-button-font-size,var(--hybrid-button-local-font-size));
-
-    /* Positioning for ripple effect */
+    /* Reset default browser styles */
+    appearance: none;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start; /* Carbon buttons are left-aligned */
     position: relative;
     overflow: hidden;
+    
+    /* Carbon typography */
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: var(--hybrid-button-font-size, var(--hybrid-button-local-font-size));
+    font-weight: var(--hybrid-button-font-weight, var(--hybrid-button-local-font-weight));
+    line-height: var(--hybrid-button-line-height, var(--hybrid-button-local-line-height));
+    text-transform: var(--hybrid-button-text-transform, var(--hybrid-button-local-text-transform));
+    
+    /* Carbon sizing */
+    height: var(--hybrid-button-height, var(--hybrid-button-local-height));
+    min-width: var(--hybrid-button-min-width, var(--hybrid-button-local-min-width));
+    width: var(--hybrid-button-width, var(--hybrid-button-local-width));
+    
+    /* Carbon spacing - asymmetric padding by default */
+    padding-top: var(--hybrid-button-padding-y, var(--hybrid-button-local-padding-y));
+    padding-bottom: var(--hybrid-button-padding-y, var(--hybrid-button-local-padding-y));
+    padding-left: var(--hybrid-button-padding-x-left, var(--hybrid-button-local-padding-x-left));
+    padding-right: var(--hybrid-button-padding-x-right, var(--hybrid-button-local-padding-x-right));
+    
+    /* Carbon borders - using CSS properties for better control */
+    border: var(--hybrid-button-border-width, 1px) var(--hybrid-button-border-style, solid) var(--hybrid-button-border-color, transparent);
+    border-radius: var(--hybrid-button-border-radius, 0);
+    
+    /* Colors */
+    background-color: var(--hybrid-button-background-color, var(--hybrid-button-local-background-color));
+    color: var(--hybrid-button-text-color, var(--hybrid-button-local-text-color));
+    
+    /* Carbon transitions */
+    transition: all 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    
+    /* Focus management */
+    outline: none;
+  }
+
+  /* Buttons with icons get symmetric padding */
+  :host([icon]) button,
+  :host([iconPosition]) button {
+    padding-left: var(--hybrid-button-padding-x-with-icon, var(--hybrid-button-local-padding-x-with-icon));
+    padding-right: var(--hybrid-button-padding-x-with-icon, var(--hybrid-button-local-padding-x-with-icon));
+    justify-content: center; /* Center content when there's an icon */
+  }
+
+  /* Ghost buttons get symmetric padding always */
+  :host([type='ghost']) button {
+    padding-left: var(--hybrid-button-padding-x-with-icon, var(--hybrid-button-local-padding-x-with-icon));
+    padding-right: var(--hybrid-button-padding-x-with-icon, var(--hybrid-button-local-padding-x-with-icon));
   }
   
-  /* Icon styling within button - inherits text color and size */
+  /* Icon styling within button - inherits text color and proper sizing */
   button hy-icon {
-    --hybrid-icon-color: var(--hybrid-button-text-color,var(--hybrid-button-local-text-color));
-    --hybrid-icon-width: var(--hybrid-button-icon-width,var(--hybrid-button-local-icon-width));
-    --hybrid-icon-height: var(--hybrid-button-icon-height,var(--hybrid-button-local-icon-height));
+    --hybrid-icon-color: currentColor;
+    --hybrid-icon-width: var(--hybrid-button-icon-width, var(--hybrid-button-local-icon-width));
+    --hybrid-icon-height: var(--hybrid-button-icon-height, var(--hybrid-button-local-icon-height));
+  }
+
+  /* 
+   * Focus state - Carbon Design System focus indicator
+   */
+  button:focus {
+    outline: var(--hybrid-button-focus-outline, 2px solid #0f62fe);
+    outline-offset: var(--hybrid-button-focus-outline-offset, 1px);
   }
 
   /* 
    * Hover state styles
-   * Applied when button is hovered but not disabled
-   */
-
-  /* 
-   * Hover state styles
-   * Applied when button is hovered but not disabled
    */
   button:hover:not(:disabled) {
-    cursor: pointer;
-    border-color: var(--hybrid-button-hover-border-color,var(--hybrid-button-local-hover-border-color));
-    background-color: var(--hybrid-button-hover-background-color,var(--hybrid-button-local-hover-background-color));
-    color: var(--hybrid-button-hover-color,var(--hybrid-button-local-hover-color));
-  }
-  
-  /* Icon color on hover */
-  button:hover:not(:disabled) hy-icon {
-    --hybrid-icon-color: var(--hybrid-button-hover-color,var(--hybrid-button-local-hover-color));
+    background-color: var(--hybrid-button-hover-background-color, var(--hybrid-button-local-hover-background-color));
+    border-color: var(--hybrid-button-hover-border-color, var(--hybrid-button-local-hover-border-color));
+    color: var(--hybrid-button-hover-color, var(--hybrid-button-local-hover-color));
   }
 
   /* 
    * Active state styles
-   * Applied when button is being clicked/pressed but not disabled
    */
   button:active:not(:disabled) {
-    outline: none;
-    border-color: var(--hybrid-button-active-border-color,var(--hybrid-button-local-active-border-color));
-    color: var(--hybrid-button-active-color,var(--hybrid-button-local-active-color));
-  }
-  
-  /* Icon color on active state */
-  button:active:not(:disabled) hy-icon {
-    --hybrid-icon-color: var(--hybrid-button-active-color,var(--hybrid-button-local-active-color));
+    background-color: var(--hybrid-button-active-background-color, var(--hybrid-button-local-active-background-color));
+    border-color: var(--hybrid-button-active-border-color, var(--hybrid-button-local-active-border-color));
+    color: var(--hybrid-button-active-color, var(--hybrid-button-local-active-color));
   }
 
   /* 
    * Disabled state styles
-   * Applied when button is disabled - removes interactivity and applies muted colors
-   */
-
-  /* 
-   * Disabled state styles
-   * Applied when button is disabled - removes interactivity and applies muted colors
    */
   button:disabled {
-    cursor: auto;
-    background-color: var(--hybrid-button-disabled-background-color,var(--hybrid-button-local-disabled-background-color));
-    color: var(--hybrid-button-disabled-text-color,var(--hybrid-button-local-disabled-text-color));
-    border-color: var(--hybrid-button-disabled-border-color,var(--hybrid-button-local-disabled-border-color));
+    cursor: not-allowed;
+    background-color: var(--hybrid-button-disabled-background-color, var(--hybrid-button-local-disabled-background-color));
+    color: var(--hybrid-button-disabled-text-color, var(--hybrid-button-local-disabled-text-color));
+    border-color: var(--hybrid-button-disabled-border-color, var(--hybrid-button-local-disabled-border-color));
+  }
+
+  /* ========================================
+   * CARBON DESIGN SYSTEM BUTTON VARIANTS
+   * ======================================== */
+
+  /* PRIMARY BUTTON - Carbon Blue */
+  :host([type='primary']) button {
+    --hybrid-button-background-color: var(--hybrid-button-local-primary-background-color);
+    --hybrid-button-border-color: var(--hybrid-button-local-primary-border-color);
+    --hybrid-button-text-color: var(--hybrid-button-local-primary-text-color);
+    --hybrid-button-border-width: var(--hybrid-button-local-primary-border-width);
+    --hybrid-button-border-style: var(--hybrid-button-local-primary-border-style);
+    --hybrid-button-hover-background-color: var(--hybrid-button-local-primary-hover-background-color);
+    --hybrid-button-hover-border-color: var(--hybrid-button-local-primary-hover-border-color);
+    --hybrid-button-hover-color: var(--hybrid-button-local-primary-hover-text-color);
+    --hybrid-button-active-background-color: var(--hybrid-button-local-primary-active-background-color);
+    --hybrid-button-active-border-color: var(--hybrid-button-local-primary-active-border-color);
+    --hybrid-button-active-color: var(--hybrid-button-local-primary-active-text-color);
+    --hybrid-button-disabled-background-color: var(--hybrid-button-local-primary-disabled-background-color);
+    --hybrid-button-disabled-border-color: var(--hybrid-button-local-primary-disabled-border-color);
+    --hybrid-button-disabled-text-color: var(--hybrid-button-local-primary-disabled-text-color);
+    --hybrid-button-focus-outline: var(--hybrid-button-local-primary-focus-outline);
+    --hybrid-button-focus-outline-offset: var(--hybrid-button-local-primary-focus-outline-offset);
+  }
+
+  /* SECONDARY BUTTON - Carbon Outline */
+  :host([type='secondary']) button {
+    --hybrid-button-background-color: var(--hybrid-button-local-secondary-background-color);
+    --hybrid-button-border-color: var(--hybrid-button-local-secondary-border-color);
+    --hybrid-button-text-color: var(--hybrid-button-local-secondary-text-color);
+    --hybrid-button-border-width: var(--hybrid-button-local-secondary-border-width);
+    --hybrid-button-border-style: var(--hybrid-button-local-secondary-border-style);
+    --hybrid-button-hover-background-color: var(--hybrid-button-local-secondary-hover-background-color);
+    --hybrid-button-hover-border-color: var(--hybrid-button-local-secondary-hover-border-color);
+    --hybrid-button-hover-color: var(--hybrid-button-local-secondary-hover-text-color);
+    --hybrid-button-active-background-color: var(--hybrid-button-local-secondary-active-background-color);
+    --hybrid-button-active-border-color: var(--hybrid-button-local-secondary-active-border-color);
+    --hybrid-button-active-color: var(--hybrid-button-local-secondary-active-text-color);
+    --hybrid-button-disabled-background-color: var(--hybrid-button-local-secondary-disabled-background-color);
+    --hybrid-button-disabled-border-color: var(--hybrid-button-local-secondary-disabled-border-color);
+    --hybrid-button-disabled-text-color: var(--hybrid-button-local-secondary-disabled-text-color);
+    --hybrid-button-focus-outline: var(--hybrid-button-local-secondary-focus-outline);
+    --hybrid-button-focus-outline-offset: var(--hybrid-button-local-secondary-focus-outline-offset);
+  }
+
+  /* TERTIARY BUTTON - Carbon Ghost */
+  :host([type='tertiary']) button,
+  :host([type='ghost']) button {
+    --hybrid-button-background-color: var(--hybrid-button-local-tertiary-background-color);
+    --hybrid-button-border-color: var(--hybrid-button-local-tertiary-border-color);
+    --hybrid-button-text-color: var(--hybrid-button-local-tertiary-text-color);
+    --hybrid-button-border-width: var(--hybrid-button-local-tertiary-border-width);
+    --hybrid-button-border-style: var(--hybrid-button-local-tertiary-border-style);
+    --hybrid-button-hover-background-color: var(--hybrid-button-local-tertiary-hover-background-color);
+    --hybrid-button-hover-border-color: var(--hybrid-button-local-tertiary-hover-border-color);
+    --hybrid-button-hover-color: var(--hybrid-button-local-tertiary-hover-text-color);
+    --hybrid-button-active-background-color: var(--hybrid-button-local-tertiary-active-background-color);
+    --hybrid-button-active-border-color: var(--hybrid-button-local-tertiary-active-border-color);
+    --hybrid-button-active-color: var(--hybrid-button-local-tertiary-active-text-color);
+    --hybrid-button-disabled-background-color: var(--hybrid-button-local-tertiary-disabled-background-color);
+    --hybrid-button-disabled-border-color: var(--hybrid-button-local-tertiary-disabled-border-color);
+    --hybrid-button-disabled-text-color: var(--hybrid-button-local-tertiary-disabled-text-color);
+    --hybrid-button-focus-outline: var(--hybrid-button-local-tertiary-focus-outline);
+    --hybrid-button-focus-outline-offset: var(--hybrid-button-local-tertiary-focus-outline-offset);
+  }
+
+  /* DANGER BUTTON - Carbon Destructive */
+  :host([type='danger']) button {
+    --hybrid-button-background-color: var(--hybrid-button-local-danger-background-color);
+    --hybrid-button-border-color: var(--hybrid-button-local-danger-border-color);
+    --hybrid-button-text-color: var(--hybrid-button-local-danger-text-color);
+    --hybrid-button-border-width: var(--hybrid-button-local-danger-border-width);
+    --hybrid-button-border-style: var(--hybrid-button-local-danger-border-style);
+    --hybrid-button-hover-background-color: var(--hybrid-button-local-danger-hover-background-color);
+    --hybrid-button-hover-border-color: var(--hybrid-button-local-danger-hover-border-color);
+    --hybrid-button-hover-color: var(--hybrid-button-local-danger-hover-text-color);
+    --hybrid-button-active-background-color: var(--hybrid-button-local-danger-active-background-color);
+    --hybrid-button-active-border-color: var(--hybrid-button-local-danger-active-border-color);
+    --hybrid-button-active-color: var(--hybrid-button-local-danger-active-text-color);
+    --hybrid-button-disabled-background-color: var(--hybrid-button-local-danger-disabled-background-color);
+    --hybrid-button-disabled-border-color: var(--hybrid-button-local-danger-disabled-border-color);
+    --hybrid-button-disabled-text-color: var(--hybrid-button-local-danger-disabled-text-color);
+    --hybrid-button-focus-outline: var(--hybrid-button-local-danger-focus-outline);
+    --hybrid-button-focus-outline-offset: var(--hybrid-button-local-danger-focus-outline-offset);
+  }
+
+  /* DANGER TERTIARY BUTTON - Carbon Destructive Outline */
+  :host([type='danger-tertiary']) button {
+    --hybrid-button-background-color: var(--hybrid-button-local-danger-tertiary-background-color);
+    --hybrid-button-border-color: var(--hybrid-button-local-danger-tertiary-border-color);
+    --hybrid-button-text-color: var(--hybrid-button-local-danger-tertiary-text-color);
+    --hybrid-button-border-width: var(--hybrid-button-local-danger-tertiary-border-width);
+    --hybrid-button-border-style: var(--hybrid-button-local-danger-tertiary-border-style);
+    --hybrid-button-hover-background-color: var(--hybrid-button-local-danger-tertiary-hover-background-color);
+    --hybrid-button-hover-border-color: var(--hybrid-button-local-danger-tertiary-hover-border-color);
+    --hybrid-button-hover-color: var(--hybrid-button-local-danger-tertiary-hover-text-color);
+    --hybrid-button-active-background-color: var(--hybrid-button-local-danger-tertiary-active-background-color);
+    --hybrid-button-active-border-color: var(--hybrid-button-local-danger-tertiary-active-border-color);
+    --hybrid-button-active-color: var(--hybrid-button-local-danger-tertiary-active-text-color);
+    --hybrid-button-disabled-background-color: var(--hybrid-button-local-danger-tertiary-disabled-background-color);
+    --hybrid-button-disabled-border-color: var(--hybrid-button-local-danger-tertiary-disabled-border-color);
+    --hybrid-button-disabled-text-color: var(--hybrid-button-local-danger-tertiary-disabled-text-color);
+  }
+
+  /* ========================================
+   * CARBON DESIGN SYSTEM BUTTON SIZES
+   * ======================================== */
+
+  /* Small button (32px) */
+  :host([size='sm']) button,
+  :host([size='small']) button {
+    --hybrid-button-height: var(--hybrid-button-local-small-height);
+    --hybrid-button-padding-y: var(--hybrid-button-local-small-padding-y);
+    --hybrid-button-padding-x-left: var(--hybrid-button-local-small-padding-x-left);
+    --hybrid-button-padding-x-right: var(--hybrid-button-local-small-padding-x-right);
+    --hybrid-button-padding-x-with-icon: var(--hybrid-button-local-small-padding-x-with-icon);
+    --hybrid-button-font-size: var(--hybrid-button-local-small-font-size);
+    --hybrid-button-line-height: var(--hybrid-button-local-small-line-height);
+  }
+
+  /* Medium button (40px) */
+  :host([size='md']) button {
+    --hybrid-button-height: var(--hybrid-button-local-medium-height);
+    --hybrid-button-padding-y: var(--hybrid-button-local-medium-padding-y);
+    --hybrid-button-padding-x-left: var(--hybrid-button-local-medium-padding-x-left);
+    --hybrid-button-padding-x-right: var(--hybrid-button-local-medium-padding-x-right);
+    --hybrid-button-padding-x-with-icon: var(--hybrid-button-local-medium-padding-x-with-icon);
+    --hybrid-button-font-size: var(--hybrid-button-local-medium-font-size);
+    --hybrid-button-line-height: var(--hybrid-button-local-medium-line-height);
+  }
+
+  /* Large button (48px) - Default */
+  :host([size='lg']) button,
+  :host([size='large']) button,
+  :host(:not([size])) button {
+    --hybrid-button-height: var(--hybrid-button-local-large-height);
+    --hybrid-button-padding-y: var(--hybrid-button-local-large-padding-y);
+    --hybrid-button-padding-x-left: var(--hybrid-button-local-large-padding-x-left);
+    --hybrid-button-padding-x-right: var(--hybrid-button-local-large-padding-x-right);
+    --hybrid-button-padding-x-with-icon: var(--hybrid-button-local-large-padding-x-with-icon);
+    --hybrid-button-font-size: var(--hybrid-button-local-large-font-size);
+    --hybrid-button-line-height: var(--hybrid-button-local-large-line-height);
+  }
+
+  /* Extra Large button (64px) */
+  :host([size='xl']) button {
+    --hybrid-button-height: var(--hybrid-button-local-xl-height);
+    --hybrid-button-padding-y: var(--hybrid-button-local-xl-padding-y);
+    --hybrid-button-padding-x-left: var(--hybrid-button-local-xl-padding-x-left);
+    --hybrid-button-padding-x-right: var(--hybrid-button-local-xl-padding-x-right);
+    --hybrid-button-padding-x-with-icon: var(--hybrid-button-local-xl-padding-x-with-icon);
+    --hybrid-button-font-size: var(--hybrid-button-local-xl-font-size);
+    --hybrid-button-line-height: var(--hybrid-button-local-xl-line-height);
+  }
+
+  /* ========================================
+   * FULL WIDTH BUTTON
+   * ======================================== */
+  :host([block]) button {
+    width: 100%;
+  }
+
+  /* ========================================
+   * LOADING STATE
+   * ======================================== */
+  :host([loading]) button {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  /* ========================================
+   * ICON-ONLY BUTTONS
+   * ======================================== */
+  :host([shape='circle']) button {
+    border-radius: 50%;
+    --hybrid-button-padding-x: var(--hybrid-button-padding-y);
+    aspect-ratio: 1;
+  }
+
+  :host([shape='round']) button {
+    border-radius: 1.5rem;
   }
 
   /* ========================================
