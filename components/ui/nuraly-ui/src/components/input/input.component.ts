@@ -7,10 +7,25 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './input.style.js';
-import { INPUT_TYPE, INPUT_STATE, INPUT_SIZE, INPUT_VARIANT, EMPTY_STRING, FocusChangeEvent } from './input.types.js';
+import '../icon/icon.component.js';
+import {
+  INPUT_TYPE,
+  INPUT_STATE,
+  INPUT_SIZE,
+  INPUT_VARIANT,
+  EMPTY_STRING,
+  ValidationRule,
+  InputValidationResult
+} from './input.types.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { InputValidationUtils, InputRenderUtils } from './utils/index.js';
 import { SelectionMixin, FocusMixin, NumberMixin } from './mixins/index.js';
+import { 
+  InputValidationController, 
+  InputValidationHost, 
+  InputEventController, 
+  InputEventHost 
+} from './controllers/index.js';
 
 /**
  * Versatile input component with validation, multiple types, and interactive features.
@@ -40,8 +55,11 @@ export class NrInputElement extends NumberMixin(
       NuralyUIBaseMixin(LitElement)
     ) 
   )
-) {
+) implements InputValidationHost, InputEventHost {
   static override styles = styles;
+  
+  private validationController = new InputValidationController(this);
+  private eventController = new InputEventController(this);
 
   /** Disables the input */
   @property({ type: Boolean, reflect: true })
@@ -91,6 +109,14 @@ export class NrInputElement extends NumberMixin(
   @property({ type: String })
   autocomplete = 'off';
 
+  /** Field name for form submission */
+  @property({ type: String })
+  name?: string;
+
+  /** Required field indicator */
+  @property({ type: Boolean })
+  required?: boolean;
+
   /** Shows copy button */
   @property({ type: Boolean, reflect: true })
   withCopy = false;
@@ -106,6 +132,43 @@ export class NrInputElement extends NumberMixin(
   /** Maximum character limit */
   @property({ type: Number })
   maxLength?: number;
+
+
+  /** Array of validation rules */
+  @property({ type: Array })
+  rules: ValidationRule[] = [];
+
+  /** Validate on change */
+  @property({ type: Boolean, attribute: 'validate-on-change' })
+  validateOnChangeInput = true;
+
+  /** Validate on blur */
+  @property({ type: Boolean, attribute: 'validate-on-blur' })
+  validateOnBlurInput = true;
+
+  /** Show validation status icon */
+  @property({ type: Boolean, attribute: 'has-feedback' })
+  hasFeedback = false;
+
+  /** Allow validation warnings */
+  @property({ type: Boolean, attribute: 'allow-warnings' })
+  allowWarnings = false;
+
+  /** Custom validation trigger */
+  @property({ type: String, attribute: 'validation-trigger' })
+  validationTrigger: 'change' | 'blur' | 'submit' = 'change';
+
+  /** Validation debounce delay in milliseconds */
+  @property({ type: Number, attribute: 'validation-debounce' })
+  validationDebounce?: number;
+
+  /** Input label for better error messages */
+  @property({ type: String })
+  label?: string;
+
+  /** Validation message */
+  @state()
+  validationMessage?: string;
 
 
   @state()
@@ -151,6 +214,42 @@ export class NrInputElement extends NumberMixin(
 
   override connectedCallback() {
     super.connectedCallback();
+    
+    this.addEventListener('nr-validation', this._handleValidationEvent as EventListener);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    
+    this.removeEventListener('nr-validation', this._handleValidationEvent as EventListener);
+    
+    this.validationController.clearDebounceTimer?.();
+  }
+
+  /**
+   * Handle validation events from the controller
+   */
+  private _handleValidationEvent = (event: Event) => {
+    const customEvent = event as CustomEvent;
+    const detail = customEvent.detail;
+    
+    this.validationMessage = detail.validationMessage || '';
+    
+    let newState = INPUT_STATE.Default;
+    
+    if (detail.validationResult.hasError) {
+      newState = INPUT_STATE.Error;
+    } else if (detail.validationResult.hasWarning && this.allowWarnings) {
+      newState = INPUT_STATE.Warning;
+    } else if (detail.validationResult.isValid && this.value && this.hasFeedback) {
+      newState = INPUT_STATE.Success;
+    }
+    
+    if (this.state !== newState) {
+      this.state = newState;
+    }
+    
+    this.requestUpdate();
   }
 
   override willUpdate(_changedProperties: PropertyValues): void {
@@ -171,6 +270,14 @@ export class NrInputElement extends NumberMixin(
       _changedProperties.has('max') ||
       _changedProperties.has('step')) {
       InputValidationUtils.validateNumericProperties(this.type, this.min, this.max, this.step);
+    }
+
+    if (_changedProperties.has('type') || 
+        _changedProperties.has('required') || 
+        _changedProperties.has('maxLength') ||
+        _changedProperties.has('min') ||
+        _changedProperties.has('max')) {
+      this.validationController.setupValidationRules();
     }
   }
 
@@ -217,198 +324,45 @@ export class NrInputElement extends NumberMixin(
   }
 
 
-  private _handleKeyDown(keyDownEvent: KeyboardEvent): void {
-    if (this.readonly && !this.isReadonlyKeyAllowed(keyDownEvent)) {
-      keyDownEvent.preventDefault();
-      return;
-    }
+  private _handleKeyDown = (keyDownEvent: KeyboardEvent): void => {
+    this.eventController.handleKeyDown(keyDownEvent);
+  };
 
-    if (keyDownEvent.key === 'Enter') {
-      this.dispatchCustomEvent('nr-enter', {
-        target: keyDownEvent.target,
-        value: this.value,
-        originalEvent: keyDownEvent
-      });
-      return;
-    }
+  private _valueChange = (e: Event): void => {
+    this.eventController.handleValueChange(e);
+  };
 
-    if (this.type === INPUT_TYPE.NUMBER) {
-      InputValidationUtils.preventNonNumericInput(keyDownEvent, this.min);
+  private _focusEvent = (e: Event): void => {
+    this.eventController.handleFocus(e);
+  };
 
-      if (keyDownEvent.defaultPrevented) {
-        this.dispatchCustomEvent('nr-invalid-key', {
-          key: keyDownEvent.key,
-          target: keyDownEvent.target,
-          value: this.value,
-          originalEvent: keyDownEvent
-        });
-      }
-    }
-  }
+  private _blurEvent = (e: Event): void => {
+    this.eventController.handleBlur(e);
+  };
 
-  private _valueChange(e: Event): void {
-    if (this.readonly) {
-      e.preventDefault();
-      return;
-    }
-
-    const target = e.target as HTMLInputElement;
-    const newValue = target.value;
-
-    if (this.maxLength && newValue.length > this.maxLength) {
-      this.dispatchCustomEvent('nr-character-limit-exceeded', {
-        value: newValue,
-        target: target,
-        limit: this.maxLength,
-        originalEvent: e
-      });
-    }
-
-    if (this.type === INPUT_TYPE.NUMBER && newValue) {
-      const validation = InputValidationUtils.validateNumericValue(newValue, this.min, this.max);
-
-      if (!validation.isValid) {
-        console.warn(`[nr-input] ${validation.warnings[0]}`);
-        this.dispatchValidationEvent('nr-validation-error', {
-          value: newValue,
-          target: target,
-          error: validation.warnings[0],
-          originalEvent: e,
-          isValid: false
-        });
-        return;
-      }
-
-      validation.warnings.forEach(warning => console.warn(`[nr-input] ${warning}`));
-    }
-    this.value = newValue;
-    this.dispatchInputEvent('nr-input', {
-      value: this.value,
-      target: target,
-      originalEvent: e
-    });
-  }
-
-  private _focusEvent(e: Event): void {
-    this.focused = true;
-
-    const input = e.target as HTMLInputElement;
-    if (input.dataset.restoreCursor) {
-      const position = parseInt(input.dataset.restoreCursor, 10);
-      this.setCursorPosition(position);
-      delete input.dataset.restoreCursor;
-    }
-
-    const focusDetail: FocusChangeEvent = {
-      focused: true,
-      cursorPosition: this.getCursorPosition() ?? undefined,
-      selectedText: this.getSelectedText()
-    };
-
-    this.dispatchFocusEvent('nr-focus', {
-      target: e.target,
-      value: this.value,
-      ...focusDetail
-    });
-
-    this.dispatchFocusEvent('nr-focus-change', focusDetail);
-  }
-
-  private _blurEvent(e: Event): void {
-    this.focused = false;
-
-    const focusDetail: FocusChangeEvent = {
-      focused: false,
-      cursorPosition: this.getCursorPosition() ?? undefined,
-      selectedText: this.getSelectedText()
-    };
-
-    this.dispatchFocusEvent('nr-blur', {
-      target: e.target,
-      value: this.value,
-      ...focusDetail
-    });
-
-    this.dispatchFocusEvent('nr-focus-change', focusDetail);
-  }
-
-  private _handleIconKeydown(keyDownEvent: KeyboardEvent): void {
-    if (this.isActivationKey(keyDownEvent)) {
-      keyDownEvent.preventDefault();
-      const target = keyDownEvent.target as HTMLElement;
-
-      if (target.id === 'copy-icon') {
-        this._onCopy();
-      } else if (target.id === 'clear-icon') {
-        this._onClear();
-      } else if (target.id === 'password-icon') {
-        this._togglePasswordIcon();
-      } else if (target.closest('#number-icons')) {
-        if (target.getAttribute('name') === 'plus') {
-          this._increment();
-        } else if (target.getAttribute('name') === 'minus') {
-          this._decrement();
-        }
-      }
-    }
-  }
+  private _handleIconKeydown = (keyDownEvent: KeyboardEvent): void => {
+    this.eventController.handleIconKeydown(keyDownEvent);
+  };
 
   private async _onCopy(): Promise<void> {
-    try {
-      const input = this.shadowRoot!.getElementById('input')! as HTMLInputElement;
-      input.select();
-      await navigator.clipboard.writeText(input.value);
-
-      this.dispatchActionEvent('nr-copy-success', {
-        value: input.value,
-        action: 'copy'
-      });
-    } catch (error) {
-      console.warn('[nr-input] Copy operation failed:', error);
-      this.dispatchCustomEvent('nr-copy-error', { error });
-    }
+    await this.eventController.handleCopy();
   }
 
   private _onClear(): void {
-    if (this.disabled || this.readonly) {
-      return;
-    }
-
-    const previousValue = this.value;
-    this.value = EMPTY_STRING;
-
-    if (this.input) {
-      this.input.value = EMPTY_STRING;
-    }
-
-    this.dispatchActionEvent('nr-clear', {
-      previousValue,
-      newValue: this.value,
-      target: this.input,
-      action: 'clear'
-    });
-    this.dispatchInputEvent('nr-input', {
-      value: this.value,
-      target: this.input,
-      action: 'clear'
-    });
+    this.eventController.handleClear();
   }
 
 
   private _increment(): void {
-    this.increment();
+    this.eventController.handleIncrement();
   }
 
   private _decrement(): void {
-    this.decrement();
+    this.eventController.handleDecrement();
   }
 
   private _togglePasswordIcon(): void {
-    if (this.inputType === INPUT_TYPE.PASSWORD) {
-      this.inputType = INPUT_TYPE.TEXT;
-    } else if (this.inputType === INPUT_TYPE.TEXT && this.type === INPUT_TYPE.PASSWORD) {
-      this.inputType = INPUT_TYPE.PASSWORD;
-    }
+    this.eventController.handleTogglePassword();
   }
 
   private _getAriaDescribedBy(): string {
@@ -422,14 +376,110 @@ export class NrInputElement extends NumberMixin(
     return describedBy.join(' ') || '';
   }
 
-  // ========================================
-  // RENDER METHODS
-  // ========================================
+  /**
+   * Setup default validation rules based on input properties
+   */
+  /**
+   * Override the form mixin's validateValue method with controller logic
+   */
+  protected validateValue(_value: string): boolean {
+    return this.validationController.validate();
+  }
+
+  /**
+   * Add validation rule dynamically
+   */
+  addRule(rule: ValidationRule): void {
+    this.validationController.addRule(rule);
+  }
+
+  /**
+   * Remove validation rule
+   */
+  removeRule(predicate: (rule: ValidationRule) => boolean): void {
+    this.validationController.removeRule(predicate);
+  }
+
+  /**
+   * Clear all validation rules
+   */
+  clearRules(): void {
+    this.validationController.clearRules();
+  }
+
+  /**
+   * Get current validation status
+   */
+  getValidationStatus(): {
+    isValid: boolean;
+    isValidating: boolean;
+    errors: string[];
+    warnings: string[];
+  } {
+    return this.validationController.getValidationStatus();
+  }
+
+  /**
+   * Trigger validation manually
+   */
+  async validateInput(): Promise<boolean> {
+    const result = this.validationController.validate();
+    
+    if (this.validationController.isValidating) {
+      return new Promise((resolve) => {
+        const checkValidation = () => {
+          if (!this.validationController.isValidating) {
+            resolve(this.validationController.isValid);
+          } else {
+            setTimeout(checkValidation, 50);
+          }
+        };
+        checkValidation();
+      });
+    }
+    
+    return result;
+  }
+
+  /**
+   * Set validation state externally (for form integration)
+   */
+  setValidationStatus(result: InputValidationResult): void {
+    this.validationController.setValidationStatus(result);
+  }
+
+  /**
+   * Get validation classes for CSS styling
+   */
+  protected getValidationClasses(): Record<string, boolean> {
+    return this.validationController.getValidationClasses();
+  }
+
+  /**
+   * Render validation feedback icon
+   */
+  private renderValidationIcon() {
+    return this.validationController.renderValidationIcon();
+  }
+
+  /**
+   * Render validation message
+   */
+  private renderValidationMessage() {
+    return this.validationController.renderValidationMessage();
+  }
+
 
   override render() {
+    const validationClasses = this.getValidationClasses();
+    const validationRenderState = this.validationController.getValidationRenderState();
+    
     return html`
       <slot name="label"></slot>
-      <div class="input-wrapper" part="input-wrapper" data-theme="${this.currentTheme}">
+      <div class="input-wrapper ${Object.entries(validationClasses).filter(([, value]) => value).map(([key]) => key).join(' ')}" 
+           part="input-wrapper" 
+           data-theme="${this.currentTheme}"
+           ?data-validating="${validationRenderState.isValidating}">
         ${InputRenderUtils.renderAddonBefore(this.hasAddonBefore, (e: Event) => this._handleSlotChange(e))}
         <div data-size=${this.size} id="input-container" part="input-container">
           ${InputRenderUtils.renderPrefix()}
@@ -442,7 +492,7 @@ export class NrInputElement extends NumberMixin(
             .placeholder=${this.placeholder}
             .type="${this.inputType}"
             .autocomplete=${this.autocomplete}
-            aria-invalid=${this.state === INPUT_STATE.Error ? 'true' : 'false'}
+            aria-invalid=${validationRenderState.validationResult.hasError ? 'true' : 'false'}
             aria-describedby=${this._getAriaDescribedBy()}
             @input=${this._valueChange}
             @focus=${this._focusEvent}
@@ -451,43 +501,44 @@ export class NrInputElement extends NumberMixin(
           />
           ${InputRenderUtils.renderSuffix()}
           ${InputRenderUtils.renderCopyIcon(
-      this.withCopy,
-      this.disabled,
-      this.readonly,
-      () => this._onCopy(),
-      (e: KeyboardEvent) => this._handleIconKeydown(e)
-    )}
+            this.withCopy,
+            this.disabled,
+            this.readonly,
+            () => this._onCopy(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
           ${InputRenderUtils.renderClearIcon(
-      this.allowClear,
-      this.value,
-      this.disabled,
-      this.readonly,
-      () => this._onClear(),
-      (e: KeyboardEvent) => this._handleIconKeydown(e)
-    )}
-          ${InputRenderUtils.renderStateIcon(this.state)}
+            this.allowClear,
+            this.value,
+            this.disabled,
+            this.readonly,
+            () => this._onClear(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
+          ${validationRenderState.hasValidationFeedback ? this.renderValidationIcon() : InputRenderUtils.renderStateIcon(this.state)}
           ${InputRenderUtils.renderCalendarIcon(this.state, this.type)}
           ${InputRenderUtils.renderPasswordIcon(
-      this.type,
-      this.inputType,
-      this.disabled,
-      this.readonly,
-      () => this._togglePasswordIcon(),
-      (e: KeyboardEvent) => this._handleIconKeydown(e)
-    )}
+            this.type,
+            this.inputType,
+            this.disabled,
+            this.readonly,
+            () => this._togglePasswordIcon(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
           ${InputRenderUtils.renderNumberIcons(
-      this.type,
-      this.state,
-      this.disabled,
-      this.readonly,
-      () => this._increment(),
-      () => this._decrement(),
-      (e: KeyboardEvent) => this._handleIconKeydown(e)
-    )}
+            this.type,
+            this.state,
+            this.disabled,
+            this.readonly,
+            () => this._increment(),
+            () => this._decrement(),
+            (e: KeyboardEvent) => this._handleIconKeydown(e)
+          )}
         </div>
         ${InputRenderUtils.renderAddonAfter(this.hasAddonAfter, (e: Event) => this._handleSlotChange(e))}
       </div>
       <slot name="helper-text"></slot>
+      ${this.renderValidationMessage()}
       ${this.showCount ? html`
         <div class="character-count" part="character-count" ?data-over-limit=${this.isOverCharacterLimit}>
           ${this.characterCountDisplay}

@@ -458,6 +458,18 @@ const inputStyle = css`
     color: var(--hybrid-input-helper-text-color, var(--hybrid-input-local-helper-text-color));
     font-size: var(--hybrid-input-helper-text-font-size, var(--hybrid-input-local-helper-text-font-size));
     padding-top: var(--hybrid-input-helper-text-padding-top, var(--hybrid-input-local-helper-text-padding-top));
+    
+    /* Prevent text overflow and ensure proper wrapping without affecting parent width */
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    white-space: normal;
+    max-width: 100%;
+    width: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+    line-height: 1.4;
   }
 
   /* 
@@ -570,6 +582,148 @@ const sizeInputStyle = css`
   .character-count[data-over-limit] {
     color: var(--hybrid-input-character-count-over-limit-color, var(--hybrid-input-local-character-count-over-limit-color));
   }
+
+  /* ========================================
+   * VALIDATION MESSAGE STYLES
+   * ======================================== */
+
+  /* 
+   * Base validation message styling
+   * Common styles for error and warning messages
+   */
+  .validation-message {
+    font-size: var(--hybrid-input-validation-message-font-size, var(--hybrid-input-local-validation-message-font-size, 0.875rem));
+    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
+    margin-top: var(--hybrid-input-validation-message-margin-top, var(--hybrid-input-local-validation-message-margin-top, 0.25rem));
+    padding: var(--hybrid-input-validation-message-padding, var(--hybrid-input-local-validation-message-padding, 0));
+    
+    /* Prevent text overflow and ensure proper wrapping without affecting parent width */
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    white-space: normal;
+    max-width: 100%;
+    width: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+    line-height: var(--hybrid-input-validation-message-line-height, var(--hybrid-input-local-validation-message-line-height, 1.4));
+  }
+
+  /* 
+   * Error validation message styling
+   * Applied when validation message has error class
+   */
+  .validation-message.error {
+    color: var(--hybrid-input-error-message-color, var(--hybrid-input-local-error-message-color, var(--hybrid-input-error-color, var(--hybrid-input-local-error-color, #dc2626))));
+  }
+
+  /* 
+   * Warning validation message styling
+   * Applied when validation message has warning class
+   */
+  .validation-message.warning {
+    color: var(--hybrid-input-warning-message-color, var(--hybrid-input-local-warning-message-color, var(--hybrid-input-warning-color, var(--hybrid-input-local-warning-color, #d97706))));
+  }
+
+  /* 
+   * Disabled state for validation messages
+   * Applied when input is disabled
+   */
+  :host([disabled]) .validation-message {
+    opacity: var(--hybrid-input-disabled-validation-message-opacity, var(--hybrid-input-local-disabled-validation-message-opacity, 0.6));
+    color: var(--hybrid-input-disabled-validation-message-color, var(--hybrid-input-local-disabled-validation-message-color));
+  }
+
+  /* 
+   * Validation icon styles
+   * Base styles for validation feedback icons
+   */
+  .validation-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 
+   * Loading validation icon with hourglass animation
+   * Applied when async validation is in progress
+   */
+  .validation-icon.validation-loading {
+    color: var(--hybrid-input-primary-color, var(--hybrid-input-local-primary-color, #3b82f6));
+    animation: validation-hourglass 2s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  /* 
+   * Error validation icon styling
+   * Applied when validation fails
+   */
+  .validation-icon.validation-error {
+    color: var(--hybrid-input-error-color, var(--hybrid-input-local-error-color, #dc2626));
+  }
+
+  /* 
+   * Warning validation icon styling
+   * Applied when validation has warnings
+   */
+  .validation-icon.validation-warning {
+    color: var(--hybrid-input-warning-color, var(--hybrid-input-local-warning-color, #d97706));
+  }
+
+  /* 
+   * Success validation icon styling
+   * Applied when validation passes
+   */
+  .validation-icon.validation-success {
+    color: var(--hybrid-input-success-color, var(--hybrid-input-local-success-color, #16a34a));
+  }
+
+  /* 
+   * Hourglass animation for validation loading
+   * Gentle pulsing effect without rotation for clean appearance
+   */
+  @keyframes validation-hourglass {
+    0% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    25% {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    75% {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    100% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+  }
+
+  /* 
+   * Alternative pulse animation option
+   * Uncomment this and change animation above to use pulse instead of hourglass
+   */
+  /*
+  @keyframes validation-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.1);
+    }
+  }
+  */
 `;
 
 export const styles = [inputStyle, sizeInputStyle, styleVariables];

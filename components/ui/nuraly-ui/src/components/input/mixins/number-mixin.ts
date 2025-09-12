@@ -94,7 +94,6 @@ export const NumberMixin = <T extends Constructor<LitElement>>(superClass: T) =>
       try {
         const input = this.inputElement;
         
-        // If input has no value, set it to min or 0 before stepping
         if (!input.value) {
           const min = input.getAttribute('min');
           input.value = min ? min : '0';
@@ -109,7 +108,6 @@ export const NumberMixin = <T extends Constructor<LitElement>>(superClass: T) =>
           action: 'increment'
         });
         
-        // Update component value if it has one
         if ('value' in this) {
           (this as any).value = newValue;
         }
@@ -135,7 +133,6 @@ export const NumberMixin = <T extends Constructor<LitElement>>(superClass: T) =>
           action: 'decrement'
         });
         
-        // Update component value if it has one
         if ('value' in this) {
           (this as any).value = newValue;
         }
