@@ -7,9 +7,9 @@
 import { LitElement, html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './form.style.js';
-import { 
-  FormConfig, 
-  FormValidationState, 
+import {
+  FormConfig,
+  FormValidationState,
   FormSubmissionState,
   FormEventDetail,
   FORM_EVENTS
@@ -19,7 +19,7 @@ import { FormValidationController } from './controllers/validation.controller.js
 import { FormSubmissionController } from './controllers/submission.controller.js';
 
 /**
- * Comprehensive form component with Ant Design-like API
+ * Comprehensive form component with field management and validation API
  * 
  * Key Features:
  * - Coordinates validation across all form fields (does NOT validate itself)
@@ -27,7 +27,7 @@ import { FormSubmissionController } from './controllers/submission.controller.js
  * - Provides form state management and events
  * - Integrates with existing component validation controllers
  * - Supports both programmatic and user-driven interactions
- * - Ant Design-like API for field manipulation and validation
+ * - Comprehensive API for field manipulation and validation
  * 
  * @example Basic Usage
  * ```html
@@ -38,7 +38,7 @@ import { FormSubmissionController } from './controllers/submission.controller.js
  * </nr-form>
  * ```
  * 
- * @example Programmatic Usage (Ant Design style)
+ * @example Programmatic Usage
  * ```typescript
  * const form = document.querySelector('nr-form');
  * 
@@ -377,11 +377,11 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   // ============================================
-  // ANT DESIGN FORM API METHODS
+  // FORM API METHODS
   // ============================================
 
   /**
-   * Get values of all fields (Ant Design style)
+   * Get values of all fields
    * @returns Object containing all field values
    */
   getFieldsValue(nameList?: string[]): Record<string, any> {
@@ -402,7 +402,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Get value of specific field (Ant Design style)
+   * Get value of specific field
    * @param name Field name
    * @returns Field value
    */
@@ -412,7 +412,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Set values of fields (Ant Design style)
+   * Set values of fields
    * @param values Object containing field values to set
    */
   setFieldsValue(values: Record<string, any>): void {
@@ -422,7 +422,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Set value of specific field (Ant Design style)
+   * Set value of specific field
    * @param name Field name
    * @param value Field value
    */
@@ -439,7 +439,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Validate specific fields (Ant Design style)
+   * Validate specific fields
    * @param nameList Array of field names to validate, if empty validates all
    * @returns Promise with validation result
    */
@@ -470,7 +470,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Reset specific fields (Ant Design style)
+   * Reset specific fields
    * @param nameList Array of field names to reset, if empty resets all
    */
   resetFields(nameList?: string[]): void {
@@ -498,7 +498,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Get field error (Ant Design style)
+   * Get field error
    * @param name Field name
    * @returns Field error message or null
    */
@@ -509,7 +509,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Get all field errors (Ant Design style)
+   * Get all field errors
    * @param nameList Array of field names, if empty returns all
    * @returns Object containing field errors
    */
@@ -529,7 +529,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Check if field has been touched (Ant Design style)
+   * Check if field has been touched
    * @param name Field name
    * @returns Whether field has been touched
    */
@@ -540,7 +540,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Check if any fields have been touched (Ant Design style)
+   * Check if any fields have been touched
    * @param nameList Array of field names, if empty checks all
    * @returns Whether any of the specified fields have been touched
    */
@@ -554,7 +554,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Check if field value has been modified (Ant Design style)
+   * Check if field value has been modified
    * @param name Field name
    * @returns Whether field has been modified
    */
@@ -565,7 +565,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Check if any fields have been modified (Ant Design style)
+   * Check if any fields have been modified
    * @param nameList Array of field names, if empty checks all
    * @returns Whether any of the specified fields have been modified
    */
@@ -579,7 +579,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Get field instance (Ant Design style)
+   * Get field instance
    * @param name Field name
    * @returns Field element or null
    */
@@ -590,7 +590,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Scroll to first error field (Ant Design style)
+   * Scroll to first error field
    * @returns Whether scrolled to a field
    */
   scrollToField(name?: string): boolean {
@@ -611,7 +611,7 @@ export class NrFormElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Submit form and validate (Ant Design style)
+   * Submit form and validate
    * @returns Promise with form values
    */
   async finish(): Promise<Record<string, any>> {

@@ -61,16 +61,7 @@ export class FormValidationController {
    * Add event listeners to a form field
    */
   private addFieldListeners(element: HTMLElement, fieldName: string): void {
-    // Only listen for validation events - let input components handle their own timing
     element.addEventListener('nr-validation', (event) => this.handleFieldValidation(fieldName, event as CustomEvent));
-    
-    // Listen for value changes to update form data (but not trigger validation)
-    //element.addEventListener('nr-input', () => this.handleFieldChange(fieldName));
-    //element.addEventListener('nr-change', () => this.handleFieldChange(fieldName));
-    
-    // Listen for focus events to track field interaction
-    //element.addEventListener('focus', () => this.handleFieldFocus(fieldName));
-    //element.addEventListener('blur', () => this.handleFieldBlur(fieldName));
   }
 
   /**
@@ -112,7 +103,6 @@ export class FormValidationController {
     
     this.validationState = isFormValid ? FormValidationState.Valid : FormValidationState.Invalid;
     
-    // Dispatch validation changed event
     const result: FormValidationResult = {
       isValid: isFormValid,
       invalidFields,
@@ -185,10 +175,8 @@ export class FormValidationController {
       summary: isFormValid ? 'Form is valid' : `${invalidFields.length} field(s) have errors`
     };
 
-    // Dispatch validation event
     this.dispatchValidationEvent(result);
 
-    // Clear validation promise
     this.validationPromise = null;
 
     return result;
