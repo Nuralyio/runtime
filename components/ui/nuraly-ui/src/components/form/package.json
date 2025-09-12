@@ -1,0 +1,63 @@
+{
+  "name": "@nuralyui/form",
+  "version": "0.1.0",
+  "description": "NuralyUI Form - A comprehensive form component with validation coordination, submission handling, and state management",
+  "type": "module",
+  "main": "./index.js",
+  "module": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./form.component.js": {
+      "types": "./form.component.d.ts", 
+      "default": "./form.component.js"
+    }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "controllers/",
+    "interfaces/",
+    "mixins/",
+    "utils/",
+    "demo/",
+    "test/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "wtr \"**/*.test.js\" --node-resolve",
+    "test:watch": "wtr \"**/*.test.js\" --node-resolve --watch",
+    "demo": "wds --open demo/ --node-resolve"
+  },
+  "keywords": [
+    "form",
+    "validation",
+    "form-control",
+    "web-components",
+    "lit",
+    "nuraly",
+    "ui-components",
+    "form-submission",
+    "form-state"
+  ],
+  "author": "Nuraly Team <team@nuraly.io>",
+  "license": "MIT",
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@nuraly/shared": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/form"
+  },
+  "bugs": {
+    "url": "https://github.com/Nuralyio/NuralyUI/issues"
+  },
+  "homepage": "https://nuralyui.com/components/form"
+}

@@ -95,7 +95,6 @@ export class InputValidationUtils {
       }
     }
 
-    // If we reach here, prevent the key input
     keyDownEvent.preventDefault();
   }
 
@@ -122,7 +121,6 @@ export class InputValidationUtils {
       };
     }
 
-    // Check min/max constraints
     if (min && numericValue < Number(min)) {
       warnings.push(`Value ${numericValue} is below minimum ${min}`);
     }

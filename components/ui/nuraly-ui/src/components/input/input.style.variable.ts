@@ -93,6 +93,18 @@ export const styleVariables = css`
     --hybrid-input-local-character-count-margin-top: 4px;
     --hybrid-input-local-character-count-over-limit-color: #da1e28;
 
+    /* Validation message styling variables */
+    --hybrid-input-local-validation-message-font-size: 12px;
+    --hybrid-input-local-validation-message-margin-top: 4px;
+    --hybrid-input-local-validation-message-padding: 0;
+    --hybrid-input-local-validation-message-line-height: 1.4;
+    --hybrid-input-local-error-message-color: #da1e28;
+    --hybrid-input-local-warning-message-color: #f0c300;
+    --hybrid-input-local-error-color: #da1e28;
+    --hybrid-input-local-warning-color: #f0c300;
+    --hybrid-input-local-disabled-validation-message-opacity: 0.6;
+    --hybrid-input-local-disabled-validation-message-color: #c6c6c6;
+
     /* Input Variant Variables */
     /* Outlined variant - full border */
     --hybrid-input-local-outlined-border: 1px solid #d0d0d0;
@@ -153,6 +165,13 @@ export const styleVariables = css`
     /* Dark theme character count colors */
     --hybrid-input-local-character-count-color: #8c8c8c;
     --hybrid-input-local-character-count-over-limit-color: #fa4d56;
+
+    /* Dark theme validation message colors */
+    --hybrid-input-local-error-message-color: #ffb3b8;
+    --hybrid-input-local-warning-message-color: #f0c300;
+    --hybrid-input-local-error-color: #fa4d56;
+    --hybrid-input-local-warning-color: #f0c300;
+    --hybrid-input-local-disabled-validation-message-color: #6f6f6f;
 
     /* Dark theme input variant variables */
     /* Outlined variant - dark theme */
