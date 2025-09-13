@@ -1,10 +1,10 @@
-import {css} from 'lit';
-import {styleVariables} from './tooltips.variables.js';
+import { css } from 'lit';
+import { styleVariables } from './tooltips.variables.js';
 
 const tooltipStyles = css`
   :host([show]) {
-    background-color: var(--hybrid-tooltip-background-color);
-    color: var(--hybrid-tooltip-text-color);
+    background-color: var(--nuraly-tooltip-background-color);
+    color: var(--nuraly-tooltip-text-color);
     position: fixed;
     padding: 5px;
     text-align: center;
@@ -54,20 +54,20 @@ const tooltipStyles = css`
     border: 5px solid transparent;
   }
   :host(.top-position)::after {
-    border-top-color: var(--hybrid-tooltip-background-color);
+    border-top-color: var(--nuraly-tooltip-background-color);
     top: 100%;
   }
   :host(.left-position)::after {
-    border-left-color: var(--hybrid-tooltip-background-color);
+    border-left-color: var(--nuraly-tooltip-background-color);
     left: 100%;
   }
 
   :host(.right-position)::after {
-    border-right-color: var(--hybrid-tooltip-background-color);
+    border-right-color: var(--nuraly-tooltip-background-color);
     right: 100%;
   }
   :host(.bottom-position)::after {
-    border-bottom-color: var(--hybrid-tooltip-background-color);
+    border-bottom-color: var(--nuraly-tooltip-background-color);
     bottom: 100%;
   }
   :host(.alignement-center.top-position)::after,

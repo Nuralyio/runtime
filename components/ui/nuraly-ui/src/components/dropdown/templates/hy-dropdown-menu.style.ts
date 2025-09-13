@@ -1,11 +1,11 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const dropdownMenuStyle = css`
   div {
-    padding: var(--hybrid-dropdown-padding);
+    padding: var(--nuraly-dropdown-padding);
     position: relative;
     cursor: pointer;
-    background-color: var(--hybrid-dropdown-background-color);
+    background-color: var(--nuraly-dropdown-background-color);
     display: flex;
     align-items: center;
   }
@@ -18,32 +18,32 @@ const dropdownMenuStyle = css`
   }
 
   :host(:not([disabled])) div:hover {
-    background-color: var(--hybrid-dropdown-hovered-background-color);
+    background-color: var(--nuraly-dropdown-hovered-background-color);
   }
   :host([disabled]) div {
     cursor: not-allowed;
-    background-color: var(--hybrid-dropdown-disabled-background-color);
-    color: var(--hybrid-dropdown-disabled-text-color);
+    background-color: var(--nuraly-dropdown-disabled-background-color);
+    color: var(--nuraly-dropdown-disabled-text-color);
   }
 
   ::slotted(*) {
-    z-index: var(--hybrid-dropdown-menu-children-z-index);
-    top: var(--hybrid-dropdown-menu-children-top);
+    z-index: var(--nuraly-dropdown-menu-children-z-index);
+    top: var(--nuraly-dropdown-menu-children-top);
     cursor: pointer;
   }
   :host([direction='left']) ::slotted(*) {
-    right: calc(var(--hybrid-dropdown-width) - var(--hybrid-dropdown-menu-children-offset));
+    right: calc(var(--nuraly-dropdown-width) - var(--nuraly-dropdown-menu-children-offset));
   }
 
   :host([direction='right']) ::slotted(*) {
-    left: calc(var(--hybrid-dropdown-width) - var(--hybrid-dropdown-menu-children-offset));
+    left: calc(var(--nuraly-dropdown-width) - var(--nuraly-dropdown-menu-children-offset));
   }
 
   :host(:not([icon])) .menu-label {
-    padding-left: var(--hybrid-dropdown-only-text-padding-left);
+    padding-left: var(--nuraly-dropdown-only-text-padding-left);
   }
   :host([icon]) .menu-label {
-    padding-left: var(--hybrid-dropdown-icon-and-text-padding-left);
+    padding-left: var(--nuraly-dropdown-icon-and-text-padding-left);
   }
 `;
 

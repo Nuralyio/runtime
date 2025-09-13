@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const defaultColorSetsStyle = css`
   .default-color-sets-container {
@@ -10,7 +10,7 @@ const defaultColorSetsStyle = css`
     margin: 3px;
   }
   .color-set-container{
-    border: var(--hybrid-colorpicker-border-color);
+    border: var(--nuraly-colorpicker-border-color);
   }
 `;
 

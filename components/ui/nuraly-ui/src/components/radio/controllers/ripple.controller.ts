@@ -86,8 +86,8 @@ export class RadioRippleController implements RippleController {
     target.offsetHeight;
     
     // Add ripple animation using CSS custom properties
-    const duration = getComputedStyle(target).getPropertyValue('--hybrid-radio-ripple-duration') || 
-                    getComputedStyle(target).getPropertyValue('--hybrid-radio-local-ripple-duration') || 
+    const duration = getComputedStyle(target).getPropertyValue('--nuraly-radio-ripple-duration') || 
+                    getComputedStyle(target).getPropertyValue('--nuraly-radio-local-ripple-duration') || 
                     '300ms';
     
     target.style.animation = `radioRipple ${duration} ease-out`;

@@ -25,17 +25,17 @@ const inputStyle = css`
   :host {
     display: flex;
     flex-direction: column;
-    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
   }
 
   /* 
    * Base input wrapper and input element styles
    * Background applied to wrapper to cover entire container including addons
    * Uses CSS custom properties with fallbacks for comprehensive theming support
-   * Properties follow the pattern: --hybrid-input-{property}, --hybrid-input-local-{property}
+   * Properties follow the pattern: --nuraly-input-{property}, --nuraly-input-local-{property}
    */
   .input-wrapper {
-    background-color: var(--hybrid-input-background-color, var(--hybrid-input-local-background-color));
+    background-color: var(--nuraly-input-background-color, var(--nuraly-input-local-background-color));
   }
 
   #input-container > input {
@@ -47,7 +47,7 @@ const inputStyle = css`
    * Applied when input is disabled - removes interactivity and applies muted colors
    */
   :host([disabled]) .input-wrapper {
-    background-color: var(--hybrid-input-disabled-background-color, var(--hybrid-input-local-disabled-background-color));
+    background-color: var(--nuraly-input-disabled-background-color, var(--nuraly-input-local-disabled-background-color));
   }
 
   :host([disabled]) #input-container > input {
@@ -69,9 +69,9 @@ const inputStyle = css`
    * Customizable placeholder text appearance
    */
   ::placeholder {
-    color: var(--hybrid-input-placeholder-color, var(--hybrid-input-local-placeholder-color));
-    font-size: var(--hybrid-input-placeholder-font-size, var(--hybrid-input-local-placeholder-font-size));
-    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
+    color: var(--nuraly-input-placeholder-color, var(--nuraly-input-local-placeholder-color));
+    font-size: var(--nuraly-input-placeholder-font-size, var(--nuraly-input-local-placeholder-font-size));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
   }
 
   /* 
@@ -79,7 +79,7 @@ const inputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) ::placeholder {
-    color: var(--hybrid-input-disabled-placeholder-color, var(--hybrid-input-local-disabled-placeholder-color));
+    color: var(--nuraly-input-disabled-placeholder-color, var(--nuraly-input-local-disabled-placeholder-color));
   }
 
   /* ========================================
@@ -88,38 +88,38 @@ const inputStyle = css`
 
   /* Warning state icon */
   #warning-icon {
-    --hybrid-icon-color: var(--hybrid-input-warning-icon-color, var(--hybrid-input-local-warning-icon-color));
+    --nuraly-icon-color: var(--nuraly-input-warning-icon-color, var(--nuraly-input-local-warning-icon-color));
   }
 
   /* Error state icon */
   #error-icon {
-    --hybrid-icon-color: var(--hybrid-input-error-icon-color, var(--hybrid-input-local-error-icon-color));
+    --nuraly-icon-color: var(--nuraly-input-error-icon-color, var(--nuraly-input-local-error-icon-color));
   }
 
   /* Calendar input type icon */
   #calendar-icon {
-    --hybrid-icon-color: var(--hybrid-input-calendar-icon-color, var(--hybrid-input-local-calendar-icon-color));
+    --nuraly-icon-color: var(--nuraly-input-calendar-icon-color, var(--nuraly-input-local-calendar-icon-color));
   }
 
   /* Password toggle icon */
   #password-icon {
-    padding-left: var(--hybrid-input-password-icon-padding-left, var(--hybrid-input-local-password-icon-padding-left));
-    padding-right: var(--hybrid-input-password-icon-padding-right, var(--hybrid-input-local-password-icon-padding-right));
+    padding-left: var(--nuraly-input-password-icon-padding-left, var(--nuraly-input-local-password-icon-padding-left));
+    padding-right: var(--nuraly-input-password-icon-padding-right, var(--nuraly-input-local-password-icon-padding-right));
     cursor: pointer;
-    --hybrid-icon-color: var(--hybrid-input-password-icon-color, var(--hybrid-input-local-password-icon-color));
+    --nuraly-icon-color: var(--nuraly-input-password-icon-color, var(--nuraly-input-local-password-icon-color));
   }
 
   /* Copy functionality icon */
   #copy-icon {
-    padding-right: var(--hybrid-input-copy-icon-padding-right, var(--hybrid-input-local-copy-icon-padding-right));
-    --hybrid-icon-color: var(--hybrid-input-copy-icon-color, var(--hybrid-input-local-copy-icon-color));
+    padding-right: var(--nuraly-input-copy-icon-padding-right, var(--nuraly-input-local-copy-icon-padding-right));
+    --nuraly-icon-color: var(--nuraly-input-copy-icon-color, var(--nuraly-input-local-copy-icon-color));
     cursor: pointer;
   }
 
   /* Clear functionality icon */
   #clear-icon {
-    padding-right: var(--hybrid-input-clear-icon-padding-right, var(--hybrid-input-local-clear-icon-padding-right));
-    --hybrid-icon-color: var(--hybrid-input-clear-icon-color, var(--hybrid-input-local-clear-icon-color));
+    padding-right: var(--nuraly-input-clear-icon-padding-right, var(--nuraly-input-local-clear-icon-padding-right));
+    --nuraly-icon-color: var(--nuraly-input-clear-icon-color, var(--nuraly-input-local-clear-icon-color));
     cursor: pointer;
   }
 
@@ -136,25 +136,25 @@ const inputStyle = css`
     right: 0;
     top: 0;
     height: 100%;
-    width: var(--hybrid-input-number-icons-container-width, var(--hybrid-input-local-number-icons-container-width));
-    padding-right: var(--hybrid-input-number-icons-container-padding-right, var(--hybrid-input-local-number-icons-container-padding-right));
+    width: var(--nuraly-input-number-icons-container-width, var(--nuraly-input-local-number-icons-container-width));
+    padding-right: var(--nuraly-input-number-icons-container-padding-right, var(--nuraly-input-local-number-icons-container-padding-right));
   }
 
   /* Individual number icons styling */
   #number-icons hy-icon {
-    --hybrid-icon-color: var(--hybrid-input-number-icons-color, var(--hybrid-input-local-number-icons-color));
-    padding-left: var(--hybrid-input-number-icons-padding-left, var(--hybrid-input-local-number-icons-padding-left));
-    padding-right: var(--hybrid-input-number-icons-padding-right, var(--hybrid-input-local-number-icons-padding-right));
-    width: var(--hybrid-input-number-icons-width, var(--hybrid-input-local-number-icons-width));
-    height: var(--hybrid-input-number-icons-height, var(--hybrid-input-local-number-icons-height));
+    --nuraly-icon-color: var(--nuraly-input-number-icons-color, var(--nuraly-input-local-number-icons-color));
+    padding-left: var(--nuraly-input-number-icons-padding-left, var(--nuraly-input-local-number-icons-padding-left));
+    padding-right: var(--nuraly-input-number-icons-padding-right, var(--nuraly-input-local-number-icons-padding-right));
+    width: var(--nuraly-input-number-icons-width, var(--nuraly-input-local-number-icons-width));
+    height: var(--nuraly-input-number-icons-height, var(--nuraly-input-local-number-icons-height));
   }
 
   /* Number icons separator styling */
   #icons-separator {
-    color: var(--hybrid-input-number-icons-separator-color, var(--hybrid-input-local-number-icons-separator-color));
-    padding-bottom: var(--hybrid-input-number-icons-separator-padding-bottom, var(--hybrid-input-local-number-icons-separator-padding-bottom));
-    padding-left: var(--hybrid-input-number-icons-separator-padding-left, var(--hybrid-input-local-number-icons-separator-padding-left));
-    padding-right: var(--hybrid-input-number-icons-separator-padding-right, var(--hybrid-input-local-number-icons-separator-padding-right));
+    color: var(--nuraly-input-number-icons-separator-color, var(--nuraly-input-local-number-icons-separator-color));
+    padding-bottom: var(--nuraly-input-number-icons-separator-padding-bottom, var(--nuraly-input-local-number-icons-separator-padding-bottom));
+    padding-left: var(--nuraly-input-number-icons-separator-padding-left, var(--nuraly-input-local-number-icons-separator-padding-left));
+    padding-right: var(--nuraly-input-number-icons-separator-padding-right, var(--nuraly-input-local-number-icons-separator-padding-right));
   }
 
   /* 
@@ -168,7 +168,7 @@ const inputStyle = css`
   :host([disabled]) #calendar-icon,
   :host([disabled]) #copy-icon,
   :host([disabled]) #clear-icon {
-    opacity: var(--hybrid-input-disabled-icon-opacity, var(--hybrid-input-local-disabled-icon-opacity));
+    opacity: var(--nuraly-input-disabled-icon-opacity, var(--nuraly-input-local-disabled-icon-opacity));
   }
 
   /* Disabled icons cursor override */
@@ -198,16 +198,16 @@ const inputStyle = css`
    * Styled to visually connect with input
    */
   .input-addon-before {
-    background-color: var(--hybrid-input-addon-background-color, var(--hybrid-input-local-addon-background-color));
-    border: var(--hybrid-input-border, var(--hybrid-input-local-border));
+    background-color: var(--nuraly-input-addon-background-color, var(--nuraly-input-local-addon-background-color));
+    border: var(--nuraly-input-border, var(--nuraly-input-local-border));
     border-right: none;
-    border-top-left-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
-    border-bottom-left-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
-    padding: var(--hybrid-input-addon-padding, var(--hybrid-input-local-addon-padding));
+    border-top-left-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
+    border-bottom-left-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
+    padding: var(--nuraly-input-addon-padding, var(--nuraly-input-local-addon-padding));
     display: flex;
     align-items: center;
-    color: var(--hybrid-input-addon-color, var(--hybrid-input-local-addon-color));
-    font-size: var(--hybrid-input-font-size, var(--hybrid-input-local-font-size));
+    color: var(--nuraly-input-addon-color, var(--nuraly-input-local-addon-color));
+    font-size: var(--nuraly-input-font-size, var(--nuraly-input-local-font-size));
     white-space: nowrap;
     min-width: 0; /* Allow shrinking */
     flex-shrink: 0; /* Prevent shrinking */
@@ -218,16 +218,16 @@ const inputStyle = css`
    * Styled to visually connect with input
    */
   .input-addon-after {
-    background-color: var(--hybrid-input-addon-background-color, var(--hybrid-input-local-addon-background-color));
-    border: var(--hybrid-input-border, var(--hybrid-input-local-border));
+    background-color: var(--nuraly-input-addon-background-color, var(--nuraly-input-local-addon-background-color));
+    border: var(--nuraly-input-border, var(--nuraly-input-local-border));
     border-left: none;
-    border-top-right-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
-    border-bottom-right-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius));
-    padding: var(--hybrid-input-addon-padding, var(--hybrid-input-local-addon-padding));
+    border-top-right-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
+    border-bottom-right-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
+    padding: var(--nuraly-input-addon-padding, var(--nuraly-input-local-addon-padding));
     display: flex;
     align-items: center;
-    color: var(--hybrid-input-addon-color, var(--hybrid-input-local-addon-color));
-    font-size: var(--hybrid-input-font-size, var(--hybrid-input-local-font-size));
+    color: var(--nuraly-input-addon-color, var(--nuraly-input-local-addon-color));
+    font-size: var(--nuraly-input-font-size, var(--nuraly-input-local-font-size));
     white-space: nowrap;
     min-width: 0; /* Allow shrinking */
     flex-shrink: 0; /* Prevent shrinking */
@@ -255,17 +255,17 @@ const inputStyle = css`
    */
   #input-container {
     /* Border properties - individual sides for granular control */
-    border-bottom: var(--hybrid-input-border-bottom, var(--hybrid-input-local-border-bottom));
-    border-top: var(--hybrid-input-border-top, var(--hybrid-input-local-border-top));
-    border-left: var(--hybrid-input-border-left, var(--hybrid-input-local-border-left));
-    border-right: var(--hybrid-input-border-right, var(--hybrid-input-local-border-right));
+    border-bottom: var(--nuraly-input-border-bottom, var(--nuraly-input-local-border-bottom));
+    border-top: var(--nuraly-input-border-top, var(--nuraly-input-local-border-top));
+    border-left: var(--nuraly-input-border-left, var(--nuraly-input-local-border-left));
+    border-right: var(--nuraly-input-border-right, var(--nuraly-input-local-border-right));
     
     /* Border radius - individual corners for design flexibility */
-    border-radius: var(--hybrid-input-border-radius, var(--hybrid-input-local-border-radius)); 
-    border-top-left-radius: var(--hybrid-input-border-top-left-radius, var(--hybrid-input-local-border-top-left-radius));
-    border-top-right-radius: var(--hybrid-input-border-top-right-radius, var(--hybrid-input-local-border-top-right-radius));
-    border-bottom-left-radius: var(--hybrid-input-border-bottom-left-radius, var(--hybrid-input-local-border-bottom-left-radius));
-    border-bottom-right-radius: var(--hybrid-input-border-bottom-right-radius, var(--hybrid-input-local-border-bottom-right-radius));
+    border-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius)); 
+    border-top-left-radius: var(--nuraly-input-border-top-left-radius, var(--nuraly-input-local-border-top-left-radius));
+    border-top-right-radius: var(--nuraly-input-border-top-right-radius, var(--nuraly-input-local-border-top-right-radius));
+    border-bottom-left-radius: var(--nuraly-input-border-bottom-left-radius, var(--nuraly-input-local-border-bottom-left-radius));
+    border-bottom-right-radius: var(--nuraly-input-border-bottom-right-radius, var(--nuraly-input-local-border-bottom-right-radius));
     
     /* Layout */
     display: flex;
@@ -279,10 +279,10 @@ const inputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) #input-container {
-    border-bottom: var(--hybrid-input-disabled-border-bottom, var(--hybrid-input-local-disabled-border-bottom));
-    border-top: var(--hybrid-input-disabled-border-top, var(--hybrid-input-local-disabled-border-top));
-    border-left: var(--hybrid-input-disabled-border-left, var(--hybrid-input-local-disabled-border-left));
-    border-right: var(--hybrid-input-disabled-border-right, var(--hybrid-input-local-disabled-border-right));
+    border-bottom: var(--nuraly-input-disabled-border-bottom, var(--nuraly-input-local-disabled-border-bottom));
+    border-top: var(--nuraly-input-disabled-border-top, var(--nuraly-input-local-disabled-border-top));
+    border-left: var(--nuraly-input-disabled-border-left, var(--nuraly-input-local-disabled-border-left));
+    border-right: var(--nuraly-input-disabled-border-right, var(--nuraly-input-local-disabled-border-right));
     opacity: 0.6;
   }
 
@@ -295,9 +295,9 @@ const inputStyle = css`
    * Default: light border, focus: blue border
    */
   :host([variant='outlined']) #input-container {
-    border: var(--hybrid-input-outlined-border, var(--hybrid-input-local-outlined-border));
-    border-radius: var(--hybrid-input-outlined-border-radius, var(--hybrid-input-local-outlined-border-radius));
-    background-color: var(--hybrid-input-outlined-background, var(--hybrid-input-local-outlined-background));
+    border: var(--nuraly-input-outlined-border, var(--nuraly-input-local-outlined-border));
+    border-radius: var(--nuraly-input-outlined-border-radius, var(--nuraly-input-local-outlined-border-radius));
+    background-color: var(--nuraly-input-outlined-background, var(--nuraly-input-local-outlined-background));
   }
 
   :host([variant='outlined']) .input-wrapper {
@@ -305,7 +305,7 @@ const inputStyle = css`
   }
 
   :host([variant='outlined']:not([state='error'])) #input-container:focus-within {
-    border: var(--hybrid-input-outlined-focus-border, var(--hybrid-input-local-outlined-focus-border));
+    border: var(--nuraly-input-outlined-focus-border, var(--nuraly-input-local-outlined-focus-border));
   }
 
   /* 
@@ -313,9 +313,9 @@ const inputStyle = css`
    * Subtle background with bottom border indication
    */
   :host([variant='filled']) #input-container {
-    background-color: var(--hybrid-input-filled-background, var(--hybrid-input-local-filled-background));
-    border-radius: var(--hybrid-input-filled-border-radius, var(--hybrid-input-local-filled-border-radius));
-    border-bottom: var(--hybrid-input-filled-border-bottom, var(--hybrid-input-local-filled-border-bottom));
+    background-color: var(--nuraly-input-filled-background, var(--nuraly-input-local-filled-background));
+    border-radius: var(--nuraly-input-filled-border-radius, var(--nuraly-input-local-filled-border-radius));
+    border-bottom: var(--nuraly-input-filled-border-bottom, var(--nuraly-input-local-filled-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -326,7 +326,7 @@ const inputStyle = css`
   }
 
   :host([variant='filled']:not([state='error'])) #input-container:focus-within {
-    border-bottom: var(--hybrid-input-filled-focus-border-bottom, var(--hybrid-input-local-filled-focus-border-bottom));
+    border-bottom: var(--nuraly-input-filled-focus-border-bottom, var(--nuraly-input-local-filled-focus-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -337,9 +337,9 @@ const inputStyle = css`
    * Clean appearance with focus indication via outline
    */
   :host([variant='borderless']) #input-container {
-    background-color: var(--hybrid-input-borderless-background, var(--hybrid-input-local-borderless-background));
+    background-color: var(--nuraly-input-borderless-background, var(--nuraly-input-local-borderless-background));
     border: none;
-    border-radius: var(--hybrid-input-borderless-border-radius, var(--hybrid-input-local-borderless-border-radius));
+    border-radius: var(--nuraly-input-borderless-border-radius, var(--nuraly-input-local-borderless-border-radius));
   }
 
   :host([variant='borderless']) .input-wrapper {
@@ -347,7 +347,7 @@ const inputStyle = css`
   }
 
   :host([variant='borderless']:not([state='error'])) #input-container:focus-within {
-    outline: var(--hybrid-input-borderless-focus-outline, var(--hybrid-input-local-borderless-focus-outline));
+    outline: var(--nuraly-input-borderless-focus-outline, var(--nuraly-input-local-borderless-focus-outline));
     border: none;
   }
 
@@ -356,7 +356,7 @@ const inputStyle = css`
    * Maintains existing behavior as default
    */
   :host([variant='underlined']) #input-container {
-    border-bottom: var(--hybrid-input-underlined-border-bottom, var(--hybrid-input-local-underlined-border-bottom));
+    border-bottom: var(--nuraly-input-underlined-border-bottom, var(--nuraly-input-local-underlined-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -364,7 +364,7 @@ const inputStyle = css`
   }
 
   :host([variant='underlined']:not([state='error'])) #input-container:focus-within {
-    border-bottom: var(--hybrid-input-underlined-focus-border-bottom, var(--hybrid-input-local-underlined-focus-border-bottom));
+    border-bottom: var(--nuraly-input-underlined-focus-border-bottom, var(--nuraly-input-local-underlined-focus-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -382,9 +382,9 @@ const inputStyle = css`
     width: 100%;
     border: none;
     outline: none;
-    color: var(--hybrid-input-text-color, var(--hybrid-input-local-text-color));
-    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
-    font-size: var(--hybrid-input-font-size, var(--hybrid-input-local-font-size));
+    color: var(--nuraly-input-text-color, var(--nuraly-input-local-text-color));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
+    font-size: var(--nuraly-input-font-size, var(--nuraly-input-local-font-size));
   }
 
   /* Remove default number input spinners */
@@ -408,13 +408,13 @@ const inputStyle = css`
    * Applied when state='error' and not disabled
    */
   :host(:not([disabled])[state='error']) #input-container {
-    border: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border)) !important;
+    border: var(--nuraly-input-error-border, var(--nuraly-input-local-error-border)) !important;
     outline: none !important;
   }
 
   /* Override variant-specific error state styling */
   :host([variant='borderless'][state='error']) #input-container {
-    border: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border)) !important;
+    border: var(--nuraly-input-error-border, var(--nuraly-input-local-error-border)) !important;
     outline: none !important;
   }
 
@@ -423,7 +423,7 @@ const inputStyle = css`
     border-top: none !important;
     border-left: none !important;
     border-right: none !important;
-    border-bottom: var(--hybrid-input-error-border, var(--hybrid-input-local-error-border)) !important;
+    border-bottom: var(--nuraly-input-error-border, var(--nuraly-input-local-error-border)) !important;
   }
 
   /* 
@@ -433,7 +433,7 @@ const inputStyle = css`
   :host([state='error']) input[type='number'] ~ #number-icons,
   :host([state='warning']) input[type='number'] ~ #number-icons {
     position: static;
-    padding-left: var(--hybrid-input-number-icons-container-padding-left, var(--hybrid-input-local-number-icons-container-padding-left));
+    padding-left: var(--nuraly-input-number-icons-container-padding-left, var(--nuraly-input-local-number-icons-container-padding-left));
   }
 
   /* ========================================
@@ -445,9 +445,9 @@ const inputStyle = css`
    * Applied to slotted label elements
    */
   ::slotted([slot='label']) {
-    color: var(--hybrid-input-label-color, var(--hybrid-input-local-label-color));
-    font-size: var(--hybrid-input-label-font-size, var(--hybrid-input-local-label-font-size));
-    padding-bottom: var(--hybrid-input-label-padding-bottom, var(--hybrid-input-local-label-padding-bottom));
+    color: var(--nuraly-input-label-color, var(--nuraly-input-local-label-color));
+    font-size: var(--nuraly-input-label-font-size, var(--nuraly-input-local-label-font-size));
+    padding-bottom: var(--nuraly-input-label-padding-bottom, var(--nuraly-input-local-label-padding-bottom));
   }
 
   /* 
@@ -455,9 +455,9 @@ const inputStyle = css`
    * Applied to slotted helper text elements
    */
   ::slotted([slot='helper-text']) {
-    color: var(--hybrid-input-helper-text-color, var(--hybrid-input-local-helper-text-color));
-    font-size: var(--hybrid-input-helper-text-font-size, var(--hybrid-input-local-helper-text-font-size));
-    padding-top: var(--hybrid-input-helper-text-padding-top, var(--hybrid-input-local-helper-text-padding-top));
+    color: var(--nuraly-input-helper-text-color, var(--nuraly-input-local-helper-text-color));
+    font-size: var(--nuraly-input-helper-text-font-size, var(--nuraly-input-local-helper-text-font-size));
+    padding-top: var(--nuraly-input-helper-text-padding-top, var(--nuraly-input-local-helper-text-padding-top));
     
     /* Prevent text overflow and ensure proper wrapping without affecting parent width */
     word-wrap: break-word;
@@ -477,11 +477,11 @@ const inputStyle = css`
    * Override helper text color based on validation state
    */
   :host([state='error']) ::slotted([slot='helper-text']) {
-    color: var(--hybrid-input-error-helper-text-color, var(--hybrid-input-local-error-helper-text-color));
+    color: var(--nuraly-input-error-helper-text-color, var(--nuraly-input-local-error-helper-text-color));
   }
 
   :host([state='warning']) ::slotted([slot='helper-text']) {
-    color: var(--hybrid-input-warning-helper-text-color, var(--hybrid-input-local-warning-helper-text-color));
+    color: var(--nuraly-input-warning-helper-text-color, var(--nuraly-input-local-warning-helper-text-color));
   }
 
   /* 
@@ -489,11 +489,11 @@ const inputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) ::slotted([slot='helper-text']) {
-    color: var(--hybrid-input-disabled-helper-text-color, var(--hybrid-input-local-disabled-helper-text-color));
+    color: var(--nuraly-input-disabled-helper-text-color, var(--nuraly-input-local-disabled-helper-text-color));
   }
 
   :host([disabled]) ::slotted([slot='label']) {
-    color: var(--hybrid-input-disabled-label-color, var(--hybrid-input-local-disabled-label-color));
+    color: var(--nuraly-input-disabled-label-color, var(--nuraly-input-local-disabled-label-color));
   }
 
   /* 
@@ -503,9 +503,9 @@ const inputStyle = css`
   ::slotted([slot='prefix']) {
     display: flex;
     align-items: center;
-    padding-right: var(--hybrid-input-prefix-padding-right, var(--hybrid-input-local-prefix-padding-right));
-    color: var(--hybrid-input-prefix-color, var(--hybrid-input-local-prefix-color));
-    font-size: var(--hybrid-input-prefix-font-size, var(--hybrid-input-local-prefix-font-size));
+    padding-right: var(--nuraly-input-prefix-padding-right, var(--nuraly-input-local-prefix-padding-right));
+    color: var(--nuraly-input-prefix-color, var(--nuraly-input-local-prefix-color));
+    font-size: var(--nuraly-input-prefix-font-size, var(--nuraly-input-local-prefix-font-size));
     flex-shrink: 0;
   }
 
@@ -516,9 +516,9 @@ const inputStyle = css`
   ::slotted([slot='suffix']) {
     display: flex;
     align-items: center;
-    padding-left: var(--hybrid-input-suffix-padding-left, var(--hybrid-input-local-suffix-padding-left));
-    color: var(--hybrid-input-suffix-color, var(--hybrid-input-local-suffix-color));
-    font-size: var(--hybrid-input-suffix-font-size, var(--hybrid-input-local-suffix-font-size));
+    padding-left: var(--nuraly-input-suffix-padding-left, var(--nuraly-input-local-suffix-padding-left));
+    color: var(--nuraly-input-suffix-color, var(--nuraly-input-local-suffix-color));
+    font-size: var(--nuraly-input-suffix-font-size, var(--nuraly-input-local-suffix-font-size));
     flex-shrink: 0;
   }
 
@@ -528,8 +528,8 @@ const inputStyle = css`
    */
   :host([disabled]) ::slotted([slot='prefix']),
   :host([disabled]) ::slotted([slot='suffix']) {
-    opacity: var(--hybrid-input-disabled-icon-opacity, var(--hybrid-input-local-disabled-icon-opacity));
-    color: var(--hybrid-input-disabled-prefix-suffix-color, var(--hybrid-input-local-disabled-prefix-suffix-color));
+    opacity: var(--nuraly-input-disabled-icon-opacity, var(--nuraly-input-local-disabled-icon-opacity));
+    color: var(--nuraly-input-disabled-prefix-suffix-color, var(--nuraly-input-local-disabled-prefix-suffix-color));
   }
 `;
 
@@ -544,26 +544,26 @@ const sizeInputStyle = css`
 
   /* Large input size variant */
   div[data-size='large'] {
-    padding-top: var(--hybrid-input-large-padding-top, var(--hybrid-input-local-large-padding-top));
-    padding-bottom: var(--hybrid-input-large-padding-bottom, var(--hybrid-input-local-large-padding-bottom));
-    padding-left: var(--hybrid-input-large-padding-left, var(--hybrid-input-local-large-padding-left));
-    padding-right: var(--hybrid-input-large-padding-right, var(--hybrid-input-local-large-padding-right));
+    padding-top: var(--nuraly-input-large-padding-top, var(--nuraly-input-local-large-padding-top));
+    padding-bottom: var(--nuraly-input-large-padding-bottom, var(--nuraly-input-local-large-padding-bottom));
+    padding-left: var(--nuraly-input-large-padding-left, var(--nuraly-input-local-large-padding-left));
+    padding-right: var(--nuraly-input-large-padding-right, var(--nuraly-input-local-large-padding-right));
   }
 
   /* Medium input size variant (default) */
   div[data-size='medium'] {
-    padding-top: var(--hybrid-input-medium-padding-top, var(--hybrid-input-local-medium-padding-top));
-    padding-bottom: var(--hybrid-input-medium-padding-bottom, var(--hybrid-input-local-medium-padding-bottom));
-    padding-left: var(--hybrid-input-medium-padding-left, var(--hybrid-input-local-medium-padding-left));
-    padding-right: var(--hybrid-input-medium-padding-right, var(--hybrid-input-local-medium-padding-right));
+    padding-top: var(--nuraly-input-medium-padding-top, var(--nuraly-input-local-medium-padding-top));
+    padding-bottom: var(--nuraly-input-medium-padding-bottom, var(--nuraly-input-local-medium-padding-bottom));
+    padding-left: var(--nuraly-input-medium-padding-left, var(--nuraly-input-local-medium-padding-left));
+    padding-right: var(--nuraly-input-medium-padding-right, var(--nuraly-input-local-medium-padding-right));
   }
 
   /* Small input size variant */
   div[data-size='small'] {
-    padding-top: var(--hybrid-input-small-padding-top, var(--hybrid-input-local-small-padding-top));
-    padding-bottom: var(--hybrid-input-small-padding-bottom, var(--hybrid-input-local-small-padding-bottom));
-    padding-left: var(--hybrid-input-small-padding-left, var(--hybrid-input-local-small-padding-left));
-    padding-right: var(--hybrid-input-small-padding-right, var(--hybrid-input-local-small-padding-right));
+    padding-top: var(--nuraly-input-small-padding-top, var(--nuraly-input-local-small-padding-top));
+    padding-bottom: var(--nuraly-input-small-padding-bottom, var(--nuraly-input-local-small-padding-bottom));
+    padding-left: var(--nuraly-input-small-padding-left, var(--nuraly-input-local-small-padding-left));
+    padding-right: var(--nuraly-input-small-padding-right, var(--nuraly-input-local-small-padding-right));
   }
 
   /* 
@@ -571,16 +571,16 @@ const sizeInputStyle = css`
    * Shows character count and limit information
    */
   .character-count {
-    font-size: var(--hybrid-input-character-count-font-size, var(--hybrid-input-local-character-count-font-size));
-    color: var(--hybrid-input-character-count-color, var(--hybrid-input-local-character-count-color));
+    font-size: var(--nuraly-input-character-count-font-size, var(--nuraly-input-local-character-count-font-size));
+    color: var(--nuraly-input-character-count-color, var(--nuraly-input-local-character-count-color));
     text-align: right;
-    margin-top: var(--hybrid-input-character-count-margin-top, var(--hybrid-input-local-character-count-margin-top));
-    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
+    margin-top: var(--nuraly-input-character-count-margin-top, var(--nuraly-input-local-character-count-margin-top));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
   }
 
   /* Character count over limit styling */
   .character-count[data-over-limit] {
-    color: var(--hybrid-input-character-count-over-limit-color, var(--hybrid-input-local-character-count-over-limit-color));
+    color: var(--nuraly-input-character-count-over-limit-color, var(--nuraly-input-local-character-count-over-limit-color));
   }
 
   /* ========================================
@@ -592,10 +592,10 @@ const sizeInputStyle = css`
    * Common styles for error and warning messages
    */
   .validation-message {
-    font-size: var(--hybrid-input-validation-message-font-size, var(--hybrid-input-local-validation-message-font-size, 0.875rem));
-    font-family: var(--hybrid-input-font-family, var(--hybrid-input-local-font-family));
-    margin-top: var(--hybrid-input-validation-message-margin-top, var(--hybrid-input-local-validation-message-margin-top, 0.25rem));
-    padding: var(--hybrid-input-validation-message-padding, var(--hybrid-input-local-validation-message-padding, 0));
+    font-size: var(--nuraly-input-validation-message-font-size, var(--nuraly-input-local-validation-message-font-size, 0.875rem));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
+    margin-top: var(--nuraly-input-validation-message-margin-top, var(--nuraly-input-local-validation-message-margin-top, 0.25rem));
+    padding: var(--nuraly-input-validation-message-padding, var(--nuraly-input-local-validation-message-padding, 0));
     
     /* Prevent text overflow and ensure proper wrapping without affecting parent width */
     word-wrap: break-word;
@@ -607,7 +607,7 @@ const sizeInputStyle = css`
     width: 0;
     min-width: 100%;
     box-sizing: border-box;
-    line-height: var(--hybrid-input-validation-message-line-height, var(--hybrid-input-local-validation-message-line-height, 1.4));
+    line-height: var(--nuraly-input-validation-message-line-height, var(--nuraly-input-local-validation-message-line-height, 1.4));
   }
 
   /* 
@@ -615,7 +615,7 @@ const sizeInputStyle = css`
    * Applied when validation message has error class
    */
   .validation-message.error {
-    color: var(--hybrid-input-error-message-color, var(--hybrid-input-local-error-message-color, var(--hybrid-input-error-color, var(--hybrid-input-local-error-color, #dc2626))));
+    color: var(--nuraly-input-error-message-color, var(--nuraly-input-local-error-message-color, var(--nuraly-input-error-color, var(--nuraly-input-local-error-color, #dc2626))));
   }
 
   /* 
@@ -623,7 +623,7 @@ const sizeInputStyle = css`
    * Applied when validation message has warning class
    */
   .validation-message.warning {
-    color: var(--hybrid-input-warning-message-color, var(--hybrid-input-local-warning-message-color, var(--hybrid-input-warning-color, var(--hybrid-input-local-warning-color, #d97706))));
+    color: var(--nuraly-input-warning-message-color, var(--nuraly-input-local-warning-message-color, var(--nuraly-input-warning-color, var(--nuraly-input-local-warning-color, #d97706))));
   }
 
   /* 
@@ -631,8 +631,8 @@ const sizeInputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) .validation-message {
-    opacity: var(--hybrid-input-disabled-validation-message-opacity, var(--hybrid-input-local-disabled-validation-message-opacity, 0.6));
-    color: var(--hybrid-input-disabled-validation-message-color, var(--hybrid-input-local-disabled-validation-message-color));
+    opacity: var(--nuraly-input-disabled-validation-message-opacity, var(--nuraly-input-local-disabled-validation-message-opacity, 0.6));
+    color: var(--nuraly-input-disabled-validation-message-color, var(--nuraly-input-local-disabled-validation-message-color));
   }
 
   /* 
@@ -652,7 +652,7 @@ const sizeInputStyle = css`
    * Applied when async validation is in progress
    */
   .validation-icon.validation-loading {
-    color: var(--hybrid-input-primary-color, var(--hybrid-input-local-primary-color, #3b82f6));
+    color: var(--nuraly-input-primary-color, var(--nuraly-input-local-primary-color, #3b82f6));
     animation: validation-hourglass 2s ease-in-out infinite;
     transform-origin: center;
   }
@@ -662,7 +662,7 @@ const sizeInputStyle = css`
    * Applied when validation fails
    */
   .validation-icon.validation-error {
-    color: var(--hybrid-input-error-color, var(--hybrid-input-local-error-color, #dc2626));
+    color: var(--nuraly-input-error-color, var(--nuraly-input-local-error-color, #dc2626));
   }
 
   /* 
@@ -670,7 +670,7 @@ const sizeInputStyle = css`
    * Applied when validation has warnings
    */
   .validation-icon.validation-warning {
-    color: var(--hybrid-input-warning-color, var(--hybrid-input-local-warning-color, #d97706));
+    color: var(--nuraly-input-warning-color, var(--nuraly-input-local-warning-color, #d97706));
   }
 
   /* 
@@ -678,7 +678,7 @@ const sizeInputStyle = css`
    * Applied when validation passes
    */
   .validation-icon.validation-success {
-    color: var(--hybrid-input-success-color, var(--hybrid-input-local-success-color, #16a34a));
+    color: var(--nuraly-input-success-color, var(--nuraly-input-local-success-color, #16a34a));
   }
 
   /* 

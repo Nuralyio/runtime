@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const carouselStyles = css`
   :host {
@@ -30,10 +30,10 @@ const carouselStyles = css`
     justify-content: space-between;
   }
   .button-control {
-    --hybrid-button-ghost-text-color: grey;
-    --hybrid-button-ghost-active-border-color: transparent;
-    --hybrid-button-ghost-hover-background-color: transparent;
-    --hybrid-button-ghost-hover-border-color: transparent;
+    --nuraly-button-ghost-text-color: grey;
+    --nuraly-button-ghost-active-border-color: transparent;
+    --nuraly-button-ghost-hover-background-color: transparent;
+    --nuraly-button-ghost-hover-border-color: transparent;
   }
 
   .dot {
@@ -60,7 +60,7 @@ const carouselStyles = css`
       --carousel-dot-background-color: gray;
       --carousel-dot-active-background-color: lightgray;
       .button-control {
-        --hybrid-button-ghost-text-color: #ffffff;
+        --nuraly-button-ghost-text-color: #ffffff;
       }
     }
   }

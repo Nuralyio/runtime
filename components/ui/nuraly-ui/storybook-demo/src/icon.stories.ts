@@ -293,7 +293,7 @@ export const CustomStyling: Story = {
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <hy-icon 
           name="exclamation-triangle" 
-          style="--hybrid-icon-local-color: #dc3545;">
+          style="--nuraly-icon-local-color: #dc3545;">
         </hy-icon>
         <small>Custom red color</small>
       </div>
@@ -301,7 +301,7 @@ export const CustomStyling: Story = {
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <hy-icon 
           name="star" 
-          style="--hybrid-icon-local-width: 32px; --hybrid-icon-local-height: 32px;">
+          style="--nuraly-icon-local-width: 32px; --nuraly-icon-local-height: 32px;">
         </hy-icon>
         <small>Custom size (32px)</small>
       </div>
@@ -309,7 +309,7 @@ export const CustomStyling: Story = {
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <hy-icon 
           name="check-circle" 
-          style="--hybrid-icon-local-width: 24px; --hybrid-icon-local-height: 24px; --hybrid-icon-local-color: #28a745;">
+          style="--nuraly-icon-local-width: 24px; --nuraly-icon-local-height: 24px; --nuraly-icon-local-color: #28a745;">
         </hy-icon>
         <small>Custom size + color</small>
       </div>
@@ -317,7 +317,7 @@ export const CustomStyling: Story = {
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <hy-icon 
           name="heart" 
-          style="--hybrid-icon-local-color: #ff6b6b; transform: rotate(15deg);">
+          style="--nuraly-icon-local-color: #ff6b6b; transform: rotate(15deg);">
         </hy-icon>
         <small>Rotated + colored</small>
       </div>
@@ -325,9 +325,9 @@ export const CustomStyling: Story = {
     
     <div style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
       <strong>CSS Custom Properties:</strong><br>
-      • <code>--hybrid-icon-local-color</code>: Changes the icon color<br>
-      • <code>--hybrid-icon-local-width</code>: Changes the icon width<br>
-      • <code>--hybrid-icon-local-height</code>: Changes the icon height
+      • <code>--nuraly-icon-local-color</code>: Changes the icon color<br>
+      • <code>--nuraly-icon-local-width</code>: Changes the icon width<br>
+      • <code>--nuraly-icon-local-height</code>: Changes the icon height
     </div>
   `,
 };

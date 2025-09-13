@@ -1,5 +1,5 @@
-import {LitElement, css, html} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import { LitElement, css, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 import '../icon.component.js';
 
 @customElement('hy-icon-demo')
@@ -54,18 +54,18 @@ export class HyIconDemo extends LitElement {
     }
 
     #custom-red-icon {
-      --hybrid-icon-local-color: #dc3545;
+      --nuraly-icon-local-color: #dc3545;
     }
 
     #custom-size-icon {
-      --hybrid-icon-local-width: 32px;
-      --hybrid-icon-local-height: 32px;
+      --nuraly-icon-local-width: 32px;
+      --nuraly-icon-local-height: 32px;
     }
 
     #custom-both-icon {
-      --hybrid-icon-local-width: 24px;
-      --hybrid-icon-local-height: 24px;
-      --hybrid-icon-local-color: #28a745;
+      --nuraly-icon-local-width: 24px;
+      --nuraly-icon-local-height: 24px;
+      --nuraly-icon-local-color: #28a745;
     }
 
     .interactive-examples {

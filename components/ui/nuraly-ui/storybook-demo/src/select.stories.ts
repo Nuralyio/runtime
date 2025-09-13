@@ -31,13 +31,13 @@ A versatile select component with comprehensive functionality including:
 - **Accessibility**: ARIA labels, focus management, screen reader support
 
 ## CSS Custom Properties
-- \`--hybrid-select-border-color\`: Border color
-- \`--hybrid-select-focus-color\`: Focus state color
-- \`--hybrid-select-error-color\`: Error state color
-- \`--hybrid-select-success-color\`: Success state color
-- \`--hybrid-select-background\`: Background color
-- \`--hybrid-select-text-color\`: Text color
-- \`--hybrid-select-dropdown-shadow\`: Dropdown shadow
+- \`--nuraly-select-border-color\`: Border color
+- \`--nuraly-select-focus-color\`: Focus state color
+- \`--nuraly-select-error-color\`: Error state color
+- \`--nuraly-select-success-color\`: Success state color
+- \`--nuraly-select-background\`: Background color
+- \`--nuraly-select-text-color\`: Text color
+- \`--nuraly-select-dropdown-shadow\`: Dropdown shadow
         `
       }
     }

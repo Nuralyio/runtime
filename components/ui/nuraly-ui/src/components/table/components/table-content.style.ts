@@ -1,5 +1,5 @@
-import {css} from 'lit';
-import {styleVariables} from './table-content.variables.js';
+import { css } from 'lit';
+import { styleVariables } from './table-content.variables.js';
 
 const tableContentStyle = css`
   :host {
@@ -10,8 +10,8 @@ const tableContentStyle = css`
   input[type='checkbox'][data-indeterminate='true']::after {
     width: 13px;
     height: 13px;
-    background-color: var(--hybrid-table-input-color);
-    color: var(--hybrid-table-checkbox-some-checked-sign-color);
+    background-color: var(--nuraly-table-input-color);
+    color: var(--nuraly-table-checkbox-some-checked-sign-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,11 +20,11 @@ const tableContentStyle = css`
   table {
     width: 100%;
     border-spacing: 0px;
-    color: var(--hybrid-table-text-color);
+    color: var(--nuraly-table-text-color);
   }
   td {
     text-align: center;
-    border-bottom: var(--hybrid-table-column-border);
+    border-bottom: var(--nuraly-table-column-border);
   }
   th {
     cursor: pointer;
@@ -38,20 +38,20 @@ const tableContentStyle = css`
     display: flex;
     justify-content: center;
     align-items: center;
-    --hybrid-icon-color: var(--hybrid-table-text-color);
+    --nuraly-icon-color: var(--nuraly-table-text-color);
   }
   tr {
-    background-color: var(--hybrid-table-row-background-color);
+    background-color: var(--nuraly-table-row-background-color);
   }
   tr:hover {
-    background-color: var(--hybrid-table-row-hover-background-color);
+    background-color: var(--nuraly-table-row-hover-background-color);
   }
   tr:first-child {
-    background-color: var(--hybrid-table-header-background-color);
+    background-color: var(--nuraly-table-header-background-color);
   }
 
   tr:has(:not(th) > input:checked) {
-    background-color: var(--hybrid-table-row-checked-background-color);
+    background-color: var(--nuraly-table-row-checked-background-color);
   }
 
   td,
@@ -61,7 +61,7 @@ const tableContentStyle = css`
   input,
   .expand-icon {
     cursor: pointer;
-    accent-color: var(--hybrid-table-input-color);
+    accent-color: var(--nuraly-table-input-color);
   }
 
   :host([size='small']) td,

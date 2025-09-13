@@ -8,22 +8,22 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    --timepicker-font-family: var(--hybrid-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
-    --timepicker-font-size: var(--hybrid-font-size-medium, 14px);
-    --timepicker-line-height: var(--hybrid-line-height-medium, 1.5715);
+    --timepicker-font-family: var(--nuraly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+    --timepicker-font-size: var(--nuraly-font-size-medium, 14px);
+    --timepicker-line-height: var(--nuraly-line-height-medium, 1.5715);
     
     /* Color system matching select component exactly */
-    --timepicker-background-color: var(--hybrid-background-color, #ffffff);
-    --timepicker-text-color: var(--hybrid-text-color, #262626);
-    --timepicker-text-color-secondary: var(--hybrid-text-color-secondary, #8c8c8c);
-    --timepicker-text-color-disabled: var(--hybrid-text-color-disabled, #8c8c8c);
-    --timepicker-border-color: var(--hybrid-border-color, #d9d9d9);
-    --timepicker-border-color-hover: var(--hybrid-border-color-hover, #1677ff);
-    --timepicker-focus-color: var(--hybrid-focus-color, #1677ff);
-    --timepicker-error-color: var(--hybrid-error-color, #ff4d4f);
-    --timepicker-warning-color: var(--hybrid-warning-color, #faad14);
-    --timepicker-success-color: var(--hybrid-success-color, #52c41a);
-    --timepicker-disabled-bg: var(--hybrid-disabled-bg, #f5f5f5);
+    --timepicker-background-color: var(--nuraly-background-color, #ffffff);
+    --timepicker-text-color: var(--nuraly-text-color, #262626);
+    --timepicker-text-color-secondary: var(--nuraly-text-color-secondary, #8c8c8c);
+    --timepicker-text-color-disabled: var(--nuraly-text-color-disabled, #8c8c8c);
+    --timepicker-border-color: var(--nuraly-border-color, #d9d9d9);
+    --timepicker-border-color-hover: var(--nuraly-border-color-hover, #1677ff);
+    --timepicker-focus-color: var(--nuraly-focus-color, #1677ff);
+    --timepicker-error-color: var(--nuraly-error-color, #ff4d4f);
+    --timepicker-warning-color: var(--nuraly-warning-color, #faad14);
+    --timepicker-success-color: var(--nuraly-success-color, #52c41a);
+    --timepicker-disabled-bg: var(--nuraly-disabled-bg, #f5f5f5);
     
     /* Select component matching colors */
     --timepicker-primary-color: #1677ff;
@@ -32,17 +32,17 @@ export const styles = css`
     --timepicker-control-item-bg-hover: #f5f5f5;
     --timepicker-control-item-bg-active: #e6f7ff;
     
-    --timepicker-border-radius: var(--hybrid-border-radius, 6px);
-    --timepicker-padding: var(--hybrid-padding-medium, 4px 11px);
-    --timepicker-height: var(--hybrid-input-height, 32px);
+    --timepicker-border-radius: var(--nuraly-border-radius, 6px);
+    --timepicker-padding: var(--nuraly-padding-medium, 4px 11px);
+    --timepicker-height: var(--nuraly-input-height, 32px);
     --timepicker-font-weight: 400;
     
     --timepicker-clock-size: 224px;
-    --timepicker-clock-background: var(--hybrid-background-color, #ffffff);
-    --timepicker-clock-border: var(--hybrid-border-color, #f0f0f0);
-    --timepicker-clock-face-color: var(--hybrid-text-color-muted, rgba(0, 0, 0, 0.65));
+    --timepicker-clock-background: var(--nuraly-background-color, #ffffff);
+    --timepicker-clock-border: var(--nuraly-border-color, #f0f0f0);
+    --timepicker-clock-face-color: var(--nuraly-text-color-muted, rgba(0, 0, 0, 0.65));
     --timepicker-clock-hand-color: var(--timepicker-primary-color);
-    --timepicker-clock-number-color: var(--hybrid-text-color, rgba(0, 0, 0, 0.88));
+    --timepicker-clock-number-color: var(--nuraly-text-color, rgba(0, 0, 0, 0.88));
     
     /* Shadows */
     --timepicker-box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -91,21 +91,21 @@ export const styles = css`
 
   /* Input wrapper hover and focus states matching select component */
   .time-picker__input-wrapper:hover:not(.time-picker--disabled) nr-input {
-    --hybrid-input-border-color: var(--timepicker-border-color-hover);
+    --nuraly-input-border-color: var(--timepicker-border-color-hover);
   }
 
   .time-picker__input-wrapper:focus-within nr-input,
   .time-picker--open .time-picker__input-wrapper nr-input,
   .time-picker__input-wrapper nr-input:focus {
-    --hybrid-input-border-color: var(--timepicker-focus-color);
-    --hybrid-input-box-shadow: 0 0 0 2px var(--timepicker-focus-color)33;
+    --nuraly-input-border-color: var(--timepicker-focus-color);
+    --nuraly-input-box-shadow: 0 0 0 2px var(--timepicker-focus-color)33;
   }
 
   /* Disabled state styling */
   .time-picker--disabled .time-picker__input-wrapper nr-input {
-    --hybrid-input-background-color: var(--timepicker-disabled-bg);
-    --hybrid-input-border-color: var(--timepicker-border-color);
-    --hybrid-input-text-color: var(--timepicker-text-color-disabled);
+    --nuraly-input-background-color: var(--timepicker-disabled-bg);
+    --nuraly-input-border-color: var(--timepicker-border-color);
+    --nuraly-input-text-color: var(--timepicker-text-color-disabled);
     cursor: not-allowed;
     opacity: 0.6;
   }
@@ -596,13 +596,13 @@ export const styles = css`
 
   /* Dark theme */
   :host([data-theme="dark"]) {
-    --timepicker-background-color: var(--hybrid-dark-background-color, #1f2937);
-    --timepicker-text-color: var(--hybrid-dark-text-color, #f9fafb);
-    --timepicker-border-color: var(--hybrid-dark-border-color, #374151);
-    --timepicker-clock-background: var(--hybrid-dark-background-color, #1f2937);
-    --timepicker-clock-border: var(--hybrid-dark-border-color, #4b5563);
-    --timepicker-clock-face-color: var(--hybrid-dark-text-color-muted, #9ca3af);
-    --timepicker-clock-number-color: var(--hybrid-dark-text-color, #f9fafb);
+    --timepicker-background-color: var(--nuraly-dark-background-color, #1f2937);
+    --timepicker-text-color: var(--nuraly-dark-text-color, #f9fafb);
+    --timepicker-border-color: var(--nuraly-dark-border-color, #374151);
+    --timepicker-clock-background: var(--nuraly-dark-background-color, #1f2937);
+    --timepicker-clock-border: var(--nuraly-dark-border-color, #4b5563);
+    --timepicker-clock-face-color: var(--nuraly-dark-text-color-muted, #9ca3af);
+    --timepicker-clock-number-color: var(--nuraly-dark-text-color, #f9fafb);
   }
 
   /* Animation classes */

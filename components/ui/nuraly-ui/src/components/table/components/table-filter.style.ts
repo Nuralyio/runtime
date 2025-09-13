@@ -1,5 +1,5 @@
-import {css} from 'lit';
-import {styleVariables} from './table-filter.variables.js';
+import { css } from 'lit';
+import { styleVariables } from './table-filter.variables.js';
 const tableActionsStyle = css`
   :host([showInput]) {
     width: 100%;
@@ -14,12 +14,12 @@ const tableActionsStyle = css`
     padding-left: 30px;
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--hybrid-filter-input-background-color);
-    color: var(--hybrid-filter-input-text-color);
+    background-color: var(--nuraly-filter-input-background-color);
+    color: var(--nuraly-filter-input-text-color);
   }
   input:focus {
     outline-style: none;
-    border: var(--hybrid-filter-focused-input-border);
+    border: var(--nuraly-filter-focused-input-border);
   }
   .icon-container {
     height: 25px;
