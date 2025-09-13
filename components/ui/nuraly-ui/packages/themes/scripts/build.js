@@ -177,9 +177,47 @@ async function build() {
   // Create index file
   await createIndexFile();
   
-  // Copy additional files
+  // Copy and modify package.json for distribution
   const packageJson = await fs.readJson(path.join(PACKAGE_ROOT, 'package.json'));
-  await fs.writeJson(path.join(DIST_DIR, 'package.json'), packageJson, { spaces: 2 });
+  
+  // Modify exports to remove dist/ prefix since we're publishing from dist
+  const distPackageJson = {
+    ...packageJson,
+    main: "index.js",
+    files: [
+      "*.css",
+      "*.js",
+      "*.cjs", 
+      "README.md"
+    ],
+    exports: {
+      ".": {
+        "import": "./index.js",
+        "require": "./index.cjs"
+      },
+      "./carbon": {
+        "import": "./carbon.css",
+        "require": "./carbon.css"
+      },
+      "./polaris": {
+        "import": "./polaris.css",
+        "require": "./polaris.css"
+      },
+      "./default": {
+        "import": "./default.css",
+        "require": "./default.css"
+      }
+    }
+  };
+  
+  await fs.writeJson(path.join(DIST_DIR, 'package.json'), distPackageJson, { spaces: 2 });
+  
+  // Copy README to dist for npm publishing
+  const readmePath = path.join(PACKAGE_ROOT, 'README.md');
+  if (await fs.pathExists(readmePath)) {
+    await fs.copy(readmePath, path.join(DIST_DIR, 'README.md'));
+    console.log('📄 README.md copied to dist');
+  }
   
   console.log(`\n✨ Build complete! Total size: ${(totalSize / 1024).toFixed(1)}KB`);
   console.log(`📁 Output: ${DIST_DIR}`);
