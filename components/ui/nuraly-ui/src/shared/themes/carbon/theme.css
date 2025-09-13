@@ -1,0 +1,258 @@
+/**
+ * Carbon Design System Theme - Main Variables
+ * Core design tokens based on IBM Carbon Design System specifications
+ * This file contains fundamental design system variables used across all components
+ */
+
+/* Default Carbon light theme (fallback) */
+:root {
+  /* ========================================
+   * CARBON DESIGN SYSTEM VARIABLES - LIGHT
+   * ======================================== */
+
+  /* Typography - IBM Plex family */
+  --nuraly-font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --nuraly-font-weight-regular: 400;
+  --nuraly-font-weight-medium: 500;
+  --nuraly-font-weight-semibold: 600;
+  --nuraly-font-weight-bold: 700;
+
+  /* Font sizes - Carbon type scale */
+  --nuraly-font-size-01: 0.75rem;    /* 12px */
+  --nuraly-font-size-02: 0.875rem;   /* 14px */
+  --nuraly-font-size-03: 1rem;       /* 16px */
+  --nuraly-font-size-04: 1.125rem;   /* 18px */
+  --nuraly-font-size-05: 1.25rem;    /* 20px */
+  --nuraly-font-size-06: 1.5rem;     /* 24px */
+  --nuraly-font-size-07: 1.75rem;    /* 28px */
+  --nuraly-font-size-08: 2rem;       /* 32px */
+
+  /* Line heights - Carbon specifications */
+  --nuraly-line-height-01: 1.25;
+  --nuraly-line-height-02: 1.375;
+  --nuraly-line-height-03: 1.5;
+
+  /* Colors - Carbon Design System Palette - Light */
+  --nuraly-color-primary: #0f62fe;
+  --nuraly-color-primary-hover: #0050e6;
+  --nuraly-color-primary-active: #002d9c;
+  --nuraly-color-primary-light: #a6c8ff;
+  --nuraly-color-primary-dark: #002d9c;
+  
+  --nuraly-color-secondary: #393939;
+  --nuraly-color-secondary-hover: #4c4c4c;
+  --nuraly-color-secondary-active: #656565;
+  --nuraly-color-secondary-light: #c6c6c6;
+  --nuraly-color-secondary-dark: #161616;
+  
+  --nuraly-color-success: #198038;
+  --nuraly-color-success-hover: #156930;
+  --nuraly-color-success-active: #0e4b25;
+  --nuraly-color-success-light: #9ef0a9;
+  --nuraly-color-success-dark: #0e4b25;
+  
+  --nuraly-color-warning: #f1c21b;
+  --nuraly-color-warning-hover: #ddb00e;
+  --nuraly-color-warning-active: #b3900c;
+  --nuraly-color-warning-light: #fcf4d6;
+  --nuraly-color-warning-dark: #b3900c;
+  
+  --nuraly-color-danger: #da1e28;
+  --nuraly-color-danger-hover: #b81921;
+  --nuraly-color-danger-active: #750e13;
+  --nuraly-color-danger-light: #ffb3b8;
+  --nuraly-color-danger-dark: #750e13;
+  
+  --nuraly-color-info: #0f62fe;
+  --nuraly-color-info-hover: #0050e6;
+  --nuraly-color-info-active: #002d9c;
+  --nuraly-color-info-light: #a6c8ff;
+  --nuraly-color-info-dark: #002d9c;
+
+  /* Background colors - Carbon G10 (Light theme) */
+  --nuraly-color-background: #ffffff;
+  --nuraly-color-background-hover: #f4f4f4;
+  --nuraly-color-background-active: #c6c6c6;
+  --nuraly-color-background-disabled: #f4f4f4;
+  --nuraly-color-background-overlay: rgba(22, 22, 22, 0.5);
+  
+  /* Text colors - Carbon Light */
+  --nuraly-color-text: #161616;
+  --nuraly-color-text-secondary: #525252;
+  --nuraly-color-text-tertiary: #8d8d8d;
+  --nuraly-color-text-on-color: #ffffff;
+  --nuraly-color-text-disabled: #c6c6c6;
+  --nuraly-color-text-inverse: #ffffff;
+
+  /* Border colors - Carbon Light */
+  --nuraly-color-border: #e0e0e0;
+  --nuraly-color-border-subtle: #f4f4f4;
+  --nuraly-color-border-strong: #8d8d8d;
+  --nuraly-color-border-inverse: #393939;
+  --nuraly-color-border-brand: #0f62fe;
+  --nuraly-color-border-danger: #da1e28;
+  --nuraly-color-border-success: #198038;
+  --nuraly-color-border-warning: #f1c21b;
+
+  /* Border radius - Carbon uses sharp corners */
+  --nuraly-border-radius-none: 0;
+  --nuraly-border-radius-xs: 0;
+  --nuraly-border-radius-sm: 0;
+  --nuraly-border-radius-md: 0;
+  --nuraly-border-radius-lg: 0;
+  --nuraly-border-radius-xl: 0;
+  --nuraly-border-radius-2xl: 0;
+  --nuraly-border-radius-full: 0;
+
+  /* Border widths */
+  --nuraly-border-width-0: 0;
+  --nuraly-border-width-1: 1px;
+  --nuraly-border-width-2: 2px;
+  --nuraly-border-width-4: 4px;
+
+  /* Spacing - Carbon 8px grid system */
+  --nuraly-spacing-01: 0.125rem;  /* 2px */
+  --nuraly-spacing-02: 0.25rem;   /* 4px */
+  --nuraly-spacing-03: 0.5rem;    /* 8px */
+  --nuraly-spacing-04: 0.75rem;   /* 12px */
+  --nuraly-spacing-05: 1rem;      /* 16px */
+  --nuraly-spacing-06: 1.5rem;    /* 24px */
+  --nuraly-spacing-07: 2rem;      /* 32px */
+  --nuraly-spacing-08: 2.5rem;    /* 40px */
+  --nuraly-spacing-09: 3rem;      /* 48px */
+  --nuraly-spacing-10: 4rem;      /* 64px */
+  --nuraly-spacing-11: 5rem;      /* 80px */
+  --nuraly-spacing-12: 6rem;      /* 96px */
+
+  /* Shadows - Carbon minimal approach */
+  --nuraly-shadow-xs: none;
+  --nuraly-shadow-sm: none;
+  --nuraly-shadow-md: none;
+  --nuraly-shadow-lg: none;
+  --nuraly-shadow-xl: none;
+  --nuraly-shadow-2xl: none;
+  --nuraly-shadow-inner: none;
+
+  /* Focus styles - Carbon accessibility-first */
+  --nuraly-focus-outline: 2px solid #0f62fe;
+  --nuraly-focus-outline-offset: 1px;
+  --nuraly-focus-color: #0f62fe;
+  --nuraly-focus-ring: 0 0 0 2px rgba(15, 98, 254, 0.2);
+
+  /* Component sizes - Carbon sizing */
+  --nuraly-size-sm: 2rem;     /* 32px - Carbon small */
+  --nuraly-size-md: 2.5rem;   /* 40px - Carbon medium */
+  --nuraly-size-lg: 3rem;     /* 48px - Carbon large (default) */
+  --nuraly-size-xl: 4rem;     /* 64px - Carbon extra large */
+
+  /* Z-index scale */
+  --nuraly-z-dropdown: 1000;
+  --nuraly-z-sticky: 1020;
+  --nuraly-z-fixed: 1030;
+  --nuraly-z-modal: 1040;
+  --nuraly-z-popover: 1050;
+  --nuraly-z-tooltip: 1060;
+  --nuraly-z-toast: 1070;
+
+  /* Transition durations - Carbon motion */
+  --nuraly-transition-fast: 110ms;
+  --nuraly-transition-normal: 240ms;
+  --nuraly-transition-slow: 400ms;
+
+  /* Transition easings - Carbon motion */
+  --nuraly-ease-linear: linear;
+  --nuraly-ease-in: cubic-bezier(0.25, 0, 1, 1);
+  --nuraly-ease-out: cubic-bezier(0, 0, 0.25, 1);
+  --nuraly-ease-in-out: cubic-bezier(0.25, 0, 0.25, 1);
+
+  /* Surface colors - Carbon Light */
+  --nuraly-color-surface: #ffffff;
+  --nuraly-color-surface-hover: #f4f4f4;
+  --nuraly-color-surface-active: #e0e0e0;
+  --nuraly-color-surface-disabled: #f4f4f4;
+  --nuraly-color-surface-elevated: #ffffff;
+}
+
+/* Light theme explicit declaration */
+[data-theme="carbon-light"],
+[data-theme="carbon"] {
+  /* Ensure consistent theming when explicitly set */
+  --nuraly-color-primary: #0f62fe;
+}
+
+/* Carbon Dark theme (G100) */
+[data-theme="carbon-dark"] {
+  /* Colors - Carbon Design System Dark Palette */
+  --nuraly-color-primary: #78a9ff;
+  --nuraly-color-primary-hover: #4589ff;
+  --nuraly-color-primary-active: #0f62fe;
+  --nuraly-color-primary-light: #a6c8ff;
+  --nuraly-color-primary-dark: #002d9c;
+  
+  --nuraly-color-secondary: #6f6f6f;
+  --nuraly-color-secondary-hover: #8d8d8d;
+  --nuraly-color-secondary-active: #a8a8a8;
+  --nuraly-color-secondary-light: #c6c6c6;
+  --nuraly-color-secondary-dark: #161616;
+  
+  --nuraly-color-success: #42be65;
+  --nuraly-color-success-hover: #24a148;
+  --nuraly-color-success-active: #198038;
+  --nuraly-color-success-light: #9ef0a9;
+  --nuraly-color-success-dark: #0e4b25;
+  
+  --nuraly-color-warning: #f1c21b;
+  --nuraly-color-warning-hover: #ddb00e;
+  --nuraly-color-warning-active: #b3900c;
+  --nuraly-color-warning-light: #fcf4d6;
+  --nuraly-color-warning-dark: #b3900c;
+  
+  --nuraly-color-danger: #ff8389;
+  --nuraly-color-danger-hover: #ff6168;
+  --nuraly-color-danger-active: #da1e28;
+  --nuraly-color-danger-light: #ffb3b8;
+  --nuraly-color-danger-dark: #750e13;
+  
+  --nuraly-color-info: #78a9ff;
+  --nuraly-color-info-hover: #4589ff;
+  --nuraly-color-info-active: #0f62fe;
+  --nuraly-color-info-light: #a6c8ff;
+  --nuraly-color-info-dark: #002d9c;
+
+  /* Background colors - Carbon G100 (Dark theme) */
+  --nuraly-color-background: #161616;
+  --nuraly-color-background-hover: #262626;
+  --nuraly-color-background-active: #393939;
+  --nuraly-color-background-disabled: #262626;
+  --nuraly-color-background-overlay: rgba(22, 22, 22, 0.75);
+  
+  /* Text colors - Carbon Dark */
+  --nuraly-color-text: #ffffff;
+  --nuraly-color-text-secondary: #c6c6c6;
+  --nuraly-color-text-tertiary: #8d8d8d;
+  --nuraly-color-text-on-color: #161616;
+  --nuraly-color-text-disabled: #8d8d8d;
+  --nuraly-color-text-inverse: #161616;
+
+  /* Border colors - Carbon Dark */
+  --nuraly-color-border: #393939;
+  --nuraly-color-border-subtle: #262626;
+  --nuraly-color-border-strong: #6f6f6f;
+  --nuraly-color-border-inverse: #e0e0e0;
+  --nuraly-color-border-brand: #78a9ff;
+  --nuraly-color-border-danger: #ff8389;
+  --nuraly-color-border-success: #42be65;
+  --nuraly-color-border-warning: #f1c21b;
+
+  /* Focus styles - Carbon Dark */
+  --nuraly-focus-outline: 2px solid #78a9ff;
+  --nuraly-focus-color: #78a9ff;
+  --nuraly-focus-ring: 0 0 0 2px rgba(120, 169, 255, 0.2);
+
+  /* Surface colors - Carbon Dark */
+  --nuraly-color-surface: #262626;
+  --nuraly-color-surface-hover: #393939;
+  --nuraly-color-surface-active: #525252;
+  --nuraly-color-surface-disabled: #262626;
+  --nuraly-color-surface-elevated: #393939;
+}
