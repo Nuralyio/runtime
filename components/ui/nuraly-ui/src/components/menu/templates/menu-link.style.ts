@@ -1,34 +1,34 @@
 import { css } from 'lit';
 const menuLinkStyle = css`
   :host([disabled]) li {
-    color: var(--hybrid-menu-disabled-link-color);
+    color: var(--nuraly-menu-disabled-link-color);
     cursor: not-allowed;
   }
 
   :host(:not([disabled]):not([selected])) li {
-    background-color: var(--hybrid-menu-link-background-color);
+    background-color: var(--nuraly-menu-link-background-color);
   }
 
   :host(:not([disabled]):not([selected])) li:hover {
-    background-color: var(--hybrid-menu-hover-link-background-color);
-    color: var(--hybrid-menu-hover-link-color);
+    background-color: var(--nuraly-menu-hover-link-background-color);
+    color: var(--nuraly-menu-hover-link-color);
   }
 
   :host([selected]) li:not(:focus) {
-    background-color: var(--hybrid-menu-selected-link-background-color);
-    color: var(--hybrid-menu-selected-color);
-    border-left: var(--hybrid-menu-selected-link-border);
+    background-color: var(--nuraly-menu-selected-link-background-color);
+    color: var(--nuraly-menu-selected-color);
+    border-left: var(--nuraly-menu-selected-link-border);
   }
 
   :host(:not([disabled])) li {
-    color: var(--hybrid-menu-link-color);
+    color: var(--nuraly-menu-link-color);
   }
 
   :host([text='']) li {
-    width: var(--hybrid-menu-link-icon-only-width);
+    width: var(--nuraly-menu-link-icon-only-width);
   }
   hy-icon {
-    --hybrid-icon-color: var(--hybrid-menu-link-icon-color);
+    --nuraly-icon-color: var(--nuraly-menu-link-icon-color);
   }
    .icon-container{
     display:flex;
@@ -44,8 +44,8 @@ const menuLinkStyle = css`
     list-style: none;
     display: flex;
     cursor: pointer;
-    padding-bottom: var(--hybrid-menu-link-padding-y);
-    padding-top: var(--hybrid-menu-link-padding-y);
+    padding-bottom: var(--nuraly-menu-link-padding-y);
+    padding-top: var(--nuraly-menu-link-padding-y);
   }
   .action-text-container{
     width:100%;
@@ -59,19 +59,19 @@ const menuLinkStyle = css`
   }
 
   :host(:not([disabled])) li:focus {
-    /* border: var(--hybrid-menu-focus-border); */
-    background-color: var(--hybrid-menu-active-background-color);
-    color: var(--hybrid-menu-focus-color);
-    border-left: var(--hybrid-menu-selected-link-border);
+    /* border: var(--nuraly-menu-focus-border); */
+    background-color: var(--nuraly-menu-active-background-color);
+    color: var(--nuraly-menu-focus-color);
+    border-left: var(--nuraly-menu-selected-link-border);
   }
 
   :host(:not([disabled]):not([selected])) li:active {
-    color: var(--hybrid-menu-active-color);
-    background-color: var(--hybrid-menu-active-background-color);
+    color: var(--nuraly-menu-active-color);
+    background-color: var(--nuraly-menu-active-background-color);
   }
 
   :host([icon='']) #text-container {
-    padding-left: var(--hybrid-menu-link-empty-icon-padding-left);
+    padding-left: var(--nuraly-menu-link-empty-icon-padding-left);
   }
   :host([icon=''][iconPosition='right']) #text-container {
     margin-right: auto;
@@ -79,7 +79,7 @@ const menuLinkStyle = css`
 
   :host([iconPosition='right']) #text-container,
   :host([iconPosition='right']) #icon-only {
-    padding-left: var(--hybrid-menu-link-icon-right-padding-left);
+    padding-left: var(--nuraly-menu-link-icon-right-padding-left);
   }
 
   #link-icon {
@@ -90,8 +90,8 @@ const menuLinkStyle = css`
   hy-icon {
     display: flex;
     align-items: center;
-    padding-right: var(--hybrid-menu-link-icon-padding-right);
-    padding-left: var(--hybrid-menu-link-icon-padding-left);
+    padding-right: var(--nuraly-menu-link-icon-padding-right);
+    padding-left: var(--nuraly-menu-link-icon-padding-left);
   }
 `;
 export const styles = menuLinkStyle;

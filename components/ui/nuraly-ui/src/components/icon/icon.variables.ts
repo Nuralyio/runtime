@@ -14,36 +14,36 @@ export const styleVariables = css`
     /* ----------------------------------------
      * BASIC ICON PROPERTIES
      * ---------------------------------------- */
-    --hybrid-icon-local-color: #000000;
-    --hybrid-icon-local-width: 18px;
-    --hybrid-icon-local-height: 18px;
+    --nuraly-icon-local-color: #000000;
+    --nuraly-icon-local-width: 18px;
+    --nuraly-icon-local-height: 18px;
 
     /* ----------------------------------------
      * INTERACTIVE STATES
      * ---------------------------------------- */
-    --hybrid-icon-local-transition: opacity 0.2s ease, transform 0.2s ease;
-    --hybrid-icon-local-hover-opacity: 0.8;
-    --hybrid-icon-local-hover-transform: scale(1.1);
-    --hybrid-icon-local-hover-color: #0f62fe;
-    --hybrid-icon-local-active-opacity: 0.6;
-    --hybrid-icon-local-active-transform: scale(0.95);
-    --hybrid-icon-local-active-color: #054ada;
-    --hybrid-icon-local-disabled-opacity: 0.4;
-    --hybrid-icon-local-disabled-color: #c6c6c6;
+    --nuraly-icon-local-transition: opacity 0.2s ease, transform 0.2s ease;
+    --nuraly-icon-local-hover-opacity: 0.8;
+    --nuraly-icon-local-hover-transform: scale(1.1);
+    --nuraly-icon-local-hover-color: #0f62fe;
+    --nuraly-icon-local-active-opacity: 0.6;
+    --nuraly-icon-local-active-transform: scale(0.95);
+    --nuraly-icon-local-active-color: #054ada;
+    --nuraly-icon-local-disabled-opacity: 0.4;
+    --nuraly-icon-local-disabled-color: #c6c6c6;
     
     /* ----------------------------------------
      * FOCUS STYLES
      * ---------------------------------------- */
-    --hybrid-icon-local-focus-outline: 2px solid #0f62fe;
-    --hybrid-icon-local-focus-outline-offset: 2px;
-    --hybrid-icon-local-focus-background: rgba(15, 98, 254, 0.1);
-    --hybrid-icon-local-focus-border-radius: 4px;
+    --nuraly-icon-local-focus-outline: 2px solid #0f62fe;
+    --nuraly-icon-local-focus-outline-offset: 2px;
+    --nuraly-icon-local-focus-background: rgba(15, 98, 254, 0.1);
+    --nuraly-icon-local-focus-border-radius: 4px;
 
     /* ----------------------------------------
      * CURSOR STYLES
      * ---------------------------------------- */
-    --hybrid-icon-local-cursor: pointer;
-    --hybrid-icon-local-disabled-cursor: not-allowed;
+    --nuraly-icon-local-cursor: pointer;
+    --nuraly-icon-local-disabled-cursor: not-allowed;
   }
 
   /* ========================================
@@ -55,12 +55,12 @@ export const styleVariables = css`
    * These override the light theme defaults when data-theme="dark" is applied
    */
   .svg-icon[data-theme="dark"] {
-    --hybrid-icon-local-color: #ffffff;
-    --hybrid-icon-local-hover-color: #78a9ff;
-    --hybrid-icon-local-active-color: #a6c8ff;
-    --hybrid-icon-local-disabled-color: #6f6f6f;
-    --hybrid-icon-local-focus-outline: 2px solid #78a9ff;
-    --hybrid-icon-local-focus-background: rgba(120, 169, 255, 0.1);
+    --nuraly-icon-local-color: #ffffff;
+    --nuraly-icon-local-hover-color: #78a9ff;
+    --nuraly-icon-local-active-color: #a6c8ff;
+    --nuraly-icon-local-disabled-color: #6f6f6f;
+    --nuraly-icon-local-focus-outline: 2px solid #78a9ff;
+    --nuraly-icon-local-focus-background: rgba(120, 169, 255, 0.1);
   }
 
   /* ========================================
@@ -73,9 +73,9 @@ export const styleVariables = css`
    */
   @media (prefers-reduced-motion: reduce) {
     :host {
-      --hybrid-icon-local-transition: none;
-      --hybrid-icon-local-hover-transform: none;
-      --hybrid-icon-local-active-transform: none;
+      --nuraly-icon-local-transition: none;
+      --nuraly-icon-local-hover-transform: none;
+      --nuraly-icon-local-active-transform: none;
     }
   }
 `;

@@ -13,104 +13,104 @@ import { css } from 'lit';
 export const datepickerVariables = css`
   :host {
     /* Layout and sizing */
-    --hybrid-datepicker-local-width: 280px;
-    --hybrid-datepicker-local-height: auto;
-    --hybrid-datepicker-local-padding: 16px;
-    --hybrid-datepicker-local-margin: 0;
-    --hybrid-datepicker-local-border-radius: 8px;
-    --hybrid-datepicker-local-calendar-width: 320px;
-    --hybrid-datepicker-local-calendar-height: auto;
-    --hybrid-datepicker-local-day-size: 36px;
-    --hybrid-datepicker-local-header-height: 56px;
+    --nuraly-datepicker-local-width: 280px;
+    --nuraly-datepicker-local-height: auto;
+    --nuraly-datepicker-local-padding: 16px;
+    --nuraly-datepicker-local-margin: 0;
+    --nuraly-datepicker-local-border-radius: 8px;
+    --nuraly-datepicker-local-calendar-width: 320px;
+    --nuraly-datepicker-local-calendar-height: auto;
+    --nuraly-datepicker-local-day-size: 36px;
+    --nuraly-datepicker-local-header-height: 56px;
     
     /* Colors - Light theme defaults */
-    --hybrid-datepicker-local-background-color: #ffffff;
-    --hybrid-datepicker-local-border-color: #d9d9d9;
-    --hybrid-datepicker-local-text-color: #000000;
-    --hybrid-datepicker-local-primary-color: #1677ff;
-    --hybrid-datepicker-local-hover-color: #f5f5f5;
-    --hybrid-datepicker-local-selected-color: #1677ff;
-    --hybrid-datepicker-local-selected-text-color: #ffffff;
-    --hybrid-datepicker-local-today-color: #1677ff;
-    --hybrid-datepicker-local-disabled-color: #f5f5f5;
-    --hybrid-datepicker-local-disabled-text-color: #bfbfbf;
-    --hybrid-datepicker-local-weekend-color: #ff4d4f;
-    --hybrid-datepicker-local-weekday-color: #8c8c8c;
-    --hybrid-datepicker-local-range-color: rgba(22, 119, 255, 0.1);
-    --hybrid-datepicker-local-shadow-color: rgba(0, 0, 0, 0.1);
-    --hybrid-datepicker-local-error-color: #da1e28;
-    --hybrid-datepicker-local-warning-color: #f0c300;
-    --hybrid-datepicker-local-success-color: #24a148;
+    --nuraly-datepicker-local-background-color: #ffffff;
+    --nuraly-datepicker-local-border-color: #d9d9d9;
+    --nuraly-datepicker-local-text-color: #000000;
+    --nuraly-datepicker-local-primary-color: #1677ff;
+    --nuraly-datepicker-local-hover-color: #f5f5f5;
+    --nuraly-datepicker-local-selected-color: #1677ff;
+    --nuraly-datepicker-local-selected-text-color: #ffffff;
+    --nuraly-datepicker-local-today-color: #1677ff;
+    --nuraly-datepicker-local-disabled-color: #f5f5f5;
+    --nuraly-datepicker-local-disabled-text-color: #bfbfbf;
+    --nuraly-datepicker-local-weekend-color: #ff4d4f;
+    --nuraly-datepicker-local-weekday-color: #8c8c8c;
+    --nuraly-datepicker-local-range-color: rgba(22, 119, 255, 0.1);
+    --nuraly-datepicker-local-shadow-color: rgba(0, 0, 0, 0.1);
+    --nuraly-datepicker-local-error-color: #da1e28;
+    --nuraly-datepicker-local-warning-color: #f0c300;
+    --nuraly-datepicker-local-success-color: #24a148;
     
     /* Header specific colors */
-    --hybrid-datepicker-local-header-background: #ffffff;
-    --hybrid-datepicker-local-hover-background: rgba(0, 0, 0, 0.04);
-    --hybrid-datepicker-local-active-background: rgba(0, 0, 0, 0.06);
+    --nuraly-datepicker-local-header-background: #ffffff;
+    --nuraly-datepicker-local-hover-background: rgba(0, 0, 0, 0.04);
+    --nuraly-datepicker-local-active-background: rgba(0, 0, 0, 0.06);
     
     /* Input field colors */
-    --hybrid-datepicker-local-input-background: #ffffff;
-    --hybrid-datepicker-local-input-border-color: #d9d9d9;
-    --hybrid-datepicker-local-input-focus-border-color: #1677ff;
-    --hybrid-datepicker-local-input-text-color: #000000;
-    --hybrid-datepicker-local-input-placeholder-color: #bfbfbf;
+    --nuraly-datepicker-local-input-background: #ffffff;
+    --nuraly-datepicker-local-input-border-color: #d9d9d9;
+    --nuraly-datepicker-local-input-focus-border-color: #1677ff;
+    --nuraly-datepicker-local-input-text-color: #000000;
+    --nuraly-datepicker-local-input-placeholder-color: #bfbfbf;
     
     /* Typography */
-    --hybrid-datepicker-local-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
-    --hybrid-datepicker-local-font-size: 14px;
-    --hybrid-datepicker-local-font-weight: 400;
-    --hybrid-datepicker-local-header-font-size: 16px;
-    --hybrid-datepicker-local-header-font-weight: 600;
-    --hybrid-datepicker-local-day-font-size: 14px;
-    --hybrid-datepicker-local-input-font-size: 14px;
-    --hybrid-datepicker-local-label-font-size: 14px;
-    --hybrid-datepicker-local-helper-font-size: 12px;
-    --hybrid-datepicker-local-message-font-size: 12px;
+    --nuraly-datepicker-local-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+    --nuraly-datepicker-local-font-size: 14px;
+    --nuraly-datepicker-local-font-weight: 400;
+    --nuraly-datepicker-local-header-font-size: 16px;
+    --nuraly-datepicker-local-header-font-weight: 600;
+    --nuraly-datepicker-local-day-font-size: 14px;
+    --nuraly-datepicker-local-input-font-size: 14px;
+    --nuraly-datepicker-local-label-font-size: 14px;
+    --nuraly-datepicker-local-helper-font-size: 12px;
+    --nuraly-datepicker-local-message-font-size: 12px;
     
     /* Spacing */
-    --hybrid-datepicker-local-gap: 6px;
-    --hybrid-datepicker-local-calendar-padding: 12px;
-    --hybrid-datepicker-local-day-padding: 6px;
-    --hybrid-datepicker-local-input-padding: 8px 12px;
+    --nuraly-datepicker-local-gap: 6px;
+    --nuraly-datepicker-local-calendar-padding: 12px;
+    --nuraly-datepicker-local-day-padding: 6px;
+    --nuraly-datepicker-local-input-padding: 8px 12px;
     
     /* Borders */
-    --hybrid-datepicker-local-border-width: 1px;
-    --hybrid-datepicker-local-input-border-width: 1px;
-    --hybrid-datepicker-local-focus-border-width: 2px;
+    --nuraly-datepicker-local-border-width: 1px;
+    --nuraly-datepicker-local-input-border-width: 1px;
+    --nuraly-datepicker-local-focus-border-width: 2px;
     
     /* Shadows */
-    --hybrid-datepicker-local-box-shadow: 0 6px 16px 0 var(--hybrid-datepicker-local-shadow-color);
-    --hybrid-datepicker-local-input-focus-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+    --nuraly-datepicker-local-box-shadow: 0 6px 16px 0 var(--nuraly-datepicker-local-shadow-color);
+    --nuraly-datepicker-local-input-focus-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
     
     /* States */
-    --hybrid-datepicker-local-disabled-opacity: 0.5;
-    --hybrid-datepicker-local-hover-opacity: 0.8;
+    --nuraly-datepicker-local-disabled-opacity: 0.5;
+    --nuraly-datepicker-local-hover-opacity: 0.8;
     
     /* Animation and transitions */
-    --hybrid-datepicker-local-transition-duration: 0.2s;
-    --hybrid-datepicker-local-transition-timing: ease-in-out;
-    --hybrid-datepicker-local-calendar-animation-duration: 0.15s;
+    --nuraly-datepicker-local-transition-duration: 0.2s;
+    --nuraly-datepicker-local-transition-timing: ease-in-out;
+    --nuraly-datepicker-local-calendar-animation-duration: 0.15s;
     
     /* Z-index */
-    --hybrid-datepicker-local-calendar-z-index: 1000;
+    --nuraly-datepicker-local-calendar-z-index: 1000;
     
     /* Icon sizes */
-    --hybrid-datepicker-local-icon-size: 16px;
-    --hybrid-datepicker-local-arrow-icon-size: 12px;
+    --nuraly-datepicker-local-icon-size: 16px;
+    --nuraly-datepicker-local-arrow-icon-size: 12px;
     
     /* Size variants */
-    --hybrid-datepicker-local-small-font-size: 12px;
-    --hybrid-datepicker-local-small-padding: 6px 8px;
-    --hybrid-datepicker-local-small-height: 32px;
-    --hybrid-datepicker-local-small-day-size: 28px;
+    --nuraly-datepicker-local-small-font-size: 12px;
+    --nuraly-datepicker-local-small-padding: 6px 8px;
+    --nuraly-datepicker-local-small-height: 32px;
+    --nuraly-datepicker-local-small-day-size: 28px;
     
-    --hybrid-datepicker-local-medium-font-size: 14px;
-    --hybrid-datepicker-local-medium-padding: 8px 12px;
-    --hybrid-datepicker-local-medium-height: 36px;
-    --hybrid-datepicker-local-medium-day-size: 36px;
+    --nuraly-datepicker-local-medium-font-size: 14px;
+    --nuraly-datepicker-local-medium-padding: 8px 12px;
+    --nuraly-datepicker-local-medium-height: 36px;
+    --nuraly-datepicker-local-medium-day-size: 36px;
     
-    --hybrid-datepicker-local-large-font-size: 16px;
-    --hybrid-datepicker-local-large-padding: 12px 16px;
-    --hybrid-datepicker-local-large-height: 44px;
-    --hybrid-datepicker-local-large-day-size: 44px;
+    --nuraly-datepicker-local-large-font-size: 16px;
+    --nuraly-datepicker-local-large-padding: 12px 16px;
+    --nuraly-datepicker-local-large-height: 44px;
+    --nuraly-datepicker-local-large-day-size: 44px;
   }
 `;

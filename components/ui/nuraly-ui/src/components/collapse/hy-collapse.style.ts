@@ -1,11 +1,11 @@
-import {css} from 'lit';
+import { css } from 'lit';
 const collapseStyles = css`
     hy-label{
     display: inline-block;  
     }
     hy-icon{
-        --hybrid-icon-width: 11px;
-        --hybrid-icon-height: 11px;
+        --nuraly-icon-width: 11px;
+        --nuraly-icon-height: 11px;
     }
   .disabled-header {
     opacity: 0.5;
@@ -79,7 +79,7 @@ const collapseStyles = css`
     border-bottom-right-radius:var(--hy-collapse-border-radius,var(--hy-collapse-local-border-radius));
   }
   :host {
-      --hybrid-icon-width: 8px;
+      --nuraly-icon-width: 8px;
     --hy-collapse-local-content-background-color: #ffffff;
     --hy-collapse-local-header-background-color: #fafafa;
     --hy-collapse-local-content-color: #000000;

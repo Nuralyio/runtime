@@ -1,4 +1,4 @@
-import {css} from 'lit';
+import { css } from 'lit';
 
 const colorHolderStyles = css`
   :host {
@@ -6,16 +6,16 @@ const colorHolderStyles = css`
   }
 
   .color-holder-container {
-    width: var(--hybrid-colorpicker-default-width);
-    height: var(--hybrid-colorpicker-default-height);
+    width: var(--nuraly-colorpicker-default-width);
+    height: var(--nuraly-colorpicker-default-height);
   }
   :host([size='small']) .color-holder-container {
-    width: var(--hybrid-colorpicker-small-width);
-    height: var(--hybrid-colorpicker-small-height);
+    width: var(--nuraly-colorpicker-small-width);
+    height: var(--nuraly-colorpicker-small-height);
   }
   :host([size='large']) .color-holder-container {
-    width: var(--hybrid-colorpicker-large-width);
-    height: var(--hybrid-colorpicker-large-height);
+    width: var(--nuraly-colorpicker-large-width);
+    height: var(--nuraly-colorpicker-large-height);
   }
 `;
 

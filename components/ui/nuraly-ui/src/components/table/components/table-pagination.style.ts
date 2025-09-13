@@ -1,12 +1,12 @@
-import {css} from 'lit';
-import {styleVariables} from './table-pagination.variables.js';
+import { css } from 'lit';
+import { styleVariables } from './table-pagination.variables.js';
 
 const tablePaginationStyle = css`
   .pagination-container {
     display: flex;
     justify-content: space-between;
-    background-color: var(--hybrid-pagination-background-color);
-    color: var(--hybrid-pagination-text-color);
+    background-color: var(--nuraly-pagination-background-color);
+    color: var(--nuraly-pagination-text-color);
   }
 
   .left-content {
@@ -14,12 +14,12 @@ const tablePaginationStyle = css`
     justify-content: space-between;
   }
   .left-content .items-details {
-    border-left: var(--hybrid-pagination-borders);
+    border-left: var(--nuraly-pagination-borders);
     padding: 10px;
   }
   .right-arrow,
   .left-arrow {
-    --hybrid-icon-color: var(--hybrid-pagination-text-color);
+    --nuraly-icon-color: var(--nuraly-pagination-text-color);
   }
 
   :host([size='small']) .left-content .items-details {
@@ -45,12 +45,12 @@ const tablePaginationStyle = css`
   .right-content {
     display: flex;
     justify-content: space-between;
-    border-left: var(--hybrid-pagination-borders);
+    border-left: var(--nuraly-pagination-borders);
   }
   .right-content .icon-container {
     display: flex;
     justify-content: space-between;
-    border-left: var(--hybrid-pagination-borders);
+    border-left: var(--nuraly-pagination-borders);
   }
 
   .right-content .page-details {
@@ -81,14 +81,14 @@ const tablePaginationStyle = css`
   }
 
   .icon-container .left-arrow {
-    border-right: var(--hybrid-pagination-borders);
+    border-right: var(--nuraly-pagination-borders);
   }
 
   select {
     border: none;
-    background-color: var(--hybrid-pagination-background-color);
+    background-color: var(--nuraly-pagination-background-color);
     cursor: pointer;
-    color: var(--hybrid-pagination-text-color);
+    color: var(--nuraly-pagination-text-color);
   }
 
   hy-icon[data-enabled='false'] {
