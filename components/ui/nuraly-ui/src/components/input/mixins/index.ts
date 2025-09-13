@@ -4,6 +4,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { SelectionMixin, SelectionCapable } from './selection-mixin.js';
-export { FocusMixin, FocusCapable, FocusOptions, BlurOptions } from './focus-mixin.js';
-export { NumberMixin, NumberCapable } from './number-mixin.js';
+export { SelectionMixin } from './selection-mixin.js';
+export { FocusMixin } from './focus-mixin.js';
+export { NumberMixin } from './number-mixin.js';
+
+// Type-only exports for interfaces
+export type { SelectionCapable } from './selection-mixin.js';
+export type { FocusCapable, FocusOptions, BlurOptions } from './focus-mixin.js';
+export type { NumberCapable } from './number-mixin.js';
