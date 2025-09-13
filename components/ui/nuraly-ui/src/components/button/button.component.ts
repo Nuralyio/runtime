@@ -9,7 +9,19 @@ import { customElement, property } from 'lit/decorators.js';
 import { ButtonType, ButtonShape, EMPTY_STRING, IconPosition } from './button.types.js';
 import { styles } from './button.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
-import { RippleMixin, KeyboardMixin, LinkMixin } from './mixins/index.js';
+
+// Import icon component
+import '../icon/icon.component.js';
+
+// Import controllers
+import {
+  ButtonRippleController,
+  ButtonKeyboardController,
+  ButtonLinkController
+} from './controllers/index.js';
+
+// Import interfaces
+import { ButtonHost } from './interfaces/index.js';
 
 /**
  * Versatile button component with multiple variants, loading states, and icon support.
@@ -27,16 +39,11 @@ import { RippleMixin, KeyboardMixin, LinkMixin } from './mixins/index.js';
  * @slot default - Button text content
  */
 @customElement('nr-button')
-export class NrButtonElement extends RippleMixin(
-  KeyboardMixin(
-    LinkMixin(
-      NuralyUIBaseMixin(LitElement)
-    )
-  )
-) {
+export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements ButtonHost {
+  static override styles = styles;
   /** Disables the button */
   @property({ type: Boolean })
-  override disabled = false;
+  disabled = false;
 
   /** Shows loading spinner */
   @property({ type: Boolean })
@@ -48,7 +55,7 @@ export class NrButtonElement extends RippleMixin(
 
   /** Button type (default, primary, secondary, danger, ghost, link) */
   @property({ type: String })
-  override type: ButtonType = ButtonType.Default;
+  type: ButtonType = ButtonType.Default;
 
   /** Button shape (default, circle, round) */
   @property({ type: String })
@@ -72,15 +79,15 @@ export class NrButtonElement extends RippleMixin(
 
   /** URL for link-type buttons */
   @property({ type: String })
-  override href = EMPTY_STRING;
+  href = EMPTY_STRING;
 
   /** Target attribute for links */
   @property({ type: String })
-  override target = EMPTY_STRING;
+  target = EMPTY_STRING;
 
   /** Enables ripple effect */
   @property({ type: Boolean })
-  override ripple = true;
+  ripple = true;
 
   /** Custom aria-label */
   @property({ type: String })
@@ -95,6 +102,11 @@ export class NrButtonElement extends RippleMixin(
   htmlType = EMPTY_STRING;
 
   override requiredComponents = ['hy-icon'];
+
+  // Controllers
+  private rippleController = new ButtonRippleController(this);
+  private keyboardController = new ButtonKeyboardController(this);
+  private linkController = new ButtonLinkController(this);
 
   override connectedCallback() {
     super.connectedCallback();
@@ -134,15 +146,10 @@ export class NrButtonElement extends RippleMixin(
       return;
     }
 
-    this.handleRippleClick(event);
+    this.rippleController.handleRippleClick(event);
     
-    if (this.isLinkType()) {
-      this.dispatchCustomEvent('link-navigation', {
-        href: this.href,
-        target: this.target,
-        timestamp: Date.now(),
-        originalEvent: event
-      });
+    if (this.linkController.isLinkType()) {
+      this.linkController.handleLinkNavigation(event);
     }
     
     this.dispatchEventWithMetadata('button-clicked', {
@@ -153,10 +160,14 @@ export class NrButtonElement extends RippleMixin(
     });
   }
 
+  private handleKeydown(event: KeyboardEvent) {
+    this.keyboardController.handleKeydown(event);
+  }
+
   override render() {
-    const elementTag = this.getElementTag();
+    const elementTag = this.linkController.getElementTag();
     const commonAttributes = this.getCommonAttributes();
-    const linkAttributes = this.getLinkAttributes();
+    const linkAttributes = this.linkController.getLinkAttributes();
     
     const content = html`
       <span id="container" part="container">
@@ -214,6 +225,4 @@ export class NrButtonElement extends RippleMixin(
       </button>
     `;
   }
-
-  static override styles = styles;
 }
