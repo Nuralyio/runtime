@@ -31,7 +31,7 @@
     ]
   },
   "include": ["src/**/*.ts","src/**/*.json"],
-  "exclude": [],
+  "exclude": ["src/**/*.stories.ts"],
   "paths": {
     "@nuralyui/input/*": ["src/components/input/*"],
   }

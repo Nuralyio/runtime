@@ -4,20 +4,29 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { BaseInputController, InputBaseController, InputHost, ErrorHandler } from './base.controller.js';
+export { BaseInputController } from './base.controller.js';
 export { 
   InputValidationController, 
-  InputValidationEventDetail, 
-  InputValidationHost 
 } from './validation.controller.js';
 export { 
   ValidationStateController,
+} from './state.controller.js';
+export { 
+  InputEventController, 
+} from './event.controller.js';
+
+// Type-only exports for interfaces
+export type { InputBaseController, InputHost, ErrorHandler } from './base.controller.js';
+export type { 
+  InputValidationEventDetail, 
+  InputValidationHost 
+} from './validation.controller.js';
+export type { 
   ValidationState,
   StateController,
   ValidationStateHost
 } from './state.controller.js';
-export { 
-  InputEventController, 
+export type { 
   EventController, 
   InputEventHost 
 } from './event.controller.js';
