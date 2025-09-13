@@ -1,7 +1,7 @@
-import {LitElement, html, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {styles} from './table-filter.style.js';
-import {EMPTY_STRING} from '../table.types.js';
+import { LitElement, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { styles } from './table-filter.style.js';
+import { EMPTY_STRING } from '../table.types.js';
 
 @customElement('hy-table-filter')
 export class HyTableFilter extends LitElement {
@@ -29,7 +29,7 @@ export class HyTableFilter extends LitElement {
     return html`
       <div class="filter-container">
         ${this.showInput
-          ? html` <hy-icon name="search" class="search-icon"></hy-icon>
+          ? html` <nr-icon name="search" class="search-icon"></nr-icon>
               <input
                 type="text"
                 placeholder="search"
@@ -37,7 +37,7 @@ export class HyTableFilter extends LitElement {
                 @input=${this._onChange}
               />`
           : html`<div class="icon-container" @click=${this._handleInput}>
-              <hy-icon name="search"></hy-icon>
+              <nr-icon name="search"></nr-icon>
             </div> `}
       </div>
     `;

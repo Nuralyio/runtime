@@ -90,7 +90,7 @@ import { INPUT_STATE } from '../input/input.types.js';
 @customElement('hy-datepicker')
 export class HyDatePickerElement extends NuralyUIBaseMixin(LitElement) implements DatePickerHost {
   static override styles = styles;
-  override requiredComponents = ['nr-input', 'nr-button', 'hy-icon', 'hy-select'];
+  override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'hy-select'];
 
   // Controllers - following the delegation pattern
   private calendarController = new DatePickerCalendarController(this);

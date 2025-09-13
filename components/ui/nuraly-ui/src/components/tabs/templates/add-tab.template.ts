@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {html} from 'lit';
+import { html } from 'lit';
 
 export const addTabTemplate = (handlers: any) => {
   return html` <div
@@ -8,6 +8,6 @@ export const addTabTemplate = (handlers: any) => {
       handlers.clickHandler();
     }}
   >
-    <hy-icon name="plus"></hy-icon>
+    <nr-icon name="plus"></nr-icon>
   </div>`;
 };

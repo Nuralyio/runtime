@@ -87,18 +87,18 @@ export class HySubMenu extends LitElement {
     return html`
     <ul tabindex="0">
         <div @mousedown=${!this.disabled ? this._toggleMenu : nothing}>
-          ${this.icon ? html`<hy-icon id="text-icon" name="${this.icon}"></hy-icon>` : nothing}
+          ${this.icon ? html`<nr-icon id="text-icon" name="${this.icon}"></nr-icon>` : nothing}
           <span>${this.text}</span>
           <div class="icons-container">
           ${this.status?.icon ? html`
-              <hy-icon name=${this.status.icon} class="status-icon" ></hy-icon>
+              <nr-icon name=${this.status.icon} class="status-icon" ></nr-icon>
             `: nothing}
           ${(this.highlighted || this.hovered) && this.menu?.menu.actions ? html`
             <hy-dropdown .options=${this.menu.menu.actions} @click-item=${this.onActionClick} .trigger=${"click"}>
-              <hy-icon name="${this.menu.menu.icon}" class="action-icon"></hy-icon>
+              <nr-icon name="${this.menu.menu.icon}" class="action-icon"></nr-icon>
             </hy-dropdown>
             `: nothing}
-            ${this.menu.children.length ? html`<hy-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></hy-icon>` : nothing}
+            ${this.menu.children.length ? html`<nr-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></nr-icon>` : nothing}
           </div>
         </div>
         <slot @select-menu=${this._handleSelectedChild} @selected-link=${this._handleSelectedChild} style="display:${this.isOpen ? nothing : 'none'};"></slot>

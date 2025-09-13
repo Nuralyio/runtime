@@ -74,7 +74,7 @@ export class InputRenderUtils {
   ): TemplateResult | typeof nothing {
     if (!withCopy) return nothing;
     
-    return html`<hy-icon
+    return html`<nr-icon
       name="copy"
       type="regular"
       id="copy-icon"
@@ -83,7 +83,7 @@ export class InputRenderUtils {
       tabindex="0"
       @click=${!disabled && !readonly ? onCopy : nothing}
       @keydown=${onKeydown}
-    ></hy-icon>`;
+    ></nr-icon>`;
   }
 
   /**
@@ -99,7 +99,7 @@ export class InputRenderUtils {
   ): TemplateResult | typeof nothing {
     if (!allowClear || !value || disabled || readonly) return nothing;
     
-    return html`<hy-icon
+    return html`<nr-icon
       name="times-circle"
       type="regular"
       id="clear-icon"
@@ -108,7 +108,7 @@ export class InputRenderUtils {
       tabindex="0"
       @click=${onClear}
       @keydown=${onKeydown}
-    ></hy-icon>`;
+    ></nr-icon>`;
   }
 
   /**
@@ -117,9 +117,9 @@ export class InputRenderUtils {
   static renderStateIcon(state: string): TemplateResult | typeof nothing {
     switch (state) {
       case INPUT_STATE.Warning:
-        return html`<hy-icon name="warning" id="warning-icon"></hy-icon>`;
+        return html`<nr-icon name="warning" id="warning-icon"></nr-icon>`;
       case INPUT_STATE.Error:
-        return html`<hy-icon name="exclamation-circle" id="error-icon"></hy-icon>`;
+        return html`<nr-icon name="exclamation-circle" id="error-icon"></nr-icon>`;
       default:
         return nothing;
     }
@@ -136,7 +136,7 @@ export class InputRenderUtils {
       return nothing;
     }
     
-    return html`<hy-icon name="calendar" type="regular" id="calendar-icon"></hy-icon>`;
+    return html`<nr-icon name="calendar" type="regular" id="calendar-icon"></nr-icon>`;
   }
 
   /**
@@ -153,7 +153,7 @@ export class InputRenderUtils {
     if (type !== INPUT_TYPE.PASSWORD) return nothing;
     
     if (inputType === INPUT_TYPE.TEXT) {
-      return html`<hy-icon
+      return html`<nr-icon
         name="eye-slash"
         type="regular"
         id="password-icon"
@@ -162,9 +162,9 @@ export class InputRenderUtils {
         tabindex="0"
         @click=${!disabled && !readonly ? onToggle : nothing}
         @keydown=${onKeydown}
-      ></hy-icon>`;
+      ></nr-icon>`;
     } else {
-      return html`<hy-icon
+      return html`<nr-icon
         name="eye"
         type="regular"
         id="password-icon"
@@ -173,7 +173,7 @@ export class InputRenderUtils {
         tabindex="0"
         @click=${!disabled && !readonly ? onToggle : nothing}
         @keydown=${onKeydown}
-      ></hy-icon>`;
+      ></nr-icon>`;
     }
   }
 
@@ -194,23 +194,23 @@ export class InputRenderUtils {
     return html`
       <div id="number-icons">
         ${state !== INPUT_STATE.Default ? html`<span id="icons-separator">|</span>` : nothing}
-        <hy-icon 
+        <nr-icon 
           name="minus" 
           aria-label="Decrease value"
           role="button"
           tabindex="0"
           @click=${!disabled && !readonly ? onDecrement : nothing}
           @keydown=${onKeydown}
-        ></hy-icon>
+        ></nr-icon>
         <span id="icons-separator">|</span>
-        <hy-icon 
+        <nr-icon 
           name="plus" 
           aria-label="Increase value"
           role="button"
           tabindex="0"
           @click=${!disabled && !readonly ? onIncrement : nothing}
           @keydown=${onKeydown}
-        ></hy-icon>
+        ></nr-icon>
       </div>
     `;
   }

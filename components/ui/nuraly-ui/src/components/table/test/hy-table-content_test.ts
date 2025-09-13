@@ -1,7 +1,7 @@
-import {html, fixture, expect} from '@open-wc/testing';
+import { html, fixture, expect } from '@open-wc/testing';
 import '../components/hy-table-content';
-import {HyTableContent} from '../components/hy-table-content';
-import {SelectionMode, SortOrder} from '../table.types';
+import { HyTableContent } from '../components/hy-table-content';
+import { SelectionMode, SortOrder } from '../table.types';
 
 suite('HyTableContent', () => {
   const headers = [
@@ -143,7 +143,7 @@ suite('HyTableContent', () => {
         .rows=${rows}
         .sortAttribute=${{index: 0, order: SortOrder.Ascending}}
       ></hy-table-content>`);
-      const sortIcon = el.shadowRoot!.querySelector('th span hy-icon')!;
+      const sortIcon = el.shadowRoot!.querySelector('th span nr-icon')!;
       expect(sortIcon).to.exist;
       expect(sortIcon).to.have.attribute('name', 'long-arrow-up');
     });
@@ -153,7 +153,7 @@ suite('HyTableContent', () => {
         .rows=${rows}
         .sortAttribute=${{index: 0, order: SortOrder.Descending}}
       ></hy-table-content>`);
-      const sortIcon = el.shadowRoot!.querySelector('th span hy-icon')!;
+      const sortIcon = el.shadowRoot!.querySelector('th span nr-icon')!;
       expect(sortIcon).to.exist;
       expect(sortIcon).to.have.attribute('name', 'long-arrow-down');
     });
@@ -163,7 +163,7 @@ suite('HyTableContent', () => {
         .rows=${rows}
         .sortAttribute=${{index: 0, order: SortOrder.Default}}
       ></hy-table-content>`);
-      const sortIcon = el.shadowRoot!.querySelector('th span hy-icon')!;
+      const sortIcon = el.shadowRoot!.querySelector('th span nr-icon')!;
       expect(sortIcon).to.exist;
       expect(sortIcon).to.have.attribute('name', 'arrows-v');
     });

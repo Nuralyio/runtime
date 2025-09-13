@@ -395,18 +395,18 @@ export const WithPrefixSuffix: Story = {
 
       <!-- Icon prefix/suffix -->
       <nr-input label="Search" placeholder="Type to search">
-        <hy-icon slot="prefix" name="search"></hy-icon>
-        <hy-icon slot="suffix" name="close"></hy-icon>
+        <nr-icon slot="prefix" name="search"></nr-icon>
+        <nr-icon slot="suffix" name="close"></nr-icon>
       </nr-input>
 
       <!-- Email with icon -->
       <nr-input type="email" label="Email" placeholder="Enter your email">
-        <hy-icon slot="prefix" name="envelope"></hy-icon>
+        <nr-icon slot="prefix" name="envelope"></nr-icon>
       </nr-input>
 
       <!-- Password with lock icon -->
       <nr-input type="password" label="Password" placeholder="Enter password">
-        <hy-icon slot="prefix" name="lock"></hy-icon>
+        <nr-icon slot="prefix" name="lock"></nr-icon>
       </nr-input>
     </div>
   `,
@@ -443,7 +443,7 @@ export const AddonBeforeAfterExamples: Story = {
       <!-- Combined with icons in addons -->
       <nr-input label="Search with Button" placeholder="Search term">
         <div slot="addon-before" style="display: flex; align-items: center; gap: 4px;">
-          <hy-icon name="search"></hy-icon>
+          <nr-icon name="search"></nr-icon>
           <span>Find:</span>
         </div>
         <button slot="addon-after" style="border: none; background: #0f62fe; color: white; padding: 4px 8px; cursor: pointer;">Go</button>

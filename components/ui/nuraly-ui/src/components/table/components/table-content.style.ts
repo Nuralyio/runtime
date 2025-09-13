@@ -34,7 +34,7 @@ const tableContentStyle = css`
     justify-content: center;
     gap: 10px;
   }
-  hy-icon {
+  nr-icon {
     display: flex;
     justify-content: center;
     align-items: center;

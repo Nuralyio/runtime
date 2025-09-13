@@ -133,7 +133,7 @@ export class TabsComponent extends LitElement {
     // if the tab does not gave edibale propetry and canDeleteTab is true
     // then render the delete icon
     if(!tab.editable && this.editable?.canDeleteTab){
-      return html`<hy-icon
+      return html`<nr-icon
       @mousedown=${() => {
         this.dispatchEvent(
           new CustomEvent(TabEvent.removeTab, {
@@ -143,7 +143,7 @@ export class TabsComponent extends LitElement {
       }}
       name="window-close"
       class="close-icon"
-    ></hy-icon>`
+    ></nr-icon>`
     ;
   }
   return nothing;
@@ -181,7 +181,7 @@ export class TabsComponent extends LitElement {
             >${children[tabIndex].label}</hy-label
           >
           ${children[tabIndex].editable?.canDeleteTab ?? this.editable?.canDeleteTab
-            ? html`<hy-icon
+            ? html`<nr-icon
                 @mousedown=${() => {
                   this.dispatchEvent(
                     new CustomEvent(TabEvent.removeTab, {
@@ -191,7 +191,7 @@ export class TabsComponent extends LitElement {
                 }}
                 name="window-close"
                 class="close-icon"
-              ></hy-icon>`
+              ></nr-icon>`
             : NOTHING_STRING}
         </div>
       `;
@@ -205,7 +205,7 @@ export class TabsComponent extends LitElement {
             this.dispatchEvent(new CustomEvent(TabEvent.addTab));
           }}
         >
-          <hy-icon name="plus" class="add-tab-icon"></hy-icon>
+          <nr-icon name="plus" class="add-tab-icon"></nr-icon>
         </div>
       `;
       tabs.push(tab);

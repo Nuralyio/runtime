@@ -122,12 +122,12 @@ export class SelectSearchController extends BaseSelectController implements Sear
           @keydown="${this.handleSearchKeyDown}"
           @click="${(e: Event) => e.stopPropagation()}"
         >
-          <hy-icon 
+          <nr-icon 
             name="search" 
             class="search-icon" 
             slot="prefix"
             aria-hidden="true">
-          </hy-icon>
+          </nr-icon>
         </nr-input>
       </div>
     `;
@@ -140,11 +140,11 @@ export class SelectSearchController extends BaseSelectController implements Sear
     return html`
       <div class="no-options" role="option" aria-disabled="true">
         <div class="no-options-content">
-          <hy-icon 
+          <nr-icon 
             name="search" 
             class="no-options-icon"
             aria-hidden="true">
-          </hy-icon>
+          </nr-icon>
           <span class="no-options-text">No results found for "${this._searchQuery}"</span>
         </div>
       </div>

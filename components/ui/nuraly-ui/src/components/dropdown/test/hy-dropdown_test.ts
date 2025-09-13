@@ -1,10 +1,10 @@
-import {html, fixture, expect} from '@open-wc/testing';
+import { html, fixture, expect } from '@open-wc/testing';
 import '../hy-dropdown.component';
-import {HyDropdownComponent} from '../hy-dropdown.component';
-import {TriggerMode} from '../dropdown.types';
-import {HyDropdownItem} from '../templates/hy-dropdown-item';
+import { HyDropdownComponent } from '../hy-dropdown.component';
+import { TriggerMode } from '../dropdown.types';
+import { HyDropdownItem } from '../templates/hy-dropdown-item';
 import '../templates/hy-dropdown-item';
-import {HyDropdownMenu} from '../templates/hy-dropdown-menu';
+import { HyDropdownMenu } from '../templates/hy-dropdown-menu';
 import '../templates/hy-dropdown-menu';
 
 const options = [
@@ -78,7 +78,7 @@ suite('HyDropdownComponent', () => {
       const el: HyDropdownItem = await fixture(
         html`<hy-dropdown-item icon="${iconName}" label="${labelText}"></hy-dropdown-item>`
       );
-      const icon = el.shadowRoot!.querySelector('hy-icon');
+      const icon = el.shadowRoot!.querySelector('nr-icon');
       const label = el.shadowRoot!.querySelector('.option-label');
       expect(icon).to.exist;
       expect(icon!.getAttribute('name')).to.equal(iconName);

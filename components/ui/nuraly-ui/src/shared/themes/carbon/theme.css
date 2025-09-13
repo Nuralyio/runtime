@@ -180,79 +180,83 @@
   --nuraly-color-primary: #0f62fe;
 }
 
-/* Carbon Dark theme (G100) */
-[data-theme="carbon-dark"] {
+/* Carbon Dark theme (G100) - with stronger specificity */
+[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"],
+body[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"] *,
+body[data-theme="carbon-dark"] * {
   /* Colors - Carbon Design System Dark Palette */
-  --nuraly-color-primary: #78a9ff;
-  --nuraly-color-primary-hover: #4589ff;
-  --nuraly-color-primary-active: #0f62fe;
-  --nuraly-color-primary-light: #a6c8ff;
-  --nuraly-color-primary-dark: #002d9c;
+  --nuraly-color-primary: #78a9ff !important;
+  --nuraly-color-primary-hover: #4589ff !important;
+  --nuraly-color-primary-active: #0f62fe !important;
+  --nuraly-color-primary-light: #a6c8ff !important;
+  --nuraly-color-primary-dark: #002d9c !important;
   
-  --nuraly-color-secondary: #6f6f6f;
-  --nuraly-color-secondary-hover: #8d8d8d;
-  --nuraly-color-secondary-active: #a8a8a8;
-  --nuraly-color-secondary-light: #c6c6c6;
-  --nuraly-color-secondary-dark: #161616;
+  --nuraly-color-secondary: #6f6f6f !important;
+  --nuraly-color-secondary-hover: #8d8d8d !important;
+  --nuraly-color-secondary-active: #a8a8a8 !important;
+  --nuraly-color-secondary-light: #c6c6c6 !important;
+  --nuraly-color-secondary-dark: #161616 !important;
   
-  --nuraly-color-success: #42be65;
-  --nuraly-color-success-hover: #24a148;
-  --nuraly-color-success-active: #198038;
-  --nuraly-color-success-light: #9ef0a9;
-  --nuraly-color-success-dark: #0e4b25;
+  --nuraly-color-success: #42be65 !important;
+  --nuraly-color-success-hover: #24a148 !important;
+  --nuraly-color-success-active: #198038 !important;
+  --nuraly-color-success-light: #9ef0a9 !important;
+  --nuraly-color-success-dark: #0e4b25 !important;
   
-  --nuraly-color-warning: #f1c21b;
-  --nuraly-color-warning-hover: #ddb00e;
-  --nuraly-color-warning-active: #b3900c;
-  --nuraly-color-warning-light: #fcf4d6;
-  --nuraly-color-warning-dark: #b3900c;
+  --nuraly-color-warning: #f1c21b !important;
+  --nuraly-color-warning-hover: #ddb00e !important;
+  --nuraly-color-warning-active: #b3900c !important;
+  --nuraly-color-warning-light: #fcf4d6 !important;
+  --nuraly-color-warning-dark: #b3900c !important;
   
-  --nuraly-color-danger: #ff8389;
-  --nuraly-color-danger-hover: #ff6168;
-  --nuraly-color-danger-active: #da1e28;
-  --nuraly-color-danger-light: #ffb3b8;
-  --nuraly-color-danger-dark: #750e13;
+  --nuraly-color-danger: #ff8389 !important;
+  --nuraly-color-danger-hover: #ff6168 !important;
+  --nuraly-color-danger-active: #da1e28 !important;
+  --nuraly-color-danger-light: #ffb3b8 !important;
+  --nuraly-color-danger-dark: #750e13 !important;
   
-  --nuraly-color-info: #78a9ff;
-  --nuraly-color-info-hover: #4589ff;
-  --nuraly-color-info-active: #0f62fe;
-  --nuraly-color-info-light: #a6c8ff;
-  --nuraly-color-info-dark: #002d9c;
+  --nuraly-color-info: #78a9ff !important;
+  --nuraly-color-info-hover: #4589ff !important;
+  --nuraly-color-info-active: #0f62fe !important;
+  --nuraly-color-info-light: #a6c8ff !important;
+  --nuraly-color-info-dark: #002d9c !important;
 
   /* Background colors - Carbon G100 (Dark theme) */
-  --nuraly-color-background: #161616;
-  --nuraly-color-background-hover: #262626;
-  --nuraly-color-background-active: #393939;
-  --nuraly-color-background-disabled: #262626;
-  --nuraly-color-background-overlay: rgba(22, 22, 22, 0.75);
+  --nuraly-color-background: #161616 !important;
+  --nuraly-color-background-hover: #262626 !important;
+  --nuraly-color-background-active: #393939 !important;
+  --nuraly-color-background-disabled: #262626 !important;
+  --nuraly-color-background-overlay: rgba(22, 22, 22, 0.75) !important;
   
   /* Text colors - Carbon Dark */
-  --nuraly-color-text: #ffffff;
-  --nuraly-color-text-secondary: #c6c6c6;
-  --nuraly-color-text-tertiary: #8d8d8d;
-  --nuraly-color-text-on-color: #161616;
-  --nuraly-color-text-disabled: #8d8d8d;
-  --nuraly-color-text-inverse: #161616;
+  --nuraly-color-text: #ffffff !important;
+  --nuraly-color-text-secondary: #c6c6c6 !important;
+  --nuraly-color-text-tertiary: #8d8d8d !important;
+  --nuraly-color-text-on-color: #161616 !important;
+  --nuraly-color-text-disabled: #8d8d8d !important;
+  --nuraly-color-text-inverse: #161616 !important;
 
   /* Border colors - Carbon Dark */
-  --nuraly-color-border: #393939;
-  --nuraly-color-border-subtle: #262626;
-  --nuraly-color-border-strong: #6f6f6f;
-  --nuraly-color-border-inverse: #e0e0e0;
-  --nuraly-color-border-brand: #78a9ff;
-  --nuraly-color-border-danger: #ff8389;
-  --nuraly-color-border-success: #42be65;
-  --nuraly-color-border-warning: #f1c21b;
+  --nuraly-color-border: #393939 !important;
+  --nuraly-color-border-subtle: #262626 !important;
+  --nuraly-color-border-strong: #6f6f6f !important;
+  --nuraly-color-border-inverse: #e0e0e0 !important;
+  --nuraly-color-border-brand: #78a9ff !important;
+  --nuraly-color-border-danger: #ff8389 !important;
+  --nuraly-color-border-success: #42be65 !important;
+  --nuraly-color-border-warning: #f1c21b !important;
 
   /* Focus styles - Carbon Dark */
-  --nuraly-focus-outline: 2px solid #78a9ff;
-  --nuraly-focus-color: #78a9ff;
-  --nuraly-focus-ring: 0 0 0 2px rgba(120, 169, 255, 0.2);
+  --nuraly-focus-outline: 2px solid #78a9ff !important;
+  --nuraly-focus-color: #78a9ff !important;
+  --nuraly-focus-ring: 0 0 0 2px rgba(120, 169, 255, 0.2) !important;
 
   /* Surface colors - Carbon Dark */
-  --nuraly-color-surface: #262626;
-  --nuraly-color-surface-hover: #393939;
-  --nuraly-color-surface-active: #525252;
-  --nuraly-color-surface-disabled: #262626;
-  --nuraly-color-surface-elevated: #393939;
+  --nuraly-color-surface: #262626 !important;
+  --nuraly-color-surface-hover: #393939 !important;
+  --nuraly-color-surface-active: #525252 !important;
+  --nuraly-color-surface-disabled: #262626 !important;
+  --nuraly-color-surface-elevated: #393939 !important;
 }

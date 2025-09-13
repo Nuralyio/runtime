@@ -15,21 +15,21 @@ import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
 // Import types
 import {
-  SelectOption,
-  SelectType,
-  SelectSize,
-  SelectStatus
+    SelectOption,
+    SelectType,
+    SelectSize,
+    SelectStatus
 } from './select.types.js';
 
 // Import controllers
 import {
-  SelectSelectionController,
-  SelectKeyboardController,
-  SelectDropdownController,
-  SelectFocusController,
-  SelectValidationController,
-  SelectSearchController,
-  SelectEventController
+    SelectSelectionController,
+    SelectKeyboardController,
+    SelectDropdownController,
+    SelectFocusController,
+    SelectValidationController,
+    SelectSearchController,
+    SelectEventController
 } from './controllers/index.js';
 
 // Import interfaces
@@ -94,7 +94,7 @@ import { SelectHost } from './interfaces/index.js';
 export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements SelectHost {
   static override styles = styles;
   
-  override requiredComponents = [ "nr-input", "hy-icon" ];
+  override requiredComponents = [ "nr-input", "nr-icon" ];
 
   /** Array of options to display in the select dropdown */
   @property({ type: Array }) 
@@ -521,11 +521,11 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
           <div class="icons-container">
             ${this.renderStatusIcon()}
             ${this.renderClearButton(selectedOptions)}
-            <hy-icon 
+            <nr-icon 
               name="angle-down" 
               class="arrow-icon"
               aria-hidden="true"
-            ></hy-icon>
+            ></nr-icon>
           </div>
           
           <div 
@@ -569,7 +569,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
         @keydown=${this.handleKeyDown}
       >
         ${selectedOptions.length > 0 ? selectedOptions[0].label : this.placeholder}
-        <hy-icon name="angle-down" class="arrow-icon"></hy-icon>
+        <nr-icon name="angle-down" class="arrow-icon"></nr-icon>
       </button>
       
       <div 
@@ -612,12 +612,12 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
       return map(selectedOptions, (option) => html`
         <span class="tag">
           <span class="tag-label">${option.label}</span>
-          <hy-icon 
+          <nr-icon 
             name="remove"
             class="tag-close"
             @click=${(e: Event) => this.handleTagRemove(e, option)}
             aria-label="Remove ${option.label}"
-          ></hy-icon>
+          ></nr-icon>
         </span>
       `);
     } else {
@@ -631,11 +631,11 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   private renderStatusIcon() {
     switch (this.status) {
       case SelectStatus.Warning:
-        return html`<hy-icon name="warning" class="status-icon warning"></hy-icon>`;
+        return html`<nr-icon name="warning" class="status-icon warning"></nr-icon>`;
       case SelectStatus.Error:
-        return html`<hy-icon name="exclamation-circle" class="status-icon error"></hy-icon>`;
+        return html`<nr-icon name="exclamation-circle" class="status-icon error"></nr-icon>`;
       case SelectStatus.Success:
-        return html`<hy-icon name="check-circle" class="status-icon success"></hy-icon>`;
+        return html`<nr-icon name="check-circle" class="status-icon success"></nr-icon>`;
       default:
         return nothing;
     }
@@ -650,13 +650,13 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     }
 
     return html`
-      <hy-icon
+      <nr-icon
         name="remove"
         class="clear-icon"
         @click=${this.handleClearAll}
         aria-label="Clear selection"
         tabindex="-1"
-      ></hy-icon>
+      ></nr-icon>
     `;
   }
 
@@ -671,11 +671,11 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
       return html`
         <div class="no-options" role="option" aria-disabled="true">
           <div class="no-options-content">
-            <hy-icon 
+            <nr-icon 
               name="${this.noOptionsIcon}" 
               class="no-options-icon"
               aria-hidden="true">
-            </hy-icon>
+            </nr-icon>
             <span class="no-options-text">${this.noOptionsMessage}</span>
           </div>
         </div>
@@ -711,18 +711,18 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
           title="${option.title || ''}"
         >
           <div class="option-content">
-            ${option.icon ? html`<hy-icon name="${option.icon}" class="option-icon"></hy-icon>` : nothing}
+            ${option.icon ? html`<nr-icon name="${option.icon}" class="option-icon"></nr-icon>` : nothing}
             <div class="option-text">
               ${option.htmlContent ? html`<div .innerHTML=${option.htmlContent}></div>` : option.label}
               ${option.description ? html`<div class="option-description">${option.description}</div>` : nothing}
             </div>
           </div>
           
-          ${isSelected ? html`<hy-icon name="check" class="check-icon" aria-hidden="true"></hy-icon>` : nothing}
+          ${isSelected ? html`<nr-icon name="check" class="check-icon" aria-hidden="true"></nr-icon>` : nothing}
           
           ${option.state && option.message ? html`
             <div class="option-message ${option.state}">
-              <hy-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></hy-icon>
+              <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
               <span>${option.message}</span>
             </div>
           ` : nothing}

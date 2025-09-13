@@ -38,7 +38,7 @@
     "license": "ISC",
     "nuralyui": {
         "requiredComponents": [
-            "hy-icon"
+            "nr-icon"
         ]
     },
     "peerDependencies": {

@@ -3,7 +3,6 @@ export const enum ButtonType {
   Secondary = 'secondary',
   Tertiary = 'tertiary', // Carbon Ghost equivalent
   Danger = 'danger',
-  DangerTertiary = 'danger-tertiary', // Danger outline
   Ghost = 'ghost', // Alias for tertiary for backward compatibility
   Default = 'default',
   Text = 'text',
@@ -11,11 +10,10 @@ export const enum ButtonType {
 }
 
 export const enum ButtonSize {
-  Small = 'sm', // 32px - Carbon small
-  Medium = 'md', // 40px - Carbon medium  
-  Large = 'lg', // 48px - Carbon large (default)
-  XLarge = 'xl', // 64px - Carbon extra large
-  Default = 'lg', // Default to large following Carbon
+  Small = 'small', // 32px -  small
+  Medium = 'medium', // 40px -  medium (default)
+  Large = 'large', // 48px -  large
+  Default = 'medium', // Default to medium for better UX
 }
 
 export const enum ButtonShape {
@@ -29,22 +27,42 @@ export const enum IconPosition {
   Right = 'right',
 }
 
+/**
+ * Enhanced icon configuration for buttons
+ */
+export interface ButtonIconConfig {
+  /** Icon name (required) */
+  name: string;
+  /** Icon type - solid or regular */
+  type?: 'solid' | 'regular';
+  /** Icon size override */
+  size?: string;
+  /** Icon color override */
+  color?: string;
+  /** Alternative text for accessibility */
+  alt?: string;
+  /** Custom attributes to pass to icon */
+  attributes?: Record<string, string>;
+}
+
+/**
+ * Union type for icon input - supports both simple string and enhanced config
+ */
+export type ButtonIcon = string | ButtonIconConfig;
+
+/**
+ * Array of icons (supports 1-2 icons)
+ */
+export type ButtonIcons = ButtonIcon[];
+
+/**
+ * Alternative icon configuration using positioned properties
+ */
+export interface ButtonIconsConfig {
+  /** Left icon configuration */
+  left?: ButtonIcon;
+  /** Right icon configuration */
+  right?: ButtonIcon;
+}
+
 export const EMPTY_STRING = '';
-
-// Carbon Design System button variants
-export const CARBON_BUTTON_VARIANTS = {
-  PRIMARY: 'primary',
-  SECONDARY: 'secondary', 
-  TERTIARY: 'tertiary',
-  DANGER: 'danger',
-  DANGER_TERTIARY: 'danger-tertiary',
-  GHOST: 'ghost'
-} as const;
-
-// Carbon Design System button sizes
-export const CARBON_BUTTON_SIZES = {
-  SMALL: 'sm',
-  MEDIUM: 'md', 
-  LARGE: 'lg',
-  XLARGE: 'xl'
-} as const;

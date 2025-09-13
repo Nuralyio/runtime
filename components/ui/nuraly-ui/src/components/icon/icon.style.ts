@@ -9,8 +9,10 @@ import { styleVariables } from './icon.variables.js';
  */
 const iconStyles = css`
   :host {
-    display: inline-block;
-    line-height: 0;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    vertical-align: baseline;
   }
 
   .svg-icon {
@@ -19,6 +21,7 @@ const iconStyles = css`
     width: var(--nuraly-icon-local-width, var(--nuraly-icon-width, 18px));
     height: var(--nuraly-icon-local-height, var(--nuraly-icon-height, 18px));
     transition: var(--nuraly-icon-local-transition, opacity 0.2s ease, transform 0.2s ease);
+    display: block;
     
     /* Cursor handling */
     cursor: default;

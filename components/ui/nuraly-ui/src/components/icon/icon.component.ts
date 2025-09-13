@@ -19,13 +19,14 @@ import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { ClickableMixin } from './mixins/index.js';
 
 /**
- * Enhanced Icon component with clickable functionality and proper event handling
+ * Enhanced Icon component with clickable functionality, custom styling, and proper event handling
  * 
  * @example
  * ```html
- * <hy-icon name="envelope"></hy-icon>
- * <hy-icon name="check" clickable @icon-click="${this.handleIconClick}"></hy-icon>
- * <hy-icon name="warning" type="regular" disabled></hy-icon>
+ * <nr-icon name="envelope"></nr-icon>
+ * <nr-icon name="check" clickable @icon-click="${this.handleIconClick}"></nr-icon>
+ * <nr-icon name="warning" type="regular" disabled></nr-icon>
+ * <nr-icon name="star" color="#ffd700" size="1.5em"></nr-icon>
  * ```
  * 
  * @fires icon-click - Dispatched when icon is clicked (contains iconName, iconType, originalEvent, timestamp)
@@ -33,7 +34,7 @@ import { ClickableMixin } from './mixins/index.js';
  */
 
 const IconBaseMixin = ClickableMixin(NuralyUIBaseMixin(LitElement));
-@customElement('hy-icon')
+@customElement('nr-icon')
 export class HyIconElement extends IconBaseMixin {
   static override readonly styles = styles;
 
@@ -48,6 +49,14 @@ export class HyIconElement extends IconBaseMixin {
   /** Alternative text for accessibility */
   @property({type: String, attribute: 'alt'})
   alt = '';
+
+  /** Icon size override */
+  @property({type: String})
+  size?: string;
+
+  /** Icon color override */
+  @property({type: String})
+  color?: string;
 
   /**
    * Validate component properties on update
@@ -71,9 +80,22 @@ export class HyIconElement extends IconBaseMixin {
     const tabIndex = this.getIconTabIndex();
     const ariaDisabled = this.getAriaDisabled();
     
+    // Build dynamic styles
+    let dynamicStyles = '';
+    if (this.size) dynamicStyles += `font-size: ${this.size};`;
+    if (this.color) dynamicStyles += `fill: ${this.color} !important;`;
+    
+    // Build CSS classes
+    const cssClasses = [
+      'svg-icon',
+      this.clickable ? 'clickable' : '',
+      this.disabled ? 'disabled' : ''
+    ].filter(Boolean).join(' ');
+    
     return html`
       <svg 
-        class="svg-icon ${this.clickable ? 'clickable' : ''} ${this.disabled ? 'disabled' : ''}"
+        class="${cssClasses}"
+        style="${dynamicStyles}"
         xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 550 550"
         role="${role}"

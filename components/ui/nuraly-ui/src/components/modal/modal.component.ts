@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {css, html, LitElement} from 'lit';
-import {property, state} from 'lit/decorators.js';
-import {styleMap} from 'lit/directives/style-map.js';
+import { css, html, LitElement } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 export class ModalComponent extends LitElement {
   static override styles = css`
@@ -192,12 +192,12 @@ export class ModalComponent extends LitElement {
       <div class="backdrop" style=${styleMap(backdropStyles)}></div>
 
       <dialog class="modal" ?open="${this.isOpen}" style=${styleMap(modalStyles)}>
-        <hy-icon
+        <nr-icon
           class="close-icon"
           name="window-close"
           style="float: right;"
           @click=${() => (this.closeModal())}
-        ></hy-icon>
+        ></nr-icon>
         <h2 class="dialog-label" @mousedown=${this.startDrag} @mouseup=${this.stopDrag}>${this.label}</h2>
         <slot></slot>
         <slot name="footer"></slot>

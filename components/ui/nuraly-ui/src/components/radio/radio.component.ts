@@ -15,11 +15,11 @@ import '../button/button.component.js';
 
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import {
-  RadioGroupController,
-  RadioKeyboardController,
-  RadioFocusController,
-  RadioValidationController,
-  RadioRippleController
+    RadioGroupController,
+    RadioKeyboardController,
+    RadioFocusController,
+    RadioValidationController,
+    RadioRippleController
 } from './controllers/index.js';
 import { styles } from './radio.style.js';
 import { RadioButtonType, RadioButtonOption } from './radio.type.js';
@@ -59,7 +59,7 @@ import { ButtonType } from '../button/button.types.js';
 export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
-  override requiredComponents = ['hy-icon'];
+  override requiredComponents = ['nr-icon'];
 
   // Properties
   @property({ type: Array }) options: RadioButtonOption[] = [];
@@ -244,7 +244,7 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
               </label>
               ${option.state && option.message
                 ? html`<div class="message-container" id="${option.value}-message">
-                    <hy-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></hy-icon>
+                    <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
                     <span>${option.message}</span>
                   </div>`
                 : nothing}
@@ -284,7 +284,7 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
             </nr-button>
             ${option.state && option.message
               ? html`<div class="message-container" id="${option.value}-message">
-                  <hy-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></hy-icon>
+                  <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
                   <span>${option.message}</span>
                 </div>`
               : nothing}
@@ -341,7 +341,7 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
               </label>
               ${option.state && option.message
                 ? html`<div class="message-container" id="${option.value}-message">
-                    <hy-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></hy-icon>
+                    <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
                     <span>${option.message}</span>
                   </div>`
                 : nothing}
@@ -380,7 +380,7 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
             </nr-button>
             ${option.state && option.message
               ? html`<div class="message-container" id="${option.value}-message">
-                  <hy-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></hy-icon>
+                  <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
                   <span>${option.message}</span>
                 </div>`
               : nothing}

@@ -6,7 +6,7 @@
 
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { ButtonType, ButtonShape, EMPTY_STRING, IconPosition } from './button.types.js';
+import { ButtonType, ButtonSize, ButtonShape, EMPTY_STRING, IconPosition, ButtonIcons, ButtonIcon, ButtonIconsConfig } from './button.types.js';
 import { styles } from './button.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
@@ -24,12 +24,25 @@ import {
 import { ButtonHost } from './interfaces/index.js';
 
 /**
- * Versatile button component with multiple variants, loading states, and icon support.
+ * Versatile button component with multiple variants, loading states, and enhanced icon support.
  * 
  * @example
  * ```html
+ * <!-- Simple usage -->
  * <nr-button type="primary">Click me</nr-button>
- * <nr-button type="primary" icon='["home"]'>Home</nr-button>
+ * 
+ * <!-- Array-based icons (original API) -->
+ * <nr-button type="primary" .icon=${['add']}>Add Item</nr-button>
+ * <nr-button type="primary" .icon=${['home', 'arrow-right']}>Home</nr-button>
+ * 
+ * <!-- Separate icon properties (new API) -->
+ * <nr-button type="primary" iconLeft="home" iconRight="arrow-right">Navigate</nr-button>
+ * <nr-button type="primary" .iconLeft=${{name: 'home', color: 'blue'}}>Enhanced</nr-button>
+ * 
+ * <!-- Object-based icons (new API) -->
+ * <nr-button type="primary" .icons=${{left: 'home', right: 'arrow-right'}}>Navigate</nr-button>
+ * 
+ * <!-- Loading state -->
  * <nr-button loading>Processing...</nr-button>
  * ```
  * 
@@ -51,7 +64,7 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
 
   /** Button size (small, medium, large) */
   @property({ type: String })
-  size = EMPTY_STRING;
+  size: ButtonSize | '' = EMPTY_STRING;
 
   /** Button type (default, primary, secondary, danger, ghost, link) */
   @property({ type: String })
@@ -69,13 +82,25 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
   @property({ type: Boolean })
   dashed = false;
 
-  /** Icon names array (supports 1-2 icons) */
+  /** Icon configuration (supports strings or enhanced config objects) */
   @property({ type: Array })
-  icon: string[] = [];
+  icon: ButtonIcons = [];
+
+  /** Left icon (alternative to icon array) */
+  @property({ type: Object })
+  iconLeft?: ButtonIcon;
+
+  /** Right icon (alternative to icon array) */
+  @property({ type: Object })
+  iconRight?: ButtonIcon;
+
+  /** Icon configuration object (alternative to icon array) */
+  @property({ type: Object })
+  icons?: ButtonIconsConfig;
 
   /** Icon position relative to text */
   @property({ reflect: true })
-  iconPosition = IconPosition.Left;
+  iconPosition: IconPosition = IconPosition.Left;
 
   /** URL for link-type buttons */
   @property({ type: String })
@@ -101,7 +126,7 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
   @property({ type: String })
   htmlType = EMPTY_STRING;
 
-  override requiredComponents = ['hy-icon'];
+  override requiredComponents = ['nr-icon'];
 
   // Controllers
   private rippleController = new ButtonRippleController(this);
@@ -129,15 +154,37 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
     };
   }
 
-  private renderIcon(iconName: string) {
-    if (!this.isComponentAvailable('hy-icon')) {
+  private renderIcon(iconConfig: ButtonIcon) {
+    if (!this.isComponentAvailable('nr-icon')) {
+      const iconName = typeof iconConfig === 'string' ? iconConfig : iconConfig.name;
       console.warn(
-        `[nr-button] Icon component 'hy-icon' not available. Icon "${iconName}" will not render. ` +
+        `[nr-button] Icon component 'nr-icon' not available. Icon "${iconName}" will not render. ` +
         `Ensure the icon component is imported and registered.`
       );
       return nothing;
     }
-    return html`<hy-icon name=${iconName}></hy-icon>`;
+
+    // Handle simple string input (backward compatibility)
+    if (typeof iconConfig === 'string') {
+      return html`<nr-icon name=${iconConfig}></nr-icon>`;
+    }
+
+    // Handle enhanced icon configuration
+    const {
+      name,
+      type = 'solid',
+      size,
+      color,
+      alt
+    } = iconConfig;
+
+    return html`<nr-icon 
+      name=${name}
+      type=${type}
+      alt=${alt || ''}
+      size=${size || ''}
+      color=${color || ''}
+    ></nr-icon>`;
   }
 
   private handleClick(event: MouseEvent) {
@@ -164,16 +211,41 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
     this.keyboardController.handleKeydown(event);
   }
 
+  /**
+   * Get the resolved left icon from various sources
+   */
+  private getResolvedLeftIcon(): ButtonIcon | undefined {
+    // Priority: iconLeft > icons.left > icon[0]
+    if (this.iconLeft) return this.iconLeft;
+    if (this.icons?.left) return this.icons.left;
+    if (this.icon?.length > 0) return this.icon[0];
+    return undefined;
+  }
+
+  /**
+   * Get the resolved right icon from various sources
+   */
+  private getResolvedRightIcon(): ButtonIcon | undefined {
+    // Priority: iconRight > icons.right > icon[1]
+    if (this.iconRight) return this.iconRight;
+    if (this.icons?.right) return this.icons.right;
+    if (this.icon?.length === 2) return this.icon[1];
+    return undefined;
+  }
+
   override render() {
     const elementTag = this.linkController.getElementTag();
     const commonAttributes = this.getCommonAttributes();
     const linkAttributes = this.linkController.getLinkAttributes();
     
+    const leftIcon = this.getResolvedLeftIcon();
+    const rightIcon = this.getResolvedRightIcon();
+    
     const content = html`
       <span id="container" part="container">
-        ${this.icon?.length ? this.renderIcon(this.icon[0]) : nothing}
+        ${leftIcon ? this.renderIcon(leftIcon) : nothing}
         <slot id="slot"></slot>
-        ${this.icon?.length === 2 ? this.renderIcon(this.icon[1]) : nothing}
+        ${rightIcon ? this.renderIcon(rightIcon) : nothing}
       </span>
     `;
     if (elementTag === 'a') {

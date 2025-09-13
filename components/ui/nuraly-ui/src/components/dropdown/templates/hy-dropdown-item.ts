@@ -39,7 +39,7 @@ export class HyDropdownItem extends LitElement {
   override render() {
     return html`
       <div @click=${this.onClick}>
-        ${this.icon ? html`<hy-icon name=${this.icon}></hy-icon>` : nothing}
+        ${this.icon ? html`<nr-icon name=${this.icon}></nr-icon>` : nothing}
         <hy-label class="option-label">${this.label}</hy-label>
       </div>
     `;

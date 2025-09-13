@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import '../icon.component.js';
 
-@customElement('hy-icon-demo')
+@customElement('nr-icon-demo')
 export class HyIconDemo extends LitElement {
   @state() 
   private currentTheme: 'light' | 'dark' = 'light';
@@ -152,56 +152,56 @@ export class HyIconDemo extends LitElement {
         
         <div class="icon-group" data-theme="${this.currentTheme}">
           <span>Default solid:</span>
-          <hy-icon name="envelope"></hy-icon>
+          <nr-icon name="envelope"></nr-icon>
           <span>Regular:</span>
-          <hy-icon name="envelope" type="regular"></hy-icon>
+          <nr-icon name="envelope" type="regular"></nr-icon>
           <span>Different icons:</span>
-          <hy-icon name="check"></hy-icon>
-          <hy-icon name="warning"></hy-icon>
-          <hy-icon name="bug"></hy-icon>
-          <hy-icon name="heart"></hy-icon>
+          <nr-icon name="check"></nr-icon>
+          <nr-icon name="warning"></nr-icon>
+          <nr-icon name="bug"></nr-icon>
+          <nr-icon name="heart"></nr-icon>
         </div>
 
         <h3>Custom Styling</h3>
         
         <div class="icon-group" data-theme="${this.currentTheme}">
           <span>Custom red color:</span>
-          <hy-icon id="custom-red-icon" name="exclamation-triangle"></hy-icon>
+          <nr-icon id="custom-red-icon" name="exclamation-triangle"></nr-icon>
           <span>Custom size:</span>
-          <hy-icon id="custom-size-icon" name="star"></hy-icon>
+          <nr-icon id="custom-size-icon" name="star"></nr-icon>
           <span>Custom size + color:</span>
-          <hy-icon id="custom-both-icon" name="check-circle"></hy-icon>
+          <nr-icon id="custom-both-icon" name="check-circle"></nr-icon>
         </div>
 
         <h3>Interactive Icons</h3>
         
         <div class="interactive-examples">
           <span>Clickable icons:</span>
-          <hy-icon 
+          <nr-icon 
             name="thumbs-up" 
             clickable 
             alt="Like button"
             @icon-click="${this.handleIconClick}">
-          </hy-icon>
-          <hy-icon 
+          </nr-icon>
+          <nr-icon 
             name="heart" 
             clickable 
             alt="Favorite button"
             @icon-click="${this.handleIconClick}">
-          </hy-icon>
-          <hy-icon 
+          </nr-icon>
+          <nr-icon 
             name="share" 
             clickable 
             alt="Share button"
             @icon-click="${this.handleIconClick}">
-          </hy-icon>
-          <hy-icon 
+          </nr-icon>
+          <nr-icon 
             name="bookmark" 
             clickable 
             disabled
             alt="Disabled bookmark button"
             @icon-click="${this.handleIconClick}">
-          </hy-icon>
+          </nr-icon>
         </div>
 
         <div class="event-log" data-theme="${this.currentTheme}">
@@ -214,6 +214,6 @@ export class HyIconDemo extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'hy-icon-demo': HyIconDemo;
+    'nr-icon-demo': HyIconDemo;
   }
 }

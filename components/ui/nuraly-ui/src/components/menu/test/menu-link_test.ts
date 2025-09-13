@@ -1,7 +1,7 @@
-import {html, fixture, expect} from '@open-wc/testing';
-import {HyMenuLink} from '../templates/hy-menu-link';
+import { html, fixture, expect } from '@open-wc/testing';
+import { HyMenuLink } from '../templates/hy-menu-link';
 import '../templates/hy-menu-link';
-import {ICON_POSITION} from '../templates/menu-link.contants';
+import { ICON_POSITION } from '../templates/menu-link.contants';
 
 suite('HyMenuLinkComponent', () => {
   test('init menu link', async () => {
@@ -9,7 +9,7 @@ suite('HyMenuLinkComponent', () => {
     const link = 'url';
     const icon = 'pencil';
     const el: HyMenuLink = await fixture(html`<hy-menu-link text="${text}" link=${link} icon=${icon}></hy-menu-link>`);
-    const templateIcon = el.shadowRoot?.querySelector('hy-icon');
+    const templateIcon = el.shadowRoot?.querySelector('nr-icon');
     const templateLink = el.shadowRoot?.querySelector('a');
     const templateText = el.shadowRoot?.querySelector('span');
     const templateLinkIcon = el.shadowRoot?.querySelector('#link-icon');

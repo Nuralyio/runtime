@@ -47,7 +47,7 @@ type Constructor<T = {}> = new (...args: any[]) => T;
  * ```typescript
  * @customElement('my-component')
  * export class MyComponent extends DependencyValidationMixin(LitElement) {
- *   requiredComponents = ['hy-icon', 'hy-tooltip'];
+ *   requiredComponents = ['nr-icon', 'hy-tooltip'];
  *   
  *   override connectedCallback() {
  *     super.connectedCallback();

@@ -131,15 +131,15 @@ export const styles = css`
     font-size: var(--nuraly-radio-message-font-size, var(--nuraly-radio-local-message-font-size));
   }
 
-  hy-icon {
+  nr-icon {
     display: flex;
   }
 
-  .error hy-icon {
+  .error nr-icon {
     --nuraly-icon-color: var(--nuraly-radio-error-icon-color, var(--nuraly-radio-local-error-icon-color));
   }
 
-  .warning hy-icon {
+  .warning nr-icon {
     --nuraly-icon-color: var(--nuraly-radio-warning-icon-color, var(--nuraly-radio-local-warning-icon-color));
   }
 
@@ -213,7 +213,7 @@ export const styles = css`
     --nuraly-button-color: var(--nuraly-button-primary-disabled-text-color, var(--nuraly-button-local-primary-disabled-text-color));
   }
 
-  .type-button nr-button[type="primary"][disabled] hy-icon {
+  .type-button nr-button[type="primary"][disabled] nr-icon {
     --nuraly-icon-color: var(--nuraly-button-primary-disabled-text-color, var(--nuraly-button-local-primary-disabled-text-color));
     --nuraly-icon-local-color: var(--nuraly-button-primary-disabled-text-color, var(--nuraly-button-local-primary-disabled-text-color));
   }

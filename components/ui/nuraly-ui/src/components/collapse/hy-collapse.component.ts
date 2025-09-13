@@ -1,9 +1,9 @@
-import {LitElement, html} from 'lit';
-import {styles} from './hy-collapse.style.js';
-import {customElement, property} from 'lit/decorators.js';
-import {CollapseSize, ISection} from './hy-collapse.type.js';
-import {map} from 'lit/directives/map.js';
-import {classMap} from 'lit/directives/class-map.js';
+import { LitElement, html } from 'lit';
+import { styles } from './hy-collapse.style.js';
+import { customElement, property } from 'lit/decorators.js';
+import { CollapseSize, ISection } from './hy-collapse.type.js';
+import { map } from 'lit/directives/map.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('hy-collapse')
 export class HyCollapse extends LitElement {
@@ -45,10 +45,10 @@ export class HyCollapse extends LitElement {
                 "
               @mousedown="${() => this.toggleSection(index)}"
             >
-              ${html`<hy-icon
+              ${html`<nr-icon
                 class="collapse-icon"
                 name="${section.open && section.collapsible != false ? 'chevron-down' : 'chevron-right'}"
-              ></hy-icon>`}
+              ></nr-icon>`}
               ${section.header}
             </hy-label>
             ${section.open && section.collapsible != false ? html`<div class="content">${section.content}</div>` : ''}
