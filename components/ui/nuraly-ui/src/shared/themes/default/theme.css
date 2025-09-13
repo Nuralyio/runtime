@@ -1,0 +1,269 @@
+/**
+ * Default Nuraly Theme - Main Variables
+ * Core design tokens and base CSS variables for the default theme
+ * This file contains fundamental design system variables used across all components
+ */
+
+/* Default light theme (fallback) */
+:root {
+  /* ========================================
+   * DEFAULT NURALY THEME VARIABLES - LIGHT
+   * ======================================== */
+
+  /* Typography */
+  --nuraly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --nuraly-font-weight-regular: 400;
+  --nuraly-font-weight-medium: 500;
+  --nuraly-font-weight-semibold: 600;
+  --nuraly-font-weight-bold: 700;
+
+  /* Font sizes */
+  --nuraly-font-size-xs: 0.75rem;    /* 12px */
+  --nuraly-font-size-sm: 0.875rem;   /* 14px */
+  --nuraly-font-size-base: 1rem;     /* 16px */
+  --nuraly-font-size-lg: 1.125rem;   /* 18px */
+  --nuraly-font-size-xl: 1.25rem;    /* 20px */
+  --nuraly-font-size-2xl: 1.5rem;    /* 24px */
+
+  /* Line heights */
+  --nuraly-line-height-tight: 1.25;
+  --nuraly-line-height-normal: 1.5;
+  --nuraly-line-height-relaxed: 1.75;
+
+  /* Base colors - Light theme */
+  --nuraly-color-primary: #3b82f6;
+  --nuraly-color-primary-hover: #2563eb;
+  --nuraly-color-primary-active: #1d4ed8;
+  --nuraly-color-primary-light: #93c5fd;
+  --nuraly-color-primary-dark: #1e40af;
+  
+  --nuraly-color-secondary: #6b7280;
+  --nuraly-color-secondary-hover: #4b5563;
+  --nuraly-color-secondary-active: #374151;
+  --nuraly-color-secondary-light: #d1d5db;
+  --nuraly-color-secondary-dark: #1f2937;
+  
+  --nuraly-color-success: #10b981;
+  --nuraly-color-success-hover: #059669;
+  --nuraly-color-success-active: #047857;
+  --nuraly-color-success-light: #6ee7b7;
+  --nuraly-color-success-dark: #064e3b;
+  
+  --nuraly-color-warning: #f59e0b;
+  --nuraly-color-warning-hover: #d97706;
+  --nuraly-color-warning-active: #b45309;
+  --nuraly-color-warning-light: #fbbf24;
+  --nuraly-color-warning-dark: #92400e;
+  
+  --nuraly-color-danger: #ef4444;
+  --nuraly-color-danger-hover: #dc2626;
+  --nuraly-color-danger-active: #b91c1c;
+  --nuraly-color-danger-light: #f87171;
+  --nuraly-color-danger-dark: #7f1d1d;
+  
+  --nuraly-color-info: #3b82f6;
+  --nuraly-color-info-hover: #2563eb;
+  --nuraly-color-info-active: #1d4ed8;
+  --nuraly-color-info-light: #93c5fd;
+  --nuraly-color-info-dark: #1e40af;
+
+  /* Background colors - Light theme */
+  --nuraly-color-background: #ffffff;
+  --nuraly-color-background-hover: #f9fafb;
+  --nuraly-color-background-active: #f3f4f6;
+  --nuraly-color-background-disabled: #f9fafb;
+  --nuraly-color-background-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* Text colors - Light theme */
+  --nuraly-color-text: #111827;
+  --nuraly-color-text-secondary: #6b7280;
+  --nuraly-color-text-tertiary: #9ca3af;
+  --nuraly-color-text-on-color: #ffffff;
+  --nuraly-color-text-disabled: #9ca3af;
+  --nuraly-color-text-inverse: #ffffff;
+
+  /* Border colors - Light theme */
+  --nuraly-color-border: #d1d5db;
+  --nuraly-color-border-subtle: #e5e7eb;
+  --nuraly-color-border-strong: #9ca3af;
+  --nuraly-color-border-inverse: #374151;
+  --nuraly-color-border-brand: #3b82f6;
+  --nuraly-color-border-danger: #ef4444;
+  --nuraly-color-border-success: #10b981;
+  --nuraly-color-border-warning: #f59e0b;
+
+  /* Border radius */
+  --nuraly-border-radius-none: 0;
+  --nuraly-border-radius-xs: 0.125rem;   /* 2px */
+  --nuraly-border-radius-sm: 0.25rem;    /* 4px */
+  --nuraly-border-radius-md: 0.375rem;   /* 6px */
+  --nuraly-border-radius-lg: 0.5rem;     /* 8px */
+  --nuraly-border-radius-xl: 0.75rem;    /* 12px */
+  --nuraly-border-radius-2xl: 1rem;      /* 16px */
+  --nuraly-border-radius-full: 9999px;
+
+  /* Border widths */
+  --nuraly-border-width-0: 0;
+  --nuraly-border-width-1: 1px;
+  --nuraly-border-width-2: 2px;
+  --nuraly-border-width-4: 4px;
+
+  /* Spacing scale */
+  --nuraly-spacing-0: 0;
+  --nuraly-spacing-1: 0.25rem;   /* 4px */
+  --nuraly-spacing-2: 0.5rem;    /* 8px */
+  --nuraly-spacing-3: 0.75rem;   /* 12px */
+  --nuraly-spacing-4: 1rem;      /* 16px */
+  --nuraly-spacing-5: 1.25rem;   /* 20px */
+  --nuraly-spacing-6: 1.5rem;    /* 24px */
+  --nuraly-spacing-8: 2rem;      /* 32px */
+  --nuraly-spacing-10: 2.5rem;   /* 40px */
+  --nuraly-spacing-12: 3rem;     /* 48px */
+  --nuraly-spacing-16: 4rem;     /* 64px */
+  --nuraly-spacing-20: 5rem;     /* 80px */
+  --nuraly-spacing-24: 6rem;     /* 96px */
+
+  /* Shadows - Light theme */
+  --nuraly-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+  --nuraly-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Focus styles - Light theme */
+  --nuraly-focus-outline: 2px solid #3b82f6;
+  --nuraly-focus-outline-offset: 2px;
+  --nuraly-focus-color: #3b82f6;
+  --nuraly-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.2);
+
+  /* Component sizes */
+  --nuraly-size-xs: 1.5rem;    /* 24px */
+  --nuraly-size-sm: 2rem;      /* 32px */
+  --nuraly-size-md: 2.5rem;    /* 40px */
+  --nuraly-size-lg: 3rem;      /* 48px */
+  --nuraly-size-xl: 3.5rem;    /* 56px */
+  --nuraly-size-2xl: 4rem;     /* 64px */
+
+  /* Z-index scale */
+  --nuraly-z-dropdown: 1000;
+  --nuraly-z-sticky: 1020;
+  --nuraly-z-fixed: 1030;
+  --nuraly-z-modal: 1040;
+  --nuraly-z-popover: 1050;
+  --nuraly-z-tooltip: 1060;
+  --nuraly-z-toast: 1070;
+
+  /* Transition durations */
+  --nuraly-transition-fast: 150ms;
+  --nuraly-transition-normal: 300ms;
+  --nuraly-transition-slow: 500ms;
+
+  /* Transition easings */
+  --nuraly-ease-linear: linear;
+  --nuraly-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nuraly-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --nuraly-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Surface colors - Light theme */
+  --nuraly-color-surface: #ffffff;
+  --nuraly-color-surface-hover: #f9fafb;
+  --nuraly-color-surface-active: #f3f4f6;
+  --nuraly-color-surface-disabled: #f9fafb;
+  --nuraly-color-surface-elevated: #ffffff;
+}
+
+/* Light theme explicit declaration */
+[data-theme="default-light"],
+[data-theme="light"] {
+  /* Ensure consistent theming when explicitly set */
+  --nuraly-color-primary: #3b82f6;
+}
+
+/* Dark theme */
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* Base colors - Dark theme */
+  --nuraly-color-primary: #60a5fa;
+  --nuraly-color-primary-hover: #3b82f6;
+  --nuraly-color-primary-active: #2563eb;
+  --nuraly-color-primary-light: #93c5fd;
+  --nuraly-color-primary-dark: #1e40af;
+  
+  --nuraly-color-secondary: #9ca3af;
+  --nuraly-color-secondary-hover: #d1d5db;
+  --nuraly-color-secondary-active: #e5e7eb;
+  --nuraly-color-secondary-light: #f3f4f6;
+  --nuraly-color-secondary-dark: #374151;
+  
+  --nuraly-color-success: #34d399;
+  --nuraly-color-success-hover: #10b981;
+  --nuraly-color-success-active: #059669;
+  --nuraly-color-success-light: #6ee7b7;
+  --nuraly-color-success-dark: #064e3b;
+  
+  --nuraly-color-warning: #fbbf24;
+  --nuraly-color-warning-hover: #f59e0b;
+  --nuraly-color-warning-active: #d97706;
+  --nuraly-color-warning-light: #fcd34d;
+  --nuraly-color-warning-dark: #92400e;
+  
+  --nuraly-color-danger: #f87171;
+  --nuraly-color-danger-hover: #ef4444;
+  --nuraly-color-danger-active: #dc2626;
+  --nuraly-color-danger-light: #fca5a5;
+  --nuraly-color-danger-dark: #7f1d1d;
+  
+  --nuraly-color-info: #60a5fa;
+  --nuraly-color-info-hover: #3b82f6;
+  --nuraly-color-info-active: #2563eb;
+  --nuraly-color-info-light: #93c5fd;
+  --nuraly-color-info-dark: #1e40af;
+
+  /* Background colors - Dark theme */
+  --nuraly-color-background: #111827;
+  --nuraly-color-background-hover: #1f2937;
+  --nuraly-color-background-active: #374151;
+  --nuraly-color-background-disabled: #1f2937;
+  --nuraly-color-background-overlay: rgba(0, 0, 0, 0.75);
+  
+  /* Text colors - Dark theme */
+  --nuraly-color-text: #f9fafb;
+  --nuraly-color-text-secondary: #d1d5db;
+  --nuraly-color-text-tertiary: #9ca3af;
+  --nuraly-color-text-on-color: #111827;
+  --nuraly-color-text-disabled: #6b7280;
+  --nuraly-color-text-inverse: #111827;
+
+  /* Border colors - Dark theme */
+  --nuraly-color-border: #4b5563;
+  --nuraly-color-border-subtle: #374151;
+  --nuraly-color-border-strong: #6b7280;
+  --nuraly-color-border-inverse: #e5e7eb;
+  --nuraly-color-border-brand: #60a5fa;
+  --nuraly-color-border-danger: #f87171;
+  --nuraly-color-border-success: #34d399;
+  --nuraly-color-border-warning: #fbbf24;
+
+  /* Shadows - Dark theme */
+  --nuraly-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --nuraly-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.5);
+  --nuraly-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+
+  /* Focus styles - Dark theme */
+  --nuraly-focus-outline: 2px solid #60a5fa;
+  --nuraly-focus-color: #60a5fa;
+  --nuraly-focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.2);
+
+  /* Surface colors - Dark theme */
+  --nuraly-color-surface: #1f2937;
+  --nuraly-color-surface-hover: #374151;
+  --nuraly-color-surface-active: #4b5563;
+  --nuraly-color-surface-disabled: #1f2937;
+  --nuraly-color-surface-elevated: #374151;
+}

@@ -1,0 +1,268 @@
+/**
+ * Polaris Design System Theme - Main Variables
+ * Core design tokens based on Shopify Polaris Design System specifications
+ * This file contains fundamental design system variables used across all components
+ */
+
+/* Default Polaris light theme (fallback) */
+:root {
+  /* ========================================
+   * POLARIS DESIGN SYSTEM VARIABLES - LIGHT
+   * ======================================== */
+
+  /* Typography - System fonts */
+  --nuraly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --nuraly-font-weight-regular: 400;
+  --nuraly-font-weight-medium: 500;
+  --nuraly-font-weight-semibold: 600;
+  --nuraly-font-weight-bold: 700;
+
+  /* Font sizes - Polaris type scale */
+  --nuraly-font-size-xs: 0.75rem;    /* 12px */
+  --nuraly-font-size-sm: 0.8125rem;  /* 13px */
+  --nuraly-font-size-base: 0.875rem; /* 14px */
+  --nuraly-font-size-md: 0.9375rem;  /* 15px */
+  --nuraly-font-size-lg: 1rem;       /* 16px */
+  --nuraly-font-size-xl: 1.25rem;    /* 20px */
+  --nuraly-font-size-2xl: 1.5rem;    /* 24px */
+  --nuraly-font-size-3xl: 1.75rem;   /* 28px */
+
+  /* Line heights - Polaris specifications */
+  --nuraly-line-height-xs: 1;
+  --nuraly-line-height-sm: 1.25;
+  --nuraly-line-height-base: 1.43;
+  --nuraly-line-height-lg: 1.5;
+
+  /* Colors - Polaris Design System Palette - Light */
+  --nuraly-color-primary: #008060;
+  --nuraly-color-primary-hover: #00704a;
+  --nuraly-color-primary-active: #004c3b;
+  --nuraly-color-primary-light: #b3f0e6;
+  --nuraly-color-primary-dark: #004c3b;
+  
+  --nuraly-color-secondary: #ffffff;
+  --nuraly-color-secondary-hover: #f6f6f7;
+  --nuraly-color-secondary-active: #edeeef;
+  --nuraly-color-secondary-light: #f6f6f7;
+  --nuraly-color-secondary-dark: #6d7175;
+  
+  --nuraly-color-success: #008060;
+  --nuraly-color-success-hover: #00704a;
+  --nuraly-color-success-active: #004c3b;
+  --nuraly-color-success-light: #b3f0e6;
+  --nuraly-color-success-dark: #004c3b;
+  
+  --nuraly-color-warning: #ffc453;
+  --nuraly-color-warning-hover: #ffb84d;
+  --nuraly-color-warning-active: #ff9f00;
+  --nuraly-color-warning-light: #ffe1aa;
+  --nuraly-color-warning-dark: #cc7a00;
+  
+  --nuraly-color-danger: #d72c0d;
+  --nuraly-color-danger-hover: #bf2600;
+  --nuraly-color-danger-active: #a91b0c;
+  --nuraly-color-danger-light: #fed7d2;
+  --nuraly-color-danger-dark: #a91b0c;
+  
+  --nuraly-color-info: #2c6ecb;
+  --nuraly-color-info-hover: #1e5ba8;
+  --nuraly-color-info-active: #164785;
+  --nuraly-color-info-light: #bfdbfe;
+  --nuraly-color-info-dark: #164785;
+
+  /* Background colors - Polaris Light */
+  --nuraly-color-background: #ffffff;
+  --nuraly-color-background-hover: #f6f6f7;
+  --nuraly-color-background-active: #edeeef;
+  --nuraly-color-background-disabled: #f6f6f7;
+  --nuraly-color-background-overlay: rgba(33, 43, 54, 0.5);
+  
+  /* Text colors - Polaris Light */
+  --nuraly-color-text: #202223;
+  --nuraly-color-text-secondary: #6d7175;
+  --nuraly-color-text-tertiary: #8c9196;
+  --nuraly-color-text-on-color: #ffffff;
+  --nuraly-color-text-disabled: #8c9196;
+  --nuraly-color-text-inverse: #ffffff;
+
+  /* Border colors - Polaris Light */
+  --nuraly-color-border: #c9cccf;
+  --nuraly-color-border-subtle: #e1e3e5;
+  --nuraly-color-border-strong: #8c9196;
+  --nuraly-color-border-inverse: #6d7175;
+  --nuraly-color-border-brand: #008060;
+  --nuraly-color-border-danger: #d72c0d;
+  --nuraly-color-border-success: #008060;
+  --nuraly-color-border-warning: #ffc453;
+
+  /* Border radius - Polaris uses rounded corners */
+  --nuraly-border-radius-none: 0;
+  --nuraly-border-radius-xs: 0.125rem;   /* 2px */
+  --nuraly-border-radius-sm: 0.25rem;    /* 4px */
+  --nuraly-border-radius-md: 0.375rem;   /* 6px */
+  --nuraly-border-radius-lg: 0.5rem;     /* 8px */
+  --nuraly-border-radius-xl: 0.75rem;    /* 12px */
+  --nuraly-border-radius-2xl: 1rem;      /* 16px */
+  --nuraly-border-radius-full: 9999px;
+
+  /* Border widths */
+  --nuraly-border-width-0: 0;
+  --nuraly-border-width-1: 1px;
+  --nuraly-border-width-2: 2px;
+  --nuraly-border-width-4: 4px;
+
+  /* Spacing - Polaris 4px grid system */
+  --nuraly-spacing-025: 0.125rem;  /* 2px */
+  --nuraly-spacing-05: 0.25rem;    /* 4px */
+  --nuraly-spacing-1: 0.5rem;      /* 8px */
+  --nuraly-spacing-15: 0.75rem;    /* 12px */
+  --nuraly-spacing-2: 1rem;        /* 16px */
+  --nuraly-spacing-3: 1.5rem;      /* 24px */
+  --nuraly-spacing-4: 2rem;        /* 32px */
+  --nuraly-spacing-5: 2.5rem;      /* 40px */
+  --nuraly-spacing-6: 3rem;        /* 48px */
+  --nuraly-spacing-8: 4rem;        /* 64px */
+  --nuraly-spacing-10: 5rem;       /* 80px */
+  --nuraly-spacing-12: 6rem;       /* 96px */
+
+  /* Shadows - Polaris elevation system */
+  --nuraly-shadow-xs: 0 0 0 1px rgba(22, 29, 37, 0.05);
+  --nuraly-shadow-sm: 0 1px 0 rgba(22, 29, 37, 0.05);
+  --nuraly-shadow-md: 0 1px 0 rgba(22, 29, 37, 0.1), 0 2px 4px rgba(22, 29, 37, 0.1);
+  --nuraly-shadow-lg: 0 4px 8px rgba(22, 29, 37, 0.1);
+  --nuraly-shadow-xl: 0 6px 20px rgba(22, 29, 37, 0.1);
+  --nuraly-shadow-2xl: 0 8px 32px rgba(22, 29, 37, 0.1);
+  --nuraly-shadow-inner: inset 0 1px 2px rgba(22, 29, 37, 0.1);
+
+  /* Focus styles - Polaris focus ring */
+  --nuraly-focus-outline: 2px solid #005e46;
+  --nuraly-focus-outline-offset: 1px;
+  --nuraly-focus-color: #005e46;
+  --nuraly-focus-ring: 0 0 0 3px rgba(0, 128, 96, 0.12);
+
+  /* Component sizes - Polaris sizing */
+  --nuraly-size-sm: 1.75rem;   /* 28px - Polaris small */
+  --nuraly-size-md: 2.25rem;   /* 36px - Polaris medium (default) */
+  --nuraly-size-lg: 2.75rem;   /* 44px - Polaris large */
+  --nuraly-size-xl: 3.25rem;   /* 52px - Polaris extra large */
+
+  /* Z-index scale */
+  --nuraly-z-dropdown: 1000;
+  --nuraly-z-sticky: 1020;
+  --nuraly-z-fixed: 1030;
+  --nuraly-z-modal: 1040;
+  --nuraly-z-popover: 1050;
+  --nuraly-z-tooltip: 1060;
+  --nuraly-z-toast: 1070;
+
+  /* Transition durations - Polaris motion */
+  --nuraly-transition-fast: 100ms;
+  --nuraly-transition-normal: 200ms;
+  --nuraly-transition-slow: 500ms;
+
+  /* Transition easings - Polaris motion */
+  --nuraly-ease-linear: linear;
+  --nuraly-ease-in: ease-in;
+  --nuraly-ease-out: ease-out;
+  --nuraly-ease-in-out: ease-in-out;
+
+  /* Surface colors - Polaris Light */
+  --nuraly-color-surface: #ffffff;
+  --nuraly-color-surface-hover: #f6f6f7;
+  --nuraly-color-surface-active: #edeeef;
+  --nuraly-color-surface-disabled: #f6f6f7;
+  --nuraly-color-surface-elevated: #ffffff;
+}
+
+/* Light theme explicit declaration */
+[data-theme="polaris-light"],
+[data-theme="polaris"] {
+  /* Ensure consistent theming when explicitly set */
+  --nuraly-color-primary: #008060;
+}
+
+/* Polaris Dark theme */
+[data-theme="polaris-dark"] {
+  /* Colors - Polaris Design System Dark Palette */
+  --nuraly-color-primary: #36bf80;
+  --nuraly-color-primary-hover: #20a66c;
+  --nuraly-color-primary-active: #008060;
+  --nuraly-color-primary-light: #b3f0e6;
+  --nuraly-color-primary-dark: #004c3b;
+  
+  --nuraly-color-secondary: #2a2e2e;
+  --nuraly-color-secondary-hover: #33393a;
+  --nuraly-color-secondary-active: #4a5458;
+  --nuraly-color-secondary-light: #6d7175;
+  --nuraly-color-secondary-dark: #1a1a1a;
+  
+  --nuraly-color-success: #36bf80;
+  --nuraly-color-success-hover: #20a66c;
+  --nuraly-color-success-active: #008060;
+  --nuraly-color-success-light: #b3f0e6;
+  --nuraly-color-success-dark: #004c3b;
+  
+  --nuraly-color-warning: #ffcc66;
+  --nuraly-color-warning-hover: #ffc453;
+  --nuraly-color-warning-active: #ffb84d;
+  --nuraly-color-warning-light: #ffe1aa;
+  --nuraly-color-warning-dark: #cc7a00;
+  
+  --nuraly-color-danger: #ff8a80;
+  --nuraly-color-danger-hover: #ff6659;
+  --nuraly-color-danger-active: #d72c0d;
+  --nuraly-color-danger-light: #fed7d2;
+  --nuraly-color-danger-dark: #a91b0c;
+  
+  --nuraly-color-info: #5eb3f5;
+  --nuraly-color-info-hover: #2c6ecb;
+  --nuraly-color-info-active: #1e5ba8;
+  --nuraly-color-info-light: #bfdbfe;
+  --nuraly-color-info-dark: #164785;
+
+  /* Background colors - Polaris Dark */
+  --nuraly-color-background: #1a1a1a;
+  --nuraly-color-background-hover: #2a2e2e;
+  --nuraly-color-background-active: #33393a;
+  --nuraly-color-background-disabled: #2a2e2e;
+  --nuraly-color-background-overlay: rgba(33, 43, 54, 0.75);
+  
+  /* Text colors - Polaris Dark */
+  --nuraly-color-text: #ffffff;
+  --nuraly-color-text-secondary: #b5bcc0;
+  --nuraly-color-text-tertiary: #8c9196;
+  --nuraly-color-text-on-color: #1a1a1a;
+  --nuraly-color-text-disabled: #6d7175;
+  --nuraly-color-text-inverse: #1a1a1a;
+
+  /* Border colors - Polaris Dark */
+  --nuraly-color-border: #4a5458;
+  --nuraly-color-border-subtle: #33393a;
+  --nuraly-color-border-strong: #6d7175;
+  --nuraly-color-border-inverse: #e1e3e5;
+  --nuraly-color-border-brand: #36bf80;
+  --nuraly-color-border-danger: #ff8a80;
+  --nuraly-color-border-success: #36bf80;
+  --nuraly-color-border-warning: #ffcc66;
+
+  /* Shadows - Polaris Dark elevation */
+  --nuraly-shadow-xs: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --nuraly-shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.3);
+  --nuraly-shadow-md: 0 1px 0 rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-xl: 0 6px 20px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-2xl: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --nuraly-shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+
+  /* Focus styles - Polaris Dark */
+  --nuraly-focus-outline: 2px solid #36bf80;
+  --nuraly-focus-color: #36bf80;
+  --nuraly-focus-ring: 0 0 0 3px rgba(54, 191, 128, 0.2);
+
+  /* Surface colors - Polaris Dark */
+  --nuraly-color-surface: #2a2e2e;
+  --nuraly-color-surface-hover: #33393a;
+  --nuraly-color-surface-active: #4a5458;
+  --nuraly-color-surface-disabled: #2a2e2e;
+  --nuraly-color-surface-elevated: #33393a;
+}

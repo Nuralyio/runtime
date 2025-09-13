@@ -1,0 +1,20 @@
+/**
+ * Default Theme - Complete Import
+ * Imports the main theme variables and all component-specific styles
+ */
+
+/* Import main theme variables */
+@import './theme.css';
+
+/* Import component-specific themes */
+@import './button/index.css';
+
+/* TODO: Import other component themes as they are created
+@import './input/index.css';
+@import './card/index.css';
+@import './modal/index.css';
+@import './dropdown/index.css';
+@import './table/index.css';
+@import './form/index.css';
+@import './navigation/index.css';
+*/

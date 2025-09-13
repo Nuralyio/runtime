@@ -1,0 +1,78 @@
+/**
+ * Carbon Theme - Button Component - Light Variant
+ * Button-specific CSS variables for the Carbon Design System light theme
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon"] {
+  /* ========================================
+   * BUTTON VARIABLES - CARBON LIGHT THEME
+   * ======================================== */
+
+  /* Primary button colors - Carbon Blue */
+  --nuraly-color-button-primary: #0f62fe;
+  --nuraly-color-button-primary-hover: #0050e6;
+  --nuraly-color-button-primary-active: #002d9c;
+  --nuraly-color-button-primary-text: #ffffff;
+  --nuraly-color-button-primary-text-hover: #ffffff;
+  --nuraly-color-button-primary-text-active: #ffffff;
+
+  /* Secondary button colors - Carbon Gray */
+  --nuraly-color-button-secondary: #393939;
+  --nuraly-color-button-secondary-hover: #4c4c4c;
+  --nuraly-color-button-secondary-active: #656565;
+  --nuraly-color-button-secondary-text: #ffffff;
+  --nuraly-color-button-secondary-text-hover: #ffffff;
+  --nuraly-color-button-secondary-text-active: #ffffff;
+
+  /* Danger button colors - Carbon Red */
+  --nuraly-color-button-danger: #da1e28;
+  --nuraly-color-button-danger-hover: #b81921;
+  --nuraly-color-button-danger-active: #750e13;
+  --nuraly-color-button-danger-text: #ffffff;
+  --nuraly-color-button-danger-text-hover: #ffffff;
+  --nuraly-color-button-danger-text-active: #ffffff;
+
+  /* Outline button colors */
+  --nuraly-color-button-outline: transparent;
+  --nuraly-color-button-outline-hover: #f4f4f4;
+  --nuraly-color-button-outline-active: #e0e0e0;
+  --nuraly-color-button-outline-text: #0f62fe;
+  --nuraly-color-button-outline-text-hover: #0050e6;
+  --nuraly-color-button-outline-text-active: #002d9c;
+  --nuraly-color-button-outline-border: #0f62fe;
+  --nuraly-color-button-outline-border-hover: #0050e6;
+  --nuraly-color-button-outline-border-active: #002d9c;
+
+  /* Ghost button colors */
+  --nuraly-color-button-ghost: transparent;
+  --nuraly-color-button-ghost-hover: #f4f4f4;
+  --nuraly-color-button-ghost-active: #e0e0e0;
+  --nuraly-color-button-ghost-text: #161616;
+  --nuraly-color-button-ghost-text-hover: #161616;
+  --nuraly-color-button-ghost-text-active: #161616;
+
+  /* Button gradients - minimal for Carbon */
+  --nuraly-color-button-gradient-bg-start: #0f62fe;
+  --nuraly-color-button-gradient-bg-end: #0f62fe;
+  --nuraly-color-button-gradient-text: #ffffff;
+
+  /* Button disabled states */
+  --nuraly-color-button-disabled: #c6c6c6;
+  --nuraly-color-button-disabled-text: #8d8d8d;
+  --nuraly-color-button-disabled-border: #c6c6c6;
+
+  /* Button focus styles - Carbon accessibility */
+  --nuraly-color-button-focus-outline: #0f62fe;
+  --nuraly-color-button-focus-ring: rgba(15, 98, 254, 0.2);
+
+  /* Button shadows - Carbon uses minimal shadows */
+  --nuraly-shadow-button: none;
+  --nuraly-shadow-button-hover: none;
+  --nuraly-shadow-button-active: none;
+  --nuraly-shadow-button-focus: 0 0 0 2px rgba(15, 98, 254, 0.2);
+
+  /* Carbon-specific button borders (sharp corners) */
+  --nuraly-border-radius-button: 0;
+}

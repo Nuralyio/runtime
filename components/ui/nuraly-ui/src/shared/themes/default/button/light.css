@@ -1,0 +1,75 @@
+/**
+ * Default Theme - Button Component - Light Variant
+ * Button-specific CSS variables for the default light theme
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"] {
+  /* ========================================
+   * BUTTON VARIABLES - DEFAULT LIGHT THEME
+   * ======================================== */
+
+  /* Primary button colors */
+  --nuraly-color-button-primary: #3b82f6;
+  --nuraly-color-button-primary-hover: #2563eb;
+  --nuraly-color-button-primary-active: #1d4ed8;
+  --nuraly-color-button-primary-text: #ffffff;
+  --nuraly-color-button-primary-text-hover: #ffffff;
+  --nuraly-color-button-primary-text-active: #ffffff;
+
+  /* Secondary button colors */
+  --nuraly-color-button-secondary: #6b7280;
+  --nuraly-color-button-secondary-hover: #4b5563;
+  --nuraly-color-button-secondary-active: #374151;
+  --nuraly-color-button-secondary-text: #ffffff;
+  --nuraly-color-button-secondary-text-hover: #ffffff;
+  --nuraly-color-button-secondary-text-active: #ffffff;
+
+  /* Danger button colors */
+  --nuraly-color-button-danger: #ef4444;
+  --nuraly-color-button-danger-hover: #dc2626;
+  --nuraly-color-button-danger-active: #b91c1c;
+  --nuraly-color-button-danger-text: #ffffff;
+  --nuraly-color-button-danger-text-hover: #ffffff;
+  --nuraly-color-button-danger-text-active: #ffffff;
+
+  /* Outline button colors */
+  --nuraly-color-button-outline: transparent;
+  --nuraly-color-button-outline-hover: #f9fafb;
+  --nuraly-color-button-outline-active: #f3f4f6;
+  --nuraly-color-button-outline-text: #3b82f6;
+  --nuraly-color-button-outline-text-hover: #2563eb;
+  --nuraly-color-button-outline-text-active: #1d4ed8;
+  --nuraly-color-button-outline-border: #3b82f6;
+  --nuraly-color-button-outline-border-hover: #2563eb;
+  --nuraly-color-button-outline-border-active: #1d4ed8;
+
+  /* Ghost button colors */
+  --nuraly-color-button-ghost: transparent;
+  --nuraly-color-button-ghost-hover: #f9fafb;
+  --nuraly-color-button-ghost-active: #f3f4f6;
+  --nuraly-color-button-ghost-text: #6b7280;
+  --nuraly-color-button-ghost-text-hover: #374151;
+  --nuraly-color-button-ghost-text-active: #111827;
+
+  /* Button gradients */
+  --nuraly-color-button-gradient-bg-start: #3b82f6;
+  --nuraly-color-button-gradient-bg-end: #1d4ed8;
+  --nuraly-color-button-gradient-text: #ffffff;
+
+  /* Button disabled states */
+  --nuraly-color-button-disabled: #f3f4f6;
+  --nuraly-color-button-disabled-text: #9ca3af;
+  --nuraly-color-button-disabled-border: #e5e7eb;
+
+  /* Button focus styles */
+  --nuraly-color-button-focus-outline: #3b82f6;
+  --nuraly-color-button-focus-ring: rgba(59, 130, 246, 0.2);
+
+  /* Button shadows */
+  --nuraly-shadow-button: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-button-hover: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-button-active: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-button-focus: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
