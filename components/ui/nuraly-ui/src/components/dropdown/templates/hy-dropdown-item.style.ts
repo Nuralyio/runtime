@@ -11,7 +11,7 @@ const dropdownItemStyle = css`
         font-size: var(--nuraly-dropdown-font-size, var(--nuraly-dropdown-font-size-local)); /* Default value added */
 
     }
-    hy-icon {
+    nr-icon {
         display: flex;
     }
     :host(:not([disabled])) div:hover {

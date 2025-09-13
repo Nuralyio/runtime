@@ -91,11 +91,11 @@ const tablePaginationStyle = css`
     color: var(--nuraly-pagination-text-color);
   }
 
-  hy-icon[data-enabled='false'] {
+  nr-icon[data-enabled='false'] {
     cursor: not-allowed;
   }
 
-  hy-icon[data-enabled='true'] {
+  nr-icon[data-enabled='true'] {
     cursor: pointer;
   }
 `;

@@ -1,10 +1,10 @@
-import {LitElement, PropertyValueMap, html, nothing} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {styles} from './table-content.style.js';
-import {repeat} from 'lit/directives/repeat.js';
-import {choose} from 'lit/directives/choose.js';
+import { LitElement, PropertyValueMap, html, nothing } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { styles } from './table-content.style.js';
+import { repeat } from 'lit/directives/repeat.js';
+import { choose } from 'lit/directives/choose.js';
 
-import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder} from '../table.types.js';
+import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder } from '../table.types.js';
 
 @customElement('hy-table-content')
 export class HyTableContent extends LitElement {
@@ -88,11 +88,11 @@ export class HyTableContent extends LitElement {
                     <span
                       >${header.name}${index == this.sortAttribute.index
                         ? choose(this.sortAttribute.order, [
-                            [SortOrder.Default, () => html`<hy-icon name="arrows-v"></hy-icon>`],
-                            [SortOrder.Ascending, () => html`<hy-icon name="long-arrow-up"></hy-icon>`],
-                            [SortOrder.Descending, () => html`<hy-icon name="long-arrow-down"></hy-icon>`],
+                            [SortOrder.Default, () => html`<nr-icon name="arrows-v"></nr-icon>`],
+                            [SortOrder.Ascending, () => html`<nr-icon name="long-arrow-up"></nr-icon>`],
+                            [SortOrder.Descending, () => html`<nr-icon name="long-arrow-down"></nr-icon>`],
                           ])
-                        : html`<hy-icon name="arrows-v"></hy-icon>`}
+                        : html`<nr-icon name="arrows-v"></nr-icon>`}
                     </span>
                   </th>`
                 : nothing}
@@ -107,7 +107,7 @@ export class HyTableContent extends LitElement {
               this.expandable && !this.selectionMode
                 ? html`
                     <td @click=${() => this._showExpandedContent(index)} class="expand-icon">
-                      <hy-icon name="${this.expand[index] ? 'angle-up' : 'angle-down'}"></hy-icon>
+                      <nr-icon name="${this.expand[index] ? 'angle-up' : 'angle-down'}"></nr-icon>
                     </td>
                   `
                 : this.selectionMode

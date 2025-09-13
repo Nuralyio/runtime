@@ -1,8 +1,8 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {HyIconElement} from './icon.component.js';
+import { HyIconElement } from './icon.component.js';
 export const HyIcon = createComponent({
-  tagName: 'hy-icon',
+  tagName: 'nr-icon',
   elementClass: HyIconElement,
   react: React,
 });

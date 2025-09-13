@@ -3,7 +3,7 @@ import { css } from 'lit';
 /**
  * Icon component CSS custom properties (design tokens)
  * 
- * This file contains all the CSS custom properties used by the hy-icon component,
+ * This file contains all the CSS custom properties used by the nr-icon component,
  * organized by functionality and including both light and dark theme variants.
  * 
  * The styling system uses CSS custom properties with fallbacks to allow

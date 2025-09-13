@@ -28,7 +28,7 @@ type Constructor<T = {}> = new (...args: any[]) => T;
  * ```typescript
  * @customElement('my-component')
  * export class MyComponent extends NuralyUIBaseMixin(LitElement) {
- *   requiredComponents = ['hy-icon'];
+ *   requiredComponents = ['nr-icon'];
  *   
  *   render() {
  *     return html`<div data-theme="${this.currentTheme}">Content</div>`;

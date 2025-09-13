@@ -24,7 +24,7 @@ import { HybridUIBaseMixin } from '../../shared/index.js';
 @customElement('my-component')
 export class MyComponent extends HybridUIBaseMixin(LitElement) {
   // Specify required components (optional)
-  override requiredComponents = ['hy-icon', 'hy-tooltip'];
+  override requiredComponents = ['nr-icon', 'hy-tooltip'];
 
   render() {
     return html`

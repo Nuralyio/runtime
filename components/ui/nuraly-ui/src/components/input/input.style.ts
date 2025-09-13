@@ -59,7 +59,7 @@ const inputStyle = css`
    * Icon base styles
    * Common styling for all icons within the input component
    */
-  hy-icon {
+  nr-icon {
     display: flex;
     align-items: center;
   }
@@ -141,7 +141,7 @@ const inputStyle = css`
   }
 
   /* Individual number icons styling */
-  #number-icons hy-icon {
+  #number-icons nr-icon {
     --nuraly-icon-color: var(--nuraly-input-number-icons-color, var(--nuraly-input-local-number-icons-color));
     padding-left: var(--nuraly-input-number-icons-padding-left, var(--nuraly-input-local-number-icons-padding-left));
     padding-right: var(--nuraly-input-number-icons-padding-right, var(--nuraly-input-local-number-icons-padding-right));

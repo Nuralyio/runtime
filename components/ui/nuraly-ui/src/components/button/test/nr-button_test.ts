@@ -7,7 +7,7 @@ suite('NrButtonElement', () => {
   test('has default properties', async () => {
     const el: NrButtonElement = await fixture(html`<nr-button></nr-button>`);
     const button: HTMLButtonElement = el.shadowRoot!.querySelector('button')!;
-    const icon = el.shadowRoot!.querySelector('hy-icon');
+    const icon = el.shadowRoot!.querySelector('nr-icon');
 
     expect(el.disabled).to.be.false;
     expect(el.loading).to.be.false;
@@ -60,7 +60,7 @@ suite('NrButtonElement', () => {
   test('renders the icon', async () => {
     const iconName = 'sample-icon';
     const el: NrButtonElement = await fixture(html`<nr-button icon=${iconName}></nr-button>`);
-    const icon = el.shadowRoot!.querySelector('hy-icon');
+    const icon = el.shadowRoot!.querySelector('nr-icon');
     expect(icon).to.exist;
     expect(icon).to.have.attribute('name', iconName);
   });

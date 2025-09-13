@@ -252,7 +252,7 @@ export const styles = css`
     pointer-events: none;
   }
 
-  .icons-container hy-icon {
+  .icons-container nr-icon {
     --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
     --nuraly-icon-color: var(--nuraly-select-icon-color, var(--nuraly-select-local-icon-color));
     pointer-events: auto;
@@ -260,7 +260,7 @@ export const styles = css`
     transition: color var(--nuraly-select-transition-duration, var(--nuraly-select-local-transition-duration));
   }
 
-  .icons-container hy-icon:hover {
+  .icons-container nr-icon:hover {
     --nuraly-icon-color: var(--nuraly-select-icon-hover-color, var(--nuraly-select-local-icon-hover-color));
   }
 

@@ -749,11 +749,11 @@ export class InputValidationController extends BaseInputController {
     if (!iconName) return '';
     
     return html`
-      <hy-icon 
+      <nr-icon 
         name="${iconName}" 
         class="validation-icon ${iconClass}"
         part="validation-icon">
-      </hy-icon>
+      </nr-icon>
     `;
   }
 

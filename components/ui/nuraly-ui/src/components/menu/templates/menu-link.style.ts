@@ -27,7 +27,7 @@ const menuLinkStyle = css`
   :host([text='']) li {
     width: var(--nuraly-menu-link-icon-only-width);
   }
-  hy-icon {
+  nr-icon {
     --nuraly-icon-color: var(--nuraly-menu-link-icon-color);
   }
    .icon-container{
@@ -87,7 +87,7 @@ const menuLinkStyle = css`
     align-items: center;
     justify-content: center;
   }
-  hy-icon {
+  nr-icon {
     display: flex;
     align-items: center;
     padding-right: var(--nuraly-menu-link-icon-padding-right);

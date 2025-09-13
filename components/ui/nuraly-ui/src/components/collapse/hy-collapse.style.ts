@@ -3,7 +3,7 @@ const collapseStyles = css`
     hy-label{
     display: inline-block;  
     }
-    hy-icon{
+    nr-icon{
         --nuraly-icon-width: 11px;
         --nuraly-icon-height: 11px;
     }

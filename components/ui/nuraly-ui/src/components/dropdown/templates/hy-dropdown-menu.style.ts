@@ -9,7 +9,7 @@ const dropdownMenuStyle = css`
     display: flex;
     align-items: center;
   }
-  hy-icon {
+  nr-icon {
     display: flex;
   }
   #caret-icon {
