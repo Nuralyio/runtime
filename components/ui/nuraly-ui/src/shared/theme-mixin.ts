@@ -9,9 +9,11 @@ import {LitElement} from 'lit';
 /**
  * Theme detection and management mixin for Lit components
  * Provides data-theme attribute detection with system fallback
+ * Supports multiple design systems (Carbon, Polaris, etc.)
  */
 export interface ThemeAware {
   currentTheme: 'light' | 'dark';
+  currentDesignSystem: 'carbon' | 'polaris' | 'default';
 }
 
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -36,16 +38,19 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
   class ThemeAwareClass extends superClass implements ThemeAware {
     private themeObserver?: MutationObserver;
     private mediaQuery?: MediaQueryList;
+    private designSystemObserver?: MutationObserver;
 
     override connectedCallback() {
       super.connectedCallback();
       this.setupThemeObserver();
+      this.setupDesignSystemObserver();
       this.setupSystemThemeListener();
     }
 
     override disconnectedCallback() {
       super.disconnectedCallback();
       this.themeObserver?.disconnect();
+      this.designSystemObserver?.disconnect();
       this.mediaQuery?.removeEventListener('change', this.handleSystemThemeChange);
     }
 
@@ -70,6 +75,22 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
       return 'light';
     }
 
+    /**
+     * Gets the current design system by checking design-system attribute in DOM hierarchy
+     * Falls back to 'carbon' as default
+     */
+    get currentDesignSystem(): 'carbon' | 'polaris' | 'default' {
+      // Check for design-system attribute starting from this element and going up
+      const designSystem = this.closest('[design-system]')?.getAttribute('design-system') ||
+                          document.documentElement.getAttribute('design-system');
+      
+      if (designSystem === 'carbon' || designSystem === 'polaris') {
+        return designSystem;
+      }
+      
+      return 'default';
+    }
+
     private setupThemeObserver() {
       // Watch for data-theme changes on document
       this.themeObserver = new MutationObserver(() => {
@@ -80,6 +101,19 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
       this.themeObserver.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['data-theme']
+      });
+    }
+
+    private setupDesignSystemObserver() {
+      // Watch for design-system changes on document
+      this.designSystemObserver = new MutationObserver(() => {
+        this.requestUpdate();
+      });
+
+      // Observe document element for design-system changes
+      this.designSystemObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['design-system']
       });
     }
 
@@ -123,6 +157,25 @@ export function detectTheme(element: Element): 'light' | 'dark' {
   }
   
   return 'light';
+}
+
+/**
+ * Standalone design system detection utility function
+ * For components that don't want to use the mixin approach
+ * 
+ * @param element - The element to start detection from
+ * @returns The detected design system
+ */
+export function detectDesignSystem(element: Element): 'carbon' | 'polaris' | 'default' {
+  // Check for design-system attribute starting from this element and going up
+  const designSystem = element.closest('[design-system]')?.getAttribute('design-system') ||
+                      document.documentElement.getAttribute('design-system');
+  
+  if (designSystem === 'carbon' || designSystem === 'polaris') {
+    return designSystem;
+  }
+  
+  return 'default';
 }
 
 /**

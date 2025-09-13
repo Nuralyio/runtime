@@ -62,7 +62,7 @@ export const RippleMixin = <T extends Constructor<LitElement>>(superClass: T) =>
     declare disabled: boolean;
     
     /**
-     * Creates ripple effect on button click
+     * Creates ripple effect on button click with enhanced animation
      * @param event - The click event
      */
     createRipple(event: MouseEvent): void {
@@ -70,7 +70,9 @@ export const RippleMixin = <T extends Constructor<LitElement>>(superClass: T) =>
 
       const button = event.currentTarget as HTMLElement;
       const rect = button.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
+      
+      // Make ripple larger for more pronounced effect
+      const size = Math.max(rect.width, rect.height) * 2;
       const x = event.clientX - rect.left - size / 2;
       const y = event.clientY - rect.top - size / 2;
 

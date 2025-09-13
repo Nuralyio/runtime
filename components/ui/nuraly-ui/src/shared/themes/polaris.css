@@ -1,0 +1,106 @@
+/**
+ * Polaris Design System Theme Variables
+ * Defines all --nuraly-* CSS variables to match Shopify Polaris specifications
+ */
+
+:root {
+  /* ========================================
+   * POLARIS DESIGN SYSTEM VARIABLES
+   * ======================================== */
+
+  /* Typography */
+  --nuraly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --nuraly-font-weight-regular: 400;
+  --nuraly-font-weight-medium: 500;
+  --nuraly-font-weight-semibold: 600;
+
+  /* Colors - Polaris Design System Palette */
+  --nuraly-color-primary: #008060;
+  --nuraly-color-primary-hover: #00704a;
+  --nuraly-color-primary-active: #004c3b;
+  
+  --nuraly-color-secondary: #ffffff;
+  --nuraly-color-secondary-hover: #f6f6f7;
+  --nuraly-color-secondary-active: #edeeef;
+  
+  --nuraly-color-danger: #d72c0d;
+  --nuraly-color-danger-hover: #bf2600;
+  --nuraly-color-danger-active: #a91b0c;
+  
+  --nuraly-color-background: #ffffff;
+  --nuraly-color-background-hover: #f6f6f7;
+  --nuraly-color-background-active: #edeeef;
+  
+  --nuraly-color-text: #202223;
+  --nuraly-color-text-secondary: #6d7175;
+  --nuraly-color-text-on-color: #ffffff;
+  --nuraly-color-text-disabled: #8c9196;
+
+  /* Button Specific Variables */
+  --nuraly-color-button-primary: #008060;
+  --nuraly-color-button-primary-hover: #00704a;
+  --nuraly-color-button-primary-active: #004c3b;
+  
+  --nuraly-color-button-secondary: #ffffff;
+  --nuraly-color-button-secondary-hover: #f6f6f7;
+  --nuraly-color-button-secondary-active: #edeeef;
+
+  /* Button gradients - Polaris uses subtle gradients */
+  --nuraly-color-button-gradient-bg-start: #008060;
+  --nuraly-color-button-gradient-bg-end: #004c3b;
+
+  /* Borders */
+  --nuraly-color-border: #c9cccf;
+  --nuraly-color-border-subtle: #e1e3e5;
+  --nuraly-color-border-strong: #8c9196;
+  --nuraly-color-border-inverse: #202223;
+
+  /* Brand colors */
+  --nuraly-color-border-brand: #004c3b;
+
+  /* Border Radius - Polaris uses friendly rounded corners */
+  --nuraly-border-radius-none: 0;
+  --nuraly-border-radius-small: 0.125rem; /* 2px */
+  --nuraly-border-radius-medium: 0.25rem; /* 4px */
+  --nuraly-border-radius-large: 0.5rem;   /* 8px */
+  --nuraly-border-radius-1: 0.25rem;      /* 4px - standard button radius */
+  --nuraly-border-radius-2: 0.375rem;     /* 6px */
+
+  /* Spacing - Polaris 4px grid system */
+  --nuraly-spacing-01: 0.125rem; /* 2px */
+  --nuraly-spacing-02: 0.25rem;  /* 4px */
+  --nuraly-spacing-03: 0.5rem;   /* 8px */
+  --nuraly-spacing-04: 0.75rem;  /* 12px */
+  --nuraly-spacing-05: 1rem;     /* 16px */
+  --nuraly-spacing-06: 1.5rem;   /* 24px */
+  --nuraly-spacing-07: 2rem;     /* 32px */
+  --nuraly-spacing-08: 2.5rem;   /* 40px */
+  --nuraly-spacing-09: 3rem;     /* 48px */
+  --nuraly-spacing-10: 4rem;     /* 64px */
+
+  /* Button specific spacing */
+  --nuraly-spacing-2: 0.5rem;   /* 8px */
+  --nuraly-spacing-4: 1rem;     /* 16px */
+
+  /* Shadows - Polaris uses subtle shadows for depth */
+  --nuraly-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  /* Focus styles - Polaris subtle focus */
+  --nuraly-focus-outline: none;
+  --nuraly-focus-outline-offset: 0;
+  --nuraly-focus-color: #008060;
+
+  /* Component sizes */
+  --nuraly-size-sm: 1.75rem;  /* 28px - Polaris small */
+  --nuraly-size-md: 2.25rem;  /* 36px - Polaris medium (default) */
+  --nuraly-size-lg: 2.75rem;  /* 44px - Polaris large */
+  --nuraly-size-xl: 3.25rem;  /* 52px - Polaris extra large */
+
+  /* Surface colors */
+  --nuraly-color-bg-surface: #ffffff;
+  --nuraly-color-bg-surface-hover: #f6f6f7;
+  --nuraly-color-bg-surface-active: #edeeef;
+}
