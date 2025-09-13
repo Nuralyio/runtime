@@ -205,37 +205,37 @@ The button component supports extensive customization through CSS custom propert
 ```css
 nr-button {
   /* Colors */
-  --nr-button-primary-bg: #4F46E5;
-  --nr-button-primary-color: white;
-  --nr-button-primary-border: #4F46E5;
+  --nuraly-button-primary-bg: #4F46E5;
+  --nuraly-button-primary-color: white;
+  --nuraly-button-primary-border: #4F46E5;
   
-  --nr-button-secondary-bg: transparent;
-  --nr-button-secondary-color: #4F46E5;
-  --nr-button-secondary-border: #4F46E5;
+  --nuraly-button-secondary-bg: transparent;
+  --nuraly-button-secondary-color: #4F46E5;
+  --nuraly-button-secondary-border: #4F46E5;
   
-  --nr-button-danger-bg: #DC2626;
-  --nr-button-danger-color: white;
-  --nr-button-danger-border: #DC2626;
+  --nuraly-button-danger-bg: #DC2626;
+  --nuraly-button-danger-color: white;
+  --nuraly-button-danger-border: #DC2626;
   
   /* Sizes */
-  --nr-button-padding-small: 4px 8px;
-  --nr-button-padding-default: 8px 16px;
-  --nr-button-padding-large: 12px 24px;
+  --nuraly-button-padding-small: 4px 8px;
+  --nuraly-button-padding-default: 8px 16px;
+  --nuraly-button-padding-large: 12px 24px;
   
-  --nr-button-font-size-small: 12px;
-  --nr-button-font-size-default: 14px;
-  --nr-button-font-size-large: 16px;
+  --nuraly-button-font-size-small: 12px;
+  --nuraly-button-font-size-default: 14px;
+  --nuraly-button-font-size-large: 16px;
   
   /* Border */
-  --nr-button-border-radius: 6px;
-  --nr-button-border-width: 1px;
+  --nuraly-button-border-radius: 6px;
+  --nuraly-button-border-width: 1px;
   
   /* States */
-  --nr-button-disabled-opacity: 0.5;
-  --nr-button-hover-opacity: 0.9;
+  --nuraly-button-disabled-opacity: 0.5;
+  --nuraly-button-hover-opacity: 0.9;
   
   /* Spacing */
-  --nr-button-icon-gap: 8px;
+  --nuraly-button-icon-gap: 8px;
 }
 ```
 
@@ -244,17 +244,17 @@ nr-button {
 ```css
 @media (prefers-color-scheme: dark) {
   nr-button {
-    --nr-button-primary-bg: #6366F1;
-    --nr-button-secondary-color: #A5B4FC;
-    --nr-button-secondary-border: #A5B4FC;
+    --nuraly-button-primary-bg: #6366F1;
+    --nuraly-button-secondary-color: #A5B4FC;
+    --nuraly-button-secondary-border: #A5B4FC;
   }
 }
 
 /* Manual dark theme */
 [data-theme="dark"] nr-button {
-  --nr-button-primary-bg: #6366F1;
-  --nr-button-secondary-color: #A5B4FC;
-  --nr-button-secondary-border: #A5B4FC;
+  --nuraly-button-primary-bg: #6366F1;
+  --nuraly-button-secondary-color: #A5B4FC;
+  --nuraly-button-secondary-border: #A5B4FC;
 }
 ```
 
@@ -263,10 +263,10 @@ nr-button {
 ```css
 /* Custom button style */
 .my-custom-button {
-  --nr-button-primary-bg: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-  --nr-button-border-radius: 20px;
-  --nr-button-padding-default: 12px 32px;
-  --nr-button-font-size-default: 16px;
+  --nuraly-button-primary-bg: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+  --nuraly-button-border-radius: 20px;
+  --nuraly-button-padding-default: 12px 32px;
+  --nuraly-button-font-size-default: 16px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;

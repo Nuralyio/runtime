@@ -294,39 +294,39 @@ export default {
 ```css
 nr-input {
   /* Colors */
-  --nr-input-bg: #ffffff;
-  --nr-input-border: #d1d5db;
-  --nr-input-border-focus: #4f46e5;
-  --nr-input-color: #111827;
-  --nr-input-placeholder: #6b7280;
+  --nuraly-input-bg: #ffffff;
+  --nuraly-input-border: #d1d5db;
+  --nuraly-input-border-focus: #4f46e5;
+  --nuraly-input-color: #111827;
+  --nuraly-input-placeholder: #6b7280;
   
   /* Error state */
-  --nr-input-border-error: #dc2626;
-  --nr-input-bg-error: #fef2f2;
+  --nuraly-input-border-error: #dc2626;
+  --nuraly-input-bg-error: #fef2f2;
   
   /* Warning state */
-  --nr-input-border-warning: #d97706;
-  --nr-input-bg-warning: #fffbeb;
+  --nuraly-input-border-warning: #d97706;
+  --nuraly-input-bg-warning: #fffbeb;
   
   /* Sizes */
-  --nr-input-padding-small: 6px 8px;
-  --nr-input-padding-medium: 8px 12px;
-  --nr-input-padding-large: 12px 16px;
+  --nuraly-input-padding-small: 6px 8px;
+  --nuraly-input-padding-medium: 8px 12px;
+  --nuraly-input-padding-large: 12px 16px;
   
-  --nr-input-font-size-small: 12px;
-  --nr-input-font-size-medium: 14px;
-  --nr-input-font-size-large: 16px;
+  --nuraly-input-font-size-small: 12px;
+  --nuraly-input-font-size-medium: 14px;
+  --nuraly-input-font-size-large: 16px;
   
   /* Border */
-  --nr-input-border-radius: 6px;
-  --nr-input-border-width: 1px;
+  --nuraly-input-border-radius: 6px;
+  --nuraly-input-border-width: 1px;
   
   /* Focus */
-  --nr-input-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  --nuraly-input-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.1);
   
   /* Disabled */
-  --nr-input-disabled-bg: #f9fafb;
-  --nr-input-disabled-color: #6b7280;
+  --nuraly-input-disabled-bg: #f9fafb;
+  --nuraly-input-disabled-color: #6b7280;
 }
 ```
 
@@ -335,14 +335,14 @@ nr-input {
 ```css
 @media (prefers-color-scheme: dark) {
   nr-input {
-    --nr-input-bg: #1f2937;
-    --nr-input-border: #374151;
-    --nr-input-border-focus: #6366f1;
-    --nr-input-color: #f9fafb;
-    --nr-input-placeholder: #9ca3af;
+    --nuraly-input-bg: #1f2937;
+    --nuraly-input-border: #374151;
+    --nuraly-input-border-focus: #6366f1;
+    --nuraly-input-color: #f9fafb;
+    --nuraly-input-placeholder: #9ca3af;
     
-    --nr-input-disabled-bg: #111827;
-    --nr-input-disabled-color: #6b7280;
+    --nuraly-input-disabled-bg: #111827;
+    --nuraly-input-disabled-color: #6b7280;
   }
 }
 ```
@@ -352,10 +352,10 @@ nr-input {
 ```css
 /* Custom input style */
 .my-custom-input {
-  --nr-input-border-radius: 12px;
-  --nr-input-border-focus: #8b5cf6;
-  --nr-input-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.1);
-  --nr-input-padding-medium: 12px 16px;
+  --nuraly-input-border-radius: 12px;
+  --nuraly-input-border-focus: #8b5cf6;
+  --nuraly-input-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  --nuraly-input-padding-medium: 12px 16px;
 }
 
 .my-custom-input:focus-within {

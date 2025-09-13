@@ -21,7 +21,7 @@ export const styles = css`
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: var(--nr-form-gap, 16px);
+    gap: var(--nuraly-form-gap, 16px);
   }
 
   .form-wrapper[disabled] {
@@ -63,7 +63,7 @@ export const styles = css`
   /* Responsive design */
   @media (max-width: 768px) {
     .form-wrapper {
-      gap: var(--nr-form-gap-mobile, 12px);
+      gap: var(--nuraly-form-gap-mobile, 12px);
     }
   }
 `;
