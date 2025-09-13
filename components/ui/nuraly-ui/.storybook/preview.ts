@@ -3,7 +3,7 @@ import type { Preview } from '@storybook/web-components';
 // Import theme CSS files directly
 import '../src/shared/themes/default.css';
 import '../src/shared/themes/carbon.css';
-// import '../src/shared/themes/polaris.css';
+import '../src/shared/themes/polaris.css';
 
 const preview: Preview = {
   parameters: {
@@ -32,9 +32,12 @@ const preview: Preview = {
         title: 'Theme',
         icon: 'contrast',
         items: [
-          { value: 'default', title: 'Default Theme', icon: 'circle' },
-          { value: 'carbon', title: 'Carbon Design System', icon: 'component' },
-          { value: 'polaris', title: 'Shopify Polaris', icon: 'shopping' },
+          { value: 'default', title: 'Default Light', icon: 'circle' },
+          { value: 'default-dark', title: 'Default Dark', icon: 'circlehollow' },
+          { value: 'carbon-light', title: 'Carbon Light', icon: 'sun' },
+          { value: 'carbon-dark', title: 'Carbon Dark', icon: 'moon' },
+          { value: 'polaris', title: 'Polaris Light', icon: 'shopping' },
+          { value: 'polaris-dark', title: 'Polaris Dark', icon: 'basket' },
         ],
         dynamicTitle: true,
       },
@@ -54,13 +57,19 @@ const preview: Preview = {
       // Apply background styling based on theme
       const bgColors: Record<string, string> = {
         default: '#ffffff',
-        carbon: '#ffffff', 
-        polaris: '#ffffff'
+        'default-dark': '#111827',
+        'carbon-light': '#ffffff', 
+        'carbon-dark': '#161616',
+        polaris: '#ffffff',
+        'polaris-dark': '#1a1a1a'
       };
       const textColors: Record<string, string> = {
-        default: '#000000',
-        carbon: '#161616',
-        polaris: '#202223'
+        default: '#111827',
+        'default-dark': '#ffffff',
+        'carbon-light': '#161616',
+        'carbon-dark': '#ffffff',
+        polaris: '#202223',
+        'polaris-dark': '#ffffff'
       };
       
       document.body.style.backgroundColor = bgColors[theme] || '#ffffff';
