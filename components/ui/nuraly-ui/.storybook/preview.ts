@@ -3,7 +3,7 @@ import type { Preview } from '@storybook/web-components';
 // Import theme CSS files directly
 import '../src/shared/themes/default.css';
 import '../src/shared/themes/carbon.css';
-import '../src/shared/themes/polaris.css';
+// import '../src/shared/themes/polaris.css';
 
 const preview: Preview = {
   parameters: {
