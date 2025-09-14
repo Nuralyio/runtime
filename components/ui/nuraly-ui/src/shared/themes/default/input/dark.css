@@ -3,8 +3,7 @@
  * Input-specific CSS variables based on Ant Design v5 dark theme specifications
  */
 
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme="default-dark"]{
   /* ========================================
    * INPUT VARIABLES - ANT DESIGN DARK THEME
    * ======================================== */
