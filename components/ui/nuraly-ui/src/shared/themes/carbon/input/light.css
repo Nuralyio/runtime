@@ -17,6 +17,14 @@
   --nuraly-color-input-label: #393939;
   --nuraly-color-input-helper-text: #6f6f6f;
 
+  /* Input fallback colors for compatibility */
+  --nuraly-color-input-text-fallback: rgba(0, 0, 0, 0.88);
+  --nuraly-color-input-background-fallback: #ffffff;
+  --nuraly-color-input-disabled-text-fallback: rgba(0, 0, 0, 0.25);
+  --nuraly-color-input-disabled-background-fallback: #f4f4f4;
+  --nuraly-color-input-placeholder-fallback: #a8a8a8;
+  --nuraly-color-input-disabled-placeholder-fallback: #c6c6c6;
+
   /* Input borders - Carbon underline style */
   --nuraly-color-input-border: transparent;
   --nuraly-color-input-border-bottom: #8d8d8d;

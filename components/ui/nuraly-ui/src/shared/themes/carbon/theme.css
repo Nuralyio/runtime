@@ -259,4 +259,30 @@ body[data-theme="carbon-dark"] * {
   --nuraly-color-surface-active: #525252 !important;
   --nuraly-color-surface-disabled: #262626 !important;
   --nuraly-color-surface-elevated: #393939 !important;
+
+  /* ========================================
+   * INPUT CORE VARIABLES - SHARED ACROSS THEMES
+   * ======================================== */
+
+  /* Input borders and layout */
+  --nuraly-input-border: none;
+  --nuraly-input-outline: none;
+  
+  /* Input cursor states */
+  --nuraly-cursor-disabled: not-allowed;
+  --nuraly-cursor-interactive: pointer;
+  
+  /* Input icon sizing - shared across themes */
+  --nuraly-input-number-icons-width: 24px;
+  --nuraly-input-number-icons-height: 24px;
+  --nuraly-input-number-icons-container-width: 32px;
+  --nuraly-input-number-icons-container-padding-right: 8px;
+  --nuraly-number-icons-padding-left: 4px;
+  --nuraly-number-icons-padding-right: 4px;
+  
+  /* Input icon padding */
+  --nuraly-password-icon-padding-left: 8px;
+  --nuraly-password-icon-padding-right: 8px;
+  --nuraly-copy-icon-padding-right: 8px;
+  --nuraly-clear-icon-padding-right: 8px;
 }
