@@ -4,8 +4,7 @@
  */
 
 :root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"]{
   /* ========================================
    * INPUT VARIABLES - ANT DESIGN LIGHT THEME
    * ======================================== */
