@@ -1,74 +1,112 @@
 /**
- * Default Theme - Button Component - Dark Variant
- * Button-specific CSS variables for the default dark theme
+ * Ant Design Theme - Button Component - Dark Variant
+ * Button-specific CSS variables based on Ant Design v5 dark theme specifications
  */
 
 [data-theme="default-dark"],
 [data-theme="dark"] {
   /* ========================================
-   * BUTTON VARIABLES - DEFAULT DARK THEME
+   * BUTTON VARIABLES - ANT DESIGN DARK THEME
    * ======================================== */
 
-  /* Primary button colors */
-  --nuraly-color-button-primary: #60a5fa;
-  --nuraly-color-button-primary-hover: #3b82f6;
-  --nuraly-color-button-primary-active: #2563eb;
-  --nuraly-color-button-primary-text: #111827;
-  --nuraly-color-button-primary-text-hover: #111827;
-  --nuraly-color-button-primary-text-active: #111827;
+  /* Primary button colors - Ant Design primary blue (darker variant for dark theme) */
+  --nuraly-color-button-primary: #1890ff;
+  --nuraly-color-button-primary-hover: #40a9ff;
+  --nuraly-color-button-primary-active: #096dd9;
+  --nuraly-color-button-primary-text: #ffffff;
+  --nuraly-color-button-primary-text-hover: #ffffff;
+  --nuraly-color-button-primary-text-active: #ffffff;
 
-  /* Secondary button colors */
-  --nuraly-color-button-secondary: #4b5563;
-  --nuraly-color-button-secondary-hover: #6b7280;
-  --nuraly-color-button-secondary-active: #9ca3af;
-  --nuraly-color-button-secondary-text: #f9fafb;
-  --nuraly-color-button-secondary-text-hover: #f9fafb;
-  --nuraly-color-button-secondary-text-active: #111827;
+  /* Secondary/Default button colors - Ant Design dark specifications */
+  --nuraly-color-button-secondary: #434343;
+  --nuraly-color-button-secondary-hover: #595959;
+  --nuraly-color-button-secondary-active: #262626;
+  --nuraly-color-button-secondary-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-button-secondary-text-hover: #40a9ff;
+  --nuraly-color-button-secondary-text-active: #096dd9;
 
-  /* Danger button colors */
-  --nuraly-color-button-danger: #f87171;
-  --nuraly-color-button-danger-hover: #ef4444;
-  --nuraly-color-button-danger-active: #dc2626;
-  --nuraly-color-button-danger-text: #111827;
-  --nuraly-color-button-danger-text-hover: #111827;
+  /* Danger button colors - Ant Design error red for dark theme */
+  --nuraly-color-button-danger: #ff4d4f;
+  --nuraly-color-button-danger-hover: #ff7875;
+  --nuraly-color-button-danger-active: #d9363e;
+  --nuraly-color-button-danger-text: #ffffff;
+  --nuraly-color-button-danger-text-hover: #ffffff;
   --nuraly-color-button-danger-text-active: #ffffff;
 
-  /* Outline button colors */
-  --nuraly-color-button-outline: transparent;
-  --nuraly-color-button-outline-hover: #1f2937;
-  --nuraly-color-button-outline-active: #374151;
-  --nuraly-color-button-outline-text: #60a5fa;
-  --nuraly-color-button-outline-text-hover: #3b82f6;
-  --nuraly-color-button-outline-text-active: #2563eb;
-  --nuraly-color-button-outline-border: #60a5fa;
-  --nuraly-color-button-outline-border-hover: #3b82f6;
-  --nuraly-color-button-outline-border-active: #2563eb;
+  /* Outline button colors - Ant Design default button for dark theme */
+  --nuraly-color-button-outline: #434343;
+  --nuraly-color-button-outline-hover: #595959;
+  --nuraly-color-button-outline-active: #262626;
+  --nuraly-color-button-outline-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-button-outline-text-hover: #40a9ff;
+  --nuraly-color-button-outline-text-active: #096dd9;
+  --nuraly-color-button-outline-border: #434343;
+  --nuraly-color-button-outline-border-hover: #40a9ff;
+  --nuraly-color-button-outline-border-active: #096dd9;
 
-  /* Ghost button colors */
+  /* Ghost/Text button colors - Ant Design link button for dark theme */
   --nuraly-color-button-ghost: transparent;
-  --nuraly-color-button-ghost-hover: #1f2937;
-  --nuraly-color-button-ghost-active: #374151;
-  --nuraly-color-button-ghost-text: #9ca3af;
-  --nuraly-color-button-ghost-text-hover: #d1d5db;
-  --nuraly-color-button-ghost-text-active: #f9fafb;
+  --nuraly-color-button-ghost-hover: rgba(24, 144, 255, 0.1);
+  --nuraly-color-button-ghost-active: rgba(24, 144, 255, 0.2);
+  --nuraly-color-button-ghost-text: #1890ff;
+  --nuraly-color-button-ghost-text-hover: #40a9ff;
+  --nuraly-color-button-ghost-text-active: #096dd9;
 
-  /* Button gradients */
-  --nuraly-color-button-gradient-bg-start: #60a5fa;
-  --nuraly-color-button-gradient-bg-end: #3b82f6;
-  --nuraly-color-button-gradient-text: #111827;
+  /* Ghost button border colors - removed borders for Ant Design */
+  --nuraly-color-button-outline-border: transparent;
+  --nuraly-color-button-outline-border-hover: transparent;
+  --nuraly-color-button-outline-border-active: transparent;
 
-  /* Button disabled states */
-  --nuraly-color-button-disabled: #374151;
-  --nuraly-color-button-disabled-text: #6b7280;
-  --nuraly-color-button-disabled-border: #4b5563;
+  /* Tertiary button - same as ghost for consistency */
+  --nuraly-color-button-tertiary: #1890ff;
+  --nuraly-color-button-tertiary-hover: #40a9ff;
+  --nuraly-color-button-tertiary-active: #096dd9;
 
-  /* Button focus styles */
-  --nuraly-color-button-focus-outline: #60a5fa;
-  --nuraly-color-button-focus-ring: rgba(96, 165, 250, 0.2);
+  /* Button gradients - minimal for Ant Design dark theme */
+  --nuraly-color-button-gradient-bg-start: #1890ff;
+  --nuraly-color-button-gradient-bg-end: #096dd9;
+  --nuraly-color-button-gradient-text: #ffffff;
 
-  /* Button shadows */
-  --nuraly-shadow-button: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --nuraly-shadow-button-hover: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --nuraly-shadow-button-active: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --nuraly-shadow-button-focus: 0 0 0 3px rgba(96, 165, 250, 0.2);
+  /* Button disabled states - Ant Design disabled palette for dark theme */
+  --nuraly-color-button-disabled: rgba(255, 255, 255, 0.08);
+  --nuraly-color-button-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-button-disabled-border: #434343;
+
+  /* Button focus styles - Ant Design focus system for dark theme */
+  --nuraly-color-button-focus-outline: #1890ff;
+  --nuraly-color-button-focus-ring: rgba(24, 144, 255, 0.2);
+
+  /* Button shadows - Ant Design box-shadow system for dark theme */
+  --nuraly-shadow-button: 0 2px 0 rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-button-hover: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --nuraly-shadow-button-active: 0 0 0 rgba(0, 0, 0, 0);
+  --nuraly-shadow-button-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
+
+  /* Ant Design specific button styling for dark theme */
+  --nuraly-border-radius-button: 6px; /* Ant Design default border radius */
+  
+  /* Button separator for fluid buttons */
+  --nuraly-color-button-separator: #434343;
+  
+  /* ========================================
+   * ANT DESIGN BUTTON PADDING & SPACING - DARK THEME
+   * Ant Design specific button dimensions (same as light)
+   * ======================================== */
+  
+  /* Ant Design button padding (inherited from light theme but explicit) */
+  --nuraly-button-padding-vertical: 4px;    /* Ant Design default vertical padding */
+  --nuraly-button-padding-horizontal: 15px; /* Ant Design default horizontal padding */
+  
+  /* Override default button spacing for Ant Design theme */
+  --nuraly-spacing-2: 4px;   /* Override vertical padding */
+  --nuraly-spacing-4: 15px;  /* Override horizontal padding */
+  
+  /* For different sizes */
+  --nuraly-size-sm: 24px;    /* Ant Design small button height */
+  --nuraly-size-md: 32px;    /* Ant Design default button height */
+  --nuraly-size-lg: 40px;    /* Ant Design large button height */
+  
+  /* Ant Design icon spacing and alignment */
+  --nuraly-button-icon-spacing: 6px;   /* Space between icon and text - reduced */
+  --nuraly-button-icon-size: 12px;     /* Icon size for buttons - balanced size for Ant Design */
 }

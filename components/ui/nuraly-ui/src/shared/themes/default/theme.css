@@ -1,150 +1,150 @@
 /**
- * Default Nuraly Theme - Main Variables
- * Core design tokens and base CSS variables for the default theme
- * This file contains fundamental design system variables used across all components
+ * Default Ant Design Theme - Main Variables
+ * Ant Design inspired design tokens and base CSS variables
+ * Based on Ant Design v5 design system specifications
  */
 
-/* Default light theme (fallback) */
+/* Default light theme (Ant Design style) */
 :root {
   /* ========================================
-   * DEFAULT NURALY THEME VARIABLES - LIGHT
+   * ANT DESIGN THEME VARIABLES - LIGHT
    * ======================================== */
 
-  /* Typography */
-  --nuraly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  /* Typography - Ant Design font stack */
+  --nuraly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --nuraly-font-weight-regular: 400;
   --nuraly-font-weight-medium: 500;
   --nuraly-font-weight-semibold: 600;
   --nuraly-font-weight-bold: 700;
 
-  /* Font sizes */
+  /* Font sizes - Ant Design scale */
   --nuraly-font-size-xs: 0.75rem;    /* 12px */
-  --nuraly-font-size-sm: 0.875rem;   /* 14px */
-  --nuraly-font-size-base: 1rem;     /* 16px */
-  --nuraly-font-size-lg: 1.125rem;   /* 18px */
-  --nuraly-font-size-xl: 1.25rem;    /* 20px */
-  --nuraly-font-size-2xl: 1.5rem;    /* 24px */
+  --nuraly-font-size-sm: 0.875rem;   /* 14px - Ant Design base */
+  --nuraly-font-size-base: 0.875rem; /* 14px - Ant Design default */
+  --nuraly-font-size-lg: 1rem;       /* 16px */
+  --nuraly-font-size-xl: 1.125rem;   /* 18px */
+  --nuraly-font-size-2xl: 1.25rem;   /* 20px */
 
-  /* Line heights */
-  --nuraly-line-height-tight: 1.25;
-  --nuraly-line-height-normal: 1.5;
-  --nuraly-line-height-relaxed: 1.75;
+  /* Line heights - Ant Design specifications */
+  --nuraly-line-height-tight: 1.2;
+  --nuraly-line-height-normal: 1.5714285714285714; /* 22px for 14px font */
+  --nuraly-line-height-relaxed: 1.6;
 
-  /* Base colors - Light theme */
-  --nuraly-color-primary: #3b82f6;
-  --nuraly-color-primary-hover: #2563eb;
-  --nuraly-color-primary-active: #1d4ed8;
-  --nuraly-color-primary-light: #93c5fd;
-  --nuraly-color-primary-dark: #1e40af;
+  /* Ant Design color palette */
+  --nuraly-color-primary: #1890ff;        /* Ant Design primary blue */
+  --nuraly-color-primary-hover: #40a9ff;   /* Ant Design primary hover */
+  --nuraly-color-primary-active: #096dd9;  /* Ant Design primary active */
+  --nuraly-color-primary-light: #e6f7ff;   /* Ant Design primary light */
+  --nuraly-color-primary-dark: #0050b3;    /* Ant Design primary dark */
   
-  --nuraly-color-secondary: #6b7280;
-  --nuraly-color-secondary-hover: #4b5563;
-  --nuraly-color-secondary-active: #374151;
-  --nuraly-color-secondary-light: #d1d5db;
-  --nuraly-color-secondary-dark: #1f2937;
+  --nuraly-color-secondary: #8c8c8c;       /* Ant Design gray-6 */
+  --nuraly-color-secondary-hover: #bfbfbf; /* Ant Design gray-5 */
+  --nuraly-color-secondary-active: #595959; /* Ant Design gray-7 */
+  --nuraly-color-secondary-light: #f5f5f5; /* Ant Design gray-2 */
+  --nuraly-color-secondary-dark: #262626;  /* Ant Design gray-9 */
   
-  --nuraly-color-success: #10b981;
-  --nuraly-color-success-hover: #059669;
-  --nuraly-color-success-active: #047857;
-  --nuraly-color-success-light: #6ee7b7;
-  --nuraly-color-success-dark: #064e3b;
+  --nuraly-color-success: #52c41a;         /* Ant Design success green */
+  --nuraly-color-success-hover: #73d13d;   /* Ant Design success hover */
+  --nuraly-color-success-active: #389e0d;  /* Ant Design success active */
+  --nuraly-color-success-light: #f6ffed;   /* Ant Design success light */
+  --nuraly-color-success-dark: #237804;    /* Ant Design success dark */
   
-  --nuraly-color-warning: #f59e0b;
-  --nuraly-color-warning-hover: #d97706;
-  --nuraly-color-warning-active: #b45309;
-  --nuraly-color-warning-light: #fbbf24;
-  --nuraly-color-warning-dark: #92400e;
+  --nuraly-color-warning: #faad14;         /* Ant Design warning orange */
+  --nuraly-color-warning-hover: #ffc53d;   /* Ant Design warning hover */
+  --nuraly-color-warning-active: #d48806;  /* Ant Design warning active */
+  --nuraly-color-warning-light: #fffbe6;   /* Ant Design warning light */
+  --nuraly-color-warning-dark: #ad6800;    /* Ant Design warning dark */
   
-  --nuraly-color-danger: #ef4444;
-  --nuraly-color-danger-hover: #dc2626;
-  --nuraly-color-danger-active: #b91c1c;
-  --nuraly-color-danger-light: #f87171;
-  --nuraly-color-danger-dark: #7f1d1d;
+  --nuraly-color-danger: #ff4d4f;          /* Ant Design error red */
+  --nuraly-color-danger-hover: #ff7875;    /* Ant Design error hover */
+  --nuraly-color-danger-active: #d9363e;   /* Ant Design error active */
+  --nuraly-color-danger-light: #fff2f0;    /* Ant Design error light */
+  --nuraly-color-danger-dark: #a8071a;     /* Ant Design error dark */
   
-  --nuraly-color-info: #3b82f6;
-  --nuraly-color-info-hover: #2563eb;
-  --nuraly-color-info-active: #1d4ed8;
-  --nuraly-color-info-light: #93c5fd;
-  --nuraly-color-info-dark: #1e40af;
+  --nuraly-color-info: #1890ff;            /* Same as primary */
+  --nuraly-color-info-hover: #40a9ff;      /* Same as primary hover */
+  --nuraly-color-info-active: #096dd9;     /* Same as primary active */
+  --nuraly-color-info-light: #e6f7ff;      /* Same as primary light */
+  --nuraly-color-info-dark: #0050b3;       /* Same as primary dark */
 
-  /* Background colors - Light theme */
-  --nuraly-color-background: #ffffff;
-  --nuraly-color-background-hover: #f9fafb;
-  --nuraly-color-background-active: #f3f4f6;
-  --nuraly-color-background-disabled: #f9fafb;
-  --nuraly-color-background-overlay: rgba(0, 0, 0, 0.5);
+  /* Background colors - Ant Design palette */
+  --nuraly-color-background: #ffffff;      /* Pure white */
+  --nuraly-color-background-hover: #fafafa; /* Ant Design gray-1 */
+  --nuraly-color-background-active: #f5f5f5; /* Ant Design gray-2 */
+  --nuraly-color-background-disabled: #f5f5f5; /* Ant Design gray-2 */
+  --nuraly-color-background-overlay: rgba(0, 0, 0, 0.45); /* Ant Design mask */
   
-  /* Text colors - Light theme */
-  --nuraly-color-text: #111827;
-  --nuraly-color-text-secondary: #6b7280;
-  --nuraly-color-text-tertiary: #9ca3af;
-  --nuraly-color-text-on-color: #ffffff;
-  --nuraly-color-text-disabled: #9ca3af;
-  --nuraly-color-text-inverse: #ffffff;
+  /* Text colors - Ant Design specifications */
+  --nuraly-color-text: rgba(0, 0, 0, 0.88);        /* Ant Design primary text */
+  --nuraly-color-text-secondary: rgba(0, 0, 0, 0.65); /* Ant Design secondary text */
+  --nuraly-color-text-tertiary: rgba(0, 0, 0, 0.45);  /* Ant Design tertiary text */
+  --nuraly-color-text-on-color: #ffffff;           /* White text on colored backgrounds */
+  --nuraly-color-text-disabled: rgba(0, 0, 0, 0.25); /* Ant Design disabled text */
+  --nuraly-color-text-inverse: #ffffff;            /* Inverse text */
 
-  /* Border colors - Light theme */
-  --nuraly-color-border: #d1d5db;
-  --nuraly-color-border-subtle: #e5e7eb;
-  --nuraly-color-border-strong: #9ca3af;
-  --nuraly-color-border-inverse: #374151;
-  --nuraly-color-border-brand: #3b82f6;
-  --nuraly-color-border-danger: #ef4444;
-  --nuraly-color-border-success: #10b981;
-  --nuraly-color-border-warning: #f59e0b;
+  /* Border colors - Ant Design specifications */
+  --nuraly-color-border: #d9d9d9;          /* Ant Design border color */
+  --nuraly-color-border-subtle: #f0f0f0;   /* Ant Design split color */
+  --nuraly-color-border-strong: #bfbfbf;   /* Ant Design gray-5 */
+  --nuraly-color-border-inverse: #434343;  /* Ant Design gray-8 */
+  --nuraly-color-border-brand: #1890ff;    /* Primary border */
+  --nuraly-color-border-danger: #ff4d4f;   /* Error border */
+  --nuraly-color-border-success: #52c41a;  /* Success border */
+  --nuraly-color-border-warning: #faad14;  /* Warning border */
 
-  /* Border radius */
+  /* Border radius - Ant Design specifications */
   --nuraly-border-radius-none: 0;
-  --nuraly-border-radius-xs: 0.125rem;   /* 2px */
-  --nuraly-border-radius-sm: 0.25rem;    /* 4px */
-  --nuraly-border-radius-md: 0.375rem;   /* 6px */
-  --nuraly-border-radius-lg: 0.5rem;     /* 8px */
-  --nuraly-border-radius-xl: 0.75rem;    /* 12px */
-  --nuraly-border-radius-2xl: 1rem;      /* 16px */
+  --nuraly-border-radius-xs: 2px;          /* Ant Design border-radius-xs */
+  --nuraly-border-radius-sm: 4px;          /* Ant Design border-radius-sm */
+  --nuraly-border-radius-md: 6px;          /* Ant Design border-radius */
+  --nuraly-border-radius-lg: 8px;          /* Ant Design border-radius-lg */
+  --nuraly-border-radius-xl: 12px;         /* Ant Design border-radius-xl */
+  --nuraly-border-radius-2xl: 16px;        /* Ant Design border-radius-2xl */
   --nuraly-border-radius-full: 9999px;
 
-  /* Border widths */
+  /* Border widths - Ant Design specifications */
   --nuraly-border-width-0: 0;
-  --nuraly-border-width-1: 1px;
-  --nuraly-border-width-2: 2px;
+  --nuraly-border-width-1: 1px;            /* Ant Design default border */
+  --nuraly-border-width-2: 2px;            /* Ant Design thick border */
   --nuraly-border-width-4: 4px;
 
-  /* Spacing scale */
+  /* Spacing scale - Ant Design spacing system */
   --nuraly-spacing-0: 0;
-  --nuraly-spacing-1: 0.25rem;   /* 4px */
-  --nuraly-spacing-2: 0.5rem;    /* 8px */
-  --nuraly-spacing-3: 0.75rem;   /* 12px */
-  --nuraly-spacing-4: 1rem;      /* 16px */
-  --nuraly-spacing-5: 1.25rem;   /* 20px */
-  --nuraly-spacing-6: 1.5rem;    /* 24px */
-  --nuraly-spacing-8: 2rem;      /* 32px */
-  --nuraly-spacing-10: 2.5rem;   /* 40px */
-  --nuraly-spacing-12: 3rem;     /* 48px */
-  --nuraly-spacing-16: 4rem;     /* 64px */
-  --nuraly-spacing-20: 5rem;     /* 80px */
-  --nuraly-spacing-24: 6rem;     /* 96px */
+  --nuraly-spacing-1: 4px;     /* 4px - Ant Design xs */
+  --nuraly-spacing-2: 8px;     /* 8px - Ant Design sm */
+  --nuraly-spacing-3: 12px;    /* 12px - Ant Design md */
+  --nuraly-spacing-4: 16px;    /* 16px - Ant Design lg */
+  --nuraly-spacing-5: 20px;    /* 20px - Ant Design xl */
+  --nuraly-spacing-6: 24px;    /* 24px - Ant Design xxl */
+  --nuraly-spacing-8: 32px;    /* 32px */
+  --nuraly-spacing-10: 40px;   /* 40px */
+  --nuraly-spacing-12: 48px;   /* 48px */
+  --nuraly-spacing-16: 64px;   /* 64px */
+  --nuraly-spacing-20: 80px;   /* 80px */
+  --nuraly-spacing-24: 96px;   /* 96px */
 
-  /* Shadows - Light theme */
-  --nuraly-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --nuraly-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --nuraly-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --nuraly-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --nuraly-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-  --nuraly-shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
-  --nuraly-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Shadows - Ant Design shadow system */
+  --nuraly-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --nuraly-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --nuraly-shadow-md: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --nuraly-shadow-lg: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-xl: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-2xl: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 
-  /* Focus styles - Light theme */
-  --nuraly-focus-outline: 2px solid #3b82f6;
+  /* Focus styles - Ant Design focus system */
+  --nuraly-focus-outline: 2px solid #1890ff;
   --nuraly-focus-outline-offset: 2px;
-  --nuraly-focus-color: #3b82f6;
-  --nuraly-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  --nuraly-focus-color: #1890ff;
+  --nuraly-focus-ring: 0 0 0 2px rgba(24, 144, 255, 0.2);
 
-  /* Component sizes */
-  --nuraly-size-xs: 1.5rem;    /* 24px */
-  --nuraly-size-sm: 2rem;      /* 32px */
-  --nuraly-size-md: 2.5rem;    /* 40px */
-  --nuraly-size-lg: 3rem;      /* 48px */
-  --nuraly-size-xl: 3.5rem;    /* 56px */
-  --nuraly-size-2xl: 4rem;     /* 64px */
+  /* Component sizes - Ant Design size tokens */
+  --nuraly-size-xs: 24px;      /* 24px - Ant Design xs */
+  --nuraly-size-sm: 32px;      /* 32px - Ant Design sm */
+  --nuraly-size-md: 32px;      /* 32px - Ant Design default */
+  --nuraly-size-lg: 40px;      /* 40px - Ant Design lg */
+  --nuraly-size-xl: 48px;      /* 48px - Ant Design xl */
+  --nuraly-size-2xl: 56px;     /* 56px */
 
   /* Z-index scale */
   --nuraly-z-dropdown: 1000;
