@@ -8,9 +8,10 @@
 
 /* Import component-specific themes */
 @import './button/index.css';
+@import './input/light.css';
+@import './input/dark.css';
 
 /* TODO: Import other component themes as they are created
-@import './input/index.css';
 @import './card/index.css';
 @import './modal/index.css';
 @import './dropdown/index.css';
