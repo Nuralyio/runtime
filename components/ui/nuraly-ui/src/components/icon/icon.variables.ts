@@ -52,9 +52,10 @@ export const styleVariables = css`
   
   /**
    * Dark theme styles using data-theme attribute on the SVG element
-   * These override the light theme defaults when data-theme="dark" is applied
+   * These override the light theme defaults when data-theme="dark" or data-theme="carbon-dark" is applied
    */
-  .svg-icon[data-theme="dark"] {
+  .svg-icon[data-theme="dark"],
+  .svg-icon[data-theme="carbon-dark"] {
     --nuraly-icon-local-color: #ffffff;
     --nuraly-icon-local-hover-color: #78a9ff;
     --nuraly-icon-local-active-color: #a6c8ff;
