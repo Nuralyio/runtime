@@ -595,6 +595,16 @@ const inputStyle = css`
   }
 
   /* 
+   * Input prefix wrapper styling
+   * Centers the prefix content vertically and horizontally
+   */
+  .input-prefix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 
    * Prefix slot styling
    * Applied to slotted prefix content (icons, text, etc.)
    */
@@ -605,6 +615,16 @@ const inputStyle = css`
     color: var(--nuraly-input-prefix-color, var(--nuraly-prefix-color));
     font-size: var(--nuraly-input-prefix-font-size, var(--nuraly-prefix-font-size));
     flex-shrink: 0;
+  }
+
+  /* 
+   * Input suffix wrapper styling
+   * Centers the suffix content vertically and horizontally
+   */
+  .input-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* 
