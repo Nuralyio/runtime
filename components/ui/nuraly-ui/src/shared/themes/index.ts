@@ -15,16 +15,6 @@
  *   <nr-button type="primary">Carbon Dark Button</nr-button>
  * </div>
  * 
- * <!-- Apply Polaris Design System Light -->
- * <div data-theme="polaris-light">
- *   <nr-button type="primary">Polaris Light Button</nr-button>
- * </div>
- * 
- * <!-- Apply Polaris Design System Dark -->
- * <div data-theme="polaris-dark">
- *   <nr-button type="primary">Polaris Dark Button</nr-button>
- * </div>
- * 
  * <!-- Use default theme light -->
  * <div data-theme="default-light">
  *   <nr-button type="primary">Default Light Button</nr-button>
@@ -41,8 +31,6 @@
  * // In your app entry point
  * import './themes/carbon.css'; // for Carbon theme
  * // OR
- * import './themes/polaris.css'; // for Polaris theme
- * // OR
  * import './themes/default.css'; // for default theme
  * ```
  */
@@ -51,22 +39,18 @@ export const THEME_FILES = {
   // Main theme files (import complete themes with all components)
   default: './default.css',
   carbon: './carbon.css',
-  polaris: './polaris.css',
   
   // Individual theme folders (for granular imports)
   'default-folder': './default/index.css',
   'carbon-folder': './carbon/index.css',
-  'polaris-folder': './polaris/index.css',
   
   // Component-specific theme files (for component-only imports)
   'default-button': './default/button/index.css',
   'carbon-button': './carbon/button/index.css',
-  'polaris-button': './polaris/button/index.css',
   
   // Core theme variables only (no component styles)
   'default-core': './default/theme.css',
-  'carbon-core': './carbon/theme.css',
-  'polaris-core': './polaris/theme.css'
+  'carbon-core': './carbon/theme.css'
 } as const;
 
 export type ThemeName = keyof typeof THEME_FILES;
@@ -76,8 +60,6 @@ export const THEME_VARIANTS = {
   'default-dark': 'Default Dark',
   'carbon-light': 'Carbon Light',
   'carbon-dark': 'Carbon Dark',
-  'polaris-light': 'Polaris Light',
-  'polaris-dark': 'Polaris Dark',
   // Backward compatibility
   'light': 'Default Light',
   'dark': 'Default Dark'
@@ -136,8 +118,6 @@ export function toggleThemeVariant(element: HTMLElement): void {
     'default-dark': 'default-light',
     'carbon-light': 'carbon-dark',
     'carbon-dark': 'carbon-light',
-    'polaris-light': 'polaris-dark',
-    'polaris-dark': 'polaris-light',
     'light': 'dark',
     'dark': 'light'
   };
