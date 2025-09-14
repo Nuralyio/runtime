@@ -13,7 +13,7 @@ import {LitElement} from 'lit';
  */
 export interface ThemeAware {
   currentTheme: 'light' | 'dark';
-  currentDesignSystem: 'carbon' | 'polaris' | 'default';
+  currentDesignSystem: 'carbon' | 'default';
 }
 
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -79,12 +79,12 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
      * Gets the current design system by checking design-system attribute in DOM hierarchy
      * Falls back to 'carbon' as default
      */
-    get currentDesignSystem(): 'carbon' | 'polaris' | 'default' {
+    get currentDesignSystem(): 'carbon' | 'default' {
       // Check for design-system attribute starting from this element and going up
       const designSystem = this.closest('[design-system]')?.getAttribute('design-system') ||
                           document.documentElement.getAttribute('design-system');
       
-      if (designSystem === 'carbon' || designSystem === 'polaris') {
+      if (designSystem === 'carbon') {
         return designSystem;
       }
       
@@ -166,12 +166,12 @@ export function detectTheme(element: Element): 'light' | 'dark' {
  * @param element - The element to start detection from
  * @returns The detected design system
  */
-export function detectDesignSystem(element: Element): 'carbon' | 'polaris' | 'default' {
+export function detectDesignSystem(element: Element): 'carbon' | 'default' {
   // Check for design-system attribute starting from this element and going up
   const designSystem = element.closest('[design-system]')?.getAttribute('design-system') ||
                       document.documentElement.getAttribute('design-system');
   
-  if (designSystem === 'carbon' || designSystem === 'polaris') {
+  if (designSystem === 'carbon') {
     return designSystem;
   }
   

@@ -17,7 +17,7 @@ const meta: Meta = {
           
           <h2>Features</h2>
           <ul>
-            <li><strong>Theme Support:</strong> Multiple design systems (Default, Carbon, Polaris)</li>
+            <li><strong>Theme Support:</strong> Multiple design systems (Default, Carbon)</li>
             <li><strong>Accessibility:</strong> WCAG 2.1 AA compliance built-in</li>
             <li><strong>Modern Standards:</strong> Built with Lit Element and TypeScript</li>
             <li><strong>Responsive Design:</strong> Mobile-first approach</li>
@@ -118,11 +118,6 @@ export const Overview: Story = {
             <div style="padding: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;" data-theme="carbon">
               <h4 style="margin: 0 0 1rem 0;">Carbon Theme</h4>
               <nr-button variant="primary" size="small">Carbon Button</nr-button>
-            </div>
-            
-            <div style="padding: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;" data-theme="polaris">
-              <h4 style="margin: 0 0 1rem 0;">Polaris Theme</h4>
-              <nr-button variant="primary" size="small">Polaris Button</nr-button>
             </div>
             
           </div>
