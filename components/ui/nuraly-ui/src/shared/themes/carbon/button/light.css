@@ -85,4 +85,24 @@
 
   /* Button separator for fluid buttons */
   --nuraly-color-button-separator: #e0e0e0;
+
+  /* ========================================
+   * CARBON BUTTON PADDING & SPACING
+   * Carbon Design System specific spacing - Direct overrides
+   * ======================================== */
+  
+  /* Carbon button padding - more generous padding for better visual hierarchy */
+  --nuraly-button-padding-vertical: 1rem;      /* 16px */
+  --nuraly-button-padding-horizontal: 1.5rem;  /* 24px */
+  
+  /* Override default button spacing for Carbon theme - use larger values */
+  --nuraly-spacing-2: 1rem;    /* Override vertical padding to 16px */
+  --nuraly-spacing-4: 1.5rem;  /* Override horizontal padding to 24px */
+  
+  /* For medium size specifically */
+  --nuraly-size-md: 3.5rem;    /* Increase button height to 56px */
+  
+  /* Carbon icon spacing and alignment */
+  --nuraly-button-icon-spacing: 0.5rem;  /* 8px gap between icon and text */
+  --nuraly-button-icon-size: 1rem;       /* 16px icon size */
 }

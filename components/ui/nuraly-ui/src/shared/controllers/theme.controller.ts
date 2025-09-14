@@ -43,13 +43,12 @@ export class ThemeController implements ReactiveController {
   }
 
   /**
-   * Get the theme system (default, carbon, polaris)
+   * Get the theme system (default, carbon)
    */
   get themeSystem(): string {
     if (!this._currentTheme) return 'default';
     
     if (this._currentTheme.startsWith('carbon')) return 'carbon';
-    if (this._currentTheme.startsWith('polaris')) return 'polaris';
     return 'default';
   }
 
@@ -147,8 +146,6 @@ export class ThemeController implements ReactiveController {
       'default-dark': 'default-light',
       'carbon-light': 'carbon-dark',
       'carbon-dark': 'carbon-light',
-      'polaris-light': 'polaris-dark',
-      'polaris-dark': 'polaris-light',
       'light': 'dark',
       'dark': 'light'
     };

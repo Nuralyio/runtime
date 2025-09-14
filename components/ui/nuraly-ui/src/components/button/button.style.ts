@@ -72,17 +72,25 @@ export const buttonStyles = css`
       flex-shrink: 0;
       width: 1rem;
       height: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      /* Better text alignment */
+      vertical-align: middle;
+      line-height: 1;
       /* Ensure icon inherits text color */
       color: inherit;
     }
 
-    /* Icon spacing */
-    &:has(nr-icon:first-child:not(:last-child)) {
-      gap: 0.5rem;
-    }
-
-    &:has(nr-icon:last-child:not(:first-child)) {
-      gap: 0.5rem;
+    /* Icon spacing - use gap for cleaner spacing */
+    gap: 0.5rem;
+    
+    /* Ensure proper alignment of content */
+    #container, [part="container"] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: inherit;
     }
   }
 
@@ -385,6 +393,82 @@ export const buttonStyles = css`
 
   [data-theme="carbon-dark"] :host([type="danger"]) .ripple {
     background: rgba(22, 22, 22, 0.4); /* Dark ripple for light buttons */
+  }
+
+  /* ========================================
+   * CARBON THEME SPECIFIC STYLING
+   * Enhanced padding and icon centering for Carbon Design System
+   * ======================================== */
+  
+  /* Carbon theme button styling - apply to all carbon themes */
+  :host([data-theme*="carbon"]) button,
+  [data-theme*="carbon"] :host button {
+    /* Better baseline alignment for icon and text */
+    align-items: center;
+    
+    /* Enhanced icon alignment and spacing for Carbon */
+    nr-icon {
+      width: var(--nuraly-button-icon-size, 1rem);
+      height: var(--nuraly-button-icon-size, 1rem);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      /* Perfect vertical alignment with text baseline */
+      vertical-align: middle;
+      line-height: 1;
+    }
+    
+    /* Icon spacing for Carbon theme - improved approach */
+    gap: var(--nuraly-button-icon-spacing, var(--nuraly-spacing-03, 0.5rem));
+  }
+  
+  /* Specific Carbon theme selectors for better targeting */
+  [data-theme="carbon-light"] nr-button button,
+  [data-theme="carbon-dark"] nr-button button,
+  [data-theme="carbon"] nr-button button {
+    /* Better baseline alignment for icon and text */
+    align-items: center;
+    
+    /* Enhanced icon alignment and spacing for Carbon */
+    nr-icon {
+      width: var(--nuraly-button-icon-size, 1rem);
+      height: var(--nuraly-button-icon-size, 1rem);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      /* Perfect vertical alignment with text baseline */
+      vertical-align: middle;
+      line-height: 1;
+      /* Slight adjustment for perfect optical centering */
+      margin-top: -1px;
+    }
+    
+    /* Target the SVG inside nr-icon for better alignment */
+    nr-icon svg {
+      display: block;
+      margin: 0 auto;
+    }
+    
+    /* Icon spacing for Carbon theme */
+    gap: var(--nuraly-button-icon-spacing, var(--nuraly-spacing-03, 0.5rem));
+    
+    /* Ensure text is also properly centered */
+    span#container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      line-height: 1;
+    }
+    
+    /* Ensure slot content aligns properly */
+    slot#slot {
+      display: inline-block;
+      line-height: inherit;
+    }
   }
 `;
 

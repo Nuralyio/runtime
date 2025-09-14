@@ -481,8 +481,8 @@ export const IconButton: Story = {
   },
   render: () => html`
     <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-      <nr-button type="primary" .icon="${['add']}">Add item</nr-button>
-      <nr-button type="secondary" .icon="${['edit']}">Edit</nr-button>
+      <nr-button type="primary" .icon="${['plus']}">Add item</nr-button>
+      <nr-button type="secondary" .icon="${['pen']}">Edit</nr-button>
       <nr-button type="default" .icon="${['download']}">Download</nr-button>
       <nr-button type="danger" .icon="${['trash']}">Delete</nr-button>
       <nr-button type="ghost" .icon="${['external-link']}">Launch</nr-button>
@@ -591,8 +591,8 @@ export const EnhancedIcons: Story = {
       <div>
         <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Simple String Icons (Backward Compatible)</h4>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <nr-button type="primary" .icon="${['add']}">Add Simple</nr-button>
-          <nr-button type="secondary" .icon="${['edit']}">Edit Simple</nr-button>
+          <nr-button type="primary" .icon="${['plus']}">Add Simple</nr-button>
+          <nr-button type="secondary" .icon="${['pen']}">Edit Simple</nr-button>
         </div>
       </div>
       
