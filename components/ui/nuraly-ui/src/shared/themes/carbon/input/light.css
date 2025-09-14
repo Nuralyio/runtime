@@ -4,8 +4,7 @@
  */
 
 :root,
-[data-theme="carbon-light"],
-[data-theme="light"] {
+[data-theme="carbon-light"]{
   /* ========================================
    * INPUT VARIABLES - CARBON LIGHT THEME
    * ======================================== */
