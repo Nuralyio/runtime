@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement} from 'lit';
+import { LitElement } from 'lit';
 
 /**
  * Theme detection and management mixin for Lit components

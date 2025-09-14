@@ -70,8 +70,8 @@ export const buttonStyles = css`
     /* Icon styling */
     nr-icon {
       flex-shrink: 0;
-      width: 1rem;
-      height: 1rem;
+      width: var(--nuraly-button-icon-size, 1rem);
+      height: var(--nuraly-button-icon-size, 1rem);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -80,6 +80,8 @@ export const buttonStyles = css`
       line-height: 1;
       /* Ensure icon inherits text color */
       color: inherit;
+      /* Override any size attribute with CSS variable */
+      font-size: var(--nuraly-button-icon-size, 1rem) !important;
     }
 
     /* Icon spacing - use gap for cleaner spacing */
