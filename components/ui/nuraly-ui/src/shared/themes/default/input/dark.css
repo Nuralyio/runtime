@@ -1,0 +1,108 @@
+/**
+ * Ant Design Theme - Input Component - Dark Variant
+ * Input-specific CSS variables based on Ant Design v5 dark theme specifications
+ */
+
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * INPUT VARIABLES - ANT DESIGN DARK THEME
+   * ======================================== */
+
+  /* Base input styling - Ant Design dark style */
+  --nuraly-color-input-background: #141414;
+  --nuraly-color-input-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-placeholder: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-label: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-helper-text: rgba(255, 255, 255, 0.45);
+
+  /* Input borders - Ant Design dark outlined style */
+  --nuraly-color-input-border: #434343;
+  --nuraly-color-input-border-bottom: #434343;
+  --nuraly-color-input-border-focus: #1890ff;
+  --nuraly-color-input-border-hover: #40a9ff;
+  --nuraly-border-width-input: 1px;
+  --nuraly-border-radius-input: 6px;
+
+  /* Input states - Ant Design dark */
+  --nuraly-color-input-disabled-background: rgba(255, 255, 255, 0.08);
+  --nuraly-color-input-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-placeholder: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-label: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-helper-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-border: #434343;
+
+  /* Error states - Ant Design dark error red */
+  --nuraly-color-input-error-border: #ff4d4f;
+  --nuraly-color-input-error-text: #ff4d4f;
+  --nuraly-color-input-error-icon: #ff4d4f;
+  --nuraly-color-input-error-background: #2a1215;
+
+  /* Warning states - Ant Design dark warning orange */
+  --nuraly-color-input-warning-border: #faad14;
+  --nuraly-color-input-warning-text: #faad14;
+  --nuraly-color-input-warning-icon: #faad14;
+  --nuraly-color-input-warning-background: #2b2111;
+
+  /* Input sizing - Ant Design (same as light) */
+  --nuraly-size-input-small-height: 24px;
+  --nuraly-size-input-medium-height: 32px;
+  --nuraly-size-input-large-height: 40px;
+
+  /* Input padding - Ant Design (same as light) */
+  --nuraly-spacing-input-small-vertical: 0px;
+  --nuraly-spacing-input-small-horizontal: 7px;
+  --nuraly-spacing-input-medium-vertical: 4px;
+  --nuraly-spacing-input-medium-horizontal: 11px;
+  --nuraly-spacing-input-large-vertical: 6px;
+  --nuraly-spacing-input-large-horizontal: 11px;
+
+  /* Input typography - Ant Design (same as light) */
+  --nuraly-font-family-input: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --nuraly-font-size-input: 14px;
+  --nuraly-font-size-input-label: 14px;
+  --nuraly-font-size-input-helper: 14px;
+  --nuraly-font-size-input-placeholder: 14px;
+  --nuraly-font-size-input-small: 14px;
+  --nuraly-font-size-input-large: 16px;
+
+  /* Input icons - Ant Design dark */
+  --nuraly-color-input-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-icon-hover: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-password-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-calendar-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-copy-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-clear-icon: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-number-icons: rgba(255, 255, 255, 0.45);
+  --nuraly-size-input-icon: 14px;
+
+  /* Addons and prefix/suffix - Ant Design dark */
+  --nuraly-color-input-addon-background: rgba(255, 255, 255, 0.04);
+  --nuraly-color-input-addon-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-addon-border: #434343;
+  --nuraly-color-input-prefix-text: rgba(255, 255, 255, 0.65);
+  --nuraly-color-input-suffix-text: rgba(255, 255, 255, 0.65);
+
+  /* Input variants - dark */
+  --nuraly-color-input-outlined-border: #434343;
+  --nuraly-color-input-outlined-background: #141414;
+  --nuraly-border-radius-input-outlined: 6px;
+
+  --nuraly-color-input-filled-background: rgba(255, 255, 255, 0.04);
+  --nuraly-color-input-filled-border: #434343;
+  --nuraly-color-input-filled-border-bottom: #434343;
+  --nuraly-border-radius-input-filled: 6px;
+
+  /* Input focus states - Ant Design dark */
+  --nuraly-shadow-input-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  --nuraly-shadow-input-error-focus: 0 0 0 2px rgba(255, 77, 79, 0.2);
+  --nuraly-shadow-input-warning-focus: 0 0 0 2px rgba(250, 173, 20, 0.2);
+
+  /* Ant Design spacing values (same as light) */
+  --nuraly-spacing-input-label-bottom: 8px;
+  --nuraly-spacing-input-helper-top: 4px;
+  --nuraly-spacing-input-icon: 4px;
+
+  /* Input transitions - Ant Design (same as light) */
+  --nuraly-transition-input: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}

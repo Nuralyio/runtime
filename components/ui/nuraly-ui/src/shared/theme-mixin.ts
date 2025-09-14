@@ -12,7 +12,7 @@ import { LitElement } from 'lit';
  * Supports multiple design systems (Carbon, Polaris, etc.)
  */
 export interface ThemeAware {
-  currentTheme: 'light' | 'dark';
+  currentTheme: string;
   currentDesignSystem: 'carbon' | 'default';
 }
 
@@ -57,13 +57,14 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
     /**
      * Gets the current theme by checking data-theme attribute in DOM hierarchy
      * Falls back to system preference if no data-theme is found
+     * Now supports all theme variants: light, dark, carbon-light, carbon-dark, default, default-dark
      */
-    get currentTheme(): 'light' | 'dark' {
+    get currentTheme(): string {
       // Check for data-theme attribute starting from this element and going up
       const dataTheme = this.closest('[data-theme]')?.getAttribute('data-theme') ||
                        document.documentElement.getAttribute('data-theme');
       
-      if (dataTheme === 'dark' || dataTheme === 'light') {
+      if (dataTheme) {
         return dataTheme;
       }
 

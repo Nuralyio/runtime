@@ -1,5 +1,4 @@
 import { css } from 'lit';
-import { styleVariables } from './input.style.variable.js';
 
 /**
  * Input component styles for the Hybrid UI Library
@@ -25,21 +24,69 @@ const inputStyle = css`
   :host {
     display: flex;
     flex-direction: column;
-    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
+    font-family: var(--nuraly-font-family-input, 'IBM Plex Sans', ui-sans-serif, system-ui);
   }
 
   /* 
    * Base input wrapper and input element styles
    * Background applied to wrapper to cover entire container including addons
-   * Uses CSS custom properties with fallbacks for comprehensive theming support
-   * Properties follow the pattern: --nuraly-input-{property}, --nuraly-input-local-{property}
+   * Uses theme CSS custom properties for comprehensive theming support
    */
   .input-wrapper {
-    background-color: var(--nuraly-input-background-color, var(--nuraly-input-local-background-color));
+    background-color: var(--nuraly-color-input-background, #ffffff);
+  }
+
+  /* Carbon Design System wrapper override */
+  html[data-theme="carbon-light"] nr-input .input-wrapper,
+  html[data-theme="carbon"] nr-input .input-wrapper,
+  html[data-theme="light"] nr-input .input-wrapper,
+  html[data-theme="default"] nr-input .input-wrapper,
+  body[data-theme="carbon-light"] nr-input .input-wrapper,
+  body[data-theme="carbon"] nr-input .input-wrapper,
+  body[data-theme="light"] nr-input .input-wrapper,
+  body[data-theme="default"] nr-input .input-wrapper,
+  [data-theme="carbon-light"] nr-input .input-wrapper,
+  [data-theme="carbon"] nr-input .input-wrapper,
+  [data-theme="light"] nr-input .input-wrapper,
+  [data-theme="default"] nr-input .input-wrapper,
+  .input-wrapper[data-theme="carbon-light"],
+  .input-wrapper[data-theme="carbon"],
+  .input-wrapper[data-theme="light"],
+  .input-wrapper[data-theme="default"] {
+    background-color: #f4f4f4 !important;
+  }
+
+  /* Carbon Dark Design System wrapper override */
+  html[data-theme="carbon-dark"] nr-input .input-wrapper,
+  html[data-theme="dark"] nr-input .input-wrapper,
+  html[data-theme="default-dark"] nr-input .input-wrapper,
+  body[data-theme="carbon-dark"] nr-input .input-wrapper,
+  body[data-theme="dark"] nr-input .input-wrapper,
+  body[data-theme="default-dark"] nr-input .input-wrapper,
+  [data-theme="carbon-dark"] nr-input .input-wrapper,
+  [data-theme="dark"] nr-input .input-wrapper,
+  [data-theme="default-dark"] nr-input .input-wrapper,
+  .input-wrapper[data-theme="carbon-dark"],
+  .input-wrapper[data-theme="dark"],
+  .input-wrapper[data-theme="default-dark"] {
+    background-color: #393939 !important;
   }
 
   #input-container > input {
     background-color: transparent;
+    border: none;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    
+    /* Typography from theme */
+    font-family: var(--nuraly-font-family-input, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto);
+    font-size: var(--nuraly-font-size-input, 14px);
+    color: var(--nuraly-color-input-text, rgba(0, 0, 0, 0.88));
+    
+    /* Padding from theme */
+    padding: var(--nuraly-spacing-input-medium-vertical, 4px) var(--nuraly-spacing-input-medium-horizontal, 11px);
   }
 
   /* 
@@ -47,12 +94,13 @@ const inputStyle = css`
    * Applied when input is disabled - removes interactivity and applies muted colors
    */
   :host([disabled]) .input-wrapper {
-    background-color: var(--nuraly-input-disabled-background-color, var(--nuraly-input-local-disabled-background-color));
+    background-color: var(--nuraly-color-input-disabled-background, #f4f4f4);
   }
 
   :host([disabled]) #input-container > input {
     background-color: transparent;
     cursor: not-allowed;
+    color: var(--nuraly-color-input-disabled-text, rgba(0, 0, 0, 0.25));
   }
 
   /* 
@@ -69,9 +117,9 @@ const inputStyle = css`
    * Customizable placeholder text appearance
    */
   ::placeholder {
-    color: var(--nuraly-input-placeholder-color, var(--nuraly-input-local-placeholder-color));
-    font-size: var(--nuraly-input-placeholder-font-size, var(--nuraly-input-local-placeholder-font-size));
-    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
+    color: var(--nuraly-color-input-placeholder, #a8a8a8);
+    font-size: var(--nuraly-font-size-input-placeholder, 14px);
+    font-family: var(--nuraly-font-family-input, 'IBM Plex Sans', ui-sans-serif, system-ui);
   }
 
   /* 
@@ -79,7 +127,7 @@ const inputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) ::placeholder {
-    color: var(--nuraly-input-disabled-placeholder-color, var(--nuraly-input-local-disabled-placeholder-color));
+    color: var(--nuraly-color-input-disabled-placeholder, #c6c6c6);
   }
 
   /* ========================================
@@ -88,38 +136,38 @@ const inputStyle = css`
 
   /* Warning state icon */
   #warning-icon {
-    --nuraly-icon-color: var(--nuraly-input-warning-icon-color, var(--nuraly-input-local-warning-icon-color));
+    --nuraly-icon-color: var(--nuraly-color-input-warning-icon, #f1c21b);
   }
 
   /* Error state icon */
   #error-icon {
-    --nuraly-icon-color: var(--nuraly-input-error-icon-color, var(--nuraly-input-local-error-icon-color));
+    --nuraly-icon-color: var(--nuraly-color-input-error-icon, #da1e28);
   }
 
   /* Calendar input type icon */
   #calendar-icon {
-    --nuraly-icon-color: var(--nuraly-input-calendar-icon-color, var(--nuraly-input-local-calendar-icon-color));
+    --nuraly-icon-color: var(--nuraly-color-input-calendar-icon, #161616);
   }
 
   /* Password toggle icon */
   #password-icon {
-    padding-left: var(--nuraly-input-password-icon-padding-left, var(--nuraly-input-local-password-icon-padding-left));
-    padding-right: var(--nuraly-input-password-icon-padding-right, var(--nuraly-input-local-password-icon-padding-right));
+    padding-left: var(--nuraly-input-password-icon-padding-left, var(--nuraly-password-icon-padding-left));
+    padding-right: var(--nuraly-input-password-icon-padding-right, var(--nuraly-password-icon-padding-right));
     cursor: pointer;
-    --nuraly-icon-color: var(--nuraly-input-password-icon-color, var(--nuraly-input-local-password-icon-color));
+    --nuraly-icon-color: var(--nuraly-color-input-password-icon, #161616);
   }
 
   /* Copy functionality icon */
   #copy-icon {
-    padding-right: var(--nuraly-input-copy-icon-padding-right, var(--nuraly-input-local-copy-icon-padding-right));
-    --nuraly-icon-color: var(--nuraly-input-copy-icon-color, var(--nuraly-input-local-copy-icon-color));
+    padding-right: var(--nuraly-input-copy-icon-padding-right, var(--nuraly-copy-icon-padding-right));
+    --nuraly-icon-color: var(--nuraly-color-input-copy-icon, #161616);
     cursor: pointer;
   }
 
   /* Clear functionality icon */
   #clear-icon {
-    padding-right: var(--nuraly-input-clear-icon-padding-right, var(--nuraly-input-local-clear-icon-padding-right));
-    --nuraly-icon-color: var(--nuraly-input-clear-icon-color, var(--nuraly-input-local-clear-icon-color));
+    padding-right: var(--nuraly-input-clear-icon-padding-right, var(--nuraly-clear-icon-padding-right));
+    --nuraly-icon-color: var(--nuraly-color-input-clear-icon, #161616);
     cursor: pointer;
   }
 
@@ -136,25 +184,25 @@ const inputStyle = css`
     right: 0;
     top: 0;
     height: 100%;
-    width: var(--nuraly-input-number-icons-container-width, var(--nuraly-input-local-number-icons-container-width));
-    padding-right: var(--nuraly-input-number-icons-container-padding-right, var(--nuraly-input-local-number-icons-container-padding-right));
+    width: var(--nuraly-input-number-icons-container-width, var(--nuraly-number-icons-container-width));
+    padding-right: var(--nuraly-input-number-icons-container-padding-right, var(--nuraly-number-icons-container-padding-right));
   }
 
   /* Individual number icons styling */
   #number-icons nr-icon {
-    --nuraly-icon-color: var(--nuraly-input-number-icons-color, var(--nuraly-input-local-number-icons-color));
-    padding-left: var(--nuraly-input-number-icons-padding-left, var(--nuraly-input-local-number-icons-padding-left));
-    padding-right: var(--nuraly-input-number-icons-padding-right, var(--nuraly-input-local-number-icons-padding-right));
-    width: var(--nuraly-input-number-icons-width, var(--nuraly-input-local-number-icons-width));
-    height: var(--nuraly-input-number-icons-height, var(--nuraly-input-local-number-icons-height));
+    --nuraly-icon-color: var(--nuraly-color-input-number-icons, #161616);
+    padding-left: var(--nuraly-input-number-icons-padding-left, var(--nuraly-number-icons-padding-left));
+    padding-right: var(--nuraly-input-number-icons-padding-right, var(--nuraly-number-icons-padding-right));
+    width: var(--nuraly-input-number-icons-width, var(--nuraly-number-icons-width));
+    height: var(--nuraly-input-number-icons-height, var(--nuraly-number-icons-height));
   }
 
   /* Number icons separator styling */
   #icons-separator {
-    color: var(--nuraly-input-number-icons-separator-color, var(--nuraly-input-local-number-icons-separator-color));
-    padding-bottom: var(--nuraly-input-number-icons-separator-padding-bottom, var(--nuraly-input-local-number-icons-separator-padding-bottom));
-    padding-left: var(--nuraly-input-number-icons-separator-padding-left, var(--nuraly-input-local-number-icons-separator-padding-left));
-    padding-right: var(--nuraly-input-number-icons-separator-padding-right, var(--nuraly-input-local-number-icons-separator-padding-right));
+    color: var(--nuraly-input-number-icons-separator-color, var(--nuraly-number-icons-separator-color));
+    padding-bottom: var(--nuraly-input-number-icons-separator-padding-bottom, var(--nuraly-number-icons-separator-padding-bottom));
+    padding-left: var(--nuraly-input-number-icons-separator-padding-left, var(--nuraly-number-icons-separator-padding-left));
+    padding-right: var(--nuraly-input-number-icons-separator-padding-right, var(--nuraly-number-icons-separator-padding-right));
   }
 
   /* 
@@ -168,7 +216,7 @@ const inputStyle = css`
   :host([disabled]) #calendar-icon,
   :host([disabled]) #copy-icon,
   :host([disabled]) #clear-icon {
-    opacity: var(--nuraly-input-disabled-icon-opacity, var(--nuraly-input-local-disabled-icon-opacity));
+    opacity: var(--nuraly-input-disabled-icon-opacity, var(--nuraly-disabled-icon-opacity));
   }
 
   /* Disabled icons cursor override */
@@ -198,16 +246,16 @@ const inputStyle = css`
    * Styled to visually connect with input
    */
   .input-addon-before {
-    background-color: var(--nuraly-input-addon-background-color, var(--nuraly-input-local-addon-background-color));
-    border: var(--nuraly-input-border, var(--nuraly-input-local-border));
+    background-color: var(--nuraly-input-addon-background-color, var(--nuraly-addon-background-color));
+    border: var(--nuraly-input-border, var(--nuraly-border));
     border-right: none;
-    border-top-left-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
-    border-bottom-left-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
-    padding: var(--nuraly-input-addon-padding, var(--nuraly-input-local-addon-padding));
+    border-top-left-radius: var(--nuraly-input-border-radius, var(--nuraly-border-radius));
+    border-bottom-left-radius: var(--nuraly-input-border-radius, var(--nuraly-border-radius));
+    padding: var(--nuraly-input-addon-padding, var(--nuraly-addon-padding));
     display: flex;
     align-items: center;
-    color: var(--nuraly-input-addon-color, var(--nuraly-input-local-addon-color));
-    font-size: var(--nuraly-input-font-size, var(--nuraly-input-local-font-size));
+    color: var(--nuraly-input-addon-color, var(--nuraly-addon-color));
+    font-size: var(--nuraly-input-font-size, var(--nuraly-font-size));
     white-space: nowrap;
     min-width: 0; /* Allow shrinking */
     flex-shrink: 0; /* Prevent shrinking */
@@ -218,16 +266,16 @@ const inputStyle = css`
    * Styled to visually connect with input
    */
   .input-addon-after {
-    background-color: var(--nuraly-input-addon-background-color, var(--nuraly-input-local-addon-background-color));
-    border: var(--nuraly-input-border, var(--nuraly-input-local-border));
+    background-color: var(--nuraly-input-addon-background-color, var(--nuraly-addon-background-color));
+    border: var(--nuraly-input-border, var(--nuraly-border));
     border-left: none;
-    border-top-right-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
-    border-bottom-right-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius));
-    padding: var(--nuraly-input-addon-padding, var(--nuraly-input-local-addon-padding));
+    border-top-right-radius: var(--nuraly-input-border-radius, var(--nuraly-border-radius));
+    border-bottom-right-radius: var(--nuraly-input-border-radius, var(--nuraly-border-radius));
+    padding: var(--nuraly-input-addon-padding, var(--nuraly-addon-padding));
     display: flex;
     align-items: center;
-    color: var(--nuraly-input-addon-color, var(--nuraly-input-local-addon-color));
-    font-size: var(--nuraly-input-font-size, var(--nuraly-input-local-font-size));
+    color: var(--nuraly-input-addon-color, var(--nuraly-addon-color));
+    font-size: var(--nuraly-input-font-size, var(--nuraly-font-size));
     white-space: nowrap;
     min-width: 0; /* Allow shrinking */
     flex-shrink: 0; /* Prevent shrinking */
@@ -251,39 +299,156 @@ const inputStyle = css`
 
   /* 
    * Main input container element
-   * Uses CSS custom properties for comprehensive border and layout control
+   * Uses theme CSS custom properties for comprehensive border and layout control
    */
   #input-container {
-    /* Border properties - individual sides for granular control */
-    border-bottom: var(--nuraly-input-border-bottom, var(--nuraly-input-local-border-bottom));
-    border-top: var(--nuraly-input-border-top, var(--nuraly-input-local-border-top));
-    border-left: var(--nuraly-input-border-left, var(--nuraly-input-local-border-left));
-    border-right: var(--nuraly-input-border-right, var(--nuraly-input-local-border-right));
+    /* Default Ant Design outlined style */
+    border: var(--nuraly-border-width-input, 1px) solid var(--nuraly-color-input-border, #d9d9d9);
+    border-radius: var(--nuraly-border-radius-input, 6px);
     
-    /* Border radius - individual corners for design flexibility */
-    border-radius: var(--nuraly-input-border-radius, var(--nuraly-input-local-border-radius)); 
-    border-top-left-radius: var(--nuraly-input-border-top-left-radius, var(--nuraly-input-local-border-top-left-radius));
-    border-top-right-radius: var(--nuraly-input-border-top-right-radius, var(--nuraly-input-local-border-top-right-radius));
-    border-bottom-left-radius: var(--nuraly-input-border-bottom-left-radius, var(--nuraly-input-local-border-bottom-left-radius));
-    border-bottom-right-radius: var(--nuraly-input-border-bottom-right-radius, var(--nuraly-input-local-border-bottom-right-radius));
+    /* Background and text styling */
+    background-color: var(--nuraly-color-input-background, #ffffff);
+    color: var(--nuraly-color-input-text, rgba(0, 0, 0, 0.88));
+    font-family: var(--nuraly-font-family-input, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto);
+    font-size: var(--nuraly-font-size-input, 14px);
     
     /* Layout */
     display: flex;
     position: relative;
     flex: 1; /* Take available space in wrapper */
     min-width: 0; /* Allow shrinking below content size */
+    
+    /* Transitions for smooth theme changes */
+    transition: var(--nuraly-transition-input, border-color 0.2s, box-shadow 0.2s);
+  }
+
+  /* Carbon Design System override - Light theme */
+  html[data-theme="carbon-light"] nr-input #input-container,
+  html[data-theme="carbon"] nr-input #input-container,
+  html[data-theme="light"] nr-input #input-container,
+  html[data-theme="default"] nr-input #input-container,
+  body[data-theme="carbon-light"] nr-input #input-container,
+  body[data-theme="carbon"] nr-input #input-container,
+  body[data-theme="light"] nr-input #input-container,
+  body[data-theme="default"] nr-input #input-container,
+  [data-theme="carbon-light"] nr-input #input-container,
+  [data-theme="carbon"] nr-input #input-container,
+  [data-theme="light"] nr-input #input-container,
+  [data-theme="default"] nr-input #input-container,
+  .input-wrapper[data-theme="carbon-light"] #input-container,
+  .input-wrapper[data-theme="carbon"] #input-container,
+  .input-wrapper[data-theme="light"] #input-container,
+  .input-wrapper[data-theme="default"] #input-container {
+    border: 2px solid transparent !important;
+    border-bottom: 2px solid #8d8d8d !important;
+    border-radius: 0 !important;
+    background-color: #f4f4f4 !important;
+    color: #161616 !important;
+  }
+
+  /* Carbon Design System override - Dark theme */
+  html[data-theme="carbon-dark"] nr-input #input-container,
+  html[data-theme="dark"] nr-input #input-container,
+  html[data-theme="default-dark"] nr-input #input-container,
+  body[data-theme="carbon-dark"] nr-input #input-container,
+  body[data-theme="dark"] nr-input #input-container,
+  body[data-theme="default-dark"] nr-input #input-container,
+  [data-theme="carbon-dark"] nr-input #input-container,
+  [data-theme="dark"] nr-input #input-container,
+  [data-theme="default-dark"] nr-input #input-container,
+  .input-wrapper[data-theme="carbon-dark"] #input-container,
+  .input-wrapper[data-theme="dark"] #input-container,
+  .input-wrapper[data-theme="default-dark"] #input-container {
+    border: 2px solid transparent !important;
+    border-bottom: 2px solid #6f6f6f !important;
+    border-radius: 0 !important;
+    background-color: #393939 !important;
+    color: #f4f4f4 !important;
+  }
+
+  /* Carbon input element padding override */
+  html[data-theme="carbon-light"] nr-input #input-container > input,
+  html[data-theme="carbon-dark"] nr-input #input-container > input,
+  html[data-theme="carbon"] nr-input #input-container > input,
+  html[data-theme="dark"] nr-input #input-container > input,
+  html[data-theme="light"] nr-input #input-container > input,
+  html[data-theme="default"] nr-input #input-container > input,
+  html[data-theme="default-dark"] nr-input #input-container > input,
+  body[data-theme="carbon-light"] nr-input #input-container > input,
+  body[data-theme="carbon-dark"] nr-input #input-container > input,
+  body[data-theme="carbon"] nr-input #input-container > input,
+  body[data-theme="dark"] nr-input #input-container > input,
+  body[data-theme="light"] nr-input #input-container > input,
+  body[data-theme="default"] nr-input #input-container > input,
+  body[data-theme="default-dark"] nr-input #input-container > input,
+  [data-theme="carbon-light"] nr-input #input-container > input,
+  [data-theme="carbon-dark"] nr-input #input-container > input,
+  [data-theme="carbon"] nr-input #input-container > input,
+  [data-theme="dark"] nr-input #input-container > input,
+  [data-theme="light"] nr-input #input-container > input,
+  [data-theme="default"] nr-input #input-container > input,
+  [data-theme="default-dark"] nr-input #input-container > input,
+  .input-wrapper[data-theme="carbon-light"] #input-container > input,
+  .input-wrapper[data-theme="carbon-dark"] #input-container > input,
+  .input-wrapper[data-theme="carbon"] #input-container > input,
+  .input-wrapper[data-theme="dark"] #input-container > input,
+  .input-wrapper[data-theme="light"] #input-container > input,
+  .input-wrapper[data-theme="default"] #input-container > input,
+  .input-wrapper[data-theme="default-dark"] #input-container > input {
+    padding: 7px 16px !important;
+  }
+
+  /* Focus state for input container */
+  #input-container:focus-within {
+    border-color: var(--nuraly-color-input-border-focus, #1890ff);
+    box-shadow: var(--nuraly-shadow-input-focus, 0 0 0 2px rgba(24, 144, 255, 0.2));
+    outline: none;
+  }
+
+  /* Carbon focus override */
+  html[data-theme="carbon-light"] nr-input #input-container:focus-within,
+  html[data-theme="carbon-dark"] nr-input #input-container:focus-within,
+  html[data-theme="carbon"] nr-input #input-container:focus-within,
+  html[data-theme="dark"] nr-input #input-container:focus-within,
+  html[data-theme="light"] nr-input #input-container:focus-within,
+  html[data-theme="default"] nr-input #input-container:focus-within,
+  html[data-theme="default-dark"] nr-input #input-container:focus-within,
+  body[data-theme="carbon-light"] nr-input #input-container:focus-within,
+  body[data-theme="carbon-dark"] nr-input #input-container:focus-within,
+  body[data-theme="carbon"] nr-input #input-container:focus-within,
+  body[data-theme="dark"] nr-input #input-container:focus-within,
+  body[data-theme="light"] nr-input #input-container:focus-within,
+  body[data-theme="default"] nr-input #input-container:focus-within,
+  body[data-theme="default-dark"] nr-input #input-container:focus-within,
+  [data-theme="carbon-light"] nr-input #input-container:focus-within,
+  [data-theme="carbon-dark"] nr-input #input-container:focus-within,
+  [data-theme="carbon"] nr-input #input-container:focus-within,
+  [data-theme="dark"] nr-input #input-container:focus-within,
+  [data-theme="light"] nr-input #input-container:focus-within,
+  [data-theme="default"] nr-input #input-container:focus-within,
+  [data-theme="default-dark"] nr-input #input-container:focus-within,
+  .input-wrapper[data-theme="carbon-light"] #input-container:focus-within,
+  .input-wrapper[data-theme="carbon-dark"] #input-container:focus-within,
+  .input-wrapper[data-theme="carbon"] #input-container:focus-within,
+  .input-wrapper[data-theme="dark"] #input-container:focus-within,
+  .input-wrapper[data-theme="light"] #input-container:focus-within,
+  .input-wrapper[data-theme="default"] #input-container:focus-within,
+  .input-wrapper[data-theme="default-dark"] #input-container:focus-within {
+    border: 2px solid #0f62fe !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 
   /* 
-   * Disabled container border styles
+   * Disabled container styles
    * Applied when input is disabled
    */
   :host([disabled]) #input-container {
-    border-bottom: var(--nuraly-input-disabled-border-bottom, var(--nuraly-input-local-disabled-border-bottom));
-    border-top: var(--nuraly-input-disabled-border-top, var(--nuraly-input-local-disabled-border-top));
-    border-left: var(--nuraly-input-disabled-border-left, var(--nuraly-input-local-disabled-border-left));
-    border-right: var(--nuraly-input-disabled-border-right, var(--nuraly-input-local-disabled-border-right));
-    opacity: 0.6;
+    background-color: var(--nuraly-color-input-disabled-background, #f5f5f5);
+    border-color: var(--nuraly-color-input-disabled-border, #d9d9d9);
+    color: var(--nuraly-color-input-disabled-text, rgba(0, 0, 0, 0.25));
+    cursor: not-allowed;
   }
 
   /* ========================================
@@ -295,9 +460,9 @@ const inputStyle = css`
    * Default: light border, focus: blue border
    */
   :host([variant='outlined']) #input-container {
-    border: var(--nuraly-input-outlined-border, var(--nuraly-input-local-outlined-border));
-    border-radius: var(--nuraly-input-outlined-border-radius, var(--nuraly-input-local-outlined-border-radius));
-    background-color: var(--nuraly-input-outlined-background, var(--nuraly-input-local-outlined-background));
+    border: var(--nuraly-input-outlined-border, var(--nuraly-outlined-border));
+    border-radius: var(--nuraly-input-outlined-border-radius, var(--nuraly-outlined-border-radius));
+    background-color: var(--nuraly-input-outlined-background, var(--nuraly-outlined-background));
   }
 
   :host([variant='outlined']) .input-wrapper {
@@ -305,7 +470,7 @@ const inputStyle = css`
   }
 
   :host([variant='outlined']:not([state='error'])) #input-container:focus-within {
-    border: var(--nuraly-input-outlined-focus-border, var(--nuraly-input-local-outlined-focus-border));
+    border: var(--nuraly-input-outlined-focus-border, var(--nuraly-outlined-focus-border));
   }
 
   /* 
@@ -313,9 +478,9 @@ const inputStyle = css`
    * Subtle background with bottom border indication
    */
   :host([variant='filled']) #input-container {
-    background-color: var(--nuraly-input-filled-background, var(--nuraly-input-local-filled-background));
-    border-radius: var(--nuraly-input-filled-border-radius, var(--nuraly-input-local-filled-border-radius));
-    border-bottom: var(--nuraly-input-filled-border-bottom, var(--nuraly-input-local-filled-border-bottom));
+    background-color: var(--nuraly-input-filled-background, var(--nuraly-filled-background));
+    border-radius: var(--nuraly-input-filled-border-radius, var(--nuraly-filled-border-radius));
+    border-bottom: var(--nuraly-input-filled-border-bottom, var(--nuraly-filled-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -326,7 +491,7 @@ const inputStyle = css`
   }
 
   :host([variant='filled']:not([state='error'])) #input-container:focus-within {
-    border-bottom: var(--nuraly-input-filled-focus-border-bottom, var(--nuraly-input-local-filled-focus-border-bottom));
+    border-bottom: var(--nuraly-input-filled-focus-border-bottom, var(--nuraly-filled-focus-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -337,9 +502,9 @@ const inputStyle = css`
    * Clean appearance with focus indication via outline
    */
   :host([variant='borderless']) #input-container {
-    background-color: var(--nuraly-input-borderless-background, var(--nuraly-input-local-borderless-background));
+    background-color: var(--nuraly-input-borderless-background, var(--nuraly-borderless-background));
     border: none;
-    border-radius: var(--nuraly-input-borderless-border-radius, var(--nuraly-input-local-borderless-border-radius));
+    border-radius: var(--nuraly-input-borderless-border-radius, var(--nuraly-borderless-border-radius));
   }
 
   :host([variant='borderless']) .input-wrapper {
@@ -347,7 +512,7 @@ const inputStyle = css`
   }
 
   :host([variant='borderless']:not([state='error'])) #input-container:focus-within {
-    outline: var(--nuraly-input-borderless-focus-outline, var(--nuraly-input-local-borderless-focus-outline));
+    outline: var(--nuraly-input-borderless-focus-outline, var(--nuraly-borderless-focus-outline));
     border: none;
   }
 
@@ -356,7 +521,7 @@ const inputStyle = css`
    * Maintains existing behavior as default
    */
   :host([variant='underlined']) #input-container {
-    border-bottom: var(--nuraly-input-underlined-border-bottom, var(--nuraly-input-local-underlined-border-bottom));
+    border-bottom: var(--nuraly-input-underlined-border-bottom, var(--nuraly-underlined-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -364,7 +529,7 @@ const inputStyle = css`
   }
 
   :host([variant='underlined']:not([state='error'])) #input-container:focus-within {
-    border-bottom: var(--nuraly-input-underlined-focus-border-bottom, var(--nuraly-input-local-underlined-focus-border-bottom));
+    border-bottom: var(--nuraly-input-underlined-focus-border-bottom, var(--nuraly-underlined-focus-border-bottom));
     border-top: none;
     border-left: none;
     border-right: none;
@@ -382,9 +547,9 @@ const inputStyle = css`
     width: 100%;
     border: none;
     outline: none;
-    color: var(--nuraly-input-text-color, var(--nuraly-input-local-text-color));
-    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
-    font-size: var(--nuraly-input-font-size, var(--nuraly-input-local-font-size));
+    color: var(--nuraly-input-text-color, var(--nuraly-text-color));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-font-family));
+    font-size: var(--nuraly-input-font-size, var(--nuraly-font-size));
   }
 
   /* Remove default number input spinners */
@@ -408,13 +573,13 @@ const inputStyle = css`
    * Applied when state='error' and not disabled
    */
   :host(:not([disabled])[state='error']) #input-container {
-    border: var(--nuraly-input-error-border, var(--nuraly-input-local-error-border)) !important;
+    border: var(--nuraly-input-error-border, var(--nuraly-error-border)) !important;
     outline: none !important;
   }
 
   /* Override variant-specific error state styling */
   :host([variant='borderless'][state='error']) #input-container {
-    border: var(--nuraly-input-error-border, var(--nuraly-input-local-error-border)) !important;
+    border: var(--nuraly-input-error-border, var(--nuraly-error-border)) !important;
     outline: none !important;
   }
 
@@ -423,7 +588,7 @@ const inputStyle = css`
     border-top: none !important;
     border-left: none !important;
     border-right: none !important;
-    border-bottom: var(--nuraly-input-error-border, var(--nuraly-input-local-error-border)) !important;
+    border-bottom: var(--nuraly-input-error-border, var(--nuraly-error-border)) !important;
   }
 
   /* 
@@ -433,7 +598,7 @@ const inputStyle = css`
   :host([state='error']) input[type='number'] ~ #number-icons,
   :host([state='warning']) input[type='number'] ~ #number-icons {
     position: static;
-    padding-left: var(--nuraly-input-number-icons-container-padding-left, var(--nuraly-input-local-number-icons-container-padding-left));
+    padding-left: var(--nuraly-input-number-icons-container-padding-left, var(--nuraly-number-icons-container-padding-left));
   }
 
   /* ========================================
@@ -445,9 +610,9 @@ const inputStyle = css`
    * Applied to slotted label elements
    */
   ::slotted([slot='label']) {
-    color: var(--nuraly-input-label-color, var(--nuraly-input-local-label-color));
-    font-size: var(--nuraly-input-label-font-size, var(--nuraly-input-local-label-font-size));
-    padding-bottom: var(--nuraly-input-label-padding-bottom, var(--nuraly-input-local-label-padding-bottom));
+    color: var(--nuraly-input-label-color, var(--nuraly-label-color));
+    font-size: var(--nuraly-input-label-font-size, var(--nuraly-label-font-size));
+    padding-bottom: var(--nuraly-input-label-padding-bottom, var(--nuraly-label-padding-bottom));
   }
 
   /* 
@@ -455,9 +620,9 @@ const inputStyle = css`
    * Applied to slotted helper text elements
    */
   ::slotted([slot='helper-text']) {
-    color: var(--nuraly-input-helper-text-color, var(--nuraly-input-local-helper-text-color));
-    font-size: var(--nuraly-input-helper-text-font-size, var(--nuraly-input-local-helper-text-font-size));
-    padding-top: var(--nuraly-input-helper-text-padding-top, var(--nuraly-input-local-helper-text-padding-top));
+    color: var(--nuraly-input-helper-text-color, var(--nuraly-helper-text-color));
+    font-size: var(--nuraly-input-helper-text-font-size, var(--nuraly-helper-text-font-size));
+    padding-top: var(--nuraly-input-helper-text-padding-top, var(--nuraly-helper-text-padding-top));
     
     /* Prevent text overflow and ensure proper wrapping without affecting parent width */
     word-wrap: break-word;
@@ -477,11 +642,11 @@ const inputStyle = css`
    * Override helper text color based on validation state
    */
   :host([state='error']) ::slotted([slot='helper-text']) {
-    color: var(--nuraly-input-error-helper-text-color, var(--nuraly-input-local-error-helper-text-color));
+    color: var(--nuraly-input-error-helper-text-color, var(--nuraly-error-helper-text-color));
   }
 
   :host([state='warning']) ::slotted([slot='helper-text']) {
-    color: var(--nuraly-input-warning-helper-text-color, var(--nuraly-input-local-warning-helper-text-color));
+    color: var(--nuraly-input-warning-helper-text-color, var(--nuraly-warning-helper-text-color));
   }
 
   /* 
@@ -489,11 +654,11 @@ const inputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) ::slotted([slot='helper-text']) {
-    color: var(--nuraly-input-disabled-helper-text-color, var(--nuraly-input-local-disabled-helper-text-color));
+    color: var(--nuraly-input-disabled-helper-text-color, var(--nuraly-disabled-helper-text-color));
   }
 
   :host([disabled]) ::slotted([slot='label']) {
-    color: var(--nuraly-input-disabled-label-color, var(--nuraly-input-local-disabled-label-color));
+    color: var(--nuraly-input-disabled-label-color, var(--nuraly-disabled-label-color));
   }
 
   /* 
@@ -503,9 +668,9 @@ const inputStyle = css`
   ::slotted([slot='prefix']) {
     display: flex;
     align-items: center;
-    padding-right: var(--nuraly-input-prefix-padding-right, var(--nuraly-input-local-prefix-padding-right));
-    color: var(--nuraly-input-prefix-color, var(--nuraly-input-local-prefix-color));
-    font-size: var(--nuraly-input-prefix-font-size, var(--nuraly-input-local-prefix-font-size));
+    padding-right: var(--nuraly-input-prefix-padding-right, var(--nuraly-prefix-padding-right));
+    color: var(--nuraly-input-prefix-color, var(--nuraly-prefix-color));
+    font-size: var(--nuraly-input-prefix-font-size, var(--nuraly-prefix-font-size));
     flex-shrink: 0;
   }
 
@@ -516,9 +681,9 @@ const inputStyle = css`
   ::slotted([slot='suffix']) {
     display: flex;
     align-items: center;
-    padding-left: var(--nuraly-input-suffix-padding-left, var(--nuraly-input-local-suffix-padding-left));
-    color: var(--nuraly-input-suffix-color, var(--nuraly-input-local-suffix-color));
-    font-size: var(--nuraly-input-suffix-font-size, var(--nuraly-input-local-suffix-font-size));
+    padding-left: var(--nuraly-input-suffix-padding-left, var(--nuraly-suffix-padding-left));
+    color: var(--nuraly-input-suffix-color, var(--nuraly-suffix-color));
+    font-size: var(--nuraly-input-suffix-font-size, var(--nuraly-suffix-font-size));
     flex-shrink: 0;
   }
 
@@ -528,8 +693,8 @@ const inputStyle = css`
    */
   :host([disabled]) ::slotted([slot='prefix']),
   :host([disabled]) ::slotted([slot='suffix']) {
-    opacity: var(--nuraly-input-disabled-icon-opacity, var(--nuraly-input-local-disabled-icon-opacity));
-    color: var(--nuraly-input-disabled-prefix-suffix-color, var(--nuraly-input-local-disabled-prefix-suffix-color));
+    opacity: var(--nuraly-input-disabled-icon-opacity, var(--nuraly-disabled-icon-opacity));
+    color: var(--nuraly-input-disabled-prefix-suffix-color, var(--nuraly-disabled-prefix-suffix-color));
   }
 `;
 
@@ -544,26 +709,42 @@ const sizeInputStyle = css`
 
   /* Large input size variant */
   div[data-size='large'] {
-    padding-top: var(--nuraly-input-large-padding-top, var(--nuraly-input-local-large-padding-top));
-    padding-bottom: var(--nuraly-input-large-padding-bottom, var(--nuraly-input-local-large-padding-bottom));
-    padding-left: var(--nuraly-input-large-padding-left, var(--nuraly-input-local-large-padding-left));
-    padding-right: var(--nuraly-input-large-padding-right, var(--nuraly-input-local-large-padding-right));
+    padding-top: var(--nuraly-input-large-padding-top, var(--nuraly-large-padding-top));
+    padding-bottom: var(--nuraly-input-large-padding-bottom, var(--nuraly-large-padding-bottom));
+    padding-left: var(--nuraly-input-large-padding-left, var(--nuraly-large-padding-left));
+    padding-right: var(--nuraly-input-large-padding-right, var(--nuraly-large-padding-right));
   }
 
   /* Medium input size variant (default) */
   div[data-size='medium'] {
-    padding-top: var(--nuraly-input-medium-padding-top, var(--nuraly-input-local-medium-padding-top));
-    padding-bottom: var(--nuraly-input-medium-padding-bottom, var(--nuraly-input-local-medium-padding-bottom));
-    padding-left: var(--nuraly-input-medium-padding-left, var(--nuraly-input-local-medium-padding-left));
-    padding-right: var(--nuraly-input-medium-padding-right, var(--nuraly-input-local-medium-padding-right));
+    padding-top: var(--nuraly-input-medium-padding-top, var(--nuraly-medium-padding-top));
+    padding-bottom: var(--nuraly-input-medium-padding-bottom, var(--nuraly-medium-padding-bottom));
+    padding-left: var(--nuraly-input-medium-padding-left, var(--nuraly-medium-padding-left));
+    padding-right: var(--nuraly-input-medium-padding-right, var(--nuraly-medium-padding-right));
   }
 
   /* Small input size variant */
   div[data-size='small'] {
-    padding-top: var(--nuraly-input-small-padding-top, var(--nuraly-input-local-small-padding-top));
-    padding-bottom: var(--nuraly-input-small-padding-bottom, var(--nuraly-input-local-small-padding-bottom));
-    padding-left: var(--nuraly-input-small-padding-left, var(--nuraly-input-local-small-padding-left));
-    padding-right: var(--nuraly-input-small-padding-right, var(--nuraly-input-local-small-padding-right));
+    padding-top: var(--nuraly-input-small-padding-top, var(--nuraly-small-padding-top));
+    padding-bottom: var(--nuraly-input-small-padding-bottom, var(--nuraly-small-padding-bottom));
+    padding-left: var(--nuraly-input-small-padding-left, var(--nuraly-small-padding-left));
+    padding-right: var(--nuraly-input-small-padding-right, var(--nuraly-small-padding-right));
+  }
+
+  /* Carbon Design System - Size-specific padding overrides */
+  html[data-theme="carbon-light"] nr-input div[data-size='medium'],
+  html[data-theme="carbon-dark"] nr-input div[data-size='medium'],
+  html[data-theme="carbon"] nr-input div[data-size='medium'],
+  html[data-theme="dark"] nr-input div[data-size='medium'],
+  body[data-theme="carbon-light"] nr-input div[data-size='medium'],
+  body[data-theme="carbon-dark"] nr-input div[data-size='medium'],
+  body[data-theme="carbon"] nr-input div[data-size='medium'],
+  body[data-theme="dark"] nr-input div[data-size='medium'],
+  [data-theme="carbon-light"] div[data-size='medium'],
+  [data-theme="carbon-dark"] div[data-size='medium'],
+  [data-theme="carbon"] div[data-size='medium'],
+  [data-theme="dark"] div[data-size='medium'] {
+    padding: 4px 8px !important;
   }
 
   /* 
@@ -571,16 +752,16 @@ const sizeInputStyle = css`
    * Shows character count and limit information
    */
   .character-count {
-    font-size: var(--nuraly-input-character-count-font-size, var(--nuraly-input-local-character-count-font-size));
-    color: var(--nuraly-input-character-count-color, var(--nuraly-input-local-character-count-color));
+    font-size: var(--nuraly-input-character-count-font-size, var(--nuraly-character-count-font-size));
+    color: var(--nuraly-input-character-count-color, var(--nuraly-character-count-color));
     text-align: right;
-    margin-top: var(--nuraly-input-character-count-margin-top, var(--nuraly-input-local-character-count-margin-top));
-    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
+    margin-top: var(--nuraly-input-character-count-margin-top, var(--nuraly-character-count-margin-top));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-font-family));
   }
 
   /* Character count over limit styling */
   .character-count[data-over-limit] {
-    color: var(--nuraly-input-character-count-over-limit-color, var(--nuraly-input-local-character-count-over-limit-color));
+    color: var(--nuraly-input-character-count-over-limit-color, var(--nuraly-character-count-over-limit-color));
   }
 
   /* ========================================
@@ -592,10 +773,10 @@ const sizeInputStyle = css`
    * Common styles for error and warning messages
    */
   .validation-message {
-    font-size: var(--nuraly-input-validation-message-font-size, var(--nuraly-input-local-validation-message-font-size, 0.875rem));
-    font-family: var(--nuraly-input-font-family, var(--nuraly-input-local-font-family));
-    margin-top: var(--nuraly-input-validation-message-margin-top, var(--nuraly-input-local-validation-message-margin-top, 0.25rem));
-    padding: var(--nuraly-input-validation-message-padding, var(--nuraly-input-local-validation-message-padding, 0));
+    font-size: var(--nuraly-input-validation-message-font-size, var(--nuraly-validation-message-font-size, 0.875rem));
+    font-family: var(--nuraly-input-font-family, var(--nuraly-font-family));
+    margin-top: var(--nuraly-input-validation-message-margin-top, var(--nuraly-validation-message-margin-top, 0.25rem));
+    padding: var(--nuraly-input-validation-message-padding, var(--nuraly-validation-message-padding, 0));
     
     /* Prevent text overflow and ensure proper wrapping without affecting parent width */
     word-wrap: break-word;
@@ -607,7 +788,7 @@ const sizeInputStyle = css`
     width: 0;
     min-width: 100%;
     box-sizing: border-box;
-    line-height: var(--nuraly-input-validation-message-line-height, var(--nuraly-input-local-validation-message-line-height, 1.4));
+    line-height: var(--nuraly-input-validation-message-line-height, var(--nuraly-validation-message-line-height, 1.4));
   }
 
   /* 
@@ -615,7 +796,7 @@ const sizeInputStyle = css`
    * Applied when validation message has error class
    */
   .validation-message.error {
-    color: var(--nuraly-input-error-message-color, var(--nuraly-input-local-error-message-color, var(--nuraly-input-error-color, var(--nuraly-input-local-error-color, #dc2626))));
+    color: var(--nuraly-input-error-message-color, var(--nuraly-error-message-color, var(--nuraly-input-error-color, var(--nuraly-error-color, #dc2626))));
   }
 
   /* 
@@ -623,7 +804,7 @@ const sizeInputStyle = css`
    * Applied when validation message has warning class
    */
   .validation-message.warning {
-    color: var(--nuraly-input-warning-message-color, var(--nuraly-input-local-warning-message-color, var(--nuraly-input-warning-color, var(--nuraly-input-local-warning-color, #d97706))));
+    color: var(--nuraly-input-warning-message-color, var(--nuraly-warning-message-color, var(--nuraly-input-warning-color, var(--nuraly-warning-color, #d97706))));
   }
 
   /* 
@@ -631,8 +812,8 @@ const sizeInputStyle = css`
    * Applied when input is disabled
    */
   :host([disabled]) .validation-message {
-    opacity: var(--nuraly-input-disabled-validation-message-opacity, var(--nuraly-input-local-disabled-validation-message-opacity, 0.6));
-    color: var(--nuraly-input-disabled-validation-message-color, var(--nuraly-input-local-disabled-validation-message-color));
+    opacity: var(--nuraly-input-disabled-validation-message-opacity, var(--nuraly-disabled-validation-message-opacity, 0.6));
+    color: var(--nuraly-input-disabled-validation-message-color, var(--nuraly-disabled-validation-message-color));
   }
 
   /* 
@@ -652,7 +833,7 @@ const sizeInputStyle = css`
    * Applied when async validation is in progress
    */
   .validation-icon.validation-loading {
-    color: var(--nuraly-input-primary-color, var(--nuraly-input-local-primary-color, #3b82f6));
+    color: var(--nuraly-input-primary-color, var(--nuraly-primary-color, #3b82f6));
     animation: validation-hourglass 2s ease-in-out infinite;
     transform-origin: center;
   }
@@ -662,7 +843,7 @@ const sizeInputStyle = css`
    * Applied when validation fails
    */
   .validation-icon.validation-error {
-    color: var(--nuraly-input-error-color, var(--nuraly-input-local-error-color, #dc2626));
+    color: var(--nuraly-input-error-color, var(--nuraly-error-color, #dc2626));
   }
 
   /* 
@@ -670,7 +851,7 @@ const sizeInputStyle = css`
    * Applied when validation has warnings
    */
   .validation-icon.validation-warning {
-    color: var(--nuraly-input-warning-color, var(--nuraly-input-local-warning-color, #d97706));
+    color: var(--nuraly-input-warning-color, var(--nuraly-warning-color, #d97706));
   }
 
   /* 
@@ -678,7 +859,7 @@ const sizeInputStyle = css`
    * Applied when validation passes
    */
   .validation-icon.validation-success {
-    color: var(--nuraly-input-success-color, var(--nuraly-input-local-success-color, #16a34a));
+    color: var(--nuraly-input-success-color, var(--nuraly-success-color, #16a34a));
   }
 
   /* 
@@ -726,4 +907,4 @@ const sizeInputStyle = css`
   */
 `;
 
-export const styles = [inputStyle, sizeInputStyle, styleVariables];
+export const styles = [inputStyle, sizeInputStyle];

@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 import '../icon/index.js';
 import './index.js';
+import '../../shared/themes/carbon/index.css';
+import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'Components/Input',
@@ -453,54 +455,122 @@ export const AddonBeforeAfterExamples: Story = {
 };
 
 export const AllStates: Story = {
+  name: 'All States & Themes',
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 1rem; width: 500px;">
-      <h3>Input States</h3>
-      <nr-input 
-        state="default" 
-        label="Default State" 
-        placeholder="Default input" 
-        value="Normal text"
-        helper-text="This is normal helper text that should use default colors"
-      ></nr-input>
-      <nr-input 
-        state="error" 
-        label="Error State" 
-        placeholder="Error input" 
-        value="Invalid email format"
-        helper-text="This error message should follow error state color and wrap properly even with very long text content that might exceed container width"
-      ></nr-input>
-      <nr-input 
-        state="warning" 
-        label="Warning State" 
-        placeholder="Warning input" 
-        value="Password might be weak"
-        helper-text="This warning message should follow warning state color and wrap properly even with very long text content that might exceed container width"
-      ></nr-input>
+    <div style="display: flex; flex-direction: column; gap: 2rem; width: 100%; max-width: 1000px;">
       
-      <h3>Combined States</h3>
-      <nr-input 
-        state="error" 
-        label="Error + Required" 
-        placeholder="Required field" 
-        required
-        .rules=${[{ required: true, message: 'This field is required and the validation message should follow error state color!' }]}
-        validation-trigger="blur"
-      ></nr-input>
-      <nr-input 
-        state="warning" 
-        label="Warning + Disabled" 
-        placeholder="Disabled field" 
-        disabled
-        helper-text="This is a disabled warning field with helper text"
-      ></nr-input>
-      <nr-input 
-        state="default" 
-        label="Default + Copy" 
-        value="Text to copy" 
-        withCopy
-        helper-text="This field has copy functionality enabled"
-      ></nr-input>
+      <!-- Ant Design Theme (Default) -->
+      <div data-theme="default-light" style="padding: 20px; border: 2px solid #1890ff; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin-top: 0; color: #1890ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;">🎨 Ant Design Theme (Default)</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <nr-input 
+            state="default" 
+            label="Default State" 
+            placeholder="Default input" 
+            value="Normal text"
+            helper-text="Ant Design styled input with clean borders"
+          ></nr-input>
+          <nr-input 
+            state="error" 
+            label="Error State" 
+            placeholder="Error input" 
+            value="Invalid email format"
+            helper-text="Ant Design error state with red accent"
+          ></nr-input>
+          <nr-input 
+            state="warning" 
+            label="Warning State" 
+            placeholder="Warning input" 
+            value="Password might be weak"
+            helper-text="Ant Design warning state with orange accent"
+          ></nr-input>
+          <nr-input 
+            state="default" 
+            label="With Icons" 
+            placeholder="Search..." 
+            withCopy
+            helper-text="Clean Ant Design styling with icons"
+          ></nr-input>
+        </div>
+      </div>
+
+      <!-- Carbon Design Theme -->
+      <div data-theme="carbon-light" style="padding: 20px; border: 2px solid #0f62fe; border-radius: 4px; background: #f4f4f4;">
+        <h3 style="margin-top: 0; color: #0f62fe; font-family: 'IBM Plex Sans', sans-serif;">⚡ Carbon Design Theme</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <nr-input 
+            state="default" 
+            label="Default State" 
+            placeholder="Default input" 
+            value="Normal text"
+            helper-text="Carbon Design System underlined style"
+          ></nr-input>
+          <nr-input 
+            state="error" 
+            label="Error State" 
+            placeholder="Error input" 
+            value="Invalid email format"
+            helper-text="Carbon error state with IBM styling"
+          ></nr-input>
+          <nr-input 
+            state="warning" 
+            label="Warning State" 
+            placeholder="Warning input" 
+            value="Password might be weak"
+            helper-text="Carbon warning state with proper contrast"
+          ></nr-input>
+          <nr-input 
+            state="default" 
+            label="With Icons" 
+            placeholder="Search..." 
+            withCopy
+            helper-text="IBM Carbon Design System styling"
+          ></nr-input>
+        </div>
+      </div>
+
+      <!-- Dark Theme Example -->
+      <div data-theme="default-dark" style="padding: 20px; border: 2px solid #1890ff; border-radius: 8px; background: #141414; color: #fff;">
+        <h3 style="margin-top: 0; color: #40a9ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;">🌙 Dark Theme (Ant Design)</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <nr-input 
+            state="default" 
+            label="Default State" 
+            placeholder="Default input" 
+            value="Normal text"
+            helper-text="Dark theme with proper contrast"
+          ></nr-input>
+          <nr-input 
+            state="error" 
+            label="Error State" 
+            placeholder="Error input" 
+            value="Invalid email format"
+            helper-text="Dark theme error state"
+          ></nr-input>
+          <nr-input 
+            state="warning" 
+            label="Warning State" 
+            placeholder="Warning input" 
+            value="Password might be weak"
+            helper-text="Dark theme warning state"
+          ></nr-input>
+          <nr-input 
+            state="default" 
+            label="With Icons" 
+            placeholder="Search..." 
+            withCopy
+            helper-text="Dark theme with accessible colors"
+          ></nr-input>
+        </div>
+      </div>
+      
+      <div style="background: #f9f9f9; padding: 15px; border-radius: 6px; margin-top: 10px;">
+        <p style="margin: 0; color: #666; font-size: 14px;">
+          💡 <strong>Theme Switching:</strong> This showcase demonstrates how the same input component 
+          automatically adapts to different design systems (Ant Design vs Carbon) and theme variants 
+          (light vs dark) using CSS custom properties.
+        </p>
+      </div>
     </div>
   `,
 };
