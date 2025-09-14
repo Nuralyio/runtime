@@ -16,6 +16,14 @@
   --nuraly-color-input-label: #c6c6c6;
   --nuraly-color-input-helper-text: #8d8d8d;
 
+  /* Input fallback colors for dark theme compatibility */
+  --nuraly-color-input-text-fallback: #f4f4f4;
+  --nuraly-color-input-background-fallback: #393939;
+  --nuraly-color-input-disabled-text-fallback: #6f6f6f;
+  --nuraly-color-input-disabled-background-fallback: #393939;
+  --nuraly-color-input-placeholder-fallback: #a8a8a8;
+  --nuraly-color-input-disabled-placeholder-fallback: #6f6f6f;
+
   /* Input borders - Carbon underline style for dark theme */
   --nuraly-color-input-border: transparent;
   --nuraly-color-input-border-bottom: #6f6f6f;
