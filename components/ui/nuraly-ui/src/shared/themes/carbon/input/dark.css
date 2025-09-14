@@ -3,8 +3,7 @@
  * Input-specific CSS variables based on IBM Carbon Design System dark theme specifications
  */
 
-[data-theme="carbon-dark"],
-[data-theme="dark"] {
+[data-theme="carbon-dark"]{
   /* ========================================
    * INPUT VARIABLES - CARBON DARK THEME
    * ======================================== */
