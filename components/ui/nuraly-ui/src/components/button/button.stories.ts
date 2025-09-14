@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 import './index.js';
-import '../../shared/themes/carbon/index.css';
-import '../../shared/themes/polaris/index.css';
 import '../../shared/themes/default/index.css';
+import '../../shared/themes/carbon/index.css';
 import '../icon/index.js';
 import type { ButtonIconConfig } from './button.types.js';
 
