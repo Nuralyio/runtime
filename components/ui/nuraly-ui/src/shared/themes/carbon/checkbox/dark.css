@@ -21,15 +21,6 @@ body[data-theme="carbon-dark"] * {
 
   /* Checkbox borders - Carbon Design System dark */
   --nuraly-color-checkbox-border: #6f6f6f;
-  --nuraly-color-checkbox-border-focus: #0f62fe;
-  --nuraly-color-checkbox-border-hover: #0f62fe;
-
-  /* Checkbox states - Carbon Design System dark */
-  --nuraly-color-checkbox-checked-background: #0f62fe;
-  --nuraly-color-checkbox-checked-border: #0f62fe;
-  --nuraly-color-checkbox-checkmark: #ffffff;
-  --nuraly-color-checkbox-indeterminate-background: #0f62fe;
-  --nuraly-color-checkbox-indeterminate-mark: #ffffff;
 
   /* Disabled states - Carbon Design System dark */
   --nuraly-color-checkbox-disabled-background: #262626;
@@ -43,3 +34,4 @@ body[data-theme="carbon-dark"] * {
   /* Background adjustments for better contrast in dark mode */
   --nuraly-color-checkbox-background: transparent;
 }
+

@@ -1,9 +1,10 @@
 /**
  * Carbon Theme - Checkbox Component
- * Index file that imports both light and dark variants
+ * Index file that imports common variables and both light and dark variants
  * IMPORTANT: Dark theme must be loaded AFTER light theme to ensure proper cascade
  */
 
+@import './common.css';
 @import './light.css';
 @import './dark.css';
 
