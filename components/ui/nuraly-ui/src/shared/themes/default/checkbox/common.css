@@ -1,0 +1,43 @@
+/**
+ * Default Theme - Checkbox Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ * Based on Ant Design v5 specifications
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="default-dark"] {
+  /* ========================================
+   * SHARED CHECKBOX VARIABLES - DEFAULT/ANT DESIGN THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Checkbox borders - shared properties */
+  --nuraly-border-width-checkbox: 1px;
+  --nuraly-border-radius-checkbox: 2px;
+
+  /* Checkbox sizing - Ant Design */
+  --nuraly-size-checkbox-small: 14px;
+  --nuraly-size-checkbox-medium: 16px;
+  --nuraly-size-checkbox-large: 18px;
+
+  /* Checkbox spacing */
+  --nuraly-spacing-checkbox-gap: 8px;
+  --nuraly-spacing-checkbox-padding: 4px;
+
+  /* Focus states - shared outline size */
+  --nuraly-size-checkbox-focus-outline: 2px;
+
+  /* Typography */
+  --nuraly-font-family-checkbox: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --nuraly-font-size-checkbox: 14px;
+  --nuraly-font-weight-checkbox: 400;
+  --nuraly-line-height-checkbox: 1.5715;
+
+  /* Animation */
+  --nuraly-transition-checkbox: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  /* Checkbox states - shared checkmark color */
+  --nuraly-color-checkbox-checkmark: #ffffff;
+  --nuraly-color-checkbox-indeterminate-mark: #ffffff;
+}

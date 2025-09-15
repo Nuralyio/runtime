@@ -27,9 +27,7 @@ body[data-theme="default-dark"] * {
   /* Checkbox states - Gray theme for dark mode */
   --nuraly-color-checkbox-checked-background: #8c8c8c;
   --nuraly-color-checkbox-checked-border: #8c8c8c;
-  --nuraly-color-checkbox-checkmark: #ffffff;
   --nuraly-color-checkbox-indeterminate-background: #8c8c8c;
-  --nuraly-color-checkbox-indeterminate-mark: #ffffff;
 
   /* Disabled states - Ant Design dark */
   --nuraly-color-checkbox-disabled-background: #262626;
@@ -43,3 +41,4 @@ body[data-theme="default-dark"] * {
   /* Background adjustments for better contrast in dark mode */
   --nuraly-color-checkbox-background: transparent;
 }
+
