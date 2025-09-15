@@ -415,3 +415,109 @@ export const InteractiveDemo: Story = {
     </div>
   `,
 };
+
+export const ThemeIntegrationTest: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 2rem; max-width: 800px;">
+      <h3>Checkbox Theme Integration Test</h3>
+      
+      <!-- Default/Light Theme -->
+      <div data-theme="default-light" style="padding: 1rem; border: 2px solid #1890ff; border-radius: 8px;">
+        <h4 style="margin-top: 0; color: #1890ff;">🌞 Default Light Theme</h4>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-checkbox>Default checkbox</nr-checkbox>
+          <nr-checkbox checked>Checked checkbox</nr-checkbox>
+          <nr-checkbox indeterminate>Indeterminate checkbox</nr-checkbox>
+          <nr-checkbox disabled>Disabled checkbox</nr-checkbox>
+          <nr-checkbox checked disabled>Checked disabled checkbox</nr-checkbox>
+        </div>
+        
+        <h5>Size Variants:</h5>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <nr-checkbox size="small">Small</nr-checkbox>
+          <nr-checkbox size="medium" checked>Medium</nr-checkbox>
+          <nr-checkbox size="large" indeterminate>Large</nr-checkbox>
+        </div>
+      </div>
+
+      <!-- Dark Theme -->
+      <div data-theme="default-dark" style="padding: 1rem; border: 2px solid #177ddc; border-radius: 8px; background: #1f1f1f; color: white;">
+        <h4 style="margin-top: 0; color: #177ddc;">🌙 Default Dark Theme</h4>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-checkbox>Default checkbox</nr-checkbox>
+          <nr-checkbox checked>Checked checkbox</nr-checkbox>
+          <nr-checkbox indeterminate>Indeterminate checkbox</nr-checkbox>
+          <nr-checkbox disabled>Disabled checkbox</nr-checkbox>
+          <nr-checkbox checked disabled>Checked disabled checkbox</nr-checkbox>
+        </div>
+        
+        <h5 style="color: white;">Size Variants:</h5>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <nr-checkbox size="small">Small</nr-checkbox>
+          <nr-checkbox size="medium" checked>Medium</nr-checkbox>
+          <nr-checkbox size="large" indeterminate>Large</nr-checkbox>
+        </div>
+      </div>
+
+      <!-- Carbon Light Theme -->
+      <div data-theme="carbon-light" style="padding: 1rem; border: 2px solid #0f62fe; border-radius: 4px; background: #f4f4f4;">
+        <h4 style="margin-top: 0; color: #0f62fe; font-family: 'IBM Plex Sans', sans-serif;">⚡ Carbon Light Theme</h4>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-checkbox>Default checkbox</nr-checkbox>
+          <nr-checkbox checked>Checked checkbox</nr-checkbox>
+          <nr-checkbox indeterminate>Indeterminate checkbox</nr-checkbox>
+          <nr-checkbox disabled>Disabled checkbox</nr-checkbox>
+          <nr-checkbox checked disabled>Checked disabled checkbox</nr-checkbox>
+        </div>
+        
+        <h5>Size Variants:</h5>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <nr-checkbox size="small">Small</nr-checkbox>
+          <nr-checkbox size="medium" checked>Medium</nr-checkbox>
+          <nr-checkbox size="large" indeterminate>Large</nr-checkbox>
+        </div>
+      </div>
+
+      <!-- Carbon Dark Theme -->
+      <div data-theme="carbon-dark" style="padding: 1rem; border: 2px solid #0f62fe; border-radius: 4px; background: #161616; color: #f4f4f4;">
+        <h4 style="margin-top: 0; color: #0f62fe; font-family: 'IBM Plex Sans', sans-serif;">🌙 Carbon Dark Theme</h4>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <nr-checkbox>Default checkbox</nr-checkbox>
+          <nr-checkbox checked>Checked checkbox</nr-checkbox>
+          <nr-checkbox indeterminate>Indeterminate checkbox</nr-checkbox>
+          <nr-checkbox disabled>Disabled checkbox</nr-checkbox>
+          <nr-checkbox checked disabled>Checked disabled checkbox</nr-checkbox>
+        </div>
+        
+        <h5 style="color: #f4f4f4;">Size Variants:</h5>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <nr-checkbox size="small">Small</nr-checkbox>
+          <nr-checkbox size="medium" checked>Medium</nr-checkbox>
+          <nr-checkbox size="large" indeterminate>Large</nr-checkbox>
+        </div>
+      </div>
+
+      <!-- Test Section -->
+      <div style="padding: 1rem; background: #f5f5f5; border-radius: 8px;">
+        <h4>Interactive Test</h4>
+        <p style="font-size: 0.875rem; color: #666;">
+          Click the checkboxes above to test interaction. Labels should be clickable, 
+          hover states should work, and themes should apply correctly.
+        </p>
+        <p style="font-size: 0.875rem; color: #666;">
+          <strong>Expected behavior:</strong>
+        </p>
+        <ul style="font-size: 0.875rem; color: #666;">
+          <li><strong>Default Light:</strong> Blue checked state (#1890ff), gray borders</li>
+          <li><strong>Default Dark:</strong> Gray checked state (#8c8c8c), light borders, white text</li>
+          <li><strong>Carbon Light:</strong> Blue checked state (#0f62fe), square borders, IBM Plex font</li>
+          <li><strong>Carbon Dark:</strong> Blue checked state (#0f62fe), light borders, IBM Plex font</li>
+          <li>Checkmarks should be visible in checked state</li>
+          <li>Indeterminate should show minus symbol</li>
+          <li>Disabled checkboxes should appear grayed out</li>
+          <li>Labels should be clickable and toggle the checkbox</li>
+        </ul>
+      </div>
+    </div>
+  `,
+};

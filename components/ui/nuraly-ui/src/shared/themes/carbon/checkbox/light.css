@@ -1,0 +1,59 @@
+/**
+ * Carbon Theme - Checkbox Component - Light Variant
+ * Checkbox-specific CSS variables for the Carbon Design System light theme
+ * Based on official Carbon Design System color tokens
+ */
+
+:root,
+[data-theme="carbon-light"]{
+  /* ========================================
+   * CHECKBOX VARIABLES - CARBON DESIGN SYSTEM LIGHT THEME
+   * ======================================== */
+
+  /* Base checkbox styling - Carbon Design System style */
+  --nuraly-color-checkbox-background: #ffffff;
+  --nuraly-color-checkbox-text: #161616;
+  --nuraly-color-checkbox-label: #161616;
+
+  /* Checkbox borders - Carbon Design System */
+  --nuraly-color-checkbox-border: #8d8d8d;
+  --nuraly-color-checkbox-border-focus: #0f62fe;
+  --nuraly-color-checkbox-border-hover: #0f62fe;
+  --nuraly-border-width-checkbox: 1px;
+  --nuraly-border-radius-checkbox: 0px; /* Carbon uses square checkboxes */
+
+  /* Checkbox states - Carbon Design System */
+  --nuraly-color-checkbox-checked-background: #0f62fe;
+  --nuraly-color-checkbox-checked-border: #0f62fe;
+  --nuraly-color-checkbox-checkmark: #ffffff;
+  --nuraly-color-checkbox-indeterminate-background: #0f62fe;
+  --nuraly-color-checkbox-indeterminate-mark: #ffffff;
+
+  /* Disabled states - Carbon Design System */
+  --nuraly-color-checkbox-disabled-background: #f4f4f4;
+  --nuraly-color-checkbox-disabled-border: #c6c6c6;
+  --nuraly-color-checkbox-disabled-text: #c6c6c6;
+  --nuraly-color-checkbox-disabled-checkmark: #c6c6c6;
+
+  /* Checkbox sizing - Carbon Design System */
+  --nuraly-size-checkbox-small: 16px;
+  --nuraly-size-checkbox-medium: 20px;
+  --nuraly-size-checkbox-large: 24px;
+
+  /* Checkbox spacing - Carbon Design System */
+  --nuraly-spacing-checkbox-gap: 8px;
+  --nuraly-spacing-checkbox-padding: 0px;
+
+  /* Focus states - Carbon Design System */
+  --nuraly-color-checkbox-focus-outline: rgba(15, 98, 254, 0.2);
+  --nuraly-size-checkbox-focus-outline: 2px;
+
+  /* Typography - Carbon Design System */
+  --nuraly-font-family-checkbox: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --nuraly-font-size-checkbox: 14px;
+  --nuraly-font-weight-checkbox: 400;
+  --nuraly-line-height-checkbox: 1.29;
+
+  /* Animation - Carbon Design System */
+  --nuraly-transition-checkbox: all 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+}

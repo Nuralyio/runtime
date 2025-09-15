@@ -10,6 +10,7 @@
 @import './button/index.css';
 @import './input/index.css';
 @import './icon/index.css';
+@import './checkbox/index.css';
 
 /* TODO: Import other component themes as they are created
 @import './card/index.css';
