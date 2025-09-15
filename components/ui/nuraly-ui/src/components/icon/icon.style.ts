@@ -2,29 +2,54 @@ import { css } from 'lit';
 import { styleVariables } from './icon.variables.js';
 
 /**
- * Icon component styles with theme support and interactive states
+ * Icon component styles for the Hybrid UI Library
  * 
- * Uses CSS custom properties for theming with fallbacks for backwards compatibility.
- * Supports both light and dark themes via data-theme attribute.
+ * This file contains all the styling for the nr-icon component, including:
+ * - Base icon styles with CSS custom properties for theming
+ * - Multiple icon states (default, hover, active, disabled, focus)
+ * - Size variations (small, medium, large, custom)
+ * - Interactive states for clickable icons
+ * - Theme compatibility (light, dark, carbon, default design systems)
+ * - Accessibility features and reduced motion support
+ * 
+ * The styling system uses CSS custom properties with fallbacks to allow
+ * for both global and local customization of icon appearance.
  */
-const iconStyles = css`
+
+const iconStyle = css`
+  /* 
+   * Host element base styles
+   * Container for the icon component with flexible positioning
+   */
   :host {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     line-height: 1;
     vertical-align: baseline;
+    position: relative;
+    font-family: var(--nuraly-font-family-icon, 'IBM Plex Sans', ui-sans-serif, system-ui);
   }
 
+  /* 
+   * Base SVG icon styles
+   * Uses theme CSS custom properties for comprehensive theming support
+   */
   .svg-icon {
-    /* Basic properties */
-    fill: var(--nuraly-icon-local-color, var(--nuraly-icon-color, #000000));
-    width: var(--nuraly-icon-local-width, var(--nuraly-icon-width, 18px));
-    height: var(--nuraly-icon-local-height, var(--nuraly-icon-height, 18px));
-    transition: var(--nuraly-icon-local-transition, opacity 0.2s ease, transform 0.2s ease);
+    /* Basic properties with theme support */
+    fill: var(--nuraly-color-icon, var(--nuraly-color-icon-fallback, #161616));
+    width: var(--nuraly-icon-size, var(--nuraly-icon-size-fallback, 18px));
+    height: var(--nuraly-icon-size, var(--nuraly-icon-size-fallback, 18px));
+    min-width: var(--nuraly-icon-min-size, var(--nuraly-icon-min-size-fallback, 16px));
+    min-height: var(--nuraly-icon-min-size, var(--nuraly-icon-min-size-fallback, 16px));
+    
+    /* Transition and display properties */
+    transition: var(--nuraly-icon-transition, var(--nuraly-icon-transition-fallback, opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease));
     display: block;
+    flex-shrink: 0;
     
     /* Cursor handling */
-    cursor: default;
+    cursor: var(--nuraly-cursor-default, default);
   }
 
   /* ========================================
@@ -32,26 +57,27 @@ const iconStyles = css`
    * ======================================== */
   
   .svg-icon.clickable {
-    cursor: var(--nuraly-icon-local-cursor, pointer);
+    cursor: var(--nuraly-cursor-interactive, pointer);
   }
 
   .svg-icon.clickable:hover {
-    opacity: var(--nuraly-icon-local-hover-opacity, 0.8);
-    transform: var(--nuraly-icon-local-hover-transform, scale(1.1));
-    fill: var(--nuraly-icon-local-hover-color, var(--nuraly-icon-local-color, #0f62fe));
+    opacity: var(--nuraly-icon-hover-opacity, var(--nuraly-icon-hover-opacity-fallback, 0.8));
+    transform: var(--nuraly-icon-hover-transform, var(--nuraly-icon-hover-transform-fallback, scale(1.05)));
+    fill: var(--nuraly-color-icon-hover, var(--nuraly-color-icon-hover-fallback, #0f62fe));
   }
 
   .svg-icon.clickable:active {
-    opacity: var(--nuraly-icon-local-active-opacity, 0.6);
-    transform: var(--nuraly-icon-local-active-transform, scale(0.95));
-    fill: var(--nuraly-icon-local-active-color, var(--nuraly-icon-local-color, #054ada));
+    opacity: var(--nuraly-icon-active-opacity, var(--nuraly-icon-active-opacity-fallback, 0.6));
+    transform: var(--nuraly-icon-active-transform, var(--nuraly-icon-active-transform-fallback, scale(0.95)));
+    fill: var(--nuraly-color-icon-active, var(--nuraly-color-icon-active-fallback, #054ada));
   }
 
   .svg-icon.clickable:focus {
-    outline: var(--nuraly-icon-local-focus-outline, 2px solid #0f62fe);
-    outline-offset: var(--nuraly-icon-local-focus-outline-offset, 2px);
-    background: var(--nuraly-icon-local-focus-background, rgba(15, 98, 254, 0.1));
-    border-radius: var(--nuraly-icon-local-focus-border-radius, 4px);
+    outline: var(--nuraly-icon-focus-outline, var(--nuraly-icon-focus-outline-fallback, 2px solid #0f62fe));
+    outline-offset: var(--nuraly-icon-focus-outline-offset, var(--nuraly-icon-focus-outline-offset-fallback, 2px));
+    background: var(--nuraly-icon-focus-background, var(--nuraly-icon-focus-background-fallback, rgba(15, 98, 254, 0.1)));
+    border-radius: var(--nuraly-icon-focus-border-radius, var(--nuraly-icon-focus-border-radius-fallback, 4px));
+    box-shadow: var(--nuraly-icon-focus-shadow, var(--nuraly-icon-focus-shadow-fallback, none));
   }
 
   /* ========================================
@@ -59,21 +85,103 @@ const iconStyles = css`
    * ======================================== */
   
   .svg-icon.disabled {
-    opacity: var(--nuraly-icon-local-disabled-opacity, 0.4);
-    fill: var(--nuraly-icon-local-disabled-color, #c6c6c6);
-    cursor: var(--nuraly-icon-local-disabled-cursor, not-allowed);
+    opacity: var(--nuraly-icon-disabled-opacity, var(--nuraly-icon-disabled-opacity-fallback, 0.25));
+    fill: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
+    cursor: var(--nuraly-cursor-disabled, not-allowed);
   }
 
   .svg-icon.clickable.disabled:hover,
   .svg-icon.clickable.disabled:active {
-    opacity: var(--nuraly-icon-local-disabled-opacity, 0.4);
-    fill: var(--nuraly-icon-local-disabled-color, #c6c6c6);
+    opacity: var(--nuraly-icon-disabled-opacity, var(--nuraly-icon-disabled-opacity-fallback, 0.25));
+    fill: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
     transform: none;
   }
 
   .svg-icon.clickable.disabled:focus {
     outline: none;
     background: none;
+    box-shadow: none;
+  }
+
+  /* ========================================
+   * ACCESSIBILITY FEATURES
+   * ======================================== */
+
+  /* Screen reader only text for better accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .svg-icon {
+      fill: CanvasText;
+    }
+    
+    .svg-icon.disabled {
+      opacity: 0.5;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .svg-icon {
+      transition: none;
+    }
+    
+    .svg-icon.clickable:hover,
+    .svg-icon.clickable:active {
+      transform: none;
+    }
   }
 `;
-export const styles = [iconStyles, styleVariables];
+
+/**
+ * Size variation styles for the icon component
+ * Defines size variations for different icon use cases
+ */
+const sizeIconStyle = css`
+  /* ========================================
+   * SIZE VARIATIONS
+   * ======================================== */
+
+  /* Small icon size */
+  :host([size='small']) .svg-icon {
+    width: var(--nuraly-icon-size-small, var(--nuraly-icon-size-small-fallback, 16px));
+    height: var(--nuraly-icon-size-small, var(--nuraly-icon-size-small-fallback, 16px));
+  }
+
+  /* Medium icon size (default) */
+  :host([size='medium']) .svg-icon {
+    width: var(--nuraly-icon-size-medium, var(--nuraly-icon-size-medium-fallback, 20px));
+    height: var(--nuraly-icon-size-medium, var(--nuraly-icon-size-medium-fallback, 20px));
+  }
+
+  /* Large icon size */
+  :host([size='large']) .svg-icon {
+    width: var(--nuraly-icon-size-large, var(--nuraly-icon-size-large-fallback, 24px));
+    height: var(--nuraly-icon-size-large, var(--nuraly-icon-size-large-fallback, 24px));
+  }
+
+  /* Extra large icon size */
+  :host([size='xlarge']) .svg-icon {
+    width: var(--nuraly-icon-size-xlarge, var(--nuraly-icon-size-xlarge-fallback, 32px));
+    height: var(--nuraly-icon-size-xlarge, var(--nuraly-icon-size-xlarge-fallback, 32px));
+  }
+
+  /* 2X large icon size */
+  :host([size='xxlarge']) .svg-icon {
+    width: var(--nuraly-icon-size-xxlarge, var(--nuraly-icon-size-xxlarge-fallback, 40px));
+    height: var(--nuraly-icon-size-xxlarge, var(--nuraly-icon-size-xxlarge-fallback, 40px));
+  }
+`;
+
+export const styles = [iconStyle, sizeIconStyle, styleVariables];
