@@ -124,6 +124,19 @@ export class NrCheckboxElement extends CheckboxEventMixin(
     };
   }
 
+  private handleLabelClick(event: Event) {
+    // Prevent double-firing when clicking the label
+    if (!this.disabled) {
+      event.preventDefault();
+      this.checked = !this.checked;
+      // Fire change event manually since we prevented the default
+      this.dispatchEvent(new CustomEvent('nr-change', {
+        detail: { checked: this.checked, value: this.value },
+        bubbles: true
+      }));
+    }
+  }
+
   override render() {
     const commonAttributes = this.getCommonAttributes();
     
@@ -150,7 +163,9 @@ export class NrCheckboxElement extends CheckboxEventMixin(
         @mouseenter=${this.handleMouseEnter}
         @mouseleave=${this.handleMouseLeave}
       />
-      <slot></slot>
+      <label class="checkbox-label" for=${this.id} @click=${this.handleLabelClick}>
+        <slot></slot>
+      </label>
     `;
   }
 

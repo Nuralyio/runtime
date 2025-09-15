@@ -1,0 +1,59 @@
+/**
+ * Default Theme - Checkbox Component - Light Variant
+ * Checkbox-specific CSS variables for the Default Design System light theme
+ * Based on official Ant Design v5 specifications
+ */
+
+:root,
+[data-theme="default-light"]{
+  /* ========================================
+   * CHECKBOX VARIABLES - ANT DESIGN LIGHT THEME
+   * ======================================== */
+
+  /* Base checkbox styling - Ant Design style */
+  --nuraly-color-checkbox-background: #ffffff;
+  --nuraly-color-checkbox-text: rgba(0, 0, 0, 0.88);
+  --nuraly-color-checkbox-label: rgba(0, 0, 0, 0.88);
+
+  /* Checkbox borders - Ant Design outlined style */
+  --nuraly-color-checkbox-border: #d9d9d9;
+  --nuraly-color-checkbox-border-focus: #1890ff;
+  --nuraly-color-checkbox-border-hover: #40a9ff;
+  --nuraly-border-width-checkbox: 1px;
+  --nuraly-border-radius-checkbox: 2px;
+
+  /* Checkbox states - Ant Design */
+  --nuraly-color-checkbox-checked-background: #1890ff;
+  --nuraly-color-checkbox-checked-border: #1890ff;
+  --nuraly-color-checkbox-checkmark: #ffffff;
+  --nuraly-color-checkbox-indeterminate-background: #1890ff;
+  --nuraly-color-checkbox-indeterminate-mark: #ffffff;
+
+  /* Disabled states - Ant Design */
+  --nuraly-color-checkbox-disabled-background: #f5f5f5;
+  --nuraly-color-checkbox-disabled-border: #d9d9d9;
+  --nuraly-color-checkbox-disabled-text: rgba(0, 0, 0, 0.25);
+  --nuraly-color-checkbox-disabled-checkmark: rgba(0, 0, 0, 0.25);
+
+  /* Checkbox sizing - Ant Design */
+  --nuraly-size-checkbox-small: 14px;
+  --nuraly-size-checkbox-medium: 16px;
+  --nuraly-size-checkbox-large: 18px;
+
+  /* Checkbox spacing */
+  --nuraly-spacing-checkbox-gap: 8px;
+  --nuraly-spacing-checkbox-padding: 4px;
+
+  /* Focus states */
+  --nuraly-color-checkbox-focus-outline: rgba(24, 144, 255, 0.2);
+  --nuraly-size-checkbox-focus-outline: 2px;
+
+  /* Typography */
+  --nuraly-font-family-checkbox: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --nuraly-font-size-checkbox: 14px;
+  --nuraly-font-weight-checkbox: 400;
+  --nuraly-line-height-checkbox: 1.5715;
+
+  /* Animation */
+  --nuraly-transition-checkbox: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}

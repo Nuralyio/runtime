@@ -21,7 +21,16 @@ const THEMES = {
       'index.css',
       'button/index.css',
       'button/light.css', 
-      'button/dark.css'
+      'button/dark.css',
+      'input/index.css',
+      'input/light.css',
+      'input/dark.css',
+      'icon/index.css',
+      'icon/light.css',
+      'icon/dark.css',
+      'checkbox/index.css',
+      'checkbox/light.css',
+      'checkbox/dark.css'
     ]
   },
   default: {
@@ -31,7 +40,16 @@ const THEMES = {
       'index.css',
       'button/index.css',
       'button/light.css',
-      'button/dark.css'
+      'button/dark.css',
+      'input/index.css',
+      'input/light.css',
+      'input/dark.css',
+      'icon/index.css',
+      'icon/light.css',
+      'icon/dark.css',
+      'checkbox/index.css',
+      'checkbox/light.css',
+      'checkbox/dark.css'
     ]
   },
   polaris: {
@@ -41,7 +59,16 @@ const THEMES = {
       'index.css', 
       'button/index.css',
       'button/light.css',
-      'button/dark.css'
+      'button/dark.css',
+      'input/index.css',
+      'input/light.css',
+      'input/dark.css',
+      'icon/index.css',
+      'icon/light.css',
+      'icon/dark.css',
+      'checkbox/index.css',
+      'checkbox/light.css',
+      'checkbox/dark.css'
     ]
   }
 };
