@@ -5,12 +5,65 @@
  */
 
 import { css } from 'lit';
-import { radioVariables } from './radio.style.variables.js';
 
 export const styles = css`
-  ${radioVariables}
-
   :host {
+    /* ========================================
+     * CSS CUSTOM PROPERTIES
+     * ======================================== */
+    
+    /* Layout and sizing */
+    --nuraly-radio-local-size: 14px;
+    --nuraly-radio-local-dot-size: 3px;
+    --nuraly-radio-local-focus-dot-size: 2px;
+    --nuraly-radio-local-margin-right: 10px;
+    --nuraly-radio-local-container-margin-top: 10px;
+    --nuraly-radio-local-direction-horizontal-container-margin-top: 0px;
+    --nuraly-radio-local-position-right-margin-right: 0px;
+    --nuraly-radio-local-position-right-margin-left: 10px;
+
+    /* Colors - Light theme defaults */
+    --nuraly-radio-local-background-color: var(--nuraly-color-radio-background, #ffffff);
+    --nuraly-radio-local-dot-color: var(--nuraly-color-radio-dot, #7c3aed);
+    --nuraly-radio-local-border-color: var(--nuraly-color-radio-border, #d9d9d9);
+    --nuraly-radio-local-hover-border-color: var(--nuraly-color-radio-border-hover, #7c3aed);
+    --nuraly-radio-local-hover-enhanced-color: var(--nuraly-color-radio-hover-enhanced, #8b5cf6);
+    --nuraly-radio-local-checked-border-color: var(--nuraly-color-radio-checked-border, #7c3aed);
+    --nuraly-radio-local-focus-border-color: var(--nuraly-color-radio-border-focus, #7c3aed);
+    --nuraly-radio-local-error-border-color: var(--nuraly-color-radio-error-border, #ef4444);
+    --nuraly-radio-local-error-icon-color: var(--nuraly-color-radio-error-icon, #ef4444);
+    --nuraly-radio-local-error-text-color: var(--nuraly-color-radio-error-text, #ef4444);
+    --nuraly-radio-local-warning-icon-color: var(--nuraly-color-radio-warning-icon, #f59e0b);
+
+    /* Typography */
+    --nuraly-radio-local-font-family: var(--nuraly-font-family-radio, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif);
+    --nuraly-radio-local-label-font-size: var(--nuraly-font-size-radio-label, 15px);
+    --nuraly-radio-local-message-font-size: var(--nuraly-font-size-radio-message, 12px);
+
+    /* States */
+    --nuraly-radio-local-disabled-opacity: 0.5;
+
+    /* Animation and transitions */
+    --nuraly-radio-local-transition-duration: 0.2s;
+    --nuraly-radio-local-ripple-duration: 0.2s;
+    --nuraly-radio-local-ripple-color: var(--nuraly-color-radio-ripple, rgba(124, 58, 237, 0.2));
+    --nuraly-radio-local-ripple-max-size: 8px;
+
+    /* Focus and interaction */
+    --nuraly-radio-local-focus-outline-width: 2px;
+    --nuraly-radio-local-focus-outline-color: var(--nuraly-color-radio-focus-outline, rgba(124, 58, 237, 0.2));
+
+    /* Hover ring */
+    --nuraly-radio-local-hover-ring-width: 4px;
+    --nuraly-radio-local-hover-ring-color: var(--nuraly-color-radio-hover-ring, rgba(124, 58, 237, 0.1));
+
+    /* Button type borders */
+    --nuraly-radio-local-button-border-radius: 4px;
+
+    /* ========================================
+     * COMPONENT STYLES
+     * ======================================== */
+    
     width: fit-content;
     display: block;
     font-family: var(--nuraly-radio-font-family, var(--nuraly-radio-local-font-family));
@@ -51,6 +104,7 @@ export const styles = css`
     width: var(--nuraly-radio-size, var(--nuraly-radio-local-size));
     height: var(--nuraly-radio-size, var(--nuraly-radio-local-size));
     padding: var(--nuraly-radio-dot-size, var(--nuraly-radio-local-dot-size));
+    background-color: var(--nuraly-radio-background-color, var(--nuraly-radio-local-background-color));
     background-clip: content-box;
     border: 1px solid var(--nuraly-radio-border-color, var(--nuraly-radio-local-border-color));
     border-radius: 50%;
@@ -225,12 +279,12 @@ export const styles = css`
   }
 
   .slot-container:hover {
-    background-color: rgba(22, 119, 255, 0.04);
+    background-color: rgba(124, 58, 237, 0.04);
     border-radius: 6px;
   }
 
   .slot-container.selected {
-    background-color: rgba(22, 119, 255, 0.08);
+    background-color: rgba(124, 58, 237, 0.08);
     border-radius: 6px;
   }
 

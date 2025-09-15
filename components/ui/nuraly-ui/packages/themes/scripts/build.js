@@ -30,7 +30,10 @@ const THEMES = {
       'icon/dark.css',
       'checkbox/index.css',
       'checkbox/light.css',
-      'checkbox/dark.css'
+      'checkbox/dark.css',
+      'radio/index.css',
+      'radio/light.css',
+      'radio/dark.css'
     ]
   },
   default: {
@@ -49,7 +52,10 @@ const THEMES = {
       'icon/dark.css',
       'checkbox/index.css',
       'checkbox/light.css',
-      'checkbox/dark.css'
+      'checkbox/dark.css',
+      'radio/index.css',
+      'radio/light.css',
+      'radio/dark.css'
     ]
   },
   polaris: {
@@ -68,7 +74,10 @@ const THEMES = {
       'icon/dark.css',
       'checkbox/index.css',
       'checkbox/light.css',
-      'checkbox/dark.css'
+      'checkbox/dark.css',
+      'radio/index.css',
+      'radio/light.css',
+      'radio/dark.css'
     ]
   }
 };
