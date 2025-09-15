@@ -1,0 +1,44 @@
+/**
+ * Carbon Design System Theme - Radio Component - Dark Variant
+ * Radio-specific CSS variables based on IBM Carbon Design System dark theme specifications
+ */
+
+[data-theme="carbon-dark"]{
+  /* ========================================
+   * RADIO VARIABLES - CARBON DESIGN SYSTEM DARK THEME
+   * ======================================== */
+
+  /* Base radio styling - Carbon Design System dark style */
+  --nuraly-color-radio-background: #262626;
+  --nuraly-color-radio-text: #f4f4f4;
+  --nuraly-color-radio-label: #f4f4f4;
+
+  /* Radio borders - Carbon Design System dark */
+  --nuraly-color-radio-border: #8d8d8d;
+  --nuraly-color-radio-border-focus: #78a9ff;
+  --nuraly-color-radio-border-hover: #78a9ff;
+
+  /* Radio states - Carbon Design System dark */
+  --nuraly-color-radio-checked-border: #78a9ff;
+  --nuraly-color-radio-dot: #78a9ff;
+  --nuraly-color-radio-hover-enhanced: #a6c8ff;
+
+  /* Error states - Carbon Design System dark */
+  --nuraly-color-radio-error-border: #fa4d56;
+  --nuraly-color-radio-error-icon: #fa4d56;
+  --nuraly-color-radio-error-text: #fa4d56;
+
+  /* Warning states - Carbon Design System dark */
+  --nuraly-color-radio-warning-icon: #f1c21b;
+
+  /* Disabled states - Carbon Design System dark */
+  --nuraly-color-radio-disabled-background: #262626;
+  --nuraly-color-radio-disabled-border: #525252;
+  --nuraly-color-radio-disabled-text: #525252;
+  --nuraly-color-radio-disabled-dot: #525252;
+
+  /* Focus and interaction - Carbon Design System dark */
+  --nuraly-color-radio-focus-outline: rgba(120, 169, 255, 0.4);
+  --nuraly-color-radio-hover-ring: rgba(120, 169, 255, 0.1);
+  --nuraly-color-radio-ripple: rgba(120, 169, 255, 0.2);
+}
