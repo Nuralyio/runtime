@@ -1,0 +1,25 @@
+/**
+ * Default Design System Theme - Radio Component - Common Variables
+ * Shared CSS variables across light and dark variants for Default Design System
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="default-dark"] {
+  /* ========================================
+   * SHARED RADIO VARIABLES - DEFAULT THEME
+   * ======================================== */
+
+  /* Radio borders - Default Design System (shared properties) */
+  --nuraly-border-width-radio: 1px;
+
+  /* Sizes - Default Design System */
+  --nuraly-size-radio-small: 14px;
+  --nuraly-size-radio-medium: 16px;
+  --nuraly-size-radio-large: 18px;
+
+  /* Typography - Default Design System (Inter font) */
+  --nuraly-font-family-radio: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+  --nuraly-font-size-radio-label: 15px;
+  --nuraly-font-size-radio-message: 12px;
+}

@@ -30,8 +30,36 @@
   --nuraly-color-radio-error-icon: #da1e28;
   --nuraly-color-radio-error-text: #da1e28;
 
-  /* Warning states - Carbon Design System */
-  --nuraly-color-radio-warning-icon: #f1c21b;
+/**
+ * Carbon Design System Theme - Radio Component - Light Variant
+ * Radio-specific CSS variables based on IBM Carbon Design System specifications
+ */
+
+:root,
+[data-theme="carbon-light"]{
+  /* ========================================
+   * RADIO VARIABLES - CARBON DESIGN SYSTEM LIGHT THEME
+   * ======================================== */
+
+  /* Base radio styling - Carbon Design System style */
+  --nuraly-color-radio-background: #ffffff;
+  --nuraly-color-radio-text: #161616;
+  --nuraly-color-radio-label: #161616;
+
+  /* Radio borders - Carbon Design System */
+  --nuraly-color-radio-border: #8d8d8d;
+  --nuraly-color-radio-border-focus: #0f62fe;
+  --nuraly-color-radio-border-hover: #0f62fe;
+
+  /* Radio states - Carbon Design System */
+  --nuraly-color-radio-checked-border: #0f62fe;
+  --nuraly-color-radio-dot: #0f62fe;
+  --nuraly-color-radio-hover-enhanced: #0353e9;
+
+  /* Error states - Carbon Design System */
+  --nuraly-color-radio-error-border: #da1e28;
+  --nuraly-color-radio-error-icon: #da1e28;
+  --nuraly-color-radio-error-text: #da1e28;
 
   /* Disabled states - Carbon Design System */
   --nuraly-color-radio-disabled-background: #f4f4f4;
@@ -43,14 +71,5 @@
   --nuraly-color-radio-focus-outline: rgba(15, 98, 254, 0.4);
   --nuraly-color-radio-hover-ring: rgba(15, 98, 254, 0.1);
   --nuraly-color-radio-ripple: rgba(15, 98, 254, 0.2);
-
-  /* Sizes - Carbon Design System */
-  --nuraly-size-radio-small: 16px;
-  --nuraly-size-radio-medium: 20px;
-  --nuraly-size-radio-large: 24px;
-
-  /* Typography - Carbon Design System */
-  --nuraly-font-family-radio: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --nuraly-font-size-radio-label: 14px;
-  --nuraly-font-size-radio-message: 12px;
+}
 }

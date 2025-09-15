@@ -1,0 +1,28 @@
+/**
+ * Carbon Design System Theme - Radio Component - Common Variables
+ * Shared CSS variables across light and dark variants for Carbon Design System
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SHARED RADIO VARIABLES - CARBON THEME
+   * ======================================== */
+
+  /* Radio borders - Carbon Design System (shared properties) */
+  --nuraly-border-width-radio: 1px;
+
+  /* Warning states - Carbon Design System (shared) */
+  --nuraly-color-radio-warning-icon: #f1c21b;
+
+  /* Sizes - Carbon Design System */
+  --nuraly-size-radio-small: 16px;
+  --nuraly-size-radio-medium: 20px;
+  --nuraly-size-radio-large: 24px;
+
+  /* Typography - Carbon Design System (IBM Plex Sans) */
+  --nuraly-font-family-radio: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --nuraly-font-size-radio-label: 14px;
+  --nuraly-font-size-radio-message: 12px;
+}
