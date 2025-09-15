@@ -1,0 +1,69 @@
+/**
+ * Carbon Theme - Icon Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ * Based on Carbon Design System specifications
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SHARED ICON VARIABLES - CARBON DESIGN SYSTEM
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Icon sizing - Carbon Design System */
+  --nuraly-icon-size: 20px;
+  --nuraly-icon-size-fallback: 18px;
+  --nuraly-icon-size-small: 16px;
+  --nuraly-icon-size-small-fallback: 16px;
+  --nuraly-icon-size-medium: 20px;
+  --nuraly-icon-size-medium-fallback: 20px;
+  --nuraly-icon-size-large: 24px;
+  --nuraly-icon-size-large-fallback: 24px;
+  --nuraly-icon-size-xlarge: 32px;
+  --nuraly-icon-size-xlarge-fallback: 32px;
+  --nuraly-icon-size-xxlarge: 40px;
+  --nuraly-icon-size-xxlarge-fallback: 40px;
+  --nuraly-icon-min-size: 12px;
+  --nuraly-icon-min-size-fallback: 12px;
+
+  /* Disabled state - shared opacity */
+  --nuraly-icon-disabled-opacity: 0.25;
+  --nuraly-icon-disabled-opacity-fallback: 0.25;
+
+  /* Focus states - shared properties */
+  --nuraly-icon-focus-outline-offset: 1px;
+  --nuraly-icon-focus-outline-offset-fallback: 2px;
+  --nuraly-icon-focus-background: transparent;
+  --nuraly-icon-focus-border-radius: 0px;
+  --nuraly-icon-focus-border-radius-fallback: 4px;
+  --nuraly-icon-focus-shadow: none;
+  --nuraly-icon-focus-shadow-fallback: none;
+
+  /* Animation and transitions - Carbon */
+  --nuraly-icon-transition: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
+  --nuraly-icon-transition-fallback: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
+  --nuraly-icon-hover-opacity: 0.8;
+  --nuraly-icon-hover-opacity-fallback: 0.8;
+  --nuraly-icon-hover-transform: scale(1.0625);
+  --nuraly-icon-hover-transform-fallback: scale(1.05);
+  --nuraly-icon-active-opacity: 0.6;
+  --nuraly-icon-active-opacity-fallback: 0.6;
+  --nuraly-icon-active-transform: scale(0.9375);
+  --nuraly-icon-active-transform-fallback: scale(0.95);
+
+  /* Semantic state colors - Carbon */
+  --nuraly-color-error: #da1e28;
+  --nuraly-color-warning: #f1c21b;
+  --nuraly-color-success: #24a148;
+  --nuraly-color-info: #0f62fe;
+
+  /* Cursor styles */
+  --nuraly-cursor-default: default;
+  --nuraly-cursor-interactive: pointer;
+  --nuraly-cursor-disabled: not-allowed;
+
+  /* Font family for icon context */
+  --nuraly-font-family-icon: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+}
