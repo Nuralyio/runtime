@@ -46,12 +46,49 @@
   --nuraly-color-input-warning-text: #f4f4f4;
   --nuraly-color-input-warning-icon: #f1c21b;
 
-  /* Input typography (same as light theme) */
-  --nuraly-font-family-input: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
-  --nuraly-font-size-input: 14px;
-  --nuraly-font-size-input-label: 12px;
-  --nuraly-font-size-input-helper: 12px;
-  --nuraly-font-size-input-placeholder: 14px;
+/**
+ * Carbon Design System Theme - Input Component - Dark Variant
+ * Input-specific CSS variables based on IBM Carbon Design System dark theme specifications
+ */
+
+[data-theme="carbon-dark"]{
+  /* ========================================
+   * INPUT VARIABLES - CARBON DARK THEME
+   * ======================================== */
+
+  /* Base input styling - Carbon Dark Design System */
+  --nuraly-color-input-background: #393939;
+  --nuraly-color-input-text: #f4f4f4;
+  --nuraly-color-input-placeholder: #a8a8a8;
+  --nuraly-color-input-label: #c6c6c6;
+  --nuraly-color-input-helper-text: #8d8d8d;
+
+  /* Input fallback colors for dark theme compatibility */
+  --nuraly-color-input-text-fallback: #f4f4f4;
+  --nuraly-color-input-background-fallback: #393939;
+  --nuraly-color-input-disabled-text-fallback: #6f6f6f;
+  --nuraly-color-input-disabled-background-fallback: #393939;
+  --nuraly-color-input-placeholder-fallback: #a8a8a8;
+  --nuraly-color-input-disabled-placeholder-fallback: #6f6f6f;
+
+  /* Input borders - Carbon underline style for dark theme (dark specific) */
+  --nuraly-color-input-border-bottom: #6f6f6f;
+
+  /* Input states - dark theme */
+  --nuraly-color-input-disabled-background: #393939;
+  --nuraly-color-input-disabled-text: #6f6f6f;
+  --nuraly-color-input-disabled-placeholder: #6f6f6f;
+  --nuraly-color-input-disabled-label: #6f6f6f;
+  --nuraly-color-input-disabled-helper-text: #6f6f6f;
+
+  /* Error states - dark theme */
+  --nuraly-color-input-error-border: #fa4d56;
+  --nuraly-color-input-error-text: #ffb3b8;
+  --nuraly-color-input-error-icon: #fa4d56;
+
+  /* Warning states - dark theme */
+  --nuraly-color-input-warning-text: #f4f4f4;
+  --nuraly-color-input-warning-icon: #f1c21b;
 
   /* Input icons - dark theme */
   --nuraly-color-input-icon: #c6c6c6;
@@ -60,7 +97,6 @@
   --nuraly-color-input-copy-icon: #c6c6c6;
   --nuraly-color-input-clear-icon: #c6c6c6;
   --nuraly-color-input-number-icons: #c6c6c6;
-  --nuraly-size-input-icon: 16px;
 
   /* Addons and prefix/suffix - dark theme */
   --nuraly-color-input-addon-background: #525252;
@@ -71,14 +107,6 @@
   /* Input variants - dark theme */
   --nuraly-color-input-outlined-border: #6f6f6f;
   --nuraly-color-input-outlined-background: #262626;
-  --nuraly-border-radius-input-outlined: 4px;
-
   --nuraly-color-input-filled-background: #393939;
-  --nuraly-color-input-filled-border-bottom: transparent;
-  --nuraly-border-radius-input-filled-top: 4px;
-
-  /* Carbon spacing values (same as light theme) */
-  --nuraly-spacing-input-label-bottom: 8px;
-  --nuraly-spacing-input-helper-top: 8px;
-  --nuraly-spacing-input-icon: 8px;
+}
 }
