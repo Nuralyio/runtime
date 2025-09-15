@@ -33,7 +33,10 @@ const THEMES = {
       'checkbox/dark.css',
       'radio/index.css',
       'radio/light.css',
-      'radio/dark.css'
+      'radio/dark.css',
+      'select/index.css',
+      'select/light.css',
+      'select/dark.css'
     ]
   },
   default: {
@@ -55,29 +58,10 @@ const THEMES = {
       'checkbox/dark.css',
       'radio/index.css',
       'radio/light.css',
-      'radio/dark.css'
-    ]
-  },
-  polaris: {
-    name: 'polaris',
-    files: [
-      'theme.css',
-      'index.css', 
-      'button/index.css',
-      'button/light.css',
-      'button/dark.css',
-      'input/index.css',
-      'input/light.css',
-      'input/dark.css',
-      'icon/index.css',
-      'icon/light.css',
-      'icon/dark.css',
-      'checkbox/index.css',
-      'checkbox/light.css',
-      'checkbox/dark.css',
-      'radio/index.css',
-      'radio/light.css',
-      'radio/dark.css'
+      'radio/dark.css',
+      'select/index.css',
+      'select/light.css',
+      'select/dark.css'
     ]
   }
 };

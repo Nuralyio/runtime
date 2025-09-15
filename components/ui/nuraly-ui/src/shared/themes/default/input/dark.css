@@ -9,15 +9,15 @@
    * ======================================== */
 
   /* Base input styling - Ant Design dark style */
-  --nuraly-color-input-background: #141414;
+  --nuraly-color-input-background: #374151;
   --nuraly-color-input-text: rgba(255, 255, 255, 0.88);
   --nuraly-color-input-placeholder: rgba(255, 255, 255, 0.25);
   --nuraly-color-input-label: rgba(255, 255, 255, 0.88);
   --nuraly-color-input-helper-text: rgba(255, 255, 255, 0.45);
 
   /* Input borders - Ant Design dark outlined style */
-  --nuraly-color-input-border: #434343;
-  --nuraly-color-input-border-bottom: #434343;
+  --nuraly-color-input-border: #374151;
+  --nuraly-color-input-border-bottom: #374151;
   --nuraly-color-input-border-focus: #1890ff;
   --nuraly-color-input-border-hover: #40a9ff;
   --nuraly-border-width-input: 1px;

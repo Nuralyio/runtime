@@ -106,3 +106,15 @@
   /* Input transitions - Ant Design */
   --nuraly-transition-input: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
+
+/* Specific input container styling for light theme */
+:root nr-input #input-container,
+[data-theme="default"] nr-input #input-container,
+[data-theme="default-light"] nr-input #input-container,
+.input-wrapper:root #input-container,
+.input-wrapper[data-theme="default"] #input-container,
+.input-wrapper[data-theme="default-light"] #input-container {
+  border-bottom: 1px solid #d9d9d9 !important;
+  background-color: #ffffff !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
