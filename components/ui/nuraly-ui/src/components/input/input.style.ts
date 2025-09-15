@@ -8,9 +8,41 @@ import { css } from 'lit';
  * - Multiple input states (default, warning, error)
  * - Size variations (small, medium, large)
  * - Different input types (text, password, number, calendar)
- * - Icon positioning and styling
+ * - Icon positioning and styling with comprehensive CSS variable overrides
  * - Focus, disabled, and validation states
  * - Dark theme support
+ * 
+ * Icon Color Customization:
+ * The input component provides multiple levels of CSS variable overrides for icon colors:
+ * 
+ * Global Level:
+ * - --nuraly-color-input-icon: Controls all icons in input components
+ * - --nuraly-size-input-icon: Controls size of all icons in input components
+ * - --nuraly-color-input-icon-hover: Hover state for all icons
+ * - --nuraly-color-input-icon-active: Active state for all icons
+ * - --nuraly-color-input-icon-disabled: Disabled state for all icons
+ * 
+ * Specific Icon Types:
+ * - --nuraly-color-input-warning-icon: Warning state icons
+ * - --nuraly-color-input-error-icon: Error state icons
+ * - --nuraly-color-input-calendar-icon: Calendar input type icons
+ * - --nuraly-color-input-password-icon: Password toggle icons
+ * - --nuraly-color-input-copy-icon: Copy functionality icons
+ * - --nuraly-color-input-clear-icon: Clear functionality icons
+ * - --nuraly-color-input-number-icons: Number input increment/decrement icons
+ * 
+ * Usage Examples:
+ * ```css
+ * :root {
+ *   --nuraly-color-input-icon: #0066cc;
+ *   --nuraly-color-input-error-icon: #cc0000;
+ *   --nuraly-size-input-icon: 20px;
+ * }
+ * 
+ * .custom-input {
+ *   --nuraly-color-input-icon: #purple;
+ * }
+ * ```
  * 
  * The styling system uses CSS custom properties with fallbacks to allow
  * for both global and local customization of input appearance.
@@ -82,10 +114,22 @@ const inputStyle = css`
   /* 
    * Icon base styles
    * Common styling for all icons within the input component
+   * Provides comprehensive CSS variable override system
    */
   nr-icon {
     display: flex;
     align-items: center;
+    
+    /* Global icon color override - applies to all icons in input */
+    --nuraly-color-icon: var(--nuraly-color-input-icon, var(--nuraly-color-icon, var(--nuraly-color-icon-fallback, #161616)));
+    
+    /* Size override for input icons */
+    --nuraly-icon-size: var(--nuraly-size-input-icon, var(--nuraly-icon-size, var(--nuraly-icon-size-fallback, 18px)));
+    
+    /* Interactive state overrides */
+    --nuraly-color-icon-hover: var(--nuraly-color-input-icon-hover, var(--nuraly-color-icon-hover, var(--nuraly-color-icon-hover-fallback, #0f62fe)));
+    --nuraly-color-icon-active: var(--nuraly-color-input-icon-active, var(--nuraly-color-icon-active, var(--nuraly-color-icon-active-fallback, #054ada)));
+    --nuraly-color-icon-disabled: var(--nuraly-color-input-icon-disabled, var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6)));
   }
 
   /* 
@@ -112,17 +156,17 @@ const inputStyle = css`
 
   /* Warning state icon */
   #warning-icon {
-    --nuraly-icon-color: var(--nuraly-color-input-warning-icon, #f1c21b);
+    --nuraly-color-icon: var(--nuraly-color-input-warning-icon, #f1c21b);
   }
 
   /* Error state icon */
   #error-icon {
-    --nuraly-icon-color: var(--nuraly-color-input-error-icon, #da1e28);
+    --nuraly-color-icon: var(--nuraly-color-input-error-icon, #da1e28);
   }
 
   /* Calendar input type icon */
   #calendar-icon {
-    --nuraly-icon-color: var(--nuraly-color-input-calendar-icon, #161616);
+    --nuraly-color-icon: var(--nuraly-color-input-calendar-icon, #161616);
   }
 
   /* Password toggle icon */
@@ -130,20 +174,20 @@ const inputStyle = css`
     padding-left: var(--nuraly-input-password-icon-padding-left, var(--nuraly-password-icon-padding-left, 8px));
     padding-right: var(--nuraly-input-password-icon-padding-right, var(--nuraly-password-icon-padding-right, 8px));
     cursor: var(--nuraly-cursor-interactive, pointer);
-    --nuraly-icon-color: var(--nuraly-color-input-password-icon, #161616);
+    --nuraly-color-icon: var(--nuraly-color-input-password-icon, #161616);
   }
 
   /* Copy functionality icon */
   #copy-icon {
     padding-right: var(--nuraly-input-copy-icon-padding-right, var(--nuraly-copy-icon-padding-right, 8px));
-    --nuraly-icon-color: var(--nuraly-color-input-copy-icon, #161616);
+    --nuraly-color-icon: var(--nuraly-color-input-copy-icon, #161616);
     cursor: var(--nuraly-cursor-interactive, pointer);
   }
 
   /* Clear functionality icon */
   #clear-icon {
     padding-right: var(--nuraly-input-clear-icon-padding-right, var(--nuraly-clear-icon-padding-right, 8px));
-    --nuraly-icon-color: var(--nuraly-color-input-clear-icon, #161616);
+    --nuraly-color-icon: var(--nuraly-color-input-clear-icon, #161616);
     cursor: var(--nuraly-cursor-interactive, pointer);
   }
 
@@ -166,7 +210,7 @@ const inputStyle = css`
 
   /* Individual number icons styling */
   #number-icons nr-icon {
-    --nuraly-icon-color: var(--nuraly-color-input-number-icons, #161616);
+    --nuraly-color-icon: var(--nuraly-color-input-number-icons, #161616);
     padding-left: var(--nuraly-input-number-icons-padding-left, var(--nuraly-number-icons-padding-left, 4px));
     padding-right: var(--nuraly-input-number-icons-padding-right, var(--nuraly-number-icons-padding-right, 4px));
     width: var(--nuraly-input-number-icons-width, var(--nuraly-number-icons-width, 24px));
