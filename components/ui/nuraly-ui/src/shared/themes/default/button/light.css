@@ -10,14 +10,6 @@
    * BUTTON VARIABLES - ANT DESIGN LIGHT THEME
    * ======================================== */
 
-  /* Primary button colors - Ant Design primary blue */
-  --nuraly-color-button-primary: #1890ff;
-  --nuraly-color-button-primary-hover: #40a9ff;
-  --nuraly-color-button-primary-active: #096dd9;
-  --nuraly-color-button-primary-text: #ffffff;
-  --nuraly-color-button-primary-text-hover: #ffffff;
-  --nuraly-color-button-primary-text-active: #ffffff;
-
   /* Secondary/Default button colors - Ant Design specifications */
   --nuraly-color-button-secondary: #ffffff;
   --nuraly-color-button-secondary-hover: #ffffff;
@@ -25,14 +17,6 @@
   --nuraly-color-button-secondary-text: rgba(0, 0, 0, 0.88);
   --nuraly-color-button-secondary-text-hover: #40a9ff;
   --nuraly-color-button-secondary-text-active: #096dd9;
-
-  /* Danger button colors - Ant Design error red */
-  --nuraly-color-button-danger: #ff4d4f;
-  --nuraly-color-button-danger-hover: #ff7875;
-  --nuraly-color-button-danger-active: #d9363e;
-  --nuraly-color-button-danger-text: #ffffff;
-  --nuraly-color-button-danger-text-hover: #ffffff;
-  --nuraly-color-button-danger-text-active: #ffffff;
 
   /* Outline button colors - Ant Design default button */
   --nuraly-color-button-outline: #ffffff;
@@ -49,65 +33,17 @@
   --nuraly-color-button-ghost: transparent;
   --nuraly-color-button-ghost-hover: rgba(24, 144, 255, 0.06);
   --nuraly-color-button-ghost-active: rgba(24, 144, 255, 0.15);
-  --nuraly-color-button-ghost-text: #1890ff;
-  --nuraly-color-button-ghost-text-hover: #40a9ff;
-  --nuraly-color-button-ghost-text-active: #096dd9;
-
-  /* Ghost button border colors - removed borders for Ant Design */
-  --nuraly-color-button-outline-border: transparent;
-  --nuraly-color-button-outline-border-hover: transparent;
-  --nuraly-color-button-outline-border-active: transparent;
-
-  /* Tertiary button - same as ghost for consistency */
-  --nuraly-color-button-tertiary: #1890ff;
-  --nuraly-color-button-tertiary-hover: #40a9ff;
-  --nuraly-color-button-tertiary-active: #096dd9;
-
-  /* Button gradients - minimal for Ant Design */
-  --nuraly-color-button-gradient-bg-start: #1890ff;
-  --nuraly-color-button-gradient-bg-end: #096dd9;
-  --nuraly-color-button-gradient-text: #ffffff;
 
   /* Button disabled states - Ant Design disabled palette */
   --nuraly-color-button-disabled: #f5f5f5;
   --nuraly-color-button-disabled-text: rgba(0, 0, 0, 0.25);
   --nuraly-color-button-disabled-border: #d9d9d9;
 
-  /* Button focus styles - Ant Design focus system */
-  --nuraly-color-button-focus-outline: #1890ff;
-  --nuraly-color-button-focus-ring: rgba(24, 144, 255, 0.2);
-
   /* Button shadows - Ant Design box-shadow system */
   --nuraly-shadow-button: 0 2px 0 rgba(0, 0, 0, 0.02);
   --nuraly-shadow-button-hover: 0 2px 4px rgba(0, 0, 0, 0.1);
   --nuraly-shadow-button-active: 0 0 0 rgba(0, 0, 0, 0);
-  --nuraly-shadow-button-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
 
-  /* Ant Design specific button styling */
-  --nuraly-border-radius-button: 6px; /* Ant Design default border radius */
-  
   /* Button separator for fluid buttons */
   --nuraly-color-button-separator: #f0f0f0;
-  
-  /* ========================================
-   * ANT DESIGN BUTTON PADDING & SPACING
-   * Ant Design specific button dimensions
-   * ======================================== */
-  
-  /* Ant Design button padding */
-  --nuraly-button-padding-vertical: 4px;    /* Ant Design default vertical padding */
-  --nuraly-button-padding-horizontal: 15px; /* Ant Design default horizontal padding */
-  
-  /* Override default button spacing for Ant Design theme */
-  --nuraly-spacing-2: 4px;   /* Override vertical padding */
-  --nuraly-spacing-4: 15px;  /* Override horizontal padding */
-  
-  /* For different sizes */
-  --nuraly-size-sm: 24px;    /* Ant Design small button height */
-  --nuraly-size-md: 32px;    /* Ant Design default button height */
-  --nuraly-size-lg: 40px;    /* Ant Design large button height */
-  
-  /* Ant Design icon spacing and alignment */
-  --nuraly-button-icon-spacing: 6px;   /* Space between icon and text - reduced */
-  --nuraly-button-icon-size: 12px;     /* Icon size for buttons - balanced size for Ant Design */
 }

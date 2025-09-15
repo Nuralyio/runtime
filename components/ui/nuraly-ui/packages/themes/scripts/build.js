@@ -20,6 +20,7 @@ const THEMES = {
       'theme.css',
       'index.css',
       'button/index.css',
+      'button/common.css',
       'button/light.css', 
       'button/dark.css',
       'input/index.css',
@@ -35,6 +36,7 @@ const THEMES = {
       'radio/light.css',
       'radio/dark.css',
       'select/index.css',
+      'select/common.css',
       'select/light.css',
       'select/dark.css'
     ]
@@ -45,6 +47,7 @@ const THEMES = {
       'theme.css',
       'index.css',
       'button/index.css',
+      'button/common.css',
       'button/light.css',
       'button/dark.css',
       'input/index.css',
@@ -60,6 +63,7 @@ const THEMES = {
       'radio/light.css',
       'radio/dark.css',
       'select/index.css',
+      'select/common.css',
       'select/light.css',
       'select/dark.css'
     ]

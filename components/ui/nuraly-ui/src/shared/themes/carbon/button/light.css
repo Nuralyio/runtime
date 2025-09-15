@@ -4,7 +4,6 @@
  * Based on official Carbon Design System color tokens
  */
 
-:root,
 [data-theme="carbon-light"],
 [data-theme="carbon"] {
   /* ========================================
@@ -65,44 +64,6 @@
   --nuraly-color-button-gradient-bg-end: #0f62fe;
   --nuraly-color-button-gradient-text: #ffffff;
 
-  /* Button disabled states - Carbon Gray 30 */
-  --nuraly-color-button-disabled: #c6c6c6;
-  --nuraly-color-button-disabled-text: #8d8d8d;
-  --nuraly-color-button-disabled-border: #c6c6c6;
-
-  /* Button focus styles - Carbon Blue 60 */
-  --nuraly-color-button-focus-outline: #0f62fe;
-  --nuraly-color-button-focus-ring: rgba(15, 98, 254, 0.2);
-
-  /* Button shadows - Carbon uses minimal shadows */
-  --nuraly-shadow-button: none;
-  --nuraly-shadow-button-hover: none;
-  --nuraly-shadow-button-active: none;
-  --nuraly-shadow-button-focus: 0 0 0 2px rgba(15, 98, 254, 0.2);
-
-  /* Carbon-specific button borders (sharp corners by default) */
-  --nuraly-border-radius-button: 0;
-
   /* Button separator for fluid buttons */
   --nuraly-color-button-separator: #e0e0e0;
-
-  /* ========================================
-   * CARBON BUTTON PADDING & SPACING
-   * Carbon Design System specific spacing - Direct overrides
-   * ======================================== */
-  
-  /* Carbon button padding - more generous padding for better visual hierarchy */
-  --nuraly-button-padding-vertical: 1rem;      /* 16px */
-  --nuraly-button-padding-horizontal: 1.5rem;  /* 24px */
-  
-  /* Override default button spacing for Carbon theme - use larger values */
-  --nuraly-spacing-2: 1rem;    /* Override vertical padding to 16px */
-  --nuraly-spacing-4: 1.5rem;  /* Override horizontal padding to 24px */
-  
-  /* For medium size specifically */
-  --nuraly-size-md: 3.5rem;    /* Increase button height to 56px */
-  
-  /* Carbon icon spacing and alignment */
-  --nuraly-button-icon-spacing: 0.5rem;  /* 8px gap between icon and text */
-  --nuraly-button-icon-size: 1rem;       /* 16px icon size */
 }
