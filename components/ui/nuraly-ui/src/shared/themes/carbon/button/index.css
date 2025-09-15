@@ -4,6 +4,7 @@
  * IMPORTANT: Dark theme must be loaded AFTER light theme to ensure proper cascade
  */
 
+@import './common.css';
 @import './light.css';
 @import './dark.css';
 
