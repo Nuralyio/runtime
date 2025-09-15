@@ -204,7 +204,7 @@ const inputStyle = css`
     right: 0;
     top: 0;
     height: 100%;
-    width: var(--nuraly-input-number-icons-container-width, var(--nuraly-number-icons-container-width, 32px));
+    width: var(--nuraly-input-number-icons-container-width, var(--nuraly-number-icons-container-width, 50px));
     padding-right: var(--nuraly-input-number-icons-container-padding-right, var(--nuraly-number-icons-container-padding-right, 8px));
   }
 

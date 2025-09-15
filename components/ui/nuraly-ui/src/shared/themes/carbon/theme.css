@@ -275,7 +275,7 @@ body[data-theme="carbon-dark"] * {
   /* Input icon sizing - shared across themes */
   --nuraly-input-number-icons-width: 24px;
   --nuraly-input-number-icons-height: 24px;
-  --nuraly-input-number-icons-container-width: 32px;
+  --nuraly-input-number-icons-container-width: 50px;
   --nuraly-input-number-icons-container-padding-right: 8px;
   --nuraly-number-icons-padding-left: 4px;
   --nuraly-number-icons-padding-right: 4px;
