@@ -68,17 +68,6 @@ const inputStyle = css`
     background-color: var(--nuraly-color-input-background, var(--nuraly-color-input-background-fallback, #ffffff));
   }
 
-  /* Carbon Design System wrapper override */
-  html[data-theme^="carbon"] nr-input .input-wrapper,
-  html[data-theme^="default"] nr-input .input-wrapper,
-  body[data-theme^="carbon"] nr-input .input-wrapper,
-  body[data-theme^="default"] nr-input .input-wrapper,
-  [data-theme^="carbon"] nr-input .input-wrapper,
-  [data-theme^="default"] nr-input .input-wrapper,
-  .input-wrapper[data-theme^="carbon"],
-  .input-wrapper[data-theme^="default"] {
-    background-color: var(--nuraly-color-input-background) !important;
-  }
 
   #input-container > input {
     background-color: transparent;

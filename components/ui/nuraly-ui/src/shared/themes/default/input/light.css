@@ -1,30 +1,26 @@
 /**
- * Ant Design Theme - Input Component - Light Variant
- * Input-specific CSS variables based on Ant Design v5 specifications
+ * Default Design System Theme - Input Component - Light Variant
+ * Input-specific CSS variables based on Default Design System specifications
  */
 
 :root,
 [data-theme="default-light"]{
   /* ========================================
-   * INPUT VARIABLES - ANT DESIGN LIGHT THEME
+   * INPUT VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */
 
-  /* Base input styling - Ant Design style */
+  /* Base input styling - Default Design System */
   --nuraly-color-input-background: #ffffff;
   --nuraly-color-input-text: rgba(0, 0, 0, 0.88);
   --nuraly-color-input-placeholder: rgba(0, 0, 0, 0.25);
   --nuraly-color-input-label: rgba(0, 0, 0, 0.88);
   --nuraly-color-input-helper-text: rgba(0, 0, 0, 0.45);
 
-  /* Input borders - Ant Design outlined style */
+  /* Input borders - Default Design System outlined style (light specific) */
   --nuraly-color-input-border: #d9d9d9;
   --nuraly-color-input-border-bottom: #d9d9d9;
-  --nuraly-color-input-border-focus: #1890ff;
-  --nuraly-color-input-border-hover: #40a9ff;
-  --nuraly-border-width-input: 1px;
-  --nuraly-border-radius-input: 6px;
 
-  /* Input states - Ant Design */
+  /* Input states - Default Design System */
   --nuraly-color-input-disabled-background: #f5f5f5;
   --nuraly-color-input-disabled-text: rgba(0, 0, 0, 0.25);
   --nuraly-color-input-disabled-placeholder: rgba(0, 0, 0, 0.25);
@@ -32,41 +28,19 @@
   --nuraly-color-input-disabled-helper-text: rgba(0, 0, 0, 0.25);
   --nuraly-color-input-disabled-border: #d9d9d9;
 
-  /* Error states - Ant Design error red */
+  /* Error states - Default Design System error red */
   --nuraly-color-input-error-border: #ff4d4f;
   --nuraly-color-input-error-text: #ff4d4f;
   --nuraly-color-input-error-icon: #ff4d4f;
   --nuraly-color-input-error-background: #fff2f0;
 
-  /* Warning states - Ant Design warning orange */
+  /* Warning states - Default Design System warning orange */
   --nuraly-color-input-warning-border: #faad14;
   --nuraly-color-input-warning-text: #faad14;
   --nuraly-color-input-warning-icon: #faad14;
   --nuraly-color-input-warning-background: #fffbe6;
 
-  /* Input sizing - Ant Design */
-  --nuraly-size-input-small-height: 24px;
-  --nuraly-size-input-medium-height: 32px;
-  --nuraly-size-input-large-height: 40px;
-
-  /* Input padding - Ant Design */
-  --nuraly-spacing-input-small-vertical: 0px;
-  --nuraly-spacing-input-small-horizontal: 7px;
-  --nuraly-spacing-input-medium-vertical: 4px;
-  --nuraly-spacing-input-medium-horizontal: 11px;
-  --nuraly-spacing-input-large-vertical: 6px;
-  --nuraly-spacing-input-large-horizontal: 11px;
-
-  /* Input typography - Ant Design */
-  --nuraly-font-family-input: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --nuraly-font-size-input: 14px;
-  --nuraly-font-size-input-label: 14px;
-  --nuraly-font-size-input-helper: 14px;
-  --nuraly-font-size-input-placeholder: 14px;
-  --nuraly-font-size-input-small: 14px;
-  --nuraly-font-size-input-large: 16px;
-
-  /* Input icons - Ant Design */
+  /* Input icons - Default Design System */
   --nuraly-color-input-icon: rgba(0, 0, 0, 0.45);
   --nuraly-color-input-icon-hover: rgba(0, 0, 0, 0.88);
   --nuraly-color-input-password-icon: rgba(0, 0, 0, 0.45);
@@ -74,9 +48,8 @@
   --nuraly-color-input-copy-icon: rgba(0, 0, 0, 0.45);
   --nuraly-color-input-clear-icon: rgba(0, 0, 0, 0.25);
   --nuraly-color-input-number-icons: rgba(0, 0, 0, 0.45);
-  --nuraly-size-input-icon: 14px;
 
-  /* Addons and prefix/suffix - Ant Design */
+  /* Addons and prefix/suffix - Default Design System */
   --nuraly-color-input-addon-background: #fafafa;
   --nuraly-color-input-addon-text: rgba(0, 0, 0, 0.88);
   --nuraly-color-input-addon-border: #d9d9d9;
@@ -86,25 +59,9 @@
   /* Input variants */
   --nuraly-color-input-outlined-border: #d9d9d9;
   --nuraly-color-input-outlined-background: #ffffff;
-  --nuraly-border-radius-input-outlined: 6px;
-
   --nuraly-color-input-filled-background: #fafafa;
   --nuraly-color-input-filled-border: #d9d9d9;
   --nuraly-color-input-filled-border-bottom: #d9d9d9;
-  --nuraly-border-radius-input-filled: 6px;
-
-  /* Input focus states - Ant Design */
-  --nuraly-shadow-input-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
-  --nuraly-shadow-input-error-focus: 0 0 0 2px rgba(255, 77, 79, 0.2);
-  --nuraly-shadow-input-warning-focus: 0 0 0 2px rgba(250, 173, 20, 0.2);
-
-  /* Ant Design spacing values */
-  --nuraly-spacing-input-label-bottom: 8px;
-  --nuraly-spacing-input-helper-top: 4px;
-  --nuraly-spacing-input-icon: 4px;
-
-  /* Input transitions - Ant Design */
-  --nuraly-transition-input: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 /* Specific input container styling for light theme */
@@ -117,4 +74,5 @@
   border-bottom: 1px solid #d9d9d9 !important;
   background-color: #ffffff !important;
   color: rgba(0, 0, 0, 0.88) !important;
+  border-radius: var(--nuraly-border-radius-input, 6px) !important;
 }
