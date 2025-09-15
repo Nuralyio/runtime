@@ -1672,3 +1672,90 @@ export const ValidationPerformance: Story = {
     </div>
   `,
 };
+
+export const CustomIconColors: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 2rem; max-width: 500px;">
+      <h3>Icon Color Customization</h3>
+      
+      <div style="padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <h4>Global Icon Color Override</h4>
+        <nr-input 
+          type="password"
+          placeholder="Custom icon colors"
+          value="example123"
+          with-clear
+          with-copy
+          style="--nuraly-color-input-icon: #9c27b0; --nuraly-size-input-icon: 20px;"
+        ></nr-input>
+        <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+          All icons are purple (20px) using: <code>--nuraly-color-input-icon: #9c27b0</code>
+        </p>
+      </div>
+
+      <div style="padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <h4>Specific Icon Type Colors</h4>
+        <nr-input 
+          type="text"
+          placeholder="Error input with custom colors"
+          state="error"
+          value="Invalid value"
+          with-clear
+          style="
+            --nuraly-color-input-error-icon: #ff5722; 
+            --nuraly-color-input-clear-icon: #4caf50;
+            --nuraly-size-input-icon: 18px;
+          "
+        ></nr-input>
+        <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+          Error icon is orange, clear icon is green using specific CSS variables
+        </p>
+      </div>
+
+      <div style="padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <h4>Number Input with Custom Icon Colors</h4>
+        <nr-input 
+          type="number"
+          placeholder="Number with custom increment icons"
+          value="42"
+          style="--nuraly-color-input-number-icons: #2196f3;"
+        ></nr-input>
+        <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+          Number increment/decrement icons are blue using: <code>--nuraly-color-input-number-icons: #2196f3</code>
+        </p>
+      </div>
+
+      <div style="padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <h4>Interactive State Colors</h4>
+        <nr-input 
+          type="password"
+          placeholder="Hover/active custom colors"
+          value="interactive"
+          style="
+            --nuraly-color-input-icon: #795548;
+            --nuraly-color-input-icon-hover: #ff9800;
+            --nuraly-color-input-icon-active: #f44336;
+          "
+        ></nr-input>
+        <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+          Brown default, orange on hover, red on active - try interacting with the password toggle icon
+        </p>
+      </div>
+
+      <div style="padding: 1rem; background-color: #f5f5f5; border-radius: 8px;">
+        <h4>Available CSS Variables</h4>
+        <ul style="font-size: 0.875rem; color: #444; margin: 0.5rem 0;">
+          <li><code>--nuraly-color-input-icon</code> - All icons</li>
+          <li><code>--nuraly-size-input-icon</code> - Icon size</li>
+          <li><code>--nuraly-color-input-error-icon</code> - Error state icons</li>
+          <li><code>--nuraly-color-input-warning-icon</code> - Warning state icons</li>
+          <li><code>--nuraly-color-input-password-icon</code> - Password toggle</li>
+          <li><code>--nuraly-color-input-clear-icon</code> - Clear button</li>
+          <li><code>--nuraly-color-input-copy-icon</code> - Copy button</li>
+          <li><code>--nuraly-color-input-number-icons</code> - Number increment/decrement</li>
+          <li><code>--nuraly-color-input-calendar-icon</code> - Calendar icons</li>
+        </ul>
+      </div>
+    </div>
+  `,
+};
