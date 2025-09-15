@@ -3,6 +3,8 @@ import { Meta, StoryObj } from '@storybook/web-components';
 import '../icon/index.js';
 import '../input/index.js';
 import './index.js';
+import '../../shared/themes/carbon/index.css';
+import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'Components/Select',

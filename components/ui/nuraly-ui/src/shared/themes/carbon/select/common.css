@@ -1,0 +1,62 @@
+/**
+ * Carbon Design System Theme - Select Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme^="carbon"] {
+  /* ========================================
+   * SHARED SELECT VARIABLES - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Common borders - Carbon Design System */
+  --nuraly-select-border-width: 1px;
+  --nuraly-select-border-radius: 0px;
+
+  /* Common dropdown styling - Carbon Design System */
+  --nuraly-select-dropdown-z-index: 9999;
+  --nuraly-select-dropdown-max-height: 200px;
+  --nuraly-select-dropdown-border-radius: 0px;
+  --nuraly-select-dropdown-border-width: 1px;
+
+  /* Common option styling - Carbon Design System */
+  --nuraly-select-option-padding: 11px 16px;
+  --nuraly-select-option-min-height: 40px;
+
+  /* Common warning states - Carbon Design System */
+  --nuraly-select-warning-border-color: #f1c21b;
+  --nuraly-select-warning-text-color: #f1c21b;
+
+  /* Common disabled states - Carbon Design System */
+  --nuraly-select-disabled-opacity: 1;
+
+  /* Common icon styling - Carbon Design System */
+  --nuraly-select-icon-size: 16px;
+  --nuraly-select-arrow-icon-size: 16px;
+
+  /* Common multi-select tags - Carbon Design System */
+  --nuraly-select-tag-border-radius: 2px;
+
+  /* Common typography - Carbon Design System */
+  --nuraly-select-font-family: 'IBM Plex Sans', sans-serif;
+  --nuraly-select-font-size: 14px;
+  --nuraly-select-line-height: 1.28572;
+
+  /* Common sizing - Carbon Design System */
+  --nuraly-select-min-height: 40px;
+  --nuraly-select-padding: 11px 16px;
+  --nuraly-select-small-height: 32px;
+  --nuraly-select-small-font-size: 12px;
+  --nuraly-select-small-padding: 7px 16px;
+  --nuraly-select-medium-height: 44px;
+  --nuraly-select-medium-font-size: 14px;
+  --nuraly-select-medium-padding: 11px 16px;
+  --nuraly-select-large-height: 48px;
+  --nuraly-select-large-font-size: 16px;
+  --nuraly-select-large-padding: 13px 16px;
+
+  /* Common animation - Carbon Design System */
+  --nuraly-select-transition-duration: 70ms;
+  --nuraly-select-transition-timing: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --nuraly-select-dropdown-animation-duration: 110ms;
+}

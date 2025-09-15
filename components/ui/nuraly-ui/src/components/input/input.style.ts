@@ -342,57 +342,43 @@ const inputStyle = css`
     transition: var(--nuraly-transition-input, border-color 0.2s, box-shadow 0.2s);
   }
 
-  /* Carbon Design System override - Common styles */
+  /* Carbon Design System override - Carbon specific styles */
   html[data-theme^="carbon"] nr-input #input-container,
-  html[data-theme^="default"] nr-input #input-container,
   body[data-theme^="carbon"] nr-input #input-container,
-  body[data-theme^="default"] nr-input #input-container,
   [data-theme^="carbon"] nr-input #input-container,
+  .input-wrapper[data-theme^="carbon"] #input-container {
+    border: var(--nuraly-border-width-input, 1px) solid var(--nuraly-color-input-border, transparent) !important;
+    border-bottom: var(--nuraly-border-width-input, 2px) solid var(--nuraly-color-input-border-bottom, #8d8d8d) !important;
+    border-radius: var(--nuraly-border-radius-input, 0) !important;
+    background-color: var(--nuraly-color-input-background, #f4f4f4) !important;
+    color: var(--nuraly-color-input-text, #161616) !important;
+  }
+
+  /* Default theme override - Default specific styles */
+  html[data-theme^="default"] nr-input #input-container,
+  body[data-theme^="default"] nr-input #input-container,
   [data-theme^="default"] nr-input #input-container,
-  .input-wrapper[data-theme^="carbon"] #input-container,
   .input-wrapper[data-theme^="default"] #input-container {
-    border: 2px solid transparent !important;
-    border-radius: 0 !important;
-  }
-
-  /* Carbon Design System override - Light theme specific */
-  html[data-theme="carbon-light"] nr-input #input-container,
-  html[data-theme="default-light"] nr-input #input-container,
-  body[data-theme="carbon-light"] nr-input #input-container,
-  body[data-theme="default-light"] nr-input #input-container,
-  [data-theme="carbon-light"] nr-input #input-container,
-  [data-theme="default-light"] nr-input #input-container,
-  .input-wrapper[data-theme="carbon-light"] #input-container,
-  .input-wrapper[data-theme="default-light"] #input-container {
-    border-bottom: 2px solid #8d8d8d !important;
-    background-color: #f4f4f4 !important;
-    color: #161616 !important;
-  }
-
-  /* Carbon Design System override - Dark theme specific */
-  html[data-theme="carbon-dark"] nr-input #input-container,
-  html[data-theme="default-dark"] nr-input #input-container,
-  body[data-theme="carbon-dark"] nr-input #input-container,
-  body[data-theme="default-dark"] nr-input #input-container,
-  [data-theme="carbon-dark"] nr-input #input-container,
-  [data-theme="default-dark"] nr-input #input-container,
-  .input-wrapper[data-theme="carbon-dark"] #input-container,
-  .input-wrapper[data-theme="default-dark"] #input-container {
-    border-bottom: 2px solid #6f6f6f !important;
-    background-color: #393939 !important;
-    color: #f4f4f4 !important;
+    border: var(--nuraly-border-width-input, 1px) solid var(--nuraly-color-input-border, #d9d9d9) !important;
+    border-radius: var(--nuraly-border-radius-input, 6px) !important;
+    background-color: var(--nuraly-color-input-background, #ffffff) !important;
+    color: var(--nuraly-color-input-text, rgba(0, 0, 0, 0.88)) !important;
   }
 
   /* Carbon input element padding override */
   html[data-theme^="carbon"] nr-input #input-container > input,
-  html[data-theme^="default"] nr-input #input-container > input,
   body[data-theme^="carbon"] nr-input #input-container > input,
-  body[data-theme^="default"] nr-input #input-container > input,
   [data-theme^="carbon"] nr-input #input-container > input,
-  [data-theme^="default"] nr-input #input-container > input,
-  .input-wrapper[data-theme^="carbon"] #input-container > input,
-  .input-wrapper[data-theme^="default"] #input-container > input {
+  .input-wrapper[data-theme^="carbon"] #input-container > input {
     padding: 7px 16px !important;
+  }
+
+  /* Default input element padding override */
+  html[data-theme^="default"] nr-input #input-container > input,
+  body[data-theme^="default"] nr-input #input-container > input,
+  [data-theme^="default"] nr-input #input-container > input,
+  .input-wrapper[data-theme^="default"] #input-container > input {
+    padding: var(--nuraly-spacing-input-medium-vertical, 4px) var(--nuraly-spacing-input-medium-horizontal, 11px) !important;
   }
 
   /* Focus state for input container */
@@ -404,16 +390,23 @@ const inputStyle = css`
 
   /* Carbon focus override */
   html[data-theme^="carbon"] nr-input #input-container:focus-within,
-  html[data-theme^="default"] nr-input #input-container:focus-within,
   body[data-theme^="carbon"] nr-input #input-container:focus-within,
-  body[data-theme^="default"] nr-input #input-container:focus-within,
   [data-theme^="carbon"] nr-input #input-container:focus-within,
+  .input-wrapper[data-theme^="carbon"] #input-container:focus-within {
+    border: var(--nuraly-border-width-input, 2px) solid var(--nuraly-color-input-border-focus, #0f62fe) !important;
+    border-radius: var(--nuraly-border-radius-input, 0) !important;
+    box-shadow: var(--nuraly-shadow-input-focus, none) !important;
+    outline: none !important;
+  }
+
+  /* Default focus override */
+  html[data-theme^="default"] nr-input #input-container:focus-within,
+  body[data-theme^="default"] nr-input #input-container:focus-within,
   [data-theme^="default"] nr-input #input-container:focus-within,
-  .input-wrapper[data-theme^="carbon"] #input-container:focus-within,
   .input-wrapper[data-theme^="default"] #input-container:focus-within {
-    border: 2px solid #0f62fe !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+    border-color: var(--nuraly-color-input-border-focus, #1890ff) !important;
+    border-radius: var(--nuraly-border-radius-input, 6px) !important;
+    box-shadow: var(--nuraly-shadow-input-focus, 0 0 0 2px rgba(24, 144, 255, 0.2)) !important;
     outline: none !important;
   }
 
