@@ -1,0 +1,113 @@
+/**
+ * Carbon Design System Theme - Icon Component - Dark Variant
+ * Icon-specific CSS variables based on IBM Carbon Design System dark theme specifications
+ */
+
+[data-theme="carbon-dark"]{
+  /* ========================================
+   * ICON VARIABLES - CARBON DARK THEME
+   * ======================================== */
+
+  /* Base icon colors - Carbon Dark Design System */
+  --nuraly-color-icon: #a6a6a6;
+  --nuraly-color-icon-fallback: #f4f4f4;
+
+  /* Icon sizing - Carbon Design System (same as light) */
+  --nuraly-icon-size: 20px;
+  --nuraly-icon-size-fallback: 18px;
+  --nuraly-icon-size-small: 16px;
+  --nuraly-icon-size-small-fallback: 16px;
+  --nuraly-icon-size-medium: 20px;
+  --nuraly-icon-size-medium-fallback: 20px;
+  --nuraly-icon-size-large: 24px;
+  --nuraly-icon-size-large-fallback: 24px;
+  --nuraly-icon-size-xlarge: 32px;
+  --nuraly-icon-size-xlarge-fallback: 32px;
+  --nuraly-icon-size-xxlarge: 40px;
+  --nuraly-icon-size-xxlarge-fallback: 40px;
+  --nuraly-icon-min-size: 12px;
+  --nuraly-icon-min-size-fallback: 12px;
+
+  /* Interactive states - Carbon Dark */
+  --nuraly-color-icon-hover: #78a9ff;
+  --nuraly-color-icon-hover-fallback: #78a9ff;
+  --nuraly-color-icon-active: #a6c8ff;
+  --nuraly-color-icon-active-fallback: #a6c8ff;
+
+  /* Disabled state - Carbon Dark */
+  --nuraly-color-icon-disabled: #6f6f6f;
+  --nuraly-color-icon-disabled-fallback: #6f6f6f;
+  --nuraly-icon-disabled-opacity: 0.25;
+  --nuraly-icon-disabled-opacity-fallback: 0.25;
+
+  /* Focus states - Carbon Dark */
+  --nuraly-color-icon-focus: #78a9ff;
+  --nuraly-icon-focus-outline: 2px solid #78a9ff;
+  --nuraly-icon-focus-outline-fallback: 2px solid #78a9ff;
+  --nuraly-icon-focus-outline-offset: 1px;
+  --nuraly-icon-focus-outline-offset-fallback: 2px;
+  --nuraly-icon-focus-background: transparent;
+  --nuraly-icon-focus-background-fallback: rgba(120, 169, 255, 0.1);
+  --nuraly-icon-focus-border-radius: 0px;
+  --nuraly-icon-focus-border-radius-fallback: 4px;
+  --nuraly-icon-focus-shadow: none;
+  --nuraly-icon-focus-shadow-fallback: none;
+
+  /* Animation and transitions - Carbon Dark (same as light) */
+  --nuraly-icon-transition: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
+  --nuraly-icon-transition-fallback: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
+  --nuraly-icon-hover-opacity: 0.8;
+  --nuraly-icon-hover-opacity-fallback: 0.8;
+  --nuraly-icon-hover-transform: scale(1.0625);
+  --nuraly-icon-hover-transform-fallback: scale(1.05);
+  --nuraly-icon-active-opacity: 0.6;
+  --nuraly-icon-active-opacity-fallback: 0.6;
+  --nuraly-icon-active-transform: scale(0.9375);
+  --nuraly-icon-active-transform-fallback: scale(0.95);
+
+  /* Semantic state colors - Carbon Dark (adjusted for dark theme) */
+  --nuraly-color-error: #fa4d56;
+  --nuraly-color-warning: #f1c21b;
+  --nuraly-color-success: #42be65;
+  --nuraly-color-info: #78a9ff;
+
+  /* Cursor styles (same as light) */
+  --nuraly-cursor-default: default;
+  --nuraly-cursor-interactive: pointer;
+  --nuraly-cursor-disabled: not-allowed;
+
+  /* Font family for icon context (same as light) */
+  --nuraly-font-family-icon: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+}
+
+/* Carbon Design System specific overrides */
+html[data-theme="carbon-dark"] nr-icon .svg-icon.clickable:focus,
+body[data-theme="carbon-dark"] nr-icon .svg-icon.clickable:focus,
+[data-theme="carbon-dark"] nr-icon .svg-icon.clickable:focus {
+  outline: 2px solid #78a9ff !important;
+  outline-offset: 1px !important;
+  background: none !important;
+  border-radius: 0 !important;
+}
+
+/* Carbon size overrides */
+html[data-theme="carbon-dark"] nr-icon[size='small'] .svg-icon,
+body[data-theme="carbon-dark"] nr-icon[size='small'] .svg-icon,
+[data-theme="carbon-dark"] nr-icon[size='small'] .svg-icon {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+html[data-theme="carbon-dark"] nr-icon[size='medium'] .svg-icon,
+body[data-theme="carbon-dark"] nr-icon[size='medium'] .svg-icon,
+[data-theme="carbon-dark"] nr-icon[size='medium'] .svg-icon {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+html[data-theme="carbon-dark"] nr-icon[size='large'] .svg-icon,
+body[data-theme="carbon-dark"] nr-icon[size='large'] .svg-icon,
+[data-theme="carbon-dark"] nr-icon[size='large'] .svg-icon {
+  width: 24px !important;
+  height: 24px !important;
+}

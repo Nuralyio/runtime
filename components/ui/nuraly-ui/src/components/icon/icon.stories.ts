@@ -20,6 +20,11 @@ const meta: Meta = {
       options: ['solid', 'regular'],
       description: 'The icon type (solid or regular)',
     },
+    size: {
+      control: { type: 'select' },
+      options: ['small', 'medium', 'large', 'xlarge', 'xxlarge'],
+      description: 'Icon size (small, medium, large, xlarge, xxlarge)',
+    },
     alt: {
       control: { type: 'text' },
       description: 'Alternative text for accessibility',
@@ -36,6 +41,7 @@ const meta: Meta = {
   args: {
     name: 'envelope',
     type: 'solid',
+    size: 'medium',
     alt: '',
     clickable: false,
     disabled: false,
@@ -53,6 +59,7 @@ export const Default: Story = {
     <nr-icon
       name="${args.name}"
       type="${args.type}"
+      size="${args.size}"
       alt="${args.alt}"
       ?clickable="${args.clickable}"
       ?disabled="${args.disabled}"
@@ -94,6 +101,33 @@ export const CommonIcons: Story = {
       <div>
         <nr-icon name="star" style="font-size: 2rem;"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">star</p>
+      </div>
+    </div>
+  `,
+};
+
+export const Sizes: Story = {
+  render: () => html`
+    <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <nr-icon name="star" size="small"></nr-icon>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">Small (16px)</p>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <nr-icon name="star" size="medium"></nr-icon>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">Medium (20px)</p>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <nr-icon name="star" size="large"></nr-icon>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">Large (24px)</p>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <nr-icon name="star" size="xlarge"></nr-icon>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">XLarge (32px)</p>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <nr-icon name="star" size="xxlarge"></nr-icon>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">XXLarge (40px)</p>
       </div>
     </div>
   `,

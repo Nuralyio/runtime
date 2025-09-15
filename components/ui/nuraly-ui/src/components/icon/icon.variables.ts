@@ -4,79 +4,129 @@ import { css } from 'lit';
  * Icon component CSS custom properties (design tokens)
  * 
  * This file contains all the CSS custom properties used by the nr-icon component,
- * organized by functionality and including both light and dark theme variants.
+ * organized by functionality and including comprehensive theme support for multiple design systems.
  * 
  * The styling system uses CSS custom properties with fallbacks to allow
- * for both global and local customization of icon appearance.
+ * for both global and local customization of icon appearance across different themes:
+ * - Light theme (default)
+ * - Dark theme
+ * - Carbon Design System (light/dark)
+ * - Default Design System (light/dark)
+ * 
+ * Design tokens follow the pattern: --nuraly-[component]-[property]-[variant]
  */
 export const styleVariables = css`
   :host {
-    /* ----------------------------------------
-     * BASIC ICON PROPERTIES
-     * ---------------------------------------- */
-    --nuraly-icon-local-color: #000000;
-    --nuraly-icon-local-width: 18px;
-    --nuraly-icon-local-height: 18px;
-
-    /* ----------------------------------------
-     * INTERACTIVE STATES
-     * ---------------------------------------- */
-    --nuraly-icon-local-transition: opacity 0.2s ease, transform 0.2s ease;
-    --nuraly-icon-local-hover-opacity: 0.8;
-    --nuraly-icon-local-hover-transform: scale(1.1);
-    --nuraly-icon-local-hover-color: #0f62fe;
-    --nuraly-icon-local-active-opacity: 0.6;
-    --nuraly-icon-local-active-transform: scale(0.95);
-    --nuraly-icon-local-active-color: #054ada;
-    --nuraly-icon-local-disabled-opacity: 0.4;
-    --nuraly-icon-local-disabled-color: #c6c6c6;
+    /* ========================================
+     * BASE ICON PROPERTIES
+     * ======================================== */
     
-    /* ----------------------------------------
-     * FOCUS STYLES
-     * ---------------------------------------- */
-    --nuraly-icon-local-focus-outline: 2px solid #0f62fe;
-    --nuraly-icon-local-focus-outline-offset: 2px;
-    --nuraly-icon-local-focus-background: rgba(15, 98, 254, 0.1);
-    --nuraly-icon-local-focus-border-radius: 4px;
-
-    /* ----------------------------------------
-     * CURSOR STYLES
-     * ---------------------------------------- */
-    --nuraly-icon-local-cursor: pointer;
-    --nuraly-icon-local-disabled-cursor: not-allowed;
+    /* Size properties with fallbacks */
+    --nuraly-icon-size-fallback: 18px;
+    --nuraly-icon-size-small-fallback: 16px;
+    --nuraly-icon-size-medium-fallback: 20px;
+    --nuraly-icon-size-large-fallback: 24px;
+    --nuraly-icon-size-xlarge-fallback: 32px;
+    --nuraly-icon-size-xxlarge-fallback: 40px;
+    --nuraly-icon-min-size-fallback: 12px;
+    
+    /* Color properties with theme-aware fallbacks */
+    --nuraly-color-icon-fallback: #161616;
+    
+    /* ========================================
+     * INTERACTIVE STATE PROPERTIES
+     * ======================================== */
+    
+    /* Transition properties */
+    --nuraly-icon-transition-fallback: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
+    
+    /* Hover state properties */
+    --nuraly-icon-hover-opacity-fallback: 0.8;
+    --nuraly-icon-hover-transform-fallback: scale(1.05);
+    --nuraly-color-icon-hover-fallback: #0f62fe;
+    
+    /* Active state properties */
+    --nuraly-icon-active-opacity-fallback: 0.6;
+    --nuraly-icon-active-transform-fallback: scale(0.95);
+    --nuraly-color-icon-active-fallback: #054ada;
+    
+    /* Disabled state properties */
+    --nuraly-icon-disabled-opacity-fallback: 0.25;
+    --nuraly-color-icon-disabled-fallback: #c6c6c6;
+    
+    /* ========================================
+     * FOCUS STATE PROPERTIES
+     * ======================================== */
+    
+    --nuraly-icon-focus-outline-fallback: 2px solid #0f62fe;
+    --nuraly-icon-focus-outline-offset-fallback: 2px;
+    --nuraly-icon-focus-background-fallback: rgba(15, 98, 254, 0.1);
+    --nuraly-icon-focus-border-radius-fallback: 4px;
+    --nuraly-icon-focus-shadow-fallback: none;
+    
+    /* ========================================
+     * CURSOR PROPERTIES
+     * ======================================== */
+    
+    --nuraly-cursor-default: default;
+    --nuraly-cursor-interactive: pointer;
+    --nuraly-cursor-disabled: not-allowed;
   }
 
   /* ========================================
-   * DARK THEME OVERRIDES
+   * SIZE-SPECIFIC DESIGN TOKENS
    * ======================================== */
   
   /**
-   * Dark theme styles using data-theme attribute on the SVG element
-   * These override the light theme defaults when data-theme="dark" or data-theme="carbon-dark" is applied
+   * Size-specific customizations that can be overridden in themes
+   * These provide defaults that themes can customize for different design systems
    */
-  .svg-icon[data-theme="dark"],
-  .svg-icon[data-theme="carbon-dark"] {
-    --nuraly-icon-local-color: #ffffff;
-    --nuraly-icon-local-hover-color: #78a9ff;
-    --nuraly-icon-local-active-color: #a6c8ff;
-    --nuraly-icon-local-disabled-color: #6f6f6f;
-    --nuraly-icon-local-focus-outline: 2px solid #78a9ff;
-    --nuraly-icon-local-focus-background: rgba(120, 169, 255, 0.1);
+  
+  :host([size="small"]) {
+    --nuraly-icon-size: var(--nuraly-icon-size-small, var(--nuraly-icon-size-small-fallback));
+  }
+  
+  :host([size="medium"]) {
+    --nuraly-icon-size: var(--nuraly-icon-size-medium, var(--nuraly-icon-size-medium-fallback));
+  }
+  
+  :host([size="large"]) {
+    --nuraly-icon-size: var(--nuraly-icon-size-large, var(--nuraly-icon-size-large-fallback));
+  }
+  
+  :host([size="xlarge"]) {
+    --nuraly-icon-size: var(--nuraly-icon-size-xlarge, var(--nuraly-icon-size-xlarge-fallback));
+  }
+  
+  :host([size="xxlarge"]) {
+    --nuraly-icon-size: var(--nuraly-icon-size-xxlarge, var(--nuraly-icon-size-xxlarge-fallback));
   }
 
   /* ========================================
-   * REDUCED MOTION SUPPORT
+   * ACCESSIBILITY DESIGN TOKENS
    * ======================================== */
   
   /**
-   * Accessibility: Respect user's motion preferences
-   * Disables animations when user prefers reduced motion
+   * Accessibility features that respect user preferences
+   * These ensure the component works well for all users
    */
-  @media (prefers-reduced-motion: reduce) {
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
     :host {
-      --nuraly-icon-local-transition: none;
-      --nuraly-icon-local-hover-transform: none;
-      --nuraly-icon-local-active-transform: none;
+      --nuraly-color-icon: CanvasText;
+      --nuraly-color-icon-hover: CanvasText;
+      --nuraly-color-icon-active: CanvasText;
+      --nuraly-icon-focus-outline: 3px solid CanvasText;
+      --nuraly-icon-focus-background: Canvas;
     }
   }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    :host {
+      --nuraly-icon-transition: none;
+      --nuraly-icon-hover-transform: none;
+      --nuraly-icon-active-transform: none;
+    }
 `;

@@ -19,14 +19,14 @@ import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { ClickableMixin } from './mixins/index.js';
 
 /**
- * Enhanced Icon component with clickable functionality, custom styling, and proper event handling
+ * Enhanced Icon component with clickable functionality, custom styling, and comprehensive theming
  * 
  * @example
  * ```html
  * <nr-icon name="envelope"></nr-icon>
  * <nr-icon name="check" clickable @icon-click="${this.handleIconClick}"></nr-icon>
  * <nr-icon name="warning" type="regular" disabled></nr-icon>
- * <nr-icon name="star" color="#ffd700" size="1.5em"></nr-icon>
+ * <nr-icon name="star" color="#ffd700" size="large"></nr-icon>
  * ```
  * 
  * @fires icon-click - Dispatched when icon is clicked (contains iconName, iconType, originalEvent, timestamp)
@@ -50,13 +50,21 @@ export class HyIconElement extends IconBaseMixin {
   @property({type: String, attribute: 'alt'})
   alt = '';
 
-  /** Icon size override */
-  @property({type: String})
-  size?: string;
+  /** Icon size (small, medium, large, xlarge, xxlarge) */
+  @property({type: String, reflect: true})
+  size?: 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 
   /** Icon color override */
   @property({type: String})
   color?: string;
+
+  /** Custom width override */
+  @property({type: String})
+  width?: string;
+
+  /** Custom height override */
+  @property({type: String})
+  height?: string;
 
   /**
    * Validate component properties on update
@@ -73,6 +81,13 @@ export class HyIconElement extends IconBaseMixin {
       console.warn(`HyIconElement: Invalid type "${this.type}". Using default "${IconTypes.Solid}"`);
       this.type = IconTypes.Solid;
     }
+
+    if (changedProperties.has('size') && this.size) {
+      const validSizes = ['small', 'medium', 'large', 'xlarge', 'xxlarge'];
+      if (!validSizes.includes(this.size)) {
+        console.warn(`HyIconElement: Invalid size "${this.size}". Valid sizes are: ${validSizes.join(', ')}`);
+      }
+    }
   }
   override render() {
     const iconPath = this.getIconPath();
@@ -80,10 +95,17 @@ export class HyIconElement extends IconBaseMixin {
     const tabIndex = this.getIconTabIndex();
     const ariaDisabled = this.getAriaDisabled();
     
-    // Build dynamic styles
+    // Build dynamic styles using CSS custom properties
     let dynamicStyles = '';
-    if (this.size) dynamicStyles += `font-size: ${this.size};`;
-    if (this.color) dynamicStyles += `fill: ${this.color} !important;`;
+    if (this.color) {
+      dynamicStyles += `--nuraly-color-icon: ${this.color};`;
+    }
+    if (this.width) {
+      dynamicStyles += `width: ${this.width};`;
+    }
+    if (this.height) {
+      dynamicStyles += `height: ${this.height};`;
+    }
     
     // Build CSS classes
     const cssClasses = [
