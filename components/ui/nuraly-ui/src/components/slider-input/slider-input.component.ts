@@ -1,7 +1,7 @@
 import { LitElement, html, PropertyValueMap } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import styles from './slider-input.style.js';
-import { debounce } from './utils.js';
+import { debounce } from './utils/index.js';
 
 export class SliderInput extends LitElement {
 	
@@ -20,10 +20,10 @@ export class SliderInput extends LitElement {
 	@property({ type: Number })
 	value = 0;
 
-	@property({ type: Number })
+	@state()
 	_actualMin = 0;
 
-	@property({ type: Number })
+	@state()
 	_actualMax = 0;
 
 
@@ -38,6 +38,8 @@ export class SliderInput extends LitElement {
 
 
 	override async firstUpdated() {
+		await this.updateComplete;
+		
 		this._input = this.shadowRoot!.querySelector('input');
 		this._slider = this.shadowRoot!.querySelector('.range-slider');
 		this._thumb = this.shadowRoot!.querySelector('.range-thumb');
@@ -54,14 +56,16 @@ export class SliderInput extends LitElement {
 				this.max = this.max + this.step - maxRemainder;
 			}
 		}
+
+		// Initial visual update
+		requestAnimationFrame(() => {
+			this._updateSliderVisuals();
+		});
 	}
 
 	override render() {
 		return html`
-          <div class="range-container">
-	        <div class="range-slider"></div>
-	        <div class="range-slider-value"></div>
-	        <div class="range-thumb"></div>
+		  <div class="slider-wrapper">
 	        <input
 	          max=${this.max}
 	          min=${this.min}
@@ -69,46 +73,96 @@ export class SliderInput extends LitElement {
 	          type="range"
 	          value=${this.value}
 	          ?disabled=${this.disabled}
-	          @input=${this._changeHandler}
+	          @input=${this._inputHandler}
+	          @change=${this._changeHandler}
 	        />
+            <div class="range-container">
+	          <div class="range-slider"></div>
+	          <div class="range-slider-value"></div>
+	          <div class="range-thumb"></div>
+	        </div>
 	      </div>`;
 	}
 
 
 	override updated(changedProps: PropertyValueMap<any>) {
-		if (changedProps.has('value')) {
-			this._updateSlider();
+		if (changedProps.has('value') || changedProps.has('min') || changedProps.has('max')) {
+			// Use requestAnimationFrame to ensure DOM is updated before calculating positions
+			requestAnimationFrame(() => {
+				this._updateSliderVisuals();
+			});
 		}
 	}
 
 	/**
-	 * Sets the slider value.
+	 * Handles input events for immediate visual feedback during dragging.
 	 */
-	_changeHandler() {
-		const { value } : any = this._input;
-		this.value = value > this._actualMax
+	_inputHandler(event: Event) {
+		event.stopPropagation();
+		const input = event.target as HTMLInputElement;
+		const newValue = Number(input.value);
+		
+		// Clamp value to actual min/max bounds
+		this.value = newValue > this._actualMax
 			? this._actualMax
-			: value < this._actualMin
+			: newValue < this._actualMin
 				? this._actualMin
-				: value;
+				: newValue;
+		
+		// Update visuals immediately for smooth dragging
+		this._updateSliderVisuals();
+		this.requestUpdate();
 	}
 
 	/**
-	 * Updates the slider's value width and thumb position (UI).
-	 * @event change
+	 * Handles change events when dragging is complete.
 	 */
-	_updateSlider= debounce(()=> {
+	_changeHandler(event: Event) {
+		event.stopPropagation();
+		const input = event.target as HTMLInputElement;
+		const newValue = Number(input.value);
+		
+		// Clamp value to actual min/max bounds
+		this.value = newValue > this._actualMax
+			? this._actualMax
+			: newValue < this._actualMin
+				? this._actualMin
+				: newValue;
+		
+		// Dispatch events when dragging is complete
+		this._dispatchChangeEvents();
+		this.requestUpdate();
+	}
+
+	/**
+	 * Updates the slider's visual appearance immediately (no debounce for smooth dragging).
+	 */
+	_updateSliderVisuals() {
+		if (!this._thumb || !this._slider) return;
+		
 		const min = this.min < this._actualMin ? this._actualMin : this.min;
 		const max = this.max > this._actualMax ? this._actualMax : this.max;
-		const percentage = (this.value - min) / (max - min);
-		const thumbWidth = this._thumb!.offsetWidth;
-		const sliderWidth = this._slider!.offsetWidth;
+		const range = max - min;
+		
+		if (range === 0) return; // Avoid division by zero
+		
+		const percentage = Math.max(0, Math.min(1, (this.value - min) / range));
+		const thumbWidth = this._thumb.offsetWidth || 20; // Fallback if not measured yet
+		const sliderWidth = this._slider.offsetWidth || 200; // Fallback if not measured yet
+		
 		const sliderValueWidth = `${percentage * 100}%`;
-		const thumbOffset = `${(sliderWidth - thumbWidth) * percentage}px`;
+		// Calculate thumb position so it stays within track bounds
+		const maxThumbOffset = sliderWidth - thumbWidth;
+		const thumbOffset = `${Math.max(0, Math.min(maxThumbOffset, maxThumbOffset * percentage))}px`;
 
 		this.style.setProperty('--hy-slider-value-width', sliderValueWidth);
 		this.style.setProperty('--hy-slider-thumb-offset', thumbOffset);
+	}
 
+	/**
+	 * Dispatches change events (debounced to avoid excessive event firing).
+	 */
+	_dispatchChangeEvents = debounce(() => {
 		// Dispatch the change event for range-slider. (For event handlers.)
 		this.dispatchEvent(new Event('change'));
 		this.dispatchEvent(new CustomEvent('changed' , {
@@ -116,7 +170,15 @@ export class SliderInput extends LitElement {
 				value: Number(this.value)
 			}
 		}));
-		this.requestUpdate()
-	})
+	}, 50); // Reduced debounce time for more responsive events
+
+	/**
+	 * Updates the slider's value width and thumb position (UI) and dispatches events.
+	 */
+	_updateSlider() {
+		this._updateSliderVisuals();
+		this._dispatchChangeEvents();
+		this.requestUpdate();
+	}
 }
 customElements.define('hy-slider-input', SliderInput);
