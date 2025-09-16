@@ -1,56 +1,70 @@
 import { css } from "lit";
+import { styleVariables } from './label.style.variables.js';
 
 export default css`
-    :host {
-        /* Default color variables */
-        --text-label-local-dark-color: white; /* Dark mode text color */
-        --text-label-local-light-color: black; /* Light mode text color */
+  ${styleVariables}
 
-        /* Font size and related properties */
-        --text-label-font-size: 13px; /* Default font size */
-        --text-label-font-weight: normal; /* Default font weight */
-        --text-label-line-height: 1.5; /* Default line height */
+  :host {
+    display: inline-block;
+    width: fit-content;
+  }
 
-        /* Padding and margin */
-        --text-label-padding: 0; /* Default padding */
-        --text-label-margin: 0; /* Default margin */
+  label {
+    font-family: var(--nuraly-label-local-font-family);
+    font-size: var(--nuraly-label-local-font-size);
+    font-weight: var(--nuraly-label-local-font-weight);
+    line-height: var(--nuraly-label-local-line-height);
+    color: var(--nuraly-label-local-text-color);
+    margin: 0;
+    margin-bottom: var(--nuraly-label-local-margin-bottom);
+    display: block;
+    user-select: none;
+    cursor: pointer;
+    transition: color var(--nuraly-label-local-transition-duration) var(--nuraly-label-local-transition-timing);
+  }
 
-        /* Use the local color variable first, then fallback to global or defined values */
-        --resolved-text-label-color: var(--text-label-color, var( --text-label-local-color));
-        --resolved-text-label-font-size: var(--text-label-font-size);
-        --resolved-text-label-font-weight: var(--text-label-font-weight);
-        --resolved-text-label-line-height: var(--text-label-line-height);
-        --resolved-text-label-padding: var(--text-label-padding);
-        --resolved-text-label-margin: var(--text-label-margin);
+  /* Size variants */
+  :host([size="small"]) label {
+    font-size: var(--nuraly-label-local-small-font-size);
+  }
 
-        display: inline-block;
-        width: fit-content;
-    }
+  :host([size="large"]) label {
+    font-size: var(--nuraly-label-local-large-font-size);
+  }
 
-    label {
-        /* Apply resolved styles 
-        color: var(--resolved-text-label-color);
-        font-size: var(--resolved-text-label-font-size);
-        font-weight: var(--resolved-text-label-font-weight);
-        line-height: var(--resolved-text-label-line-height);
-        padding: var(--resolved-text-label-padding);
-        margin: var(--resolved-text-label-margin);
-        display: block;
-        user-select: none;*/
-        font-size: var(--resolved-text-label-font-size);
-        color: var(--resolved-text-label-color);
-    }
+  /* Variant colors */
+  :host([variant="secondary"]) label {
+    color: var(--nuraly-label-local-secondary-color);
+  }
 
-    @media (prefers-color-scheme: dark) {
-        :host {
-            /* Update resolved color for dark mode */
-            --resolved-text-label-color: var(--text-label-dark-color, var(--text-label-color, var(--text-label-local-dark-color)));        }
-    }
+  :host([variant="error"]) label {
+    color: var(--nuraly-label-local-error-color);
+  }
 
-    @media (prefers-color-scheme: light) {
-        :host {
-            --resolved-text-label-color: var(--text-label-color, var(--text-label-local-color));
-            /* Optionally update color for light mode */
-        }
-    }
+  :host([variant="warning"]) label {
+    color: var(--nuraly-label-local-warning-color);
+  }
+
+  :host([variant="success"]) label {
+    color: var(--nuraly-label-local-success-color);
+  }
+
+  /* Disabled state */
+  :host([disabled]) label {
+    color: var(--nuraly-label-local-disabled-color);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* Required asterisk */
+  .required-asterisk {
+    color: var(--nuraly-label-local-required-color);
+    margin-left: var(--nuraly-label-local-required-margin);
+    font-weight: normal;
+  }
+
+  /* Focus-within for accessibility when label is associated with form elements */
+  :host(:focus-within) label:not([disabled]) {
+    opacity: 0.8;
+  }
 `;
