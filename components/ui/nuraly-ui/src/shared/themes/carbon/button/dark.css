@@ -23,10 +23,10 @@ body[data-theme="carbon-dark"] * {
   --nuraly-color-button-primary-text-hover: #ffffff !important;
   --nuraly-color-button-primary-text-active: #ffffff !important;
 
-  /* Secondary button colors - Carbon Gray 80 */
-  --nuraly-color-button-secondary: #6f6f6f !important;
-  --nuraly-color-button-secondary-hover: #4c4c4c !important;
-  --nuraly-color-button-secondary-active: #656565 !important;
+  /* Secondary button colors - Carbon Gray */
+  --nuraly-color-button-secondary: #8d8d8d !important;
+  --nuraly-color-button-secondary-hover: #6f6f6f !important;
+  --nuraly-color-button-secondary-active: #525252 !important;
   --nuraly-color-button-secondary-text: #ffffff !important;
   --nuraly-color-button-secondary-text-hover: #ffffff !important;
   --nuraly-color-button-secondary-text-active: #ffffff !important;

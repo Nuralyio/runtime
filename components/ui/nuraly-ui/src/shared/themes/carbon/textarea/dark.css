@@ -1,0 +1,90 @@
+/**
+ * Carbon Theme - Textarea Component - Dark Variant
+ * Textarea-specific CSS variables based on Carbon design system
+ */
+
+/**
+ * Carbon Design System Theme - Textarea Component - Dark Variant
+ * Textarea-specific CSS variables based on IBM Carbon Design System specifications
+ */
+
+:root,
+[data-theme="carbon-dark"]{
+  /* ========================================
+   * TEXTAREA VARIABLES - CARBON DARK THEME
+   * ======================================== */
+
+  /* Base textarea styling - Carbon Design System Dark */
+  --nuraly-color-textarea-background: #393939;
+  --nuraly-color-textarea-text: #f4f4f4;
+  --nuraly-color-textarea-placeholder: #a8a8a8;
+  --nuraly-color-textarea-label: #f4f4f4;
+  --nuraly-color-textarea-helper-text: #c6c6c6;
+
+  /* Textarea fallback colors for compatibility */
+  --nuraly-color-textarea-text-fallback: rgba(255, 255, 255, 0.88);
+  --nuraly-color-textarea-background-fallback: #262626;
+  --nuraly-color-textarea-disabled-text-fallback: rgba(255, 255, 255, 0.25);
+  --nuraly-color-textarea-disabled-background-fallback: #525252;
+  --nuraly-color-textarea-placeholder-fallback: #a8a8a8;
+  --nuraly-color-textarea-disabled-placeholder-fallback: #8d8d8d;
+
+  /* Textarea borders - Carbon underline style */
+  --nuraly-color-textarea-border: #393939; /* Top/left/right borders match background */
+  --nuraly-color-textarea-border-bottom: #a8a8a8; /* Only bottom border visible */
+  --nuraly-color-textarea-border-focus: #78a9ff;
+  --nuraly-color-textarea-border-hover: #78a9ff;
+  --nuraly-border-width-textarea: 2px;
+  --nuraly-border-radius-textarea: 0px;
+
+  /* Textarea states */
+  --nuraly-color-textarea-disabled-background: #525252;
+  --nuraly-color-textarea-disabled-text: #8d8d8d;
+  --nuraly-color-textarea-disabled-placeholder: #8d8d8d;
+  --nuraly-color-textarea-disabled-label: #8d8d8d;
+  --nuraly-color-textarea-disabled-helper-text: #8d8d8d;
+
+  /* Error states */
+  --nuraly-color-textarea-error-border: #ff8389;
+  --nuraly-color-textarea-error-text: #ffb3b8;
+  --nuraly-color-textarea-error-icon: #ff8389;
+
+  /* Warning states */
+  --nuraly-color-textarea-warning-text: #f4f4f4;
+  --nuraly-color-textarea-warning-icon: #f1c21b;
+
+  /* Success states */
+  --nuraly-color-textarea-success-border: #42be65;
+  --nuraly-color-textarea-success-text: #f4f4f4;
+  --nuraly-color-textarea-success-icon: #42be65;
+
+  /* Focus and interaction - Carbon dark design */
+  --nuraly-color-textarea-focus-outline: rgba(120, 169, 255, 0.2);
+  --nuraly-color-textarea-hover-ring: rgba(120, 169, 255, 0.1);
+  
+  /* Icon colors */
+  --nuraly-color-textarea-icon: #a8a8a8;
+  --nuraly-color-textarea-icon-hover: #78a9ff;
+  --nuraly-color-textarea-icon-active: #4589ff;
+  --nuraly-color-textarea-icon-disabled: #8d8d8d;
+  --nuraly-color-textarea-clear-icon: #a8a8a8;
+  --nuraly-color-textarea-clear-icon-hover: #78a9ff;
+
+  /* Character count colors */
+  --nuraly-color-textarea-count: #c6c6c6;
+  --nuraly-color-textarea-count-over-limit: #ff8389;
+
+  /* Validation feedback colors */
+  --nuraly-color-textarea-validation-icon: #a8a8a8;
+  --nuraly-color-textarea-validation-error: #ff8389;
+  --nuraly-color-textarea-validation-warning: #f1c21b;
+  --nuraly-color-textarea-validation-success: #42be65;
+
+  /* Outlined variant (when implemented) */
+  --nuraly-color-textarea-outlined-border: #a8a8a8;
+  --nuraly-color-textarea-outlined-background: transparent;
+
+  /* Filled variant (when implemented) */
+  --nuraly-color-textarea-filled-background: #393939;
+  --nuraly-color-textarea-filled-border: transparent;
+}

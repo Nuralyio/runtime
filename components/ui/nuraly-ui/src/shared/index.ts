@@ -15,3 +15,6 @@ export { throttle, debounce, rafThrottle } from './utils.js';
 
 // Export shared controllers
 export * from './controllers/index.js';
+
+// Export shared validation types
+export * from './validation.types.js';

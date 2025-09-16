@@ -13,6 +13,7 @@
 @import './checkbox/index.css';
 @import './radio/index.css';
 @import './select/index.css';
+@import './textarea/index.css';
 
 /* TODO: Import other component themes as they are created
 @import './card/index.css';

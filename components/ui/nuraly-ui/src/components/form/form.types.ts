@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { ValidatableComponent, FormFieldInfo } from '../../shared/validation.types.js';
+
 /**
  * Form validation states that can be applied to the form and its children
  */
@@ -46,15 +48,8 @@ export interface FormConfig {
 /**
  * Form field information
  */
-export interface FormField {
-  element: HTMLElement & FormFieldCapable;
-  name: string;
-  value: any;
-  isValid: boolean;
-  validationMessage: string;
-  required: boolean;
-  touched: boolean;
-  dirty: boolean;
+export interface FormField extends FormFieldInfo {
+  // FormField now extends the shared FormFieldInfo interface
 }
 
 /**
@@ -78,27 +73,10 @@ export interface FormSubmissionData {
 
 /**
  * Interface that form field components must implement
+ * @deprecated Use ValidatableComponent from shared/validation.types.js instead
  */
-export interface FormFieldCapable {
-  /** Field name for form submission */
-  name?: string;
-  /** Field value */
-  value: any;
-  /** Required field indicator */
-  required?: boolean;
-  /** Disabled state */
-  disabled?: boolean;
-  /** Readonly state */
-  readonly?: boolean;
-  /** Validation methods */
-  validate?(): boolean;
-  checkValidity?(): boolean;
-  reportValidity?(): boolean;
-  setCustomValidity?(message: string): void;
-  /** Validation state */
-  validationMessage?: string;
-  /** Reset field to initial state */
-  reset?(): void;
+export interface FormFieldCapable extends ValidatableComponent {
+  /** @deprecated This interface is replaced by ValidatableComponent */
 }
 
 /**
