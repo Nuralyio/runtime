@@ -46,7 +46,11 @@ const THEMES = {
       'textarea/index.css',
       'textarea/common.css',
       'textarea/light.css',
-      'textarea/dark.css'
+      'textarea/dark.css',
+      'datepicker/index.css',
+      'datepicker/common.css',
+      'datepicker/light.css',
+      'datepicker/dark.css'
     ]
   },
   default: {
@@ -81,7 +85,11 @@ const THEMES = {
       'textarea/index.css',
       'textarea/common.css',
       'textarea/light.css',
-      'textarea/dark.css'
+      'textarea/dark.css',
+      'datepicker/index.css',
+      'datepicker/common.css',
+      'datepicker/light.css',
+      'datepicker/dark.css'
     ]
   }
 };

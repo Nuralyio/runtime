@@ -1,4 +1,4 @@
-import {DateRawObject, IDayInfo, IDayPresentation} from '../datepicker.type.js';
+import { DateRawObject, IDayInfo, IDayPresentation } from '../datepicker.types.js';
 
 export const getDayDetails = ({dayIndex, month, year, numberOfDays, firstDay, days}: IDayInfo): IDayPresentation => {
   const date = dayIndex - firstDay;

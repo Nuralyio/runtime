@@ -7,8 +7,8 @@
 import { ReactiveController, ReactiveControllerHost } from 'lit';
 import { CalendarController } from '../interfaces/index.js';
 import { DatePickerHost } from '../interfaces/base-controller.interface.js';
-import { INavigationDate, IDayPresentation } from '../datepicker.type.js';
-import { getMonthDetails } from '../core/month.helper.js';
+import { INavigationDate, IDayPresentation } from '../datepicker.types.js';
+import { getMonthDetails } from '../utils/month.helper.js';
 import dayjs from 'dayjs';
 
 /**

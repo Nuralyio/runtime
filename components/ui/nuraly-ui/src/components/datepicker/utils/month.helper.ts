@@ -1,5 +1,5 @@
-import {getDayDetails, getNumberOfDays} from './day.helper.js';
-import {IDayPresentation} from '../datepicker.type.js';
+import { getDayDetails, getNumberOfDays } from './day.helper.js';
+import { IDayPresentation } from '../datepicker.types.js';
 
 export const getMonthDetails = (year: number, month: number, days: string[]) => {
   const firstDay = new Date(year, month).getDay();

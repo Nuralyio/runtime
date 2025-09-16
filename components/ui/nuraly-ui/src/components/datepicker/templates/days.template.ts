@@ -1,10 +1,10 @@
-import {html, TemplateResult} from 'lit';
-import {DateRawObject, IDayPresentation, INavigationDate} from '../datepicker.type.js';
-import {todayIsTheDay} from '../core/day.helper.js';
-import {capitalizeFirstLetter} from '../core/string.helper.js';
-import {getMonthDetails} from '../core/month.helper.js';
+import { html, TemplateResult } from 'lit';
+import { DateRawObject, IDayPresentation, INavigationDate } from '../datepicker.types.js';
+import { todayIsTheDay } from '../utils/day.helper.js';
+import { capitalizeFirstLetter } from '../utils/string.helper.js';
+import { getMonthDetails } from '../utils/month.helper.js';
 import dayjs from 'dayjs';
-import {classMap} from 'lit/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 const today = dayjs();
 const currentYear = today.year();
 const currentDay = today.date();

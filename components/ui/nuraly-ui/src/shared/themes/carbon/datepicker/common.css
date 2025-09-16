@@ -1,0 +1,70 @@
+/**
+ * Carbon Theme - Datepicker Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme^="carbon"] {
+  /* ========================================
+   * SHARED DATEPICKER VARIABLES - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Common datepicker disabled states - Carbon Gray 30/50 */
+  --nuraly-color-datepicker-disabled: #c6c6c6;
+  --nuraly-color-datepicker-disabled-text: #8d8d8d;
+  --nuraly-color-datepicker-disabled-background: #f4f4f4;
+
+  /* Common datepicker focus styles - Carbon Blue 60 */
+  --nuraly-color-datepicker-primary: #0f62fe;
+  --nuraly-color-datepicker-selected: #0f62fe;
+  --nuraly-color-datepicker-today: #0f62fe;
+  --nuraly-color-datepicker-input-focus-border: #0f62fe;
+
+  /* Common datepicker shadows - Carbon uses minimal shadows */
+  --nuraly-shadow-datepicker-box: 0 2px 6px rgba(0, 0, 0, 0.2);
+  --nuraly-shadow-datepicker-input-focus: 0 0 0 2px rgba(15, 98, 254, 0.2);
+
+  /* Common Carbon-specific datepicker borders (sharp corners by default) */
+  --nuraly-border-radius-datepicker: 0;
+
+  /* Common Carbon datepicker typography */
+  --nuraly-font-family-datepicker: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --nuraly-font-size-datepicker: 14px;
+  --nuraly-font-weight-datepicker: 400;
+  --nuraly-font-size-datepicker-header: 14px;
+  --nuraly-font-weight-datepicker-header: 600;
+
+  /* Common Carbon spacing for datepicker */
+  --nuraly-spacing-datepicker-gap: 8px;
+  --nuraly-spacing-datepicker-calendar-padding: 16px;
+  --nuraly-spacing-datepicker-day-padding: 8px;
+  --nuraly-spacing-datepicker-input-padding: 11px 16px;
+
+  /* Common Carbon datepicker sizes */
+  --nuraly-size-datepicker-width: 288px;
+  --nuraly-size-datepicker-calendar-width: 288px;
+  --nuraly-size-datepicker-day: 40px;
+  --nuraly-size-datepicker-header-height: 48px;
+
+  /* Common borders */
+  --nuraly-border-width-datepicker: 1px;
+  --nuraly-border-width-datepicker-input: 1px;
+  --nuraly-border-width-datepicker-focus: 2px;
+
+  /* Common transitions */
+  --nuraly-transition-duration-datepicker: 0.11s;
+  --nuraly-transition-timing-datepicker: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --nuraly-transition-duration-datepicker-calendar: 0.11s;
+
+  /* Common z-index */
+  --nuraly-z-index-datepicker-calendar: 9000;
+
+  /* Common icon sizes */
+  --nuraly-size-datepicker-icon: 16px;
+  --nuraly-size-datepicker-arrow-icon: 16px;
+
+  /* Common error/warning/success colors from Carbon */
+  --nuraly-color-datepicker-error: #da1e28;
+  --nuraly-color-datepicker-warning: #f1c21b;
+  --nuraly-color-datepicker-success: #24a148;
+}
