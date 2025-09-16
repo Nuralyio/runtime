@@ -15,6 +15,7 @@
 @import './select/index.css';
 @import './textarea/index.css';
 @import './datepicker/index.css';
+@import './timepicker/index.css';
 
 
 /* TODO: Import other component themes as they are created

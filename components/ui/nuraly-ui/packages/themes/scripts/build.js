@@ -50,7 +50,11 @@ const THEMES = {
       'datepicker/index.css',
       'datepicker/common.css',
       'datepicker/light.css',
-      'datepicker/dark.css'
+      'datepicker/dark.css',
+      'timepicker/index.css',
+      'timepicker/common.css',
+      'timepicker/light.css',
+      'timepicker/dark.css'
     ]
   },
   default: {
@@ -89,7 +93,11 @@ const THEMES = {
       'datepicker/index.css',
       'datepicker/common.css',
       'datepicker/light.css',
-      'datepicker/dark.css'
+      'datepicker/dark.css',
+      'timepicker/index.css',
+      'timepicker/common.css',
+      'timepicker/light.css',
+      'timepicker/dark.css'
     ]
   }
 };

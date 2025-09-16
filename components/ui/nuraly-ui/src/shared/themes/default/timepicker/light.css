@@ -1,0 +1,58 @@
+/**
+ * Default Design System Theme - Timepicker Component - Light Variant
+ * Timepicker-specific CSS variables for the Default Design System light theme
+ * Based on Ant Design v5 specifications
+ */
+
+[data-theme="default-light"],
+[data-theme="default"],
+:root {
+  /* ========================================
+   * TIMEPICKER VARIABLES - DEFAULT LIGHT THEME
+   * Ant Design v5 Light Theme Colors
+   * ======================================== */
+
+  /* Background colors */
+  --nuraly-color-timepicker-background: #ffffff;
+  --nuraly-color-timepicker-dropdown-background: #ffffff;
+  --nuraly-color-timepicker-clock-background: #ffffff;
+  --nuraly-color-timepicker-hover-background: rgba(0, 0, 0, 0.04);
+  --nuraly-color-timepicker-active-background: rgba(0, 0, 0, 0.06);
+
+  /* Text colors */
+  --nuraly-color-timepicker-text: rgba(0, 0, 0, 0.88);
+  --nuraly-color-timepicker-selected-text: #ffffff;
+  --nuraly-color-timepicker-clock-text: rgba(0, 0, 0, 0.88);
+  --nuraly-color-timepicker-clock-face: rgba(0, 0, 0, 0.45);
+
+  /* Border colors */
+  --nuraly-color-timepicker-border: #d9d9d9;
+  --nuraly-color-timepicker-clock-border: #f0f0f0;
+
+  /* Input field colors */
+  --nuraly-color-timepicker-input-background: #ffffff;
+  --nuraly-color-timepicker-input-border: #d9d9d9;
+  --nuraly-color-timepicker-input-text: rgba(0, 0, 0, 0.88);
+  --nuraly-color-timepicker-input-placeholder: rgba(0, 0, 0, 0.25);
+
+  /* Hover states */
+  --nuraly-color-timepicker-hover: #f5f5f5;
+
+  /* Item selection and control colors */
+  --nuraly-color-timepicker-item-hover: #f5f5f5;
+  --nuraly-color-timepicker-item-active: #e6f7ff;
+  --nuraly-color-timepicker-item-selected: #1890ff;
+  --nuraly-color-timepicker-item-selected-text: #ffffff;
+
+  /* Disabled states */
+  --nuraly-color-timepicker-disabled: #f5f5f5;
+  --nuraly-color-timepicker-disabled-text: rgba(0, 0, 0, 0.25);
+  --nuraly-color-timepicker-disabled-background: #f5f5f5;
+
+  /* Shadow color */
+  --nuraly-color-timepicker-shadow: rgba(0, 0, 0, 0.15);
+
+  /* States */
+  --nuraly-opacity-timepicker-disabled: 1;
+  --nuraly-opacity-timepicker-hover: 1;
+}
