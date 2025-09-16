@@ -1,0 +1,58 @@
+/**
+ * Carbon Theme - Slider Input Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme^="carbon"] {
+  /* ========================================
+   * SHARED SLIDER INPUT VARIABLES - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Common slider input disabled states - Carbon Gray 30/50 */
+  --nuraly-color-slider-input-disabled: #c6c6c6;
+  --nuraly-color-slider-input-disabled-text: #8d8d8d;
+  --nuraly-color-slider-input-disabled-background: #f4f4f4;
+
+  /* Common slider input focus styles - Carbon Blue 60 */
+  --nuraly-color-slider-input-primary: #0f62fe;
+  --nuraly-color-slider-input-selected: #0f62fe;
+  --nuraly-color-slider-input-focus: #0f62fe;
+
+  /* Common Carbon-specific slider input borders (sharp corners by default) */
+  --nuraly-border-slider-input-radius: 0;
+  --nuraly-border-slider-input-thumb-radius: 0;
+
+  /* Common Carbon slider input typography */
+  --nuraly-font-family-slider-input: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --nuraly-font-size-slider-input: 14px;
+  --nuraly-font-weight-slider-input: 400;
+
+  /* Common Carbon spacing for slider input */
+  --nuraly-spacing-slider-input-gap: 8px;
+  --nuraly-spacing-slider-input-padding: 16px;
+
+  /* Common Carbon slider input sizes */
+  --nuraly-size-slider-input-height: 2px;
+  --nuraly-size-slider-input-thumb-diameter: 16px;
+  --nuraly-size-slider-input-width: 100%;
+
+  /* Common borders */
+  --nuraly-border-width-slider-input: 0;
+  --nuraly-border-width-slider-input-focus: 2px;
+
+  /* Common transitions - Carbon uses fast, snappy transitions */
+  --nuraly-transition-duration-slider-input: 0.11s;
+  --nuraly-transition-timing-slider-input: cubic-bezier(0.2, 0, 0.38, 0.9);
+
+  /* Common z-index */
+  --nuraly-z-index-slider-input: 1;
+
+  /* Common error/warning/success colors from Carbon */
+  --nuraly-color-slider-input-error: #da1e28;
+  --nuraly-color-slider-input-warning: #f1c21b;
+  --nuraly-color-slider-input-success: #24a148;
+
+  /* Common slider input shadows - Carbon uses minimal shadows */
+  --nuraly-shadow-slider-input-focus: 0 0 0 2px rgba(15, 98, 254, 0.2);
+}

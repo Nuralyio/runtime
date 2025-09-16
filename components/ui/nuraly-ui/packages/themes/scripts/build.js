@@ -54,7 +54,11 @@ const THEMES = {
       'timepicker/index.css',
       'timepicker/common.css',
       'timepicker/light.css',
-      'timepicker/dark.css'
+      'timepicker/dark.css',
+      'slider-input/index.css',
+      'slider-input/common.css',
+      'slider-input/light.css',
+      'slider-input/dark.css'
     ]
   },
   default: {
@@ -97,7 +101,11 @@ const THEMES = {
       'timepicker/index.css',
       'timepicker/common.css',
       'timepicker/light.css',
-      'timepicker/dark.css'
+      'timepicker/dark.css',
+      'slider-input/index.css',
+      'slider-input/common.css',
+      'slider-input/light.css',
+      'slider-input/dark.css'
     ]
   }
 };

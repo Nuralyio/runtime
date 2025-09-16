@@ -1,0 +1,32 @@
+/* Carbon Dark Theme - Slider Input Colors */
+:root {
+  /* Colors - Track */
+  --nuraly-color-slider-input-track: #393939;
+  --nuraly-color-slider-input-track-filled: #0f62fe;
+  --nuraly-color-slider-input-border: #525252;
+
+  /* Colors - Thumb */
+  --nuraly-color-slider-input-thumb: #161616;
+  --nuraly-color-slider-input-thumb-border: #0f62fe;
+  --nuraly-color-slider-input-thumb-hover: #0353e9;
+  --nuraly-color-slider-input-thumb-active: #002d9c;
+
+  /* Colors - Disabled states */
+  --nuraly-color-slider-input-disabled-track: #393939;
+  --nuraly-color-slider-input-disabled: #525252;
+  --nuraly-color-slider-input-disabled-thumb: #393939;
+  --nuraly-color-slider-input-disabled-border: #525252;
+
+  /* Colors - Status states */
+  --nuraly-color-slider-input-error: #fa4d56;
+  --nuraly-color-slider-input-warning: #f1c21b;
+  --nuraly-color-slider-input-success: #42be65;
+
+  /* Border radius - Square corners for Carbon */
+  --nuraly-border-slider-input-radius: 0px;
+  --nuraly-border-slider-input-thumb-radius: 0px;
+
+  /* Shadows */
+  --nuraly-shadow-slider-input-thumb: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --nuraly-shadow-slider-input-focus: 0 0 0 2px #0f62fe;
+}
