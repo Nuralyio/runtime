@@ -19,10 +19,10 @@
   --nuraly-color-button-primary-text-hover: #ffffff;
   --nuraly-color-button-primary-text-active: #ffffff;
 
-  /* Secondary button colors - Carbon Gray 80 */
-  --nuraly-color-button-secondary: #393939;
-  --nuraly-color-button-secondary-hover: #4c4c4c;
-  --nuraly-color-button-secondary-active: #6f6f6f;
+  /* Secondary button colors - Carbon Gray */
+  --nuraly-color-button-secondary: #8d8d8d;
+  --nuraly-color-button-secondary-hover: #6f6f6f;
+  --nuraly-color-button-secondary-active: #525252;
   --nuraly-color-button-secondary-text: #ffffff;
   --nuraly-color-button-secondary-text-hover: #ffffff;
   --nuraly-color-button-secondary-text-active: #ffffff;

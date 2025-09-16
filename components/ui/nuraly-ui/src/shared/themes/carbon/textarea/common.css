@@ -1,0 +1,59 @@
+/**
+ * Carbon Design System Theme - Textarea Component - Common Variables
+ * Shared CSS variables across light and dark variants for Carbon Design System
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SHARED TEXTAREA VARIABLES - CARBON THEME
+   * ======================================== */
+
+  /* Textarea borders - Carbon underline style (shared properties) */
+  --nuraly-border-width-textarea: 2px;
+  --nuraly-border-radius-textarea: 0px;
+  --nuraly-color-textarea-border: transparent;
+  --nuraly-color-textarea-border-focus: #0f62fe;
+  --nuraly-textarea-border-radius:0px;
+
+  /* Textarea sizing - Carbon Design System */
+  --nuraly-size-textarea-small-min-height: 32px;
+  --nuraly-size-textarea-medium-min-height: 40px;
+  --nuraly-size-textarea-large-min-height: 48px;
+
+  /* Textarea padding - Carbon Design System */
+  --nuraly-spacing-textarea-small-vertical: 4px;
+  --nuraly-spacing-textarea-small-horizontal: 12px;
+  --nuraly-spacing-textarea-medium-vertical: 7px;
+  --nuraly-spacing-textarea-medium-horizontal: 16px;
+  --nuraly-spacing-textarea-large-vertical: 10px;
+  --nuraly-spacing-textarea-large-horizontal: 16px;
+
+  /* Textarea typography - Carbon Design System (IBM Plex Sans) */
+  --nuraly-font-family-textarea: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+  --nuraly-font-size-textarea: 14px;
+  --nuraly-font-size-textarea-label: 12px;
+  --nuraly-font-size-textarea-helper: 12px;
+  --nuraly-font-size-textarea-placeholder: 14px;
+  --nuraly-line-height-textarea: 1.28;
+
+  /* Textarea icon sizing - Carbon Design System */
+  --nuraly-size-textarea-icon: 16px;
+
+  /* Textarea variant border radius - Carbon Design System */
+  --nuraly-border-radius-textarea-outlined: 0px;
+  --nuraly-border-radius-textarea-filled-top: 0px;
+
+  /* Carbon spacing values - shared */
+  --nuraly-spacing-textarea-label-bottom: 8px;
+  --nuraly-spacing-textarea-helper-top: 8px;
+  --nuraly-spacing-textarea-icon: 8px;
+
+  /* Warning states - Carbon design */
+  --nuraly-color-textarea-warning-icon: #f1c21b;
+
+  /* Character count styling */
+  --nuraly-spacing-textarea-count-top: 4px;
+  --nuraly-font-size-textarea-count: 12px;
+}

@@ -5,12 +5,12 @@
  */
 
 import {
-  FormField,
-  FormFieldCapable,
-  FormValidationResult,
-  FormValidationState,
-  FORM_EVENTS
+    FormField,
+    FormValidationResult,
+    FormValidationState,
+    FORM_EVENTS
 } from '../form.types.js';
+import { ValidatableComponent } from '../../../shared/validation.types.js';
 
 /**
  * Controller that coordinates validation across all form fields
@@ -26,14 +26,14 @@ export class FormValidationController {
   /**
    * Register a form field for validation coordination
    */
-  registerField(element: HTMLElement & FormFieldCapable): void {
+  registerField(element: HTMLElement & ValidatableComponent): void {
     const name = element.name || element.getAttribute('name') || `field-${Date.now()}`;
     
     const field: FormField = {
       element,
       name,
       value: element.value,
-      isValid: element.checkValidity?.() ?? true,
+      isValid: element.getValidationStatus().isValid,
       validationMessage: element.validationMessage || '',
       required: element.required ?? false,
       touched: false,
@@ -85,8 +85,9 @@ export class FormValidationController {
       field.isValid = event.detail.isValid || false;
       field.validationMessage = event.detail.validationMessage || '';
     } else {
-      // Fallback to basic HTML validation
-      field.isValid = field.element.checkValidity?.() ?? true;
+      // Fallback to ValidatableComponent validation
+      const status = field.element.getValidationStatus();
+      field.isValid = status.isValid;
       field.validationMessage = field.element.validationMessage || '';
     }
 
@@ -154,7 +155,8 @@ export class FormValidationController {
     // Check each field's validation state
     for (const [name, field] of this.fields) {
       // Trigger validation on the field component itself
-      const isValid = field.element.checkValidity?.() ?? true;
+      const status = field.element.getValidationStatus();
+      const isValid = status.isValid;
       
       field.isValid = isValid;
       field.validationMessage = field.element.validationMessage || '';
@@ -228,8 +230,13 @@ export class FormValidationController {
    */
   reset(): void {
     for (const field of this.fields.values()) {
-      if (typeof field.element.reset === 'function') {
-        field.element.reset();
+      // Reset using ValidatableComponent interface if available
+      if ('clearValidation' in field.element && typeof field.element.clearValidation === 'function') {
+        field.element.clearValidation();
+      }
+      // Reset value if component supports it
+      if ('value' in field.element) {
+        field.element.value = '';
       }
       field.touched = false;
       field.dirty = false;

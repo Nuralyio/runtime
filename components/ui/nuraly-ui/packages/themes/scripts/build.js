@@ -42,7 +42,11 @@ const THEMES = {
       'select/index.css',
       'select/common.css',
       'select/light.css',
-      'select/dark.css'
+      'select/dark.css',
+      'textarea/index.css',
+      'textarea/common.css',
+      'textarea/light.css',
+      'textarea/dark.css'
     ]
   },
   default: {
@@ -73,7 +77,11 @@ const THEMES = {
       'select/index.css',
       'select/common.css',
       'select/light.css',
-      'select/dark.css'
+      'select/dark.css',
+      'textarea/index.css',
+      'textarea/common.css',
+      'textarea/light.css',
+      'textarea/dark.css'
     ]
   }
 };
