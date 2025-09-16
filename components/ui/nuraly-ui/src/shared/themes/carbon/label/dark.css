@@ -1,0 +1,47 @@
+/**
+ * Carbon Theme - Label Component - Dark Mode
+ * Dark mode color palette following IBM Carbon design system
+ */
+
+:root,
+[data-theme="carbon-dark"],
+[data-theme^="carbon"]:where([data-theme*="dark"]) {
+  /* ========================================
+   * DARK MODE LABEL COLORS - CARBON
+   * ======================================== */
+
+  /* Dark mode label text colors - Carbon White/Gray */
+  --nuraly-color-label-text: #f4f4f4;
+  --nuraly-color-label-secondary: #c6c6c6;
+
+  /* Dark mode label status colors - Carbon Design */
+  --nuraly-color-label-error: #ff8389;
+  --nuraly-color-label-warning: #f1c21b;
+  --nuraly-color-label-success: #42be65;
+
+  /* Dark mode label required asterisk */
+  --nuraly-color-label-required: #ff8389;
+
+  /* Dark mode label disabled state */
+  --nuraly-color-label-disabled: #6f6f6f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  [data-theme="carbon"]:not([data-theme*="light"]) {
+    /* Dark mode label text colors - Carbon White/Gray */
+    --nuraly-color-label-text: #f4f4f4;
+    --nuraly-color-label-secondary: #c6c6c6;
+
+    /* Dark mode label status colors - Carbon Design */
+    --nuraly-color-label-error: #ff8389;
+    --nuraly-color-label-warning: #f1c21b;
+    --nuraly-color-label-success: #42be65;
+
+    /* Dark mode label required asterisk */
+    --nuraly-color-label-required: #ff8389;
+
+    /* Dark mode label disabled state */
+    --nuraly-color-label-disabled: #6f6f6f;
+  }
+}

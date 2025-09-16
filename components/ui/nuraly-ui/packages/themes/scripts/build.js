@@ -58,7 +58,11 @@ const THEMES = {
       'slider-input/index.css',
       'slider-input/common.css',
       'slider-input/light.css',
-      'slider-input/dark.css'
+      'slider-input/dark.css',
+      'label/index.css',
+      'label/common.css',
+      'label/light.css',
+      'label/dark.css'
     ]
   },
   default: {
@@ -105,7 +109,11 @@ const THEMES = {
       'slider-input/index.css',
       'slider-input/common.css',
       'slider-input/light.css',
-      'slider-input/dark.css'
+      'slider-input/dark.css',
+      'label/index.css',
+      'label/common.css',
+      'label/light.css',
+      'label/dark.css'
     ]
   }
 };

@@ -1,0 +1,47 @@
+/**
+ * Default Theme - Label Component - Dark Mode
+ * Dark mode color palette for Default design system
+ */
+
+:root,
+[data-theme="default-dark"],
+[data-theme^="default"]:where([data-theme*="dark"]) {
+  /* ========================================
+   * DARK MODE LABEL COLORS - DEFAULT
+   * ======================================== */
+
+  /* Dark mode label text colors - Default White/Gray */
+  --nuraly-color-label-text: #ffffff;
+  --nuraly-color-label-secondary: #bfbfbf;
+
+  /* Dark mode label status colors */
+  --nuraly-color-label-error: #ff7875;
+  --nuraly-color-label-warning: #ffc53d;
+  --nuraly-color-label-success: #73d13d;
+
+  /* Dark mode label required asterisk */
+  --nuraly-color-label-required: #ff7875;
+
+  /* Dark mode label disabled state */
+  --nuraly-color-label-disabled: #595959;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  [data-theme="default"]:not([data-theme*="light"]) {
+    /* Dark mode label text colors - Default White/Gray */
+    --nuraly-color-label-text: #ffffff;
+    --nuraly-color-label-secondary: #bfbfbf;
+
+    /* Dark mode label status colors */
+    --nuraly-color-label-error: #ff7875;
+    --nuraly-color-label-warning: #ffc53d;
+    --nuraly-color-label-success: #73d13d;
+
+    /* Dark mode label required asterisk */
+    --nuraly-color-label-required: #ff7875;
+
+    /* Dark mode label disabled state */
+    --nuraly-color-label-disabled: #595959;
+  }
+}
