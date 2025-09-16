@@ -5,7 +5,7 @@
  */
 
 import { DatePickerBaseController } from './base-controller.interface.js';
-import { INavigationDate, IDayPresentation } from '../datepicker.type.js';
+import { INavigationDate, IDayPresentation } from '../datepicker.types.js';
 
 /**
  * Calendar controller interface for managing calendar display and navigation

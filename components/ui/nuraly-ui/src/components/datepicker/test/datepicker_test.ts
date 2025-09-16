@@ -1,7 +1,7 @@
 import { expect, fixture, html } from '@open-wc/testing';
 import '../datepicker.component';
 import { HyDatePickerElement } from '../datepicker.component';
-import { DatePickerMode } from '../datepicker.type';
+import { DatePickerMode } from '../datepicker.types';
 
 suite('HyDatePickerElement', () => {
   test('should be defined', async () => {

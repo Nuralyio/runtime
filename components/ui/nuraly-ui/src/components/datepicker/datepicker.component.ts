@@ -11,27 +11,27 @@ import { classMap } from 'lit/directives/class-map.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import { styles } from './datepicker.style.js';
 import {
-    DatePickerMode,
-    DatePickerType,
-    DatePickerSize,
-    DatePickerVariant,
-    DatePickerPlacement,
-    INavigationDate,
-    IDayPresentation,
-    DatePickerState,
-} from './datepicker.type.js';
+  DatePickerMode,
+  DatePickerType,
+  DatePickerSize,
+  DatePickerVariant,
+  DatePickerPlacement,
+  INavigationDate,
+  IDayPresentation,
+  DatePickerState,
+} from './datepicker.types.js';
 import {
-    DEFAULT_DATE_FORMAT,
-    DEFAULT_LOCALE,
-    INPUT_FIELD_ID,
-    CALENDAR_CONTAINER_CLASS,
-    DATE_PICKER_EVENTS,
+  DEFAULT_DATE_FORMAT,
+  DEFAULT_LOCALE,
+  INPUT_FIELD_ID,
+  CALENDAR_CONTAINER_CLASS,
+  DATE_PICKER_EVENTS,
 } from './datepicker.constant.js';
 import {
-    DatePickerCalendarController,
-    DatePickerSelectionController,
-    DatePickerKeyboardController,
-    DatePickerPositioningController,
+  DatePickerCalendarController,
+  DatePickerSelectionController,
+  DatePickerKeyboardController,
+  DatePickerPositioningController,
 } from './controllers/index.js';
 import { SharedDropdownController } from '../../shared/controllers/dropdown.controller.js';
 import { DatePickerHost } from './interfaces/base-controller.interface.js';
@@ -40,8 +40,8 @@ import { renderMonthsTemplate } from './templates/months.template.js';
 import { renderYearsTemplate } from './templates/years.template.js';
 import { renderDays } from './templates/days.template.js';
 
-import { capitalizeFirstLetter } from './core/string.helper.js';
-import './core/locale.helper.js';
+import { capitalizeFirstLetter } from './utils/string.helper.js';
+import './utils/locale.helper.js';
 import { INPUT_STATE } from '../input/input.types.js';
 
 /**

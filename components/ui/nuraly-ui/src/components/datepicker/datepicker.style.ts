@@ -1,14 +1,24 @@
+import { css } from 'lit';
+import { styleVariables } from './datepicker.style.variables.js';
+
 /**
- * @license
- * Copyright 2023 Google Laabidi Aymen
- * SPDX-License-Identifier: MIT
+ * Datepicker component styles for the Hybrid UI Library
+ * 
+ * This file contains all the styling for the nr-datepicker component, including:
+ * - Base datepicker styles with CSS custom properties for theming
+ * - Multiple datepicker states (default, disabled, focused)
+ * - Size variations (small, medium, large)
+ * - Calendar styling and positioning
+ * - Date selection states and range highlighting
+ * - Focus, disabled, and validation states
+ * - Dark theme support
+ * 
+ * The styling system uses CSS custom properties with fallbacks to allow
+ * for both global and local customization of datepicker appearance.
  */
 
-import { css } from 'lit';
-import { datepickerVariables } from './datepicker.style.variables.js';
-
 export const styles = css`
-  ${datepickerVariables}
+  ${styleVariables}
 
   :host {
     width: fit-content;
@@ -24,17 +34,6 @@ export const styles = css`
 
   :host([range]) {
     --nuraly-datepicker-local-calendar-width: 600px;
-  }
-
-  /* Theme-specific styles */
-  :host([theme='dark']) {
-    --nuraly-datepicker-local-background-color: #1f1f1f;
-    --nuraly-datepicker-local-border-color: #424242;
-    --nuraly-datepicker-local-text-color: #ffffff;
-    --nuraly-datepicker-local-hover-color: #333333;
-    --nuraly-datepicker-local-input-background: #1f1f1f;
-    --nuraly-datepicker-local-input-border-color: #424242;
-    --nuraly-datepicker-local-input-text-color: #ffffff;
   }
 
   /* Container styles */
