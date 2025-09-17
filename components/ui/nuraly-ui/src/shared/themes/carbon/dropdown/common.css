@@ -1,0 +1,69 @@
+/**
+ * Carbon Design System Theme - Dropdown Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme^="carbon"] {
+  /* ========================================
+   * SHARED DROPDOWN VARIABLES - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Font */
+  --nuraly-dropdown-font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --nuraly-dropdown-font-size: 0.875rem;
+  --nuraly-dropdown-font-weight: 400;
+  --nuraly-dropdown-line-height: 1.28571;
+
+  /* Trigger styling */
+  --nuraly-dropdown-trigger-padding: 0;
+  --nuraly-dropdown-trigger-border-radius: 0px;
+
+  /* Dropdown panel */
+  --nuraly-dropdown-border-radius: 0px;
+  --nuraly-dropdown-border-width: 1px;
+  --nuraly-dropdown-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  --nuraly-dropdown-z-index: 9999;
+  --nuraly-dropdown-min-width: 10rem;
+  --nuraly-dropdown-max-width: 20rem;
+
+  /* Items */
+  --nuraly-dropdown-item-padding: 0.75rem 1rem;
+  --nuraly-dropdown-item-font-size: 0.875rem;
+  --nuraly-dropdown-item-font-weight: 400;
+  --nuraly-dropdown-item-line-height: 1.28571;
+  --nuraly-dropdown-item-border-radius: 0px;
+  --nuraly-dropdown-item-gap: 0.5rem;
+  --nuraly-dropdown-item-transition: background-color 0.11s cubic-bezier(0.2, 0, 0.38, 0.9);
+
+  /* Icon */
+  --nuraly-dropdown-icon-size: 1rem;
+
+  /* Divider */
+  --nuraly-dropdown-divider-width: 1px;
+  --nuraly-dropdown-divider-margin: 0.25rem 0;
+
+  /* Arrow */
+  --nuraly-dropdown-arrow-size: 0.5rem;
+  --nuraly-dropdown-arrow-offset: 0.75rem;
+
+  /* Size variants */
+  --nuraly-dropdown-small-font-size: 0.75rem;
+  --nuraly-dropdown-small-item-padding: 0.5rem 0.75rem;
+  --nuraly-dropdown-small-icon-size: 0.875rem;
+
+  --nuraly-dropdown-large-font-size: 1rem;
+  --nuraly-dropdown-large-item-padding: 1rem 1.25rem;
+  --nuraly-dropdown-large-icon-size: 1.25rem;
+
+  /* Animation */
+  --nuraly-dropdown-animation-duration: 0.15s;
+  --nuraly-dropdown-animation-timing: cubic-bezier(0.2, 0, 0.38, 0.9);
+  
+  /* Positioning offset */
+  --nuraly-dropdown-offset: 0.25rem;
+
+  /* Disabled state - Carbon Design System */
+  --nuraly-dropdown-disabled-opacity: 1;
+  --nuraly-dropdown-item-disabled-opacity: 0.25;
+}

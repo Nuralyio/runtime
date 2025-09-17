@@ -66,7 +66,11 @@ const THEMES = {
       'card/index.css',
       'card/common.css',
       'card/light.css',
-      'card/dark.css'
+      'card/dark.css',
+      'dropdown/index.css',
+      'dropdown/common.css',
+      'dropdown/light.css',
+      'dropdown/dark.css'
     ]
   },
   default: {
@@ -121,7 +125,11 @@ const THEMES = {
       'card/index.css',
       'card/common.css',
       'card/light.css',
-      'card/dark.css'
+      'card/dark.css',
+      'dropdown/index.css',
+      'dropdown/common.css',
+      'dropdown/light.css',
+      'dropdown/dark.css'
     ]
   }
 };

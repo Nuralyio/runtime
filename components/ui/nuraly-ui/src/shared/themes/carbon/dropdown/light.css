@@ -1,0 +1,42 @@
+/**
+ * Carbon Design System Theme - Dropdown Component - Light Variant
+ */
+
+[data-theme="carbon-light"],
+[data-theme="carbon"] {
+  /* ========================================
+   * DROPDOWN LIGHT THEME - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Colors */
+  --nuraly-color-dropdown-background: #ffffff;
+  --nuraly-color-dropdown-border: #e0e0e0;
+  --nuraly-color-dropdown-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Trigger colors */
+  --nuraly-color-dropdown-trigger-text: #161616;
+  --nuraly-color-dropdown-trigger-background: transparent;
+  --nuraly-color-dropdown-trigger-border: transparent;
+
+  /* Item colors */
+  --nuraly-color-dropdown-item-text: #161616;
+  --nuraly-color-dropdown-item-background: transparent;
+  --nuraly-color-dropdown-item-background-hover: #e5e5e5;
+  --nuraly-color-dropdown-item-background-focus: #e5e5e5;
+  --nuraly-color-dropdown-item-background-active: #c6c6c6;
+
+  /* Disabled item colors */
+  --nuraly-color-dropdown-item-text-disabled: #c6c6c6;
+  --nuraly-color-dropdown-item-background-disabled: transparent;
+
+  /* Icon colors */
+  --nuraly-color-dropdown-icon: #525252;
+  --nuraly-color-dropdown-icon-disabled: #c6c6c6;
+
+  /* Divider colors */
+  --nuraly-color-dropdown-divider: #e0e0e0;
+
+  /* Arrow colors */
+  --nuraly-color-dropdown-arrow: #ffffff;
+  --nuraly-color-dropdown-arrow-border: #e0e0e0;
+}
