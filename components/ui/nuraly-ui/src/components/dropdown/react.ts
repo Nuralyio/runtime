@@ -1,9 +1,14 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {HyDropdownComponent} from './hy-dropdown.component.js';
-export const HyDropdown = createComponent({
-  tagName: 'hy-dropdown',
-  elementClass: HyDropdownComponent,
+import { NrDropdownElement } from './dropdown.component.js';
+
+export const NrDropdown = createComponent({
+  tagName: 'nr-dropdown',
+  elementClass: NrDropdownElement,
   react: React,
-  events: {},
+  events: {
+    'nr-dropdown-open': 'onDropdownOpen',
+    'nr-dropdown-close': 'onDropdownClose',
+    'nr-dropdown-item-click': 'onDropdownItemClick'
+  },
 });

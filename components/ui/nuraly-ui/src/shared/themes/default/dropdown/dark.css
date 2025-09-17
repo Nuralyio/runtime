@@ -1,0 +1,41 @@
+/**
+ * Default Design System Theme - Dropdown Component - Dark Variant
+ */
+
+[data-theme="default-dark"] {
+  /* ========================================
+   * DROPDOWN DARK THEME - DEFAULT DESIGN SYSTEM
+   * ======================================== */
+
+  /* Colors */
+  --nuraly-color-dropdown-background: #1f2937;
+  --nuraly-color-dropdown-border: #4b5563;
+  --nuraly-color-dropdown-shadow: rgba(0, 0, 0, 0.25);
+
+  /* Trigger colors */
+  --nuraly-color-dropdown-trigger-text: #f9fafb;
+  --nuraly-color-dropdown-trigger-background: transparent;
+  --nuraly-color-dropdown-trigger-border: transparent;
+
+  /* Item colors */
+  --nuraly-color-dropdown-item-text: #f9fafb;
+  --nuraly-color-dropdown-item-background: transparent;
+  --nuraly-color-dropdown-item-background-hover: #374151;
+  --nuraly-color-dropdown-item-background-focus: #1e40af;
+  --nuraly-color-dropdown-item-background-active: #4b5563;
+
+  /* Disabled item colors */
+  --nuraly-color-dropdown-item-text-disabled: #6b7280;
+  --nuraly-color-dropdown-item-background-disabled: transparent;
+
+  /* Icon colors */
+  --nuraly-color-dropdown-icon: #9ca3af;
+  --nuraly-color-dropdown-icon-disabled: #6b7280;
+
+  /* Divider colors */
+  --nuraly-color-dropdown-divider: #4b5563;
+
+  /* Arrow colors */
+  --nuraly-color-dropdown-arrow: #1f2937;
+  --nuraly-color-dropdown-arrow-border: #4b5563;
+}
