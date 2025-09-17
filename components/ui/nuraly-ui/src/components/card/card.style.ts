@@ -1,69 +1,62 @@
 import { css } from 'lit';
 
-const cardStyles = css`
-  .card {
-    background-color: var(--nuraly-card-background-color);
-    border-radius: 4px;
-    border: var(--nuraly-card-border);
+export const styles = css`
+  :host {
+    display: block;
+    color: var(--nuraly-color-text);
+    background-color: var(--nuraly-color-background);
+    font-family: var(--nuraly-card-font-family);
   }
 
-  .card-header {
-    font-weight: bold;
+  .card {
+    background-color: var(--nuraly-card-background-color);
+    border-radius: var(--nuraly-card-border-radius);
+    border: var(--nuraly-card-border);
+    overflow: hidden;
+    transition: var(--nuraly-card-transition);
+    box-shadow: var(--nuraly-card-shadow);
+  }
+
+  .card:hover {
+    cursor: var(--nuraly-card-cursor);
+    box-shadow: var(--nuraly-card-hover-shadow);
+    background-color: var(--nuraly-card-hover-background-color);
+    border-color: var(--nuraly-card-hover-border-color);
+  }
+
+  .card__header {
+    font-weight: var(--nuraly-card-header-font-weight);
     border-bottom: var(--nuraly-card-header-border-bottom);
     padding: var(--nuraly-card-padding);
     background-color: var(--nuraly-card-header-background-color);
     font-size: var(--nuraly-card-font-size);
     color: var(--nuraly-card-header-color);
+    line-height: var(--nuraly-card-line-height);
   }
 
-  .card-content {
+  .card__content {
     padding: var(--nuraly-card-padding);
     color: var(--nuraly-card-content-color);
     font-size: var(--nuraly-card-font-size);
+    line-height: var(--nuraly-card-line-height);
   }
 
-  .card:hover {
-    cursor: pointer;
-  }
-
-  .small-card > .card-header,
-  .small-card > .card-content {
+  /* Size variants */
+  .card--small .card__header,
+  .card--small .card__content {
     padding: var(--nuraly-card-small-padding);
     font-size: var(--nuraly-card-small-font-size);
   }
 
-  .large-card > .card-header,
-  .large-card > .card-content {
+  .card--large .card__header,
+  .card--large .card__content {
     padding: var(--nuraly-card-large-padding);
     font-size: var(--nuraly-card-large-font-size);
   }
 
-  :host {
-    --nuraly-card-border: 1px solid #e8e8e8;
-    --nuraly-card-background-color: #ffffff;
-    --nuraly-card-header-background-color: #f5f5f5;
-    --nuraly-card-header-border-bottom: 1px solid #e8e8e8;
-    --nuraly-card-font-size: 15px;
-    --nuraly-card-padding: 13px;
-    --nuraly-card-header-color: #000000;
-    --nuraly-card-content-color: #000000;
-
-    --nuraly-card-small-font-size: 13px;
-    --nuraly-card-small-padding: 8px;
-
-    --nuraly-card-large-font-size: 17px;
-    --nuraly-card-large-padding: 16px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --nuraly-card-border: 1px solid #404040;
-      --nuraly-card-background-color: #383838;
-      --nuraly-card-header-background-color: #2e2e2e;
-      --nuraly-card-header-border-bottom: 1px solid #404040;
-      --nuraly-card-header-color: #ffffff;
-      --nuraly-card-content-color: #ffffff;
-    }
+  /* Focus styles for accessibility */
+  .card:focus-within {
+    outline: var(--nuraly-card-focus-outline);
+    outline-offset: var(--nuraly-card-focus-offset);
   }
 `;
-
-export const styles = cardStyles;
