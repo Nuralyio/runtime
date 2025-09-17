@@ -1,10 +1,10 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import { HyCardComponent } from './card.component.js';
+import { NrCardElement } from './card.component.js';
 
-export const HyCard = createComponent({
-  tagName: 'hy-card',
-  elementClass: HyCardComponent,
+export const NrCard = createComponent({
+  tagName: 'nr-card',
+  elementClass: NrCardElement,
   react: React,
   events: {
     click: 'click',

@@ -62,7 +62,11 @@ const THEMES = {
       'label/index.css',
       'label/common.css',
       'label/light.css',
-      'label/dark.css'
+      'label/dark.css',
+      'card/index.css',
+      'card/common.css',
+      'card/light.css',
+      'card/dark.css'
     ]
   },
   default: {
@@ -113,7 +117,11 @@ const THEMES = {
       'label/index.css',
       'label/common.css',
       'label/light.css',
-      'label/dark.css'
+      'label/dark.css',
+      'card/index.css',
+      'card/common.css',
+      'card/light.css',
+      'card/dark.css'
     ]
   }
 };
