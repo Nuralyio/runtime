@@ -1,0 +1,37 @@
+/**
+ * Default Theme - Modal Component - Dark Theme
+ * Default dark theme variables for modal
+ */
+
+[data-theme="default-dark"] {
+  /* Modal backdrop */
+  --nuraly-color-modal-backdrop: rgba(0, 0, 0, 0.6);
+  --nuraly-color-modal-backdrop-nested: rgba(0, 0, 0, 0.8);
+  --nuraly-modal-backdrop-filter: blur(4px);
+  
+  /* Modal background */
+  --nuraly-color-modal-background: #1f2937;
+  --nuraly-border-modal: 1px solid #374151;
+  --nuraly-shadow-modal: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  
+  /* Modal header */
+  --nuraly-border-modal-header: 1px solid #374151;
+  --nuraly-color-modal-title: #f9fafb;
+  --nuraly-font-size-modal-title: 1rem;
+  --nuraly-font-weight-modal-title: 600;
+  --nuraly-color-modal-header-icon: #9ca3af;
+  
+  /* Modal body */
+  --nuraly-color-modal-body-text: #e5e7eb;
+  
+  /* Modal footer */
+  --nuraly-border-modal-footer: 1px solid #374151;
+  
+  /* Modal close button */
+  --nuraly-color-modal-close-icon: #9ca3af;
+  --nuraly-color-modal-close-icon-hover: #f3f4f6;
+  --nuraly-color-modal-close-hover: #374151;
+  --nuraly-color-modal-close-active: #4b5563;
+}

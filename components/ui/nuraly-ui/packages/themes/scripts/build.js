@@ -70,7 +70,11 @@ const THEMES = {
       'dropdown/index.css',
       'dropdown/common.css',
       'dropdown/light.css',
-      'dropdown/dark.css'
+      'dropdown/dark.css',
+      'modal/index.css',
+      'modal/common.css',
+      'modal/light.css',
+      'modal/dark.css'
     ]
   },
   default: {
@@ -129,7 +133,11 @@ const THEMES = {
       'dropdown/index.css',
       'dropdown/common.css',
       'dropdown/light.css',
-      'dropdown/dark.css'
+      'dropdown/dark.css',
+      'modal/index.css',
+      'modal/common.css',
+      'modal/light.css',
+      'modal/dark.css'
     ]
   }
 };

@@ -1,11 +1,16 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import { ModalComponent } from './modal.component.js';
-export const NrInput = createComponent({
-  tagName: 'hy-modal',
-  elementClass: ModalComponent,
+import { NrModalElement } from './modal.component.js';
+
+export const NrModal = createComponent({
+  tagName: 'nr-modal',
+  elementClass: NrModalElement,
   react: React,
   events: {
-    //valueChange: 'valueChange',
+    'modal-open': 'onModalOpen',
+    'modal-close': 'onModalClose',
+    'modal-before-close': 'onModalBeforeClose',
+    'modal-after-open': 'onModalAfterOpen',
+    'modal-escape': 'onModalEscape',
   },
 });
