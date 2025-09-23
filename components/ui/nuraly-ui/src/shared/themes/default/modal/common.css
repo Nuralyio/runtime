@@ -1,0 +1,45 @@
+/**
+ * Default Theme - Modal Component - Common Variables
+ * Shared variables for both light and dark themes
+ */
+[data-theme="default-light"],
+[data-theme="default-dark"] {
+  /* Modal dimensions */
+  --nuraly-modal-width-small: 400px;
+  --nuraly-modal-width-medium: 600px;
+  --nuraly-modal-width-large: 800px;
+  --nuraly-modal-width-xl: 1000px;
+  
+  --nuraly-modal-min-height-small: 200px;
+  --nuraly-modal-min-height-medium: 300px;
+  --nuraly-modal-min-height-large: 400px;
+  --nuraly-modal-min-height-xl: 500px;
+  
+  /* Modal spacing */
+  --nuraly-spacing-modal-padding: 1rem;
+  --nuraly-spacing-modal-margin: 2rem;
+  --nuraly-spacing-modal-top: 2rem;
+  --nuraly-spacing-modal-bottom: 2rem;
+  
+  /* Modal header */
+  --nuraly-modal-header-height: 40px;
+  --nuraly-spacing-modal-header: 0.5rem 1.5rem;
+  --nuraly-modal-header-icon-size: 16px;
+  
+  /* Modal body */
+  --nuraly-spacing-modal-body: 1rem 1.5rem;
+  
+  /* Modal footer */
+  --nuraly-modal-footer-height: 64px;
+  --nuraly-spacing-modal-footer: 1rem 1.5rem;
+  
+  /* Modal close button */
+  --nuraly-modal-close-size: 28px;
+  --nuraly-modal-close-icon-size: 14px;
+  
+  /* Modal transitions */
+  --nuraly-transition-modal: 0.3s ease;
+  
+  /* Modal z-index */
+  --nuraly-z-modal-backdrop: 1000;
+}

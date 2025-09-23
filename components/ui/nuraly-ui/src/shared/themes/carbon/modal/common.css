@@ -1,0 +1,51 @@
+/**
+ * Carbon Theme - Modal Component - Common Variables
+ * Shared variables for both light and dark themes
+ */
+
+
+
+:root,
+[data-theme^="carbon"]{
+  /* Modal dimensions */
+  --nuraly-modal-width-small: 400px;
+  --nuraly-modal-width-medium: 600px;
+  --nuraly-modal-width-large: 800px;
+  --nuraly-modal-width-xl: 1000px;
+  
+  --nuraly-modal-min-height-small: 200px;
+  --nuraly-modal-min-height-medium: 300px;
+  --nuraly-modal-min-height-large: 400px;
+  --nuraly-modal-min-height-xl: 500px;
+  
+  /* Modal spacing - Carbon 8px grid */
+  --nuraly-spacing-modal-padding: var(--nuraly-spacing-05, 1rem);
+  --nuraly-spacing-modal-margin: var(--nuraly-spacing-07, 2rem);
+  --nuraly-spacing-modal-top: var(--nuraly-spacing-07, 2rem);
+  --nuraly-spacing-modal-bottom: var(--nuraly-spacing-07, 2rem);
+  
+  /* Modal header */
+  --nuraly-modal-header-height: 48px;
+  --nuraly-spacing-modal-header: var(--nuraly-spacing-05, 1rem) var(--nuraly-spacing-06, 1.5rem);
+  --nuraly-modal-header-icon-size: 20px;
+  
+  /* Modal body */
+  --nuraly-spacing-modal-body: var(--nuraly-spacing-05, 1rem) var(--nuraly-spacing-06, 1.5rem);
+  
+  /* Modal footer */
+  --nuraly-modal-footer-height: 64px;
+  --nuraly-spacing-modal-footer: var(--nuraly-spacing-05, 1rem) var(--nuraly-spacing-06, 1.5rem);
+  
+  /* Modal close button */
+  --nuraly-modal-close-size: 28px;
+  --nuraly-modal-close-icon-size: 14px;
+  
+  /* Modal borders - Carbon uses sharp corners */
+  --nuraly-border-radius-modal: 0;
+  
+  /* Modal transitions */
+  --nuraly-transition-modal: 0.24s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Modal z-index */
+  --nuraly-z-modal-backdrop: 1000;
+}

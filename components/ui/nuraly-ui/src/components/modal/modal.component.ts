@@ -1,209 +1,478 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
+import { html, LitElement, nothing, PropertyValues } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import {
+  ModalSize,
+  ModalPosition,
+  ModalAnimation,
+  ModalBackdrop,
+  EMPTY_STRING
+} from './modal.types.js';
+import { styles } from './modal.style.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { ModalManager } from './modal-manager.js';
 
-export class ModalComponent extends LitElement {
-  static override styles = css`
-  :host {
-    font-size: 16px;
-    }
-    .modal {
-      position: fixed;
-      z-index: 9999;
-      background-color: #ffffff;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    }
+// Import icon component
+import '../icon/icon.component.js';
+import '../button/button.component.js';
 
-    dialog {
-      border: 0;
-      box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
-        0 9px 28px 8px rgba(0, 0, 0, 0.05);
-      min-width: 400px;
-      min-height: 200px;
-    }
+// Import controllers
+import {
+  ModalDragController,
+  ModalDragHost,
+  ModalKeyboardController,
+  ModalKeyboardHost
+} from './controllers/index.js';
 
-    .dialog-label {
-      cursor: move;
-    }
+/**
+ * Versatile modal component with multiple sizes, animations, and enhanced functionality.
+ * 
+ * @example
+ * ```html
+ * <!-- Simple usage -->
+ * <nr-modal open title="My Modal">
+ *   <p>Modal content goes here</p>
+ * </nr-modal>
+ * 
+ * <!-- With custom configuration -->
+ * <nr-modal 
+ *   open
+ *   size="large"
+ *   position="top"
+ *   animation="zoom"
+ *   backdrop="static"
+ *   draggable>
+ *   <div slot="header">
+ *     <nr-icon name="info"></nr-icon>
+ *     <span>Custom Header</span>
+ *   </div>
+ *   <p>Modal content</p>
+ *   <div slot="footer">
+ *     <nr-button type="secondary">Cancel</nr-button>
+ *     <nr-button type="primary">OK</nr-button>
+ *   </div>
+ * </nr-modal>
+ * ```
+ * 
+ * @fires modal-open - Modal opened
+ * @fires modal-close - Modal closed
+ * @fires modal-before-close - Before modal closes (cancelable)
+ * @fires modal-after-open - After modal opens
+ * @fires modal-escape - Escape key pressed
+ * 
+ * @slot default - Modal body content
+ * @slot header - Custom header content
+ * @slot footer - Custom footer content
+ */
+@customElement('nr-modal')
+export class NrModalElement extends NuralyUIBaseMixin(LitElement) 
+  implements ModalDragHost, ModalKeyboardHost {
+  static override styles = styles;
 
-    .backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.3);
-      z-index: 9998;
-    }
+  /** Whether the modal is open */
+  @property({ type: Boolean, reflect: true })
+  open = false;
 
-    .close-icon {
-      cursor: pointer;
-    }
-    ::slotted([slot='footer']) {
-      /* Styles applied specifically to slotted elements with slot="custom-slot" */
-      bottom: 0;
-      position: absolute;
-      text-align: end;
-      margin-bottom: 10px;
-      width : 93%;
-    }
+  /** Modal size (small, medium, large, xl) */
+  @property({ type: String })
+  size: ModalSize = ModalSize.Medium;
 
-    ::slotted([slot='content']) {
-      padding: 0px 24px 20px 24px;
-    }
-    @media (prefers-color-scheme: dark) {
-      .modal {
-        background-color: rgb(74, 74, 74);
-        color: #ffffff;
-      } 
-      .backdrop {
-        background-color: rgba(0, 0, 0, 0.3);
-      }
-    }
+  /** Modal position (center, top, bottom) */
+  @property({ type: String })
+  position: ModalPosition = ModalPosition.Center;
 
-  `;
+  /** Animation type */
+  @property({ type: String })
+  animation: ModalAnimation = ModalAnimation.Fade;
 
-  @property({type: Boolean})
-  isOpen!: boolean;
+  /** Backdrop behavior */
+  @property({ type: String })
+  backdrop: ModalBackdrop = ModalBackdrop.Closable;
 
-  @property({type: String})
-  label = '';
+  /** Whether the modal can be closed */
+  @property({ type: Boolean })
+  closable = true;
 
+  /** Whether the modal can be dragged */
+  @property({ type: Boolean })
+  modalDraggable = false;
+
+  /** Whether the modal is resizable */
+  @property({ type: Boolean })
+  resizable = false;
+
+  /** Whether the modal is fullscreen */
+  @property({ type: Boolean })
+  fullscreen = false;
+
+  /** Modal title */
+  @property({ type: String })
+  modalTitle = EMPTY_STRING;
+
+  /** Show close button in header */
+  @property({ type: Boolean, attribute: 'show-close-button' })
+  showCloseButton = true;
+
+  /** Header icon */
+  @property({ type: String })
+  headerIcon = EMPTY_STRING;
+
+  /** Z-index for the modal */
+  @property({ type: Number })
+  zIndex = 1000;
+
+  /** Custom width */
+  @property({ type: String })
+  width = EMPTY_STRING;
+
+  /** Custom height */
+  @property({ type: String })
+  height = EMPTY_STRING;
+
+  /** Dragging state */
   @state()
-  private offsetX = 0;
+  isDragging = false;
 
+  /** Current X offset for dragging */
+  @property({ type: Number })
+  offsetX = 0;
+
+  /** Current Y offset for dragging */
+  @property({ type: Number })
+  offsetY = 0;
+
+  /** Animation state */
   @state()
-  private offsetY = 0;
+  private animationState: 'closed' | 'opening' | 'open' | 'closing' = 'closed';
 
-  private isDragging = false;
-  private initialX = 0;
-  private initialY = 0;
+  /** Previous focus element */
+  private previousActiveElement: Element | null = null;
+
+  override requiredComponents = ['nr-icon', 'nr-button'];
+
+  // Controllers
+  private dragController = new ModalDragController(this);
+  private keyboardController = new ModalKeyboardController(this);
 
   override connectedCallback() {
     super.connectedCallback();
-    // this.addEventListener('mousedown', this.startDrag);
-    document.addEventListener('mousemove', this.drag.bind(this));
-    // this.addEventListener('mouseup', this.stopDrag);
-    document.addEventListener('keydown', this.handleKeyDown.bind(this));
-    //  document.addEventListener('click', this.handleOutsideClick.bind(this));
+    this.validateDependencies();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    // this.removeEventListener('mousedown', this.startDrag);
-    document.removeEventListener('mousemove', this.drag);
-    // this.removeEventListener('mouseup', this.stopDrag);
-    document.removeEventListener('keydown', this.handleKeyDown.bind(this));
-    document.removeEventListener('click', this.handleOutsideClick.bind(this));
-  }
-
-  private startDrag(event: MouseEvent) {
-    if (event.target instanceof HTMLElement) {
-      this.isDragging = true;
-      this.initialX = event.clientX - this.offsetX;
-      this.initialY = event.clientY - this.offsetY;
-      event.preventDefault();
+    // Restore focus when modal is destroyed
+    if (this.previousActiveElement instanceof HTMLElement) {
+      this.previousActiveElement.focus();
     }
   }
 
-  private drag(event: MouseEvent) {
-    if (this.isDragging) {
-      this.offsetX = event.clientX - this.initialX;
-      this.offsetY = event.clientY - this.initialY;
-      this.style.transform = `translate(${this.offsetX}px, ${this.offsetY}px)`;
-      event.preventDefault();
-    }
-  }
+  override willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
 
-  private handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      this.closeModal();
-      event.preventDefault();
-    }
-  }
-
-  private handleOutsideClick(event: MouseEvent) {
-    if (this.isOpen && !this.isChildDialog(event.target as HTMLElement)) {
-      this.closeModal();
-
-    }
-  }
-
-  private isChildDialog(target: HTMLElement): boolean {
-    let element = target.parentElement;
-    while (element !== null) {
-      if (element.tagName === 'DIALOG') {
-        return true;
+    if (changedProperties.has('open')) {
+      if (this.open) {
+        this.handleOpen();
+      } else {
+        this.handleClose();
       }
-      element = element.parentElement;
     }
-    return false;
   }
 
+  private handleOpen() {
+    // Register with modal manager and get z-index
+    const assignedZIndex = ModalManager.openModal(this);
+    this.zIndex = assignedZIndex;
+    
+    // Set animation state to opening
+    this.animationState = 'opening';
+    
+    // Dispatch before open event
+    this.dispatchEvent(new CustomEvent('modal-open', {
+      bubbles: true,
+      detail: { modal: this, stackDepth: ModalManager.getStackDepth() }
+    }));
+
+    // Wait for DOM update, then start JavaScript animation
+    this.updateComplete.then(() => {
+      this.startOpenAnimation();
+    });
+  }
+
+  private startOpenAnimation() {
+    const modalElement = this.shadowRoot?.querySelector('.modal') as HTMLElement;
+    const backdropElement = this.shadowRoot?.querySelector('.modal-backdrop') as HTMLElement;
+    
+    if (!modalElement || !backdropElement) return;
+
+    // Get animation keyframes based on animation type
+    const { modalKeyframes, backdropKeyframes } = this.getAnimationKeyframes();
+    
+    // Start animations
+    const modalAnimation = modalElement.animate(modalKeyframes, {
+      duration: 300,
+      easing: 'ease',
+      fill: 'forwards'
+    });
+
+
+    // When animation completes
+    modalAnimation.addEventListener('finish', () => {
+      this.animationState = 'open';
+      
+      // Only focus if this is the top modal
+      if (ModalManager.isTopModal(this)) {
+        this.keyboardController.focusFirstElement();
+      }
+      
+      // Dispatch after open event
+      this.dispatchEvent(new CustomEvent('modal-after-open', {
+        bubbles: true,
+        detail: { modal: this, stackDepth: ModalManager.getStackDepth() }
+      }));
+    });
+  }
+
+  private getAnimationKeyframes() {
+    const backdropKeyframes = [
+      { opacity: 0 },
+      { opacity: 1 }
+    ];
+
+    let modalKeyframes;
+    switch (this.animation) {
+      case 'fade':
+        modalKeyframes = [
+          { opacity: 0, transform: 'scale(0.9)' },
+          { opacity: 1, transform: 'scale(1)' }
+        ];
+        break;
+      case 'zoom':
+        modalKeyframes = [
+          { opacity: 0, transform: 'scale(0.7)' },
+          { opacity: 1, transform: 'scale(1)' }
+        ];
+        break;
+      case 'slide-up':
+        modalKeyframes = [
+          { opacity: 0, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' }
+        ];
+        break;
+      case 'slide-down':
+        modalKeyframes = [
+          { opacity: 0, transform: 'translateY(-20px)' },
+          { opacity: 1, transform: 'translateY(0)' }
+        ];
+        break;
+      default:
+        modalKeyframes = [
+          { opacity: 0, transform: 'scale(0.9)' },
+          { opacity: 1, transform: 'scale(1)' }
+        ];
+    }
+
+    return { modalKeyframes, backdropKeyframes };
+  }
+
+  private handleClose() {
+    this.animationState = 'closing';
+    
+    // Unregister from modal manager
+    ModalManager.closeModal(this);
+    
+    // Reset drag position
+    this.dragController.resetPosition();
+    
+    // Wait for animation to complete
+    setTimeout(() => {
+      this.animationState = 'closed';
+    }, 300);
+  }
+
+  /**
+   * Opens the modal
+   */
+  openModal() {
+    this.open = true;
+  }
+
+  /**
+   * Closes the modal
+   */
   closeModal() {
-    this.isOpen = false;
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.style.transform = 'none';
-    this.dispatchEvent(new CustomEvent('close'));
+    if (!this.closable) return;
 
-  }
-
-  private adjustDialogPosition() {
-    if (this.isOpen) {
-      const dialog = this.shadowRoot?.querySelector('.modal') as HTMLElement;
-      if (dialog) {
-
-          const contentHeight = dialog.clientHeight;
-          const windowHeight = window.innerHeight;
-          const dialogHeight = Math.min(contentHeight + 40, windowHeight - 40);
-
-          const topPosition = Math.max((windowHeight - dialogHeight) / 2, 0);
-          dialog.style.top = `${topPosition}px`;
+    // Dispatch before close event (cancelable)
+    const beforeCloseEvent = new CustomEvent('modal-before-close', {
+      bubbles: true,
+      cancelable: true,
+      detail: { 
+        modal: this,
+        cancel: () => beforeCloseEvent.preventDefault()
       }
-    }
-  }
-  override updated(changedProperties: Map<string | number | symbol, unknown>) {
-    super.updated(changedProperties);
+    });
 
-    if (changedProperties.has('isOpen')) {
-      if (this.isOpen) {
-        // The dialog has been opened
-        this.adjustDialogPosition();
-      }
-
+    const dispatched = this.dispatchEvent(beforeCloseEvent);
+    
+    // Only close if event wasn't cancelled
+    if (dispatched) {
+      this.open = false;
+      
+      // Dispatch close event
+      this.dispatchEvent(new CustomEvent('modal-close', {
+        bubbles: true,
+        detail: { modal: this }
+      }));
     }
   }
 
-  private stopDrag() {
-    this.isDragging = false;
+  private handleBackdropClick = (event: MouseEvent) => {
+    // Only allow backdrop close if this is the top modal and backdrop is closable
+    if (this.backdrop === ModalBackdrop.Closable && 
+        event.target === event.currentTarget && 
+        ModalManager.handleBackdropClick(this)) {
+      this.closeModal();
+    }
+  };
+
+  private getBackdropClasses() {
+    return {
+      'modal-backdrop': true,
+      'modal-backdrop--hidden': !this.open,
+      [`modal-backdrop--position-${this.position}`]: true
+    };
   }
 
-  override render() {
-    const backdropStyles = {
-      display: this.isOpen ? 'block' : 'none',
+  private getModalClasses() {
+    return {
+      'modal': true,
+      [`modal--size-${this.size}`]: !this.fullscreen,
+      'modal--fullscreen': this.fullscreen,
+      [`modal--animation-${this.animation}`]: this.animationState === 'opening' || this.animationState === 'open',
+      'modal--dragging': this.isDragging,
+      'modal--resizable': this.resizable
     };
-    const modalStyles = {
-      transform: `translate(${this.offsetX}px, ${this.offsetY}px)`,
-    };
+  }
+
+  private getModalStyles() {
+    const styles: any = {};
+    
+    if (this.zIndex) {
+      styles['--nuraly-z-modal-backdrop'] = this.zIndex.toString();
+    }
+    
+    if (this.width) {
+      styles.width = this.width;
+    }
+    
+    if (this.height) {
+      styles.height = this.height;
+    }
+    
+    return styles;
+  }
+
+  private renderHeader() {
+    const hasCustomHeader = this.querySelector('[slot="header"]');
+    const hasTitle = this.modalTitle || this.headerIcon;
+    
+    if (!hasCustomHeader && !hasTitle && !this.showCloseButton) {
+      return nothing;
+    }
 
     return html`
-      <div class="backdrop" style=${styleMap(backdropStyles)}></div>
+      <div class="modal-header ${this.modalDraggable ? 'modal-header--draggable' : ''}">
+        ${hasCustomHeader ? html`
+          <div class="modal-header-content">
+            <slot name="header"></slot>
+          </div>
+        ` : hasTitle ? html`
+          <div class="modal-header-content">
+            ${this.headerIcon ? html`
+              <nr-icon class="modal-header-icon" name="${this.headerIcon}"></nr-icon>
+            ` : nothing}
+            ${this.modalTitle ? html`
+              <h2 class="modal-title">${this.modalTitle}</h2>
+            ` : nothing}
+          </div>
+        ` : nothing}
+        
+        ${this.showCloseButton ? html`
+          <button 
+            class="modal-close-button"
+            @click=${this.closeModal}
+            aria-label="Close modal"
+            type="button">
+            <nr-icon class="modal-close-icon" name="close"></nr-icon>
+          </button>
+        ` : nothing}
+      </div>
+    `;
+  }
 
-      <dialog class="modal" ?open="${this.isOpen}" style=${styleMap(modalStyles)}>
-        <nr-icon
-          class="close-icon"
-          name="window-close"
-          style="float: right;"
-          @click=${() => (this.closeModal())}
-        ></nr-icon>
-        <h2 class="dialog-label" @mousedown=${this.startDrag} @mouseup=${this.stopDrag}>${this.label}</h2>
-        <slot></slot>
+  private renderFooter() {
+    const hasCustomFooter = this.querySelector('[slot="footer"]');
+    
+    if (!hasCustomFooter) {
+      return nothing;
+    }
+
+    return html`
+      <div class="modal-footer">
         <slot name="footer"></slot>
-      </dialog>
+      </div>
+    `;
+  }
+
+   override updated() {
+        this.updateDataTheme();
+    }
+
+   private updateDataTheme() {
+        if (!this.closest('[data-theme]')) {
+            this.setAttribute('data-theme', this.currentTheme);
+        }
+    }
+
+  override render() {
+    if (!this.open && this.animationState === 'closed') {
+      return nothing;
+    }
+
+    return html`
+      <div 
+        class=${classMap(this.getBackdropClasses())}
+        @click=${this.handleBackdropClick}
+        style=${styleMap(this.getModalStyles())}>
+        
+        <div 
+          class=${classMap(this.getModalClasses())}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby=${this.modalTitle ? 'modal-title' : nothing}
+          tabindex="-1">
+          
+          ${this.renderHeader()}
+          
+          <div class="modal-body">
+            <slot></slot>
+          </div>
+          
+          ${this.renderFooter()}
+          
+          ${this.resizable ? html`
+            <div class="resize-handle"></div>
+          ` : nothing}
+        </div>
+      </div>
     `;
   }
 }
-
-customElements.define('modal-component', ModalComponent);
