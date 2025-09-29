@@ -1,45 +1,132 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { LitElement, PropertyValueMap, html, nothing } from 'lit';
-import { property } from 'lit/decorators.js';
-import { styles } from './tabs.style.js';
-import { classMap } from 'lit/directives/class-map.js';
-import { NOTHING_STRING, TabEditable, TabEvent, TabOrientation, TabsAlign } from './tabs.constant.js';
 /**
- * `hy-tabs` is a LitElement that provides a customizable tabs.
- * @customElement 'hy-tabs'
- *
- * Attributes
- * @attr activeTab
- * @attr orientation
- * @attr tabsAlign
- * @attr editable
- * Events
- * @fires tabEdited - Indicates when tab edited
- * @fires removeTab - Indicates when tab removed
- * @fires addTab - Indicates when tab added
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
  */
-export class TabsComponent extends LitElement {
-  @property({type: Number})
-  activeTab!: number;
 
-  @property({type: String})
-  orientation!: TabOrientation;
+import { html, LitElement, nothing, PropertyValueMap } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { styles } from './tabs.style.js';
+import {
+  TabOrientation,
+  TabsAlign,
+  TabSize,
+  TabType,
+  TabEditable,
+  TabEvent,
+  TabItem,
+  TabClickEventDetail,
+  EMPTY_STRING,
+  DEFAULT_ACTIVE_TAB
+} from './tabs.types.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
-  @property({type: String})
-  tabsAlign!: TabsAlign;
+// Import icon component
+import '../icon/icon.component.js';
 
-  @property({type: Object})
-  editable!: TabEditable;
+// Import controllers
+import {
+  TabsKeyboardController,
+  TabsDragDropController,
+  TabsEditableController,
+  TabsEventController,
+  type TabsKeyboardHost,
+  type TabsDragDropHost,
+  type TabsEditableHost,
+  type TabsEventHost
+} from './controllers/index.js';
 
-  @property({type: Array})
-  tabs!: any[];
-
+/**
+ * Versatile tabs component with support for multiple orientations, editable tabs, and drag & drop.
+ * 
+ * @example
+ * ```html
+ * <!-- Basic usage -->
+ * <nr-tabs .tabs=${tabs} activeTab="0"></nr-tabs>
+ * 
+ * <!-- With editing capabilities -->
+ * <nr-tabs .tabs=${tabs} .editable=${{canAddTab: true, canDeleteTab: true}}></nr-tabs>
+ * 
+ * <!-- Vertical orientation -->
+ * <nr-tabs .tabs=${tabs} orientation="vertical" align="left"></nr-tabs>
+ * ```
+ * 
+ * @fires nr-tab-click - Tab clicked
+ * @fires nr-tab-change - Active tab changed
+ * @fires nr-tab-add - New tab requested
+ * @fires nr-tab-remove - Tab removal requested
+ * @fires nr-tab-edit - Tab edited
+ * @fires nr-tab-order-change - Tab order changed via drag & drop
+ * 
+ * @slot default - Tab content
+ */
+@customElement('nr-tabs')
+export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements 
+  TabsKeyboardHost,
+  TabsDragDropHost,
+  TabsEditableHost,
+  TabsEventHost {
   static override styles = styles;
+  
+  /** Currently active tab index */
+  @property({ type: Number })
+  activeTab = DEFAULT_ACTIVE_TAB;
 
-  constructor() {
-    super();
-    this.activeTab = 0;
-    this.orientation = TabOrientation.Horizontal;
+  /** Tab orientation (horizontal, vertical) */
+  @property({ type: String })
+  orientation: TabOrientation = TabOrientation.Horizontal;
+
+  /** Tab alignment (left, center, right) */
+  @property({ type: String })
+  align: TabsAlign = TabsAlign.Left;
+
+  /** Tab size (small, medium, large) */
+  @property({ type: String, attribute: 'size' })
+  tabSize: TabSize = TabSize.Medium;
+
+  /** Tab type/variant */
+  @property({ type: String, attribute: 'type' })
+  variant: TabType = TabType.Default;
+
+  /** Editable configuration */
+  @property({ type: Object })
+  editable?: TabEditable;
+
+  /** Array of tab items */
+  @property({ type: Array })
+  tabs: TabItem[] = [];
+
+  /** Whether tabs are animated */
+  @property({ type: Boolean })
+  animated = true;
+
+  /** Whether to destroy inactive tab content */
+  @property({ type: Boolean })
+  destroyInactiveTabPane = false;
+
+  /** Custom aria-label for the tabs container */
+  @property({ type: String })
+  tabsAriaLabel = EMPTY_STRING;
+
+  override requiredComponents = ['nr-icon'];
+
+  // Controllers - automatically connected via Lit's reactive controller system
+  private keyboardController = new TabsKeyboardController(this);
+  private dragDropController = new TabsDragDropController(this);
+  private editableController = new TabsEditableController(this);
+  private eventController = new TabsEventController(this);
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.validateDependencies();
+    this.observeChildrenChanges();
+    
+    // Ensure controllers are properly referenced for TypeScript
+    void this.keyboardController;
+    void this.dragDropController;
+    void this.editableController;
+    void this.eventController;
   }
 
   override render() {
@@ -49,198 +136,194 @@ export class TabsComponent extends LitElement {
           'tabs-container': true,
           'vertical-align': this.orientation === TabOrientation.Vertical,
           'horizontal-align': this.orientation === TabOrientation.Horizontal,
-          'right-align': this.tabsAlign === TabsAlign.Right,
-          'left-align': this.tabsAlign === TabsAlign.Left,
-          'center-align': this.tabsAlign === TabsAlign.Center,
+          'right-align': this.align === TabsAlign.Right,
+          'left-align': this.align === TabsAlign.Left,
+          'center-align': this.align === TabsAlign.Center,
         })}
+        role="tablist"
+        aria-label="${this.tabsAriaLabel || nothing}"
+        data-theme="${this.currentTheme}"
+        data-size="${this.tabSize}"
+        data-type="${this.variant}"
       >
         <div
           class="tab-labels"
-          style="flex-direction: ${this.orientation === TabOrientation.Vertical ? 'column' : ('row' as any)}"
+          style="flex-direction: ${this.orientation === TabOrientation.Vertical ? 'column' : 'row'}"
         >
           <div></div>
-
           ${this.renderTabs()}
           <div></div>
         </div>
-        <div class="tab-content">${this.renderActiveTab()}</div>
+        <div class="tab-content" role="tabpanel">
+          ${this.renderActiveTab()}
+        </div>
       </div>
     `;
-  }
-  override connectedCallback() {
-    super.connectedCallback();
-    this.observeChildrenChanges();
-    this.addEventListener('dragover', this.handleDragOver);
   }
 
   private observeChildrenChanges() {
     const mutationObserver = new MutationObserver(() => {
-     // this.requestUpdate();
+      // Handle dynamic tab changes if needed
+      this.requestUpdate();
     });
 
-    mutationObserver.observe(this, {childList: true});
+    mutationObserver.observe(this, { childList: true });
   }
 
-  private handleDragStart(event: any) {
-    event.dataTransfer.setData('text/plain', event.currentTarget.dataset.index);
-    event.dataTransfer.effectAllowed = 'move';
-    event.target.closest('.tab-label').classList.add('dragging-start');
-  }
+  private renderDeleteIcon(tab: TabItem, tabIndex: number) {
+    if (!this.editableController.canDeleteTab(tab)) return nothing;
 
-  private handleDragOver(event: any) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }
-
-  private handleDragEnter(event: any) {
-    event.preventDefault();
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      return;
+    if (!this.isComponentAvailable('nr-icon')) {
+      console.warn('[nr-tabs] Icon component not available. Delete icon will not render.');
+      return nothing;
     }
-    event.currentTarget.classList.add('dragging');
+
+    return html`
+      <nr-icon
+        name="window-close"
+        class="close-icon"
+        @mousedown=${(e: MouseEvent) => {
+          e.stopPropagation();
+          this.editableController.handleRemoveTab(tabIndex);
+        }}
+      ></nr-icon>
+    `;
   }
 
-  private handleDragLeave(event: any) {
-    event.preventDefault();
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      return;
-    }
-    if (event.currentTarget.classList.contains('dragging')) {
-      event.currentTarget.classList.remove('dragging');
-    }
-  }
-
-  private handleDrop(event: any) {
-    event.preventDefault();
-    const sourceIndex = event.dataTransfer.getData('text/plain');
-    const targetIndex = event.currentTarget.dataset.index;
-    if (sourceIndex !== targetIndex) {
-      const tabs = Array.from(this.children || []);
-      const sourceTab = tabs[sourceIndex];
-      const targetTab = tabs[targetIndex];
-      this.dispatchEvent(
-        new CustomEvent(TabEvent.tabOrderChange, {
-          detail: {sourceTab, targetTab, sourceIndex: parseInt(sourceIndex), targetIndex: parseInt(targetIndex)},
-        })
-      );
-    }
-    this.shadowRoot!.querySelector('.dragging')?.classList.remove('dragging');
-    event.target.classList.remove('dragging');
-    this.shadowRoot!.querySelector('.dragging-start')?.classList.remove('dragging-start');
-  }
-
-  renderDeleteIcon(tab :any){
-    // if the tab does not gave edibale propetry and canDeleteTab is true
-    // then render the delete icon
-    if(!tab.editable && this.editable?.canDeleteTab){
-      return html`<nr-icon
-      @mousedown=${() => {
-        this.dispatchEvent(
-          new CustomEvent(TabEvent.removeTab, {
-            detail: {index: tab.index},
-          })
-        );
-      }}
-      name="window-close"
-      class="close-icon"
-    ></nr-icon>`
-    ;
-  }
-  return nothing;
-
-  }
   private renderTabs() {
     const tabs = [];
-    const children = this.tabs || [];
-    for (let tabIndex = 0; tabIndex < children.length; tabIndex++) {
-      const tab = html`
+    
+    for (let tabIndex = 0; tabIndex < this.tabs.length; tabIndex++) {
+      const tab = this.tabs[tabIndex];
+      const isActive = tabIndex === this.activeTab;
+      
+      // Determine tab position for border radius
+      const isFirstTab = tabIndex === 0;
+      const isLastTab = tabIndex === this.tabs.length - 1;
+      const isSingleTab = this.tabs.length === 1;
+      const isMiddleTab = !isFirstTab && !isLastTab && !isSingleTab;
+      
+      const tabElement = html`
         <div
           data-index=${tabIndex}
-          draggable=${this.editable?.canMove}
-          @dragenter=${this.handleDragEnter}
-          @dragleave=${this.handleDragLeave}
-          @dragstart=${(e: any) => this.handleDragStart(e)}
-          @drop=${(event: Event) => this.handleDrop(event)}
-          class=${tabIndex === this.activeTab ? 'tab-label active' : 'tab-label'}
-          @mousedown=${(e: Event) => this.setActiveTab(tabIndex, children[tabIndex], e)}
+          draggable=${this.dragDropController.getDraggableState() ? 'true' : 'false'}
+          @dragenter=${(e: DragEvent) => this.dragDropController.handleDragEnter(e)}
+          @dragleave=${(e: DragEvent) => this.dragDropController.handleDragLeave(e)}
+          @dragstart=${(e: DragEvent) => this.dragDropController.handleDragStart(e)}
+          @drop=${(e: DragEvent) => this.dragDropController.handleDrop(e)}
+          class=${classMap({
+            'tab-label': true,
+            'active': isActive,
+            'disabled': !!tab.disabled,
+            'first-tab': isFirstTab && this.orientation === TabOrientation.Horizontal,
+            'middle-tab': isMiddleTab && this.orientation === TabOrientation.Horizontal,
+            'last-tab': isLastTab && this.orientation === TabOrientation.Horizontal,
+            'single-tab': isSingleTab && this.orientation === TabOrientation.Horizontal
+          })}
+          role="tab"
+          aria-selected=${isActive ? 'true' : 'false'}
+          aria-disabled=${tab.disabled ? 'true' : 'false'}
+          tabindex=${isActive ? '0' : '-1'}
+          @click=${(e: MouseEvent) => this.eventController.handleTabClick(tabIndex, e)}
         >
-          <hy-label
-            contenteditable=${this.editable?.canEditTabTitle ? true : nothing}
-            @blur=${(event: Event) => {
-              this.dispatchEvent(
-                new CustomEvent(TabEvent.tabEdited, {
-                  detail: {
-                    tab: {
-                      label: (event.target as HTMLElement)?.textContent,
-                      index: tabIndex,
-                    },
-                  },
-                })
-              );
-            }}
-            >${children[tabIndex].label}</hy-label
-          >
-          ${children[tabIndex].editable?.canDeleteTab ?? this.editable?.canDeleteTab
-            ? html`<nr-icon
-                @mousedown=${() => {
-                  this.dispatchEvent(
-                    new CustomEvent(TabEvent.removeTab, {
-                      detail: {index: tabIndex},
-                    })
-                  );
-                }}
-                name="window-close"
-                class="close-icon"
-              ></nr-icon>`
-            : NOTHING_STRING}
+          ${tab.icon && this.isComponentAvailable('nr-icon') 
+            ? html`<nr-icon name=${tab.icon} class="tab-icon"></nr-icon>` 
+            : nothing}
+          
+          <span class="tab-text" 
+                contenteditable=${this.editableController.getContentEditableAttribute(tab) || nothing}
+                @blur=${(event: Event) => this.editableController.handleTabTitleBlur(event, tabIndex)}
+                @keydown=${(event: KeyboardEvent) => this.editableController.handleTabTitleKeyDown(event, tabIndex)}
+          >${tab.label}</span>
+          
+          ${this.renderDeleteIcon(tab, tabIndex)}
         </div>
       `;
-      tabs.push(tab);
+      tabs.push(tabElement);
     }
-    if (this.editable?.canAddTab) {
-      const tab = html`
+
+    // Add tab button
+    if (this.editableController.canAddTab()) {
+      const addTabElement = html`
         <div
           class="tab-label add-tab-label"
+          role="button"
+          aria-label="Add new tab"
+          tabindex="0"
           @mousedown=${() => {
-            this.dispatchEvent(new CustomEvent(TabEvent.addTab));
+            this.editableController.handleAddTab();
+          }}
+          @keydown=${(e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.editableController.handleAddTab();
+            }
           }}
         >
-          <nr-icon name="plus" class="add-tab-icon"></nr-icon>
+          ${this.isComponentAvailable('nr-icon') 
+            ? html`<nr-icon name="plus" class="add-tab-icon"></nr-icon>`
+            : html`<span>+</span>`}
         </div>
       `;
-      tabs.push(tab);
+      tabs.push(addTabElement);
     }
+
     return tabs;
   }
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-    if (!this.tabs[this.activeTab]) {
-      if (!this.tabs[this.activeTab - 1]) {
-        this.activeTab++;
-      } else {
-        this.activeTab--;
-      }
+    
+    // Validate active tab index
+    if (this.activeTab >= this.tabs.length) {
+      this.activeTab = Math.max(0, this.tabs.length - 1);
+    } else if (this.activeTab < 0) {
+      this.activeTab = 0;
     }
   }
 
   private renderActiveTab() {
-    const children = this.tabs ? [...this.tabs] : [];
-    if (children.length > 0 && this.activeTab >= 0 && this.activeTab < children.length) {
-      return html`${children[this.activeTab].content}`;
+    if (this.tabs.length === 0 || this.activeTab < 0 || this.activeTab >= this.tabs.length) {
+      return nothing;
     }
-    return html`${NOTHING_STRING}`;
+
+    const activeTab = this.tabs[this.activeTab];
+    return html`${activeTab.content || nothing}`;
   }
 
-  private setActiveTab(index: number, _element: Element, event: Event) {
-    event.preventDefault();
+  setActiveTab(index: number, event?: Event) {
+    // Handle MouseEvent specifically for drag behavior
+    if (event instanceof MouseEvent) {
+      // For click events when drag is enabled, we don't need to prevent default
+      // as the drag operation should take precedence over click for dragging
+      const canMove = this.editable?.canMove ?? false;
+      if (!canMove) {
+        event.preventDefault();
+      }
+    }
+    
+    if (index < 0 || index >= this.tabs.length || this.tabs[index].disabled) {
+      return;
+    }
+
+    const previousIndex = this.activeTab;
+    const tab = this.tabs[index];
+    
     this.activeTab = index;
-    this.dispatchEvent(
-      new CustomEvent(TabEvent.tabTilteClick, {
-        detail: {index},
-      })
-    );
+    
+    // Dispatch events
+    this.dispatchEventWithMetadata(TabEvent.TabClick, {
+      index,
+      tab,
+      previousIndex
+    } as TabClickEventDetail);
+    
+    if (previousIndex !== index) {
+      this.dispatchEventWithMetadata(TabEvent.TabChange, {
+        index,
+        tab,
+        previousIndex
+      } as TabClickEventDetail);
+    }
   }
 }
-
-customElements.define('hy-tabs', TabsComponent);
