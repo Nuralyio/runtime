@@ -74,7 +74,11 @@ const THEMES = {
       'modal/index.css',
       'modal/common.css',
       'modal/light.css',
-      'modal/dark.css'
+      'modal/dark.css',
+      'tabs/index.css',
+      'tabs/common.css',
+      'tabs/light.css',
+      'tabs/dark.css'
     ]
   },
   default: {
@@ -137,7 +141,11 @@ const THEMES = {
       'modal/index.css',
       'modal/common.css',
       'modal/light.css',
-      'modal/dark.css'
+      'modal/dark.css',
+      'tabs/index.css',
+      'tabs/common.css',
+      'tabs/light.css',
+      'tabs/dark.css'
     ]
   }
 };

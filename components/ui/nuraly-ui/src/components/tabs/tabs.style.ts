@@ -1,199 +1,332 @@
 import { css } from 'lit';
 
+/**
+ * Tabs component styles for the Hybrid UI Library
+ * Using shared CSS variables from /src/shared/themes/
+ * 
+ * This file contains all the styling for the nr-tabs component with
+ * clean CSS variable usage without local fallbacks and proper theme switching support.
+ */
 export const styles = css`
-  :host{
+  :host {
     display: block;
     height: 100%;
+    
+    /* Force CSS custom property inheritance to ensure theme switching works properly */
+    color: var(--nuraly-color-text);
+    background-color: var(--nuraly-color-background);
+    
+    /* Minimal transitions for better performance */
+    
   }
-   .tabs-container{
-    border-radius: var(--nuraly-tabs-border-radius, var(--nuraly-tabs-border-radius-local));
-    background-color:var(--nuraly-tabs-container-background-color, var(--nuraly-tabs-container-background-local-color));
-    height: 100%;
-   }
-  .tab-labels,
+
+  /* Force re-evaluation of theme-dependent properties on theme change */
+  :host([data-theme]) {
+    color: inherit;
+    background-color: inherit;
+  }
+
   .tabs-container {
     display: flex;
+    height: 100%;
+    background-color: var(--nuraly-color-background);
+    border-radius: var(--nuraly-border-radius-tabs, var(--nuraly-border-radius-medium, 0));
+    box-shadow: var(--nuraly-shadow-tabs);
   }
 
-  .tabs-container {
-    box-shadow: var(--nuraly-tabs-container-box-shadow);
+  .tab-labels {
+    display: flex;
+    background-color: var(--nuraly-color-tabs-header-background);
+    border: var(--nuraly-border-tabs-header);
   }
 
-  .dragging-start {
-    border: var(--nuraly-tabs-dragging-start-border);
-  }
-  .dragging-enter {
-    background-color: var(--nuraly-tabs-dragging-enter-background-color);
-  }
-  .vertical-align > .tab-content {
-    border: var(--nuraly-tabs-va-enter-border);
-    border-left: var(--nuraly-tabs-va-enter-border-left);
-  }
-  .vertical-align.right-align > .tab-content {
-    border: var(--nuraly-tabs-va-ra-border);
-    border-right: var(--nuraly-tabs-va-ra-border-right);
-  }
-
+  /* Tab label base styles */
   .tab-label {
-    cursor: var(--nuraly-tabs-label-cursor);
-    padding: var(--nuraly-tabs-label-padding);
-    border-bottom: var(--nuraly-tabs-label-border-bottom);
-    transition: var(--nuraly-tabs-label-transition);
-    user-select: var(--nuraly-tabs-label-user-select);
-    color:var(--nuraly-tabs-label-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nuraly-spacing-2);
+    position: relative;
+    cursor: pointer;
+    padding: var(--nuraly-spacing-tabs-padding, var(--nuraly-spacing-3) var(--nuraly-spacing-4));
+    border: var(--nuraly-border-tabs-label);
+    border-bottom: var(--nuraly-border-width-medium, 2px) solid transparent;
+    background-color: var(--nuraly-color-tabs-label-background);
+    color: var(--nuraly-color-tabs-label-text);
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-body);
+    font-weight: var(--nuraly-font-weight-regular);
+    user-select: none;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--nuraly-color-tabs-label-text-hover);
+      background-color: var(--nuraly-color-tabs-label-background-hover);
+      border-color: var(--nuraly-color-tabs-label-border-hover);
+    }
+
+    &:focus {
+      outline: var(--nuraly-focus-outline);
+      outline-offset: var(--nuraly-focus-outline-offset);
+    }
+
+    &.active {
+      color: var(--nuraly-color-tabs-label-text-active);
+      background-color: var(--nuraly-color-tabs-label-background-active);
+      border-color: var(--nuraly-color-tabs-label-border-active);
+      font-weight: var(--nuraly-font-weight-semibold);
+    }
+
+    /* Positioning-specific border radius for horizontal tabs */
+    &.first-tab {
+      border-radius: var(--nuraly-border-radius-tabs-first);
+    }
+
+    &.middle-tab {
+      border-radius: var(--nuraly-border-radius-tabs-middle);
+    }
+
+    &.last-tab {
+      border-radius: var(--nuraly-border-radius-tabs-last);
+    }
+
+    &.single-tab {
+      border-radius: var(--nuraly-border-radius-tabs-single);
+    }
+
+    &.disabled {
+      cursor: not-allowed;
+      color: var(--nuraly-color-text-disabled);
+      background-color: var(--nuraly-color-background-disabled);
+      
+      &:hover {
+        color: var(--nuraly-color-text-disabled);
+        background-color: var(--nuraly-color-background-disabled);
+        border-color: transparent;
+      }
+    }
   }
 
-  .tab-label:hover {
-    color: var(--nuraly-tabs-label-hover-color);
+  /* Tab icon styling */
+  .tab-icon {
+    flex-shrink: 0;
+    width: var(--nuraly-tabs-icon-size, 1rem);
+    height: var(--nuraly-tabs-icon-size, 1rem);
+    color: inherit;
   }
 
-  .tab-label.active {
-    color: var(--nuraly-tabs-label-active-hover-color);
-    border-top-left-radius: var(--nuraly-tabs-label-active-border-left-radius, 0);
-    border-top-right-radius: var(--nuraly-tabs-label-active-border-right-radius, 0);
+  /* Tab text styling */
+  .tab-text {
+    flex: 1;
+    color: inherit;
+    
+    &[contenteditable="true"] {
+      cursor: text;
+      outline: none;
+      
+      &:focus {
+        background-color: var(--nuraly-color-tabs-edit-background);
+        border-radius: var(--nuraly-border-radius-small);
+        padding: var(--nuraly-spacing-1);
+      }
+    }
   }
 
+  /* Close/delete icon styling */
+  .close-icon {
+    flex-shrink: 0;
+    width: var(--nuraly-tabs-close-icon-size, 0.875rem);
+    height: var(--nuraly-tabs-close-icon-size, 0.875rem);
+    color: var(--nuraly-color-tabs-close-icon);
+    cursor: pointer;
+    padding: var(--nuraly-spacing-1);
+    border-radius: var(--nuraly-border-radius-small);
+
+    &:hover {
+      color: var(--nuraly-color-tabs-close-icon-hover);
+      background-color: var(--nuraly-color-tabs-close-icon-background-hover);
+    }
+
+    &:active {
+      color: var(--nuraly-color-tabs-close-icon-active);
+      background-color: var(--nuraly-color-tabs-close-icon-background-active);
+    }
+  }
+
+  /* Add tab button styling */
+  .add-tab-label {
+    min-width: auto;
+    width: var(--nuraly-tabs-add-button-size, 2.5rem);
+    color: var(--nuraly-color-tabs-add-icon);
+    
+    &:hover {
+      color: var(--nuraly-color-tabs-add-icon-hover);
+      background-color: var(--nuraly-color-tabs-add-background-hover);
+    }
+  }
+
+  .add-tab-icon {
+    width: var(--nuraly-tabs-add-icon-size, 1rem);
+    height: var(--nuraly-tabs-add-icon-size, 1rem);
+    color: inherit;
+  }
+
+  /* Tab content area */
   .tab-content {
-    padding: var(--nuraly-tabs-content-padding);
-    margin: var(--nuraly-tabs-content-maring);
-    flex-grow: 1;
-    background-color: var(--nuraly-tabs-content-background-color, var(--nuraly-tabs-content-background-color-local));
-    border-top: var(--nuraly-tabs-content-border-top);
-    max-height:100vh;
-    overflow-y:auto;
-    overflow-x:hidden;
-  }
-  .right-align > .tab-labels {
-    flex-direction: var(--nuraly-tabs-right-align-labels-flex-direction);
-    align-self: var(--nuraly-tabs-right-align-labels-align-self);
+    flex: 1;
+    padding: var(--nuraly-spacing-tabs-content-padding, var(--nuraly-spacing-4));
+    background-color: var(--nuraly-color-tabs-content-background);
+    border: var(--nuraly-border-tabs-content);
+    border-top: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100vh;
   }
 
-  .center-align > .tab-labels {
-    align-self: var(--nuraly-tabs-center-align-labels-align-self);
-  }
+  /* Orientation specific styles */
   .vertical-align {
-    flex-direction: var(--nuraly-tabs-vertical-align-flex-direction);
-  }
-  .horizontal-align {
-    flex-direction: var(--nuraly-tabs-halign-flex-direction);
+    flex-direction: row;
+    
+    .tab-labels {
+      flex-direction: column;
+      min-width: var(--nuraly-tabs-vertical-width, 12rem);
+    }
+    
+    .tab-content {
+      border-top: none;
+      border-left: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+    }
+    
+    .tab-label {
+      border-bottom: var(--nuraly-border-tabs-label);
+      border-right: var(--nuraly-border-width-medium, 2px) solid transparent;
+      
+      &:hover,
+      &.active {
+        border-right-color: var(--nuraly-color-tabs-label-border-active);
+      }
+    }
   }
 
   .vertical-align.right-align {
-    flex-direction: var(--nuraly-tabs-valign-right-align-flex-direction);
-  }
-
-  .tab-label:hover,
-  .tab-label.active {
-    border-bottom: var(--nuraly-tabs-label-active-border-bottom);
-    border-color: var(--nuraly-tabs-label-active-border-color);
-  }
-
-  .tab-label.active {
-    color: var(--nuraly-tabs-label-active-hover-color);
-  }
-
-  .vertical-align .tab-label {
-    border: var(--nuraly-tabs-vertical-align-label-border);
-    border-right: var(--nuraly-tabs-vertical-align-label-border-right);
-  }
-
-  .vertical-align.right-align .tab-label {
-    border: var(--nuraly-tabs-valign-ralign-label-border);
-    border-left: var(--nuraly-tabs-valign-ralign-label-border-left);
-  }
-
-  .vertical-align .tab-label:hover,
-  .vertical-align .tab-label.active {
-    border: var(--nuraly-tabs-vertical-align-label-border-active);
-    border-right: var(--nuraly-tabs-vertical-align-label-border-right-active);
-    border-color: var(--nuraly-tabs-vertical-align-label-border-color-active);
-  }
-  .vertical-align.right-align .tab-label:hover,
-  .vertical-align.right-align .tab-label.active {
-    border: var(--nuraly-tabs-valign-ralign-label-border-active);
-    border-left: var(--nuraly-tabs-valign-ralign-label-border-left-active);
-    border-color: var(--nuraly-tabs-valign-ralign-label-border-color-active);
-  }
-
-  .close-icon {
-    font-size: var(--nuraly-tabs-add-icon-font-size);
-    vertical-align: bottom;
-    margin-left: var(--nuraly-tabs-add-icon-margin-left);
-  }
-
-  .add-tab-label {
-    font-size: var(--nuraly-tabs-add-label-font-size);
-    text-align: var(--nuraly-tabs-add-label-text-align);
-  }
-  .dragging {
-    border: var(--nuraly-tabs-dragging-border) !important;
-    opacity: 0.8;
-    color: #464646 !important;
-  }
-  .tab-label.active {
-    color: var(--nuraly-tabs-label-active);
-    background-color: var(--nuraly-tabs-label-active-background-color); /* Added background color */
-  } 
-  .add-tab-icon{
-    --nuraly-icon-color:var(--nuraly-tabs-add-icon-color);
-  }
-  :host{
-    --nuraly-tabs-container-background-local-color:#ffffff;
-    --nuraly-tabs-border-radius-local:0px;
-    --nuraly-tabs-container-box-shadow:none;
-    --nuraly-tabs-dragging-start-border:1px dashed black;
-    --nuraly-tabs-dragging-enter-background-color:#1661b1;
-    --nuraly-tabs-va-enter-border: none;
-    --nuraly-tabs-va-enter-border-left: 1px solid #ccc;
-    --nuraly-tabs-va-ra-border:none;
-    --nuraly-tabs-va-ra-border-right:1px solid #ccc;
-    --nuraly-tabs-label-cursor:pointer;
-    --nuraly-tabs-label-padding: 3px 7px 5px 7px;
-    --nuraly-tabs-label-border-bottom: 2px solid transparent;
-    --nuraly-tabs-label-transition: border-color 0.1s ease;
-    --nuraly-tabs-label-user-select: none;
-    --nuraly-tabs-label-hover-color: #1661b1;
-    --nuraly-tabs-label-active-hover-color:#006afe;
-    --nuraly-tabs-content-padding:5px;
-    --nuraly-tabs-content-background-color-local: #fff;
-    --nuraly-tabs-content-border-top: 1px solid #ccc;
-    --nuraly-tabs-right-align-labels-flex-direction:row-reverse;
-    --nuraly-tabs-right-align-labels-align-self: end;
-    --nuraly-tabs-center-align-labels-align-self:center;
-    --nuraly-tabs-vertical-align-flex-direction:row;
-    --nuraly-tabs-halign-flex-direction:column;
-    --nuraly-tabs-valign-right-align-flex-direction:row-reverse;
-    --nuraly-tabs-label-active-border-bottom:2px solid transparent;
-    --nuraly-tabs-label-active-border-color: rgb(0, 106, 254);
-    --nuraly-tabs-label-active-hover-color: #006afe;
-    --nuraly-tabs-vertical-align-label-border: #006afe;
-    --nuraly-tabs-vertical-align-label-border-right: 2px solid transparent;
-    --nuraly-tabs-valign-ralign-label-border: none;
-    --nuraly-tabs-valign-ralign-label-border-left: 2px solid transparent;
-    --nuraly-tabs-vertical-align-label-border-active: none;
-    --nuraly-tabs-vertical-align-label-border-right-active: 2px solid transparent;
-    --nuraly-tabs-vertical-align-label-border-color-active: rgb(0, 106, 254);
-    --nuraly-tabs-valign-ralign-label-border-active: none;
-    --nuraly-tabs-valign-ralign-label-border-left-active: 2px solid transparent;
-    --nuraly-tabs-valign-ralign-label-border-color-active: rgb(0, 106, 254);
-    --nuraly-tabs-add-icon-font-size: 13px;
-    --nuraly-tabs-add-icon-margin-left: 5px;
-    --nuraly-tabs-add-label-font-size: 13px;
-    --nuraly-tabs-add-label-text-align: center;
-    --nuraly-tabs-dragging-border: 1px dashed gray;
-    --nuraly-tabs-label-active: #000000;
-    --nuraly-tabs-label-color:gray;
-    --nuraly-tabs-add-icon-color: #000000;
-    --nuraly-tabs-label-active-background-color: transparent; /* Added variable */
-  }
-  @media (prefers-color-scheme: dark) {
-    :host{
-      --nuraly-tabs-container-background-local-color: #3e3e3e;
-      --nuraly-tabs-content-background-color-local: #2d2d2d;
-      --nuraly-tabs-label-hover-color: #aaa;
-      --nuraly-tabs-label-active:#ffffff;   
-      --nuraly-tabs-add-icon-color: #ffffff;
-      --nuraly-tabs-label-active-background-color: #2d2d2d; /* Dark mode background */
+    flex-direction: row-reverse;
+    
+    .tab-content {
+      border-left: none;
+      border-right: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
     }
+    
+    .tab-label {
+      border-right: var(--nuraly-border-tabs-label);
+      border-left: var(--nuraly-border-width-medium, 2px) solid transparent;
+      
+      &:hover,
+      &.active {
+        border-left-color: var(--nuraly-color-tabs-label-border-active);
+        border-right-color: transparent;
+      }
+    }
+  }
+
+  /* Alignment specific styles */
+  .right-align > .tab-labels {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+  }
+
+  .center-align > .tab-labels {
+    align-self: center;
+  }
+
+  .horizontal-align {
+    flex-direction: column;
+  }
+
+  /* Size variations */
+  :host([data-size="small"]) {
+    .tab-label {
+      padding: var(--nuraly-spacing-2) var(--nuraly-spacing-3);
+      font-size: var(--nuraly-font-size-small);
+    }
+    
+    .tab-content {
+      padding: var(--nuraly-spacing-3);
+    }
+  }
+
+  :host([data-size="large"]) {
+    .tab-label {
+      padding: var(--nuraly-spacing-4) var(--nuraly-spacing-6);
+      font-size: var(--nuraly-font-size-large);
+    }
+    
+    .tab-content {
+      padding: var(--nuraly-spacing-6);
+    }
+  }
+
+  /* Type variations */
+  :host([data-type="card"]) {
+    .tab-label {
+      border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+      border-radius: var(--nuraly-border-radius-medium);
+      margin: 0 var(--nuraly-spacing-1);
+      
+      &.active {
+        background-color: var(--nuraly-color-primary);
+        color: var(--nuraly-color-primary-text);
+        border-color: var(--nuraly-color-primary);
+      }
+    }
+  }
+
+  :host([data-type="bordered"]) {
+    .tabs-container {
+      border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+      border-radius: var(--nuraly-border-radius-medium);
+    }
+  }
+
+  /* Drag and drop states */
+  .tab-label.dragging-start {
+    opacity: 0.7;
+    border: var(--nuraly-border-width-thin, 1px) dashed var(--nuraly-color-border-strong);
+    background-color: var(--nuraly-color-background-hover);
+  }
+
+  .tab-label.dragging {
+    border: var(--nuraly-border-width-thin, 1px) dashed var(--nuraly-color-primary);
+    background-color: var(--nuraly-color-primary-background);
+    opacity: 0.8;
+  }
+
+  /* Minimal animation support for better performance */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(var(--nuraly-spacing-2));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  /* Focus management for keyboard navigation */
+  .tab-label[tabindex="0"] {
+    position: relative;
+  }
+
+  .tab-label:focus-visible {
+    z-index: 1;
   }
 `;

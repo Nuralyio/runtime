@@ -1,26 +1,40 @@
 {
     "name": "@nuralyui/tabs",
-    "version": "0.0.13",
-    "description": "",
+    "version": "0.0.15",
+    "description": "Versatile tabs component with support for multiple orientations, editable tabs, and drag & drop functionality",
     "main": "index.js",
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
+    "keywords": [
+        "tabs",
+        "web-components",
+        "lit-element",
+        "typescript",
+        "drag-drop",
+        "editable",
+        "accessibility"
+    ],
     "author": "Labidi Aymen",
-    "license": "ISC",
+    "license": "MIT",
     "exports": {
         ".": {
             "import": "./index.js"
         },
         "./bundle": {
             "import": "./bundle.js"
+        },
+        "./react": {
+            "import": "./react.js"
         }
     },
     "files": [
         "bundle.js",
         "*.js",
         "*.d.ts",
-        "*.js.map"
+        "*.js.map",
+        "react.js",
+        "react.d.ts"
     ]
 }
