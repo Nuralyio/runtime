@@ -213,7 +213,7 @@ export class NrModalElement extends NuralyUIBaseMixin(LitElement)
     if (!modalElement || !backdropElement) return;
 
     // Get animation keyframes based on animation type
-    const { modalKeyframes, backdropKeyframes } = this.getAnimationKeyframes();
+    const { modalKeyframes} = this.getAnimationKeyframes();
     
     // Start animations
     const modalAnimation = modalElement.animate(modalKeyframes, {
