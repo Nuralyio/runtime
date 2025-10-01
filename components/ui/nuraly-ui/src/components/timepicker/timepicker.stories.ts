@@ -5,7 +5,7 @@ import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
-  title: 'Components/TimePicker',
+  title: 'Data Entry/TimePicker',
   component: 'nr-timepicker',
   parameters: {
     layout: 'centered',

@@ -7,7 +7,7 @@ import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
-  title: 'Components/Select',
+  title: 'Data Entry/Select',
   component: 'hy-select',
   parameters: {
     layout: 'centered',

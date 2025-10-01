@@ -35,7 +35,7 @@ import type { DropdownItem } from './dropdown.types.js';
  * - Animation options and arrow indicators
  */
 const meta: Meta = {
-  title: 'Components/Dropdown',
+  title: 'Navigation/Dropdown',
   component: 'nr-dropdown',
   parameters: {
     layout: 'centered',

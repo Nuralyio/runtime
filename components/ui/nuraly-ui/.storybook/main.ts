@@ -11,6 +11,13 @@ const config: StorybookConfig = {
     name: '@storybook/web-components-vite',
     options: {},
   },
+  docs: {
+    autodocs: true,
+  },
+  core: {
+    disableTelemetry: true,
+  },
+  staticDirs: ['../public'],
   viteFinal: async (config) => {
     return {
       ...config,

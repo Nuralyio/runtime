@@ -33,7 +33,7 @@ import '../../shared/themes/default/index.css';
  * - Screen readers can navigate card content naturally
  */
 const meta: Meta = {
-  title: 'Components/Card',
+  title: 'Data Display/Card',
   component: 'nr-card',
   parameters: {
     layout: 'centered',

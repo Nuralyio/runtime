@@ -33,7 +33,7 @@ import type { ButtonIconConfig } from './button.types.js';
  * - **Danger**: For actions that could have destructive effects on the user's data
  */
 const meta: Meta = {
-  title: 'Components/Button',
+  title: 'General/Button',
   component: 'nr-button',
   parameters: {
     layout: 'centered',

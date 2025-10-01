@@ -6,7 +6,7 @@ import '../../shared/themes/default/index.css';
 import { TEXTAREA_STATE, TEXTAREA_SIZE, TEXTAREA_VARIANT, TEXTAREA_RESIZE } from './textarea.types.js';
 
 const meta: Meta = {
-  title: 'Components/Textarea',
+  title: 'Data Entry/Textarea',
   component: 'nr-textarea',
   parameters: {
     layout: 'centered',

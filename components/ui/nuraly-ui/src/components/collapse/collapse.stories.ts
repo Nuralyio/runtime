@@ -12,7 +12,7 @@ import '../button/index.js';
 import '../icon/index.js';
 
 const meta: Meta = {
-  title: 'Components/Collapse',
+  title: 'Data Display/Collapse',
   component: 'nr-collapse',
   parameters: {
     layout: 'padded',

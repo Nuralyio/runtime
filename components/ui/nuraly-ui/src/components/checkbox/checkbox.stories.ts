@@ -5,7 +5,7 @@ import '../../shared/themes/default/index.css';
 import './index.js';
 
 const meta: Meta = {
-  title: 'Components/Checkbox',
+  title: 'Data Entry/Checkbox',
   component: 'nr-checkbox',
   parameters: {
     layout: 'centered',

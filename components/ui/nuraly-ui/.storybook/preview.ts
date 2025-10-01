@@ -22,6 +22,23 @@ const preview: Preview = {
       },
     },
     backgrounds: { disable: true },
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: [
+          'General',
+          ['Button', 'Icon', 'Label'],
+          'Data Entry',
+          ['ColorPicker', 'Input', 'Textarea', 'Select', 'Checkbox', 'Radio', 'DatePicker', 'TimePicker', 'Slider', 'Form'],
+          'Data Display',
+          ['Card', 'Collapse', 'Tabs'],
+          'Feedback',
+          ['Modal'],
+          'Navigation',
+          ['Dropdown'],
+        ],
+      },
+    },
   },
   globalTypes: {
     theme: {

@@ -14,7 +14,7 @@ import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
-  title: 'Components/Modal',
+  title: 'Feedback/Modal',
   component: 'nr-modal',
   parameters: {
     layout: 'fullscreen',
