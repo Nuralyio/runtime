@@ -1,0 +1,47 @@
+/**
+ * Carbon Theme - Collapse Component - Dark Variant
+ * Dark mode colors for Carbon Design System
+ */
+
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * COLLAPSE DARK THEME - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Header colors */
+  --nuraly-color-collapse-header-background: #393939; /* Gray 90 */
+  --nuraly-color-collapse-header-background-hover: #4c4c4c; /* Gray 80 */
+  --nuraly-color-collapse-header-background-active: #6f6f6f; /* Gray 70 */
+  --nuraly-color-collapse-header-background-expanded: #4c4c4c; /* Gray 80 */
+  --nuraly-color-collapse-header-text: #f4f4f4; /* Gray 10 */
+  --nuraly-color-collapse-header-text-disabled: #6f6f6f; /* Gray 70 */
+  
+  /* Content colors */
+  --nuraly-color-collapse-content-background: #262626; /* Gray 95 */
+  --nuraly-color-collapse-content-text: #e0e0e0; /* Gray 20 */
+  --nuraly-color-collapse-content-text-secondary: #a8a8a8; /* Gray 50 */
+  
+  /* Border colors */
+  --nuraly-color-collapse-border: #525252; /* Gray 80 */
+  --nuraly-color-collapse-border-hover: #6f6f6f; /* Gray 70 */
+  --nuraly-color-collapse-border-active: #8d8d8d; /* Gray 60 */
+  --nuraly-color-collapse-border-focus: #4589ff; /* Blue 50 */
+  
+  /* Icon colors */
+  --nuraly-color-collapse-icon: #e0e0e0; /* Gray 20 */
+  --nuraly-color-collapse-icon-hover: #f4f4f4; /* Gray 10 */
+  --nuraly-color-collapse-icon-disabled: #6f6f6f; /* Gray 70 */
+  
+  /* Shadow colors */
+  --nuraly-shadow-collapse: none; /* Carbon typically doesn't use shadows */
+  --nuraly-shadow-collapse-hover: none;
+  --nuraly-shadow-collapse-focus: 0 0 0 2px rgba(69, 137, 255, 0.4);
+  
+  /* Variant specific colors */
+  --nuraly-color-collapse-bordered-border: #525252; /* Gray 80 */
+  --nuraly-color-collapse-bordered-background: #262626; /* Gray 95 */
+  
+  --nuraly-color-collapse-ghost-background: transparent;
+  --nuraly-color-collapse-ghost-border: transparent;
+  --nuraly-color-collapse-ghost-hover: #393939; /* Gray 90 */
+}

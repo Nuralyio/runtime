@@ -1,9 +1,9 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import { HyCollapse } from './hy-collapse.component.js';
+import { HyCollapse } from './collapse.component.js';
 
 export const HyCollapseComponent = createComponent({
-  tagName: 'hy-collapse',
+  tagName: 'nr-collapse',
   elementClass: HyCollapse,
   react: React,
   events: {

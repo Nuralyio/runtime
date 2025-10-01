@@ -78,7 +78,11 @@ const THEMES = {
       'tabs/index.css',
       'tabs/common.css',
       'tabs/light.css',
-      'tabs/dark.css'
+      'tabs/dark.css',
+      'collapse/index.css',
+      'collapse/common.css',
+      'collapse/light.css',
+      'collapse/dark.css'
     ]
   },
   default: {
@@ -145,7 +149,11 @@ const THEMES = {
       'tabs/index.css',
       'tabs/common.css',
       'tabs/light.css',
-      'tabs/dark.css'
+      'tabs/dark.css',
+      'collapse/index.css',
+      'collapse/common.css',
+      'collapse/light.css',
+      'collapse/dark.css'
     ]
   }
 };
