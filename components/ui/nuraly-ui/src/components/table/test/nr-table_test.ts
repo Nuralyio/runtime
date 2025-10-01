@@ -16,14 +16,14 @@ suite('HyTableComponent', () => {
     {name: 'Thibaut', age: 44},
   ];
   test('init table', async () => {
-    const el: HyTable = await fixture(html`<hy-table .headers=${headers} .rows=${rows}></hy-table>`);
+    const el: HyTable = await fixture(html`<nr-table .headers=${headers} .rows=${rows}></nr-table>`);
     expect(el.rowsCopy).to.deep.equal(rows);
     expect(el.displayedRows).to.deep.equal(el.rowsCopy.slice(0, el.selectedItemPerPage));
     expect(el.currentPage).to.equal(1);
   });
 
   test('sort data correctly', async () => {
-    const el: HyTable = await fixture(html`<hy-table .headers=${headers} .rows=${rows}></hy-table>`);
+    const el: HyTable = await fixture(html`<nr-table .headers=${headers} .rows=${rows}></nr-table>`);
     const sortToNameEvent = new CustomEvent('', {detail: {index: 0}});
     const rowsAscToName = [
       {name: 'Doe', age: 55},
@@ -59,7 +59,7 @@ suite('HyTableComponent', () => {
     const selectedItems = Array(rows.length).fill(false);
     test('select one item', async () => {
       const el: HyTable = await fixture(
-        html`<hy-table .headers=${headers} .rows=${rows} .selectionMode=${SelectionMode.Multiple}></hy-table>`
+        html`<nr-table .headers=${headers} .rows=${rows} .selectionMode=${SelectionMode.Multiple}></nr-table>`
       );
       expect(el.selectedItems).to.deep.equal(selectedItems);
       const selectFirstItemEvent = new CustomEvent('', {detail: {index: 1, value: true}});
@@ -74,7 +74,7 @@ suite('HyTableComponent', () => {
     });
     test('select all', async () => {
       const el: HyTable = await fixture(
-        html`<hy-table .headers=${headers} .rows=${rows} .selectionMode=${SelectionMode.Multiple}></hy-table>`
+        html`<nr-table .headers=${headers} .rows=${rows} .selectionMode=${SelectionMode.Multiple}></nr-table>`
       );
       expect(el.selectedItems).to.deep.equal(selectedItems);
       const selectAllItemsEvent = new CustomEvent('', {detail: {isEveryItemChecked: false}});
@@ -93,7 +93,7 @@ suite('HyTableComponent', () => {
 
     test('select one item', async () => {
       const el: HyTable = await fixture(
-        html`<hy-table .headers=${headers} .rows=${rows} .selectionMode=${SelectionMode.Multiple}></hy-table>`
+        html`<nr-table .headers=${headers} .rows=${rows} .selectionMode=${SelectionMode.Multiple}></nr-table>`
       );
       expect(el.selectedItems).to.deep.equal(selectedItems);
       const selectFirstItemEvent = new CustomEvent('', {detail: {index: 0}});
@@ -109,7 +109,7 @@ suite('HyTableComponent', () => {
   });
 
   test('search items', async () => {
-    const el: HyTable = await fixture(html`<hy-table .headers=${headers} .rows=${rows}></hy-table>`);
+    const el: HyTable = await fixture(html`<nr-table .headers=${headers} .rows=${rows}></nr-table>`);
     const searchEvent = new CustomEvent('', {detail: {value: 'Joh'}});
     el._handleSearch(searchEvent);
     await el.updateComplete;
@@ -122,7 +122,7 @@ suite('HyTableComponent', () => {
   });
 
   test('update page', async () => {
-    const el: HyTable = await fixture(html`<hy-table .headers=${headers} .rows=${rows}></hy-table>`);
+    const el: HyTable = await fixture(html`<nr-table .headers=${headers} .rows=${rows}></nr-table>`);
     const updatePageEvent = new CustomEvent('', {detail: {page: 2}});
     el._handleUpdatePage(updatePageEvent);
     await el.updateComplete;
@@ -130,7 +130,7 @@ suite('HyTableComponent', () => {
     expect(el.displayedRows).to.deep.equal([{name: 'Thibaut', age: 44}]);
   });
   test('update item per page', async () => {
-    const el: HyTable = await fixture(html`<hy-table .headers=${headers} .rows=${rows}></hy-table>`);
+    const el: HyTable = await fixture(html`<nr-table .headers=${headers} .rows=${rows}></nr-table>`);
     const updateItemPerPageEvent = new CustomEvent('', {detail: {selectedItemPerPage: el.itemPerPage[1]}});
     expect(el.displayedRows).to.deep.equal([
       {name: 'John', age: 30},

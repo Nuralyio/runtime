@@ -4,7 +4,7 @@ import { styles } from './sub-menu.style.js';
 import { EMPTY_STRING } from '../menu.constants.js';
 import { IAction } from '../menu.types.js';
 
-@customElement('hy-sub-menu')
+@customElement('nr-sub-menu')
 export class HySubMenu extends LitElement {
   @property()
   text!: string;

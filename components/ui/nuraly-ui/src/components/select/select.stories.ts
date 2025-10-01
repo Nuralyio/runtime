@@ -8,7 +8,7 @@ import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'Data Entry/Select',
-  component: 'hy-select',
+  component: 'nr-select',
   parameters: {
     layout: 'centered',
     docs: {
@@ -135,7 +135,7 @@ export const Default: Story = {
     size: 'medium',
   },
   render: (args) => html`
-    <hy-select
+    <nr-select
       .options=${[
         { label: 'Apple', value: 'apple' },
         { label: 'Banana', value: 'banana' },
@@ -152,7 +152,7 @@ export const Default: Story = {
       @change=${(e: any) => {
         console.log('Selection changed:', e.detail);
       }}
-    ></hy-select>
+    ></nr-select>
   `,
 };
 
@@ -169,58 +169,58 @@ export const EmptyStates: Story = {
     <div style="display: flex; flex-direction: column; gap: 20px; max-width: 400px;">
       <div>
         <h4>Default placeholder</h4>
-        <hy-select .options=${basicOptions}></hy-select>
+        <nr-select .options=${basicOptions}></nr-select>
       </div>
       
       <div>
         <h4>Custom placeholder</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="Choose your favorite fruit...">
-        </hy-select>
+        </nr-select>
       </div>
       
       <div>
         <h4>Short placeholder</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="Pick one">
-        </hy-select>
+        </nr-select>
       </div>
       
       <div>
         <h4>Empty placeholder (no text)</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="">
-        </hy-select>
+        </nr-select>
       </div>
       
       <div>
         <h4>Multiple select placeholder</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="Select multiple fruits..."
           multiple>
-        </hy-select>
+        </nr-select>
       </div>
       
       <div>
         <h4>Required field placeholder</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="Please select a required option *"
           required>
-        </hy-select>
+        </nr-select>
       </div>
       
       <div>
         <h4>Disabled with placeholder</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="This select is disabled"
           disabled>
-        </hy-select>
+        </nr-select>
       </div>
     </div>
   `,
@@ -239,10 +239,10 @@ export const NoOptions: Story = {
     <div style="display: flex; flex-direction: column; gap: 20px; max-width: 400px;">
       <div>
         <h4>Empty options array (default message)</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="Click to see empty state">
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Component with empty options array - dropdown shows "No options available" message
         </small>
@@ -250,11 +250,11 @@ export const NoOptions: Story = {
       
       <div>
         <h4>Custom no-options message</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="Custom empty state"
           no-options-message="No items found">
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Using custom no-options-message property
         </small>
@@ -262,12 +262,12 @@ export const NoOptions: Story = {
       
       <div>
         <h4>Loading state (no options yet)</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="Loading options..."
           no-options-message="Loading..."
           disabled>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Disabled while options are being loaded from an API
         </small>
@@ -275,11 +275,11 @@ export const NoOptions: Story = {
       
       <div>
         <h4>No results found state</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="Search returned no results"
           no-options-message="No results found">
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           When search/filter returns no results
         </small>
@@ -287,12 +287,12 @@ export const NoOptions: Story = {
       
       <div>
         <h4>Multiple select with no options</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="No options to select"
           no-options-message="No items available for selection"
           multiple>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Multiple selection mode with empty options
         </small>
@@ -300,7 +300,7 @@ export const NoOptions: Story = {
       
       <div>
         <h4>Dynamic options (simulate loading)</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="Click to simulate loading..."
           @click=${(e: any) => {
@@ -323,7 +323,7 @@ export const NoOptions: Story = {
               }, 1000);
             }
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Click to simulate loading options dynamically
         </small>
@@ -331,11 +331,11 @@ export const NoOptions: Story = {
       
       <div>
         <h4>Error state with no options</h4>
-        <hy-select 
+        <nr-select 
           .options=${[]}
           placeholder="Failed to load options"
           status="error">
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Error state when options failed to load
         </small>
@@ -357,7 +357,7 @@ export const SearchableSelect: Story = {
     <div style="display: flex; flex-direction: column; gap: 20px; max-width: 500px;">
       <div>
         <h4>Single select with search</h4>
-        <hy-select 
+        <nr-select 
           .options=${[
             { label: 'Apple', value: 'apple' },
             { label: 'Apricot', value: 'apricot' },
@@ -385,7 +385,7 @@ export const SearchableSelect: Story = {
           @nr-change=${(e: any) => {
             console.log('Searchable select changed:', e.detail.value);
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Type to filter options (try "app", "berry", etc.)
         </small>
@@ -393,7 +393,7 @@ export const SearchableSelect: Story = {
       
       <div>
         <h4>Multiple select with search</h4>
-        <hy-select 
+        <nr-select 
           .options=${[
             { label: 'JavaScript', value: 'js' },
             { label: 'TypeScript', value: 'ts' },
@@ -418,7 +418,7 @@ export const SearchableSelect: Story = {
           @nr-change=${(e: any) => {
             console.log('Multiple searchable select changed:', e.detail.value);
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Search and select multiple programming languages
         </small>
@@ -426,7 +426,7 @@ export const SearchableSelect: Story = {
       
       <div>
         <h4>Search with no results</h4>
-        <hy-select 
+        <nr-select 
           .options=${[
             { label: 'Red', value: 'red' },
             { label: 'Green', value: 'green' },
@@ -439,7 +439,7 @@ export const SearchableSelect: Story = {
           @nr-change=${(e: any) => {
             console.log('No results select changed:', e.detail.value);
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Type "yellow" to see the no results message
         </small>
@@ -463,7 +463,7 @@ export const Multiple: Story = {
     searchable: true,
   },
   render: (args) => html`
-    <hy-select
+    <nr-select
       .options=${[
         { label: 'JavaScript', value: 'js' },
         { label: 'TypeScript', value: 'ts' },
@@ -482,7 +482,7 @@ export const Multiple: Story = {
       @change=${(e: any) => {
         console.log('Multiple selection changed:', e.detail);
       }}
-    ></hy-select>
+    ></nr-select>
   `,
 };
 
@@ -502,7 +502,7 @@ export const WithDefaults: Story = {
   render: (args) => html`
     <div style="display: flex; flex-direction: column; gap: 1rem;">
       <label>Single with default:</label>
-      <hy-select
+      <nr-select
         .options=${[
           { label: 'Small', value: 'sm' },
           { label: 'Medium', value: 'md' },
@@ -511,10 +511,10 @@ export const WithDefaults: Story = {
         ]}
         .value=${args.value}
         placeholder=${args.placeholder}
-      ></hy-select>
+      ></nr-select>
       
       <label>Multiple with defaults:</label>
-      <hy-select
+      <nr-select
         .options=${[
           { label: 'Red', value: 'red' },
           { label: 'Green', value: 'green' },
@@ -525,7 +525,7 @@ export const WithDefaults: Story = {
         .value=${['red', 'blue']}
         placeholder="Select colors"
         multiple
-      ></hy-select>
+      ></nr-select>
     </div>
   `,
 };
@@ -543,7 +543,7 @@ export const PlaceholderBehavior: Story = {
     <div style="display: flex; flex-direction: column; gap: 20px; max-width: 500px;">
       <div>
         <h4>Single select - placeholder returns after clearing</h4>
-        <hy-select 
+        <nr-select 
           .options=${[
             { label: 'Option 1', value: '1' },
             { label: 'Option 2', value: '2' },
@@ -553,7 +553,7 @@ export const PlaceholderBehavior: Story = {
           @nr-change=${(e: any) => {
             console.log('Single select changed:', e.detail.value);
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Select an option, then click the clear button to see placeholder return
         </small>
@@ -561,7 +561,7 @@ export const PlaceholderBehavior: Story = {
       
       <div>
         <h4>Multiple select - placeholder behavior with tags</h4>
-        <hy-select 
+        <nr-select 
           .options=${[
             { label: 'Red', value: 'red' },
             { label: 'Green', value: 'green' },
@@ -573,7 +573,7 @@ export const PlaceholderBehavior: Story = {
           @nr-change=${(e: any) => {
             console.log('Multiple select changed:', e.detail.value);
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Select multiple options to see tags replace placeholder, remove all to see placeholder return
         </small>
@@ -581,13 +581,13 @@ export const PlaceholderBehavior: Story = {
       
       <div>
         <h4>Long placeholder text behavior</h4>
-        <hy-select 
+        <nr-select 
           .options=${basicOptions}
           placeholder="This is a very long placeholder text that demonstrates how the component handles lengthy placeholder content gracefully"
           @nr-change=${(e: any) => {
             console.log('Long placeholder select changed:', e.detail.value);
           }}>
-        </hy-select>
+        </nr-select>
         <small style="color: #666; margin-top: 8px; display: block;">
           Long placeholder text should be properly truncated or wrapped based on CSS
         </small>
@@ -609,30 +609,30 @@ export const ValidationStates: Story = {
     <div style="display: grid; gap: 1.5rem; max-width: 400px;">
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Valid State</label>
-        <hy-select
+        <nr-select
           .options=${basicOptions}
           placeholder="Valid selection"
           valid
-        ></hy-select>
+        ></nr-select>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Invalid State</label>
-        <hy-select
+        <nr-select
           .options=${basicOptions}
           placeholder="Invalid selection"
           .invalid=${true}
           .errorMessage=${'Please select a valid option'}
-        ></hy-select>
+        ></nr-select>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Loading State</label>
-        <hy-select
+        <nr-select
           .options=${basicOptions}
           placeholder="Loading state"
           .loading=${true}
-        ></hy-select>
+        ></nr-select>
       </div>
     </div>
   `,
@@ -654,7 +654,7 @@ export const DisabledStates: Story = {
     <div style="display: grid; gap: 1.5rem; max-width: 400px;">
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Individual Disabled Options</label>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Available Option', value: 'available' },
             { label: 'Disabled Option', value: 'disabled', disabled: true },
@@ -663,17 +663,17 @@ export const DisabledStates: Story = {
             { label: 'Final Available', value: 'available3' }
           ]}
           placeholder="Some options disabled"
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">Try opening - some options are disabled</small>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Entire Component Disabled</label>
-        <hy-select
+        <nr-select
           .options=${basicOptions}
           placeholder="Entire component disabled"
           ?disabled=${args.disabled || true}
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">Cannot be opened or interacted with</small>
       </div>
     </div>
@@ -697,7 +697,7 @@ export const RichOptions: Story = {
     <div style="display: grid; gap: 1.5rem; max-width: 400px;">
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Actions with Icons & Descriptions</label>
-        <hy-select
+        <nr-select
           .options=${[
             { 
               label: 'User Profile', 
@@ -738,12 +738,12 @@ export const RichOptions: Story = {
           ]}
           placeholder=${args.placeholder}
           ?searchable=${args.searchable}
-        ></hy-select>
+        ></nr-select>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">File Types</label>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Document', value: 'doc', icon: '📄', description: 'Word documents and PDFs' },
             { label: 'Spreadsheet', value: 'xls', icon: '📊', description: 'Excel and CSV files' },
@@ -753,7 +753,7 @@ export const RichOptions: Story = {
           ]}
           placeholder="Select file type"
           multiple
-        ></hy-select>
+        ></nr-select>
       </div>
     </div>
   `,
@@ -777,7 +777,7 @@ export const LargeDataset: Story = {
     <div style="display: grid; gap: 1.5rem; max-width: 500px;">
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Countries (100+ options)</label>
-        <hy-select
+        <nr-select
           .options=${[
             'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria',
             'Bangladesh', 'Belgium', 'Brazil', 'Bulgaria', 'Canada', 'Chile',
@@ -798,13 +798,13 @@ export const LargeDataset: Story = {
           placeholder=${args.placeholder}
           ?searchable=${args.searchable}
           ?multiple=${args.multiple}
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">Type to search through options</small>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Generated Items (200 options)</label>
-        <hy-select
+        <nr-select
           .options=${Array.from({ length: 200 }, (_, i) => ({
             label: `Item ${i + 1} - ${['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa'][i % 10]}`,
             value: `item${i + 1}`,
@@ -813,7 +813,7 @@ export const LargeDataset: Story = {
           placeholder="Search through 200 generated items"
           searchable
           multiple
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">Stress test with many options</small>
       </div>
     </div>
@@ -838,7 +838,7 @@ export const MaxHeightExamples: Story = {
     <div style="display: grid; gap: 2rem; max-width: 600px;">
       <div>
         <h4 style="margin-bottom: 1rem; color: #333;">Default Height (200px)</h4>
-        <hy-select
+        <nr-select
           .options=${Array.from({ length: 20 }, (_, i) => ({
             label: `Option ${i + 1} - ${['Short', 'Medium length option', 'Very long option with lots of text'][i % 3]}`,
             value: `option${i + 1}`,
@@ -849,13 +849,13 @@ export const MaxHeightExamples: Story = {
           ?multiple=${args.multiple}
           max-height="200px"
 
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">Default max-height: 200px</small>
       </div>
       
       <div>
         <h4 style="margin-bottom: 1rem; color: #333;">Compact Height (120px)</h4>
-        <hy-select
+        <nr-select
           .options=${Array.from({ length: 20 }, (_, i) => ({
             label: `Compact Option ${i + 1}`,
             value: `compact${i + 1}`,
@@ -866,13 +866,13 @@ export const MaxHeightExamples: Story = {
           ?searchable=${args.searchable}
           ?multiple=${args.multiple}
           max-height="120px"
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">max-height: 120px - More compact dropdown</small>
       </div>
       
       <div>
         <h4 style="margin-bottom: 1rem; color: #333;">Tall Height (350px)</h4>
-        <hy-select
+        <nr-select
           .options=${Array.from({ length: 30 }, (_, i) => ({
             label: `Extended Option ${i + 1}`,
             value: `extended${i + 1}`,
@@ -883,7 +883,7 @@ export const MaxHeightExamples: Story = {
           ?searchable=${args.searchable}
           ?multiple=${args.multiple}
           max-height="350px"
-        ></hy-select>
+        ></nr-select>
         <small style="color: #666; font-size: 0.875rem;">max-height: 350px - Taller dropdown shows more options</small>
       </div>
       
@@ -892,26 +892,26 @@ export const MaxHeightExamples: Story = {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div>
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">rem units (8rem)</label>
-            <hy-select
+            <nr-select
               .options=${Array.from({ length: 15 }, (_, i) => ({
                 label: `Rem Option ${i + 1}`,
                 value: `rem${i + 1}`
               }))}
               placeholder="8rem height"
               max-height="8rem"
-            ></hy-select>
+            ></nr-select>
           </div>
           
           <div>
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">vh units (20vh)</label>
-            <hy-select
+            <nr-select
               .options=${Array.from({ length: 15 }, (_, i) => ({
                 label: `Viewport Option ${i + 1}`,
                 value: `vh${i + 1}`
               }))}
               placeholder="20vh height"
               max-height="20vh"
-            ></hy-select>
+            ></nr-select>
           </div>
         </div>
         <small style="color: #666; font-size: 0.875rem;">Supports any CSS unit: px, rem, em, vh, %</small>
@@ -942,7 +942,7 @@ export const EventHandling: Story = {
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Single Selection Events</label>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Option A', value: 'a' },
             { label: 'Option B', value: 'b' },
@@ -955,12 +955,12 @@ export const EventHandling: Story = {
           }}
           @dropdown-open=${() => console.log('🔽 Dropdown opened')}
           @dropdown-close=${() => console.log('🔼 Dropdown closed')}
-        ></hy-select>
+        ></nr-select>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Multiple Selection Events</label>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'React', value: 'react' },
             { label: 'Vue', value: 'vue' },
@@ -976,7 +976,7 @@ export const EventHandling: Story = {
           @tag-remove=${(e: any) => {
             console.log('🗑️ Tag removed:', e.detail);
           }}
-        ></hy-select>
+        ></nr-select>
       </div>
     </div>
   `,
@@ -1006,7 +1006,7 @@ export const Playground: Story = {
   },
   render: (args) => html`
     <div style="max-width: 400px;">
-      <hy-select
+      <nr-select
         .options=${[
           { label: '🍎 Apple', value: 'apple', description: 'Fresh red apples' },
           { label: '🍌 Banana', value: 'banana', description: 'Yellow bananas' },
@@ -1033,7 +1033,7 @@ export const Playground: Story = {
         @change=${(e: any) => {
           console.log('Playground selection changed:', e.detail);
         }}
-      ></hy-select>
+      ></nr-select>
     </div>
   `,
 };
@@ -1064,7 +1064,7 @@ export const FontSelection: Story = {
         <!-- Single Font Selection with Preview -->
         <div>
           <h3>Choose Your Font</h3>
-          <hy-select
+          <nr-select
             .options=${[
               { 
                 label: 'Arial', 
@@ -1154,7 +1154,7 @@ export const FontSelection: Story = {
                 console.log('Font changed to:', selectedFont);
               }
             }}
-          ></hy-select>
+          ></nr-select>
           
           <div 
             id="font-preview" 
@@ -1183,7 +1183,7 @@ export const FontSelection: Story = {
         <div>
           <h3>Font Stack Selection</h3>
           <p>Select multiple fonts to create a fallback stack</p>
-          <hy-select
+          <nr-select
             .options=${[
               { 
                 label: 'Arial', 
@@ -1270,7 +1270,7 @@ export const FontSelection: Story = {
                 stackDisplay.textContent = 'CSS: font-family: /* your stack will appear here */';
               }
             }}
-          ></hy-select>
+          ></nr-select>
           
           <div 
             id="stack-preview"
@@ -1307,7 +1307,7 @@ export const FontSelection: Story = {
         <!-- Web-Safe Fonts Category -->
         <div>
           <h3>Web-Safe Font Categories</h3>
-          <hy-select
+          <nr-select
             .options=${[
               { 
                 label: 'Sans-Serif Fonts', 
@@ -1415,7 +1415,7 @@ export const FontSelection: Story = {
                 `;
               }
             }}
-          ></hy-select>
+          ></nr-select>
           
           <div 
             id="category-preview"
@@ -1457,7 +1457,7 @@ export const AllFeatures: Story = {
       <section>
         <h3>1. Basic Single Selection</h3>
         <p>Click to open, select an option, dropdown should close automatically</p>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Apple', value: 'apple' },
             { label: 'Banana', value: 'banana' },
@@ -1466,14 +1466,14 @@ export const AllFeatures: Story = {
           ]}
           placeholder="Select a fruit"
           @change=${(e: any) => console.log('Single selection:', e.detail)}
-        ></hy-select>
+        ></nr-select>
       </section>
 
       <!-- Multiple Selection -->
       <section>
         <h3>2. Multiple Selection</h3>
         <p>Multiple selection - dropdown stays open, shows tags for selected items</p>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'JavaScript', value: 'js' },
             { label: 'TypeScript', value: 'ts' },
@@ -1484,7 +1484,7 @@ export const AllFeatures: Story = {
           placeholder="Select programming languages"
           multiple
           @change=${(e: any) => console.log('Multiple selection:', e.detail)}
-        ></hy-select>
+        ></nr-select>
       </section>
 
       <!-- Pre-selected Values -->
@@ -1492,7 +1492,7 @@ export const AllFeatures: Story = {
         <h3>3. Pre-selected Values</h3>
         <p>Single and multiple with default selections</p>
         <div style="display: grid; gap: 15px; grid-template-columns: 1fr 1fr;">
-          <hy-select
+          <nr-select
             .options=${[
               { label: 'Small', value: 'sm' },
               { label: 'Medium', value: 'md' },
@@ -1500,8 +1500,8 @@ export const AllFeatures: Story = {
             ]}
             .defaultValue=${['md']}
             placeholder="Size (pre-selected)"
-          ></hy-select>
-          <hy-select
+          ></nr-select>
+          <nr-select
             .options=${[
               { label: 'Red', value: 'red' },
               { label: 'Green', value: 'green' },
@@ -1511,7 +1511,7 @@ export const AllFeatures: Story = {
             .defaultValue=${['red', 'blue']}
             placeholder="Colors (multiple pre-selected)"
             multiple
-          ></hy-select>
+          ></nr-select>
         </div>
       </section>
 
@@ -1520,30 +1520,30 @@ export const AllFeatures: Story = {
         <h3>4. Positioning Test</h3>
         <p>Multiple selects to test positioning (second should not go to left: 0)</p>
         <div style="display: grid; gap: 15px; grid-template-columns: 1fr 1fr 1fr;">
-          <hy-select
+          <nr-select
             .options=${[
               { label: 'Option A1', value: 'a1' },
               { label: 'Option A2', value: 'a2' },
               { label: 'Option A3', value: 'a3' }
             ]}
             placeholder="First Select"
-          ></hy-select>
-          <hy-select
+          ></nr-select>
+          <nr-select
             .options=${[
               { label: 'Option B1', value: 'b1' },
               { label: 'Option B2', value: 'b2' },
               { label: 'Option B3', value: 'b3' }
             ]}
             placeholder="Second Select"
-          ></hy-select>
-          <hy-select
+          ></nr-select>
+          <nr-select
             .options=${[
               { label: 'Option C1', value: 'c1' },
               { label: 'Option C2', value: 'c2' },
               { label: 'Option C3', value: 'c3' }
             ]}
             placeholder="Third Select"
-          ></hy-select>
+          ></nr-select>
         </div>
       </section>
 
@@ -1551,7 +1551,7 @@ export const AllFeatures: Story = {
       <section>
         <h3>5. Disabled Options</h3>
         <p>Some options are disabled and cannot be selected</p>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Available Option 1', value: 'av1' },
             { label: 'Disabled Option', value: 'dis1', disabled: true },
@@ -1560,7 +1560,7 @@ export const AllFeatures: Story = {
             { label: 'Available Option 3', value: 'av3' }
           ]}
           placeholder="Select with disabled options"
-        ></hy-select>
+        ></nr-select>
       </section>
 
       <!-- Status States -->
@@ -1568,30 +1568,30 @@ export const AllFeatures: Story = {
         <h3>6. Status States</h3>
         <p>Different status states: success, warning, error</p>
         <div style="display: grid; gap: 15px; grid-template-columns: 1fr 1fr 1fr;">
-          <hy-select
+          <nr-select
             .options=${[
               { label: 'Valid Choice 1', value: 'v1' },
               { label: 'Valid Choice 2', value: 'v2' }
             ]}
             placeholder="Success State"
             status="success"
-          ></hy-select>
-          <hy-select
+          ></nr-select>
+          <nr-select
             .options=${[
               { label: 'Warning Choice 1', value: 'w1' },
               { label: 'Warning Choice 2', value: 'w2' }
             ]}
             placeholder="Warning State"
             status="warning"
-          ></hy-select>
-          <hy-select
+          ></nr-select>
+          <nr-select
             .options=${[
               { label: 'Error Choice 1', value: 'e1' },
               { label: 'Error Choice 2', value: 'e2' }
             ]}
             placeholder="Error State"
             status="error"
-          ></hy-select>
+          ></nr-select>
         </div>
       </section>
 
@@ -1599,14 +1599,14 @@ export const AllFeatures: Story = {
       <section>
         <h3>7. Disabled Component</h3>
         <p>Entire component is disabled</p>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Cannot Select 1', value: 'cs1' },
             { label: 'Cannot Select 2', value: 'cs2' }
           ]}
           placeholder="Disabled select"
           disabled
-        ></hy-select>
+        ></nr-select>
       </section>
 
       <!-- Click Outside Test -->
@@ -1622,7 +1622,7 @@ export const AllFeatures: Story = {
       <section>
         <h3>9. Event Testing</h3>
         <p>Check console for change events when selecting options</p>
-        <hy-select
+        <nr-select
           .options=${[
             { label: 'Event Test 1', value: 'et1' },
             { label: 'Event Test 2', value: 'et2' },
@@ -1635,20 +1635,20 @@ export const AllFeatures: Story = {
           }}
           @dropdown-open=${() => console.log('🔽 Dropdown opened')}
           @dropdown-close=${() => console.log('🔼 Dropdown closed')}
-        ></hy-select>
+        ></nr-select>
       </section>
 
       <!-- Large Option List -->
       <section>
         <h3>10. Large Option List</h3>
         <p>Test with many options to check scrolling and performance</p>
-        <hy-select
+        <nr-select
           .options=${Array.from({ length: 20 }, (_, i) => ({
             label: `Option ${i + 1} - ${['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta'][i % 6]}`,
             value: `opt${i + 1}`
           }))}
           placeholder="Select from many options"
-        ></hy-select>
+        ></nr-select>
       </section>
     </div>
   `,

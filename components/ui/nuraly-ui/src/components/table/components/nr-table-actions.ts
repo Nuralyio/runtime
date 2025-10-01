@@ -3,7 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import {styles} from './table-actions.style.js';
 import {Sizes} from '../table.types.js';
 
-@customElement('hy-table-actions')
+@customElement('nr-table-actions')
 export class HyTableActions extends LitElement {
   @property() selectedItems!: number;
   @property({type: Sizes, reflect: true}) size: Sizes = Sizes.Normal;

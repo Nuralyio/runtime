@@ -155,8 +155,8 @@ export class SliderInput extends LitElement {
 		const maxThumbOffset = sliderWidth - thumbWidth;
 		const thumbOffset = `${Math.max(0, Math.min(maxThumbOffset, maxThumbOffset * percentage))}px`;
 
-		this.style.setProperty('--hy-slider-value-width', sliderValueWidth);
-		this.style.setProperty('--hy-slider-thumb-offset', thumbOffset);
+		this.style.setProperty('--nr-slider-value-width', sliderValueWidth);
+		this.style.setProperty('--nr-slider-thumb-offset', thumbOffset);
 	}
 
 	/**
@@ -181,4 +181,4 @@ export class SliderInput extends LitElement {
 		this.requestUpdate();
 	}
 }
-customElements.define('hy-slider-input', SliderInput);
+customElements.define('nr-slider-input', SliderInput);

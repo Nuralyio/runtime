@@ -6,7 +6,7 @@ import { choose } from 'lit/directives/choose.js';
 
 import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder } from '../table.types.js';
 
-@customElement('hy-table-content')
+@customElement('nr-table-content')
 export class HyTableContent extends LitElement {
   @property({type: Array}) headers!: [];
   @property({type: Array}) rows!: [];

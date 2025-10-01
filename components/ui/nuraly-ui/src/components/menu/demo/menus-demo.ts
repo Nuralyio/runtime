@@ -11,7 +11,7 @@ import { customElement, state } from 'lit/decorators.js';
 import '../menu.component';
 import { IMenu } from '../menu.types';
 
-@customElement('hy-menu-demo')
+@customElement('nr-menu-demo')
 export class ElMeenuElement extends LitElement {
   @state()
   path!: number[];
@@ -110,7 +110,7 @@ export class ElMeenuElement extends LitElement {
   protected override render() {
     return html`
       <h3>Treeview</h3>
-      <hy-menu
+      <nr-menu
         .items=${this.items}
         @action-click=${(e: CustomEvent) => {
         console.log('action name', e.detail.value)
@@ -120,41 +120,41 @@ export class ElMeenuElement extends LitElement {
         this.path = e.detail.path;
         this.value = e.detail.value;
       }}
-      ></hy-menu>
+      ></nr-menu>
       path: ${this.path?.join('-')} value: ${this.value}
 
       <h3>Treeview</h3>
-      <hy-menu
+      <nr-menu
         .items=${this.items}
         @change=${(e: CustomEvent) => {
         this.path = e.detail.path;
         this.value = e.detail.value;
       }}
-      ></hy-menu>
+      ></nr-menu>
 
       <h3>Treeview</h3>
-      <hy-menu
+      <nr-menu
         .items=${this.items2}
         @change=${(e: CustomEvent) => {
         this.path = e.detail.path;
         this.value = e.detail.value;
       }}
-      ></hy-menu>
+      ></nr-menu>
 
       <h3>Treeview</h3>
-      <hy-menu
+      <nr-menu
         .items=${this.items3}
         @change=${(e: CustomEvent) => {
         this.path = e.detail.path;
         this.value = e.detail.value;
       }}
-      ></hy-menu>
+      ></nr-menu>
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'hy-menu-demo': ElMeenuElement;
+    'nr-menu-demo': ElMeenuElement;
   }
 }

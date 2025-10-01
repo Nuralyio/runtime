@@ -4,7 +4,7 @@ import { css } from 'lit';
  * Color Picker component styles for the Hybrid UI Library
  * Using shared CSS variables from /src/shared/themes/
  * 
- * This file contains all the styling for the hy-colorpicker component with
+ * This file contains all the styling for the nr-colorpicker component with
  * clean CSS variable usage without local fallbacks and proper theme switching support.
  */
 export default css`

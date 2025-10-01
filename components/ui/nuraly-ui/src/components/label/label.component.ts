@@ -4,7 +4,7 @@ import styles from "./label.style.js";
 import { LabelSize, LabelVariant } from './label.types.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
-@customElement('hy-label')
+@customElement('nr-label')
 export class HyTextLabel extends NuralyUIBaseMixin(LitElement) {
     static override styles = styles;
 

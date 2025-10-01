@@ -45,7 +45,7 @@ export default css`
 
   .range-slider-value {
     background: var(--nuraly-slider-input-local-track-filled-color);
-    width: var(--hy-slider-value-width, 0%);
+    width: var(--nr-slider-value-width, 0%);
     z-index: calc(var(--nuraly-slider-input-local-z-index) + 1);
   }
 
@@ -57,7 +57,7 @@ export default css`
     width: var(--nuraly-slider-input-local-thumb-diameter);
     position: absolute;
     top: calc((var(--nuraly-slider-input-local-track-height) - var(--nuraly-slider-input-local-thumb-diameter)) / 2);
-    left: var(--hy-slider-thumb-offset, 0px);
+    left: var(--nr-slider-thumb-offset, 0px);
     cursor: pointer;
     z-index: calc(var(--nuraly-slider-input-local-z-index) + 2);
     box-shadow: var(--nuraly-slider-input-local-thumb-shadow);

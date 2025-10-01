@@ -15,9 +15,9 @@ export const styleVariables = css`
     --nuraly-slider-input-local-large-thumb-diameter: var(--nuraly-size-slider-input-large-thumb-diameter, 24px);
 
     /* Typography */
-    --nuraly-slider-input-local-font-family: var(--nuraly-typography-slider-input-font-family, var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif));
-    --nuraly-slider-input-local-font-size: var(--nuraly-typography-slider-input-font-size, var(--nuraly-font-size-base, 14px));
-    --nuraly-slider-input-local-font-weight: var(--nuraly-typography-slider-input-font-weight, var(--nuraly-font-weight-normal, 400));
+    --nuraly-slider-input-local-font-family: var(--nuraly-typograpnr-slider-input-font-family, var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif));
+    --nuraly-slider-input-local-font-size: var(--nuraly-typograpnr-slider-input-font-size, var(--nuraly-font-size-base, 14px));
+    --nuraly-slider-input-local-font-weight: var(--nuraly-typograpnr-slider-input-font-weight, var(--nuraly-font-weight-normal, 400));
 
     /* Border radius */
     --nuraly-slider-input-local-border-radius: var(--nuraly-border-slider-input-radius, var(--nuraly-border-radius-base, 6px));

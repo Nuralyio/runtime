@@ -3,7 +3,7 @@ import * as React from 'react';
 import { HyTable } from './table.component.js';
 
 export const HyTableComponent = createComponent({
-  tagName: 'hy-table',
+  tagName: 'nr-table',
   elementClass: HyTable,
   react: React,
   events: {

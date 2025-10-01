@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
-@customElement('hy-video-player')
+@customElement('nr-video-player')
 export class HyVideoPlayer extends LitElement {
   @property()
   src!: string;

@@ -1,12 +1,12 @@
 import {html, fixture, expect} from '@open-wc/testing';
-import {HySubMenu} from '../templates/hy-sub-menu';
-import '../templates/hy-sub-menu';
+import {HySubMenu} from '../templates/nr-sub-menu';
+import '../templates/nr-sub-menu';
 
 suite('HySubMenuComponent', () => {
   test('init sub menu', async () => {
     const text = 'link';
     const icon = 'bomb';
-    const el: HySubMenu = await fixture(html`<hy-sub-menu text=${text} icon=${icon}></hy-sub-menu>`);
+    const el: HySubMenu = await fixture(html`<nr-sub-menu text=${text} icon=${icon}></nr-sub-menu>`);
     const toggleIcon = el.shadowRoot?.querySelector('#toggle-icon');
     const textContainer = el.shadowRoot!.querySelector('span')!;
     const textIcon = el.shadowRoot?.querySelector('#text-icon');
@@ -21,7 +21,7 @@ suite('HySubMenuComponent', () => {
   });
 
   test('toggle sub menu', async () => {
-    const el: HySubMenu = await fixture(html`<hy-sub-menu></hy-sub-menu>`);
+    const el: HySubMenu = await fixture(html`<nr-sub-menu></nr-sub-menu>`);
     const container = el.shadowRoot!.querySelector('div')!;
     const toggleIcon = el.shadowRoot?.querySelector('#toggle-icon');
     container.click();
@@ -35,7 +35,7 @@ suite('HySubMenuComponent', () => {
   });
 
   test('disabled sub menu', async () => {
-    const el: HySubMenu = await fixture(html`<hy-sub-menu disabled=${true}></hy-sub-menu>`);
+    const el: HySubMenu = await fixture(html`<nr-sub-menu disabled=${true}></nr-sub-menu>`);
     const container = el.shadowRoot!.querySelector('div')!;
     expect(el.disabled).to.be.true;
     container.click();
@@ -45,7 +45,7 @@ suite('HySubMenuComponent', () => {
 
   test('sub menu with text only', async () => {
     const text = 'sub menu text';
-    const el: HySubMenu = await fixture(html`<hy-sub-menu text="${text}"></hy-sub-menu>`);
+    const el: HySubMenu = await fixture(html`<nr-sub-menu text="${text}"></nr-sub-menu>`);
     const icon = el.shadowRoot!.querySelector('#text-icon');
     const textContainer = el.shadowRoot!.querySelector('span')!;
     expect(icon).to.not.exist;
@@ -53,7 +53,7 @@ suite('HySubMenuComponent', () => {
   });
 
   test('highlight sub menu', async () => {
-    const el: HySubMenu = await fixture(html`<hy-sub-menu></hy-sub-menu>`);
+    const el: HySubMenu = await fixture(html`<nr-sub-menu></nr-sub-menu>`);
     let eventDispatched = false;
     el.addEventListener('init-highlighted', () => {
       eventDispatched = true;

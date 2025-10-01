@@ -48,14 +48,14 @@ suite('HyMenuComponent', () => {
   ];
 
   test('select the correct number of menu links and sub menus', async () => {
-    const el: HyMenuComponent = await fixture(html`<hy-menu .items=${mockMenuItems}></hy-menu>`);
+    const el: HyMenuComponent = await fixture(html`<nr-menu .items=${mockMenuItems}></nr-menu>`);
 
     expect(el._menuLinks).to.have.length(7);
     expect(el._subMenues).to.have.length(5);
   });
 
   test('update the selected link', async () => {
-    const el: HyMenuComponent = await fixture(html`<hy-menu .items=${mockMenuItems}></hy-menu>`);
+    const el: HyMenuComponent = await fixture(html`<nr-menu .items=${mockMenuItems}></nr-menu>`);
     const previousSelectedIndex = 2;
     const newSelectedIndex = 1;
     const event = new CustomEvent('selected-link', {
@@ -63,15 +63,15 @@ suite('HyMenuComponent', () => {
     });
     el._updateSelectedLink(event);
 
-    const selectedLink = el.shadowRoot!.querySelectorAll('hy-menu-link')[newSelectedIndex];
+    const selectedLink = el.shadowRoot!.querySelectorAll('nr-menu-link')[newSelectedIndex];
     expect(selectedLink).to.have.attribute('selected');
-    const previouslySelectedLink = el.shadowRoot!.querySelectorAll('hy-menu-link')[previousSelectedIndex];
+    const previouslySelectedLink = el.shadowRoot!.querySelectorAll('nr-menu-link')[previousSelectedIndex];
     expect(previouslySelectedLink).to.not.have.attribute('selected');
   });
 
   test('init highlighted', async () => {
-    const el: HyMenuComponent = await fixture(html`<hy-menu .items=${mockMenuItems}></hy-menu>`);
-    const subMenu = el.shadowRoot!.querySelector('hy-sub-menu')!;
+    const el: HyMenuComponent = await fixture(html`<nr-menu .items=${mockMenuItems}></nr-menu>`);
+    const subMenu = el.shadowRoot!.querySelector('nr-sub-menu')!;
     subMenu.setAttribute('highlighted', 'true');
     el._handleInitHighlighted();
     expect(subMenu).to.not.have.attribute('highlighted');

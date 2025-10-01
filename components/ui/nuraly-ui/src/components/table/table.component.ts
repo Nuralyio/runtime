@@ -1,13 +1,13 @@
 import styles from './table.style.js';
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import './components/hy-table-actions.js';
-import './components/hy-table-filter.js';
-import './components/hy-table-pagination.js';
-import './components/hy-table-content.js';
+import './components/nr-table-actions.js';
+import './components/nr-table-filter.js';
+import './components/nr-table-pagination.js';
+import './components/nr-table-content.js';
 import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, SortValue} from './table.types.js';
 
-@customElement('hy-table')
+@customElement('nr-table')
 export class HyTable extends LitElement {
   static override styles = styles;
 
@@ -170,19 +170,19 @@ export class HyTable extends LitElement {
   }
   override render() {
     return html`${this.selectionMode && !this.withFilter && this.selectedItems.some((isSelected) => isSelected)
-        ? html`<hy-table-actions
+        ? html`<nr-table-actions
             .selectedItems=${this.selectedItems.filter((isSelected) => isSelected).length}
             .size=${this.size}
             @cancel-selection=${this._handleCancelSelection}
-          ></hy-table-actions>`
+          ></nr-table-actions>`
         : this.withFilter
         ? html`
             <div class="filter-container">
-              <hy-table-filter @value-change=${this._handleSearch}></hy-table-filter>
+              <nr-table-filter @value-change=${this._handleSearch}></nr-table-filter>
             </div>
           `
         : nothing}
-      <hy-table-content
+      <nr-table-content
         .headers=${this.headers}
         .rows=${this.displayedRows}
         .expandable=${this.expandable && !this.selectionMode ? this.expandable : nothing}
@@ -196,9 +196,9 @@ export class HyTable extends LitElement {
         @check-one=${this._handleCheckOne}
         @select-one=${this._handleSelectOne}
         @update-sort=${this._handleSortOrder}
-      ></hy-table-content>
+      ></nr-table-content>
 
-      <hy-table-pagination
+      <nr-table-pagination
         .numberOfItems=${this.rowsCopy.length}
         .currentPage=${this.currentPage}
         .itemPerPage=${this.itemPerPage}
@@ -206,6 +206,6 @@ export class HyTable extends LitElement {
         .size=${this.size}
         @item-per-page=${this._handleItemPerPage}
         @update-page=${this._handleUpdatePage}
-      ></hy-table-pagination> `;
+      ></nr-table-pagination> `;
   }
 }

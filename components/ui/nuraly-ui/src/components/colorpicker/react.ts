@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ColorPicker } from './color-picker.component.js';
 
 export const HyColorPicker = createComponent({
-  tagName: 'hy-color-picker',
+  tagName: 'nr-color-picker',
   elementClass: ColorPicker,
   react: React,
   events: {

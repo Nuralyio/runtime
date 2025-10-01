@@ -43,31 +43,31 @@ import type { ColorPickerHost } from './interfaces/index.js';
  * @example
  * ```html
  * <!-- Basic color picker -->
- * <hy-color-picker color="#3498db"></hy-color-picker>
+ * <nr-color-picker color="#3498db"></nr-color-picker>
  * 
  * <!-- With default colors -->
- * <hy-color-picker 
+ * <nr-color-picker 
  *   color="#3498db"
  *   .defaultColorSets="${['#3498db', '#e74c3c', '#2ecc71']}">
- * </hy-color-picker>
+ * </nr-color-picker>
  * 
  * <!-- With custom configuration -->
- * <hy-color-picker
+ * <nr-color-picker
  *   color="#3498db"
  *   trigger="click"
  *   placement="top"
  *   size="large"
  *   show-input="true"
  *   show-copy-button="true">
- * </hy-color-picker>
+ * </nr-color-picker>
  * 
  * <!-- Disabled -->
- * <hy-color-picker color="#3498db" disabled></hy-color-picker>
+ * <nr-color-picker color="#3498db" disabled></nr-color-picker>
  * ```
  * 
  * @fires hy-color-change - Color value changed
- * @fires hy-colorpicker-open - Dropdown opened
- * @fires hy-colorpicker-close - Dropdown closed
+ * @fires nr-colorpicker-open - Dropdown opened
+ * @fires nr-colorpicker-close - Dropdown closed
  * @fires color-changed - Legacy event for backwards compatibility
  * 
  * @slot - Default slot for custom content
@@ -78,7 +78,7 @@ import type { ColorPickerHost } from './interfaces/index.js';
  * @cssproperty --colorpicker-dropdown-shadow - Shadow of dropdown panel
  * @cssproperty --colorpicker-dropdown-border-radius - Border radius of dropdown
  */
-@customElement('hy-color-picker')
+@customElement('nr-color-picker')
 export class ColorPicker extends NuralyUIBaseMixin(LitElement) implements ColorPickerHost {
   static override styles = styles;
 
@@ -283,7 +283,7 @@ export class ColorPicker extends NuralyUIBaseMixin(LitElement) implements ColorP
       <div class="${classMap(containerClasses)}" data-theme="${this.currentTheme}">
         ${this.renderLabel()}
         
-        <hy-colorholder-box
+        <nr-colorholder-box
           class="color-holder"
           color="${this.color}"
           .size=${this.size}
@@ -294,7 +294,7 @@ export class ColorPicker extends NuralyUIBaseMixin(LitElement) implements ColorP
           aria-expanded="${this.show}"
           aria-haspopup="dialog"
           tabindex="${this.disabled ? -1 : 0}"
-        ></hy-colorholder-box>
+        ></nr-colorholder-box>
         
         ${this.renderDropdown()}
         ${this.renderHelperText()}
@@ -343,11 +343,11 @@ export class ColorPicker extends NuralyUIBaseMixin(LitElement) implements ColorP
     }
 
     return html`
-      <hy-default-color-sets 
+      <nr-default-color-sets 
         .defaultColorSets=${this.defaultColorSets} 
         @color-click="${this.handleColorChanged}"
         aria-label="Preset colors">
-      </hy-default-color-sets>
+      </nr-default-color-sets>
     `;
   }
 

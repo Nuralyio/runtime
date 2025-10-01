@@ -6,7 +6,7 @@ import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'General/Label',
-  component: 'hy-label',
+  component: 'nr-label',
   parameters: {
     docs: {
       description: {
@@ -64,7 +64,7 @@ export const Default: Story = {
     disabled: false,
   },
   render: (args) => html`
-    <hy-label 
+    <nr-label 
       size=${args.size} 
       variant=${args.variant}
       ?required=${args.required}
@@ -72,7 +72,7 @@ export const Default: Story = {
       for=${args.for || ''}
     >
       Default Label
-    </hy-label>
+    </nr-label>
   `,
 };
 
@@ -82,7 +82,7 @@ export const Required: Story = {
     required: true,
   },
   render: (args) => html`
-    <hy-label 
+    <nr-label 
       size=${args.size} 
       variant=${args.variant}
       ?required=${args.required}
@@ -90,7 +90,7 @@ export const Required: Story = {
       for=${args.for || ''}
     >
       Required Field
-    </hy-label>
+    </nr-label>
   `,
 };
 
@@ -100,7 +100,7 @@ export const Disabled: Story = {
     disabled: true,
   },
   render: (args) => html`
-    <hy-label 
+    <nr-label 
       size=${args.size} 
       variant=${args.variant}
       ?required=${args.required}
@@ -108,7 +108,7 @@ export const Disabled: Story = {
       for=${args.for || ''}
     >
       Disabled Label
-    </hy-label>
+    </nr-label>
   `,
 };
 
@@ -118,15 +118,15 @@ export const Sizes: Story = {
     <div style="display: flex; flex-direction: column; gap: 16px;">
       <div>
         <h3>Small</h3>
-        <hy-label size="small">Small Label</hy-label>
+        <nr-label size="small">Small Label</nr-label>
       </div>
       <div>
         <h3>Medium (Default)</h3>
-        <hy-label size="medium">Medium Label</hy-label>
+        <nr-label size="medium">Medium Label</nr-label>
       </div>
       <div>
         <h3>Large</h3>
-        <hy-label size="large">Large Label</hy-label>
+        <nr-label size="large">Large Label</nr-label>
       </div>
     </div>
   `,
@@ -138,23 +138,23 @@ export const Variants: Story = {
     <div style="display: flex; flex-direction: column; gap: 16px;">
       <div>
         <h3>Default</h3>
-        <hy-label variant="default">Default Label</hy-label>
+        <nr-label variant="default">Default Label</nr-label>
       </div>
       <div>
         <h3>Secondary</h3>
-        <hy-label variant="secondary">Secondary Label</hy-label>
+        <nr-label variant="secondary">Secondary Label</nr-label>
       </div>
       <div>
         <h3>Success</h3>
-        <hy-label variant="success">Success Label</hy-label>
+        <nr-label variant="success">Success Label</nr-label>
       </div>
       <div>
         <h3>Warning</h3>
-        <hy-label variant="warning">Warning Label</hy-label>
+        <nr-label variant="warning">Warning Label</nr-label>
       </div>
       <div>
         <h3>Error</h3>
-        <hy-label variant="error">Error Label</hy-label>
+        <nr-label variant="error">Error Label</nr-label>
       </div>
     </div>
   `,
@@ -166,15 +166,15 @@ export const RequiredStates: Story = {
     <div style="display: flex; flex-direction: column; gap: 16px;">
       <div>
         <h3>Optional Field</h3>
-        <hy-label>Email Address</hy-label>
+        <nr-label>Email Address</nr-label>
       </div>
       <div>
         <h3>Required Field</h3>
-        <hy-label required>Email Address</hy-label>
+        <nr-label required>Email Address</nr-label>
       </div>
       <div>
         <h3>Required + Error State</h3>
-        <hy-label required variant="error">Email Address</hy-label>
+        <nr-label required variant="error">Email Address</nr-label>
       </div>
     </div>
   `,
@@ -185,22 +185,22 @@ export const FormIntegration: Story = {
   render: () => html`
     <form style="display: flex; flex-direction: column; gap: 16px; max-width: 300px;">
       <div>
-        <hy-label for="username" required>Username</hy-label>
+        <nr-label for="username" required>Username</nr-label>
         <input id="username" type="text" style="width: 100%; padding: 8px; margin-top: 4px;" />
       </div>
       
       <div>
-        <hy-label for="email" required>Email Address</hy-label>
+        <nr-label for="email" required>Email Address</nr-label>
         <input id="email" type="email" style="width: 100%; padding: 8px; margin-top: 4px;" />
       </div>
       
       <div>
-        <hy-label for="phone" variant="secondary">Phone Number (Optional)</hy-label>
+        <nr-label for="phone" variant="secondary">Phone Number (Optional)</nr-label>
         <input id="phone" type="tel" style="width: 100%; padding: 8px; margin-top: 4px;" />
       </div>
       
       <div>
-        <hy-label for="bio">Bio</hy-label>
+        <nr-label for="bio">Bio</nr-label>
         <textarea id="bio" style="width: 100%; padding: 8px; margin-top: 4px; min-height: 80px;"></textarea>
       </div>
     </form>
@@ -215,10 +215,10 @@ export const AllStates: Story = {
       <div>
         <h4>Small Size</h4>
         <div style="display: flex; flex-direction: column; gap: 8px;">
-          <hy-label size="small">Default Small</hy-label>
-          <hy-label size="small" required>Required Small</hy-label>
-          <hy-label size="small" variant="error">Error Small</hy-label>
-          <hy-label size="small" disabled>Disabled Small</hy-label>
+          <nr-label size="small">Default Small</nr-label>
+          <nr-label size="small" required>Required Small</nr-label>
+          <nr-label size="small" variant="error">Error Small</nr-label>
+          <nr-label size="small" disabled>Disabled Small</nr-label>
         </div>
       </div>
       
@@ -226,10 +226,10 @@ export const AllStates: Story = {
       <div>
         <h4>Medium Size</h4>
         <div style="display: flex; flex-direction: column; gap: 8px;">
-          <hy-label size="medium">Default Medium</hy-label>
-          <hy-label size="medium" required>Required Medium</hy-label>
-          <hy-label size="medium" variant="warning">Warning Medium</hy-label>
-          <hy-label size="medium" disabled>Disabled Medium</hy-label>
+          <nr-label size="medium">Default Medium</nr-label>
+          <nr-label size="medium" required>Required Medium</nr-label>
+          <nr-label size="medium" variant="warning">Warning Medium</nr-label>
+          <nr-label size="medium" disabled>Disabled Medium</nr-label>
         </div>
       </div>
       
@@ -237,10 +237,10 @@ export const AllStates: Story = {
       <div>
         <h4>Large Size</h4>
         <div style="display: flex; flex-direction: column; gap: 8px;">
-          <hy-label size="large">Default Large</hy-label>
-          <hy-label size="large" required>Required Large</hy-label>
-          <hy-label size="large" variant="success">Success Large</hy-label>
-          <hy-label size="large" disabled>Disabled Large</hy-label>
+          <nr-label size="large">Default Large</nr-label>
+          <nr-label size="large" required>Required Large</nr-label>
+          <nr-label size="large" variant="success">Success Large</nr-label>
+          <nr-label size="large" disabled>Disabled Large</nr-label>
         </div>
       </div>
     </div>
@@ -254,22 +254,22 @@ export const ThemeComparison: Story = {
       <div data-theme="default-light" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <h4>Default Light Theme</h4>
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <hy-label>Default Label</hy-label>
-          <hy-label required>Required Label</hy-label>
-          <hy-label variant="error">Error Label</hy-label>
-          <hy-label variant="success">Success Label</hy-label>
-          <hy-label disabled>Disabled Label</hy-label>
+          <nr-label>Default Label</nr-label>
+          <nr-label required>Required Label</nr-label>
+          <nr-label variant="error">Error Label</nr-label>
+          <nr-label variant="success">Success Label</nr-label>
+          <nr-label disabled>Disabled Label</nr-label>
         </div>
       </div>
       
       <div data-theme="carbon-light" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <h4>Carbon Light Theme</h4>
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <hy-label>Default Label</hy-label>
-          <hy-label required>Required Label</hy-label>
-          <hy-label variant="error">Error Label</hy-label>
-          <hy-label variant="success">Success Label</hy-label>
-          <hy-label disabled>Disabled Label</hy-label>
+          <nr-label>Default Label</nr-label>
+          <nr-label required>Required Label</nr-label>
+          <nr-label variant="error">Error Label</nr-label>
+          <nr-label variant="success">Success Label</nr-label>
+          <nr-label disabled>Disabled Label</nr-label>
         </div>
       </div>
     </div>
@@ -287,7 +287,7 @@ export const Interactive: Story = {
   },
   render: (args) => html`
     <div style="display: flex; flex-direction: column; gap: 16px; max-width: 400px;">
-      <hy-label 
+      <nr-label 
         size=${args.size} 
         variant=${args.variant}
         ?required=${args.required}
@@ -295,7 +295,7 @@ export const Interactive: Story = {
         for=${args.for || ''}
       >
         Interactive Label (Try changing props above)
-      </hy-label>
+      </nr-label>
       
       <input 
         id="demo-input" 

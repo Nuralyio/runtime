@@ -4,7 +4,7 @@ import './slider-input.component.js';
 
 const meta: Meta = {
   title: 'Data Entry/Slider',
-  component: 'hy-slider-input',
+  component: 'nr-slider-input',
   parameters: {
     layout: 'centered',
     docs: {
@@ -73,7 +73,7 @@ type Story = StoryObj;
 // Helper function to create slider stories
 const createSliderStory = (args: any) => html`
   <div style="width: 300px;">
-    <hy-slider-input
+    <nr-slider-input
       .value=${args.value}
       .min=${args.min}
       .max=${args.max}
@@ -84,7 +84,7 @@ const createSliderStory = (args: any) => html`
       @change=${(e: Event) => {
         console.log('Slider changed:', (e.target as any).value);
       }}
-    ></hy-slider-input>
+    ></nr-slider-input>
     <div style="margin-top: 8px; font-size: 12px; color: #666;">
       Value: ${args.value}
     </div>
@@ -136,7 +136,7 @@ export const ErrorState: Story = {
   },
   render: (args) => html`
     <div style="width: 300px;">
-      <hy-slider-input
+      <nr-slider-input
         .value=${args.value}
         .min=${args.min}
         .max=${args.max}
@@ -144,7 +144,7 @@ export const ErrorState: Story = {
         ?disabled=${args.disabled}
         size=${args.size || ''}
         error
-      ></hy-slider-input>
+      ></nr-slider-input>
       <div style="margin-top: 8px; font-size: 12px; color: #ff4d4f;">
         Error: Value is too high
       </div>
@@ -159,7 +159,7 @@ export const WarningState: Story = {
   },
   render: (args) => html`
     <div style="width: 300px;">
-      <hy-slider-input
+      <nr-slider-input
         .value=${args.value}
         .min=${args.min}
         .max=${args.max}
@@ -167,7 +167,7 @@ export const WarningState: Story = {
         ?disabled=${args.disabled}
         size=${args.size || ''}
         warning
-      ></hy-slider-input>
+      ></nr-slider-input>
       <div style="margin-top: 8px; font-size: 12px; color: #faad14;">
         Warning: Value is approaching limit
       </div>
@@ -182,7 +182,7 @@ export const SuccessState: Story = {
   },
   render: (args) => html`
     <div style="width: 300px;">
-      <hy-slider-input
+      <nr-slider-input
         .value=${args.value}
         .min=${args.min}
         .max=${args.max}
@@ -190,7 +190,7 @@ export const SuccessState: Story = {
         ?disabled=${args.disabled}
         size=${args.size || ''}
         success
-      ></hy-slider-input>
+      ></nr-slider-input>
       <div style="margin-top: 8px; font-size: 12px; color: #52c41a;">
         Success: Optimal value selected
       </div>
@@ -203,15 +203,15 @@ export const SizeComparison: Story = {
     <div style="display: flex; flex-direction: column; gap: 24px; width: 300px;">
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Small</label>
-        <hy-slider-input value="20" size="small"></hy-slider-input>
+        <nr-slider-input value="20" size="small"></nr-slider-input>
       </div>
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Medium (Default)</label>
-        <hy-slider-input value="50"></hy-slider-input>
+        <nr-slider-input value="50"></nr-slider-input>
       </div>
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Large</label>
-        <hy-slider-input value="80" size="large"></hy-slider-input>
+        <nr-slider-input value="80" size="large"></nr-slider-input>
       </div>
     </div>
   `,
@@ -222,23 +222,23 @@ export const StateComparison: Story = {
     <div style="display: flex; flex-direction: column; gap: 24px; width: 300px;">
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Default</label>
-        <hy-slider-input value="50"></hy-slider-input>
+        <nr-slider-input value="50"></nr-slider-input>
       </div>
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #52c41a;">Success</label>
-        <hy-slider-input value="30" success></hy-slider-input>
+        <nr-slider-input value="30" success></nr-slider-input>
       </div>
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #faad14;">Warning</label>
-        <hy-slider-input value="75" warning></hy-slider-input>
+        <nr-slider-input value="75" warning></nr-slider-input>
       </div>
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #ff4d4f;">Error</label>
-        <hy-slider-input value="90" error></hy-slider-input>
+        <nr-slider-input value="90" error></nr-slider-input>
       </div>
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #8c8c8c;">Disabled</label>
-        <hy-slider-input value="40" disabled></hy-slider-input>
+        <nr-slider-input value="40" disabled></nr-slider-input>
       </div>
     </div>
   `,
@@ -251,9 +251,9 @@ export const ThemeComparison: Story = {
         <h3 style="margin: 0 0 16px 0;">Carbon Theme (Sharp Corners)</h3>
         <div data-theme="carbon" style="padding: 16px; background: #f4f4f4; border-radius: 4px;">
           <div style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
-            <hy-slider-input value="30"></hy-slider-input>
-            <hy-slider-input value="60" size="large"></hy-slider-input>
-            <hy-slider-input value="40" disabled></hy-slider-input>
+            <nr-slider-input value="30"></nr-slider-input>
+            <nr-slider-input value="60" size="large"></nr-slider-input>
+            <nr-slider-input value="40" disabled></nr-slider-input>
           </div>
         </div>
       </div>
@@ -262,9 +262,9 @@ export const ThemeComparison: Story = {
         <h3 style="margin: 0 0 16px 0;">Default Theme (Rounded Corners)</h3>
         <div data-theme="default" style="padding: 16px; background: #fafafa; border-radius: 8px;">
           <div style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
-            <hy-slider-input value="30"></hy-slider-input>
-            <hy-slider-input value="60" size="large"></hy-slider-input>
-            <hy-slider-input value="40" disabled></hy-slider-input>
+            <nr-slider-input value="30"></nr-slider-input>
+            <nr-slider-input value="60" size="large"></nr-slider-input>
+            <nr-slider-input value="40" disabled></nr-slider-input>
           </div>
         </div>
       </div>
@@ -293,13 +293,13 @@ export const Interactive: Story = {
           </span>
         </div>
         
-        <hy-slider-input
+        <nr-slider-input
           .value=${value}
           .min=${0}
           .max=${100}
           .step=${1}
           @change=${handleChange}
-        ></hy-slider-input>
+        ></nr-slider-input>
         
         <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #666;">
           <span>0%</span>
@@ -344,17 +344,17 @@ export const CustomStyling: Story = {
     <div style="display: flex; flex-direction: column; gap: 24px; width: 300px;">
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Rainbow Gradient</label>
-        <hy-slider-input value="70" class="custom-slider"></hy-slider-input>
+        <nr-slider-input value="70" class="custom-slider"></nr-slider-input>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Minimal Style</label>
-        <hy-slider-input value="30" class="minimal-slider"></hy-slider-input>
+        <nr-slider-input value="30" class="minimal-slider"></nr-slider-input>
       </div>
       
       <div>
         <label style="display: block; margin-bottom: 8px; font-weight: 500;">Default Style</label>
-        <hy-slider-input value="50"></hy-slider-input>
+        <nr-slider-input value="50"></nr-slider-input>
       </div>
     </div>
   `,
