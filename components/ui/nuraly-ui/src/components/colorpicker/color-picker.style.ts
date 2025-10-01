@@ -1,75 +1,86 @@
 import { css } from 'lit';
 
+/**
+ * Color Picker component styles for the Hybrid UI Library
+ * Using shared CSS variables from /src/shared/themes/
+ * 
+ * This file contains all the styling for the hy-colorpicker component with
+ * clean CSS variable usage without local fallbacks and proper theme switching support.
+ */
 export default css`
+  :host {
+    display: inline-block;
+    vertical-align: middle;
+    
+    /* Force CSS custom property inheritance to ensure theme switching works properly */
+    color: var(--nuraly-color-text);
+    background-color: var(--nuraly-color-background);
+    
+    /* Ensure clean state transitions when theme changes */
+    * {
+      transition: all var(--nuraly-transition-fast, 0.15s) ease;
+    }
+  }
+
+  /* Force re-evaluation of theme-dependent properties on theme change */
+  :host([data-theme]) {
+    color: inherit;
+    background-color: inherit;
+  }
+
   .color-picker-container {
     display: inline-flex;
     flex-direction: column;
   }
+  
   hex-color-picker {
     width: 100%;
   }
+  
   .dropdown-container {
     display: none;
   }
+  
   hex-color-picker::part(saturation) {
     border-radius: 0px;
   }
+  
   hex-color-picker::part(hue) {
     border-radius: 0px;
   }
+  
   hex-color-picker::part(saturation-pointer),
   hex-color-picker::part(hue-pointer) {
     cursor: pointer;
   }
+  
   .color-holder {
     cursor: pointer;
   }
+  
   :host([disabled]) .color-holder {
-    opacity: var(--nuraly-colorpicker-disabled-opacity);
+    opacity: var(--nuraly-opacity-disabled, 0.5);
     cursor: not-allowed;
   }
-  :host(:not([disabled])) .color-holder {
-    border: var(--nuraly-colorpicker-border-color);
-  }
-  :host(:not([disabled])) .color-holder:hover {
-    opacity: var(--nuraly-colorpicker-hover-opacity);
-  }
-  :host(:not([disabled])) .color-holder:active {
-    border:var(--nuraly-colorpicker-active-border)
-  }
-  
 
-  :host([show]) .dropdown-container{
+  :host([show]) .dropdown-container {
     display: block;
     position: fixed;
     width: 180px;
-    z-index: 1;
-    padding: 5px;
-    background-color: var(--nuraly-colorpicker-background-color);
-    box-shadow: 1px -1px 5px 1px rgba(0, 0, 0, 0.14);
-    -webkit-box-shadow: 1px -1px 5px 1px rgba(0, 0, 0, 0.14);
-    -moz-box-shadow: 1px -1px 5px 1px rgba(0, 0, 0, 0.14);
+    z-index: var(--nuraly-z-index-dropdown, 1000);
+    padding: var(--nuraly-spacing-2, 0.5rem);
+    background-color: var(--nuraly-color-surface, #ffffff);
+    border: 1px solid var(--nuraly-color-border, rgba(0, 0, 0, 0.1));
+    border-radius: var(--nuraly-border-radius-medium, 4px);
+    box-shadow: var(--nuraly-shadow-dropdown, 0 2px 8px rgba(0, 0, 0, 0.15));
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--nuraly-transition-fast, 0.15s) ease-in-out,
+                visibility var(--nuraly-transition-fast, 0.15s) ease-in-out;
   }
 
-  :host {
-    --nuraly-colorpicker-background-color: #f4f4f4;
-    --nuraly-colorpicker-border-color: 1px solid gray;
-    --nuraly-colorpicker-active-border: 1px solid #0f62fe;
-    --nuraly-colorpicker-disabled-opacity: 0.5;
-    --nuraly-colorpicker-hover-opacity: 0.8;
-    --nuraly-colorpicker-default-width: 30px;
-    --nuraly-colorpicker-default-height: 25px;
-    --nuraly-colorpicker-small-width: 20px;
-    --nuraly-colorpicker-small-height: 15px;
-    --nuraly-colorpicker-large-width: 35px;
-    --nuraly-colorpicker-large-height: 30px;
-  }
- 
-  @media (prefers-color-scheme: dark) {
-    :host { 
-      --nuraly-colorpicker-background-color: #393939;
-      --nuraly-colorpicker-border-color: 1px solid #f4f4f4;
-      --nuraly-colorpicker-disabled-opacity: 0.2;
-    }
+  :host([show]) .dropdown-container.positioned {
+    opacity: 1;
+    visibility: visible;
   }
 `;

@@ -1,0 +1,45 @@
+/**
+ * Carbon Design System Theme - Color Picker Component - Common Variables
+ * Shared CSS variables across light and dark variants for Carbon Design System
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SHARED COLORPICKER VARIABLES - CARBON THEME
+   * ======================================== */
+
+  /* Color picker sizing - Carbon Design System */
+  --nuraly-size-colorpicker-default: 32px;
+  --nuraly-size-colorpicker-default-height: 32px;
+  --nuraly-size-colorpicker-small: 24px;
+  --nuraly-size-colorpicker-small-height: 24px;
+  --nuraly-size-colorpicker-large: 40px;
+  --nuraly-size-colorpicker-large-height: 40px;
+
+  /* Color picker borders - Carbon Design System */
+  --nuraly-border-radius-colorpicker: 0px;
+  --nuraly-border-width-colorpicker: 1px;
+
+  /* Color picker dropdown - Carbon Design System */
+  --nuraly-z-index-dropdown: 6000; /* Carbon z-index scale */
+  --nuraly-shadow-dropdown: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --nuraly-border-radius-dropdown: 0px;
+
+  /* Color picker spacing - Carbon Design System */
+  --nuraly-spacing-colorpicker-padding: 8px;
+  --nuraly-spacing-colorpicker-preset-gap: 4px;
+
+  /* Color picker opacity states */
+  --nuraly-opacity-disabled: 0.5;
+  --nuraly-opacity-hover: 0.85;
+
+  /* Color picker focus ring - Carbon Blue 60 */
+  --nuraly-color-focus: rgba(15, 98, 254, 0.5);
+  --nuraly-color-focus-active: rgba(15, 98, 254, 0.8);
+
+  /* Color picker transitions */
+  --nuraly-transition-fast: 0.11s; /* Carbon motion duration */
+  --nuraly-transition-base: 0.15s;
+}
