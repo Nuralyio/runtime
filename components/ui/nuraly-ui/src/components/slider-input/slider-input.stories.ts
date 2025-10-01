@@ -3,7 +3,7 @@ import { html } from 'lit';
 import './slider-input.component.js';
 
 const meta: Meta = {
-  title: 'Components/SliderInput',
+  title: 'Data Entry/Slider',
   component: 'hy-slider-input',
   parameters: {
     layout: 'centered',

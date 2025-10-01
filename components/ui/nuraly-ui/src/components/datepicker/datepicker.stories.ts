@@ -9,7 +9,7 @@ import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
-  title: 'Components/DatePicker',
+  title: 'Data Entry/DatePicker',
   component: 'hy-datepicker',
   parameters: {
     layout: 'centered',

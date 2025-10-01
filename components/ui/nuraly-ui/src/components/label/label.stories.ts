@@ -3,8 +3,9 @@ import { html } from 'lit';
 import './index.js';
 import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
+
 const meta: Meta = {
-  title: 'Components/Label',
+  title: 'General/Label',
   component: 'hy-label',
   parameters: {
     docs: {

@@ -7,7 +7,7 @@ import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
-  title: 'Components/ColorPicker',
+  title: 'Data Entry/ColorPicker',
   component: 'hy-color-picker',
   parameters: {
     layout: 'centered',

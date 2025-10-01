@@ -4,7 +4,7 @@ import { html } from 'lit';
 import './index.js';
 
 const meta: Meta = {
-  title: 'Components/Icon',
+  title: 'General/Icon',
   component: 'nr-icon',
   parameters: {
     layout: 'centered',

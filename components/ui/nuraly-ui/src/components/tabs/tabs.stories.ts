@@ -45,7 +45,7 @@ const longTabsList: TabItem[] = [
 ];
 
 const meta: Meta = {
-  title: 'Components/Tabs',
+  title: 'Data Display/Tabs',
   component: 'nr-tabs',
   parameters: {
     layout: 'padded',

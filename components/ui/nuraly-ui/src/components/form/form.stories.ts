@@ -8,7 +8,7 @@ import '../checkbox/index.js';
 import '../select/index.js';
 import '../icon/index.js';
 const meta: Meta = {
-  title: 'Components/Form',
+  title: 'Data Entry/Form',
   component: 'nr-form',
   parameters: {
     layout: 'padded',
