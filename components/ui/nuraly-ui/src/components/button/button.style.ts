@@ -4,7 +4,7 @@ import { css } from 'lit';
  * Button component styles for the Hybrid UI Library
  * Using shared CSS variables from /src/shared/themes/
  * 
- * This file contains all the styling for the hy-button component with
+ * This file contains all the styling for the nr-button component with
  * clean CSS variable usage without local fallbacks and proper theme switching support.
  */
 export const buttonStyles = css`

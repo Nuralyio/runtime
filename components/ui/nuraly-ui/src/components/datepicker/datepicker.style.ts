@@ -124,7 +124,7 @@ export const styles = css`
   }
 
   /* Button customizations */
-  hy-button {
+  nr-button {
     --nuraly-button-border-color: transparent;
     --nuraly-button-background-color: transparent;
     --nuraly-button-text-color: var(--nuraly-datepicker-text-color, var(--nuraly-datepicker-local-text-color));

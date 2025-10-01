@@ -10,7 +10,7 @@ import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'Data Entry/DatePicker',
-  component: 'hy-datepicker',
+  component: 'nr-datepicker',
   parameters: {
     layout: 'centered',
   },
@@ -104,7 +104,7 @@ export const Default: Story = {
     placeholder: 'Choose a date',
   },
   render: (args) => html`
-    <hy-datepicker
+    <nr-datepicker
       .label=${args.label}
       .placeholder=${args.placeholder}
       .fieldFormat=${args.fieldFormat}
@@ -115,7 +115,7 @@ export const Default: Story = {
       .state=${args.state}
       .disabled=${args.disabled}
       .required=${args.required}
-    ></hy-datepicker>
+    ></nr-datepicker>
   `,
 };
 
@@ -127,14 +127,14 @@ export const WithDefaultValue: Story = {
     helper: 'Please enter your birth date',
   },
   render: (args) => html`
-    <hy-datepicker
+    <nr-datepicker
       .label=${args.label}
       .defaultValue=${args.defaultValue}
       .helper=${args.helper}
       .fieldFormat=${args.fieldFormat}
       .locale=${args.locale}
       .size=${args.size}
-    ></hy-datepicker>
+    ></nr-datepicker>
   `,
 };
 
@@ -146,14 +146,14 @@ export const DateRange: Story = {
     helper: 'Choose start and end dates',
   },
   render: (args) => html`
-    <hy-datepicker
+    <nr-datepicker
       .label=${args.label}
       .range=${args.range}
       .helper=${args.helper}
       .fieldFormat=${args.fieldFormat}
       .locale=${args.locale}
       .size=${args.size}
-    ></hy-datepicker>
+    ></nr-datepicker>
   `,
 };
 
@@ -161,23 +161,23 @@ export const DateRange: Story = {
 export const Sizes: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
-      <hy-datepicker
+      <nr-datepicker
         label="Small Date Picker"
         size="small"
         helper="Small size variant"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Medium Date Picker"
         size="medium"
         helper="Medium size variant (default)"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Large Date Picker"
         size="large"
         helper="Large size variant"
-      ></hy-datepicker>
+      ></nr-datepicker>
     </div>
   `,
 };
@@ -186,29 +186,29 @@ export const Sizes: Story = {
 export const ValidationStates: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
-      <hy-datepicker
+      <nr-datepicker
         label="Default State"
         state="default"
         helper="Normal date picker"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Error State"
         state="error"
         helper="Please select a valid date"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Warning State"
         state="warning"
         helper="Date is in the past"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Success State"
         state="success"
         helper="Valid date selected"
-      ></hy-datepicker>
+      ></nr-datepicker>
     </div>
   `,
 };
@@ -217,40 +217,40 @@ export const ValidationStates: Story = {
 export const DateFormats: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
-      <hy-datepicker
+      <nr-datepicker
         label="DD/MM/YYYY Format"
         field-format="DD/MM/YYYY"
         default-value="25/12/2023"
         helper="European format"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="MM/DD/YYYY Format"
         field-format="MM/DD/YYYY"
         default-value="12/25/2023"
         helper="US format"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="YYYY-MM-DD Format"
         field-format="YYYY-MM-DD"
         default-value="2023-12-25"
         helper="ISO format"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="DD MMM YYYY Format"
         field-format="DD MMM YYYY"
         default-value="25 Dec 2023"
         helper="Short month name"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="DD MMMM YYYY Format"
         field-format="DD MMMM YYYY"
         default-value="25 December 2023"
         helper="Full month name"
-      ></hy-datepicker>
+      ></nr-datepicker>
     </div>
   `,
 };
@@ -259,33 +259,33 @@ export const DateFormats: Story = {
 export const Locales: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
-      <hy-datepicker
+      <nr-datepicker
         label="English (en)"
         locale="en"
         field-format="DD MMMM YYYY"
         default-value="25 December 2023"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="French (fr)"
         locale="fr"
         field-format="DD MMMM YYYY"
         default-value="25 décembre 2023"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="German (de)"
         locale="de"
         field-format="DD MMMM YYYY"
         default-value="25 Dezember 2023"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Spanish (es)"
         locale="es"
         field-format="DD MMMM YYYY"
         default-value="25 diciembre 2023"
-      ></hy-datepicker>
+      ></nr-datepicker>
     </div>
   `,
 };
@@ -299,13 +299,13 @@ export const WithRestrictions: Story = {
     helper: 'Only dates between 2023 and 2024 are allowed',
   },
   render: (args) => html`
-    <hy-datepicker
+    <nr-datepicker
       .label=${args.label}
       .minDate=${args.minDate}
       .maxDate=${args.maxDate}
       .helper=${args.helper}
       .fieldFormat=${args.fieldFormat}
-    ></hy-datepicker>
+    ></nr-datepicker>
   `,
 };
 
@@ -318,13 +318,13 @@ export const Disabled: Story = {
     helper: 'This date picker is disabled',
   },
   render: (args) => html`
-    <hy-datepicker
+    <nr-datepicker
       .label=${args.label}
       .disabled=${args.disabled}
       .value=${args.value}
       .helper=${args.helper}
       .fieldFormat=${args.fieldFormat}
-    ></hy-datepicker>
+    ></nr-datepicker>
   `,
 };
 
@@ -336,12 +336,12 @@ export const Required: Story = {
     helper: 'This field is required',
   },
   render: (args) => html`
-    <hy-datepicker
+    <nr-datepicker
       .label=${args.label}
       .required=${args.required}
       .helper=${args.helper}
       .fieldFormat=${args.fieldFormat}
-    ></hy-datepicker>
+    ></nr-datepicker>
   `,
 };
 
@@ -349,7 +349,7 @@ export const Required: Story = {
 export const WithEvents: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
-      <hy-datepicker
+      <nr-datepicker
         label="Date with Events"
         helper="Check the console for event logs"
         @nr-date-change=${(e: CustomEvent) => {
@@ -365,7 +365,7 @@ export const WithEvents: Story = {
         @nr-calendar-close=${() => {
           console.log('Calendar closed');
         }}
-      ></hy-datepicker>
+      ></nr-datepicker>
       
       <div id="date-output" style="padding: 10px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">
         Selected: (none)
@@ -378,7 +378,7 @@ export const WithEvents: Story = {
 export const RangeWithEvents: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
-      <hy-datepicker
+      <nr-datepicker
         label="Date Range with Events"
         range
         helper="Select a date range"
@@ -392,7 +392,7 @@ export const RangeWithEvents: Story = {
         @nr-date-change=${(e: CustomEvent) => {
           console.log('Individual date in range:', e.detail);
         }}
-      ></hy-datepicker>
+      ></nr-datepicker>
       
       <div id="range-output" style="padding: 10px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">
         Range: (none selected)
@@ -408,55 +408,55 @@ export const ComplexExample: Story = {
       <h3>Booking Form Example</h3>
       
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <hy-datepicker
+        <nr-datepicker
           label="Check-in Date"
           required
           min-date="01/01/2024"
           helper="Select your arrival date"
           field-format="DD/MM/YYYY"
-        ></hy-datepicker>
+        ></nr-datepicker>
         
-        <hy-datepicker
+        <nr-datepicker
           label="Check-out Date"
           required
           min-date="02/01/2024"
           helper="Select your departure date"
           field-format="DD/MM/YYYY"
-        ></hy-datepicker>
+        ></nr-datepicker>
       </div>
       
-      <hy-datepicker
+      <nr-datepicker
         label="Special Event Date Range"
         range
         field-format="DD MMM YYYY"
         helper="Select the event duration"
         locale="en"
         size="large"
-      ></hy-datepicker>
+      ></nr-datepicker>
       
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-        <hy-datepicker
+        <nr-datepicker
           label="Birth Date"
           field-format="DD/MM/YYYY"
           max-date="31/12/2010"
           helper="Must be over 13"
           size="small"
-        ></hy-datepicker>
+        ></nr-datepicker>
         
-        <hy-datepicker
+        <nr-datepicker
           label="Appointment"
           field-format="DD MMM YYYY"
           min-date="01/01/2024"
           helper="Future dates only"
           size="medium"
-        ></hy-datepicker>
+        ></nr-datepicker>
         
-        <hy-datepicker
+        <nr-datepicker
           label="Anniversary"
           field-format="DD MMMM"
           helper="Day and month only"
           size="small"
-        ></hy-datepicker>
+        ></nr-datepicker>
       </div>
     </div>
   `,

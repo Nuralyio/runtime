@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './table-filter.style.js';
 import { EMPTY_STRING } from '../table.types.js';
 
-@customElement('hy-table-filter')
+@customElement('nr-table-filter')
 export class HyTableFilter extends LitElement {
   @property({reflect: true, type: Boolean})
   showInput = false;

@@ -3,14 +3,14 @@ import { css } from 'lit';
 export const styleVariables = css`
   :host {
     /* Typography */
-    --nuraly-label-local-font-family: var(--nuraly-typography-label-font-family, var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif));
-    --nuraly-label-local-font-weight: var(--nuraly-typography-label-font-weight, var(--nuraly-font-weight-medium, 500));
-    --nuraly-label-local-line-height: var(--nuraly-typography-label-line-height, var(--nuraly-line-height-base, 1.5));
+    --nuraly-label-local-font-family: var(--nuraly-typograpnr-label-font-family, var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif));
+    --nuraly-label-local-font-weight: var(--nuraly-typograpnr-label-font-weight, var(--nuraly-font-weight-medium, 500));
+    --nuraly-label-local-line-height: var(--nuraly-typograpnr-label-line-height, var(--nuraly-line-height-base, 1.5));
 
     /* Size variants */
-    --nuraly-label-local-small-font-size: var(--nuraly-typography-label-small-font-size, var(--nuraly-font-size-xs, 12px));
-    --nuraly-label-local-medium-font-size: var(--nuraly-typography-label-medium-font-size, var(--nuraly-font-size-sm, 14px));
-    --nuraly-label-local-large-font-size: var(--nuraly-typography-label-large-font-size, var(--nuraly-font-size-base, 16px));
+    --nuraly-label-local-small-font-size: var(--nuraly-typograpnr-label-small-font-size, var(--nuraly-font-size-xs, 12px));
+    --nuraly-label-local-medium-font-size: var(--nuraly-typograpnr-label-medium-font-size, var(--nuraly-font-size-sm, 14px));
+    --nuraly-label-local-large-font-size: var(--nuraly-typograpnr-label-large-font-size, var(--nuraly-font-size-base, 16px));
 
     /* Default font size */
     --nuraly-label-local-font-size: var(--nuraly-label-local-medium-font-size);

@@ -1,8 +1,8 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { styles } from './hy-dropdown-menu.style.js';
+import { styles } from './nr-dropdown-menu.style.js';
 import { DropDownDirection } from '../dropdown.types';
-@customElement('hy-dropdown-menu')
+@customElement('nr-dropdown-menu')
 export class HyDropdownMenu extends LitElement {
   static override styles = styles;
   @query('div')
@@ -41,7 +41,7 @@ export class HyDropdownMenu extends LitElement {
   override render() {
     return html`<div @mousedown=${this.onClickMenu}>
       ${this.icon ? html`<nr-icon name=${this.icon}></nr-icon>` : nothing}
-      <hy-label class="menu-label"> ${this.label}</hy-label>
+      <nr-label class="menu-label"> ${this.label}</nr-label>
       <nr-icon
         name="${this.direction == DropDownDirection.Right ? 'caret-right' : 'caret-left'}"
         id="caret-icon"

@@ -97,7 +97,7 @@ export class TableDemo extends LitElement {
     return html`
       <h1>With selection</h1>
       <h3>Multiple selection</h3>
-      <hy-table  
+      <nr-table  
       @onSelect=${(e:CustomEvent)=>{
         console.log('selected', e.detail.value)
       }} 
@@ -107,15 +107,15 @@ export class TableDemo extends LitElement {
       @onSort=${(e:CustomEvent)=>{
         console.log('sorted ', e.detail.value)
       }}
-      .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}></hy-table>
+      .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'multiple'}></nr-table>
       <h3>Single selection</h3>
-      <hy-table .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'single'}></hy-table>
+      <nr-table .headers="${this.headers}" .rows="${this.rows}" .selectionMode=${'single'}></nr-table>
       <h1>With Expandable attribute (title)</h1>
-      <hy-table .headers="${this.headers}" .rows="${this.rows}" .expandable=${'title'}></hy-table>
+      <nr-table .headers="${this.headers}" .rows="${this.rows}" .expandable=${'title'}></nr-table>
       <h1>With filter: search</h1>
-      <hy-table .headers="${this.headers}" .rows="${this.rows}" .withFilter=${true}></hy-table>
+      <nr-table .headers="${this.headers}" .rows="${this.rows}" .withFilter=${true}></nr-table>
       <h3>filter + expandable attribute (priority)</h3>
-      <hy-table
+      <nr-table
         .headers="${this.headers}"
         .rows="${this.rows}"
         .withFilter=${true}
@@ -129,26 +129,26 @@ export class TableDemo extends LitElement {
         @onSort=${(e:CustomEvent)=>{
           console.log('sorted ', e.detail.value)
         }}
-      ></hy-table>
+      ></nr-table>
 
       <h1>Sizes</h1>
       <h3>Small size with selection</h3>
-      <hy-table
+      <nr-table
         .headers="${this.headers}"
         .rows="${this.rows}"
         .size=${'small'}
         .selectionMode=${'multiple'}
-      ></hy-table>
+      ></nr-table>
       <h3>Large size</h3>
-      <hy-table .headers="${this.headers}" .rows="${this.rows}" .size=${'large'}></hy-table>
+      <nr-table .headers="${this.headers}" .rows="${this.rows}" .size=${'large'}></nr-table>
       <h3>Large size with multiple selection</h3>
-      <hy-table
+      <nr-table
         .headers="${this.headers}"
         .rows="${this.rows}"
         .size=${'large'}
         .selectionMode=${'multiple'}
-      ></hy-table>
+      ></nr-table>
     `;
   }
 }
-customElements.define('hy-table-demo', TableDemo);
+customElements.define('nr-table-demo', TableDemo);

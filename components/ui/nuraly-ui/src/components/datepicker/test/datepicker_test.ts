@@ -5,26 +5,26 @@ import { DatePickerMode } from '../datepicker.types';
 
 suite('HyDatePickerElement', () => {
   test('should be defined', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     expect(el).to.be.instanceOf(HyDatePickerElement);
   });
 
   test('should open the calendar when input is focused', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const input = el.shadowRoot!.querySelector('nr-input');
     input!.dispatchEvent(new Event('focus'));
     expect(el.openedCalendar).to.be.true;
   });
 
   test('should close the calendar when clicking outside', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     el.openedCalendar = true;
     document.body.click();
     expect(el.openedCalendar).to.be.false;
   });
 
   test('should move to next month', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const currentMonth = 1;
     el.navigationDates = {start: {month: currentMonth, day: 1, year: 2023}};
     el.openedCalendar = true;
@@ -34,7 +34,7 @@ suite('HyDatePickerElement', () => {
     expect(el.navigationDates.start.month).to.equal(currentMonth + 1);
   });
   test('should move to previous month', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const currentMonth = 2;
     el.navigationDates = {start: {month: currentMonth, day: 1, year: 2023}};
     el.openedCalendar = true;
@@ -44,7 +44,7 @@ suite('HyDatePickerElement', () => {
     expect(el.navigationDates.start.month).to.equal(currentMonth - 1);
   });
   test('should move to next year when displaying last month and click next month', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const currentYear = 2023;
     el.navigationDates = {start: {month: 12, day: 1, year: currentYear}};
     el.openedCalendar = true;
@@ -56,7 +56,7 @@ suite('HyDatePickerElement', () => {
   });
 
   test('should move to previous year when displaying first month and click next month', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const currentYear = 2023;
     el.navigationDates = {start: {month: 1, day: 1, year: currentYear}};
     el.openedCalendar = true;
@@ -68,7 +68,7 @@ suite('HyDatePickerElement', () => {
   });
 
   test('should move to previous year', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const currentYear = 2023;
     el.navigationDates = {start: {month: 2, day: 1, year: currentYear}};
     el.openedCalendar = true;
@@ -78,7 +78,7 @@ suite('HyDatePickerElement', () => {
     expect(el.navigationDates.start.year).to.equal(currentYear - 1);
   });
   test('should move to next year', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     const currentyear = 2023;
     el.navigationDates = {start: {month: 2, day: 1, year: currentyear}};
     el.openedCalendar = true;
@@ -88,7 +88,7 @@ suite('HyDatePickerElement', () => {
     expect(el.navigationDates.start.year).to.equal(currentyear + 1);
   });
   test('should select a date correctly', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     el.navigationDates = {start: {month: 2, day: 20, year: 2023}};
     el.openedCalendar = true;
     await el.updateComplete;
@@ -101,7 +101,7 @@ suite('HyDatePickerElement', () => {
     expect(input.value).to.equal(`03/02/2023`);
   });
   test('should select a month correctly', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     el.openedCalendar = true;
     el.mode = DatePickerMode.Month;
     await el.updateComplete;
@@ -111,7 +111,7 @@ suite('HyDatePickerElement', () => {
     expect(el.navigationDates.start.month).to.equal(monthIndex + 1);
   });
   test('should select a year correctly', async () => {
-    const el = await fixture<HyDatePickerElement>(html`<hy-datepicker></hy-datepicker>`);
+    const el = await fixture<HyDatePickerElement>(html`<nr-datepicker></nr-datepicker>`);
     el.openedCalendar = true;
     el.mode = DatePickerMode.Year;
     await el.updateComplete;

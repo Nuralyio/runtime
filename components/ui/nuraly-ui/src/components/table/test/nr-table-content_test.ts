@@ -1,6 +1,6 @@
 import { html, fixture, expect } from '@open-wc/testing';
-import '../components/hy-table-content';
-import { HyTableContent } from '../components/hy-table-content';
+import '../components/nr-table-content';
+import { HyTableContent } from '../components/nr-table-content';
 import { SelectionMode, SortOrder } from '../table.types';
 
 suite('HyTableContent', () => {
@@ -14,11 +14,11 @@ suite('HyTableContent', () => {
   ];
   test('init table content', async () => {
     const el: HyTableContent = await fixture(
-      html`<hy-table-content
+      html`<nr-table-content
         .headers=${headers}
         .rows=${rows}
         .sortAttribute=${{index: -1, order: SortOrder.Default}}
-      ></hy-table-content>`
+      ></nr-table-content>`
     );
 
     const headerElements = el.shadowRoot!.querySelectorAll('th span');
@@ -30,7 +30,7 @@ suite('HyTableContent', () => {
     const currentPage = 1;
     const itemPerPage = 2;
 
-    const el: HyTableContent = await fixture(html`<hy-table-content
+    const el: HyTableContent = await fixture(html`<nr-table-content
       .headers=${headers}
       .rows=${rows}
       .selectionMode=${SelectionMode.Multiple}
@@ -38,7 +38,7 @@ suite('HyTableContent', () => {
       .currentPage=${currentPage}
       .itemPerPage=${itemPerPage}
       .sortAttribute=${{index: -1, order: SortOrder.Default}}
-    ></hy-table-content>`);
+    ></nr-table-content>`);
 
     const checkboxes: NodeListOf<HTMLInputElement> = el.shadowRoot!.querySelectorAll('input[type="checkbox"]');
     expect(checkboxes.length).to.equal(3);
@@ -57,12 +57,12 @@ suite('HyTableContent', () => {
       {name: 'Doe', age: 25, details: 'Doe details'},
     ];
 
-    const el: HyTableContent = await fixture(html`<hy-table-content
+    const el: HyTableContent = await fixture(html`<nr-table-content
       .headers=${headers}
       .rows=${rows}
       expandable="details"
       .sortAttribute=${{index: -1, order: SortOrder.Default}}
-    ></hy-table-content>`);
+    ></nr-table-content>`);
 
     const expandIcons: NodeListOf<HTMLElement> = el.shadowRoot!.querySelectorAll('.expand-icon');
     expect(expandIcons.length).to.equal(rows.length);
@@ -75,12 +75,12 @@ suite('HyTableContent', () => {
   });
 
   test('dispatch check-all element event', async () => {
-    const el: HyTableContent = await fixture(html`<hy-table-content
+    const el: HyTableContent = await fixture(html`<nr-table-content
       .headers=${headers}
       .rows=${rows}
       .sortAttribute=${{index: 0, order: SortOrder.Ascending}}
       .selectionMode=${SelectionMode.Multiple}
-    ></hy-table-content>`);
+    ></nr-table-content>`);
     const globalCheckBox: Element = el.shadowRoot!.querySelectorAll('input[type="checkbox"]')[0];
     let dispatchCheckAllItem = false;
     el.addEventListener('check-all', () => {
@@ -90,12 +90,12 @@ suite('HyTableContent', () => {
     expect(dispatchCheckAllItem).to.be.true;
   });
   test('dispatch check one item event', async () => {
-    const el: HyTableContent = await fixture(html`<hy-table-content
+    const el: HyTableContent = await fixture(html`<nr-table-content
       .headers=${headers}
       .rows=${rows}
       .sortAttribute=${{index: 0, order: SortOrder.Ascending}}
       .selectionMode=${SelectionMode.Multiple}
-    ></hy-table-content>`);
+    ></nr-table-content>`);
     const firstItemCheckBox: Element = el.shadowRoot!.querySelectorAll('input[type="checkbox"]')[1];
     let dispatchCheckItem = false;
     el.addEventListener('check-one', () => {
@@ -105,12 +105,12 @@ suite('HyTableContent', () => {
     expect(dispatchCheckItem).to.be.true;
   });
   test('dispatch select one event ', async () => {
-    const el: HyTableContent = await fixture(html`<hy-table-content
+    const el: HyTableContent = await fixture(html`<nr-table-content
       .headers=${headers}
       .rows=${rows}
       .sortAttribute=${{index: 0, order: SortOrder.Ascending}}
       .selectionMode=${SelectionMode.Single}
-    ></hy-table-content>`);
+    ></nr-table-content>`);
     const firstItemRadio: Element = el.shadowRoot!.querySelector('input[type="radio"]')!;
     let dispatchSelectItem = false;
     el.addEventListener('select-one', () => {
@@ -121,11 +121,11 @@ suite('HyTableContent', () => {
   });
 
   test('dispatch update sort order event', async () => {
-    const el: HyTableContent = await fixture(html`<hy-table-content
+    const el: HyTableContent = await fixture(html`<nr-table-content
       .headers=${headers}
       .rows=${rows}
       .sortAttribute=${{index: 0, order: SortOrder.Ascending}}
-    ></hy-table-content>`);
+    ></nr-table-content>`);
     const th = el.shadowRoot?.querySelector('th');
     let dispatchUpdateSortOrder = false;
     el.addEventListener('update-sort', () => {
@@ -138,31 +138,31 @@ suite('HyTableContent', () => {
   });
   suite('display sorting icon', () => {
     test('ascending icon', async () => {
-      const el: HyTableContent = await fixture(html`<hy-table-content
+      const el: HyTableContent = await fixture(html`<nr-table-content
         .headers=${headers}
         .rows=${rows}
         .sortAttribute=${{index: 0, order: SortOrder.Ascending}}
-      ></hy-table-content>`);
+      ></nr-table-content>`);
       const sortIcon = el.shadowRoot!.querySelector('th span nr-icon')!;
       expect(sortIcon).to.exist;
       expect(sortIcon).to.have.attribute('name', 'long-arrow-up');
     });
     test('descending icon', async () => {
-      const el: HyTableContent = await fixture(html`<hy-table-content
+      const el: HyTableContent = await fixture(html`<nr-table-content
         .headers=${headers}
         .rows=${rows}
         .sortAttribute=${{index: 0, order: SortOrder.Descending}}
-      ></hy-table-content>`);
+      ></nr-table-content>`);
       const sortIcon = el.shadowRoot!.querySelector('th span nr-icon')!;
       expect(sortIcon).to.exist;
       expect(sortIcon).to.have.attribute('name', 'long-arrow-down');
     });
     test('default icon', async () => {
-      const el: HyTableContent = await fixture(html`<hy-table-content
+      const el: HyTableContent = await fixture(html`<nr-table-content
         .headers=${headers}
         .rows=${rows}
         .sortAttribute=${{index: 0, order: SortOrder.Default}}
-      ></hy-table-content>`);
+      ></nr-table-content>`);
       const sortIcon = el.shadowRoot!.querySelector('th span nr-icon')!;
       expect(sortIcon).to.exist;
       expect(sortIcon).to.have.attribute('name', 'arrows-v');

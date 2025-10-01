@@ -23,16 +23,16 @@ export class HyDivider extends LitElement {
 
   override willUpdate(changedProperties: {has: (arg0: string) => any}) {
     if (changedProperties.has('color')) {
-      this.style.setProperty('--hy-divider-color', this.color);
+      this.style.setProperty('--nr-divider-color', this.color);
     }
     if (changedProperties.has('darkColor')) {
-      this.style.setProperty('--hy-divider-local-dark-color', this.darkColor);
+      this.style.setProperty('--nr-divider-local-dark-color', this.darkColor);
     }
     if (changedProperties.has('lightColor')) {
-      this.style.setProperty('--hy-divider-local-light-color', this.lightColor);
+      this.style.setProperty('--nr-divider-local-light-color', this.lightColor);
     }
     if (changedProperties.has('thickness')) {
-      this.style.setProperty('--hy-divider-thickness', `${this.thickness}px`);
+      this.style.setProperty('--nr-divider-thickness', `${this.thickness}px`);
     }
   }
 

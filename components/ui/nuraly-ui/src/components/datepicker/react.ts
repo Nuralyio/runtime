@@ -9,7 +9,7 @@ import { createComponent } from '@lit-labs/react';
 import { HyDatePickerElement } from './datepicker.component.js';
 
 export const HyDatepicker = createComponent({
-  tagName: 'hy-datepicker',
+  tagName: 'nr-datepicker',
   elementClass: HyDatePickerElement,
   react: React,
   events: {

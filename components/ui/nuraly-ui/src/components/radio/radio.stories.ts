@@ -452,7 +452,7 @@ export const WithSlots: Story = {
           @change="${action('slot-rich-change')}"
         >
           <div slot="pro" style="display: flex; align-items: center; gap: 12px; padding: 8px;">
-            <hy-icon name="user" style="--nuraly-icon-color: #1677ff;"></hy-icon>
+            <nr-icon name="user" style="--nuraly-icon-color: #1677ff;"></nr-icon>
             <div>
               <div style="font-weight: 600;">Professional</div>
               <div style="font-size: 12px; color: #666;">Perfect for freelancers</div>
@@ -460,14 +460,14 @@ export const WithSlots: Story = {
             <span style="background: #e6f7ff; color: #1677ff; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: auto;">POPULAR</span>
           </div>
           <div slot="team" style="display: flex; align-items: center; gap: 12px; padding: 8px;">
-            <hy-icon name="users" style="--nuraly-icon-color: #52c41a;"></hy-icon>
+            <nr-icon name="users" style="--nuraly-icon-color: #52c41a;"></nr-icon>
             <div>
               <div style="font-weight: 600;">Team</div>
               <div style="font-size: 12px; color: #666;">Great for small teams</div>
             </div>
           </div>
           <div slot="enterprise" style="display: flex; align-items: center; gap: 12px; padding: 8px;">
-            <hy-icon name="building" style="--nuraly-icon-color: #722ed1;"></hy-icon>
+            <nr-icon name="building" style="--nuraly-icon-color: #722ed1;"></nr-icon>
             <div>
               <div style="font-weight: 600;">Enterprise</div>
               <div style="font-size: 12px; color: #666;">For large organizations</div>

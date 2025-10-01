@@ -19,9 +19,9 @@ import { ColorPickerSize } from './color-picker.types.js';
  * 
  * @example
  * ```html
- * <hy-colorholder-box color="#3498db"></hy-colorholder-box>
- * <hy-colorholder-box color="rgb(52, 152, 219)" size="large"></hy-colorholder-box>
- * <hy-colorholder-box color="#e74c3c" disabled></hy-colorholder-box>
+ * <nr-colorholder-box color="#3498db"></nr-colorholder-box>
+ * <nr-colorholder-box color="rgb(52, 152, 219)" size="large"></nr-colorholder-box>
+ * <nr-colorholder-box color="#e74c3c" disabled></nr-colorholder-box>
  * ```
  * 
  * @cssproperty --color-holder-size - Size of the color box
@@ -29,7 +29,7 @@ import { ColorPickerSize } from './color-picker.types.js';
  * @cssproperty --color-holder-border-radius - Border radius
  * @cssproperty --color-holder-cursor - Cursor style
  */
-@customElement('hy-colorholder-box')
+@customElement('nr-colorholder-box')
 export class ColorHolderBox extends LitElement {
   static override styles = styles;
 

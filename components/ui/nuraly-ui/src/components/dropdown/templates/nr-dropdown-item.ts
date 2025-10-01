@@ -1,8 +1,8 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { styles } from './hy-dropdown-item.style.js';
+import { styles } from './nr-dropdown-item.style.js';
 
-@customElement('hy-dropdown-item')
+@customElement('nr-dropdown-item')
 export class HyDropdownItem extends LitElement {
   static override styles = styles;
 
@@ -40,7 +40,7 @@ export class HyDropdownItem extends LitElement {
     return html`
       <div @click=${this.onClick}>
         ${this.icon ? html`<nr-icon name=${this.icon}></nr-icon>` : nothing}
-        <hy-label class="option-label">${this.label}</hy-label>
+        <nr-label class="option-label">${this.label}</nr-label>
       </div>
     `;
   }

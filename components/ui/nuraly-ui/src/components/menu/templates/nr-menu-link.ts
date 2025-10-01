@@ -5,7 +5,7 @@ import { EMPTY_STRING } from '../menu.constants.js';
 import { ICON_POSITION } from './menu-link.contants.js';
 import { IAction } from '../menu.types.js';
 
-@customElement('hy-menu-link')
+@customElement('nr-menu-link')
 export class HyMenuLink extends LitElement {
   static index: number;
 

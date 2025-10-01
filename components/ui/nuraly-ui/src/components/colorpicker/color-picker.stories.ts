@@ -8,7 +8,7 @@ import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'Data Entry/ColorPicker',
-  component: 'hy-color-picker',
+  component: 'nr-color-picker',
   parameters: {
     layout: 'centered',
     docs: {
@@ -43,9 +43,9 @@ A comprehensive color picker component with dropdown functionality including:
 - \`--default-color-sets-gap\`: Gap between preset color swatches
 
 ## Events
-- \`hy-color-change\`: Fired when color value changes (with validation info)
-- \`hy-colorpicker-open\`: Fired when dropdown opens
-- \`hy-colorpicker-close\`: Fired when dropdown closes
+- \`nr-color-change\`: Fired when color value changes (with validation info)
+- \`nr-colorpicker-open\`: Fired when dropdown opens
+- \`nr-colorpicker-close\`: Fired when dropdown closes
 - \`color-changed\`: Legacy event for backwards compatibility
         `
       }
@@ -143,11 +143,11 @@ export const Default: Story = {
     color: '#3498db',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       ?disabled="${args.disabled}"
       size="${args.size || 'default'}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -159,10 +159,10 @@ export const WithPresetColors: Story = {
     color: '#e74c3c',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -174,10 +174,10 @@ export const MaterialDesignPalette: Story = {
     color: '#2196f3',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       .defaultColorSets="${materialColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -191,12 +191,12 @@ export const WithLabelAndHelper: Story = {
     helperText: 'Choose your primary brand color',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       label="${args.label}"
       helper-text="${args.helperText}"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -209,11 +209,11 @@ export const SmallSize: Story = {
   },
   render: (args) => html`
     <div style="display: flex; gap: 16px; align-items: center;">
-      <hy-color-picker
+      <nr-color-picker
         color="${args.color}"
         size="small"
         .defaultColorSets="${defaultColors}"
-      ></hy-color-picker>
+      ></nr-color-picker>
       <span>Small size variant</span>
     </div>
   `,
@@ -228,11 +228,11 @@ export const LargeSize: Story = {
   },
   render: (args) => html`
     <div style="display: flex; gap: 16px; align-items: center;">
-      <hy-color-picker
+      <nr-color-picker
         color="${args.color}"
         size="large"
         .defaultColorSets="${defaultColors}"
-      ></hy-color-picker>
+      ></nr-color-picker>
       <span>Large size variant</span>
     </div>
   `,
@@ -245,27 +245,27 @@ export const SizeComparison: Story = {
   render: () => html`
     <div style="display: flex; gap: 24px; align-items: center;">
       <div style="text-align: center;">
-        <hy-color-picker
+        <nr-color-picker
           color="#3498db"
           size="small"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
         <div style="margin-top: 8px; font-size: 12px;">Small</div>
       </div>
       <div style="text-align: center;">
-        <hy-color-picker
+        <nr-color-picker
           color="#e74c3c"
           size="default"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
         <div style="margin-top: 8px; font-size: 12px;">Default</div>
       </div>
       <div style="text-align: center;">
-        <hy-color-picker
+        <nr-color-picker
           color="#2ecc71"
           size="large"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
         <div style="margin-top: 8px; font-size: 12px;">Large</div>
       </div>
     </div>
@@ -281,13 +281,13 @@ export const Disabled: Story = {
     disabled: true,
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       ?disabled="${args.disabled}"
       label="Disabled Color Picker"
       helper-text="This color picker is disabled"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -299,11 +299,11 @@ export const WithoutInput: Story = {
     color: '#1abc9c',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       ?show-input="${false}"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -315,11 +315,11 @@ export const WithoutCopyButton: Story = {
     color: '#e67e22',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       ?show-copy-button="${false}"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -331,13 +331,13 @@ export const CloseOnSelect: Story = {
     color: '#8e44ad',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       close-on-select
       label="Select a Color"
       helper-text="Dropdown closes automatically after selection"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -349,11 +349,11 @@ export const CustomPlaceholder: Story = {
     color: '#27ae60',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       input-placeholder="Enter hex color code..."
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };
 
@@ -364,36 +364,36 @@ export const FormExample: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 24px; min-width: 300px;">
       <div>
-        <hy-color-picker
+        <nr-color-picker
           color="#3498db"
           label="Primary Color"
           helper-text="Main brand color for buttons and links"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       <div>
-        <hy-color-picker
+        <nr-color-picker
           color="#2ecc71"
           label="Success Color"
           helper-text="Color for success messages and confirmations"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       <div>
-        <hy-color-picker
+        <nr-color-picker
           color="#e74c3c"
           label="Error Color"
           helper-text="Color for error states and warnings"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       <div>
-        <hy-color-picker
+        <nr-color-picker
           color="#f39c12"
           label="Warning Color"
           helper-text="Color for warning messages"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
     </div>
   `,
@@ -408,32 +408,32 @@ export const ThemeCustomization: Story = {
       <div style="background: #f8f9fa; padding: 24px; border-radius: 8px;">
         <h3 style="margin: 0 0 16px 0;">Light Theme Colors</h3>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-          <hy-color-picker
+          <nr-color-picker
             color="#ffffff"
             label="Background"
             .defaultColorSets="${['#ffffff', '#f8f9fa', '#e9ecef', '#dee2e6']}"
-          ></hy-color-picker>
-          <hy-color-picker
+          ></nr-color-picker>
+          <nr-color-picker
             color="#212529"
             label="Text"
             .defaultColorSets="${['#212529', '#495057', '#6c757d', '#adb5bd']}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
       </div>
       
       <div style="background: #2c3e50; padding: 24px; border-radius: 8px;">
         <h3 style="margin: 0 0 16px 0; color: white;">Dark Theme Colors</h3>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-          <hy-color-picker
+          <nr-color-picker
             color="#1a1a1a"
             label="Background"
             .defaultColorSets="${['#1a1a1a', '#2c2c2c', '#3c3c3c', '#4a4a4a']}"
-          ></hy-color-picker>
-          <hy-color-picker
+          ></nr-color-picker>
+          <nr-color-picker
             color="#f8f9fa"
             label="Text"
             .defaultColorSets="${['#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da']}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
       </div>
     </div>
@@ -462,24 +462,24 @@ export const GradientPalette: Story = {
       <div style="display: flex; flex-direction: column; gap: 24px;">
         <div>
           <h4 style="margin: 0 0 12px 0;">Blue Gradient</h4>
-          <hy-color-picker
+          <nr-color-picker
             color="#2196f3"
             .defaultColorSets="${blueGradient}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
         <div>
           <h4 style="margin: 0 0 12px 0;">Green Gradient</h4>
-          <hy-color-picker
+          <nr-color-picker
             color="#4caf50"
             .defaultColorSets="${greenGradient}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
         <div>
           <h4 style="margin: 0 0 12px 0;">Red Gradient</h4>
-          <hy-color-picker
+          <nr-color-picker
             color="#f44336"
             .defaultColorSets="${redGradient}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
       </div>
     `;
@@ -492,12 +492,12 @@ export const GradientPalette: Story = {
 export const EventHandling: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 16px; min-width: 400px;">
-      <hy-color-picker
+      <nr-color-picker
         color="#3498db"
         label="Select a Color"
         helper-text="Color change events are logged to console"
         .defaultColorSets="${defaultColors}"
-        @hy-color-change="${(e: CustomEvent) => {
+        @nr-color-change="${(e: CustomEvent) => {
           console.log('Color changed:', e.detail);
           const infoBox = document.getElementById('color-info');
           if (infoBox) {
@@ -508,9 +508,9 @@ export const EventHandling: Story = {
             `;
           }
         }}"
-        @hy-colorpicker-open="${() => console.log('Dropdown opened')}"
-        @hy-colorpicker-close="${() => console.log('Dropdown closed')}"
-      ></hy-color-picker>
+        @nr-colorpicker-open="${() => console.log('Dropdown opened')}"
+        @nr-colorpicker-close="${() => console.log('Dropdown closed')}"
+      ></nr-color-picker>
       
       <div 
         id="color-info"
@@ -556,12 +556,12 @@ export const TransparentColors: Story = {
         background-size: 20px 20px;
         background-position: 0 0, 10px 10px;
       ">
-        <hy-color-picker
+        <nr-color-picker
           color="rgba(52, 152, 219, 0.5)"
           label="Transparent Color"
           helper-text="Supports transparent and RGBA values"
           .defaultColorSets="${transparentColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
     `;
   },
@@ -583,52 +583,52 @@ export const ViewportAllCorners: Story = {
     <div style="position: relative; min-height: 100vh; padding: 8px;">
       <!-- Top Left -->
       <div style="position: absolute; top: 8px; left: 8px;">
-        <hy-color-picker
+        <nr-color-picker
           color="#3498db"
           label="Top Left"
           size="small"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <!-- Top Right -->
       <div style="position: absolute; top: 8px; right: 8px;">
-        <hy-color-picker
+        <nr-color-picker
           color="#e74c3c"
           label="Top Right"
           size="small"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <!-- Bottom Left -->
       <div style="position: absolute; bottom: 8px; left: 8px;">
-        <hy-color-picker
+        <nr-color-picker
           color="#2ecc71"
           label="Bottom Left"
           size="small"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <!-- Bottom Right -->
       <div style="position: absolute; bottom: 8px; right: 8px;">
-        <hy-color-picker
+        <nr-color-picker
           color="#f39c12"
           label="Bottom Right"
           size="small"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <!-- Center for reference -->
       <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        <hy-color-picker
+        <nr-color-picker
           color="#9b59b6"
           label="Center Reference"
           helper-text="This should open normally"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
     </div>
   `,
@@ -650,40 +650,40 @@ export const ViewportScrolling: Story = {
     <div style="min-height: 200vh; padding: 20px;">
       <div style="position: sticky; top: 0; background: white; padding: 16px; border: 2px solid #3498db; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
         <h3 style="margin: 0 0 8px 0;">Sticky Header</h3>
-        <hy-color-picker
+        <nr-color-picker
           color="#3498db"
           label="Sticky Position"
           helper-text="Scroll to test repositioning"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <div style="margin: 40px 0;">
         <h3>Top Section</h3>
-        <hy-color-picker
+        <nr-color-picker
           color="#e74c3c"
           label="Top Section"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <div style="margin: 800px 0 40px 0;">
         <h3>Middle Section (scroll down)</h3>
-        <hy-color-picker
+        <nr-color-picker
           color="#2ecc71"
           label="Middle Section"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <div style="margin: 40px 0;">
         <h3>Bottom Section</h3>
-        <hy-color-picker
+        <nr-color-picker
           color="#f39c12"
           label="Bottom Section"
           helper-text="Near the bottom of the page"
           .defaultColorSets="${defaultColors}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
     </div>
   `,
@@ -706,30 +706,30 @@ export const ViewportNarrowWidth: Story = {
       <h3 style="text-align: center; margin-bottom: 24px;">Mobile Width (320px)</h3>
       
       <div style="margin-bottom: 24px;">
-        <hy-color-picker
+        <nr-color-picker
           color="#3498db"
           label="Left Edge"
           helper-text="Near left edge"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <div style="margin-bottom: 24px; display: flex; justify-content: flex-end;">
-        <hy-color-picker
+        <nr-color-picker
           color="#e74c3c"
           label="Right Edge"
           helper-text="Near right edge"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
       
       <div style="margin-bottom: 24px; display: flex; justify-content: center;">
-        <hy-color-picker
+        <nr-color-picker
           color="#2ecc71"
           label="Centered"
           helper-text="In the center"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
     </div>
   `,
@@ -757,28 +757,28 @@ export const ViewportResize: Story = {
             2. Resize your browser window<br>
             3. The dropdown should reposition automatically
           </p>
-          <hy-color-picker
+          <nr-color-picker
             color="#3498db"
             label="Resize Test"
             helper-text="Open dropdown and resize window"
             .defaultColorSets="${defaultColors}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <hy-color-picker
+          <nr-color-picker
             color="#e74c3c"
             label="Left Side"
             size="small"
             .defaultColorSets="${defaultColors.slice(0, 8)}"
-          ></hy-color-picker>
+          ></nr-color-picker>
           
-          <hy-color-picker
+          <nr-color-picker
             color="#2ecc71"
             label="Right Side"
             size="small"
             .defaultColorSets="${defaultColors.slice(0, 8)}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
       </div>
     </div>
@@ -804,47 +804,47 @@ export const ViewportForcedPlacement: Story = {
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 32px; max-width: 800px; margin: 0 auto;">
         <div style="text-align: center;">
           <h4 style="margin-bottom: 16px;">Auto (Smart)</h4>
-          <hy-color-picker
+          <nr-color-picker
             color="#3498db"
             label="Auto Placement"
             placement="auto"
             helper-text="Chooses best position"
             .defaultColorSets="${defaultColors.slice(0, 8)}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
         
         <div style="text-align: center;">
           <h4 style="margin-bottom: 16px;">Bottom (Forced)</h4>
-          <hy-color-picker
+          <nr-color-picker
             color="#e74c3c"
             label="Bottom Placement"
             placement="bottom"
             helper-text="Always opens below"
             .defaultColorSets="${defaultColors.slice(0, 8)}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
         
         <div style="text-align: center;">
           <h4 style="margin-bottom: 16px;">Top (Forced)</h4>
-          <hy-color-picker
+          <nr-color-picker
             color="#2ecc71"
             label="Top Placement"
             placement="top"
             helper-text="Always opens above"
             .defaultColorSets="${defaultColors.slice(0, 8)}"
-          ></hy-color-picker>
+          ></nr-color-picker>
         </div>
       </div>
       
       <!-- Bottom edge test -->
       <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">
-        <hy-color-picker
+        <nr-color-picker
           color="#f39c12"
           label="Bottom Edge Auto"
           placement="auto"
           helper-text="Should open upward"
           .defaultColorSets="${defaultColors.slice(0, 8)}"
-        ></hy-color-picker>
+        ></nr-color-picker>
       </div>
     </div>
   `,
@@ -870,7 +870,7 @@ export const Playground: Story = {
     trigger: 'click',
   },
   render: (args) => html`
-    <hy-color-picker
+    <nr-color-picker
       color="${args.color}"
       ?disabled="${args.disabled}"
       size="${args.size}"
@@ -885,6 +885,6 @@ export const Playground: Story = {
       placement="${args.placement}"
       trigger="${args.trigger}"
       .defaultColorSets="${defaultColors}"
-    ></hy-color-picker>
+    ></nr-color-picker>
   `,
 };

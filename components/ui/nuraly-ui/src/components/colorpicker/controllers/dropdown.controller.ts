@@ -72,7 +72,7 @@ export class ColorPickerDropdownController extends BaseColorPickerController imp
         }
 
         this.dispatchEvent(
-          new CustomEvent('hy-colorpicker-open', {
+          new CustomEvent('nr-colorpicker-open', {
             bubbles: true,
             composed: true,
           })
@@ -100,7 +100,7 @@ export class ColorPickerDropdownController extends BaseColorPickerController imp
         }
 
         this.dispatchEvent(
-          new CustomEvent('hy-colorpicker-close', {
+          new CustomEvent('nr-colorpicker-close', {
             bubbles: true,
             composed: true,
           })

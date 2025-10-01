@@ -47,7 +47,7 @@ import { INPUT_STATE } from '../input/input.types.js';
 /**
  * HyDatePicker - A comprehensive date picker component
  * 
- * @element hy-datepicker
+ * @element nr-datepicker
  * 
  * @fires nr-date-change - Fired when a date is selected
  * @fires nr-range-change - Fired when a date range is selected
@@ -71,23 +71,23 @@ import { INPUT_STATE } from '../input/input.types.js';
  * 
  * @example
  * ```html
- * <hy-datepicker 
+ * <nr-datepicker 
  *   label="Select Date"
  *   field-format="DD/MM/YYYY"
  *   @nr-date-change="${this.handleDateChange}">
- * </hy-datepicker>
+ * </nr-datepicker>
  * ```
  * 
  * @example Range picker
  * ```html
- * <hy-datepicker 
+ * <nr-datepicker 
  *   range
  *   label="Select Date Range"
  *   @nr-range-change="${this.handleRangeChange}">
- * </hy-datepicker>
+ * </nr-datepicker>
  * ```
  */
-@customElement('hy-datepicker')
+@customElement('nr-datepicker')
 export class HyDatePickerElement extends NuralyUIBaseMixin(LitElement) implements DatePickerHost {
   static override styles = styles;
   override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'hy-select'];

@@ -1,6 +1,6 @@
 import {html, fixture, expect} from '@open-wc/testing';
-import '../components/hy-table-pagination';
-import {HyTablePagination} from '../components/hy-table-pagination';
+import '../components/nr-table-pagination';
+import {HyTablePagination} from '../components/nr-table-pagination';
 import {Sizes} from '../table.types';
 
 suite('HyTablePagination', () => {
@@ -11,13 +11,13 @@ suite('HyTablePagination', () => {
     const currentPage = 1;
     const size = Sizes.Normal;
     const el: HyTablePagination = await fixture(
-      html`<hy-table-pagination
+      html`<nr-table-pagination
         .numberOfItems=${numberOfItems}
         .itemPerPage=${itemPerPage}
         .selectedItemPerPage=${selectedItemPerPage}
         .currentPage=${currentPage}
         .size=${size}
-      ></hy-table-pagination>`
+      ></nr-table-pagination>`
     );
     expect(el.numberOfItems).to.equal(numberOfItems);
     expect(el.itemPerPage).to.equal(itemPerPage);
@@ -36,12 +36,12 @@ suite('HyTablePagination', () => {
     const itemPerPage = [10, 20, 50];
     const selectedItemPerPage = itemPerPage[0];
     const currentPage = 1;
-    const el: HyTablePagination = await fixture(html`<hy-table-pagination
+    const el: HyTablePagination = await fixture(html`<nr-table-pagination
       .numberOfItems=${numberOfItems}
       .itemPerPage=${itemPerPage}
       .selectedItemPerPage=${selectedItemPerPage}
       .currentPage=${currentPage}
-    ></hy-table-pagination>`);
+    ></nr-table-pagination>`);
     expect(el.fromItem).to.equal(1);
     expect(el.toItem).to.equal(10);
     expect(el.enablePrevious).to.be.false;
@@ -65,12 +65,12 @@ suite('HyTablePagination', () => {
     const itemPerPage = [10, 20, 50];
     const selectedItemPerPage = itemPerPage[0];
     const currentPage = 1;
-    const el: HyTablePagination = await fixture(html`<hy-table-pagination
+    const el: HyTablePagination = await fixture(html`<nr-table-pagination
       .numberOfItems=${numberOfItems}
       .itemPerPage=${itemPerPage}
       .selectedItemPerPage=${selectedItemPerPage}
       .currentPage=${currentPage}
-    ></hy-table-pagination>`);
+    ></nr-table-pagination>`);
     expect(el.currentPage).to.equal(1);
     expect(el.fromItem).to.equal(1);
     expect(el.toItem).to.equal(10);
@@ -91,12 +91,12 @@ suite('HyTablePagination', () => {
     const itemPerPage = [10, 20, 50];
     const selectedItemPerPage = itemPerPage[0];
     const currentPage = 10;
-    const el: HyTablePagination = await fixture(html`<hy-table-pagination
+    const el: HyTablePagination = await fixture(html`<nr-table-pagination
       .numberOfItems=${numberOfItems}
       .itemPerPage=${itemPerPage}
       .selectedItemPerPage=${selectedItemPerPage}
       .currentPage=${currentPage}
-    ></hy-table-pagination>`);
+    ></nr-table-pagination>`);
     expect(el.currentPage).to.equal(10);
     expect(el.fromItem).to.equal(91);
     expect(el.toItem).to.equal(100);

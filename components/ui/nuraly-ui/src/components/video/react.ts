@@ -2,7 +2,7 @@ import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
 
 export const HyVideo = createComponent({
-  tagName: 'hy-video',
+  tagName: 'nr-video',
   elementClass: class extends HTMLElement {},
   react: React,
   events: {

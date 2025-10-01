@@ -18,9 +18,9 @@ import type { ColorClickEventDetail } from './interfaces/index.js';
  * 
  * @example
  * ```html
- * <hy-default-color-sets 
+ * <nr-default-color-sets 
  *   .defaultColorSets="${['#3498db', '#e74c3c', '#2ecc71', '#f39c12']}">
- * </hy-default-color-sets>
+ * </nr-default-color-sets>
  * ```
  * 
  * @fires color-click - Fired when a color swatch is clicked
@@ -28,7 +28,7 @@ import type { ColorClickEventDetail } from './interfaces/index.js';
  * @cssproperty --default-color-sets-gap - Gap between color swatches
  * @cssproperty --default-color-sets-padding - Padding around the color grid
  */
-@customElement('hy-default-color-sets')
+@customElement('nr-default-color-sets')
 export class DefaultColorSets extends LitElement {
   static override styles = styles;
 
@@ -96,7 +96,7 @@ export class DefaultColorSets extends LitElement {
         ${map(
           this.defaultColorSets,
           (color) => html`
-            <hy-colorholder-box
+            <nr-colorholder-box
               color="${color}"
               .size=${this.size}
               class="color-set-container"
@@ -110,7 +110,7 @@ export class DefaultColorSets extends LitElement {
                   this.handleColorClick(color, e);
                 }
               }}
-            ></hy-colorholder-box>
+            ></nr-colorholder-box>
           `
         )}
       </div>
