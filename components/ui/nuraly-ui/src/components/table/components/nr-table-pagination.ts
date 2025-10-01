@@ -1,11 +1,12 @@
 import { LitElement, PropertyValueMap, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { NuralyUIBaseMixin } from '../../../shared/base-mixin.js';
 import { styles } from './table-pagination.style.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { Sizes } from '../table.types.js';
 
 @customElement('nr-table-pagination')
-export class HyTablePagination extends LitElement {
+export class HyTablePagination extends NuralyUIBaseMixin(LitElement) {
   @property()
   numberOfItems!: number;
   @property()

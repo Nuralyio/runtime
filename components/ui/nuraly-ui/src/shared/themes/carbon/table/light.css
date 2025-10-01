@@ -1,0 +1,59 @@
+/**
+ * Carbon Theme - Table Component - Light Variant
+ * Table-specific CSS variables for the Carbon Design System light theme
+ * Based on official Carbon Design System color tokens
+ */
+
+[data-theme="carbon-light"],
+[data-theme="carbon"] {
+  /* ========================================
+   * TABLE VARIABLES - CARBON LIGHT THEME
+   * Official Carbon Design System Colors
+   * ======================================== */
+
+  /* Table background colors - Carbon Gray scale */
+  --nuraly-table-background: #ffffff;
+  --nuraly-table-header-background: #e0e0e0; /* Carbon Gray 20 - Stronger header */
+  --nuraly-table-row-background: #ffffff;
+  --nuraly-table-row-hover-background: #e8e8e8; /* Carbon Gray 10 - Subtle hover */
+  --nuraly-table-row-selected-background: #d0e2ff; /* Carbon Blue 20 - Carbon blue */
+  --nuraly-table-row-expanded-background: #f4f4f4;
+  
+  /* Table text colors - Carbon Black/Gray */
+  --nuraly-table-text-color: #161616; /* Carbon Gray 100 */
+  --nuraly-table-header-text-color: #161616; /* Carbon Gray 100 - Bold headers */
+  --nuraly-table-secondary-text-color: #525252; /* Carbon Gray 70 */
+  
+  /* Table border colors - Carbon distinctive borders */
+  --nuraly-table-border-color: #c6c6c6; /* Carbon Gray 30 - More visible */
+  --nuraly-table-header-border-color: #8d8d8d; /* Carbon Gray 50 - Strong header border */
+  --nuraly-table-row-border-color: #e0e0e0; /* Carbon Gray 20 */
+  
+  /* Table action colors - Carbon Blue */
+  --nuraly-table-action-color: #0f62fe; /* Carbon Blue 60 */
+  --nuraly-table-action-hover-color: #0353e9; /* Carbon Blue 70 */
+  
+  /* Table sort indicator - Carbon style */
+  --nuraly-table-sort-indicator-color: #525252; /* Carbon Gray 70 */
+  --nuraly-table-sort-indicator-active-color: #0f62fe; /* Carbon Blue 60 */
+  
+  /* Table selection colors - Carbon Blue */
+  --nuraly-table-checkbox-background: #ffffff;
+  --nuraly-table-checkbox-border: #8d8d8d; /* Carbon Gray 50 */
+  --nuraly-table-checkbox-checked: #0f62fe; /* Carbon Blue 60 */
+  
+  /* Table filter/search - Carbon clean style */
+  --nuraly-table-filter-background: #f4f4f4; /* Carbon Gray 10 */
+  --nuraly-table-filter-border: #8d8d8d; /* Carbon Gray 50 */
+  --nuraly-table-filter-text: #161616;
+  
+  /* Table pagination - Carbon Gray scale */
+  --nuraly-table-pagination-background: #f4f4f4; /* Carbon Gray 10 */
+  --nuraly-table-pagination-text: #161616;
+  --nuraly-table-pagination-button-background: #e0e0e0; /* Carbon Gray 20 */
+  --nuraly-table-pagination-button-hover: #c6c6c6; /* Carbon Gray 30 */
+  --nuraly-table-pagination-button-active: #0f62fe; /* Carbon Blue 60 */
+  
+  /* Table empty state */
+  --nuraly-table-empty-state-color: #8d8d8d;
+}
