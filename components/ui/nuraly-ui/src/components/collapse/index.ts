@@ -1,1 +1,1 @@
-export * from './hy-collapse.component.js';
+export * from './collapse.component.js';
