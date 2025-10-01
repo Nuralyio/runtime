@@ -1,10 +1,11 @@
-import {LitElement, html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {styles} from './table-actions.style.js';
-import {Sizes} from '../table.types.js';
+import { LitElement, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { NuralyUIBaseMixin } from '../../../shared/base-mixin.js';
+import { styles } from './table-actions.style.js';
+import { Sizes } from '../table.types.js';
 
 @customElement('nr-table-actions')
-export class HyTableActions extends LitElement {
+export class HyTableActions extends NuralyUIBaseMixin(LitElement) {
   @property() selectedItems!: number;
   @property({type: Sizes, reflect: true}) size: Sizes = Sizes.Normal;
 

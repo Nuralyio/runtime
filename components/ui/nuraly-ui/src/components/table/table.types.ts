@@ -1,32 +1,52 @@
+/**
+ * Table header configuration
+ */
 export interface IHeader {
   name: string;
   key: string;
 }
 
-export enum SelectionMode {
+/**
+ * Selection mode for table rows
+ */
+export const enum SelectionMode {
   Single = 'single',
   Multiple = 'multiple',
 }
 
-export enum Sizes {
+/**
+ * Table size variants
+ */
+export const enum Sizes {
   Small = 'small',
   Normal = 'normal',
   Large = 'large',
 }
 
-export enum SortOrder {
+/**
+ * Sort order states
+ */
+export const enum SortOrder {
   Default = 'default',
   Ascending = 'ascending',
   Descending = 'descending',
 }
-export enum SortValue {
+
+/**
+ * Sort direction values
+ */
+export const enum SortValue {
   Default = 0,
   Ascending = 1,
   Descending = -1,
 }
 
+/**
+ * Sort attribute configuration
+ */
 export interface SortAttribute {
   index: number;
   order: SortOrder;
 }
+
 export const EMPTY_STRING = '';

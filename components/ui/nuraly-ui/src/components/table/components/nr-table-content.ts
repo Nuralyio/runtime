@@ -1,13 +1,13 @@
 import { LitElement, PropertyValueMap, html, nothing } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { styles } from './table-content.style.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { choose } from 'lit/directives/choose.js';
-
+import { NuralyUIBaseMixin } from '../../../shared/base-mixin.js';
+import { styles } from './table-content.style.js';
 import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder } from '../table.types.js';
 
 @customElement('nr-table-content')
-export class HyTableContent extends LitElement {
+export class HyTableContent extends NuralyUIBaseMixin(LitElement) {
   @property({type: Array}) headers!: [];
   @property({type: Array}) rows!: [];
   @property({type: Sizes, reflect: true}) size!: Sizes;

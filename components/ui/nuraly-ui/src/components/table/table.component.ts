@@ -1,14 +1,39 @@
-import styles from './table.style.js';
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {NuralyUIBaseMixin} from '../../shared/base-mixin.js';
+import styles from './table.style.js';
+import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, SortValue} from './table.types.js';
 import './components/nr-table-actions.js';
 import './components/nr-table-filter.js';
 import './components/nr-table-pagination.js';
 import './components/nr-table-content.js';
-import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, SortValue} from './table.types.js';
 
+/**
+ * Advanced table component with sorting, filtering, pagination, and selection capabilities.
+ * 
+ * @example
+ * ```html
+ * <nr-table
+ *   .headers=${headers}
+ *   .rows=${data}
+ *   size="normal"
+ *   selectionMode="multiple">
+ * </nr-table>
+ * ```
+ * 
+ * @fires onPaginate - Fired when pagination changes
+ * @fires onSelect - Fired when row selection changes
+ * @fires onSearch - Fired when search/filter is applied
+ * @fires onSort - Fired when sorting is applied
+ */
 @customElement('nr-table')
-export class HyTable extends LitElement {
+export class HyTable extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
   @property({type: Array}) headers!: IHeader[];
@@ -50,9 +75,16 @@ export class HyTable extends LitElement {
     }
   }
 
+  /**
+   * Initialize selection state array based on rows length
+   */
   _initSelection() {
     if (this.selectionMode) this.selectedItems = Array(this.rows.length).fill(false);
   }
+
+  /**
+   * Initialize or reset pagination state
+   */
   _initPagination() {
     if (this.sortAttribute.index > -1) {
       if (this.sortAttribute.order != SortOrder.Default) this._sort();
@@ -62,11 +94,17 @@ export class HyTable extends LitElement {
     this.currentPage = this.rowsCopy.length > 0 ? 1 : 0;
   }
 
+  /**
+   * Handle items per page change event
+   */
   _handleItemPerPage(itemPerPageEvent: CustomEvent) {
     this.selectedItemPerPage = itemPerPageEvent.detail.selectedItemPerPage;
     this._initPagination();
   }
 
+  /**
+   * Handle page navigation event
+   */
   _handleUpdatePage(updatePageEvent: CustomEvent) {
     this.currentPage = updatePageEvent.detail.page;
     this.displayedRows = this.rowsCopy.slice(
@@ -77,18 +115,28 @@ export class HyTable extends LitElement {
 
   }
 
+  /**
+   * Handle check all rows event
+   */
   _handleCheckAll(checkAllEvent: CustomEvent) {
     const everyItemChecked = checkAllEvent.detail.isEveryItemChecked;
     this.selectedItems = everyItemChecked ? this.selectedItems.map(() => false) : this.selectedItems.map(() => true);
-    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.rowsCopy.filter((_,i)=>this.selectedItems[i])}}))
-
+    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.rowsCopy.filter((_, i) => this.selectedItems[i])}}))
   }
+
+  /**
+   * Handle check single row event
+   */
   _handleCheckOne(checkOneEvent: CustomEvent) {
     const indexSelected = checkOneEvent.detail.index;
     this.selectedItems[indexSelected + (this.currentPage - 1) * this.selectedItemPerPage] = checkOneEvent.detail.value;
     this.selectedItems = [...this.selectedItems];
-    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.rowsCopy.filter((_,i)=>this.selectedItems[i])}}))
+    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.rowsCopy.filter((_, i) => this.selectedItems[i])}}))
   }
+
+  /**
+   * Handle select single row event (radio button mode)
+   */
   _handleSelectOne(selectOneEvent: CustomEvent) {
     const previousSelected = this.selectedItems.findIndex((isSelected) => isSelected);
     if (previousSelected > -1) {
@@ -97,15 +145,20 @@ export class HyTable extends LitElement {
     const indexSelected = selectOneEvent.detail.index;
     this.selectedItems[indexSelected + (this.currentPage - 1) * this.selectedItemPerPage] = true;
     this.selectedItems = [...this.selectedItems];
-    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.rowsCopy.filter((_,i)=>this.selectedItems[i])}}))
-
+    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.rowsCopy.filter((_, i) => this.selectedItems[i])}}))
   }
 
+  /**
+   * Handle cancel selection action
+   */
   _handleCancelSelection() {
     this.selectedItems = this.selectedItems.map(() => false);
-    this.dispatchEvent(new CustomEvent('onSelect',{bubbles:true,composed:true,detail:{value:this.selectedItems}}))
+    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.selectedItems}}))
   }
 
+  /**
+   * Handle search/filter input
+   */
   _handleSearch(searchEvent: CustomEvent) {
     const searchValue = searchEvent.detail.value;
     if ((searchValue as string).trim().length > 0) {
@@ -116,12 +169,15 @@ export class HyTable extends LitElement {
           return stringValue.includes(searchValue);
         });
       }) as [];
-      this.dispatchEvent(new CustomEvent('onSearch',{bubbles:true,composed:true,detail:{value:this.rowsCopy}}))
+      this.dispatchEvent(new CustomEvent('onSearch', {bubbles: true, composed: true, detail: {value: this.rowsCopy}}))
     } else {
       this.activeSearch = false;
     }
   }
 
+  /**
+   * Handle column sort order change
+   */
   _handleSortOrder(sortOrderEvent: CustomEvent) {
     const index = sortOrderEvent.detail.index;
     if (index != this.sortAttribute.index) {
@@ -135,6 +191,9 @@ export class HyTable extends LitElement {
     this.sortAttribute = {...this.sortAttribute};
   }
 
+  /**
+   * Sort rows based on current sort attribute
+   */
   _sort() {
     if (this.rowsCopy.length) {
       const sortOrder =
@@ -149,10 +208,13 @@ export class HyTable extends LitElement {
         const result = stringifyA < stringifyB ? -1 : stringifyA > stringifyB ? 1 : 0;
         return result * sortOrder;
       });
-      this.dispatchEvent(new CustomEvent('onSort',{bubbles:true,composed:true,detail:{value:this.rowsCopy}}))
+      this.dispatchEvent(new CustomEvent('onSort', {bubbles: true, composed: true, detail: {value: this.rowsCopy}}))
     }
   }
 
+  /**
+   * Reset sort to original row order
+   */
   _resetSort() {
     this.rowsCopy.sort((copyA, copyB) => {
       const positionInOriginalArrayA = this.rows.findIndex(
@@ -168,6 +230,9 @@ export class HyTable extends LitElement {
         : SortValue.Default;
     });
   }
+  /**
+   * Render the table component with all sub-components
+   */
   override render() {
     return html`${this.selectionMode && !this.withFilter && this.selectedItems.some((isSelected) => isSelected)
         ? html`<nr-table-actions

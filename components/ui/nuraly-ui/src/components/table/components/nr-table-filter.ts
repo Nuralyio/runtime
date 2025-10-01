@@ -1,10 +1,11 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { NuralyUIBaseMixin } from '../../../shared/base-mixin.js';
 import { styles } from './table-filter.style.js';
 import { EMPTY_STRING } from '../table.types.js';
 
 @customElement('nr-table-filter')
-export class HyTableFilter extends LitElement {
+export class HyTableFilter extends NuralyUIBaseMixin(LitElement) {
   @property({reflect: true, type: Boolean})
   showInput = false;
 
