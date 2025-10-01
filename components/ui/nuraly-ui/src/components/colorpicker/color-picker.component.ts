@@ -1,143 +1,399 @@
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
 import { LitElement, PropertyValues, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { INPUT_STATE } from '../input/input.types.js';
+import '../input/index.js';
+
+// Import child components
 import './color-holder.component.js';
 import './default-color-sets.component.js';
+
+// Import styles and types
 import styles from './color-picker.style.js';
-import { ColorPickerSize } from './color-picker.types.js';
+import {
+  ColorPickerSize,
+  ColorPickerTrigger,
+  ColorPickerPlacement,
+  ColorPickerAnimation,
+  ColorFormat
+} from './color-picker.types.js';
 
+// Import controllers
+import {
+  ColorPickerDropdownController,
+  ColorPickerEventController,
+} from './controllers/index.js';
+
+// Import interfaces
+import type { ColorPickerHost } from './interfaces/index.js';
+
+/**
+ * Advanced color picker component with dropdown positioning, validation, and accessibility.
+ * 
+ * Supports multiple color formats, default color sets, custom triggers, keyboard navigation,
+ * and various display configurations.
+ * 
+ * @example
+ * ```html
+ * <!-- Basic color picker -->
+ * <hy-color-picker color="#3498db"></hy-color-picker>
+ * 
+ * <!-- With default colors -->
+ * <hy-color-picker 
+ *   color="#3498db"
+ *   .defaultColorSets="${['#3498db', '#e74c3c', '#2ecc71']}">
+ * </hy-color-picker>
+ * 
+ * <!-- With custom configuration -->
+ * <hy-color-picker
+ *   color="#3498db"
+ *   trigger="click"
+ *   placement="top"
+ *   size="large"
+ *   show-input="true"
+ *   show-copy-button="true">
+ * </hy-color-picker>
+ * 
+ * <!-- Disabled -->
+ * <hy-color-picker color="#3498db" disabled></hy-color-picker>
+ * ```
+ * 
+ * @fires hy-color-change - Color value changed
+ * @fires hy-colorpicker-open - Dropdown opened
+ * @fires hy-colorpicker-close - Dropdown closed
+ * @fires color-changed - Legacy event for backwards compatibility
+ * 
+ * @slot - Default slot for custom content
+ * 
+ * @cssproperty --colorpicker-trigger-size - Size of the color trigger box
+ * @cssproperty --colorpicker-dropdown-width - Width of the dropdown panel
+ * @cssproperty --colorpicker-dropdown-background - Background color of dropdown
+ * @cssproperty --colorpicker-dropdown-shadow - Shadow of dropdown panel
+ * @cssproperty --colorpicker-dropdown-border-radius - Border radius of dropdown
+ */
 @customElement('hy-color-picker')
-export class ColorPicker extends LitElement {
-  @property({type: String})
-  color = 'transparent';
+export class ColorPicker extends NuralyUIBaseMixin(LitElement) implements ColorPickerHost {
+  static override styles = styles;
 
-  @property({type: Boolean, reflect: true})
+  override requiredComponents = ['nr-input', 'nr-icon'];
+
+  /** Current color value */
+  @property({ type: String }) 
+  color = '#3498db';
+
+  /** Controls dropdown visibility */
+  @property({ type: Boolean, reflect: true }) 
   show = false;
 
-  @property({type: Array})
-  defaultColorSets: Array<string> = [];
+  /** Array of preset colors to display */
+  @property({ type: Array, attribute: 'default-color-sets' }) 
+  defaultColorSets: string[] = [];
 
-  @property({type: Boolean, reflect: true})
+  /** Disables the color picker */
+  @property({ type: Boolean, reflect: true }) 
   disabled = false;
 
-  @property({type: String, reflect: true})
-  size = ColorPickerSize.Default;
+  /** Color picker size (small, default, large) */
+  @property({ type: String, reflect: true }) 
+  size: ColorPickerSize = ColorPickerSize.Default;
 
-  @state()
-  isValidColor=true
+  /** Trigger mode for opening dropdown */
+  @property({ type: String, reflect: true }) 
+  trigger: ColorPickerTrigger = ColorPickerTrigger.Click;
 
-  static override styles = styles;
+  /** Dropdown placement */
+  @property({ type: String, reflect: true }) 
+  placement: ColorPickerPlacement = ColorPickerPlacement.Auto;
+
+  /** Animation style for dropdown */
+  @property({ type: String, reflect: true }) 
+  animation: ColorPickerAnimation = ColorPickerAnimation.Fade;
+
+  /** Close dropdown when a color is selected */
+  @property({ type: Boolean, attribute: 'close-on-select' }) 
+  closeOnSelect = false;
+
+  /** Close dropdown on outside click */
+  @property({ type: Boolean, attribute: 'close-on-outside-click' }) 
+  closeOnOutsideClick = true;
+
+  /** Close dropdown on escape key */
+  @property({ type: Boolean, attribute: 'close-on-escape' }) 
+  closeOnEscape = true;
+
+  /** Show color input field */
+  @property({ type: Boolean, attribute: 'show-input' }) 
+  showInput = true;
+
+  /** Show copy button on input */
+  @property({ type: Boolean, attribute: 'show-copy-button' }) 
+  showCopyButton = true;
+
+  /** Color format (hex, rgb, rgba, hsl, hsla) */
+  @property({ type: String, reflect: true }) 
+  format: ColorFormat = ColorFormat.Hex;
+
+  /** Placeholder text for color input */
+  @property({ type: String, attribute: 'input-placeholder' }) 
+  inputPlaceholder = 'Enter color';
+
+  /** Label text */
+  @property({ type: String }) 
+  label = '';
+
+  /** Helper text */
+  @property({ type: String, attribute: 'helper-text' }) 
+  helperText = '';
+
+  /** Validation state for color value */
+  @state() 
+  private isValidColor = true;
+
+  /** Manages dropdown visibility and positioning */
+  private dropdownController = new ColorPickerDropdownController(this);
+
+  /** Handles all event management */
+  private eventController = new ColorPickerEventController(this);
 
   constructor() {
     super();
+    // Dynamically import vanilla-colorful for color picker UI
     if (typeof window !== 'undefined') {
       import('vanilla-colorful');
     }
   }
 
+  /**
+   * Component connected to DOM - initialize base functionality
+   */
   override connectedCallback(): void {
     super.connectedCallback();
-    // Mark the scroll listener as passive:
-    document.addEventListener('scroll', this.calculateDropDownPosition, {
-      passive: true,
-    });
-    document.addEventListener('click', this.onClickOutside);
   }
 
-  override updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has('color')) {
-      this.checkIsValidColor()
-    }
-  }
-  private async toggleColorHolder() {
-    this.show = !this.show;
-    await this.updateComplete;
-    this.calculateDropDownPosition();
-  }
-  private onClickOutside = (onClickEvent: Event) => {
-    const outsideClick =  !onClickEvent.composedPath().includes(this)
-      if(outsideClick)
-        this.show =false
-  };
-  private calculateDropDownPosition = () => {
-    const dropdownContainer = this.shadowRoot?.querySelector('.dropdown-container') as HTMLElement;
-    const colorHolder = this.shadowRoot?.querySelector('.color-holder')  as HTMLElement;
-
-    if (dropdownContainer && colorHolder) {
-      const dropdownRect = dropdownContainer.getBoundingClientRect();
-      const colorHolderRect = colorHolder.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
-
-      // Check if the dropdown is going out of the viewport vertically
-      if (colorHolderRect.bottom + dropdownRect.height > viewportHeight) {
-        // Move the dropdown upwards if it goes out of the viewport
-        dropdownContainer.style.top = `${colorHolderRect.top - dropdownRect.height}px`;
-      } else {
-        // Otherwise, position it below the color holder
-        dropdownContainer.style.top = `${colorHolderRect.bottom}px`;
-      }
-
-      // Check if the dropdown is going out of the viewport horizontally
-      if (colorHolderRect.right + dropdownRect.width > viewportWidth) {
-        // Move the dropdown to the left if it goes out of the viewport
-        dropdownContainer.style.left = `${viewportWidth - dropdownRect.width}px`;
-      } else {
-        // Otherwise, position it to the right of the color holder
-        dropdownContainer.style.left = `${colorHolderRect.left}px`;
-      }
-    }
-  };
-
-  private handleColorChanged(colorChangedEvent: CustomEvent) {
-    if(this.color !=colorChangedEvent.detail.value){
-      this.color = colorChangedEvent.detail.value;
-      this.dispatchColorChange()
-    }
-  }
-
-  private onInputChange(inputChangedEvent: CustomEvent) {
-    if(this.color != inputChangedEvent.detail.value){
-      this.color = inputChangedEvent.detail.value;
-      this.dispatchColorChange()
-    }
-  }
-  private dispatchColorChange(){
-    this.dispatchEvent(
-      new CustomEvent('color-changed', {
-        detail: {
-          value: this.color,
-        },
-      })
-    );
-
-  }
-
-  private checkIsValidColor(){
-    this.isValidColor = CSS.supports('color',this.color)
-  }
-
+  /**
+   * Component disconnected from DOM - cleanup event listeners
+   */
   override disconnectedCallback(): void {
-    document.removeEventListener('click', this.onClickOutside);
-    document.removeEventListener('scroll', this.calculateDropDownPosition);
+    super.disconnectedCallback();
   }
 
+  /**
+   * Called after component updates
+   */
+  override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    
+    if (changedProperties.has('color')) {
+      this.validateColor();
+    }
+  }
+
+  // === Public API Methods ===
+
+  /**
+   * Opens the color picker dropdown
+   */
+  open(): void {
+    this.dropdownController.open();
+  }
+
+  /**
+   * Closes the color picker dropdown
+   */
+  close(): void {
+    this.dropdownController.close();
+  }
+
+  /**
+   * Toggles the color picker dropdown
+   */
+  toggle(): void {
+    this.dropdownController.toggle();
+  }
+
+  /**
+   * Validates the current color value
+   */
+  validateColor(): boolean {
+    this.isValidColor = this.eventController.isValidColor(this.color);
+    return this.isValidColor;
+  }
+
+  /**
+   * Sets up global event listeners (called by dropdown controller)
+   */
+  setupEventListeners(): void {
+    if (this.closeOnOutsideClick || this.closeOnEscape) {
+      this.eventController.setupEventListeners();
+    }
+  }
+
+  /**
+   * Removes global event listeners (called by dropdown controller)
+   */
+  removeEventListeners(): void {
+    this.eventController.removeEventListeners();
+  }
+
+  /**
+   * Handles trigger click to toggle dropdown
+   */
+  private handleTriggerClick = (event: Event): void => {
+    this.eventController.handleTriggerClick(event);
+  };
+
+  /**
+   * Handles color selection from hex-color-picker or default colors
+   */
+  private handleColorChanged = (event: CustomEvent): void => {
+    const newColor = event.detail.value;
+    this.eventController.handleColorChange(newColor);
+    
+    if (this.closeOnSelect) {
+      this.dropdownController.close();
+    }
+  };
+
+  /**
+   * Handles input change from text input
+   */
+  private handleInputChange = (event: CustomEvent): void => {
+    this.eventController.handleInputChange(event);
+  };
+
+  /**
+   * Main render method
+   */
   override render() {
-    return html`<div class="color-picker-container">
-      <hy-colorholder-box
-        class="color-holder"
-        color="${this.color}"
-        .size=${this.size}
-        @click=${!this.disabled ? this.toggleColorHolder : nothing}
-      ></hy-colorholder-box>
-      <div class='dropdown-container'>
-        <hy-default-color-sets .defaultColorSets=${this.defaultColorSets} @color-click="${this.handleColorChanged}">
-        </hy-default-color-sets>
-        <hex-color-picker
+    const containerClasses = {
+      'color-picker-container': true,
+      'color-picker-container--disabled': this.disabled,
+      'color-picker-container--open': this.show,
+      [`color-picker-container--${this.size}`]: true,
+    };
+
+    return html`
+      <div class="${classMap(containerClasses)}" data-theme="${this.currentTheme}">
+        ${this.renderLabel()}
+        
+        <hy-colorholder-box
+          class="color-holder"
           color="${this.color}"
-          @color-changed="${(colorChangedEvent: CustomEvent) => this.handleColorChanged(colorChangedEvent)}"
-        ></hex-color-picker>
-        <nr-input type="text" .value="${this.color}" @nr-input="${this.onInputChange}" ?withCopy=${true} .state=${!this.isValidColor?'error':nothing}> </nr-input>
+          .size=${this.size}
+          ?disabled="${this.disabled}"
+          @click=${this.disabled ? nothing : this.handleTriggerClick}
+          role="button"
+          aria-label="Select color"
+          aria-expanded="${this.show}"
+          aria-haspopup="dialog"
+          tabindex="${this.disabled ? -1 : 0}"
+        ></hy-colorholder-box>
+        
+        ${this.renderDropdown()}
+        ${this.renderHelperText()}
       </div>
-    </div> `;
+    `;
+  }
+
+  /**
+   * Renders the label if provided
+   */
+  private renderLabel() {
+    if (!this.label) return nothing;
+    
+    return html`
+      <label class="color-picker-label">
+        ${this.label}
+      </label>
+    `;
+  }
+
+  /**
+   * Renders the dropdown panel with color picker
+   */
+  private renderDropdown() {
+    if (!this.show) return nothing;
+
+    return html`
+      <div 
+        class="dropdown-container"
+        role="dialog"
+        aria-label="Color picker"
+      >
+        ${this.renderDefaultColorSets()}
+        ${this.renderColorPicker()}
+        ${this.renderColorInput()}
+      </div>
+    `;
+  }
+
+  /**
+   * Renders default color sets if provided
+   */
+  private renderDefaultColorSets() {
+    if (!this.defaultColorSets || this.defaultColorSets.length === 0) {
+      return nothing;
+    }
+
+    return html`
+      <hy-default-color-sets 
+        .defaultColorSets=${this.defaultColorSets} 
+        @color-click="${this.handleColorChanged}"
+        aria-label="Preset colors">
+      </hy-default-color-sets>
+    `;
+  }
+
+  /**
+   * Renders the hex color picker
+   */
+  private renderColorPicker() {
+    return html`
+      <hex-color-picker
+        color="${this.color}"
+        @color-changed="${this.handleColorChanged}"
+        aria-label="Color gradient picker">
+      </hex-color-picker>
+    `;
+  }
+
+  /**
+   * Renders the color input field
+   */
+  private renderColorInput() {
+    if (!this.showInput) return nothing;
+
+    return html`
+      <nr-input 
+        type="text" 
+        .value="${this.color}" 
+        placeholder="${this.inputPlaceholder}"
+        @nr-input="${this.handleInputChange}" 
+        ?withCopy=${this.showCopyButton} 
+        .state="${!this.isValidColor ? INPUT_STATE.Error : INPUT_STATE.Default}"
+        aria-label="Color value input"
+        aria-invalid="${!this.isValidColor}">
+      </nr-input>
+    `;
+  }
+
+  /**
+   * Renders helper text if provided
+   */
+  private renderHelperText() {
+    if (!this.helperText) return nothing;
+    
+    return html`
+      <div class="color-picker-helper-text">
+        ${this.helperText}
+      </div>
+    `;
   }
 }

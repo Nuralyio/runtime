@@ -82,7 +82,11 @@ const THEMES = {
       'collapse/index.css',
       'collapse/common.css',
       'collapse/light.css',
-      'collapse/dark.css'
+      'collapse/dark.css',
+      'colorpicker/index.css',
+      'colorpicker/common.css',
+      'colorpicker/light.css',
+      'colorpicker/dark.css'
     ]
   },
   default: {
@@ -153,7 +157,11 @@ const THEMES = {
       'collapse/index.css',
       'collapse/common.css',
       'collapse/light.css',
-      'collapse/dark.css'
+      'collapse/dark.css',
+      'colorpicker/index.css',
+      'colorpicker/common.css',
+      'colorpicker/light.css',
+      'colorpicker/dark.css'
     ]
   }
 };
