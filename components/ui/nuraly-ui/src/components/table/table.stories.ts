@@ -644,3 +644,122 @@ export const FixedColumnsBothSidesWithHeader: Story = {
     </div>
   `,
 };
+
+// ============================================
+// Loading State Feature Stories
+// ============================================
+
+/**
+ * Table with skeleton loading state.
+ * Shows animated skeleton rows while data is loading.
+ */
+export const LoadingSkeleton: Story = {
+  args: {
+    headers: sampleHeaders,
+    rows: [],
+    size: 'normal',
+    loading: true,
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Loading State - Skeleton Rows</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Skeleton loading provides visual feedback while data is being fetched.
+        This creates a better user experience than showing an empty table.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?loading=${args.loading}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table simulating data load transition.
+ * Demonstrates transitioning from loading to loaded state.
+ */
+export const LoadingTransition: Story = {
+  args: {
+    headers: [
+      {name: 'Order ID', key: 'orderId'},
+      {name: 'Customer', key: 'customer'},
+      {name: 'Product', key: 'product'},
+      {name: 'Amount', key: 'amount'},
+      {name: 'Status', key: 'status'},
+    ],
+    rows: [],
+    size: 'normal',
+    loading: true,
+  },
+  render: (args) => {
+    // Simulate data loading after 3 seconds
+    setTimeout(() => {
+      const table = document.querySelector('nr-table[data-story="loading-transition"]');
+      if (table) {
+        table.setAttribute('loading', 'false');
+        (table as any).rows = Array.from({length: 10}, (_, i) => ({
+          orderId: `#${1000 + i}`,
+          customer: `Customer ${i + 1}`,
+          product: ['Laptop', 'Mouse', 'Keyboard', 'Monitor', 'Headphones'][i % 5],
+          amount: `$${(Math.random() * 500 + 50).toFixed(2)}`,
+          status: i % 3 === 0 ? 'Pending' : 'Completed',
+        }));
+      }
+    }, 3000);
+
+    return html`
+      <div style="padding: 1rem;">
+        <h3 style="margin-bottom: 1rem;">Loading Transition</h3>
+        <p style="margin-bottom: 1rem; color: #666;">
+          This story simulates loading data. Wait 3 seconds to see the transition
+          from loading skeleton to actual data.
+        </p>
+        <nr-table
+          data-story="loading-transition"
+          .headers=${args.headers}
+          .rows=${args.rows}
+          size=${args.size}
+          ?loading=${args.loading}>
+        </nr-table>
+      </div>
+    `;
+  },
+};
+
+/**
+ * Table with loading state and selection mode.
+ * Shows how loading works with interactive features.
+ */
+export const LoadingWithFeatures: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name'},
+      {name: 'Email', key: 'email'},
+      {name: 'Department', key: 'department'},
+      {name: 'Status', key: 'status'},
+    ],
+    rows: [],
+    size: 'normal',
+    loading: true,
+    selectionMode: 'multiple',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Loading with Multiple Selection</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Loading state works seamlessly with other table features like row selection.
+        The selection column is included in the skeleton animation.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?loading=${args.loading}
+        selectionMode=${args.selectionMode}>
+      </nr-table>
+    </div>
+  `,
+};

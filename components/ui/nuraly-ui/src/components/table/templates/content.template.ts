@@ -3,6 +3,8 @@ import { repeat } from 'lit/directives/repeat.js';
 import { choose } from 'lit/directives/choose.js';
 import { IHeader, SelectionMode, SortAttribute, SortOrder } from '../table.types.js';
 import { renderColumnFilterTemplate, renderFilterIcon } from './column-filter.template.js';
+import { renderLoadingTemplate } from './loading.template.js';
+import { TableHost } from '../interfaces/index.js';
 
 /**
  * Calculate cumulative left position for fixed columns
@@ -52,6 +54,8 @@ export interface ContentTemplateData {
   expand: boolean[];
   columnFilters: Map<string, string | number>;
   activeFilterColumn: string | null;
+  loading: boolean;
+  host: TableHost;
   globalCheckRef?: (el: HTMLInputElement | null) => void;
   onCheckAll: () => void;
   onCheckOne: (event: Event, index: number) => void;
@@ -152,11 +156,13 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
         </tr>
       </thead>
       <tbody>
-        ${repeat(
-          data.rows,
-          (row, index) => html`
+        ${data.loading 
+          ? renderLoadingTemplate(data.host, 5)
+          : repeat(
+              data.rows,
+              (row, index) => html`
             <tr>
-            ${data.expandable && !data.selectionMode
+              ${data.expandable && !data.selectionMode
               ? html`
                   <td @click=${() => data.onShowExpandedContent(index)} class="expand-icon ${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
                     <nr-icon name="${data.expand[index] ? 'angle-up' : 'angle-down'}"></nr-icon>
@@ -208,12 +214,11 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                   : nothing}`;
               }
             )}
-
+            </tr>
             <tr style="display:${data.expand[index] ? 'table-row' : 'none'};">
               <td colspan=${data.headers.length}>${data.expandable}: ${row[data.expandable!]}</td>
             </tr>
-          </tr>
-        `
+          `
         )}
       </tbody>
     </table>
