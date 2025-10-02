@@ -147,7 +147,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
    * Handle items per page change event
    */
   _handleItemPerPage(itemPerPageEvent: CustomEvent) {
-    this.paginationController.handleItemPerPageChange(itemPerPageEvent.detail.selectedItemPerPage);
+    const value = itemPerPageEvent.detail.value || itemPerPageEvent.detail.selectedItemPerPage;
+    this.paginationController.handleItemPerPageChange(Number(value));
   }
 
   /**
