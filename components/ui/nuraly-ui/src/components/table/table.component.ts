@@ -5,14 +5,33 @@
  */
 
 import {LitElement, PropertyValueMap, html, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, state, query} from 'lit/decorators.js';
 import {NuralyUIBaseMixin} from '../../shared/base-mixin.js';
 import styles from './table.style.js';
-import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, SortValue} from './table.types.js';
-import './components/nr-table-actions.js';
-import './components/nr-table-filter.js';
-import './components/nr-table-pagination.js';
-import './components/nr-table-content.js';
+import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, EMPTY_STRING} from './table.types.js';
+
+// Import required components
+import '../select/select.component.js';
+import '../icon/icon.component.js';
+
+// Import controllers
+import {
+  TableSelectionController,
+  TablePaginationController,
+  TableSortController,
+  TableFilterController
+} from './controllers/index.js';
+
+// Import interfaces
+import { TableHost } from './interfaces/index.js';
+
+// Import templates
+import {
+  renderPaginationTemplate,
+  renderContentTemplate,
+  renderActionsTemplate,
+  renderFilterTemplate
+} from './templates/index.js';
 
 /**
  * Advanced table component with sorting, filtering, pagination, and selection capabilities.
@@ -33,42 +52,77 @@ import './components/nr-table-content.js';
  * @fires onSort - Fired when sorting is applied
  */
 @customElement('nr-table')
-export class HyTable extends NuralyUIBaseMixin(LitElement) {
+export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost {
   static override styles = styles;
 
-  @property({type: Array}) headers!: IHeader[];
-  @property({type: Array}) rows: [] = [];
-  @property() size = Sizes.Normal;
-  @property({type: Boolean}) withFilter = false;
-  @property({type: String}) expandable: string | undefined;
-  @property() selectionMode: SelectionMode | undefined;
+  @property({ type: Array }) headers!: IHeader[];
+  @property({ type: Array }) rows: any[] = [];
+  @property({ type: String }) size: Sizes = Sizes.Normal;
+  @property({ type: Boolean }) withFilter = false;
+  @property({ type: String }) expandable: string | undefined;
+  @property({ type: String }) selectionMode: SelectionMode | undefined;
 
   @state() itemPerPage = [5, 10, 15, 20];
   @state() selectedItemPerPage = this.itemPerPage[0];
-  @state() displayedRows = [];
+  @state() displayedRows: any[] = [];
   @state() selectedItems: boolean[] = [];
   @state() currentPage!: number;
-  @state() rowsCopy: [] = [];
+  @state() rowsCopy: any[] = [];
   @state() activeSearch = false;
   @state() sortAttribute: SortAttribute = {index: -1, order: SortOrder.Default};
+  @state() expand: boolean[] = [];
+  @state() showFilterInput = false;
+  @state() filterValue = EMPTY_STRING;
+
+  @query('#global-check')
+  globalCheck?: HTMLInputElement;
+
+  override requiredComponents = ['hy-select', 'nr-icon'];
+
+  // Controllers
+  private selectionController = new TableSelectionController(this);
+  private paginationController = new TablePaginationController(this);
+  private sortController = new TableSortController(this);
+  private filterController = new TableFilterController(this);
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this._initSelection();
+    this.selectionController.initSelection();
+  }
+
+  override updated(_changedProperties: PropertyValueMap<this> | Map<PropertyKey, unknown>): void {
+    if (this.globalCheck && _changedProperties.has('selectedItems')) {
+      if (this.selectedItems.every((isSelected) => isSelected)) {
+        this.globalCheck.checked = true;
+        this.globalCheck.setAttribute('data-indeterminate', 'false');
+      } else if (this.selectedItems.some((isSelected) => isSelected)) {
+        this.globalCheck.checked = false;
+        this.globalCheck.setAttribute('data-indeterminate', 'true');
+      } else {
+        this.globalCheck.checked = false;
+        this.globalCheck.setAttribute('data-indeterminate', 'false');
+      }
+    }
+    if (this.showFilterInput && _changedProperties.has('showFilterInput')) {
+      this.shadowRoot?.querySelector('input')?.focus();
+    }
   }
 
   override willUpdate(_changedProperties: PropertyValueMap<this>) {
-    if (_changedProperties.has('sortAttribute') && this.sortAttribute.index > -1) {
+    if (_changedProperties.has('rows')) {
+      this.expand = Array(this.rows.length).fill(false);
+    }
+    if (_changedProperties.has('sortAttribute') && this.sortController.isSortActive()) {
       this._initPagination();
-      this._initSelection();
+      this.selectionController.initSelection();
     }
     if (_changedProperties.has('rowsCopy')) {
-      if (this.activeSearch) {
+      if (this.filterController.isSearchActive()) {
         this._initPagination();
       }
     }
     if (_changedProperties.has('activeSearch') || _changedProperties.has('rows')) {
-      if (!this.activeSearch) {
+      if (!this.filterController.isSearchActive()) {
         this.rowsCopy = [...this.rows];
         this._initPagination();
       }
@@ -76,201 +130,172 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
-   * Initialize selection state array based on rows length
-   */
-  _initSelection() {
-    if (this.selectionMode) this.selectedItems = Array(this.rows.length).fill(false);
-  }
-
-  /**
    * Initialize or reset pagination state
    */
-  _initPagination() {
-    if (this.sortAttribute.index > -1) {
-      if (this.sortAttribute.order != SortOrder.Default) this._sort();
-      else this._resetSort();
+  private _initPagination() {
+    if (this.sortController.isSortActive()) {
+      if (!this.sortController.isSortDefault()) {
+        this.sortController.sort();
+      } else {
+        this.sortController.resetSort();
+      }
     }
-    this.displayedRows = this.rowsCopy.slice(0, this.selectedItemPerPage);
-    this.currentPage = this.rowsCopy.length > 0 ? 1 : 0;
+    this.paginationController.initPagination();
   }
 
   /**
    * Handle items per page change event
    */
   _handleItemPerPage(itemPerPageEvent: CustomEvent) {
-    this.selectedItemPerPage = itemPerPageEvent.detail.selectedItemPerPage;
-    this._initPagination();
+    this.paginationController.handleItemPerPageChange(itemPerPageEvent.detail.selectedItemPerPage);
   }
 
   /**
    * Handle page navigation event
    */
   _handleUpdatePage(updatePageEvent: CustomEvent) {
-    this.currentPage = updatePageEvent.detail.page;
-    this.displayedRows = this.rowsCopy.slice(
-      (updatePageEvent.detail.page - 1) * this.selectedItemPerPage,
-      (updatePageEvent.detail.page - 1) * this.selectedItemPerPage + this.selectedItemPerPage
-    );
-    this.dispatchEvent(new CustomEvent('onPaginate',{bubbles:true,composed:true,detail:{value:this.currentPage}}))
-
+    this.paginationController.handlePageChange(updatePageEvent.detail.page);
   }
 
   /**
    * Handle check all rows event
    */
   _handleCheckAll(checkAllEvent: CustomEvent) {
-    const everyItemChecked = checkAllEvent.detail.isEveryItemChecked;
-    this.selectedItems = everyItemChecked ? this.selectedItems.map(() => false) : this.selectedItems.map(() => true);
-    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.rowsCopy.filter((_, i) => this.selectedItems[i])}}))
+    this.selectionController.handleCheckAll(checkAllEvent.detail.isEveryItemChecked);
   }
 
   /**
    * Handle check single row event
    */
   _handleCheckOne(checkOneEvent: CustomEvent) {
-    const indexSelected = checkOneEvent.detail.index;
-    this.selectedItems[indexSelected + (this.currentPage - 1) * this.selectedItemPerPage] = checkOneEvent.detail.value;
-    this.selectedItems = [...this.selectedItems];
-    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.rowsCopy.filter((_, i) => this.selectedItems[i])}}))
+    this.selectionController.handleCheckOne(checkOneEvent.detail.index, checkOneEvent.detail.value);
   }
 
   /**
    * Handle select single row event (radio button mode)
    */
   _handleSelectOne(selectOneEvent: CustomEvent) {
-    const previousSelected = this.selectedItems.findIndex((isSelected) => isSelected);
-    if (previousSelected > -1) {
-      this.selectedItems[previousSelected] = false;
-    }
-    const indexSelected = selectOneEvent.detail.index;
-    this.selectedItems[indexSelected + (this.currentPage - 1) * this.selectedItemPerPage] = true;
-    this.selectedItems = [...this.selectedItems];
-    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.rowsCopy.filter((_, i) => this.selectedItems[i])}}))
+    this.selectionController.handleSelectOne(selectOneEvent.detail.index);
   }
 
   /**
    * Handle cancel selection action
    */
   _handleCancelSelection() {
-    this.selectedItems = this.selectedItems.map(() => false);
-    this.dispatchEvent(new CustomEvent('onSelect', {bubbles: true, composed: true, detail: {value: this.selectedItems}}))
+    this.selectionController.cancelSelection();
   }
 
   /**
    * Handle search/filter input
    */
   _handleSearch(searchEvent: CustomEvent) {
-    const searchValue = searchEvent.detail.value;
-    if ((searchValue as string).trim().length > 0) {
-      this.activeSearch = true;
-      this.rowsCopy = this.rows.filter((rowValue) => {
-        return Object.values(rowValue).some((attributeValue) => {
-          const stringValue = JSON.stringify(attributeValue);
-          return stringValue.includes(searchValue);
-        });
-      }) as [];
-      this.dispatchEvent(new CustomEvent('onSearch', {bubbles: true, composed: true, detail: {value: this.rowsCopy}}))
-    } else {
-      this.activeSearch = false;
-    }
+    this.filterController.handleSearch(searchEvent.detail.value);
   }
 
   /**
    * Handle column sort order change
    */
   _handleSortOrder(sortOrderEvent: CustomEvent) {
-    const index = sortOrderEvent.detail.index;
-    if (index != this.sortAttribute.index) {
-      this.sortAttribute.index = index;
-      this.sortAttribute.order = SortOrder.Ascending;
-    } else {
-      if (this.sortAttribute.order == SortOrder.Default) this.sortAttribute.order = SortOrder.Ascending;
-      else if (this.sortAttribute.order == SortOrder.Ascending) this.sortAttribute.order = SortOrder.Descending;
-      else this.sortAttribute.order = SortOrder.Default;
-    }
-    this.sortAttribute = {...this.sortAttribute};
+    this.sortController.handleSortOrderChange(sortOrderEvent.detail.index);
   }
 
   /**
-   * Sort rows based on current sort attribute
+   * Toggle expanded content for a row
    */
-  _sort() {
-    if (this.rowsCopy.length) {
-      const sortOrder =
-        this.sortAttribute.order == SortOrder.Default
-          ? SortValue.Default
-          : this.sortAttribute.order == SortOrder.Ascending
-          ? SortValue.Ascending
-          : SortValue.Descending;
-      this.rowsCopy.sort((a, b) => {
-        const stringifyA = JSON.stringify(a[this.headers[this.sortAttribute.index].key]);
-        const stringifyB = JSON.stringify(b[this.headers[this.sortAttribute.index].key]);
-        const result = stringifyA < stringifyB ? -1 : stringifyA > stringifyB ? 1 : 0;
-        return result * sortOrder;
-      });
-      this.dispatchEvent(new CustomEvent('onSort', {bubbles: true, composed: true, detail: {value: this.rowsCopy}}))
-    }
+  private _showExpandedContent(index: number) {
+    this.expand[index] = !this.expand[index];
+    this.requestUpdate();
   }
 
   /**
-   * Reset sort to original row order
+   * Toggle filter input visibility
    */
-  _resetSort() {
-    this.rowsCopy.sort((copyA, copyB) => {
-      const positionInOriginalArrayA = this.rows.findIndex(
-        (originalA) => JSON.stringify(originalA) === JSON.stringify(copyA)
-      );
-      const positionInOriginalArrayB = this.rows.findIndex(
-        (originalB) => JSON.stringify(originalB) === JSON.stringify(copyB)
-      );
-      return positionInOriginalArrayA > positionInOriginalArrayB
-        ? SortValue.Ascending
-        : positionInOriginalArrayA < positionInOriginalArrayB
-        ? SortValue.Descending
-        : SortValue.Default;
-    });
+  private _toggleFilterInput() {
+    this.showFilterInput = !this.showFilterInput;
   }
+
   /**
-   * Render the table component with all sub-components
+   * Handle filter input change
+   */
+  private _handleFilterInputChange(event: Event) {
+    this.filterValue = (event.target as HTMLInputElement).value;
+    this.filterController.handleSearch(this.filterValue);
+  }
+
+  /**
+   * Render the table component with all templates
    */
   override render() {
-    return html`${this.selectionMode && !this.withFilter && this.selectedItems.some((isSelected) => isSelected)
-        ? html`<nr-table-actions
-            .selectedItems=${this.selectedItems.filter((isSelected) => isSelected).length}
-            .size=${this.size}
-            @cancel-selection=${this._handleCancelSelection}
-          ></nr-table-actions>`
+    const numberOfPages = Math.ceil(this.rowsCopy.length / this.selectedItemPerPage);
+    const fromItem = this.currentPage > 0 
+      ? this.currentPage * this.selectedItemPerPage - this.selectedItemPerPage + 1 
+      : 0;
+    const toItem = this.currentPage * this.selectedItemPerPage <= this.rowsCopy.length
+      ? this.currentPage * this.selectedItemPerPage
+      : this.rowsCopy.length;
+    const enableNext = toItem < this.rowsCopy.length;
+    const enablePrevious = fromItem > 1;
+
+    return html`
+      ${this.selectionMode && !this.withFilter && this.selectionController.hasSelection()
+        ? renderActionsTemplate({
+            selectedItems: this.selectionController.getSelectedCount(),
+            size: this.size,
+            onCancelSelection: () => this._handleCancelSelection()
+          })
         : this.withFilter
         ? html`
             <div class="filter-container">
-              <nr-table-filter @value-change=${this._handleSearch}></nr-table-filter>
+              ${renderFilterTemplate({
+                showInput: this.showFilterInput,
+                value: this.filterValue,
+                onToggleInput: () => this._toggleFilterInput(),
+                onChange: (e) => this._handleFilterInputChange(e)
+              })}
             </div>
           `
         : nothing}
-      <nr-table-content
-        .headers=${this.headers}
-        .rows=${this.displayedRows}
-        .expandable=${this.expandable && !this.selectionMode ? this.expandable : nothing}
-        .selectionMode=${this.selectionMode && !this.withFilter ? this.selectionMode : nothing}
-        .selectedItems=${this.selectedItems}
-        .currentPage=${this.currentPage}
-        .itemPerPage=${this.selectedItemPerPage}
-        .sortAttribute=${this.sortAttribute}
-        .size=${this.size}
-        @check-all=${this._handleCheckAll}
-        @check-one=${this._handleCheckOne}
-        @select-one=${this._handleSelectOne}
-        @update-sort=${this._handleSortOrder}
-      ></nr-table-content>
 
-      <nr-table-pagination
-        .numberOfItems=${this.rowsCopy.length}
-        .currentPage=${this.currentPage}
-        .itemPerPage=${this.itemPerPage}
-        .selectedItemPerPage=${this.selectedItemPerPage}
-        .size=${this.size}
-        @item-per-page=${this._handleItemPerPage}
-        @update-page=${this._handleUpdatePage}
-      ></nr-table-pagination> `;
+      <div class="table-content-wrapper">
+        ${renderContentTemplate({
+          headers: this.headers,
+          rows: this.displayedRows,
+          expandable: this.expandable && !this.selectionMode ? this.expandable : undefined,
+          selectionMode: this.selectionMode && !this.withFilter ? this.selectionMode : undefined,
+          selectedItems: this.selectedItems,
+          currentPage: this.currentPage,
+          itemPerPage: this.selectedItemPerPage,
+          sortAttribute: this.sortAttribute,
+          expand: this.expand,
+          onCheckAll: () => this._handleCheckAll({ detail: { isEveryItemChecked: this.selectedItems.every(i => i) } } as CustomEvent),
+          onCheckOne: (e, index) => this._handleCheckOne({ detail: { index, value: (e.target as HTMLInputElement).checked } } as CustomEvent),
+          onSelectOne: (index) => this._handleSelectOne({ detail: { index } } as CustomEvent),
+          onUpdateSort: (index) => this._handleSortOrder({ detail: { index } } as CustomEvent),
+          onShowExpandedContent: (index) => this._showExpandedContent(index)
+        })}
+      </div>
+
+      ${renderPaginationTemplate({
+        numberOfItems: this.rowsCopy.length,
+        itemPerPage: this.itemPerPage,
+        selectedItemPerPage: this.selectedItemPerPage,
+        currentPage: this.currentPage,
+        size: this.size,
+        numberOfPages,
+        fromItem,
+        toItem,
+        enableNext,
+        enablePrevious,
+        onItemPerPageChange: (e) => this._handleItemPerPage(e),
+        onNextPage: () => {
+          this.currentPage++;
+          this._handleUpdatePage({ detail: { page: this.currentPage } } as CustomEvent);
+        },
+        onPreviousPage: () => {
+          this.currentPage--;
+          this._handleUpdatePage({ detail: { page: this.currentPage } } as CustomEvent);
+        }
+      })}
+    `;
   }
 }
