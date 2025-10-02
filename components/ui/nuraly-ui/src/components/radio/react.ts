@@ -13,6 +13,8 @@ export const NrRadio = createComponent({
   elementClass: NrRadioElement,
   react: React,
   events: {
-    onChanged: 'change'
+    onChange: 'change',
+    onFocus: 'focus',
+    onBlur: 'blur'
   }
 });

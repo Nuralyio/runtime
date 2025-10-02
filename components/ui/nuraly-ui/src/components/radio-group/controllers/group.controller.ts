@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { RadioButtonOption } from '../radio.type.js';
+import { RadioButtonOption } from '../radio-group.types.js';
 import { SelectionController, RadioHost } from '../interfaces/index.js';
 
 /**
