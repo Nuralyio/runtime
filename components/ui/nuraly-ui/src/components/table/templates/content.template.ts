@@ -47,6 +47,7 @@ export interface ContentTemplateData {
   headers: IHeader[];
   rows: any[];
   expandable: string | undefined;
+  expansionRenderer: ((row: any, index: number) => any) | undefined;
   selectionMode: SelectionMode | undefined;
   selectedItems: boolean[];
   currentPage: number;
@@ -82,7 +83,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
     <table>
       <thead>
         <tr>
-          ${data.expandable || data.selectionMode
+          ${(data.expandable || data.expansionRenderer) || data.selectionMode
             ? html`<th class="${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
                 ${data.selectionMode === SelectionMode.Multiple
                   ? html`<nr-checkbox 
@@ -96,7 +97,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
             data.headers,
             (header: IHeader, index) => {
               const fixedClasses = getFixedColumnClasses(header);
-              const hasSelection = data.expandable || data.selectionMode;
+              const hasSelection = (data.expandable || data.expansionRenderer) || data.selectionMode;
               const leftPosition = header.fixed === 'left' 
                 ? calculateFixedColumnLeft(data.headers, index, !!hasSelection) 
                 : undefined;
@@ -165,10 +166,23 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
               data.rows,
               (row, index) => html`
             <tr>
-              ${data.expandable && !data.selectionMode
+              ${(data.expandable || data.expansionRenderer) && !data.selectionMode
               ? html`
-                  <td @click=${() => data.onShowExpandedContent(index)} class="expand-icon ${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
-                    <nr-icon name="${data.expand[index] ? 'angle-up' : 'angle-down'}"></nr-icon>
+                  <td 
+                    @click=${() => data.onShowExpandedContent(index)} 
+                    @keydown=${(e: KeyboardEvent) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        data.onShowExpandedContent(index);
+                      }
+                    }}
+                    tabindex="0"
+                    role="button"
+                    aria-expanded="${data.expand[index]}"
+                    aria-label="${data.expand[index] ? 'Collapse row' : 'Expand row'}"
+                    class="expand-icon ${data.expand[index] ? 'expanded' : ''} ${selectionColumnClass}" 
+                    style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
+                    <nr-icon name="angle-down"></nr-icon>
                   </td>
                 `
               : data.selectionMode
@@ -200,7 +214,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
               data.headers,
               (header: IHeader, headerIndex) => {
                 const fixedClasses = getFixedColumnClasses(header);
-                const hasSelection = data.expandable || data.selectionMode;
+                const hasSelection = (data.expandable || data.expansionRenderer) || data.selectionMode;
                 const leftPosition = header.fixed === 'left' 
                   ? calculateFixedColumnLeft(data.headers, headerIndex, !!hasSelection) 
                   : undefined;
@@ -218,9 +232,23 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
               }
             )}
             </tr>
-            <tr style="display:${data.expand[index] ? 'table-row' : 'none'};">
-              <td colspan=${data.headers.length}>${data.expandable}: ${row[data.expandable!]}</td>
-            </tr>
+            ${data.expand[index] 
+              ? html`
+                <tr class="expansion-row expanded">
+                  <td colspan=${data.headers.length + ((data.expandable || data.expansionRenderer) || data.selectionMode ? 1 : 0)}>
+                    <div class="expansion-content">
+                      ${data.expansionRenderer 
+                        ? data.expansionRenderer(row, index)
+                        : data.expandable 
+                        ? row[data.expandable]
+                        : nothing
+                      }
+                    </div>
+                  </td>
+                </tr>
+              `
+              : nothing
+            }
           `
         )}
       </tbody>

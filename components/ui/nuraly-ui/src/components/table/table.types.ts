@@ -80,4 +80,12 @@ export interface SortAttribute {
   order: SortOrder;
 }
 
+/**
+ * Expansion content render function
+ * @param row - The row data
+ * @param index - The row index
+ * @returns Template result for the expanded content
+ */
+export type ExpansionContentRenderer = (row: any, index: number) => any;
+
 export const EMPTY_STRING = '';

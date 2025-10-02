@@ -76,6 +76,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: String }) size: Sizes = Sizes.Normal;
   @property({ type: Boolean }) withFilter = false;
   @property({ type: String }) expandable: string | undefined;
+  @property({ attribute: false }) expansionRenderer: ((row: any, index: number) => any) | undefined;
   @property({ type: String }) selectionMode: SelectionMode | undefined;
   @property({ type: Boolean }) fixedHeader = false;
   @property({ type: Object }) scrollConfig: { x?: number | string; y?: number | string } | undefined;
@@ -294,6 +295,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           headers: this.headers,
           rows: this.displayedRows,
           expandable: this.expandable && !this.selectionMode ? this.expandable : undefined,
+          expansionRenderer: !this.selectionMode ? this.expansionRenderer : undefined,
           selectionMode: this.selectionMode && !this.withFilter ? this.selectionMode : undefined,
           selectedItems: this.selectedItems,
           currentPage: this.currentPage,
