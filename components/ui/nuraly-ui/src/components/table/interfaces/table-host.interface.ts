@@ -17,6 +17,8 @@ export interface TableHost {
   expandable?: string;
   selectionMode?: SelectionMode;
   loading: boolean;
+  emptyText: string;
+  emptyIcon?: string;
   
   // State
   itemPerPage: number[];

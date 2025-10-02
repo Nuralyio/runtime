@@ -4,6 +4,7 @@ import { choose } from 'lit/directives/choose.js';
 import { IHeader, SelectionMode, SortAttribute, SortOrder } from '../table.types.js';
 import { renderColumnFilterTemplate, renderFilterIcon } from './column-filter.template.js';
 import { renderLoadingTemplate } from './loading.template.js';
+import { renderEmptyTemplate } from './empty.template.js';
 import { TableHost } from '../interfaces/index.js';
 
 /**
@@ -158,6 +159,8 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
       <tbody>
         ${data.loading 
           ? renderLoadingTemplate(data.host, 5)
+          : data.rows.length === 0
+          ? renderEmptyTemplate(data.host)
           : repeat(
               data.rows,
               (row, index) => html`
