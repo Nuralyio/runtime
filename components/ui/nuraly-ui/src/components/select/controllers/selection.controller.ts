@@ -122,31 +122,31 @@ export class SelectSelectionController extends BaseSelectController implements S
   }
 
   /**
-   * Initialize selection from host default value
+   * Initialize selection from host value
    */
-  initializeFromDefaultValue(): void {
+  initializeFromValue(): void {
     try {
       // Prevent re-initialization
       if (this._initialized) return;
       
-      const defaultValue = this.host.defaultValue;
-      if (!defaultValue || defaultValue.length === 0) return;
+      const value = this.host.value;
+      if (!value || (Array.isArray(value) && value.length === 0)) return;
 
-      const defaultValues = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
-      const defaultOptions = this.host.options.filter(option =>
-        defaultValues.includes(option.value)
+      const values = Array.isArray(value) ? value : [value];
+      const selectedOptions = this.host.options.filter(option =>
+        values.includes(option.value)
       );
 
-      if (defaultOptions.length > 0) {
-        this._selectedOptions = this.host.multiple ? defaultOptions : [defaultOptions[0]];
+      if (selectedOptions.length > 0) {
+        this._selectedOptions = this.host.multiple ? selectedOptions : [selectedOptions[0]];
         // Don't call updateHostValue during initialization to avoid loops
-        // The host already has the defaultValue, no need to update it
+        // The host already has the value, no need to update it
         this.requestUpdate();
       }
       
       this._initialized = true;
     } catch (error) {
-      this.handleError(error as Error, 'initializeFromDefaultValue');
+      this.handleError(error as Error, 'initializeFromValue');
     }
   }
 

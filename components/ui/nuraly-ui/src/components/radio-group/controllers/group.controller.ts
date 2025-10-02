@@ -183,7 +183,7 @@ export class RadioGroupController implements SelectionController {
    * @private
    */
   private dispatchChangeEvent(option: RadioButtonOption, oldValue: string): void {
-    const changeEvent = new CustomEvent('change', {
+    const changeEvent = new CustomEvent('nr-change', {
       detail: {
         value: option.value,
         option: option,

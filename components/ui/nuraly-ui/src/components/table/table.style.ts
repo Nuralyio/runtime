@@ -158,13 +158,14 @@ export default css`
   .pagination-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     background-color: var(--nuraly-pagination-background-color);
     color: var(--nuraly-pagination-text-color);
   }
 
   .pagination-container .left-content {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
   }
 
   .pagination-container .left-content .items-details {
@@ -185,8 +186,9 @@ export default css`
     white-space: nowrap;
   }
 
-  .pagination-container .left-content .select-details hy-select {
-    min-width: 80px;
+  .pagination-container .left-content .select-details nr-select {
+    min-width: 60px;
+    max-width: 80px;
     --select-border-color: var(--nuraly-table-border-color, #d9d9d9);
     --select-background: var(--nuraly-table-pagination-background, #fafafa);
     --select-text-color: var(--nuraly-table-pagination-text, #000000);
@@ -194,13 +196,13 @@ export default css`
 
   .pagination-container .right-content {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     border-left: var(--nuraly-pagination-borders);
   }
 
   .pagination-container .right-content .icon-container {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     border-left: var(--nuraly-pagination-borders);
   }
 

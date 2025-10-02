@@ -64,7 +64,7 @@ export class TableSelectionController extends BaseTableController {
       
       const selectedRows = this.host.rowsCopy.filter((_, i) => this.host.selectedItems[i]);
       this.dispatchEvent(
-        new CustomEvent('onSelect', {
+        new CustomEvent('nr-select', {
           bubbles: true,
           composed: true,
           detail: { value: selectedRows }
@@ -93,7 +93,7 @@ export class TableSelectionController extends BaseTableController {
       
       const selectedRows = this.host.rowsCopy.filter((_, i) => this.host.selectedItems[i]);
       this.dispatchEvent(
-        new CustomEvent('onSelect', {
+        new CustomEvent('nr-select', {
           bubbles: true,
           composed: true,
           detail: { value: selectedRows }
@@ -114,7 +114,7 @@ export class TableSelectionController extends BaseTableController {
       this.host.selectedItems = this.host.selectedItems.map(() => false);
       
       this.dispatchEvent(
-        new CustomEvent('onSelect', {
+        new CustomEvent('nr-select', {
           bubbles: true,
           composed: true,
           detail: { value: [] }

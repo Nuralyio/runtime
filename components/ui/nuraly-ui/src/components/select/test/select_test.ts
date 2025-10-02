@@ -1,7 +1,7 @@
-import {expect, fixture, html} from '@open-wc/testing';
+import { expect, fixture, html } from '@open-wc/testing';
 import '../select.component.js';
-import {HySelectComponent} from '../select.component.js';
-import {SelectOption, SelectSize, SelectStatus, SelectType} from '../select.types.js';
+import { HySelectComponent } from '../select.component.js';
+import { SelectOption, SelectSize, SelectStatus, SelectType } from '../select.types.js';
 
 const options: SelectOption[] = [
   {value: 'abuja', label: 'Abuja'},
@@ -10,9 +10,9 @@ const options: SelectOption[] = [
   {value: 'beirut', label: 'Beirut'},
   {value: 'prague', label: 'Prague'},
 ];
-suite('Hy-select', () => {
+suite('Nr-select', () => {
   test('init select', async () => {
-    const el: HySelectComponent = await fixture(html`<hy-select .options=${options}></hy-select>`);
+    const el: HySelectComponent = await fixture(html`<nr-select .options=${options}></nr-select>`);
     expect(el.show).to.be.false;
     expect(el.placeholder).to.equal('Select an option');
     expect(el.disabled).to.be.false;
@@ -21,10 +21,9 @@ suite('Hy-select', () => {
     expect(el.status).to.equal(SelectStatus.Default);
     expect(el.size).to.equal(SelectSize.Medium);
     expect(el.selectedOptions).to.deep.equal([]);
-    expect(el.defaultValue).to.deep.equal([]);
   });
   test('should hide/show options', async () => {
-    const el: HySelectComponent = await fixture(html`<hy-select .options=${options}></hy-select>`);
+    const el: HySelectComponent = await fixture(html`<nr-select .options=${options}></nr-select>`);
     const wrapper: HTMLElement = el.shadowRoot!.querySelector('.wrapper')!;
     let displayedOptions: HTMLElement = el.shadowRoot!.querySelector('.options')!;
     let displayedStyle = window.getComputedStyle(displayedOptions).display;
@@ -39,7 +38,7 @@ suite('Hy-select', () => {
     expect(displayedOptions.children.length).to.equal(options.length);
   });
   test('should not toggle show when select disabled', async () => {
-    const el: HySelectComponent = await fixture(html`<hy-select .options=${options} .disabled=${true}></hy-select>`);
+    const el: HySelectComponent = await fixture(html`<nr-select .options=${options} .disabled=${true}></nr-select>`);
     const wrapper: HTMLElement = el.shadowRoot!.querySelector('.wrapper')!;
     expect(el.show).to.equal(false);
     wrapper.click();
@@ -47,7 +46,7 @@ suite('Hy-select', () => {
     expect(el.show).to.be.false;
   });
   test('should dispatch change events', async () => {
-    const el: HySelectComponent = await fixture(html`<hy-select .options=${options} .show=${true}></hy-select>`);
+    const el: HySelectComponent = await fixture(html`<nr-select .options=${options} .show=${true}></nr-select>`);
     const wrapper: HTMLElement = el.shadowRoot!.querySelector('.wrapper')!;
     let dispatchChangeEvent = false;
     el.addEventListener('changed', () => {
@@ -59,11 +58,11 @@ suite('Hy-select', () => {
     expect(dispatchChangeEvent).to.be.true;
   });
   test('should select multiple options', async () => {
-    const el: HySelectComponent = await fixture(html`<hy-select
+    const el: HySelectComponent = await fixture(html`<nr-select
       .options=${options}
       .show=${true}
       .multiple=${true}
-    ></hy-select>`);
+    ></nr-select>`);
     const wrapper: HTMLElement = el.shadowRoot!.querySelector('.wrapper')!;
     const displayedOption: NodeListOf<HTMLElement> = wrapper.querySelectorAll('.option')!;
     expect(el.selectedOptions).to.deep.equal([]);
@@ -75,7 +74,7 @@ suite('Hy-select', () => {
     expect(el.selectedOptions).to.deep.equal([options[0], options[2]]);
   });
   test('should select one option', async () => {
-    const el: HySelectComponent = await fixture(html`<hy-select .options=${options} .show=${true}></hy-select>`);
+    const el: HySelectComponent = await fixture(html`<nr-select .options=${options} .show=${true}></nr-select>`);
     const wrapper: HTMLElement = el.shadowRoot!.querySelector('.wrapper')!;
     const displayedOption: NodeListOf<HTMLElement> = wrapper.querySelectorAll('.option')!;
     expect(el.selectedOptions).to.deep.equal([]);
@@ -86,38 +85,38 @@ suite('Hy-select', () => {
     await el.updateComplete;
     expect(el.selectedOptions).to.deep.equal([options[2]]);
   });
-  suite('display default values', () => {
-    test('should display default value when single default value provided in single selection mode', async () => {
-      const defaultValues = ['abuja'];
-      const el: HySelectComponent = await fixture(html`<hy-select
+  suite('display initial values', () => {
+    test('should display value when single value provided in single selection mode', async () => {
+      const values = ['abuja'];
+      const el: HySelectComponent = await fixture(html`<nr-select
         .options=${options}
         .show=${true}
-        .defaultValue=${defaultValues}
-      ></hy-select>`);
-      const option = options.find((option) => option.value == defaultValues[0]);
+        .value=${values}
+      ></nr-select>`);
+      const option = options.find((option) => option.value == values[0]);
       expect(el.selectedOptions).to.deep.equal([option]);
     });
-    test('should display first default option when multiple default values provided in single selection mode', async () => {
-      const defaultValues = ['abuja', 'nairobi'];
-      const el: HySelectComponent = await fixture(html`<hy-select
+    test('should display first option when multiple values provided in single selection mode', async () => {
+      const values = ['abuja', 'nairobi'];
+      const el: HySelectComponent = await fixture(html`<nr-select
         .options=${options}
         .show=${true}
-        .defaultValue=${defaultValues}
-      ></hy-select>`);
-      const option = options.find((option) => option.value == defaultValues[0]);
+        .value=${values}
+      ></nr-select>`);
+      const option = options.find((option) => option.value == values[0]);
 
       expect(el.selectedOptions).to.deep.equal([option]);
     });
-    test('should display default option values when multiple default values provided in multiple selection mode', async () => {
-      const defaultValues = ['abuja', 'nairobi'];
-      const el: HySelectComponent = await fixture(html`<hy-select
+    test('should display option values when multiple values provided in multiple selection mode', async () => {
+      const values = ['abuja', 'nairobi'];
+      const el: HySelectComponent = await fixture(html`<nr-select
         .options=${options}
         .show=${true}
-        .defaultValue=${defaultValues}
+        .value=${values}
         .multiple=${true}
-      ></hy-select>`);
+      ></nr-select>`);
       const selectedOptions: SelectOption[] = [];
-      defaultValues.forEach((value) => {
+      values.forEach((value) => {
         const option = options.find((option) => option.value == value)!;
         selectedOptions.push(option);
       });

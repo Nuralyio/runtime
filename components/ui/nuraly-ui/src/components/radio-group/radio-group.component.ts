@@ -54,7 +54,7 @@ import { ButtonType } from '../button/button.types.js';
  * </nr-radio-group>
  * ```
  * 
- * @fires change - Dispatched when the selected option changes
+ * @fires nr-change - Dispatched when the selected option changes
  */
 @customElement('nr-radio-group')
 export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {

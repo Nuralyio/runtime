@@ -7,7 +7,7 @@ import { HySelectComponent } from './select.component.js';
  * Provides React-compatible props and event handling
  */
 export const HySelect = createComponent({
-  tagName: 'hy-select',
+  tagName: 'nr-select',
   elementClass: HySelectComponent,
   react: React,
   events: {

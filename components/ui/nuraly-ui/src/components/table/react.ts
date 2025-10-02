@@ -9,6 +9,6 @@ export const HyTableComponent = createComponent({
   events: {
     rowClick: 'row-click',
     sortChange: 'sort-change',
-    selectionChange: 'selection-change',
+    selectionChange: 'nr-select',
   },
 });

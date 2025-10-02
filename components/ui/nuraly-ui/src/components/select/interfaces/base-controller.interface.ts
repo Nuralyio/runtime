@@ -20,7 +20,6 @@ export interface ErrorHandler {
 export interface SelectHost {
   options: SelectOption[];
   value: string | string[];
-  defaultValue: string | string[];
   disabled: boolean;
   required: boolean;
   multiple: boolean;

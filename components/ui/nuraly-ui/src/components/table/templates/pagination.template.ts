@@ -33,12 +33,12 @@ export function renderPaginationTemplate(data: PaginationTemplateData): Template
       <div class="left-content">
         <span class="select-details">
           <label>Items per page:</label>
-          <hy-select
+          <nr-select
             .options=${selectOptions}
             .value=${String(data.selectedItemPerPage)}
             size="small"
             @nr-change=${data.onItemPerPageChange}
-          ></hy-select>
+          ></nr-select>
         </span>
         <span class="items-details">
           ${data.fromItem} - ${data.toItem} of ${data.numberOfItems} items
