@@ -217,42 +217,6 @@ export const MultipleSelection: Story = {
 };
 
 /**
- * Small size variant for compact displays.
- */
-export const SmallSize: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: sampleRows.slice(0, 5),
-    size: 'small',
-  },
-  render: (args) => html`
-    <nr-table
-      .headers=${args.headers}
-      .rows=${args.rows}
-      size=${args.size}>
-    </nr-table>
-  `,
-};
-
-/**
- * Large size variant for more spacious displays.
- */
-export const LargeSize: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: sampleRows.slice(0, 5),
-    size: 'large',
-  },
-  render: (args) => html`
-    <nr-table
-      .headers=${args.headers}
-      .rows=${args.rows}
-      size=${args.size}>
-    </nr-table>
-  `,
-};
-
-/**
  * Table with pagination for large datasets.
  */
 export const WithPagination: Story = {
@@ -335,49 +299,6 @@ export const CarbonDark: Story = {
   },
 };
 
-/**
- * Table with Default theme light variant.
- */
-export const DefaultLight: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: sampleRows.slice(0, 5),
-    size: 'normal',
-  },
-  render: (args) => html`
-    <div data-theme="default-light" style="padding: 1rem;">
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
- * Table with Default theme dark variant.
- */
-export const DefaultDark: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: sampleRows.slice(0, 5),
-    size: 'normal',
-  },
-  render: (args) => html`
-    <div data-theme="default-dark" style="padding: 1rem; background: #1a1b1e;">
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}>
-      </nr-table>
-    </div>
-  `,
-  parameters: {
-    backgrounds: {default: 'dark'},
-  },
-};
-
 // ============================================
 // Fixed Header Feature Stories
 // ============================================
@@ -417,332 +338,9 @@ export const FixedHeaderBasic: Story = {
   `,
 };
 
-/**
- * Table with fixed header and smaller scroll height.
- * Demonstrates compact fixed header for limited space.
- */
-export const FixedHeaderCompact: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: Array.from({length: 30}, (_, i) => ({
-      name: `Employee ${i + 1}`,
-      email: `emp${i + 1}@company.com`,
-      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
-      status: i % 2 === 0 ? 'Active' : 'Inactive',
-    })),
-    size: 'small',
-    fixedHeader: true,
-    scrollConfig: {y: 250},
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Compact Fixed Header (250px height, small size)</h3>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}
-        ?fixedHeader=${args.fixedHeader}
-        .scrollConfig=${args.scrollConfig}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
- * Table with fixed header and selection mode.
- * Shows how fixed header works with row selection.
- */
-export const FixedHeaderWithSelection: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: Array.from({length: 40}, (_, i) => ({
-      name: `Person ${i + 1}`,
-      email: `person${i + 1}@domain.com`,
-      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
-      status: i % 3 === 0 ? 'Inactive' : 'Active',
-    })),
-    size: 'normal',
-    fixedHeader: true,
-    scrollConfig: {y: 350},
-    selectionMode: 'multiple',
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Fixed Header with Multiple Selection</h3>
-      <p style="margin-bottom: 1rem; color: #666;">
-        Select rows and scroll - header with checkbox stays visible!
-      </p>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}
-        ?fixedHeader=${args.fixedHeader}
-        .scrollConfig=${args.scrollConfig}
-        selectionMode=${args.selectionMode}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
- * Table with fixed header and wider columns requiring horizontal scroll.
- * Demonstrates both vertical and horizontal scrolling.
- */
-export const FixedHeaderWithHorizontalScroll: Story = {
-  args: {
-    headers: [
-      {name: 'Name', key: 'name'},
-      {name: 'Email Address', key: 'email'},
-      {name: 'Role', key: 'role'},
-      {name: 'Department', key: 'department'},
-      {name: 'Location', key: 'location'},
-      {name: 'Status', key: 'status'},
-      {name: 'Start Date', key: 'startDate'},
-      {name: 'Manager', key: 'manager'},
-    ],
-    rows: Array.from({length: 35}, (_, i) => ({
-      name: `Employee Name ${i + 1}`,
-      email: `employee${i + 1}@organization.com`,
-      role: ['Senior Developer', 'UI/UX Designer', 'Product Manager', 'QA Engineer'][i % 4],
-      department: ['Engineering', 'Design', 'Product', 'Quality'][i % 4],
-      location: ['New York', 'London', 'Tokyo', 'Sydney'][i % 4],
-      status: i % 3 === 0 ? 'On Leave' : 'Active',
-      startDate: `2023-0${(i % 9) + 1}-15`,
-      manager: `Manager ${Math.floor(i / 5) + 1}`,
-    })),
-    size: 'normal',
-    fixedHeader: true,
-    scrollConfig: {x: 800, y: 400},
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Fixed Header with Horizontal & Vertical Scroll</h3>
-      <p style="margin-bottom: 1rem; color: #666;">
-        Scroll in both directions - header remains sticky!
-      </p>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}
-        ?fixedHeader=${args.fixedHeader}
-        .scrollConfig=${args.scrollConfig}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
- * Large dataset with fixed header for performance demonstration.
- * Shows how fixed header handles many rows efficiently.
- */
-export const FixedHeaderLargeDataset: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: Array.from({length: 100}, (_, i) => ({
-      name: `User ${String(i + 1).padStart(3, '0')}`,
-      email: `user${String(i + 1).padStart(3, '0')}@example.com`,
-      role: ['Developer', 'Designer', 'Manager', 'Tester', 'Analyst', 'Admin'][i % 6],
-      status: i % 4 === 0 ? 'Inactive' : 'Active',
-    })),
-    size: 'normal',
-    fixedHeader: true,
-    scrollConfig: {y: 500},
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Fixed Header with 100 Rows</h3>
-      <p style="margin-bottom: 1rem; color: #666;">
-        Scroll through 100 rows with smooth fixed header performance.
-      </p>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}
-        ?fixedHeader=${args.fixedHeader}
-        .scrollConfig=${args.scrollConfig}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
- * Comparison: With and Without Fixed Header.
- * Side-by-side comparison to show the difference.
- */
-export const FixedHeaderComparison: Story = {
-  args: {
-    headers: sampleHeaders,
-    rows: Array.from({length: 30}, (_, i) => ({
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
-      status: i % 3 === 0 ? 'Inactive' : 'Active',
-    })),
-    size: 'normal',
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Comparison: Fixed Header ON vs OFF</h3>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
-        <div>
-          <h4 style="margin-bottom: 0.5rem; color: #0f62fe;">❌ Without Fixed Header</h4>
-          <p style="margin-bottom: 1rem; color: #666; font-size: 0.875rem;">
-            Header scrolls away with content
-          </p>
-          <nr-table
-            .headers=${args.headers}
-            .rows=${args.rows}
-            size=${args.size}
-            .scrollConfig=${{y: 300}}>
-          </nr-table>
-        </div>
-        
-        <div>
-          <h4 style="margin-bottom: 0.5rem; color: #198038;">✅ With Fixed Header</h4>
-          <p style="margin-bottom: 1rem; color: #666; font-size: 0.875rem;">
-            Header stays visible while scrolling
-          </p>
-          <nr-table
-            .headers=${args.headers}
-            .rows=${args.rows}
-            size=${args.size}
-            fixedHeader
-            .scrollConfig=${{y: 300}}>
-          </nr-table>
-        </div>
-      </div>
-    </div>
-  `,
-};
-
 // ============================================
 // Column Filters Feature Stories
 // ============================================
-
-/**
- * Table with text-based column filters.
- * Users can filter data by typing in column-specific filter inputs.
- */
-export const ColumnFiltersText: Story = {
-  args: {
-    headers: [
-      {
-        name: 'Name',
-        key: 'name',
-        filterable: true,
-        filterConfig: {
-          type: 'text',
-          placeholder: 'Search name...',
-        },
-      },
-      {
-        name: 'Email',
-        key: 'email',
-        filterable: true,
-        filterConfig: {
-          type: 'text',
-          placeholder: 'Search email...',
-        },
-      },
-      {
-        name: 'Role',
-        key: 'role',
-        filterable: true,
-        filterConfig: {
-          type: 'text',
-          placeholder: 'Search role...',
-        },
-      },
-      {name: 'Status', key: 'status'},
-    ],
-    rows: Array.from({length: 25}, (_, i) => ({
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      role: ['Developer', 'Designer', 'Manager', 'Tester', 'Analyst'][i % 5],
-      status: i % 3 === 0 ? 'Inactive' : 'Active',
-    })),
-    size: 'normal',
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Column Filters - Text Search</h3>
-      <p style="margin-bottom: 1rem; color: #666;">
-        Click the filter icon in the header to filter by Name, Email, or Role.
-        Type to search and see results update instantly.
-      </p>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
- * Table with select-based column filters.
- * Users can filter data by selecting from predefined options.
- */
-export const ColumnFiltersSelect: Story = {
-  args: {
-    headers: [
-      {name: 'Name', key: 'name'},
-      {name: 'Email', key: 'email'},
-      {
-        name: 'Role',
-        key: 'role',
-        filterable: true,
-        filterConfig: {
-          type: 'select',
-          placeholder: 'Select role...',
-          options: [
-            {label: 'All Roles', value: ''},
-            {label: 'Developer', value: 'Developer'},
-            {label: 'Designer', value: 'Designer'},
-            {label: 'Manager', value: 'Manager'},
-            {label: 'Tester', value: 'Tester'},
-          ],
-        },
-      },
-      {
-        name: 'Status',
-        key: 'status',
-        filterable: true,
-        filterConfig: {
-          type: 'select',
-          placeholder: 'Select status...',
-          options: [
-            {label: 'All', value: ''},
-            {label: 'Active', value: 'Active'},
-            {label: 'Inactive', value: 'Inactive'},
-          ],
-        },
-      },
-    ],
-    rows: Array.from({length: 30}, (_, i) => ({
-      name: `Employee ${i + 1}`,
-      email: `emp${i + 1}@company.com`,
-      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
-      status: i % 3 === 0 ? 'Inactive' : 'Active',
-    })),
-    size: 'normal',
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Column Filters - Select Dropdown</h3>
-      <p style="margin-bottom: 1rem; color: #666;">
-        Use dropdown filters to select specific Role or Status values.
-        Perfect for categorical data with known options.
-      </p>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}>
-      </nr-table>
-    </div>
-  `,
-};
 
 /**
  * Table with multiple column filters active simultaneously.
@@ -832,90 +430,6 @@ export const ColumnFiltersMultiple: Story = {
 };
 
 /**
- * Table with column filters and fixed header combined.
- * Shows how filters work with scrollable tables.
- */
-export const ColumnFiltersWithFixedHeader: Story = {
-  args: {
-    headers: [
-      {
-        name: 'ID',
-        key: 'id',
-        filterable: true,
-        filterConfig: {
-          type: 'number',
-          placeholder: 'Filter ID...',
-        },
-      },
-      {
-        name: 'Name',
-        key: 'name',
-        filterable: true,
-        filterConfig: {
-          type: 'text',
-          placeholder: 'Search name...',
-        },
-      },
-      {
-        name: 'Category',
-        key: 'category',
-        filterable: true,
-        filterConfig: {
-          type: 'select',
-          placeholder: 'Select category...',
-          options: [
-            {label: 'All', value: ''},
-            {label: 'Electronics', value: 'Electronics'},
-            {label: 'Furniture', value: 'Furniture'},
-            {label: 'Clothing', value: 'Clothing'},
-            {label: 'Books', value: 'Books'},
-          ],
-        },
-      },
-      {
-        name: 'Status',
-        key: 'status',
-        filterable: true,
-        filterConfig: {
-          type: 'select',
-          placeholder: 'Select status...',
-          options: [
-            {label: 'All', value: ''},
-            {label: 'Available', value: 'Available'},
-            {label: 'Out of Stock', value: 'Out of Stock'},
-          ],
-        },
-      },
-    ],
-    rows: Array.from({length: 50}, (_, i) => ({
-      id: i + 1,
-      name: `Product ${i + 1}`,
-      category: ['Electronics', 'Furniture', 'Clothing', 'Books'][i % 4],
-      status: i % 5 === 0 ? 'Out of Stock' : 'Available',
-    })),
-    size: 'normal',
-    fixedHeader: true,
-    scrollConfig: {y: 400},
-  },
-  render: (args) => html`
-    <div style="padding: 1rem;">
-      <h3 style="margin-bottom: 1rem;">Column Filters with Fixed Header</h3>
-      <p style="margin-bottom: 1rem; color: #666;">
-        Filters remain accessible in the sticky header while scrolling through results.
-        Try filtering and scrolling to see both features work together!
-      </p>
-      <nr-table
-        .headers=${args.headers}
-        .rows=${args.rows}
-        size=${args.size}
-        ?fixedHeader=${args.fixedHeader}
-        .scrollConfig=${args.scrollConfig}>
-      </nr-table>
-    </div>
-  `,
-};
-
-/**
  * Table with mixed filter types (text, select, number).
  * Demonstrates the flexibility of the column filter system.
  */
@@ -984,6 +498,148 @@ export const ColumnFiltersMixedTypes: Story = {
         .headers=${args.headers}
         .rows=${args.rows}
         size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+// ============================================
+// Fixed Columns Feature Stories
+// ============================================
+
+// Story: Fixed Columns Right
+export const FixedColumnsRight: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name', width: 180},
+      {name: 'Department', key: 'department', width: 150},
+      {name: 'Email', key: 'email', width: 250},
+      {name: 'Position', key: 'position', width: 150},
+      {name: 'Location', key: 'location', width: 150},
+      {name: 'Join Date', key: 'joinDate', width: 150},
+      {name: 'Salary', key: 'salary', width: 120},
+      {name: 'Status', key: 'status', width: 120, fixed: 'right'},
+      {name: 'Actions', key: 'actions', width: 120, fixed: 'right'},
+    ],
+    rows: Array.from({length: 25}, (_, i) => ({
+      id: i + 1,
+      name: `Employee ${i + 1}`,
+      department: ['Engineering', 'Design', 'Product', 'Sales'][i % 4],
+      email: `employee${i + 1}@company.com`,
+      position: ['Senior', 'Mid', 'Junior', 'Lead'][i % 4],
+      location: ['New York', 'London', 'Tokyo', 'Berlin'][i % 4],
+      joinDate: `202${i % 5}-0${(i % 9) + 1}-15`,
+      salary: `$${(50 + i * 5)}K`,
+      status: i % 5 === 0 ? 'On Leave' : 'Active',
+      actions: '⋮',
+    })),
+    size: 'normal',
+    scrollConfig: {x: 1200},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Columns on the Right</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Status and Actions columns are fixed on the right side. 
+        Scroll horizontally to see that these columns remain visible while viewing other data.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+// Story: Fixed Columns Both Sides
+export const FixedColumnsBothSides: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name', width: 180, fixed: 'left'},
+      {name: 'Department', key: 'department', width: 150},
+      {name: 'Email', key: 'email', width: 250},
+      {name: 'Position', key: 'position', width: 150},
+      {name: 'Location', key: 'location', width: 150},
+      {name: 'Join Date', key: 'joinDate', width: 150},
+      {name: 'Salary', key: 'salary', width: 120},
+      {name: 'Status', key: 'status', width: 120, fixed: 'right'},
+      {name: 'Actions', key: 'actions', width: 120, fixed: 'right'},
+    ],
+    rows: Array.from({length: 25}, (_, i) => ({
+      id: i + 1,
+      name: `Employee ${i + 1}`,
+      department: ['Engineering', 'Design', 'Product', 'Sales'][i % 4],
+      email: `employee${i + 1}@company.com`,
+      position: ['Senior', 'Mid', 'Junior', 'Lead'][i % 4],
+      location: ['New York', 'London', 'Tokyo', 'Berlin'][i % 4],
+      joinDate: `202${i % 5}-0${(i % 9) + 1}-15`,
+      salary: `$${(50 + i * 5)}K`,
+      status: i % 5 === 0 ? 'On Leave' : 'Active',
+      actions: '⋮',
+    })),
+    size: 'normal',
+    scrollConfig: {x: 1200},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Columns on Both Sides</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Name is fixed on the left, Status and Actions are fixed on the right.
+        Scroll horizontally to see both fixed columns remain visible while the middle columns scroll.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+// Story: Fixed Columns Both Sides + Fixed Header
+export const FixedColumnsBothSidesWithHeader: Story = {
+  args: {
+    headers: [
+      {name: 'SKU', key: 'sku', width: 150, fixed: 'left'},
+      {name: 'Product Name', key: 'name', width: 250},
+      {name: 'Category', key: 'category', width: 150},
+      {name: 'Description', key: 'description', width: 300},
+      {name: 'Supplier', key: 'supplier', width: 180},
+      {name: 'Price', key: 'price', width: 100},
+      {name: 'Stock', key: 'stock', width: 100},
+      {name: 'Status', key: 'status', width: 120, fixed: 'right'},
+    ],
+    rows: Array.from({length: 40}, (_, i) => ({
+      id: i + 1,
+      sku: `SKU-${1000 + i}`,
+      name: `Product ${i + 1}`,
+      category: ['Electronics', 'Furniture', 'Clothing', 'Food'][i % 4],
+      description: `High quality ${['electronics', 'furniture', 'clothing', 'food'][i % 4]} product with excellent features and durability.`,
+      supplier: `Supplier ${(i % 10) + 1}`,
+      price: `$${(10 + i * 2)}`,
+      stock: (100 + i * 3).toString(),
+      status: i % 7 === 0 ? 'Out of Stock' : 'In Stock',
+    })),
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {x: 1200, y: 400},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Columns Both Sides + Fixed Header</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        SKU fixed on left, Status fixed on right, and header is fixed on top.
+        Scroll both horizontally and vertically to see all three features working together!
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}>
       </nr-table>
     </div>
   `,
