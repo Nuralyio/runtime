@@ -26,6 +26,9 @@ export interface TableHost {
   rowsCopy: any[];
   activeSearch: boolean;
   sortAttribute: SortAttribute;
+  filterValue: string;
+  columnFilters: Map<string, string | number>;
+  activeFilterColumn: string | null;
   
   // Methods
   requestUpdate(): void;

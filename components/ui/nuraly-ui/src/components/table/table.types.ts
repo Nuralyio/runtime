@@ -1,9 +1,38 @@
 /**
+ * Column filter types
+ */
+export const enum FilterType {
+  Text = 'text',
+  Select = 'select',
+  Number = 'number',
+  Date = 'date',
+}
+
+/**
+ * Column filter configuration
+ */
+export interface ColumnFilter {
+  type: FilterType;
+  placeholder?: string;
+  options?: Array<{ label: string; value: string | number }>;
+}
+
+/**
+ * Active filter state for a column
+ */
+export interface ActiveColumnFilter {
+  columnKey: string;
+  value: string | number | null;
+}
+
+/**
  * Table header configuration
  */
 export interface IHeader {
   name: string;
   key: string;
+  filterable?: boolean;
+  filterConfig?: ColumnFilter;
 }
 
 /**

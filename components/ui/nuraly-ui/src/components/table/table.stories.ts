@@ -615,3 +615,376 @@ export const FixedHeaderComparison: Story = {
     </div>
   `,
 };
+
+// ============================================
+// Column Filters Feature Stories
+// ============================================
+
+/**
+ * Table with text-based column filters.
+ * Users can filter data by typing in column-specific filter inputs.
+ */
+export const ColumnFiltersText: Story = {
+  args: {
+    headers: [
+      {
+        name: 'Name',
+        key: 'name',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Search name...',
+        },
+      },
+      {
+        name: 'Email',
+        key: 'email',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Search email...',
+        },
+      },
+      {
+        name: 'Role',
+        key: 'role',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Search role...',
+        },
+      },
+      {name: 'Status', key: 'status'},
+    ],
+    rows: Array.from({length: 25}, (_, i) => ({
+      name: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester', 'Analyst'][i % 5],
+      status: i % 3 === 0 ? 'Inactive' : 'Active',
+    })),
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Column Filters - Text Search</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Click the filter icon in the header to filter by Name, Email, or Role.
+        Type to search and see results update instantly.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with select-based column filters.
+ * Users can filter data by selecting from predefined options.
+ */
+export const ColumnFiltersSelect: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name'},
+      {name: 'Email', key: 'email'},
+      {
+        name: 'Role',
+        key: 'role',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Select role...',
+          options: [
+            {label: 'All Roles', value: ''},
+            {label: 'Developer', value: 'Developer'},
+            {label: 'Designer', value: 'Designer'},
+            {label: 'Manager', value: 'Manager'},
+            {label: 'Tester', value: 'Tester'},
+          ],
+        },
+      },
+      {
+        name: 'Status',
+        key: 'status',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Select status...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'Active', value: 'Active'},
+            {label: 'Inactive', value: 'Inactive'},
+          ],
+        },
+      },
+    ],
+    rows: Array.from({length: 30}, (_, i) => ({
+      name: `Employee ${i + 1}`,
+      email: `emp${i + 1}@company.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
+      status: i % 3 === 0 ? 'Inactive' : 'Active',
+    })),
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Column Filters - Select Dropdown</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Use dropdown filters to select specific Role or Status values.
+        Perfect for categorical data with known options.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with multiple column filters active simultaneously.
+ * Demonstrates combining filters across different columns.
+ */
+export const ColumnFiltersMultiple: Story = {
+  args: {
+    headers: [
+      {
+        name: 'Name',
+        key: 'name',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Filter name...',
+        },
+      },
+      {
+        name: 'Department',
+        key: 'department',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Filter department...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'Engineering', value: 'Engineering'},
+            {label: 'Design', value: 'Design'},
+            {label: 'Product', value: 'Product'},
+            {label: 'Sales', value: 'Sales'},
+          ],
+        },
+      },
+      {
+        name: 'Level',
+        key: 'level',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Filter level...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'Junior', value: 'Junior'},
+            {label: 'Mid', value: 'Mid'},
+            {label: 'Senior', value: 'Senior'},
+          ],
+        },
+      },
+      {
+        name: 'Status',
+        key: 'status',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Filter status...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'Active', value: 'Active'},
+            {label: 'On Leave', value: 'On Leave'},
+            {label: 'Inactive', value: 'Inactive'},
+          ],
+        },
+      },
+    ],
+    rows: Array.from({length: 40}, (_, i) => ({
+      name: `Employee ${String(i + 1).padStart(2, '0')}`,
+      department: ['Engineering', 'Design', 'Product', 'Sales'][i % 4],
+      level: ['Junior', 'Mid', 'Senior'][i % 3],
+      status: ['Active', 'On Leave', 'Inactive'][i % 3],
+    })),
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Column Filters - Multiple Active Filters</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Apply filters to multiple columns simultaneously. All filters work together (AND logic).
+        Active filters show a blue indicator dot.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with column filters and fixed header combined.
+ * Shows how filters work with scrollable tables.
+ */
+export const ColumnFiltersWithFixedHeader: Story = {
+  args: {
+    headers: [
+      {
+        name: 'ID',
+        key: 'id',
+        filterable: true,
+        filterConfig: {
+          type: 'number',
+          placeholder: 'Filter ID...',
+        },
+      },
+      {
+        name: 'Name',
+        key: 'name',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Search name...',
+        },
+      },
+      {
+        name: 'Category',
+        key: 'category',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Select category...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'Electronics', value: 'Electronics'},
+            {label: 'Furniture', value: 'Furniture'},
+            {label: 'Clothing', value: 'Clothing'},
+            {label: 'Books', value: 'Books'},
+          ],
+        },
+      },
+      {
+        name: 'Status',
+        key: 'status',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Select status...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'Available', value: 'Available'},
+            {label: 'Out of Stock', value: 'Out of Stock'},
+          ],
+        },
+      },
+    ],
+    rows: Array.from({length: 50}, (_, i) => ({
+      id: i + 1,
+      name: `Product ${i + 1}`,
+      category: ['Electronics', 'Furniture', 'Clothing', 'Books'][i % 4],
+      status: i % 5 === 0 ? 'Out of Stock' : 'Available',
+    })),
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {y: 400},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Column Filters with Fixed Header</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Filters remain accessible in the sticky header while scrolling through results.
+        Try filtering and scrolling to see both features work together!
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with mixed filter types (text, select, number).
+ * Demonstrates the flexibility of the column filter system.
+ */
+export const ColumnFiltersMixedTypes: Story = {
+  args: {
+    headers: [
+      {
+        name: 'Order ID',
+        key: 'orderId',
+        filterable: true,
+        filterConfig: {
+          type: 'number',
+          placeholder: 'Filter by order ID...',
+        },
+      },
+      {
+        name: 'Customer',
+        key: 'customer',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Search customer...',
+        },
+      },
+      {
+        name: 'Product',
+        key: 'product',
+        filterable: true,
+        filterConfig: {
+          type: 'text',
+          placeholder: 'Search product...',
+        },
+      },
+      {
+        name: 'Priority',
+        key: 'priority',
+        filterable: true,
+        filterConfig: {
+          type: 'select',
+          placeholder: 'Select priority...',
+          options: [
+            {label: 'All', value: ''},
+            {label: 'High', value: 'High'},
+            {label: 'Medium', value: 'Medium'},
+            {label: 'Low', value: 'Low'},
+          ],
+        },
+      },
+    ],
+    rows: Array.from({length: 35}, (_, i) => ({
+      orderId: 1000 + i,
+      customer: `Customer ${String.fromCharCode(65 + (i % 26))}`,
+      product: `Product ${['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'][i % 5]}`,
+      priority: ['High', 'Medium', 'Low'][i % 3],
+    })),
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Column Filters - Mixed Types</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Different filter types for different data: number input for Order ID, 
+        text search for Customer/Product, and dropdown for Priority.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};

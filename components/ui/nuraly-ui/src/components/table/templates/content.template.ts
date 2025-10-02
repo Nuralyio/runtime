@@ -2,6 +2,7 @@ import { html, nothing, TemplateResult } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { choose } from 'lit/directives/choose.js';
 import { IHeader, SelectionMode, SortAttribute, SortOrder } from '../table.types.js';
+import { renderColumnFilterTemplate, renderFilterIcon } from './column-filter.template.js';
 
 export interface ContentTemplateData {
   headers: IHeader[];
@@ -13,12 +14,17 @@ export interface ContentTemplateData {
   itemPerPage: number;
   sortAttribute: SortAttribute;
   expand: boolean[];
+  columnFilters: Map<string, string | number>;
+  activeFilterColumn: string | null;
   globalCheckRef?: (el: HTMLInputElement | null) => void;
   onCheckAll: () => void;
   onCheckOne: (event: Event, index: number) => void;
   onSelectOne: (index: number) => void;
   onUpdateSort: (index: number) => void;
   onShowExpandedContent: (index: number) => void;
+  onToggleColumnFilter: (columnKey: string) => void;
+  onApplyColumnFilter: (columnKey: string, value: string | number) => void;
+  onClearColumnFilter: (columnKey: string) => void;
 }
 
 /**
@@ -46,17 +52,47 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
             (header: IHeader, index) =>
               html`
                 ${data.expandable !== header.key
-                  ? html`<th @click=${() => data.onUpdateSort(index)}>
-                      <span>
-                        ${header.name}
-                        ${index === data.sortAttribute.index
-                          ? choose(data.sortAttribute.order, [
-                              [SortOrder.Default, () => html`<nr-icon name="arrows-v"></nr-icon>`],
-                              [SortOrder.Ascending, () => html`<nr-icon name="long-arrow-up"></nr-icon>`],
-                              [SortOrder.Descending, () => html`<nr-icon name="long-arrow-down"></nr-icon>`],
-                            ])
-                          : html`<nr-icon name="arrows-v"></nr-icon>`}
-                      </span>
+                  ? html`<th class="${header.filterable ? 'filterable' : ''}">
+                      <div class="th-content">
+                        <span class="th-text" @click=${() => data.onUpdateSort(index)}>
+                          ${header.name}
+                          ${index === data.sortAttribute.index
+                            ? choose(data.sortAttribute.order, [
+                                [SortOrder.Default, () => html`<nr-icon name="arrows-v"></nr-icon>`],
+                                [SortOrder.Ascending, () => html`<nr-icon name="long-arrow-up"></nr-icon>`],
+                                [SortOrder.Descending, () => html`<nr-icon name="long-arrow-down"></nr-icon>`],
+                              ])
+                            : html`<nr-icon name="arrows-v"></nr-icon>`}
+                        </span>
+                        ${header.filterable && header.filterConfig
+                          ? html`
+                              <div class="filter-wrapper">
+                                <button 
+                                  class="filter-trigger"
+                                  @click=${(e: Event) => {
+                                    e.stopPropagation();
+                                    data.onToggleColumnFilter(header.key);
+                                  }}
+                                >
+                                  ${renderFilterIcon(
+                                    data.activeFilterColumn === header.key,
+                                    data.columnFilters.has(header.key)
+                                  )}
+                                </button>
+                                ${data.activeFilterColumn === header.key
+                                  ? renderColumnFilterTemplate({
+                                      columnKey: header.key,
+                                      filterConfig: header.filterConfig,
+                                      currentValue: data.columnFilters.get(header.key),
+                                      isActive: true,
+                                      onFilterChange: (value) => data.onApplyColumnFilter(header.key, value),
+                                      onClearFilter: () => data.onClearColumnFilter(header.key),
+                                    })
+                                  : nothing}
+                              </div>
+                            `
+                          : nothing}
+                      </div>
                     </th>`
                   : nothing}
               `
