@@ -15,21 +15,21 @@ import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
 // Import types
 import {
-    SelectOption,
-    SelectType,
-    SelectSize,
-    SelectStatus
+  SelectOption,
+  SelectType,
+  SelectSize,
+  SelectStatus
 } from './select.types.js';
 
 // Import controllers
 import {
-    SelectSelectionController,
-    SelectKeyboardController,
-    SelectDropdownController,
-    SelectFocusController,
-    SelectValidationController,
-    SelectSearchController,
-    SelectEventController
+  SelectSelectionController,
+  SelectKeyboardController,
+  SelectDropdownController,
+  SelectFocusController,
+  SelectValidationController,
+  SelectSearchController,
+  SelectEventController
 } from './controllers/index.js';
 
 // Import interfaces
@@ -61,8 +61,8 @@ import { SelectHost } from './interfaces/index.js';
  * <!-- With search functionality -->
  * <hy-select searchable search-placeholder="Search options..."></hy-select>
  * 
- * <!-- Without clear button -->
- * <hy-select clearable="false"></hy-select>
+ * <!-- With clear button -->
+ * <hy-select clearable></hy-select>
  * ```
  * 
  * @fires nr-change - Selection changed
@@ -158,7 +158,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   
   /** Enable clear button to clear all selections */
   @property({ type: Boolean, reflect: true })
-  clearable: boolean = true;
+  clearable: boolean = false;
   
   /** Placeholder text for the search input */
   @property({ type: String, attribute: 'search-placeholder' })
