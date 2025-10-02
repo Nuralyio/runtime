@@ -78,6 +78,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @state() expand: boolean[] = [];
   @state() showFilterInput = false;
   @state() filterValue = EMPTY_STRING;
+  @state() columnFilters: Map<string, string | number> = new Map();
+  @state() activeFilterColumn: string | null = null;
 
   @query('#global-check')
   globalCheck?: HTMLElement;
@@ -282,6 +284,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           itemPerPage: this.selectedItemPerPage,
           sortAttribute: this.sortAttribute,
           expand: this.expand,
+          columnFilters: this.columnFilters,
+          activeFilterColumn: this.activeFilterColumn,
           onCheckAll: () => {
             const startIndex = (this.currentPage - 1) * this.selectedItemPerPage;
             const endIndex = Math.min(startIndex + this.selectedItemPerPage, this.selectedItems.length);
@@ -292,7 +296,10 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           onCheckOne: (e, index) => this._handleCheckOne({ detail: { index, value: (e as CustomEvent).detail.checked } } as CustomEvent),
           onSelectOne: (index) => this._handleSelectOne({ detail: { index } } as CustomEvent),
           onUpdateSort: (index) => this._handleSortOrder({ detail: { index } } as CustomEvent),
-          onShowExpandedContent: (index) => this._showExpandedContent(index)
+          onShowExpandedContent: (index) => this._showExpandedContent(index),
+          onToggleColumnFilter: (columnKey) => this.filterController.toggleColumnFilterDropdown(columnKey),
+          onApplyColumnFilter: (columnKey, value) => this.filterController.applyColumnFilter(columnKey, value),
+          onClearColumnFilter: (columnKey) => this.filterController.clearColumnFilter(columnKey)
         })}
       </div>
 

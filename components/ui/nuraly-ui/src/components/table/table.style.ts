@@ -291,4 +291,113 @@ export default css`
   .pagination-container[data-size='large'] .icon-container .right-arrow {
     padding: 15px;
   }
+
+  /* Column Filter Styles */
+  th .th-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    position: relative;
+  }
+
+  th .th-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+
+  th .filter-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .filter-trigger {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .filter-trigger:hover {
+    background-color: var(--nuraly-table-filter-hover, rgba(0, 0, 0, 0.04));
+  }
+
+  .filter-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filter-icon.has-filter {
+    color: var(--nuraly-table-filter-active, #1890ff);
+  }
+
+  .filter-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--nuraly-table-filter-active, #1890ff);
+  }
+
+  .column-filter-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--nuraly-table-background, #ffffff);
+    border: 1px solid var(--nuraly-table-row-border-color, #f0f0f0);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    min-width: 200px;
+    padding: 8px;
+  }
+
+  .column-filter-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .column-filter-input {
+    padding: 8px;
+    border: 1px solid var(--nuraly-table-row-border-color, #d9d9d9);
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .column-filter-input:focus {
+    outline: none;
+    border-color: var(--nuraly-table-filter-active, #1890ff);
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+
+  .column-filter-clear {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--nuraly-table-text-color, #000);
+    align-self: flex-end;
+  }
+
+  .column-filter-clear:hover {
+    color: var(--nuraly-table-filter-active, #1890ff);
+  }
 `;
