@@ -94,6 +94,23 @@ const meta: Meta = {
         defaultValue: {summary: 'undefined'},
       },
     },
+    fixedHeader: {
+      control: {type: 'boolean'},
+      description: 'Enable sticky header that remains visible while scrolling',
+      table: {
+        category: 'Features',
+        defaultValue: {summary: 'false'},
+      },
+    },
+    scrollConfig: {
+      control: {type: 'object'},
+      description: 'Scroll configuration for table dimensions (x and y)',
+      table: {
+        category: 'Features',
+        defaultValue: {summary: 'undefined'},
+        type: {summary: '{ x?: number | string; y?: number | string }'},
+      },
+    },
   },
 };
 
@@ -359,4 +376,242 @@ export const DefaultDark: Story = {
   parameters: {
     backgrounds: {default: 'dark'},
   },
+};
+
+// ============================================
+// Fixed Header Feature Stories
+// ============================================
+
+/**
+ * Table with fixed header and vertical scrolling.
+ * The header remains visible while scrolling through rows.
+ * Useful for long tables where you need to reference column headers.
+ */
+export const FixedHeaderBasic: Story = {
+  args: {
+    headers: sampleHeaders,
+    rows: Array.from({length: 50}, (_, i) => ({
+      name: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
+      status: i % 3 === 0 ? 'Inactive' : 'Active',
+    })),
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {y: 400},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Header with Vertical Scroll (400px height)</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Try scrolling - the header stays fixed at the top!
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with fixed header and smaller scroll height.
+ * Demonstrates compact fixed header for limited space.
+ */
+export const FixedHeaderCompact: Story = {
+  args: {
+    headers: sampleHeaders,
+    rows: Array.from({length: 30}, (_, i) => ({
+      name: `Employee ${i + 1}`,
+      email: `emp${i + 1}@company.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
+      status: i % 2 === 0 ? 'Active' : 'Inactive',
+    })),
+    size: 'small',
+    fixedHeader: true,
+    scrollConfig: {y: 250},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Compact Fixed Header (250px height, small size)</h3>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with fixed header and selection mode.
+ * Shows how fixed header works with row selection.
+ */
+export const FixedHeaderWithSelection: Story = {
+  args: {
+    headers: sampleHeaders,
+    rows: Array.from({length: 40}, (_, i) => ({
+      name: `Person ${i + 1}`,
+      email: `person${i + 1}@domain.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
+      status: i % 3 === 0 ? 'Inactive' : 'Active',
+    })),
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {y: 350},
+    selectionMode: 'multiple',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Header with Multiple Selection</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Select rows and scroll - header with checkbox stays visible!
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}
+        selectionMode=${args.selectionMode}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Table with fixed header and wider columns requiring horizontal scroll.
+ * Demonstrates both vertical and horizontal scrolling.
+ */
+export const FixedHeaderWithHorizontalScroll: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name'},
+      {name: 'Email Address', key: 'email'},
+      {name: 'Role', key: 'role'},
+      {name: 'Department', key: 'department'},
+      {name: 'Location', key: 'location'},
+      {name: 'Status', key: 'status'},
+      {name: 'Start Date', key: 'startDate'},
+      {name: 'Manager', key: 'manager'},
+    ],
+    rows: Array.from({length: 35}, (_, i) => ({
+      name: `Employee Name ${i + 1}`,
+      email: `employee${i + 1}@organization.com`,
+      role: ['Senior Developer', 'UI/UX Designer', 'Product Manager', 'QA Engineer'][i % 4],
+      department: ['Engineering', 'Design', 'Product', 'Quality'][i % 4],
+      location: ['New York', 'London', 'Tokyo', 'Sydney'][i % 4],
+      status: i % 3 === 0 ? 'On Leave' : 'Active',
+      startDate: `2023-0${(i % 9) + 1}-15`,
+      manager: `Manager ${Math.floor(i / 5) + 1}`,
+    })),
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {x: 800, y: 400},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Header with Horizontal & Vertical Scroll</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Scroll in both directions - header remains sticky!
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Large dataset with fixed header for performance demonstration.
+ * Shows how fixed header handles many rows efficiently.
+ */
+export const FixedHeaderLargeDataset: Story = {
+  args: {
+    headers: sampleHeaders,
+    rows: Array.from({length: 100}, (_, i) => ({
+      name: `User ${String(i + 1).padStart(3, '0')}`,
+      email: `user${String(i + 1).padStart(3, '0')}@example.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester', 'Analyst', 'Admin'][i % 6],
+      status: i % 4 === 0 ? 'Inactive' : 'Active',
+    })),
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {y: 500},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Fixed Header with 100 Rows</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Scroll through 100 rows with smooth fixed header performance.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        ?fixedHeader=${args.fixedHeader}
+        .scrollConfig=${args.scrollConfig}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Comparison: With and Without Fixed Header.
+ * Side-by-side comparison to show the difference.
+ */
+export const FixedHeaderComparison: Story = {
+  args: {
+    headers: sampleHeaders,
+    rows: Array.from({length: 30}, (_, i) => ({
+      name: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      role: ['Developer', 'Designer', 'Manager', 'Tester'][i % 4],
+      status: i % 3 === 0 ? 'Inactive' : 'Active',
+    })),
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Comparison: Fixed Header ON vs OFF</h3>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+        <div>
+          <h4 style="margin-bottom: 0.5rem; color: #0f62fe;">❌ Without Fixed Header</h4>
+          <p style="margin-bottom: 1rem; color: #666; font-size: 0.875rem;">
+            Header scrolls away with content
+          </p>
+          <nr-table
+            .headers=${args.headers}
+            .rows=${args.rows}
+            size=${args.size}
+            .scrollConfig=${{y: 300}}>
+          </nr-table>
+        </div>
+        
+        <div>
+          <h4 style="margin-bottom: 0.5rem; color: #198038;">✅ With Fixed Header</h4>
+          <p style="margin-bottom: 1rem; color: #666; font-size: 0.875rem;">
+            Header stays visible while scrolling
+          </p>
+          <nr-table
+            .headers=${args.headers}
+            .rows=${args.rows}
+            size=${args.size}
+            fixedHeader
+            .scrollConfig=${{y: 300}}>
+          </nr-table>
+        </div>
+      </div>
+    </div>
+  `,
 };

@@ -58,6 +58,33 @@ export default css`
     color: var(--nuraly-table-background, #ffffff);
   }
 
+  /* Fixed Header Styles */
+  .table-content-wrapper.fixed-header {
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  .table-content-wrapper.fixed-header table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table-content-wrapper.fixed-header thead {
+    background-color: var(--nuraly-table-header-background, #fafafa);
+  }
+
+  .table-content-wrapper.fixed-header thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--nuraly-table-header-background, #fafafa);
+    border-bottom: var(--nuraly-table-border-width, 1px) solid var(--nuraly-table-row-border-color, #f0f0f0);
+  }
+
+  .table-content-wrapper.fixed-header thead tr {
+    box-shadow: 0 1px 0 0 var(--nuraly-table-row-border-color, #f0f0f0);
+  }
+
   .actions-container button {
     cursor: pointer;
     border: none;
@@ -121,19 +148,19 @@ export default css`
     --nuraly-icon-color: var(--nuraly-table-text-color);
   }
 
-  tr {
+  tbody tr {
     background-color: var(--nuraly-table-row-background, #ffffff);
   }
 
-  tr:hover {
+  tbody tr:hover {
     background-color: var(--nuraly-table-row-hover-background, #f5f5f5);
   }
 
-  tr:first-child {
+  thead tr {
     background-color: var(--nuraly-table-header-background, #fafafa);
   }
 
-  tr:has(:not(th) > input:checked) {
+  tbody tr:has(input:checked) {
     background-color: var(--nuraly-table-row-selected-background, #e6f7ff);
   }
 

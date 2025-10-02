@@ -29,42 +29,45 @@ export interface ContentTemplateData {
 export function renderContentTemplate(data: ContentTemplateData): TemplateResult {
   return html`
     <table>
-      <tr>
-        ${data.expandable || data.selectionMode
-          ? html`<th>
-              ${data.selectionMode === SelectionMode.Multiple
-                ? html`<nr-checkbox 
-                    id="global-check"
-                    @nr-change=${data.onCheckAll}
-                  ></nr-checkbox>`
-                : nothing}
-            </th>`
-          : nothing}
+      <thead>
+        <tr>
+          ${data.expandable || data.selectionMode
+            ? html`<th>
+                ${data.selectionMode === SelectionMode.Multiple
+                  ? html`<nr-checkbox 
+                      id="global-check"
+                      @nr-change=${data.onCheckAll}
+                    ></nr-checkbox>`
+                  : nothing}
+              </th>`
+            : nothing}
+          ${repeat(
+            data.headers,
+            (header: IHeader, index) =>
+              html`
+                ${data.expandable !== header.key
+                  ? html`<th @click=${() => data.onUpdateSort(index)}>
+                      <span>
+                        ${header.name}
+                        ${index === data.sortAttribute.index
+                          ? choose(data.sortAttribute.order, [
+                              [SortOrder.Default, () => html`<nr-icon name="arrows-v"></nr-icon>`],
+                              [SortOrder.Ascending, () => html`<nr-icon name="long-arrow-up"></nr-icon>`],
+                              [SortOrder.Descending, () => html`<nr-icon name="long-arrow-down"></nr-icon>`],
+                            ])
+                          : html`<nr-icon name="arrows-v"></nr-icon>`}
+                      </span>
+                    </th>`
+                  : nothing}
+              `
+          )}
+        </tr>
+      </thead>
+      <tbody>
         ${repeat(
-          data.headers,
-          (header: IHeader, index) =>
-            html`
-              ${data.expandable !== header.key
-                ? html`<th @click=${() => data.onUpdateSort(index)}>
-                    <span>
-                      ${header.name}
-                      ${index === data.sortAttribute.index
-                        ? choose(data.sortAttribute.order, [
-                            [SortOrder.Default, () => html`<nr-icon name="arrows-v"></nr-icon>`],
-                            [SortOrder.Ascending, () => html`<nr-icon name="long-arrow-up"></nr-icon>`],
-                            [SortOrder.Descending, () => html`<nr-icon name="long-arrow-down"></nr-icon>`],
-                          ])
-                        : html`<nr-icon name="arrows-v"></nr-icon>`}
-                    </span>
-                  </th>`
-                : nothing}
-            `
-        )}
-      </tr>
-      ${repeat(
-        data.rows,
-        (row, index) => html`
-          <tr>
+          data.rows,
+          (row, index) => html`
+            <tr>
             ${data.expandable && !data.selectionMode
               ? html`
                   <td @click=${() => data.onShowExpandedContent(index)} class="expand-icon">
@@ -107,7 +110,8 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
             </tr>
           </tr>
         `
-      )}
+        )}
+      </tbody>
     </table>
   `;
 }

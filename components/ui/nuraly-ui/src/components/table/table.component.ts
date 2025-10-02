@@ -43,7 +43,9 @@ import {
  *   .headers=${headers}
  *   .rows=${data}
  *   size="normal"
- *   selectionMode="multiple">
+ *   selectionMode="multiple"
+ *   fixedHeader
+ *   .scrollConfig=${{ y: 400 }}>
  * </nr-table>
  * ```
  * 
@@ -62,6 +64,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: Boolean }) withFilter = false;
   @property({ type: String }) expandable: string | undefined;
   @property({ type: String }) selectionMode: SelectionMode | undefined;
+  @property({ type: Boolean }) fixedHeader = false;
+  @property({ type: Object }) scrollConfig: { x?: number | string; y?: number | string } | undefined;
 
   @state() itemPerPage = [5, 10, 15, 20];
   @state() selectedItemPerPage = this.itemPerPage[0];
@@ -265,7 +269,9 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           `
         : nothing}
 
-      <div class="table-content-wrapper">
+      <div class="table-content-wrapper ${this.fixedHeader ? 'fixed-header' : ''}" 
+           style="${this.scrollConfig?.y ? `${this.fixedHeader ? 'height' : 'max-height'}: ${typeof this.scrollConfig.y === 'number' ? this.scrollConfig.y + 'px' : this.scrollConfig.y};` : ''}
+                  ${this.scrollConfig?.x ? `${this.fixedHeader ? 'width' : 'max-width'}: ${typeof this.scrollConfig.x === 'number' ? this.scrollConfig.x + 'px' : this.scrollConfig.x};` : ''}">
         ${renderContentTemplate({
           headers: this.headers,
           rows: this.displayedRows,
