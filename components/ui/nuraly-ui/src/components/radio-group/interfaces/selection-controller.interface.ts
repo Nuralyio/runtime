@@ -5,7 +5,7 @@
  */
 
 import { RadioBaseController } from './base-controller.interface.js';
-import { RadioButtonOption } from '../radio.type.js';
+import { RadioButtonOption } from '../radio-group.types.js';
 
 /**
  * Interface for controllers that handle radio button selection logic

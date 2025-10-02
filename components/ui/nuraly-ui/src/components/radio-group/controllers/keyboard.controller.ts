@@ -5,7 +5,7 @@
  */
 
 import { KeyboardController } from '../interfaces/focus-controller.interface.js';
-import { RadioButtonOption } from '../radio.type.js';
+import { RadioButtonOption } from '../radio-group.types.js';
 
 /**
  * Controller that manages keyboard navigation for radio groups

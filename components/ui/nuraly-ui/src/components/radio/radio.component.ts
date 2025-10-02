@@ -4,398 +4,184 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { choose } from 'lit/directives/choose.js';
-import { classMap } from 'lit/directives/class-map.js';
-
-// Import dependencies
-import '../icon/icon.component.js';
-import '../button/button.component.js';
-
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
-import {
-    RadioGroupController,
-    RadioKeyboardController,
-    RadioFocusController,
-    RadioValidationController,
-    RadioRippleController
-} from './controllers/index.js';
+import { LitElement, html } from 'lit';
+import { customElement, property, query } from 'lit/decorators.js';
 import { styles } from './radio.style.js';
-import { RadioButtonType, RadioButtonOption } from './radio.type.js';
-import { ButtonType } from '../button/button.types.js';
+import { RadioSize } from './radio.types.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import '../label/label.component.js';
 
 /**
- * A radio button group component using Reactive Controllers architecture.
- * 
- * Supports multiple display modes:
- * - Default: Traditional radio buttons with labels
- * - Button: Button-style radio group
- * - Slot: Custom HTML content with radio selection
- * 
- * Features:
- * - Theme-aware styling with light/dark mode support
- * - Keyboard navigation (arrow keys, space, enter)
- * - Accessibility compliance
- * - Form validation and integration
- * - Ripple effects on interaction
- * - Modular controller-based architecture
+ * A simple radio button component that can be used standalone or within a form.
+ * For grouped radio buttons with more features, use nr-radio-group instead.
  * 
  * @example
  * ```html
- * <nr-radio-new
- *   .options='[
- *     { value: "option1", label: "Option 1" },
- *     { value: "option2", label: "Option 2" }
- *   ]'
- *   default-value="option1"
- *   direction="horizontal">
- * </nr-radio-new>
+ * <nr-radio name="option" value="1">Option 1</nr-radio>
+ * <nr-radio name="option" value="2" checked>Option 2</nr-radio>
+ * <nr-radio name="option" value="3" disabled>Option 3</nr-radio>
  * ```
  * 
- * @fires change - Dispatched when the selected option changes
+ * @fires change - Dispatched when the radio button is selected
+ * @fires focus - Dispatched when the radio button receives focus
+ * @fires blur - Dispatched when the radio button loses focus
+ * 
+ * @slot default - Radio button label content
  */
+
 @customElement('nr-radio')
 export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
-  override requiredComponents = ['nr-icon'];
+  override requiredComponents = ['nr-label'];
+  
+  /** Whether the radio button is checked */
+  @property({ type: Boolean, reflect: true })
+  checked = false;
 
-  // Properties
-  @property({ type: Array }) options: RadioButtonOption[] = [];
-  @property({ type: String, attribute: 'default-value' }) defaultValue: string = '';
-  @property({ type: String }) value: string = '';
-  @property({ type: String }) name: string = '';
-  @property({ type: String }) direction: 'horizontal' | 'vertical' = 'vertical';
-  @property({ type: String }) type: RadioButtonType = RadioButtonType.Default;
-  @property({ type: Boolean }) required: boolean = false;
-  @property({ type: Boolean }) disabled: boolean = false;
+  /** Whether the radio button is disabled */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
 
-  // Reactive Controllers - PROPERLY implemented now
-  private groupController = new RadioGroupController(this);
-  // @ts-ignore - Controller handles events through listeners, doesn't need direct reference
-  private keyboardController = new RadioKeyboardController(this, this.groupController);
-  // Additional controllers for full functionality
-  private focusController = new RadioFocusController(this);
-  private validationController = new RadioValidationController(this);
-  private rippleController = new RadioRippleController(this);
+  /** Radio button size (small, medium, large) */
+  @property({ reflect: true })
+  size: RadioSize = RadioSize.Medium;
 
-  /**
-   * Get the currently selected option - DELEGATES to controller
-   */
-  get selectedOption(): RadioButtonOption | undefined {
-    return this.groupController.getSelectedOption();
+  /** Form field name - used to group radio buttons */
+  @property({ type: String })
+  name = '';
+
+  /** Form field value */
+  @property({ type: String })
+  value = '';
+
+  /** Radio button ID */
+  @property({ type: String })
+  override id = '';
+
+  /** Tab index */
+  @property({ type: Number })
+  override tabIndex = 0;
+
+  /** Whether the radio button is required */
+  @property({ type: Boolean })
+  required = false;
+
+  @query('input')
+  private inputElement!: HTMLInputElement;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('click', this._handleClick);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', this._handleClick);
+  }
+
+  private _handleClick = (e: Event) => {
+    if (this.disabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if (!this.checked) {
+      this.checked = true;
+      this._uncheckSiblings();
+      this._dispatchChangeEvent();
+    }
+  };
+
+  private _handleInputChange = (e: Event) => {
+    e.stopPropagation();
+    if (this.disabled) return;
+    
+    this.checked = this.inputElement.checked;
+    if (this.checked) {
+      this._uncheckSiblings();
+      this._dispatchChangeEvent();
+    }
+  };
+
+  private _handleFocus = () => {
+    if (this.disabled) return;
+    this.dispatchEvent(new FocusEvent('focus', { bubbles: true, composed: true }));
+  };
+
+  private _handleBlur = () => {
+    if (this.disabled) return;
+    this.dispatchEvent(new FocusEvent('blur', { bubbles: true, composed: true }));
+  };
+
+  private _uncheckSiblings() {
+    if (!this.name) return;
+
+    // Find all radio buttons with the same name in the same root
+    const root = this.getRootNode() as Document | ShadowRoot;
+    const radios = root.querySelectorAll(`nr-radio[name="${this.name}"]`);
+    
+    radios.forEach((radio) => {
+      if (radio !== this && radio instanceof NrRadioElement) {
+        radio.checked = false;
+      }
+    });
+  }
+
+  private _dispatchChangeEvent() {
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: this.value, checked: this.checked },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   /**
-   * Check if an option is selected - DELEGATES to controller
+   * Sets focus on the radio button
    */
-  isOptionSelected(option: RadioButtonOption): boolean {
-    return this.groupController.isOptionSelected(option);
+  override focus() {
+    this.inputElement?.focus();
   }
 
   /**
-   * Check if an option is disabled - DELEGATES to controller
+   * Removes focus from the radio button
    */
-  isOptionDisabled(option: RadioButtonOption): boolean {
-    return this.groupController.isOptionDisabled(option);
+  override blur() {
+    this.inputElement?.blur();
   }
 
-  /**
-   * Handle option selection change - DELEGATES to controller
-   */
-  handleSelectionChange(option: RadioButtonOption): void {
-    this.groupController.selectOption(option);
-  }
-
-  /**
-   * Set focused option by index - DELEGATES to controller
-   */
-  setFocusedOption(index: number): void {
-    this.focusController.setFocusedOption(index);
-  }
-
-  /**
-   * Handle keyboard events - DELEGATES to controller
-   */
-  handleKeyDown(_event: KeyboardEvent): void {
-    // Controller handles keyboard navigation automatically via event listeners
-    // This method exists for template compatibility but delegates to controller
-  }
-
-  /**
-   * Add ripple effect on radio input click - DELEGATES to controller
-   */
-  addRippleEffect(event: Event): void {
-    this.rippleController.addRippleEffect(event);
-  }
-
-  /**
-   * Validate the radio group - DELEGATES to controller
-   */
-  validate(): boolean {
-    return this.validationController.validate();
-  }
-
-  /**
-   * Get validation message - DELEGATES to controller
-   */
-  get validationMessage(): string {
-    return this.validationController.validationMessage;
-  }
-
-  /**
-   * Check if the radio group is valid - DELEGATES to controller
-   */
-  get isValid(): boolean {
-    return this.validationController.isValid;
-  }
-
-  /**
-   * Get form data for form submission - DELEGATES to controller
-   */
-  getFormData(): { [key: string]: string } {
-    return this.validationController.getFormData();
-  }
-
-  /**
-   * Reset the radio group - DELEGATES to controller
-   */
-  reset(): void {
-    this.validationController.reset();
-  }
-
-  /**
-   * FormData integration for native form submission - DELEGATES to controller
-   */
-  get formData(): FormData | null {
-    return this.validationController.getFormDataObject();
-  }
-
-  /**
-   * Check form validity (required for HTML5 form validation)
-   */
-  checkValidity(): boolean {
-    return this.validate();
-  }
-
-  /**
-   * Report form validity (required for HTML5 form validation) - DELEGATES to controller
-   */
-  reportValidity(): boolean {
-    return this.validationController.reportValidity();
-  }
-
-  /**
-   * Programmatically focus the radio group - DELEGATES to controller
-   */
-  override focus(): void {
-    this.focusController.focus();
-  }
-
-  /**
-   * Programmatically blur the radio group - DELEGATES to controller
-   */
-  override blur(): void {
-    this.focusController.blur();
-  }
-
-  /**
-   * Render default radio button style
-   */
-  private renderOptionDefault() {
+  override render() {
     return html`
-      <div 
-        role="radiogroup" 
-        aria-labelledby="radio-group-label"
-        class="radio-group"
-      >
-        ${this.options.map(
-          (option: RadioButtonOption, index: number) => html`
-            <div
-              class="${classMap({
-                'radio-container': true,
-                error: option.state === 'error',
-                warning: option.state === 'warning',
-                [option.className || '']: Boolean(option.className)
-              })}"
-              data-theme="${this.currentTheme}"
-              style="${option.style || ''}"
-              title="${option.title || ''}"
-            >
-              <label class="radio" id="${option.id || option.value}-label">
-                <div class="input-container">
-                  <input
-                    class="radio-input"
-                    type="radio"
-                    role="radio"
-                    name="radioGroup"
-                    .value="${option.value}"
-                    aria-labelledby="${option.value}-label"
-                    aria-describedby="${option.state && option.message ? `${option.value}-message` : nothing}"
-                    tabindex="${this.isOptionSelected(option) ? '0' : '-1'}"
-                    @change="${(e: Event) => { this.addRippleEffect(e); this.handleSelectionChange(option); }}"
-                    @focus="${() => this.setFocusedOption(index)}"
-                    ?checked="${this.isOptionSelected(option)}"
-                    ?disabled="${this.isOptionDisabled(option)}"
-                  />
-                </div>
-                <span>${option.label}</span>
-              </label>
-              ${option.state && option.message
-                ? html`<div class="message-container" id="${option.value}-message">
-                    <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
-                    <span>${option.message}</span>
-                  </div>`
-                : nothing}
-            </div>
-          `
-        )}
+      <div class="radio-wrapper" data-theme="${this.currentTheme}">
+        <input
+          type="radio"
+          class="radio-input"
+          .checked=${this.checked}
+          .disabled=${this.disabled}
+          .name=${this.name}
+          .value=${this.value}
+          .required=${this.required}
+          tabindex=${this.tabIndex}
+          @change=${this._handleInputChange}
+          @focus=${this._handleFocus}
+          @blur=${this._handleBlur}
+          aria-checked=${this.checked}
+          aria-disabled=${this.disabled}
+        />
+        <span class="radio-circle"></span>
+        <nr-label class="radio-label" data-theme="${this.currentTheme}">
+          <slot></slot>
+        </nr-label>
       </div>
     `;
   }
+}
 
-  /**
-   * Render button style radio group
-   */
-  private renderOptionsWithButtons() {
-    return html`
-      <div 
-        class="type-button" 
-        role="radiogroup" 
-        aria-labelledby="radio-group-label"
-        @keydown="${this.handleKeyDown}"
-      >
-        ${this.options.map(
-          (option: RadioButtonOption, index: number) => html`
-            <nr-button
-              class="${this.isOptionSelected(option) ? 'selected' : ''}"
-              type="${this.isOptionSelected(option) ? ButtonType.Primary : ButtonType.Default}"
-              role="radio"
-              aria-checked="${this.isOptionSelected(option)}"
-              aria-describedby="${option.state && option.message ? `${option.value}-message` : nothing}"
-              tabindex="${this.isOptionSelected(option) ? '0' : '-1'}"
-              .icon="${option.icon ? [option.icon] : []}"
-              .disabled="${this.isOptionDisabled(option)}"
-              @click="${() => this.handleSelectionChange(option)}"
-              @focus="${() => this.setFocusedOption(index)}"
-            >
-              ${option.label}
-            </nr-button>
-            ${option.state && option.message
-              ? html`<div class="message-container" id="${option.value}-message">
-                  <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
-                  <span>${option.message}</span>
-                </div>`
-              : nothing}
-          `
-        )}
-      </div>
-    `;
-  }
-
-  /**
-   * Render slot-based radio group (for custom HTML content)
-   */
-  private renderOptionsWithSlots() {
-    return html`
-      <div 
-        role="radiogroup" 
-        aria-labelledby="radio-group-label"
-        class="radio-group slot-group"
-      >
-        ${this.options.map(
-          (option: RadioButtonOption, index: number) => html`
-            <div
-              class="${classMap({
-                'radio-container': true,
-                'slot-container': true,
-                error: option.state === 'error',
-                warning: option.state === 'warning',
-                selected: this.isOptionSelected(option),
-                [option.className || '']: Boolean(option.className)
-              })}"
-              data-theme="${this.currentTheme}"
-              style="${option.style || ''}"
-              title="${option.title || ''}"
-              @click="${() => this.handleSelectionChange(option)}"
-            >
-              <label class="radio slot-radio" id="${option.value}-label">
-                <input
-                  class="radio-input"
-                  type="radio"
-                  role="radio"
-                  name="radioGroup"
-                  .value="${option.value}"
-                  aria-labelledby="${option.value}-label"
-                  aria-describedby="${option.state && option.message ? `${option.value}-message` : nothing}"
-                  tabindex="${this.isOptionSelected(option) ? '0' : '-1'}"
-                  @change="${(e: Event) => { this.addRippleEffect(e); this.handleSelectionChange(option); }}"
-                  @focus="${() => this.setFocusedOption(index)}"
-                  ?checked="${this.isOptionSelected(option)}"
-                  ?disabled="${this.isOptionDisabled(option)}"
-                />
-                <div class="slot-content">
-                  <slot name="${option.value}"></slot>
-                </div>
-              </label>
-              ${option.state && option.message
-                ? html`<div class="message-container" id="${option.value}-message">
-                    <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
-                    <span>${option.message}</span>
-                  </div>`
-                : nothing}
-            </div>
-          `
-        )}
-      </div>
-    `;
-  }
-
-  /**
-   * Render button style with slots
-   */
-  private renderButtonsWithSlots() {
-    return html`
-      <div 
-        class="type-button" 
-        role="radiogroup" 
-        aria-labelledby="radio-group-label"
-        @keydown="${this.handleKeyDown}"
-      >
-        ${this.options.map(
-          (option: RadioButtonOption, index: number) => html`
-            <nr-button
-              class="${this.isOptionSelected(option) ? 'selected' : ''}"
-              type="${this.isOptionSelected(option) ? ButtonType.Primary : ButtonType.Default}"
-              role="radio"
-              aria-checked="${this.isOptionSelected(option)}"
-              aria-describedby="${option.state && option.message ? `${option.value}-message` : nothing}"
-              tabindex="${this.isOptionSelected(option) ? '0' : '-1'}"
-              .disabled="${this.isOptionDisabled(option)}"
-              @click="${() => this.handleSelectionChange(option)}"
-              @focus="${() => this.setFocusedOption(index)}"
-            >
-              <slot name="${option.value}" slot="default"></slot>
-            </nr-button>
-            ${option.state && option.message
-              ? html`<div class="message-container" id="${option.value}-message">
-                  <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
-                  <span>${option.message}</span>
-                </div>`
-              : nothing}
-          `
-        )}
-      </div>
-    `;
-  }
-
-  protected override render() {
-    return html`${choose(this.type, [
-      [RadioButtonType.Default, () => this.renderOptionDefault()],
-      [RadioButtonType.Button, () => this.renderOptionsWithButtons()],
-      [RadioButtonType.Slot, () => this.renderOptionsWithSlots()],
-      ['button-slot', () => this.renderButtonsWithSlots()], // Special case for button with slots
-    ])} `;
+declare global {
+  interface HTMLElementTagNameMap {
+    'nr-radio': NrRadioElement;
   }
 }
