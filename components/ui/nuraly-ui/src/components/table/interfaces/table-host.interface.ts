@@ -16,6 +16,7 @@ export interface TableHost {
   withFilter: boolean;
   expandable?: string;
   selectionMode?: SelectionMode;
+  loading: boolean;
   
   // State
   itemPerPage: number[];

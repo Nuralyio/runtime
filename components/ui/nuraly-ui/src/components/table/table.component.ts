@@ -79,6 +79,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: String }) selectionMode: SelectionMode | undefined;
   @property({ type: Boolean }) fixedHeader = false;
   @property({ type: Object }) scrollConfig: { x?: number | string; y?: number | string } | undefined;
+  @property({ type: Boolean }) loading = false;
 
   @state() itemPerPage = [5, 10, 15, 20];
   @state() selectedItemPerPage = this.itemPerPage[0];
@@ -299,6 +300,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           expand: this.expand,
           columnFilters: this.columnFilters,
           activeFilterColumn: this.activeFilterColumn,
+          loading: this.loading,
+          host: this,
           onCheckAll: () => {
             const startIndex = (this.currentPage - 1) * this.selectedItemPerPage;
             const endIndex = Math.min(startIndex + this.selectedItemPerPage, this.selectedItems.length);

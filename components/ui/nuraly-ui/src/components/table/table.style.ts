@@ -483,4 +483,103 @@ export default css`
   .table-content-wrapper.has-scroll td.fixed-column-right::before {
     box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.15);
   }
+
+  /* ============================================ */
+  /* Loading State Styles */
+  /* ============================================ */
+  
+  /* Skeleton Loading Rows */
+  .skeleton-row {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-cell {
+    padding: var(--nuraly-spacing-3, 0.75rem) var(--nuraly-spacing-4, 1rem);
+    border-bottom: 1px solid var(--nuraly-table-border-color, #f0f0f0);
+  }
+
+  .skeleton-cell.selection-skeleton {
+    width: 48px;
+    text-align: center;
+  }
+
+  .skeleton-checkbox {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 2px;
+    margin: 0 auto;
+  }
+
+  .skeleton-content {
+    height: 16px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    width: 80%;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  /* Spinner Loading */
+  .loading-row {
+    background-color: var(--nuraly-table-row-background, #ffffff);
+  }
+
+  .loading-cell {
+    padding: var(--nuraly-spacing-8, 2rem) var(--nuraly-spacing-4, 1rem);
+    text-align: center;
+    border-bottom: 1px solid var(--nuraly-table-border-color, #f0f0f0);
+  }
+
+  .loading-spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--nuraly-spacing-4, 1rem);
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--nuraly-table-border-color, #f0f0f0);
+    border-top-color: var(--nuraly-color-primary, #1890ff);
+    border-radius: 50%;
+    animation: spinner-rotate 0.8s linear infinite;
+  }
+
+  @keyframes spinner-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-text {
+    margin: 0;
+    color: var(--nuraly-color-text-secondary, #666666);
+    font-size: 14px;
+  }
 `;
+
