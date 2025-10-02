@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {LitElement, PropertyValueMap, html, nothing} from 'lit';
-import {customElement, property, state, query} from 'lit/decorators.js';
-import {NuralyUIBaseMixin} from '../../shared/base-mixin.js';
+import { LitElement, PropertyValueMap, html, nothing } from 'lit';
+import { customElement, property, state, query } from 'lit/decorators.js';
+import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import styles from './table.style.js';
-import {IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, EMPTY_STRING} from './table.types.js';
+import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, EMPTY_STRING } from './table.types.js';
 
 // Import required components
 import '../select/select.component.js';
@@ -75,9 +75,9 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @state() filterValue = EMPTY_STRING;
 
   @query('#global-check')
-  globalCheck?: HTMLInputElement;
+  globalCheck?: HTMLElement;
 
-  override requiredComponents = ['hy-select', 'nr-icon'];
+  override requiredComponents = ['hy-select', 'nr-icon', 'nr-checkbox'];
 
   // Controllers
   private selectionController = new TableSelectionController(this);
@@ -91,16 +91,23 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   }
 
   override updated(_changedProperties: PropertyValueMap<this> | Map<PropertyKey, unknown>): void {
-    if (this.globalCheck && _changedProperties.has('selectedItems')) {
-      if (this.selectedItems.every((isSelected) => isSelected)) {
-        this.globalCheck.checked = true;
-        this.globalCheck.setAttribute('data-indeterminate', 'false');
-      } else if (this.selectedItems.some((isSelected) => isSelected)) {
-        this.globalCheck.checked = false;
-        this.globalCheck.setAttribute('data-indeterminate', 'true');
+    if (this.globalCheck && (_changedProperties.has('selectedItems') || _changedProperties.has('currentPage') || _changedProperties.has('displayedRows'))) {
+      const checkbox = this.globalCheck as any;
+      
+      // Get the selection state for the current page only
+      const startIndex = (this.currentPage - 1) * this.selectedItemPerPage;
+      const endIndex = Math.min(startIndex + this.displayedRows.length, this.selectedItems.length);
+      const currentPageSelections = this.selectedItems.slice(startIndex, endIndex);
+      
+      if (currentPageSelections.length > 0 && currentPageSelections.every((isSelected) => isSelected)) {
+        checkbox.checked = true;
+        checkbox.indeterminate = false;
+      } else if (currentPageSelections.some((isSelected) => isSelected)) {
+        checkbox.checked = false;
+        checkbox.indeterminate = true;
       } else {
-        this.globalCheck.checked = false;
-        this.globalCheck.setAttribute('data-indeterminate', 'false');
+        checkbox.checked = false;
+        checkbox.indeterminate = false;
       }
     }
     if (this.showFilterInput && _changedProperties.has('showFilterInput')) {
@@ -268,8 +275,14 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           itemPerPage: this.selectedItemPerPage,
           sortAttribute: this.sortAttribute,
           expand: this.expand,
-          onCheckAll: () => this._handleCheckAll({ detail: { isEveryItemChecked: this.selectedItems.every(i => i) } } as CustomEvent),
-          onCheckOne: (e, index) => this._handleCheckOne({ detail: { index, value: (e.target as HTMLInputElement).checked } } as CustomEvent),
+          onCheckAll: () => {
+            const startIndex = (this.currentPage - 1) * this.selectedItemPerPage;
+            const endIndex = Math.min(startIndex + this.selectedItemPerPage, this.selectedItems.length);
+            const currentPageItems = this.selectedItems.slice(startIndex, endIndex);
+            const isEveryItemChecked = currentPageItems.every(i => i) && currentPageItems.length > 0;
+            this._handleCheckAll({ detail: { isEveryItemChecked } } as CustomEvent);
+          },
+          onCheckOne: (e, index) => this._handleCheckOne({ detail: { index, value: (e as CustomEvent).detail.checked } } as CustomEvent),
           onSelectOne: (index) => this._handleSelectOne({ detail: { index } } as CustomEvent),
           onUpdateSort: (index) => this._handleSortOrder({ detail: { index } } as CustomEvent),
           onShowExpandedContent: (index) => this._showExpandedContent(index)

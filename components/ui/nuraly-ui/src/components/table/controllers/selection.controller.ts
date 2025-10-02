@@ -20,13 +20,21 @@ export class TableSelectionController extends BaseTableController {
   }
 
   /**
-   * Handle check all rows event
+   * Handle check all rows event (only for current page)
    */
   handleCheckAll(isEveryItemChecked: boolean): void {
     try {
-      const newSelection = isEveryItemChecked 
-        ? this.host.selectedItems.map(() => false) 
-        : this.host.selectedItems.map(() => true);
+      // Calculate the range for current page
+      const startIndex = (this.host.currentPage - 1) * this.host.selectedItemPerPage;
+      const endIndex = Math.min(startIndex + this.host.selectedItemPerPage, this.host.selectedItems.length);
+      
+      // Create a copy of the selection array
+      const newSelection = [...this.host.selectedItems];
+      
+      // Toggle only the items on the current page
+      for (let i = startIndex; i < endIndex; i++) {
+        newSelection[i] = !isEveryItemChecked;
+      }
       
       this.host.selectedItems = newSelection;
       
