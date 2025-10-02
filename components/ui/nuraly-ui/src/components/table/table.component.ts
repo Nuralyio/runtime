@@ -35,10 +35,11 @@ import {
 } from './templates/index.js';
 
 /**
- * Advanced table component with sorting, filtering, pagination, and selection capabilities.
+ * Advanced table component with sorting, filtering, pagination, selection, and fixed columns.
  * 
  * @example
  * ```html
+ * <!-- Basic table with fixed header -->
  * <nr-table
  *   .headers=${headers}
  *   .rows=${data}
@@ -46,6 +47,18 @@ import {
  *   selectionMode="multiple"
  *   fixedHeader
  *   .scrollConfig=${{ y: 400 }}>
+ * </nr-table>
+ * 
+ * <!-- Table with fixed columns -->
+ * <nr-table
+ *   .headers=${[
+ *     { name: 'ID', key: 'id', fixed: 'left', width: 80 },
+ *     { name: 'Name', key: 'name', fixed: 'left', width: 150 },
+ *     { name: 'Email', key: 'email' },
+ *     { name: 'Status', key: 'status' }
+ *   ]}
+ *   .rows=${data}
+ *   .scrollConfig=${{ x: 800 }}>
  * </nr-table>
  * ```
  * 

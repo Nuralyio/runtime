@@ -4,6 +4,42 @@ import { choose } from 'lit/directives/choose.js';
 import { IHeader, SelectionMode, SortAttribute, SortOrder } from '../table.types.js';
 import { renderColumnFilterTemplate, renderFilterIcon } from './column-filter.template.js';
 
+/**
+ * Calculate cumulative left position for fixed columns
+ */
+function calculateFixedColumnLeft(headers: IHeader[], currentIndex: number, hasSelection: boolean): number {
+  let left = 0;
+  
+  // Add selection column width if present
+  if (hasSelection) {
+    left += 50; // Default selection column width
+  }
+  
+  // Sum up widths of all previous fixed left columns
+  for (let i = 0; i < currentIndex; i++) {
+    if (headers[i].fixed === 'left') {
+      const width = headers[i].width;
+      left += typeof width === 'number' ? width : parseInt(String(width)) || 150;
+    }
+  }
+  
+  return left;
+}
+
+/**
+ * Get CSS classes for fixed columns
+ */
+function getFixedColumnClasses(header: IHeader): string {
+  const classes: string[] = [];
+  
+  if (header.fixed) {
+    classes.push('fixed-column');
+    classes.push(`fixed-column-${header.fixed}`);
+  }
+  
+  return classes.join(' ');
+}
+
 export interface ContentTemplateData {
   headers: IHeader[];
   rows: any[];
@@ -33,12 +69,16 @@ export interface ContentTemplateData {
  * @returns Template for table content
  */
 export function renderContentTemplate(data: ContentTemplateData): TemplateResult {
+  // Check if any columns are fixed left
+  const hasFixedLeftColumns = data.headers.some(h => h.fixed === 'left');
+  const selectionColumnClass = hasFixedLeftColumns ? 'fixed-column fixed-column-left' : '';
+  
   return html`
     <table>
       <thead>
         <tr>
           ${data.expandable || data.selectionMode
-            ? html`<th>
+            ? html`<th class="${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
                 ${data.selectionMode === SelectionMode.Multiple
                   ? html`<nr-checkbox 
                       id="global-check"
@@ -49,10 +89,21 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
             : nothing}
           ${repeat(
             data.headers,
-            (header: IHeader, index) =>
-              html`
+            (header: IHeader, index) => {
+              const fixedClasses = getFixedColumnClasses(header);
+              const hasSelection = data.expandable || data.selectionMode;
+              const leftPosition = header.fixed === 'left' 
+                ? calculateFixedColumnLeft(data.headers, index, !!hasSelection) 
+                : undefined;
+              const width = header.width 
+                ? typeof header.width === 'number' ? `${header.width}px` : header.width 
+                : undefined;
+              
+              return html`
                 ${data.expandable !== header.key
-                  ? html`<th class="${header.filterable ? 'filterable' : ''}">
+                  ? html`<th 
+                      class="${[header.filterable ? 'filterable' : '', fixedClasses].filter(Boolean).join(' ')}"
+                      style="${leftPosition !== undefined ? `left: ${leftPosition}px;` : ''} ${width ? `width: ${width}; min-width: ${width};` : ''}">
                       <div class="th-content">
                         <span class="th-text" @click=${() => data.onUpdateSort(index)}>
                           ${header.name}
@@ -95,7 +146,8 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                       </div>
                     </th>`
                   : nothing}
-              `
+              `;
+            }
           )}
         </tr>
       </thead>
@@ -106,7 +158,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
             <tr>
             ${data.expandable && !data.selectionMode
               ? html`
-                  <td @click=${() => data.onShowExpandedContent(index)} class="expand-icon">
+                  <td @click=${() => data.onShowExpandedContent(index)} class="expand-icon ${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
                     <nr-icon name="${data.expand[index] ? 'angle-up' : 'angle-down'}"></nr-icon>
                   </td>
                 `
@@ -115,7 +167,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                   [
                     SelectionMode.Multiple,
                     () =>
-                      html`<td>
+                      html`<td class="${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
                         <nr-checkbox
                           @nr-change=${(checkOneEvent: Event) => data.onCheckOne(checkOneEvent, index)}
                           .checked=${data.selectedItems[index + (data.currentPage - 1) * data.itemPerPage]}
@@ -124,7 +176,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                   ],
                   [
                     SelectionMode.Single,
-                    () => html`<td>
+                    () => html`<td class="${selectionColumnClass}" style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
                       <nr-radio
                         name="table-row-selection"
                         value="${index}"
@@ -137,8 +189,24 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
               : nothing}
             ${repeat(
               data.headers,
-              (header: IHeader) =>
-                html`${data.expandable !== header.key ? html`<td>${row[header.key]}</td>` : nothing}`
+              (header: IHeader, headerIndex) => {
+                const fixedClasses = getFixedColumnClasses(header);
+                const hasSelection = data.expandable || data.selectionMode;
+                const leftPosition = header.fixed === 'left' 
+                  ? calculateFixedColumnLeft(data.headers, headerIndex, !!hasSelection) 
+                  : undefined;
+                const width = header.width 
+                  ? typeof header.width === 'number' ? `${header.width}px` : header.width 
+                  : undefined;
+                
+                return html`${data.expandable !== header.key 
+                  ? html`<td 
+                      class="${fixedClasses}"
+                      style="${leftPosition !== undefined ? `left: ${leftPosition}px;` : ''} ${width ? `width: ${width}; min-width: ${width};` : ''}">
+                      ${row[header.key]}
+                    </td>` 
+                  : nothing}`;
+              }
             )}
 
             <tr style="display:${data.expand[index] ? 'table-row' : 'none'};">

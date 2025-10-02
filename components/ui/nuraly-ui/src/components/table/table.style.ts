@@ -400,4 +400,87 @@ export default css`
   .column-filter-clear:hover {
     color: var(--nuraly-table-filter-active, #1890ff);
   }
+
+  /* Fixed Columns Styles */
+  th.fixed-column,
+  td.fixed-column {
+    position: sticky;
+    background-color: var(--nuraly-table-row-background, #ffffff);
+  }
+
+  /* Fixed columns in header - highest priority */
+  thead th.fixed-column {
+    z-index: 20;
+    background-color: var(--nuraly-table-header-background, #fafafa);
+  }
+
+  /* When table has fixed header, fixed columns in header need even higher z-index */
+  .table-content-wrapper.fixed-header thead th.fixed-column {
+    z-index: 25;
+    background-color: var(--nuraly-table-header-background, #fafafa);
+  }
+
+  /* Fixed columns in body */
+  tbody td.fixed-column {
+    z-index: 8;
+    background-color: var(--nuraly-table-row-background, #ffffff);
+  }
+
+  /* Ensure fixed columns in tbody have proper background */
+  tbody tr td.fixed-column {
+    background-color: var(--nuraly-table-row-background, #ffffff);
+  }
+
+  tbody tr:hover td.fixed-column {
+    background-color: var(--nuraly-table-row-hover-background, #f5f5f5);
+  }
+
+  th.fixed-column-left,
+  td.fixed-column-left {
+    left: 0;
+    border-right: 1px solid var(--nuraly-table-row-border-color, #f0f0f0);
+  }
+
+  th.fixed-column-right,
+  td.fixed-column-right {
+    right: 0;
+    border-left: 1px solid var(--nuraly-table-row-border-color, #f0f0f0);
+  }
+
+  /* Shadow effect for fixed columns */
+  th.fixed-column-left::after,
+  td.fixed-column-left::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -10px;
+    bottom: 0;
+    width: 10px;
+    pointer-events: none;
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+
+  .table-content-wrapper.has-scroll th.fixed-column-left::after,
+  .table-content-wrapper.has-scroll td.fixed-column-left::after {
+    box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
+  }
+
+  th.fixed-column-right::before,
+  td.fixed-column-right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -10px;
+    bottom: 0;
+    width: 10px;
+    pointer-events: none;
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+
+  .table-content-wrapper.has-scroll th.fixed-column-right::before,
+  .table-content-wrapper.has-scroll td.fixed-column-right::before {
+    box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.15);
+  }
 `;

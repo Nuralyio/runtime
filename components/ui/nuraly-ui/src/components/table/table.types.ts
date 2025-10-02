@@ -33,6 +33,8 @@ export interface IHeader {
   key: string;
   filterable?: boolean;
   filterConfig?: ColumnFilter;
+  fixed?: 'left' | 'right';
+  width?: number | string;
 }
 
 /**
