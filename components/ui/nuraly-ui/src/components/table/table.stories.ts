@@ -867,3 +867,208 @@ export const EmptyStateWithFeatures: Story = {
     </div>
   `,
 };
+
+/**
+ * Row Expansion - Basic
+ * Demonstrates basic row expansion with simple content.
+ * Click the expand icon to reveal additional row details with smooth animation.
+ */
+export const RowExpansionBasic: Story = {
+  args: {
+    headers: [
+      {name: 'Product', key: 'product'},
+      {name: 'Category', key: 'category'},
+      {name: 'Price', key: 'price'},
+      {name: 'Stock', key: 'stock'},
+    ],
+    rows: [
+      {product: 'Laptop Pro', category: 'Electronics', price: '$1,299', stock: 45, details: 'High-performance laptop with 16GB RAM, 512GB SSD, and dedicated graphics card. Perfect for developers and designers.'},
+      {product: 'Wireless Mouse', category: 'Accessories', price: '$29', stock: 120, details: 'Ergonomic wireless mouse with precision tracking, 3-button design, and long battery life.'},
+      {product: 'USB-C Hub', category: 'Accessories', price: '$49', stock: 78, details: 'Multi-port USB-C hub with HDMI, USB 3.0, SD card reader, and power delivery support.'},
+      {product: 'Monitor 4K', category: 'Electronics', price: '$599', stock: 32, details: '27-inch 4K UHD monitor with HDR support, 99% sRGB color accuracy, and adjustable stand.'},
+      {product: 'Keyboard Mechanical', category: 'Accessories', price: '$149', stock: 67, details: 'Premium mechanical keyboard with RGB backlighting, hot-swappable switches, and aluminum frame.'},
+    ],
+    expandable: 'details',
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Row Expansion - Basic</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Click the expand icon (▼) to reveal additional details for each row.
+        The expansion animates smoothly with a slide-down effect.
+        Use keyboard (Enter/Space) or click to toggle expansion.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        expandable=${args.expandable}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Row Expansion - Custom Content
+ * Shows row expansion with rich HTML content using a custom renderer.
+ * Supports complex layouts, nested components, and formatted content.
+ */
+export const RowExpansionCustomContent: Story = {
+  args: {
+    headers: [
+      {name: 'Employee', key: 'name'},
+      {name: 'Department', key: 'department'},
+      {name: 'Position', key: 'position'},
+      {name: 'Status', key: 'status'},
+    ],
+    rows: [
+      {
+        name: 'Sarah Johnson',
+        department: 'Engineering',
+        position: 'Senior Developer',
+        status: 'Active',
+        email: 'sarah.johnson@company.com',
+        phone: '+1 (555) 123-4567',
+        skills: ['React', 'TypeScript', 'Node.js', 'AWS'],
+        joined: '2021-03-15',
+      },
+      {
+        name: 'Michael Chen',
+        department: 'Design',
+        position: 'UX Designer',
+        status: 'Active',
+        email: 'michael.chen@company.com',
+        phone: '+1 (555) 234-5678',
+        skills: ['Figma', 'Sketch', 'Prototyping', 'User Research'],
+        joined: '2022-07-01',
+      },
+      {
+        name: 'Emily Rodriguez',
+        department: 'Product',
+        position: 'Product Manager',
+        status: 'On Leave',
+        email: 'emily.rodriguez@company.com',
+        phone: '+1 (555) 345-6789',
+        skills: ['Roadmapping', 'Agile', 'Analytics', 'Stakeholder Management'],
+        joined: '2020-11-20',
+      },
+    ],
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Row Expansion - Custom Content</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        This example uses a custom renderer to display rich HTML content with formatted layout.
+        The expansion panel shows detailed employee information with proper styling.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        .expansionRenderer=${(row: any) => html`
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 8px 0;">
+            <div>
+              <strong style="color: #262626;">Contact Information</strong>
+              <div style="margin-top: 8px; color: #595959;">
+                <div style="margin-bottom: 4px;">
+                  <span style="color: #8c8c8c;">Email:</span> ${row.email}
+                </div>
+                <div>
+                  <span style="color: #8c8c8c;">Phone:</span> ${row.phone}
+                </div>
+              </div>
+            </div>
+            <div>
+              <strong style="color: #262626;">Employment Details</strong>
+              <div style="margin-top: 8px; color: #595959;">
+                <div style="margin-bottom: 4px;">
+                  <span style="color: #8c8c8c;">Joined:</span> ${row.joined}
+                </div>
+                <div>
+                  <span style="color: #8c8c8c;">Status:</span> 
+                  <span style="color: ${row.status === 'Active' ? '#52c41a' : '#faad14'};">
+                    ${row.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div style="grid-column: 1 / -1;">
+              <strong style="color: #262626;">Skills</strong>
+              <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                ${row.skills.map((skill: string) => html`
+                  <span style="
+                    padding: 4px 12px;
+                    background: #f0f0f0;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    color: #595959;
+                  ">${skill}</span>
+                `)}
+              </div>
+            </div>
+          </div>
+        `}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Row Expansion - With Other Features
+ * Demonstrates row expansion combined with other table features.
+ * Shows expansion working alongside pagination, sorting, and fixed headers.
+ */
+export const RowExpansionWithFeatures: Story = {
+  args: {
+    headers: [
+      {name: 'Order ID', key: 'orderId', sortable: true},
+      {name: 'Customer', key: 'customer', sortable: true},
+      {name: 'Amount', key: 'amount', sortable: true},
+      {name: 'Date', key: 'date', sortable: true},
+      {name: 'Status', key: 'status'},
+    ],
+    rows: [
+      {orderId: '#12345', customer: 'Alice Williams', amount: '$450.00', date: '2024-10-01', status: 'Delivered', items: 'MacBook Pro (x1), USB-C Cable (x2)', shipping: 'Express - Delivered on Oct 3, 2024'},
+      {orderId: '#12346', customer: 'Bob Smith', amount: '$89.99', date: '2024-10-02', status: 'Shipped', items: 'Wireless Mouse (x1), Mouse Pad (x1)', shipping: 'Standard - Expected Oct 5, 2024'},
+      {orderId: '#12347', customer: 'Carol Davis', amount: '$1,299.00', date: '2024-10-02', status: 'Processing', items: 'Monitor 4K (x2), HDMI Cable (x2)', shipping: 'Express - Processing'},
+      {orderId: '#12348', customer: 'David Brown', amount: '$149.00', date: '2024-10-03', status: 'Delivered', items: 'Keyboard Mechanical (x1)', shipping: 'Standard - Delivered on Oct 5, 2024'},
+      {orderId: '#12349', customer: 'Eva Martinez', amount: '$599.00', date: '2024-10-03', status: 'Shipped', items: 'Laptop Stand (x1), Cable Organizer (x2)', shipping: 'Express - Expected Oct 4, 2024'},
+      {orderId: '#12350', customer: 'Frank Wilson', amount: '$249.50', date: '2024-10-04', status: 'Processing', items: 'Webcam HD (x1), Microphone (x1)', shipping: 'Standard - Processing'},
+      {orderId: '#12351', customer: 'Grace Lee', amount: '$89.00', date: '2024-10-04', status: 'Cancelled', items: 'USB Hub (x1)', shipping: 'Cancelled by customer'},
+      {orderId: '#12352', customer: 'Henry Taylor', amount: '$799.00', date: '2024-10-05', status: 'Delivered', items: 'Graphics Tablet (x1), Stylus (x2)', shipping: 'Express - Delivered on Oct 6, 2024'},
+    ],
+    size: 'normal',
+    fixedHeader: true,
+    scrollConfig: {y: 400},
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Row Expansion - With Features</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Row expansion works seamlessly with fixed headers, scrolling, and sorting.
+        Try sorting columns, scrolling, and expanding rows to see how they all work together.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        .expansionRenderer=${(row: any) => html`
+          <div style="padding: 8px 0;">
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #262626;">Order Items:</strong>
+              <div style="margin-top: 4px; color: #595959;">${row.items}</div>
+            </div>
+            <div>
+              <strong style="color: #262626;">Shipping Info:</strong>
+              <div style="margin-top: 4px; color: #595959;">${row.shipping}</div>
+            </div>
+          </div>
+        `}
+        fixedHeader
+        .scrollConfig=${args.scrollConfig}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};

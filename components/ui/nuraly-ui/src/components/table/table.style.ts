@@ -628,5 +628,62 @@ export default css`
     font-size: 14px;
     line-height: 1.5;
   }
+
+  /* Expansion Row Styles */
+  .expand-icon {
+    text-align: center;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+    outline: none;
+  }
+
+  .expand-icon:hover {
+    background-color: var(--nuraly-color-fill-tertiary, #f5f5f5);
+  }
+
+  .expand-icon:focus {
+    background-color: var(--nuraly-color-fill-tertiary, #f5f5f5);
+    box-shadow: inset 0 0 0 2px var(--nuraly-color-primary, #1890ff);
+  }
+
+  .expand-icon nr-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .expand-icon.expanded nr-icon {
+    transform: rotate(180deg);
+  }
+
+  .expansion-row {
+    transition: all 0.3s ease;
+  }
+
+  .expansion-row.collapsed {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .expansion-row.expanded {
+    opacity: 1;
+    animation: slideDown 0.3s ease;
+  }
+
+  .expansion-content {
+    padding: 16px;
+    background-color: var(--nuraly-color-fill-quaternary, #fafafa);
+    border-top: 1px solid var(--nuraly-color-border, #d9d9d9);
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
 
