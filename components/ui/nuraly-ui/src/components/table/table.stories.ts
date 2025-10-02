@@ -697,10 +697,11 @@ export const LoadingTransition: Story = {
   render: (args) => {
     // Simulate data loading after 3 seconds
     setTimeout(() => {
-      const table = document.querySelector('nr-table[data-story="loading-transition"]');
+      const table = document.querySelector('nr-table[data-story="loading-transition"]') as any;
       if (table) {
-        table.setAttribute('loading', 'false');
-        (table as any).rows = Array.from({length: 10}, (_, i) => ({
+        // Properly set loading to false using property setter
+        table.loading = false;
+        table.rows = Array.from({length: 10}, (_, i) => ({
           orderId: `#${1000 + i}`,
           customer: `Customer ${i + 1}`,
           product: ['Laptop', 'Mouse', 'Keyboard', 'Monitor', 'Headphones'][i % 5],
