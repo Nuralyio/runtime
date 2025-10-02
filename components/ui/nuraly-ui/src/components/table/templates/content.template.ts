@@ -33,11 +33,10 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
         ${data.expandable || data.selectionMode
           ? html`<th>
               ${data.selectionMode === SelectionMode.Multiple
-                ? html`<input 
-                    id="global-check" 
-                    type="checkbox" 
-                    @change=${data.onCheckAll}
-                  />`
+                ? html`<nr-checkbox 
+                    id="global-check"
+                    @nr-change=${data.onCheckAll}
+                  ></nr-checkbox>`
                 : nothing}
             </th>`
           : nothing}
@@ -78,11 +77,10 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                     SelectionMode.Multiple,
                     () =>
                       html`<td>
-                        <input
-                          type="checkbox"
-                          @change=${(checkOneEvent: Event) => data.onCheckOne(checkOneEvent, index)}
+                        <nr-checkbox
+                          @nr-change=${(checkOneEvent: Event) => data.onCheckOne(checkOneEvent, index)}
                           .checked=${data.selectedItems[index + (data.currentPage - 1) * data.itemPerPage]}
-                        />
+                        ></nr-checkbox>
                       </td>`,
                   ],
                   [
