@@ -13,6 +13,6 @@ export const NrRadioGroup = createComponent({
   elementClass: NrRadioGroupElement,
   react: React,
   events: {
-    onChanged: 'change'
+    onChanged: 'nr-change'
   }
 });

@@ -13,6 +13,7 @@ import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, EMPTY_STRING }
 // Import required components
 import '../select/select.component.js';
 import '../icon/icon.component.js';
+import '../radio/radio.component.js';
 
 // Import controllers
 import {
@@ -47,7 +48,7 @@ import {
  * ```
  * 
  * @fires onPaginate - Fired when pagination changes
- * @fires onSelect - Fired when row selection changes
+ * @fires nr-select - Fired when row selection changes
  * @fires onSearch - Fired when search/filter is applied
  * @fires onSort - Fired when sorting is applied
  */
@@ -77,7 +78,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @query('#global-check')
   globalCheck?: HTMLElement;
 
-  override requiredComponents = ['hy-select', 'nr-icon', 'nr-checkbox'];
+  override requiredComponents = ['nr-select', 'nr-icon', 'nr-checkbox', 'nr-radio'];
 
   // Controllers
   private selectionController = new TableSelectionController(this);

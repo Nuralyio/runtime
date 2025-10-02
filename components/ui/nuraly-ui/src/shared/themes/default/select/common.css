@@ -48,7 +48,7 @@
   --nuraly-select-padding-bottom: 8px;
   --nuraly-select-padding-left: 12px;
   --nuraly-select-padding-right: 12px;
-  --nuraly-select-width: 300px;
+  --nuraly-select-width: auto;
   --nuraly-select-margin: 0;
   --nuraly-select-wrapper-margin: 0;
   --nuraly-select-small-height: 32px;

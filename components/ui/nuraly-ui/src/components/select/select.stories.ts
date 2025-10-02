@@ -1498,7 +1498,7 @@ export const AllFeatures: Story = {
               { label: 'Medium', value: 'md' },
               { label: 'Large', value: 'lg' }
             ]}
-            .defaultValue=${['md']}
+            .value=${['md']}
             placeholder="Size (pre-selected)"
           ></nr-select>
           <nr-select
@@ -1508,7 +1508,7 @@ export const AllFeatures: Story = {
               { label: 'Blue', value: 'blue' },
               { label: 'Yellow', value: 'yellow' }
             ]}
-            .defaultValue=${['red', 'blue']}
+            .value=${['red', 'blue']}
             placeholder="Colors (multiple pre-selected)"
             multiple
           ></nr-select>

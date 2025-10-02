@@ -86,12 +86,12 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                   [
                     SelectionMode.Single,
                     () => html`<td>
-                      <input
-                        type="radio"
-                        name="item"
-                        @change=${() => data.onSelectOne(index)}
+                      <nr-radio
+                        name="table-row-selection"
+                        value="${index}"
+                        @nr-change=${() => data.onSelectOne(index)}
                         .checked=${data.selectedItems[index + (data.currentPage - 1) * data.itemPerPage]}
-                      />
+                      ></nr-radio>
                     </td>`,
                   ],
                 ])

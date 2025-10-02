@@ -16,31 +16,31 @@ Advanced select component with multiple selection modes, validation, keyboard na
 
 ```html
 <!-- Basic select with custom placeholder -->
-<hy-select placeholder="Choose a city...">
+<nr-select placeholder="Choose a city...">
   <option value="1">New York</option>
   <option value="2">London</option>
-</hy-select>
+</nr-select>
 
 <!-- Multiple selection -->
-<hy-select multiple placeholder="Select multiple cities"></hy-select>
+<nr-select multiple placeholder="Select multiple cities"></nr-select>
 
 <!-- With validation -->
-<hy-select required status="error" placeholder="Please select..."></hy-select>
+<nr-select required status="error" placeholder="Please select..."></nr-select>
 
 <!-- Button style -->
-<hy-select type="button" placeholder="Click to select"></hy-select>
+<nr-select type="button" placeholder="Click to select"></nr-select>
 
 <!-- Empty placeholder (no text shown when nothing selected) -->
-<hy-select placeholder=""></hy-select>
+<nr-select placeholder=""></nr-select>
 
 <!-- Custom no-options message -->
-<hy-select no-options-message="No cities found"></hy-select>
+<nr-select no-options-message="No cities found"></nr-select>
 
 <!-- Custom no-options message and icon -->
-<hy-select 
+<nr-select 
   no-options-message="No fruits available" 
   no-options-icon="apple">
-</hy-select>
+</nr-select>
 ```
 
 ## Properties
@@ -48,7 +48,7 @@ Advanced select component with multiple selection modes, validation, keyboard na
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `options` | `SelectOption[]` | `[]` | Array of options to display |
-| `defaultValue` | `string[]` | `[]` | Default selected values |
+| `value` | `string \| string[]` | `''` | Current/initial value(s) |
 | `placeholder` | `string` | `'Select an option'` | Placeholder text |
 | `disabled` | `boolean` | `false` | Disables the component |
 | `type` | `SelectType` | `'default'` | Display type |
@@ -58,7 +58,6 @@ Advanced select component with multiple selection modes, validation, keyboard na
 | `size` | `SelectSize` | `'medium'` | Component size |
 | `required` | `boolean` | `false` | Required for validation |
 | `name` | `string` | `''` | Form field name |
-| `value` | `string \| string[]` | `''` | Current value(s) |
 | `no-options-message` | `string` | `'No options available'` | Message when no options |
 | `no-options-icon` | `string` | `'inbox'` | Icon for no options message |
 
@@ -171,9 +170,9 @@ const options = [
 ### Multiple Selection with Tags
 
 ```html
-<hy-select multiple>
+<nr-select multiple>
   <!-- Selected options appear as removable tags -->
-</hy-select>
+</nr-select>
 ```
 
 ### Custom Validation

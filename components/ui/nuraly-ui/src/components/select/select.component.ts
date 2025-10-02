@@ -44,25 +44,25 @@ import { SelectHost } from './interfaces/index.js';
  * @example
  * ```html
  * <!-- Basic select -->
- * <hy-select placeholder="Choose an option">
+ * <nr-select placeholder="Choose an option">
  *   <option value="1">Option 1</option>
  *   <option value="2">Option 2</option>
- * </hy-select>
+ * </nr-select>
  * 
  * <!-- Multiple selection -->
- * <hy-select multiple placeholder="Choose multiple options"></hy-select>
+ * <nr-select multiple placeholder="Choose multiple options"></nr-select>
  * 
  * <!-- With validation -->
- * <hy-select required status="error"></hy-select>
+ * <nr-select required status="error"></nr-select>
  * 
  * <!-- Button style -->
- * <hy-select type="button"></hy-select>
+ * <nr-select type="button"></nr-select>
  * 
  * <!-- With search functionality -->
- * <hy-select searchable search-placeholder="Search options..."></hy-select>
+ * <nr-select searchable search-placeholder="Search options..."></nr-select>
  * 
  * <!-- With clear button -->
- * <hy-select clearable></hy-select>
+ * <nr-select clearable></nr-select>
  * ```
  * 
  * @fires nr-change - Selection changed
@@ -90,7 +90,7 @@ import { SelectHost } from './interfaces/index.js';
  * @cssproperty --select-search-background - Search input background
  * @cssproperty --select-search-padding - Search input padding
  */
-@customElement('hy-select')
+@customElement('nr-select')
 export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements SelectHost {
   static override styles = styles;
   
@@ -99,10 +99,6 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   /** Array of options to display in the select dropdown */
   @property({ type: Array }) 
   options: SelectOption[] = [];
-  
-  /** Default selected values (for initialization) */
-  @property({ type: Array, attribute: 'default-value' }) 
-  defaultValue: string[] = [];
   
   /** Placeholder text shown when no option is selected */
   @property({ type: String }) 
@@ -141,7 +137,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   name: string = '';
   
   /** Current selected value(s) */
-  @property({ type: String }) 
+  @property() 
   value: string | string[] = '';
   
   /** Message to display when no options are available */
@@ -220,6 +216,23 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   }
 
   /**
+   * Called before update to handle property changes
+   */
+  override willUpdate(changedProperties: Map<string, any>): void {
+    super.willUpdate(changedProperties);
+    
+    // If options or value changed, reinitialize selection
+    if ((changedProperties.has('options') || changedProperties.has('value')) && 
+        this.options.length > 0 && 
+        this.value && 
+        (Array.isArray(this.value) ? this.value.length > 0 : this.value !== '')) {
+      // Reset initialization flag to allow reinit
+      (this.selectionController as any)._initialized = false;
+      this.selectionController.initializeFromValue();
+    }
+  }
+
+  /**
    * First render complete - setup controllers and initialize state
    */
   override firstUpdated(changedProperties: any): void {
@@ -238,8 +251,8 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     }
 
     // Apply default selection if specified
-    if (this.defaultValue.length > 0) {
-      this.selectionController.initializeFromDefaultValue();
+    if (this.value && (Array.isArray(this.value) ? this.value.length > 0 : this.value !== '')) {
+      this.selectionController.initializeFromValue();
     }
   }
 

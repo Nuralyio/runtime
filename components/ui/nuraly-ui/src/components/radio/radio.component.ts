@@ -22,9 +22,9 @@ import '../label/label.component.js';
  * <nr-radio name="option" value="3" disabled>Option 3</nr-radio>
  * ```
  * 
- * @fires change - Dispatched when the radio button is selected
- * @fires focus - Dispatched when the radio button receives focus
- * @fires blur - Dispatched when the radio button loses focus
+ * @fires nr-change - Dispatched when the radio button is selected
+ * @fires nr-focus - Dispatched when the radio button receives focus
+ * @fires nr-blur - Dispatched when the radio button loses focus
  * 
  * @slot default - Radio button label content
  */
@@ -107,12 +107,12 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
 
   private _handleFocus = () => {
     if (this.disabled) return;
-    this.dispatchEvent(new FocusEvent('focus', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent('nr-focus', { bubbles: true, composed: true }));
   };
 
   private _handleBlur = () => {
     if (this.disabled) return;
-    this.dispatchEvent(new FocusEvent('blur', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent('nr-blur', { bubbles: true, composed: true }));
   };
 
   private _uncheckSiblings() {
@@ -131,7 +131,7 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
 
   private _dispatchChangeEvent() {
     this.dispatchEvent(
-      new CustomEvent('change', {
+      new CustomEvent('nr-change', {
         detail: { value: this.value, checked: this.checked },
         bubbles: true,
         composed: true,
