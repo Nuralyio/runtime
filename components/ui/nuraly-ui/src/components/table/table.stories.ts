@@ -763,3 +763,106 @@ export const LoadingWithFeatures: Story = {
     </div>
   `,
 };
+
+/**
+ * Empty State - Default
+ * Shows the default empty state with the default message and icon when no data is available.
+ */
+export const EmptyStateDefault: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name'},
+      {name: 'Email', key: 'email'},
+      {name: 'Department', key: 'department'},
+      {name: 'Status', key: 'status'},
+    ],
+    rows: [],
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Empty State - Default</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        When the table has no data, an empty state is displayed with a default message.
+        This provides clear feedback to users.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Empty State - Custom Message
+ * Shows a custom empty state message and icon.
+ */
+export const EmptyStateCustom: Story = {
+  args: {
+    headers: [
+      {name: 'Product', key: 'product'},
+      {name: 'Price', key: 'price'},
+      {name: 'Stock', key: 'stock'},
+      {name: 'Category', key: 'category'},
+    ],
+    rows: [],
+    size: 'normal',
+    emptyText: 'No products found in inventory',
+    emptyIcon: 'box-open',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Empty State - Custom Message</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Customize the empty state with your own message and icon to provide
+        context-specific feedback.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        emptyText=${args.emptyText}
+        emptyIcon=${args.emptyIcon}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Empty State - With Features
+ * Shows empty state with other table features like selection mode and fixed header.
+ */
+export const EmptyStateWithFeatures: Story = {
+  args: {
+    headers: [
+      {name: 'Task', key: 'task'},
+      {name: 'Assignee', key: 'assignee'},
+      {name: 'Due Date', key: 'dueDate'},
+      {name: 'Priority', key: 'priority'},
+    ],
+    rows: [],
+    size: 'normal',
+    emptyText: 'No tasks assigned yet',
+    emptyIcon: 'clipboard-list',
+    selectionMode: 'multiple',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Empty State - With Features</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Empty state works seamlessly with other table features like selection mode.
+        The empty state spans across all columns including the selection column.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}
+        emptyText=${args.emptyText}
+        emptyIcon=${args.emptyIcon}
+        selectionMode=${args.selectionMode}>
+      </nr-table>
+    </div>
+  `,
+};

@@ -80,6 +80,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: Boolean }) fixedHeader = false;
   @property({ type: Object }) scrollConfig: { x?: number | string; y?: number | string } | undefined;
   @property({ type: Boolean }) loading = false;
+  @property({ type: String }) emptyText = 'No data available';
+  @property({ type: String }) emptyIcon: string | undefined;
 
   @state() itemPerPage = [5, 10, 15, 20];
   @state() selectedItemPerPage = this.itemPerPage[0];

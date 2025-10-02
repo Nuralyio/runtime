@@ -581,5 +581,52 @@ export default css`
     color: var(--nuraly-color-text-secondary, #666666);
     font-size: 14px;
   }
+
+  /* Empty State Styles */
+  .empty-row {
+    background: var(--nuraly-table-row-bg-color, #ffffff);
+  }
+
+  .empty-row:hover {
+    background: var(--nuraly-table-row-bg-color, #ffffff);
+  }
+
+  .empty-cell {
+    padding: 64px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--nuraly-table-border-color, #f0f0f0);
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--nuraly-color-text-quaternary, #bfbfbf);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .empty-icon nr-icon {
+    font-size: 64px;
+  }
+
+  .empty-text {
+    margin: 0;
+    color: var(--nuraly-color-text-secondary, #666666);
+    font-size: 14px;
+    line-height: 1.5;
+  }
 `;
 
