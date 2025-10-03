@@ -18,6 +18,7 @@ import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
+import commonInputsCollapseBlock from "./common-blocks/common-inputs-collapse-block.ts";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
 import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/inputs/checked.ts";
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
@@ -53,7 +54,7 @@ import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_functio
 
 
 import { StudioButton } from "./editor/right-panel-tabs/button";
-import { StudioTextLabel } from "./editor/right-panel-tabs/text-label";
+import { StudioTextLabel } from "./editor/right-panel-tabs/text-label/properties.ts";
 import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioSelect } from "./editor/right-panel-tabs/select";
@@ -64,7 +65,7 @@ import { StudioContainer } from "./editor/right-panel-tabs/container";
 import { StudioCommonInputs } from "./editor/common/inputs";
 import { StudioCollection } from "./editor/right-panel-tabs/collection";
 import { StudioFunction } from "./editor/left-panel-tabs/functions";
-import { StudioTextInput } from "./editor/right-panel-tabs/text-input/index.ts";
+import { StudioTextInput } from "./editor/right-panel-tabs/text-input/properties.ts";
 import { StudioDashboard } from "./dashboard/index.ts";
 import { StudioRefComponent } from "./editor/right-panel-tabs/ref-component/index.ts";
 import { PageThemeStudio } from "./page-blocks/themes.ts";
@@ -257,6 +258,9 @@ export default [
   },
 
   ...StudioTextLabel,
+  ...commonInputsCollapseBlock,
+  ...studioTypographyCollapseBlock,
+  ...studioSizeCollpaseBlock,
 
   RightPanelTabs,
   {
@@ -339,6 +343,9 @@ export default [
   ...StudioCollection,
   ...StudioFunction,
   ...StudioTextInput,
+  ...commonInputsCollapseBlock,
+  ...studioTypographyCollapseBlock,
+  ...studioSizeCollpaseBlock,
   ...RightPanelFunctionTab,
   ...StudioDashboard,
   ...StudioRefComponent,
