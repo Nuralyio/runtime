@@ -152,6 +152,19 @@ export const StudioButton = loadComponentProperties(
   buttonMeta
 );
 
+// Checkbox
+import checkboxConfig from "./checkbox/_checkbox-config.json";
+import checkboxHandlers from "./checkbox/_checkbox-handlers.json";
+import checkboxTheme from "./checkbox/_checkbox-theme.json";
+import checkboxMeta from "./checkbox/_checkbox-meta.json";
+
+export const StudioCheckbox = loadComponentProperties(
+  checkboxConfig,
+  checkboxHandlers,
+  checkboxTheme,
+  checkboxMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -159,6 +172,7 @@ export const StudioComponents = {
   StudioDatepicker,
   StudioSelect,
   StudioButton,
+  StudioCheckbox,
   // Add more components here as they're migrated
 };
 
