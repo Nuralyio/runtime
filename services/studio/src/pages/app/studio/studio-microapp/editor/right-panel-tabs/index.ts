@@ -230,6 +230,19 @@ export const StudioDropdown = loadComponentProperties(
   dropdownMeta
 );
 
+// Embed
+import embedConfig from "./embed/_embed-config.json";
+import embedHandlers from "./embed/_embed-handlers.json";
+import embedTheme from "./embed/_embed-theme.json";
+import embedMeta from "./embed/_embed-meta.json";
+
+export const StudioEmbed = loadComponentProperties(
+  embedConfig,
+  embedHandlers,
+  embedTheme,
+  embedMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -243,6 +256,7 @@ export const StudioComponents = {
   StudioContainer,
   StudioDocument,
   StudioDropdown,
+  StudioEmbed,
   // Add more components here as they're migrated
 };
 

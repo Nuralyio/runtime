@@ -1,0 +1,45 @@
+{
+  "embedFields": {
+    "container": {
+      "uuid": "embed_collapse_container",
+      "name": "Embed Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "embed_collapse",
+      "title": "Embed Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "url",
+        "label": "URL",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "https://nuraly.io",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'url') : null;\nreturn Input?.type === 'value' ? Input.value ?? '' : '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.input?.label?.type === 'handler' &&\n  selectedComponent?.input?.label?.value\n  ? 'disabled'\n  : 'unabled';",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'url', 'value', EventData.value);\n}"
+        },
+        "autoCheckbox": true,
+        "checkboxHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst handlerValue = selectedComponent?.input?.label?.type === 'handler'\n  ? selectedComponent?.input?.label.value\n  : '';\nreturn ['url', handlerValue];",
+        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent && EventData.value !== selectedComponent?.input?.label?.value) {\n  updateInput(selectedComponent, 'url', 'handler', EventData.value);\n}"
+      }
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block"
+    ],
+    "includeContainers": []
+  }
+}
