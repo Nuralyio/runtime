@@ -54,7 +54,7 @@ import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_functio
 
 
 import { StudioButton } from "./editor/right-panel-tabs/button";
-import { StudioTextLabel } from "./editor/right-panel-tabs/text-label/properties.ts";
+import { StudioTextInput, StudioTextLabel } from "./editor/right-panel-tabs/index.ts";
 import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioSelect } from "./editor/right-panel-tabs/select";
@@ -65,7 +65,6 @@ import { StudioContainer } from "./editor/right-panel-tabs/container";
 import { StudioCommonInputs } from "./editor/common/inputs";
 import { StudioCollection } from "./editor/right-panel-tabs/collection";
 import { StudioFunction } from "./editor/left-panel-tabs/functions";
-import { StudioTextInput } from "./editor/right-panel-tabs/text-input/properties.ts";
 import { StudioDashboard } from "./dashboard/index.ts";
 import { StudioRefComponent } from "./editor/right-panel-tabs/ref-component/index.ts";
 import { PageThemeStudio } from "./page-blocks/themes.ts";
