@@ -1,0 +1,46 @@
+{
+  "collectionFields": {
+    "container": {
+      "uuid": "collection_collapse_container",
+      "name": "Collection Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "collection_collapse",
+      "title": "Collection Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "column",
+        "label": "Column",
+        "type": "number",
+        "default": 1,
+        "width": "100px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet fontSize = Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '--columns') || 1;\nreturn [fontSize]",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state='enabled';\nif(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize']){\n  state='disabled'\n}\nreturn state",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyle(selectedComponent, '--columns', EventData.value);"
+        },
+        "autoCheckbox": true
+      }
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block",
+      "collection_data",
+      "table_direction_block"
+    ],
+    "includeContainers": [
+      "border_collapse_container"
+    ]
+  }
+}

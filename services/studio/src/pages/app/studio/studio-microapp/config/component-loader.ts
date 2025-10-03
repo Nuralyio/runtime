@@ -127,10 +127,10 @@ export function loadComponentProperties(
     ? themeConfigTyped  // Old structure: direct array
     : themeConfigTyped.theme?.modes;  // New structure: { theme: { modes: [...] } }
   
-  const themeComponents = generateComponents(
-    themeModes,
-    metadata.themeContainerId
-  );
+  // Only generate theme components if there are themes defined
+  const themeComponents = (themeModes && themeModes.length > 0)
+    ? generateComponents(themeModes, metadata.themeContainerId)
+    : [];
 
   // Build parent container
   const parentContainer = {

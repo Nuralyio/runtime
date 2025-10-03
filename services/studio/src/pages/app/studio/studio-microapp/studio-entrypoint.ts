@@ -36,25 +36,22 @@ import studioPageSEOBlock from "./page-blocks/studio-page-seo-block.ts";
 import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks.ts";
 import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks.ts";
 import collectionContainerBlocks from "./collection-blocks/collection-blocks-container.ts";
-import collectionDataBlocks from "./editor/right-panel-tabs/collection/inputs/data.ts";
 import TopBar from "../components/editor-micro-apps/top-bar.ts";
 import LeftPanel from "../components/editor-micro-apps/left-panel.ts";
 import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
 import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
 
 
-import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox } from "./editor/right-panel-tabs/index.ts";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox, StudioCode, StudioCollection } from "./editor/right-panel-tabs/index.ts";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
 import { StudioContainer } from "./editor/right-panel-tabs/container";
 import { StudioCommonInputs } from "./editor/common/inputs";
-import { StudioCollection } from "./editor/right-panel-tabs/collection";
 import { StudioFunction } from "./editor/left-panel-tabs/functions";
 import { StudioDashboard } from "./dashboard/index.ts";
 import { StudioRefComponent } from "./editor/right-panel-tabs/ref-component/index.ts";
 import { PageThemeStudio } from "./page-blocks/themes.ts";
-import { StudioCode } from "./editor/right-panel-tabs/code/index.ts";
 import { StudioMenu } from "./editor/right-panel-tabs/menu/index.ts";
 import { StudioRichText } from "./editor/right-panel-tabs/Richtext/index.ts";
 import { StudioDropdown } from "./editor/right-panel-tabs/dropdown/index.ts";
@@ -303,7 +300,6 @@ export default [
   ...microAppSelectionBlocks,
   ...microAppContainerBlocks,
   ...collectionContainerBlocks,
-  ...collectionDataBlocks,
   ...TopBar,
   ...LeftPanel,
   ...StudioButton,
