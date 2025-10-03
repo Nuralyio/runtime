@@ -113,10 +113,24 @@ export const StudioTextLabel = loadComponentProperties(
   textLabelMeta
 );
 
+// Datepicker
+import datepickerConfig from "./datepicker/_datepicker-config.json";
+import datepickerHandlers from "./datepicker/_datepicker-handlers.json";
+import datepickerTheme from "./datepicker/_datepicker-theme.json";
+import datepickerMeta from "./datepicker/_datepicker-meta.json";
+
+export const StudioDatepicker = loadComponentProperties(
+  datepickerConfig,
+  datepickerHandlers,
+  datepickerTheme,
+  datepickerMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
   StudioTextLabel,
+  StudioDatepicker,
   // Add more components here as they're migrated
 };
 

@@ -24,8 +24,6 @@ import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/input
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
 import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
 import studioImageFallbackBlock from "./editor/right-panel-tabs/image/inputs/src-fallback.ts";
-import studioDatepickerLocaleBlock from "./editor/right-panel-tabs/datepicker/inputs/locale.ts";
-import studioDatepickerFormatBlock from "./editor/right-panel-tabs/datepicker/inputs/format.ts";
 import studioSelectLabelSize from "./editor/right-panel-tabs/select/inputs/label-fontsize.ts";
 import studioSelectTypeBlock from "./editor/right-panel-tabs/select/inputs/select-type.ts";
 import studioSelectSelectionmodeBlock from "./editor/right-panel-tabs/select/inputs/selection_mode.ts";
@@ -54,11 +52,10 @@ import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_functio
 
 
 import { StudioButton } from "./editor/right-panel-tabs/button";
-import { StudioTextInput, StudioTextLabel } from "./editor/right-panel-tabs/index.ts";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker } from "./editor/right-panel-tabs/index.ts";
 import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioSelect } from "./editor/right-panel-tabs/select";
-import { StudioDatepicker } from "./editor/right-panel-tabs/datepicker";
 import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
 import { StudioContainer } from "./editor/right-panel-tabs/container";
@@ -287,8 +284,6 @@ export default [
   ...stduioTable,
   ...tableSelectionModeBlock,
   ...tableFilterBlock,
-  ...studioDatepickerLocaleBlock,
-  ...studioDatepickerFormatBlock,
   ...studioBackgroundcolorBlock,
   // Removed: ...studioWidthBlock, ...studioHeightBlock (now in studioSizeCollpaseBlock)
   ...studioFLexBlock,

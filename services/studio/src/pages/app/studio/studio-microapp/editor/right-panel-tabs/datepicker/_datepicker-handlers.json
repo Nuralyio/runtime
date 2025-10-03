@@ -1,0 +1,9 @@
+{
+  "handlerPrefix": "studio_datepicker_handler",
+  "events": [
+    {
+      "name": "onDateChange",
+      "label": "dateChange"
+    }
+  ]
+}
