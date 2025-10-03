@@ -17,7 +17,6 @@ import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-b
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
 import commonInputsCollapseBlock from "./common-blocks/common-inputs-collapse-block.ts";
-import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/inputs/checked.ts";
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
 import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
 import studioImageFallbackBlock from "./editor/right-panel-tabs/image/inputs/src-fallback.ts";
@@ -44,8 +43,7 @@ import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
 import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
 
 
-import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton } from "./editor/right-panel-tabs/index.ts";
-import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox } from "./editor/right-panel-tabs/index.ts";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
@@ -294,7 +292,6 @@ export default [
   ...studioMouseEnterEvent,
   ...studioMouseLeaveEvent,
   ...studioIconColorBlock,
-  ...studioCheckboxCheckedBlock,
   ...studioImageAltBlock,
   ...studioImageSrcBlock,
   ...studioImageFallbackBlock,

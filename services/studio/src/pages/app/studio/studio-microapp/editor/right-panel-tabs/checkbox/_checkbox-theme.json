@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Dark Mode",
+    "open": true,
+    "items": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          { "label": "Checkbox Text Color", "cssVar": "--hybrid-checkbox-color" },
+          { "label": "Checkbox Symbol Color", "cssVar": "--hybrid-checkbox-symbol-color" }
+        ]
+      },
+      {
+        "name": "Empty State",
+        "open": false,
+        "items": [
+          { "label": "Empty Background Color", "cssVar": "--hybrid-checkbox-empty-background-color" }
+        ]
+      },
+      {
+        "name": "Filled State",
+        "open": false,
+        "items": [
+          { "label": "Filled Background Color", "cssVar": "--hybrid-checkbox-filled-background-color" }
+        ]
+      },
+      {
+        "name": "Disabled State",
+        "open": false,
+        "items": [
+          { "label": "Disabled Text Color", "cssVar": "--hybrid-checkbox-disabled-text-color" },
+          { "label": "Disabled Background Color", "cssVar": "--hybrid-checkbox-disabled-background-color" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Light Mode",
+    "open": false,
+    "items": [
+      {
+        "name": "General",
+        "open": false,
+        "items": [
+          { "label": "Checkbox Text Color", "cssVar": "--hybrid-checkbox-color" },
+          { "label": "Checkbox Symbol Color", "cssVar": "--hybrid-checkbox-symbol-color" }
+        ]
+      },
+      {
+        "name": "Empty State",
+        "open": false,
+        "items": [
+          { "label": "Empty Background Color", "cssVar": "--hybrid-checkbox-empty-background-color" }
+        ]
+      },
+      {
+        "name": "Filled State",
+        "open": false,
+        "items": [
+          { "label": "Filled Background Color", "cssVar": "--hybrid-checkbox-filled-background-color" }
+        ]
+      },
+      {
+        "name": "Disabled State",
+        "open": false,
+        "items": [
+          { "label": "Disabled Text Color", "cssVar": "--hybrid-checkbox-disabled-text-color" },
+          { "label": "Disabled Background Color", "cssVar": "--hybrid-checkbox-disabled-background-color" }
+        ]
+      }
+    ]
+  }
+]

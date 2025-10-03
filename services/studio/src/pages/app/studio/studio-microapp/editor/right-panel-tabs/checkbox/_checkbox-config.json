@@ -1,0 +1,70 @@
+{
+  "checkboxFields": {
+    "container": {
+      "uuid": "checkbox_collapse_container",
+      "name": "Checkbox Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "checkbox_collapse",
+      "title": "Checkbox Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "label",
+        "label": "Label",
+        "type": "text",
+        "default": "Checkbox",
+        "width": "180px",
+        "placeholder": "Checkbox label",
+        "valueHandler": { "ref": "componentInput", "params": ["label"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["label"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["label", "value"] }
+        }
+      },
+      {
+        "name": "id",
+        "label": "ID",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Component ID",
+        "valueHandler": { "ref": "componentInput", "params": ["id"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["id"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["id", "value"] }
+        }
+      },
+      {
+        "name": "checked",
+        "label": "Checked",
+        "type": "radio",
+        "default": "uncheck",
+        "width": "180px",
+        "options": [
+          { "label": "✓", "value": "check" },
+          { "label": "✗", "value": "uncheck" },
+          { "label": "—", "value": "indeterminate" }
+        ],
+        "valueHandler": { "ref": "componentInputRadio", "params": ["checked", [{"label": "✓", "value": "check"}, {"label": "✗", "value": "uncheck"}, {"label": "—", "value": "indeterminate"}], "uncheck"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["checked"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["checked", "string"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "checked"
+      }
+    ]
+  }
+}
