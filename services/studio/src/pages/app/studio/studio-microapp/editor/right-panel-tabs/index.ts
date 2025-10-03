@@ -126,11 +126,25 @@ export const StudioDatepicker = loadComponentProperties(
   datepickerMeta
 );
 
+// Select
+import selectConfig from "./select/_select-config.json";
+import selectHandlers from "./select/_select-handlers.json";
+import selectTheme from "./select/_select-theme.json";
+import selectMeta from "./select/_select-meta.json";
+
+export const StudioSelect = loadComponentProperties(
+  selectConfig,
+  selectHandlers,
+  selectTheme,
+  selectMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
   StudioTextLabel,
   StudioDatepicker,
+  StudioSelect,
   // Add more components here as they're migrated
 };
 

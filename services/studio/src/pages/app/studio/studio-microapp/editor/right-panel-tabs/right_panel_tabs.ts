@@ -101,6 +101,9 @@ export default {
                              handlers=[
                               "studio_select_handler"
                             ];
+                            themes=[
+                                "studio_select_theme_container"
+                            ];
                             break;
                            
                         

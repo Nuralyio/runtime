@@ -1,0 +1,9 @@
+{
+  "handlerPrefix": "studio_select_handler",
+  "events": [
+    {
+      "name": "changed",
+      "label": "onChanged"
+    }
+  ]
+}

@@ -18,6 +18,15 @@ export const ValueHandlers = {
     return selectedComponent?.input?.${propertyName}?.value || '';
   `,
   
+  // Get component input property for radio buttons (returns [options, currentValue, type])
+  componentInputRadio: (propertyName: string, options: Array<{label: string, value: string}>, defaultValue: string = '') => `
+    const options = ${JSON.stringify(options)};
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const currentValue = selectedComponent?.input?.${propertyName}?.value || '${defaultValue}';
+    const type = 'button';
+    return [options, currentValue, type];
+  `,
+  
   // Get component style property
   componentStyle: (propertyName: string, defaultValue: string = '') => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
