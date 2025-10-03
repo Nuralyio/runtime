@@ -1,0 +1,13 @@
+{
+  "handlerPrefix": "studio_icon_handler",
+  "events": [
+    {
+      "name": "onInit",
+      "label": "onInit"
+    },
+    {
+      "name": "onClick",
+      "label": "onClick"
+    }
+  ]
+}

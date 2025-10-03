@@ -1,0 +1,11 @@
+{
+  "uuid": "FileUpload_blocks",
+  "name": "Parent FileUpload Container",
+  "themeContainerId": "studio_FileUpload_theme_container",
+  "configKey": "fileUploadFields",
+  "childrenIds": [
+    "FileUpload_input_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}

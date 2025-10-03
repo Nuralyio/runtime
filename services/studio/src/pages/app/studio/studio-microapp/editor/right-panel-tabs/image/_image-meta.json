@@ -1,0 +1,11 @@
+{
+  "uuid": "image_blocks",
+  "name": "Parent Image Container",
+  "themeContainerId": "studio_image_theme_container",
+  "configKey": "imageFields",
+  "childrenIds": [
+    "image_input_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}
