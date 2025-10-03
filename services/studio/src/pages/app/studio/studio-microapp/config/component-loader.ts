@@ -1,12 +1,17 @@
 /**
- * Universal Component Property Loader
+ * COMPONENT LOADER WITH MEMOIZATION
  * 
  * Generates studio component properties from JSON configuration files.
  * Each component needs 4 files:
  * - _component-config.json      (field definitions)
  * - _component-handlers.json    (event handlers)
  * - _component-theme.json       (CSS variables/theme)
- * - _component-meta.json        (NEW: component metadata)
+ * - _component-meta.json        (component metadata)
+ * 
+ * PERFORMANCE OPTIMIZATION:
+ * - Uses Map-based caching to prevent re-processing on module re-imports
+ * - Components are processed once and cached by UUID
+ * - Significantly reduces CPU usage and prevents infinite loops
  */
 
 import { ComponentType } from "$store/component/interface.ts";
@@ -14,6 +19,9 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 import { GenericJsonProcessor, type BlockConfig } from "./json-processor.ts";
 import { createHandlersFromEvents } from "../editor/utils/handler-generator.ts";
 import { generateComponents } from "../common-blocks/studio-theme-block.ts";
+
+// Memoization cache to prevent re-processing
+const componentCache = new Map<string, any[]>();
 
 // Type definitions
 type CssVarItem = { 
@@ -85,6 +93,12 @@ export function loadComponentProperties(
   themeConfig: any,
   metadata: ComponentMetadata
 ) {
+  // Check cache first
+  const cacheKey = metadata.uuid;
+  if (componentCache.has(cacheKey)) {
+    return componentCache.get(cacheKey)!;
+  }
+
   // Type assertions
   const fieldsConfigTyped = fieldsConfig as Record<string, BlockConfig>;
   const handlersConfigTyped = handlersConfig as HandlerConfig;
@@ -123,12 +137,17 @@ export function loadComponentProperties(
   };
 
   // Combine all components
-  return [
+  const result = [
     parentContainer,
     ...fieldComponents,
     ...handlerComponents,
     ...themeComponents
   ];
+
+  // Cache the result
+  componentCache.set(cacheKey, result);
+
+  return result;
 }
 
 /**
