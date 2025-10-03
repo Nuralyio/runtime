@@ -1,0 +1,144 @@
+{
+  "textInputFields": {
+    "container": {
+      "uuid": "text_input_fields_collapse_container",
+      "name": "Text Input Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "text_input_fields_collapse",
+      "title": "Input Fields",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "label",
+        "label": "Label",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter label",
+        "valueHandler": { "ref": "componentInput", "params": ["label"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["label"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["label", "string"] }
+        }
+      },
+      {
+        "name": "placeholder",
+        "label": "Placeholder",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter placeholder",
+        "valueHandler": { "ref": "componentInput", "params": ["placeholder"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["placeholder"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["placeholder", "string"] }
+        }
+      },
+      {
+        "name": "helperText",
+        "label": "Helper Text",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter helper text",
+        "valueHandler": { "ref": "componentInput", "params": ["helperText"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["helperText"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["helperText", "string"] }
+        }
+      },
+      {
+        "name": "inputType",
+        "label": "Type",
+        "type": "radio",
+        "default": "text",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let currentType = ''; let isDisabled = false; if (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) { isDisabled = true; } else { currentType = selectedComponent?.input?.type?.value || 'text'; } const options = [{ value: 'text', icon: 'font', disabled: isDisabled }, { value: 'password', icon: 'lock', disabled: isDisabled }, { value: 'email', icon: 'envelope', disabled: isDisabled }, { value: 'number', icon: 'hashtag', disabled: isDisabled }]; const radioType = 'button'; return [options, currentType, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent) { updateInput(selectedComponent, 'type', 'string', EventData.value); }"
+        }
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "radio",
+        "default": "default",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let isDisabled = false; let currentStatus = ''; if (selectedComponent?.input?.status?.type == 'handler' && selectedComponent?.input?.status?.value != '') { isDisabled = true; } else { currentStatus = selectedComponent?.input?.status?.value || 'default'; } const options = [{ value: 'default', icon: 'font-awesome', disabled: isDisabled }, { value: 'warning', icon: 'triangle-exclamation', disabled: isDisabled }, { value: 'error', icon: 'circle-exclamation', disabled: isDisabled }]; const radioType = 'button'; return [options, currentStatus, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents); const statusValue = EventData.value ? EventData.value : 'default'; updateInput(selectedComponent, 'status', 'string', statusValue);"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "status",
+        "handlerValueGetter": "const parameter = 'status'; let statusHandler = ''; const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent?.input?.status?.type == 'handler') { statusHandler = selectedComponent?.input?.status?.value || ''; } return [parameter, statusHandler];",
+        "handlerEventUpdate": "updateInput(Utils.first(Vars.selectedComponents), 'status', 'handler', EventData.value);"
+      },
+      {
+        "name": "labelSize",
+        "label": "Label Size",
+        "type": "number",
+        "default": "14",
+        "width": "80px",
+        "placeholder": "14px",
+        "valueHandler": { "ref": "componentStyle", "params": ["label-fontsize", "14px"] },
+        "stateHandler": { "ref": "defaultStyle", "params": ["label-fontsize"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateStyleWithUnit", "params": ["label-fontsize", "px"] },
+          "onArrowUp": "const selectedComponent = Utils.first(Vars.selectedComponents); if (!selectedComponent) return; let currentValue = Editor.getComponentStyle(selectedComponent, 'label-fontsize') || '14px'; let numValue = parseInt(currentValue) || 14; updateStyle(selectedComponent, 'label-fontsize', (numValue + 1) + 'px');",
+          "onArrowDown": "const selectedComponent = Utils.first(Vars.selectedComponents); if (!selectedComponent) return; let currentValue = Editor.getComponentStyle(selectedComponent, 'label-fontsize') || '14px'; let numValue = parseInt(currentValue) || 14; if (numValue > 1) { updateStyle(selectedComponent, 'label-fontsize', (numValue - 1) + 'px'); }"
+        }
+      },
+      {
+        "name": "labelColor",
+        "label": "Label Color",
+        "type": "color",
+        "default": "#000000",
+        "width": "80px",
+        "valueHandler": { "ref": "componentStyle", "params": ["label-color", "#000000"] },
+        "stateHandler": { "ref": "defaultStyle", "params": ["label-color"] },
+        "eventHandlers": {
+          "colorChange": { "ref": "updateStyle", "params": ["label-color"] }
+        }
+      },
+      {
+        "name": "helperSize",
+        "label": "Helper Size",
+        "type": "number",
+        "default": "12",
+        "width": "80px",
+        "placeholder": "12px",
+        "valueHandler": { "ref": "componentStyle", "params": ["helper-fontsize", "12px"] },
+        "stateHandler": { "ref": "defaultStyle", "params": ["helper-fontsize"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateStyleWithUnit", "params": ["helper-fontsize", "px"] },
+          "onArrowUp": "const selectedComponent = Utils.first(Vars.selectedComponents); if (!selectedComponent) return; let currentValue = Editor.getComponentStyle(selectedComponent, 'helper-fontsize') || '12px'; let numValue = parseInt(currentValue) || 12; updateStyle(selectedComponent, 'helper-fontsize', (numValue + 1) + 'px');",
+          "onArrowDown": "const selectedComponent = Utils.first(Vars.selectedComponents); if (!selectedComponent) return; let currentValue = Editor.getComponentStyle(selectedComponent, 'helper-fontsize') || '12px'; let numValue = parseInt(currentValue) || 12; if (numValue > 1) { updateStyle(selectedComponent, 'helper-fontsize', (numValue - 1) + 'px'); }"
+        }
+      },
+      {
+        "name": "helperColor",
+        "label": "Helper Color",
+        "type": "color",
+        "default": "#666666",
+        "width": "80px",
+        "valueHandler": { "ref": "componentStyle", "params": ["helper-color", "#666666"] },
+        "stateHandler": { "ref": "defaultStyle", "params": ["helper-color"] },
+        "eventHandlers": {
+          "colorChange": { "ref": "updateStyle", "params": ["helper-color"] }
+        }
+      }
+    ]
+  }
+}
