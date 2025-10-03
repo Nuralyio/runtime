@@ -1,0 +1,85 @@
+{
+  "selectFields": {
+    "container": {
+      "uuid": "select_collapse_container",
+      "name": "Select Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "select_collapse",
+      "title": "Select Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "options",
+        "label": "Data",
+        "type": "event",
+        "default": "",
+        "width": "50px",
+        "placeholder": "",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "options",
+        "handlerValueGetter": "const parameter = 'value'; let valueHandler = ''; const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.options?.type =='handler' && selectedComponent.input?.options?.value){ valueHandler = selectedComponent.input?.options?.value } return [parameter, valueHandler];",
+        "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents); if(EventData.value != selectedComponent.input?.options?.value) updateInput(selectedComponent,'options','handler',EventData.value);"
+      },
+      {
+        "name": "defaultSelected",
+        "label": "Default",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "",
+        "valueHandler": { "ref": "componentInput", "params": ["defaultSelected"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["defaultSelected"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["defaultSelected", "value"] }
+        }
+      },
+      {
+        "name": "type",
+        "label": "Type",
+        "type": "radio",
+        "default": "default",
+        "width": "180px",
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Inline", "value": "inline" }
+        ],
+        "valueHandler": { "ref": "componentInputRadio", "params": ["type", [{"label": "Default", "value": "default"}, {"label": "Inline", "value": "inline"}], "default"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["type"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["type", "string"] }
+        }
+      },
+      {
+        "name": "selectionMode",
+        "label": "Selection mode",
+        "type": "radio",
+        "default": "single",
+        "width": "180px",
+        "options": [
+          { "label": "Single", "value": "single" },
+          { "label": "Multiple", "value": "multiple" }
+        ],
+        "valueHandler": { "ref": "componentInputRadio", "params": ["selectionMode", [{"label": "Single", "value": "single"}, {"label": "Multiple", "value": "multiple"}], "single"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["selectionMode"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["selectionMode", "string"] }
+        },
+        "hasHandler": true,
+        "handlerProperty": "selectionMode",
+        "handlerType": "input"
+      }
+    ]
+  }
+}

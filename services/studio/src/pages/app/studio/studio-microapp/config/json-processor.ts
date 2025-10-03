@@ -15,7 +15,7 @@ import { ValueHandlers, StateHandlers, EventHandlers } from "./handler-library.t
 export interface PropertyConfig {
   name: string;
   label: string;
-  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio';
+  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event';
   default: any;
   unit?: string;
   min?: number;
@@ -360,6 +360,58 @@ export class GenericJsonProcessor {
   }
   
   private static generatePropertyInput(property: PropertyConfig, inputUuid: string): any {
+    // Event type components (low-code editors) use a different structure
+    if (property.type === 'event') {
+      const valueGetter = property.handlerValueGetter 
+        ? this.resolveHandler(property.handlerValueGetter, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
+        : `
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (!selectedComponent) return ["", ""];
+          const handler = selectedComponent?.${property.handlerType || 'input'}Handlers?.['${property.handlerProperty || property.name}'];
+          return handler ? [${property.handlerProperty || property.name}, handler] : ["", ""];
+        `;
+      
+      const eventUpdate = property.handlerEventUpdate
+        ? this.resolveHandler(property.handlerEventUpdate, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
+        : `
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            update${property.handlerType === 'style' ? 'Style' : 'Input'}Handler(selectedComponent, "${property.handlerProperty || property.name}", EventData.handler, EventData.type);
+          }
+        `;
+      
+      return {
+        uuid: inputUuid,
+        application_id: "1",
+        name: `${property.label} Event`,
+        component_type: ComponentType.Event,
+        inputHandlers: {},
+        styleHandlers: {},
+        styleBreakPoints: {
+          mobile: {},
+          tablet: {},
+          laptop: {}
+        },
+        attributesHandlers: {},
+        errors: {},
+        childrenIds: [],
+        style: {
+          display: "block",
+          width: property.width || "180px"
+        },
+        input: {
+          value: {
+            type: "handler",
+            value: valueGetter
+          }
+        },
+        event: {
+          codeChange: eventUpdate
+        }
+      };
+    }
+    
+    // Standard input components (text, number, select, color, etc.)
     const baseInput: any = {
       uuid: inputUuid,
       application_id: "1",
@@ -390,7 +442,7 @@ export class GenericJsonProcessor {
                      const selectedComponent = Utils.first(Vars.selectedComponents);
                      const currentValue = Editor.getComponentStyle(selectedComponent, '${property.name}') || "${property.default}";
                      const type = "button";
-                     return [options, currentValue, radioType];
+                     return [options, currentValue, type];
                    `
                    : `
                      return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}";
@@ -609,6 +661,8 @@ export class GenericJsonProcessor {
         return ComponentType.Checkbox;
       case 'radio':
         return ComponentType.RadioButton;
+      case 'event':
+        return ComponentType.Event;  // Low-code editor for dynamic data
       default:
         return ComponentType.TextInput;
     }

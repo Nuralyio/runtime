@@ -24,9 +24,6 @@ import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/input
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
 import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
 import studioImageFallbackBlock from "./editor/right-panel-tabs/image/inputs/src-fallback.ts";
-import studioSelectLabelSize from "./editor/right-panel-tabs/select/inputs/label-fontsize.ts";
-import studioSelectTypeBlock from "./editor/right-panel-tabs/select/inputs/select-type.ts";
-import studioSelectSelectionmodeBlock from "./editor/right-panel-tabs/select/inputs/selection_mode.ts";
 import stduioTable from "./editor/right-panel-tabs/table/inputs/columns-block.ts";
 import tableSelectionModeBlock from "./editor/right-panel-tabs/table/inputs/selection-mode.ts";
 import tableFilterBlock from "./editor/right-panel-tabs/table/inputs/filter.ts";
@@ -36,7 +33,6 @@ import QuickActionsButton from "../components/editor-micro-apps/quick-action-bot
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block.ts";
 import studioLabelBlock from "./editor/common/inputs/label.ts";
 import studioBorderCollapse from "./common-blocks/studio-border-collapse.ts";
-import studioSelectValuesBlock from "./editor/right-panel-tabs/select/inputs/studio-select-values-block.ts";
 import studioTableValuesBlock from "./editor/right-panel-tabs/table/inputs/data.ts";
 import studioPageNameBlock from "./page-blocks/studio-page-name-block.ts";
 import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
@@ -52,10 +48,9 @@ import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_functio
 
 
 import { StudioButton } from "./editor/right-panel-tabs/button";
-import { StudioTextInput, StudioTextLabel, StudioDatepicker } from "./editor/right-panel-tabs/index.ts";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect } from "./editor/right-panel-tabs/index.ts";
 import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
-import { StudioSelect } from "./editor/right-panel-tabs/select";
 import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
 import { StudioContainer } from "./editor/right-panel-tabs/container";
@@ -295,8 +290,6 @@ export default [
   //...studioSelectHelperColor,
   ...studioLabelBlock,
   ...studioBorderCollapse,
-  ...studioSelectLabelSize,
-  ...studioSelectValuesBlock,
   ...studioStatusBlock,
   ...studioSizeBlock,
   ...studioButtonTypeBlock,
@@ -313,8 +306,6 @@ export default [
   ...studioImageSrcBlock,
   ...studioImageFallbackBlock,
   ...studioCheckboxChangedEventBlock,
-  ...studioSelectTypeBlock,
-  ...studioSelectSelectionmodeBlock,
   ...studioSizeCollpaseBlock,
   ...studioCursorBlock,
   ...QuickActions,

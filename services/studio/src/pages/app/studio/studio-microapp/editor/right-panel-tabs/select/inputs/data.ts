@@ -12,7 +12,6 @@ export default [
     style: {
       ...InputBlockContainerTheme
     },
-
     childrenIds: ["select_values_label", "select_values_handler"]
   },
   {
@@ -28,9 +27,9 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-               const label ='Data';
-               return label;
-            `
+          const label = 'Data';
+          return label;
+        `
       }
     }
   },
@@ -49,33 +48,26 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-                const parameter ='value';
-                let valueHandler=''
-                
-                    const selectedComponent = Utils.first(Vars.selectedComponents);
-                    
-                        
-                        
-                        if(selectedComponent.input?.options?.type =='handler' && selectedComponent.input?.options?.value){
-                           valueHandler = selectedComponent.input?.options?.value
-                        }
-                
-                return [parameter,valueHandler];
-            `
+          const parameter = 'value';
+          let valueHandler = '';
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          
+          if(selectedComponent.input?.options?.type == 'handler' && selectedComponent.input?.options?.value) {
+            valueHandler = selectedComponent.input?.options?.value;
+          }
+          
+          return [parameter, valueHandler];
+        `
       }
     },
-
     event: {
       codeChange: /* js */ `
-            
-                const selectedComponent = Utils.first(Vars.selectedComponents);
-                    
-                    
-                    if(EventData.value != selectedComponent.input?.value?.value != EventData.value )
-                    updateInput(selectedComponent,'options','handler',EventData.value);
-            
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        
+        if(EventData.value != selectedComponent.input?.options?.value) {
+          updateInput(selectedComponent, 'options', 'handler', EventData.value);
+        }
       `
     }
   }
-
 ];
