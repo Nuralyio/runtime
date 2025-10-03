@@ -1,0 +1,100 @@
+{
+  "containerFields": {
+    "container": {
+      "uuid": "container_collapse_container",
+      "name": "Container Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "container_collapse",
+      "title": "Container Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "direction",
+        "label": "Type",
+        "type": "select",
+        "default": "default",
+        "width": "180px",
+        "placeholder": "Direction",
+        "options": [
+          { "label": "vertical", "value": "vertical" },
+          { "label": "horizontal", "value": "horizontal" }
+        ],
+        "valueHandler": { "ref": "componentInputSelect", "params": ["direction", "default"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["direction"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["direction", "value"] }
+        }
+      },
+      {
+        "name": "alignment",
+        "label": "Alignment",
+        "type": "select",
+        "default": "default",
+        "width": "180px",
+        "placeholder": "Direction",
+        "options": [
+          { "label": "flex-start", "value": "flex-start" },
+          { "label": "flex-end", "value": "flex-end" },
+          { "label": "center", "value": "center" }
+        ],
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst currentType = Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'justify-content') ?? 'default';\nconst options = [\n  { label: 'flex-start', value: 'flex-start' },\n  { label: 'flex-end', value: 'flex-end' },\n  { label: 'center', value: 'center' },\n];\nreturn [options, [[currentType]]];",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet isDisabled = 'enabled';\nif (selectedComponent?.styleHandlers?.['justify-content']) {\n  isDisabled = 'disabled';\n}\nreturn isDisabled;",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst typeValue = EventData.value || 'default';\nupdateStyle(selectedComponent, 'justify-content', typeValue);"
+        },
+        "autoCheckbox": false,
+        "checkboxHandler": "const parameter = 'justify-content';\nlet typeHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\ntypeHandler = selectedComponent?.styleHandlers?.['justify-content'] || '';\nreturn [parameter, typeHandler];",
+        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyleHandlers(selectedComponent, 'justify-content', EventData.value);"
+      },
+      {
+        "name": "gap",
+        "label": "Gap",
+        "type": "number",
+        "default": 0,
+        "width": "153px",
+        "valueHandler": "return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'gap') ?? 0",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap']) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyle(selectedComponent, 'gap', EventData.value + 'px');"
+        },
+        "autoCheckbox": false,
+        "checkboxHandler": "const parameter = 'gap';\nlet heightHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nheightHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap'] || '';\nreturn [parameter, heightHandler];",
+        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyleHandlers(selectedComponent, 'gap', EventData.value);"
+      },
+      {
+        "name": "layout",
+        "label": "Layout",
+        "type": "select",
+        "default": "default",
+        "width": "180px",
+        "placeholder": "layout",
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Boxed", "value": "boxed" }
+        ],
+        "valueHandler": { "ref": "componentInputSelect", "params": ["layout", "default"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["layout"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["layout", "value"] }
+        }
+      }
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block",
+      "display_block"
+    ],
+    "includeContainers": []
+  }
+}

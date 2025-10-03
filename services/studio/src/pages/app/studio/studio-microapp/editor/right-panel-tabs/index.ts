@@ -191,6 +191,32 @@ export const StudioCollection = loadComponentProperties(
   collectionMeta
 );
 
+// Container
+import containerConfig from "./container/_container-config.json";
+import containerHandlers from "./container/_container-handlers.json";
+import containerTheme from "./container/_container-theme.json";
+import containerMeta from "./container/_container-meta.json";
+
+export const StudioContainer = loadComponentProperties(
+  containerConfig,
+  containerHandlers,
+  containerTheme,
+  containerMeta
+);
+
+// Document
+import documentConfig from "./document/_document-config.json";
+import documentHandlers from "./document/_document-handlers.json";
+import documentTheme from "./document/_document-theme.json";
+import documentMeta from "./document/_document-meta.json";
+
+export const StudioDocument = loadComponentProperties(
+  documentConfig,
+  documentHandlers,
+  documentTheme,
+  documentMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -201,6 +227,8 @@ export const StudioComponents = {
   StudioCheckbox,
   StudioCode,
   StudioCollection,
+  StudioContainer,
+  StudioDocument,
   // Add more components here as they're migrated
 };
 
