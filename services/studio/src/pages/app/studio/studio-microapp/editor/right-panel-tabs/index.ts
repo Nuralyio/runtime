@@ -217,6 +217,19 @@ export const StudioDocument = loadComponentProperties(
   documentMeta
 );
 
+// Dropdown
+import dropdownConfig from "./dropdown/_dropdown-config.json";
+import dropdownHandlers from "./dropdown/_dropdown-handlers.json";
+import dropdownTheme from "./dropdown/_dropdown-theme.json";
+import dropdownMeta from "./dropdown/_dropdown-meta.json";
+
+export const StudioDropdown = loadComponentProperties(
+  dropdownConfig,
+  dropdownHandlers,
+  dropdownTheme,
+  dropdownMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -229,6 +242,7 @@ export const StudioComponents = {
   StudioCollection,
   StudioContainer,
   StudioDocument,
+  StudioDropdown,
   // Add more components here as they're migrated
 };
 

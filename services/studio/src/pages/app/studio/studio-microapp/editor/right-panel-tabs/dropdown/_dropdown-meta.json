@@ -1,0 +1,12 @@
+{
+  "uuid": "dropdown_blocks",
+  "name": "Parent Dropdown Container",
+  "themeContainerId": "studio_dropdown_theme_container",
+  "configKey": "dropdownFields",
+  "childrenIds": [
+    "dropdown_collapse_container",
+    "typography_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}
