@@ -18,6 +18,12 @@ export const ValueHandlers = {
     return selectedComponent?.input?.${propertyName}?.value || '';
   `,
   
+  // Get component inputHandlers property (for icon, etc.)
+  componentInputHandler: (propertyName: string, defaultValue: string = '') => `
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    return selectedComponent?.inputHandlers?.${propertyName} || '${defaultValue}';
+  `,
+  
   // Get component input property for radio buttons (returns [options, currentValue, type])
   componentInputRadio: (propertyName: string, options: Array<{label: string, value: string}>, defaultValue: string = '') => `
     const options = ${JSON.stringify(options)};
@@ -85,6 +91,12 @@ export const StateHandlers = {
     return selectedComponent?.inputHandlers?.['${propertyName}'] ? 'disabled' : 'enabled';
   `,
   
+  // Icon picker disable state - check if icon has inputHandler
+  iconPickerDisable: (propertyName: string) => `
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    return !!(selectedComponent?.inputHandlers?.['${propertyName}']);
+  `,
+  
   // Value handler state - disabled if input value is a handler
   valueHandler: `
     const selectedComponent = Utils.first(Vars.selectedComponents);
@@ -106,6 +118,14 @@ export const EventHandlers = {
     const selectedComponent = Utils.first(Vars.selectedComponents);
     if (selectedComponent) {
       updateInput(selectedComponent, '${propertyName}', '${valueType}', EventData.value);
+    }
+  `,
+  
+  // Update component inputHandlers property (for icon, etc.)
+  updateInputHandler: (propertyName: string) => `
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    if (selectedComponent) {
+      updateInputHandlers(selectedComponent, '${propertyName}', EventData.value);
     }
   `,
   

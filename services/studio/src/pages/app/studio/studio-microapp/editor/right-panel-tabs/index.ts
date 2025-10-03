@@ -243,6 +243,58 @@ export const StudioEmbed = loadComponentProperties(
   embedMeta
 );
 
+// FileUpload
+import fileUploadConfig from "./file-upload/_file-upload-config.json";
+import fileUploadHandlers from "./file-upload/_file-upload-handlers.json";
+import fileUploadTheme from "./file-upload/_file-upload-theme.json";
+import fileUploadMeta from "./file-upload/_file-upload-meta.json";
+
+export const StudioFileUpload = loadComponentProperties(
+  fileUploadConfig,
+  fileUploadHandlers,
+  fileUploadTheme,
+  fileUploadMeta
+);
+
+// Icon
+import iconConfig from "./icon/_icon-config.json";
+import iconHandlers from "./icon/_icon-handlers.json";
+import iconTheme from "./icon/_icon-theme.json";
+import iconMeta from "./icon/_icon-meta.json";
+
+export const StudioIcon = loadComponentProperties(
+  iconConfig,
+  iconHandlers,
+  iconTheme,
+  iconMeta
+);
+
+// Image
+import imageConfig from "./image/_image-config.json";
+import imageHandlers from "./image/_image-handlers.json";
+import imageTheme from "./image/_image-theme.json";
+import imageMeta from "./image/_image-meta.json";
+
+export const StudioImage = loadComponentProperties(
+  imageConfig,
+  imageHandlers,
+  imageTheme,
+  imageMeta
+);
+
+// Link
+import linkConfig from "./link/_link-config.json";
+import linkHandlers from "./link/_link-handlers.json";
+import linkTheme from "./link/_link-theme.json";
+import linkMeta from "./link/_link-meta.json";
+
+export const StudioLink = loadComponentProperties(
+  linkConfig,
+  linkHandlers,
+  linkTheme,
+  linkMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -257,6 +309,10 @@ export const StudioComponents = {
   StudioDocument,
   StudioDropdown,
   StudioEmbed,
+  StudioFileUpload,
+  StudioIcon,
+  StudioImage,
+  StudioLink,
   // Add more components here as they're migrated
 };
 
