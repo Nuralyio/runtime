@@ -1,0 +1,100 @@
+{
+  "datepickerFields": {
+    "container": {
+      "uuid": "datepickerFields_collapse_container",
+      "name": "Datepicker Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "datepickerFields_collapse",
+      "title": "Datepicker Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "value",
+        "label": "Value",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter value",
+        "valueHandler": { "ref": "componentInput", "params": ["value"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["value"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["value", "string"] }
+        }
+      },
+      {
+        "name": "label",
+        "label": "Label",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter label",
+        "valueHandler": { "ref": "componentInput", "params": ["label"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["label"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["label", "string"] }
+        }
+      },
+      {
+        "name": "helperText",
+        "label": "Helper Text",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter helper text",
+        "valueHandler": { "ref": "componentInput", "params": ["helperText"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["helperText"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["helperText", "string"] }
+        }
+      },
+      {
+        "name": "locale",
+        "label": "Language",
+        "type": "select",
+        "default": "en",
+        "width": "180px",
+        "options": [
+          { "label": "English", "value": "en" },
+          { "label": "French", "value": "fr" },
+          { "label": "Arabic", "value": "ar" },
+          { "label": "Espagnol", "value": "es" },
+          { "label": "Chinese", "value": "zh" }
+        ],
+        "valueHandler": { "ref": "componentInput", "params": ["locale"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["locale"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["locale", "string"] }
+        }
+      },
+      {
+        "name": "format",
+        "label": "Format",
+        "type": "select",
+        "default": "DD/MM/YYYY",
+        "width": "180px",
+        "placeholder": "Select format",
+        "options": [
+          { "label": "dd/mm/yyyy", "value": "DD/MM/YYYY" },
+          { "label": "mm/dd/yyyy", "value": "MM/DD/YYYY" },
+          { "label": "yyyy/mm/dd", "value": "YYYY/MM/DD" }
+        ],
+        "valueHandler": { "ref": "componentInput", "params": ["format"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["format"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["format", "string"] }
+        }
+      }
+    ]
+  }
+}

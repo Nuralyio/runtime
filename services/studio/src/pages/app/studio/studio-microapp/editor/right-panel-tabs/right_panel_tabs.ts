@@ -89,6 +89,9 @@ export default {
                                         handlers=[
                                             "studio_datepicker_handler"
                                         ];
+                                        themes=[
+                                            "studio_datepicker_theme_container"
+                                        ]
                                         break;
                                         
                         case "select":
