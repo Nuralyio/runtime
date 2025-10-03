@@ -139,12 +139,26 @@ export const StudioSelect = loadComponentProperties(
   selectMeta
 );
 
+// Button
+import buttonConfig from "./button/_button-config.json";
+import buttonHandlers from "./button/_button-handlers.json";
+import buttonTheme from "./button/_button-theme.json";
+import buttonMeta from "./button/_button-meta.json";
+
+export const StudioButton = loadComponentProperties(
+  buttonConfig,
+  buttonHandlers,
+  buttonTheme,
+  buttonMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
   StudioTextLabel,
   StudioDatepicker,
   StudioSelect,
+  StudioButton,
   // Add more components here as they're migrated
 };
 

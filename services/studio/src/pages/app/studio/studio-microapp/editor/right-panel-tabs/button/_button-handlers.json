@@ -1,0 +1,9 @@
+{
+    "handlerPrefix": "studio_button_handler",
+    "events": [
+        {
+        "name": "onClick",
+        "label": "onClick"
+        }
+    ]
+}

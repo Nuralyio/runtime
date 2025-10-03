@@ -54,7 +54,7 @@ export default {
                             break;
                         case "button_input":
                             parameters=[
-                                'buttons_bocks'
+                                'button_blocks'
                             ];
                             handlers=[
                                 "studio_button_handler"
