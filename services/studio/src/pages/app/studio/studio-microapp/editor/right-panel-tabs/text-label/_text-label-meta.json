@@ -1,0 +1,12 @@
+{
+  "uuid": "text_label_bocks",
+  "name": "Parent Color Container",
+  "themeContainerId": "parent_color_container",
+  "configKey": "textLabelFields",
+  "childrenIds": [
+    "text_label_collapse_container",
+    "typography_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}
