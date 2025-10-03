@@ -17,13 +17,9 @@ import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-b
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
 import commonInputsCollapseBlock from "./common-blocks/common-inputs-collapse-block.ts";
-import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
-import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
-import studioImageFallbackBlock from "./editor/right-panel-tabs/image/inputs/src-fallback.ts";
 import stduioTable from "./editor/right-panel-tabs/table/inputs/columns-block.ts";
 import tableSelectionModeBlock from "./editor/right-panel-tabs/table/inputs/selection-mode.ts";
 import tableFilterBlock from "./editor/right-panel-tabs/table/inputs/filter.ts";
-import studioIconColorBlock from "./editor/right-panel-tabs/icon/inputs/color.ts";
 import QuickActions from "../components/editor-micro-apps/quick-action.ts";
 import QuickActionsButton from "../components/editor-micro-apps/quick-action-bottom.ts";
 import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block.ts";
@@ -280,10 +276,6 @@ export default [
   ...studioClickEvent,
   ...studioMouseEnterEvent,
   ...studioMouseLeaveEvent,
-  ...studioIconColorBlock,
-  ...studioImageAltBlock,
-  ...studioImageSrcBlock,
-  ...studioImageFallbackBlock,
   ...studioCheckboxChangedEventBlock,
   ...studioSizeCollpaseBlock,
   ...studioCursorBlock,
