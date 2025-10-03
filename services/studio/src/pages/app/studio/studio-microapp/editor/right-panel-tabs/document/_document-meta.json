@@ -1,0 +1,9 @@
+{
+  "uuid": "document_blocks",
+  "name": "Parent Document Container",
+  "themeContainerId": "parent_color_container",
+  "configKey": "documentFields",
+  "childrenIds": [
+    "document_collapse_container"
+  ]
+}
