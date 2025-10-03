@@ -42,7 +42,7 @@ import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
 import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
 
 
-import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument, StudioDropdown } from "./editor/right-panel-tabs/index.ts";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument, StudioDropdown, StudioEmbed } from "./editor/right-panel-tabs/index.ts";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioImage } from "./editor/right-panel-tabs/image";
 import { StudioTable } from "./editor/right-panel-tabs/table";
@@ -54,7 +54,6 @@ import { PageThemeStudio } from "./page-blocks/themes.ts";
 import { StudioMenu } from "./editor/right-panel-tabs/menu/index.ts";
 import { StudioRichText } from "./editor/right-panel-tabs/Richtext/index.ts";
 import { StudioRichTextEditor } from "./editor/right-panel-tabs/RichtextEditor/index.ts";
-import { StudioEmbed } from "./editor/right-panel-tabs/embed/index.ts";
 import { StudioLink } from "./editor/right-panel-tabs/link/index.ts";
 import { StudioFileUpload } from "./editor/right-panel-tabs/file-upload/index.ts";
 import { StudioVideo } from "./editor/right-panel-tabs/video";
