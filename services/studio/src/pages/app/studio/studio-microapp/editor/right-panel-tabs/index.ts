@@ -165,6 +165,32 @@ export const StudioCheckbox = loadComponentProperties(
   checkboxMeta
 );
 
+// Code
+import codeConfig from "./code/_code-config.json";
+import codeHandlers from "./code/_code-handlers.json";
+import codeTheme from "./code/_code-theme.json";
+import codeMeta from "./code/_code-meta.json";
+
+export const StudioCode = loadComponentProperties(
+  codeConfig,
+  codeHandlers,
+  codeTheme,
+  codeMeta
+);
+
+// Collection
+import collectionConfig from "./collection/_collection-config.json";
+import collectionHandlers from "./collection/_collection-handlers.json";
+import collectionTheme from "./collection/_collection-theme.json";
+import collectionMeta from "./collection/_collection-meta.json";
+
+export const StudioCollection = loadComponentProperties(
+  collectionConfig,
+  collectionHandlers,
+  collectionTheme,
+  collectionMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -173,6 +199,8 @@ export const StudioComponents = {
   StudioSelect,
   StudioButton,
   StudioCheckbox,
+  StudioCode,
+  StudioCollection,
   // Add more components here as they're migrated
 };
 

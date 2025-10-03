@@ -1,0 +1,9 @@
+{
+  "handlerPrefix": "studio_collection_handler",
+  "events": [
+    {
+      "name": "onInit",
+      "label": "onInit"
+    }
+  ]
+}

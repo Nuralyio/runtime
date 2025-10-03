@@ -1,0 +1,68 @@
+{
+  "codeFields": {
+    "container": {
+      "uuid": "code_collapse_container",
+      "name": "Code Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "code_collapse",
+      "title": "Code Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "language",
+        "label": "Language",
+        "type": "select",
+        "default": "javascript",
+        "width": "180px",
+        "placeholder": "Automatique",
+        "options": [
+          { "label": "JS/Typescript", "value": "javascript" },
+          { "label": "HTML", "value": "html" },
+          { "label": "CSS", "value": "css" },
+          { "label": "JSON", "value": "json" }
+        ],
+        "valueHandler": { "ref": "componentInputSelect", "params": ["language", "javascript"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["language"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["language", "value"] }
+        }
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "type": "select",
+        "default": "default",
+        "width": "180px",
+        "placeholder": "Automatique",
+        "options": [
+          { "label": "Automatique", "value": "" },
+          { "label": "Visual studio", "value": "vs" },
+          { "label": "Visual studio dark", "value": "vs-dark" }
+        ],
+        "valueHandler": { "ref": "componentInputSelect", "params": ["theme", "default"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["theme"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["theme", "value"] }
+        }
+      }
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block"
+    ],
+    "includeContainers": [
+      "border_collapse_container"
+    ]
+  }
+}
