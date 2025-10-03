@@ -6,6 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 interface Item {
   label: string;
   cssVar: string;
+  type?: "color" | "text" | "number" | "select";  // Input type (defaults to "color")
+  defaultValue?: string;  // Default value for the input
+  placeholder?: string;  // Placeholder for text/number inputs
+  options?: Array<{ label: string; value: string }>;  // Options for select inputs
 }
 
 interface Category {
@@ -116,6 +120,100 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     const inputUuid = uuidv4();
     const handlerUuid = uuidv4();
 
+    // Determine input type (default to color)
+    const inputType = item.type || "color";
+    const defaultValue = item.defaultValue || (inputType === "color" ? "black" : "");
+    const placeholder = item.placeholder || "";
+    const options = item.options || [];
+
+    // Set component type based on input type
+    let componentType = ComponentType.ColorPicker;
+    let inputStyle: any = {};
+    let inputConfig: any = {};
+
+    if (inputType === "text") {
+      componentType = ComponentType.TextInput;
+      inputStyle = {
+        width: "120px",
+        "--hybrid-input-background-color": "#2a2a2a",
+        "--hybrid-input-text-color": "#ffffff",
+        "--hybrid-input-border-bottom": "1px solid #444"
+      };
+      inputConfig = {
+        placeholder: {
+          type: "string",
+          value: placeholder
+        }
+      };
+    } else if (inputType === "number") {
+      componentType = ComponentType.TextInput;
+      inputStyle = {
+        width: "80px",
+        "--hybrid-input-background-color": "#2a2a2a",
+        "--hybrid-input-text-color": "#ffffff",
+        "--hybrid-input-border-bottom": "1px solid #444"
+      };
+      inputConfig = {
+        type: {
+          type: "string",
+          value: "number"
+        },
+        placeholder: {
+          type: "string",
+          value: placeholder
+        }
+      };
+    } else if (inputType === "select") {
+      componentType = ComponentType.Select;
+      inputStyle = {
+        width: "140px",
+        "--hy-select-background-color": "#2a2a2a",
+        "--hy-select-text-color": "#ffffff",
+        "--hy-select-border": "1px solid #444",
+        "--hy-select-hover-background": "#3a3a3a"
+      };
+      // No need for options in inputConfig, will be in value handler
+      inputConfig = {};
+    }
+
+    // Create value handler based on input type
+    let valueHandler = "";
+    let eventUpdate = "";
+    let eventType = "valueChange";
+
+    if (inputType === "color") {
+      valueHandler = /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        return Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
+      `;
+      eventUpdate = /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
+      `;
+    } else if (inputType === "select") {
+      valueHandler = /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const currentValue = Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
+        const options = ${JSON.stringify(options)};
+        return [options, [currentValue]];
+      `;
+      eventUpdate = /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
+      `;
+      eventType = "changed";
+    } else {
+      // For text and number inputs
+      valueHandler = /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        return Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
+      `;
+      eventUpdate = /* js */ `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
+      `;
+    }
+
     const blockComponents = [
       {
         uuid: blockUuid,
@@ -181,22 +279,17 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         uuid: inputUuid,
         application_id: "1",
         name: `${item.label} input`,
-        component_type: ComponentType.ColorPicker,
+        component_type: componentType,
         ...COMMON_ATTRIBUTES,
-        style: {},
+        style: inputStyle,
         event: {
-          valueChange: /* js */ `
-            const selectedComponent = Utils.first(Vars.selectedComponents);
-            updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
-          `
+          [eventType]: eventUpdate
         },
         input: {
+          ...inputConfig,
           value: {
             type: "handler",
-            value: /* js */ `
-              const selectedComponent = Utils.first(Vars.selectedComponents);
-              return  Editor.getComponentStyle(Utils.first(Vars.selectedComponents), "${item.cssVar}") ?? "black";
-              `
+            value: valueHandler
           }
         }
       },
