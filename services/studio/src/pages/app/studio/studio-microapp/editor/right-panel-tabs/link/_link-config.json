@@ -18,11 +18,24 @@
         "--hy-collapse-local-header-background-color": "#3d3d3d"
       }
     },
-    "properties": [],
+    "properties": [
+      {
+        "name": "url",
+        "label": "URL",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "https://nuraly.io",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'url') : null;\nreturn Input?.type === 'value' ? Input.value ?? '' : '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.input?.url?.type === 'handler' && selectedComponent?.input?.url?.value ? 'disabled' : 'enabled';",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'url', 'value', EventData.value);\n}"
+        }
+      }
+    ],
     "includeCommonProperties": [
       "component_value_text_block",
-      "component_id_text_block",
-      "link_url_block"
+      "component_id_text_block"
     ],
     "includeContainers": []
   }

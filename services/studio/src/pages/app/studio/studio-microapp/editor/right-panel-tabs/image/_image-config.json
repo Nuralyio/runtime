@@ -18,15 +18,63 @@
         "--hy-collapse-local-header-background-color": "#3d3d3d"
       }
     },
-    "properties": [],
+    "properties": [
+      {
+        "name": "src",
+        "label": "Src",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "Image URL",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.src?.type == 'value') {\n  return selectedComponent.input?.src?.value ?? '';\n}\nreturn '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.src?.type == 'handler' && selectedComponent?.input?.src?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newSrcText = EventData.value;\nupdateInput(selectedComponent, 'src', 'string', newSrcText);"
+        }
+      },
+      {
+        "name": "alt",
+        "label": "Alt",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "Alt text",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.alt?.type == 'value') {\n  return selectedComponent.input?.alt?.value ?? '';\n}\nreturn '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.alt?.type == 'handler' && selectedComponent?.input?.alt?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newAltText = EventData.value;\nupdateInput(selectedComponent, 'alt', 'string', newAltText);"
+        }
+      },
+      {
+        "name": "fallback",
+        "label": "Fallback",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "Fallback URL",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.fallback?.type == 'string') {\n  return selectedComponent.input?.fallback?.value ?? '';\n}\nreturn '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.fallback?.type == 'handler' && selectedComponent?.input?.fallback?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newFallBack = EventData.value;\nupdateInput(selectedComponent, 'fallback', 'string', newFallBack);"
+        }
+      },
+      {
+        "name": "previewable",
+        "label": "Previewable",
+        "type": "boolean",
+        "default": false,
+        "width": "100%",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.previewable?.type == 'value') {\n  return selectedComponent.input?.previewable?.value ?? false;\n}\nreturn false;",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.previewable?.type == 'handler' && selectedComponent?.input?.previewable?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "checkboxChanged": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newPreviewable = EventData.value === 'check';\nupdateInput(selectedComponent, 'previewable', 'string', newPreviewable);"
+        }
+      }
+    ],
     "includeCommonProperties": [
       "component_value_text_block",
       "component_id_text_block",
-      "image_previewable_text_block",
-      "display_block",
-      "image_alt_text_block",
-      "image_src_text_block",
-      "image_fallback_text_block"
+      "display_block"
     ],
     "includeContainers": []
   }
