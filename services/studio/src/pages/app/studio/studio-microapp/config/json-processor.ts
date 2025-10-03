@@ -421,10 +421,9 @@ export class GenericJsonProcessor {
       Object.entries(property.eventHandlers).forEach(([eventName, handler]) => {
         const resolvedHandler = this.resolveHandler(handler, EventHandlers);
         if (resolvedHandler) {
-          console.log(`[${property.name}] Setting event "${eventName}":`, resolvedHandler.substring(0, 100));
           baseInput.event[eventName] = resolvedHandler;
         } else {
-          console.warn(`[${property.name}] Failed to resolve handler for event "${eventName}"`, handler);
+          console.warn(`[JSON-Processor] Failed to resolve handler for "${property.name}.${eventName}"`, handler);
         }
       });
     }
