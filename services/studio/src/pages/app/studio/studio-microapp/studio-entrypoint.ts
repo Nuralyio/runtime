@@ -11,9 +11,6 @@ import studioHelperTextBlock from "./editor/common/inputs/helper-text.ts";
 import studioStatusBlock from "./common-blocks/studio-status-block.ts";
 import studioSizeBlock from "./common-blocks/studio-size-block.ts";
 import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
-import studioPositionBlock from "./common-blocks/studio-position-block.ts";
-import studioWidthBlock from "./common-blocks/studio-width-block.ts";
-import studioHeightBlock from "./common-blocks/studio-height-block.ts";
 import studioFLexBlock from "./common-blocks/flex-size.ts";
 import studioButtonTypeBlock from "./editor/right-panel-tabs/button/inputs/type.ts";
 import studioButtonIconPosition from "./editor/right-panel-tabs/button/inputs/icon-position.ts";
@@ -22,17 +19,12 @@ import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-b
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
 import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
-import studioInputLabelColor from "./editor/right-panel-tabs/text-input/inputs/studio-input-label-color.ts";
-import studioInputLabelSize from "./editor/right-panel-tabs/text-input/inputs/studio-input-label-size.ts";
-import studioInputHelperColor from "./editor/right-panel-tabs/text-input/inputs/studio-input-helper-color.ts";
-import studioInputHelperSize from "./editor/right-panel-tabs/text-input/inputs/studio-input-helper-size.ts";
 import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/inputs/checked.ts";
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
 import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
 import studioImageFallbackBlock from "./editor/right-panel-tabs/image/inputs/src-fallback.ts";
 import studioDatepickerLocaleBlock from "./editor/right-panel-tabs/datepicker/inputs/locale.ts";
 import studioDatepickerFormatBlock from "./editor/right-panel-tabs/datepicker/inputs/format.ts";
-import studioInputTypeBlock from "./editor/right-panel-tabs/text-input/inputs/studio-input-type-block.ts";
 import studioSelectLabelSize from "./editor/right-panel-tabs/select/inputs/label-fontsize.ts";
 import studioSelectTypeBlock from "./editor/right-panel-tabs/select/inputs/select-type.ts";
 import studioSelectSelectionmodeBlock from "./editor/right-panel-tabs/select/inputs/selection_mode.ts";
@@ -295,30 +287,23 @@ export default [
   ...studioDatepickerLocaleBlock,
   ...studioDatepickerFormatBlock,
   ...studioBackgroundcolorBlock,
-  ...studioWidthBlock,
+  // Removed: ...studioWidthBlock, ...studioHeightBlock (now in studioSizeCollpaseBlock)
   ...studioFLexBlock,
-  ...studioHeightBlock,
   ...studioBoxShadowBlock,
   ...studioBorderRadiusBlock,
   ...studioDisplayBlock,
   ...studioPlaceholderBlock,
   ...studioHelperTextBlock,
-  ...studioInputHelperColor,
   //...studioSelectHelperColor,
-  ...studioInputHelperSize,
   ...studioLabelBlock,
   ...studioBorderCollapse,
-  ...studioInputLabelColor,
-  ...studioInputLabelSize,
   ...studioSelectLabelSize,
   ...studioSelectValuesBlock,
   ...studioStatusBlock,
   ...studioSizeBlock,
-  ...studioInputTypeBlock,
   ...studioButtonTypeBlock,
   ...studioIconPickerBlock,
   ...studioTypographyCollapseBlock,
-  ...studioPositionBlock,
   ...studioButtonIconPosition,
   ...studioClickEvent,
   ...studioMouseEnterEvent,

@@ -41,7 +41,7 @@ export default [
   },
 
   {
-    uuid: "width_label",
+    uuid: "whidth_label",
     name: "width label",
     component_type: ComponentType.TextLabel,
     application_id: "1",
