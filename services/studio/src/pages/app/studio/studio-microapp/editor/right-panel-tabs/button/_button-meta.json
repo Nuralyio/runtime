@@ -1,0 +1,12 @@
+{
+  "uuid": "button_blocks",
+  "name": "Parent Button Container",
+  "themeContainerId": "studio_button_theme_container",
+  "configKey": "buttonFields",
+  "childrenIds": [
+    "button_collapse_container",
+    "typography_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}

@@ -32,8 +32,13 @@ type CssVarItem = {
   placeholder?: string;
   options?: Array<{ label: string; value: string }>;
 };
-type CssVarGroup = { name: string; items: CssVarItem[]; open?: boolean };
-type CssVarSection = { name: string; open?: boolean; items: CssVarGroup[] };
+type CssVarGroup = { name: string; variables: CssVarItem[]; open?: boolean };
+type CssVarSection = { name: string; open?: boolean; sections: CssVarGroup[] };
+type ThemeConfig = {
+  theme: {
+    modes: CssVarSection[];
+  };
+};
 
 type HandlerConfig = {
   handlerPrefix: string;
@@ -102,7 +107,7 @@ export function loadComponentProperties(
   // Type assertions
   const fieldsConfigTyped = fieldsConfig as Record<string, BlockConfig>;
   const handlersConfigTyped = handlersConfig as HandlerConfig;
-  const themeConfigTyped = themeConfig as CssVarSection[];
+  const themeConfigTyped = themeConfig as any;  // Allow both old and new structure
 
   // Generate field components from JSON config
   const fieldComponents = GenericJsonProcessor.generateFromConfig(
@@ -117,8 +122,13 @@ export function loadComponentProperties(
   );
 
   // Generate theme components from JSON config
+  // Support both old structure (direct array) and new structure (theme.modes)
+  const themeModes = Array.isArray(themeConfigTyped) 
+    ? themeConfigTyped  // Old structure: direct array
+    : themeConfigTyped.theme?.modes;  // New structure: { theme: { modes: [...] } }
+  
   const themeComponents = generateComponents(
-    themeConfigTyped,
+    themeModes,
     metadata.themeContainerId
   );
 

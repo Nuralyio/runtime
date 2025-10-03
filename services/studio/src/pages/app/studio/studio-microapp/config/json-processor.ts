@@ -15,7 +15,7 @@ import { ValueHandlers, StateHandlers, EventHandlers } from "./handler-library.t
 export interface PropertyConfig {
   name: string;
   label: string;
-  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event';
+  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event' | 'icon';
   default: any;
   unit?: string;
   min?: number;
@@ -411,6 +411,69 @@ export class GenericJsonProcessor {
       };
     }
     
+    // Icon type components use IconPicker with special input structure
+    if (property.type === 'icon') {
+      const iconInput: any = {
+        uuid: inputUuid,
+        application_id: "1",
+        name: `${property.label} Input`,
+        component_type: ComponentType.IconPicker,
+        inputHandlers: {},
+        styleHandlers: {},
+        styleBreakPoints: {
+          mobile: {},
+          tablet: {},
+          laptop: {}
+        },
+        attributesHandlers: {},
+        errors: {},
+        childrenIds: [],
+        style: {
+          display: "block",
+          width: property.width || "180px"
+        },
+        input: {
+          value: {
+            type: "handler",
+            value: this.resolveHandler(property.valueHandler, ValueHandlers) ||
+                   `
+                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, '${property.name}') : null;
+                     return Input?.value || '';
+                   `
+          },
+          placeholder: {
+            type: "handler",
+            value: `return '${property.placeholder || 'Choose an icon'}';`
+          },
+          disable: {
+            type: "handler",
+            value: this.resolveHandler(property.stateHandler, StateHandlers) ||
+                   `
+                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     return !!(
+                       selectedComponent?.input?.${property.name}?.type === "handler" && 
+                       selectedComponent?.input?.${property.name}?.value
+                     );
+                   `
+          }
+        },
+        event: {}
+      };
+      
+      // Add event handlers
+      if (property.eventHandlers) {
+        Object.entries(property.eventHandlers).forEach(([eventName, handler]) => {
+          const resolvedHandler = this.resolveHandler(handler, EventHandlers);
+          if (resolvedHandler) {
+            iconInput.event[eventName] = resolvedHandler;
+          }
+        });
+      }
+      
+      return iconInput;
+    }
+    
     // Standard input components (text, number, select, color, etc.)
     const baseInput: any = {
       uuid: inputUuid,
@@ -663,6 +726,8 @@ export class GenericJsonProcessor {
         return ComponentType.RadioButton;
       case 'event':
         return ComponentType.Event;  // Low-code editor for dynamic data
+      case 'icon':
+        return ComponentType.IconPicker;  // Icon picker component
       default:
         return ComponentType.TextInput;
     }

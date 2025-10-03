@@ -12,14 +12,11 @@ import studioStatusBlock from "./common-blocks/studio-status-block.ts";
 import studioSizeBlock from "./common-blocks/studio-size-block.ts";
 import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
 import studioFLexBlock from "./common-blocks/flex-size.ts";
-import studioButtonTypeBlock from "./editor/right-panel-tabs/button/inputs/type.ts";
-import studioButtonIconPosition from "./editor/right-panel-tabs/button/inputs/icon-position.ts";
 import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
 import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
 import commonInputsCollapseBlock from "./common-blocks/common-inputs-collapse-block.ts";
-import studioButtonClickEventBlock from "./button-blocks/studio-button-click-event-block.ts";
 import studioCheckboxCheckedBlock from "./editor/right-panel-tabs/checkbox/inputs/checked.ts";
 import studioImageAltBlock from "./editor/right-panel-tabs/image/inputs/alt.ts";
 import studioImageSrcBlock from "./editor/right-panel-tabs/image/inputs/src.ts";
@@ -47,8 +44,7 @@ import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
 import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
 
 
-import { StudioButton } from "./editor/right-panel-tabs/button";
-import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect } from "./editor/right-panel-tabs/index.ts";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton } from "./editor/right-panel-tabs/index.ts";
 import { StudioCheckbox } from "./editor/right-panel-tabs/checkbox";
 import { StudioIcon } from "./editor/right-panel-tabs/icon";
 import { StudioImage } from "./editor/right-panel-tabs/image";
@@ -292,15 +288,12 @@ export default [
   ...studioBorderCollapse,
   ...studioStatusBlock,
   ...studioSizeBlock,
-  ...studioButtonTypeBlock,
   ...studioIconPickerBlock,
   ...studioTypographyCollapseBlock,
-  ...studioButtonIconPosition,
   ...studioClickEvent,
   ...studioMouseEnterEvent,
   ...studioMouseLeaveEvent,
   ...studioIconColorBlock,
-  ...studioButtonClickEventBlock,
   ...studioCheckboxCheckedBlock,
   ...studioImageAltBlock,
   ...studioImageSrcBlock,

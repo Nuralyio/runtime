@@ -1,0 +1,126 @@
+{
+  "buttonFields": {
+    "container": {
+      "uuid": "button_collapse_container",
+      "name": "Button Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "button_collapse",
+      "title": "Button Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "label",
+        "label": "Label",
+        "type": "text",
+        "default": "Button",
+        "width": "180px",
+        "placeholder": "Button text",
+        "valueHandler": { "ref": "componentInput", "params": ["label"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["label"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["label", "value"] }
+        }
+      },
+      {
+        "name": "id",
+        "label": "ID",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Component ID",
+        "valueHandler": { "ref": "componentInput", "params": ["id"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["id"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["id", "value"] }
+        }
+      },
+      {
+        "name": "type",
+        "label": "Type",
+        "type": "select",
+        "default": "default",
+        "width": "180px",
+        "options": [
+          { "label": "Primary", "value": "primary" },
+          { "label": "Secondary", "value": "secondary" },
+          { "label": "Danger", "value": "danger" },
+          { "label": "Ghost", "value": "ghost" },
+          { "label": "Default", "value": "default" }
+        ],
+        "valueHandler": { "ref": "componentStyleSelect", "params": ["type", [{"label": "Primary", "value": "primary"}, {"label": "Secondary", "value": "secondary"}, {"label": "Danger", "value": "danger"}, {"label": "Ghost", "value": "ghost"}, {"label": "Default", "value": "default"}], "default"] },
+        "stateHandler": { "ref": "styleHandler", "params": ["type"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateStyle", "params": ["type", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "type"
+      },
+      {
+        "name": "iconPosition",
+        "label": "Icon position",
+        "type": "radio",
+        "default": "left",
+        "width": "180px",
+        "options": [
+          { "label": "Left", "value": "left" },
+          { "label": "Right", "value": "right" }
+        ],
+        "valueHandler": { "ref": "componentInputRadio", "params": ["iconPosition", [{"label": "Left", "value": "left"}, {"label": "Right", "value": "right"}], "left"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["iconPosition"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["iconPosition", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "iconPosition"
+      },
+      {
+        "name": "icon",
+        "label": "Icon",
+        "type": "icon",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Choose an icon",
+        "valueHandler": { "ref": "componentInput", "params": ["icon"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["icon"] },
+        "eventHandlers": {
+          "iconChanged": { "ref": "updateInput", "params": ["icon", "string"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "icon"
+      },
+      {
+        "name": "state",
+        "label": "State",
+        "type": "radio",
+        "default": "enabled",
+        "width": "180px",
+        "options": [
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
+        ],
+        "valueHandler": { "ref": "componentInputRadio", "params": ["state", [{"label": "Enabled", "value": "enabled"}, {"label": "Disabled", "value": "disabled"}], "enabled"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["state"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["state", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "state"
+      }
+    ]
+  }
+}
