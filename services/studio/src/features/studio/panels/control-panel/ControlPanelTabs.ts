@@ -1,6 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { type ComponentElement } from "@shared/redux/store/component/interface";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface";
 import { $editorState } from "@shared/redux/store/apps";
 import { isServer } from "@shared/utils/envirement";
 

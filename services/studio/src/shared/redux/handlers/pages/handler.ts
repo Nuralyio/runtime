@@ -1,5 +1,5 @@
 import { $currentApplication } from "@shared/redux/store/apps";
-import { type PageElement } from "./interfaces/interface";
+import { type PageElement } from "./page.interface";
 import { addPageToApplicationAction } from "@shared/redux/actions/application/addPageToApplicationAction";
 import { updatePageAction } from "@shared/redux/actions/page/updatePageAction";
 import { eventDispatcher } from "@shared/utils/change-detection";

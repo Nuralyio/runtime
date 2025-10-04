@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/select";
 import "@nuralyui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { ViewMode } from "@shared/redux/store/environment.ts";
 import { executeCodeWithClosure } from "@runtime/Kernel.ts";

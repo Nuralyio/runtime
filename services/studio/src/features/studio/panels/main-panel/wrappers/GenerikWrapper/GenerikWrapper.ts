@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { $draggingComponentInfo, $hoveredComponent } from "@shared/redux/store/component/store.ts";
-import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/component.interface.ts";
 import { $environment, type Environment, ViewMode } from "@shared/redux/store/environment.ts";
 import { $context, getVar, setVar } from "@shared/redux/store/context.ts";
 import styles from "./GenerikWrapper.style.ts";

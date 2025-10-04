@@ -1,4 +1,4 @@
-import { type ComponentType } from "@shared/redux/store/component/interface";
+import { type ComponentType } from "@shared/redux/store/component/component.interface";
 
 export const GenerateName = (componentType: ComponentType) => {
   const randomNumber = Math.floor(Math.random() * 10000);

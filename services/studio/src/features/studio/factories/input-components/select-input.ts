@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { createBaseComponent } from "../component-builders.ts";
 
 export const createSelectInput = (config: {

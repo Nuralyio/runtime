@@ -1,7 +1,7 @@
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/select";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { executeCodeWithClosure } from "@runtime/Kernel.ts";

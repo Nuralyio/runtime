@@ -1,4 +1,4 @@
-import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/component.interface.ts";
 import { html, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ref } from "lit/directives/ref.js";

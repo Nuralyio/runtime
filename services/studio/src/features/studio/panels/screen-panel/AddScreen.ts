@@ -5,7 +5,7 @@ import "@nuralyui/menu";
 import "@nuralyui/button";
 import "@nuralyui/icon";
 import { $pages } from "@shared/redux/store/page";
-import { type PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import { type PageElement } from "@shared/redux/handlers/pages/page.interface";
 
 import { addPageAction } from "@shared/redux/actions/page/addPageAction";
 

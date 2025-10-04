@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import QuickActions from "./params/editor-micro-apps/quick-action.ts";
 import QuickActionsButton from "./params/editor-micro-apps/quick-action-bottom.ts";
 import TopBar from "./params/editor-micro-apps/top-bar.ts";

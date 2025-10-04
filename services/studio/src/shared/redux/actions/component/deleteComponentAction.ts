@@ -1,5 +1,5 @@
 import { $components } from "@shared/redux/store/component/store.ts";
-import type { ComponentElement } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { updateComponentHandler } from "@shared/redux/handlers/components/update-component.handler.ts";
 import { deleteComponentActionHandler } from "@shared/redux/handlers/components/delete-component.handler.ts";
 import { eventDispatcher } from "../../../utils/change-detection.ts";

@@ -1,6 +1,6 @@
 import { atom, computed, deepMap, onMount, onNotify } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
-import { type PageElement } from "../handlers/pages/interfaces/interface";
+import { type PageElement } from "../handlers/pages/page.interface";
 import { setVar } from "@shared/redux/store/context";
 import { ExecuteInstance } from "@runtime/Kernel";
 

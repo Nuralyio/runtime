@@ -10,7 +10,7 @@ import { ViewMode } from "@shared/redux/store/environment";
 import { merge, Observable, Subscription } from "rxjs";
 import EditorInstance, { getInitPlatform } from "./Editor";
 import { styleMap } from "lit/directives/style-map.js";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { ExecuteInstance } from "./Kernel";
 
 

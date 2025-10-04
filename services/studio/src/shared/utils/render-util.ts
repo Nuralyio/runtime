@@ -1,4 +1,4 @@
-import { type ComponentElement, ComponentType } from "@shared/redux/store/component/interface";
+import { type ComponentElement, ComponentType } from "@shared/redux/store/component/component.interface";
 import { html, type TemplateResult } from "lit";
 import "@nuralyui/tooltips";
 import "@runtime/ui/Tabs/Tabs";

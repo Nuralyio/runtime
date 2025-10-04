@@ -1,4 +1,4 @@
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { addPageHandler } from "@shared/redux/handlers/pages/handler";
 
 /** Actions*/

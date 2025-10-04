@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../BaseElement.ts";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { executeCodeWithClosure } from "@runtime/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { debounce } from "@shared/utils/time.ts";

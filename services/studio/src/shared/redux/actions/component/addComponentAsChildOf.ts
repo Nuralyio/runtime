@@ -1,5 +1,5 @@
 import { $components, type ComponentStore } from "@shared/redux/store/component/store";
-import type { ComponentElement } from "@shared/redux/store/component/interface";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface";
 import { updateComponentHandler } from "@shared/redux/handlers/components/update-component.handler";
 
 export function addComponentAsChildOf(componentId: string, parentComponentId: string, application_id: string) {

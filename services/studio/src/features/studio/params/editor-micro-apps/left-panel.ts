@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface";
+import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { isServer } from "@shared/utils/envirement";
 export let filesAppUUID = "" ;
 export let filesPageUUID = "" ;

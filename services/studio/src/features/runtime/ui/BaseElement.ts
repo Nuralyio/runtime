@@ -24,7 +24,7 @@ import { scrollToTarget, setupHashScroll, traitInputHandler, traitStyleHandler }
 import { calculateStyles } from "./BaseElement/calculateStyles.ts";
 import { handleMouseEnter, handleMouseLeave } from "./BaseElement/interactions.helpers.ts";
 import { handleComponentEvent } from "./BaseElement/execute-event.helpers.ts";
-import type { ComponentElement } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { v4 as uuidv4 } from "uuid";
 
 

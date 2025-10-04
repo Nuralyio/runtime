@@ -18,8 +18,8 @@ import { setCurrentEditorTab } from '@shared/redux/actions/editor/setCurrentEdit
 import { loadFunctionsHandler } from '@shared/redux/handlers/functions/load-functions-handler';
 import { GenerateName } from '@shared/utils/naming-generator';
 import { eventDispatcher } from '@shared/utils/change-detection';
-import type { ComponentElement } from '@shared/redux/store/component/interface';
-import type { PageElement } from '@shared/redux/handlers/pages/interfaces/interface';
+import type { ComponentElement } from '@shared/redux/store/component/component.interface';
+import type { PageElement } from '@shared/redux/handlers/pages/page.interface';
 import Editor from '../Editor';
 import { invokeFunctionHandler } from '@shared/redux/handlers/functions/invoke-function-handler';
 import Database from '@nuraly/dbclient';

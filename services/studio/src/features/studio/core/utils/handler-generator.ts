@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid"; // Import UUID package
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 
 export const createHandlersFromEvents = (

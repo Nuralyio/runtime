@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface";
+import { ComponentType } from "@shared/redux/store/component/component.interface";
 
 export default {
   uuid: "right_panel_tabs",

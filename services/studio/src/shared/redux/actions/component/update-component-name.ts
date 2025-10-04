@@ -1,7 +1,7 @@
 // Filename: update-component-name.ts
 
 import { $components } from "@shared/redux/store/component/store.ts";
-import type { ComponentElement } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from "@shared/redux/handlers/components/update-component.handler.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison

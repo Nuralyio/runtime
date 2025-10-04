@@ -1,5 +1,5 @@
 import { deletePageHandler } from "@shared/redux/handlers/pages/deletePageHandler";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { $applicationPages } from "@shared/redux/store/page";
 
 

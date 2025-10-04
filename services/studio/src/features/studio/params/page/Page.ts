@@ -7,9 +7,9 @@ import "@features/studio/panels/main-panel/wrappers/GenerikWrapper/GenerikWrappe
 import "@features/studio/panels/main-panel/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
 import { $currentApplication, $resizing } from "@shared/redux/store/apps";
-import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/interface";
+import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/component.interface";
 import { $applicationComponents, $draggingComponentInfo } from "@shared/redux/store/component/store";
-import { type PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import { type PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { $applicationPages, $currentPage, $currentPageViewPort } from "@shared/redux/store/page";
 import { html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";

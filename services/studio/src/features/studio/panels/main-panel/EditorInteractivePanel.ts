@@ -5,7 +5,7 @@ import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { ViewMode } from "@shared/redux/store/environment.ts";
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from "@shared/redux/store/page.ts";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { $selectedComponent } from "@shared/redux/store/component/store.ts";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { $currentApplication } from "@shared/redux/store/apps.ts";

@@ -1,5 +1,5 @@
 import { $components } from "@shared/redux/store/component/store";
-import { type ComponentElement, ComponentType, type ComponentStore } from "@shared/redux/store/component/interface";
+import { type ComponentElement, ComponentType, type ComponentStore } from "@shared/redux/store/component/component.interface";
 import { v4 as uuidv4 } from "uuid";
 import { addComponentHandler } from "@shared/redux/handlers/components/add-component.handler";
 
