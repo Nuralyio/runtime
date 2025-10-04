@@ -360,6 +360,19 @@ export const StudioVideo = loadComponentProperties(
   videoMeta
 );
 
+// Menu
+import menuConfig from "./menu/_menu-config.json";
+import menuHandlers from "./menu/_menu-handlers.json";
+import menuTheme from "./menu/_menu-theme.json";
+import menuMeta from "./menu/_menu-meta.json";
+
+export const StudioMenu = loadComponentProperties(
+  menuConfig,
+  menuHandlers,
+  menuTheme,
+  menuMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -383,6 +396,7 @@ export const StudioComponents = {
   StudioRichTextEditor,
   StudioTable,
   StudioVideo,
+  StudioMenu,
 };
 
 // Export async loader for future use
