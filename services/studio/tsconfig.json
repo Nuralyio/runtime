@@ -8,13 +8,22 @@
     "baseUrl": "./src",
     "paths": {
       "$store/*": [
-        "store/*"
+        "shared/redux/store/*"
+      ],
+      "@features/*": [
+        "features/*"
       ],
       "@shared/*": [
         "shared/*"
       ],
-      "@services/*": [
-        "services/*"
+      "@api/*": [
+        "api/*"
+      ],
+      "@runtime/*": [
+        "features/runtime/*"
+      ],
+      "@studio/*": [
+        "features/studio/*"
       ],
       "@utils/*": [
         "utils/*"

@@ -1,0 +1,20 @@
+import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import { $pages } from "@shared/redux/store/page";
+import { setVar } from "@shared/redux/store/context";
+
+export function updatePageAction(page: PageElement, application_id: string) {
+  $pages.set({
+    ...$pages.get(),
+    [application_id]: [...($pages.get()[application_id].map((oldPage) => {
+      if (oldPage.uuid == page.uuid) {
+        return page;
+      }
+      return oldPage;
+
+    }) || [])]
+  });
+
+  const pages = $pages.get()[application_id];
+  setVar(application_id, `${application_id}.appPages`, pages);
+
+}
