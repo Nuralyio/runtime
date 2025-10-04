@@ -2,7 +2,7 @@ import { addComponentAction } from "@shared/redux/actions/component/addComponent
 import { $currentApplication } from "@shared/redux/store/apps";
 import { extractAllChildrenIds } from "@shared/redux/store/component/helper";
 import { $applicationComponents } from "@shared/redux/store/component/store";
-import { ExecuteInstance } from "@runtime/Kernel";
+import { ExecuteInstance } from "@runtime/core/Kernel";
 
 export function copyCpmponentToClipboard(component : any) {
     delete component.parent;

@@ -10,8 +10,8 @@ import { invokeFunctionHandler } from "@shared/redux/handlers/functions/invoke-f
 import { ButtonTheme } from "@studio/core/utils/common-editor-theme.ts";
 import { buildFunctionHandler } from "@shared/redux/handlers/functions/build-function-handler.ts";
 import { deployFunctionHandler } from "@shared/redux/handlers/functions/deploy-function-handler.ts";
-import { ExecuteInstance } from "@runtime/Kernel.ts";
-import "@runtime/ui/CodeEditor/CodeEditor.ts";
+import { ExecuteInstance } from "@runtime/core/Kernel.ts";
+import "@runtime/components/advanced/CodeEditor/CodeEditor.ts";
 
 // debounce.ts
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {

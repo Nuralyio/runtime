@@ -1,7 +1,7 @@
-import { FileStorage } from '../Storage';
-import { Navigation } from '../Navigation';
-import { Utils } from '../Utils';
-import { ExecuteInstance } from '../Kernel';
+import { FileStorage } from '../core/Storage';
+import { Navigation } from '../core/Navigation';
+import { Utils } from '../core/Utils';
+import { ExecuteInstance } from '../core/Kernel';
 import { isServer } from '@shared/utils/envirement';
 import { setVar } from '@shared/redux/store/context';
 import { addPageHandler, updatePageHandler } from '@shared/redux/handlers/pages/handler';
@@ -20,7 +20,7 @@ import { GenerateName } from '@shared/utils/naming-generator';
 import { eventDispatcher } from '@shared/utils/change-detection';
 import type { ComponentElement } from '@shared/redux/store/component/component.interface';
 import type { PageElement } from '@shared/redux/handlers/pages/page.interface';
-import Editor from '../Editor';
+import Editor from '../core/Editor';
 import { invokeFunctionHandler } from '@shared/redux/handlers/functions/invoke-function-handler';
 import Database from '@nuraly/dbclient';
 
