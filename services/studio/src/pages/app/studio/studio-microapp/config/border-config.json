@@ -1,0 +1,17 @@
+{
+  "borderInputs": {
+    "container": {
+      "uuid": "border_collapse_container",
+      "name": "Border Collapse Container",
+      "style": {
+        "marginTop": "13px"
+      }
+    },
+    "collapse": {
+      "uuid": "border_collapse",
+      "title": "Box",
+      "style": {}
+    },
+    "properties": []
+  }
+}

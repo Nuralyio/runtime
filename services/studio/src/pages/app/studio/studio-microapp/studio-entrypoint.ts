@@ -1,21 +1,13 @@
 import { ComponentType } from "$store/component/interface.ts";
 import { COMMON_ATTRIBUTES } from "./helper/common_attributes.ts";
-import studioBackgroundcolorBlock from "./text-labels-blocks/studio-backgroundcolor-block.ts";
-import studioBoxShadowBlock from "./text-labels-blocks/studio-box-shadow-block.ts";
-import studioBorderRadiusBlock from "./text-labels-blocks/studio-border-radius-block.ts";
-import studioClickEvent from "./text-labels-blocks/studio-click-event.ts";
-import studioMouseEnterEvent from "./text-labels-blocks/studio-mouse-enter-event.ts";
-import studioMouseLeaveEvent from "./text-labels-blocks/studio-mouse-leave-event.ts";
+import studioBoxShadowBlock from "./common-blocks/studio-box-shadow-block.ts";
+import studioBorderRadiusBlock from "./common-blocks/studio-border-radius-block.ts";
 import studioDisplayBlock from "./editor/common/inputs/display.ts";
 import studioHelperTextBlock from "./editor/common/inputs/helper-text.ts";
-import studioStatusBlock from "./common-blocks/studio-status-block.ts";
-import studioSizeBlock from "./common-blocks/studio-size-block.ts";
 import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
-import studioFLexBlock from "./common-blocks/flex-size.ts";
 import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
 import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
 import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
-import studioCursorBlock from "./common-blocks/styles/cursor-block.ts";
 import commonInputsCollapseBlock from "./common-blocks/common-inputs-collapse-block.ts";
 import stduioTable from "./editor/right-panel-tabs/table/inputs/columns-block.ts";
 import tableSelectionModeBlock from "./editor/right-panel-tabs/table/inputs/selection-mode.ts";
@@ -253,9 +245,7 @@ export default [
   ...stduioTable,
   ...tableSelectionModeBlock,
   ...tableFilterBlock,
-  ...studioBackgroundcolorBlock,
   // Removed: ...studioWidthBlock, ...studioHeightBlock (now in studioSizeCollpaseBlock)
-  ...studioFLexBlock,
   ...studioBoxShadowBlock,
   ...studioBorderRadiusBlock,
   ...studioDisplayBlock,
@@ -264,15 +254,9 @@ export default [
   //...studioSelectHelperColor,
   ...studioLabelBlock,
   ...studioBorderCollapse,
-  ...studioStatusBlock,
-  ...studioSizeBlock,
   ...studioIconPickerBlock,
   ...studioTypographyCollapseBlock,
-  ...studioClickEvent,
-  ...studioMouseEnterEvent,
-  ...studioMouseLeaveEvent,
   ...studioSizeCollpaseBlock,
-  ...studioCursorBlock,
   ...QuickActions,
   ...QuickActionsButton,
   ...microAppSelectionBlocks,
