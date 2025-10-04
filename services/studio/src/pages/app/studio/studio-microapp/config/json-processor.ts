@@ -4,6 +4,7 @@ import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 // Force reload: 2025-10-03-16:55:00
 import sizeConfig from "./size-config.json";
 import { ValueHandlers, StateHandlers, EventHandlers } from "./handler-library.ts";
+import { getCommonPropertyBlock } from "./common-properties-registry.ts";
 
 /**
  * GENERIC JSON-TO-COMPONENTS PROCESSOR
@@ -51,6 +52,7 @@ export interface BlockConfig {
     style: Record<string, string>;
   };
   properties: PropertyConfig[];
+  includeCommonProperties?: string[];  // Array of common property block UUIDs to include
 }
 
 export interface GenericConfig {
@@ -141,7 +143,33 @@ export class GenericJsonProcessor {
    * ```
    */
   static generateFromConfig(blockConfig: BlockConfig, blockName: string): any[] {
-    return this.generateBlockComponents(blockConfig, blockName);
+    const components = this.generateBlockComponents(blockConfig, blockName);
+    
+    // Process includeCommonProperties if present
+    if (blockConfig.includeCommonProperties && blockConfig.includeCommonProperties.length > 0) {
+      const commonComponents: any[] = [];
+      
+      console.log(`[JSON Processor] Processing includeCommonProperties for ${blockName}:`, blockConfig.includeCommonProperties);
+      
+      for (const commonBlockUuid of blockConfig.includeCommonProperties) {
+        const commonBlock = getCommonPropertyBlock(commonBlockUuid);
+        
+        if (commonBlock && commonBlock.length > 0) {
+          console.log(`[JSON Processor] Found common block "${commonBlockUuid}" with ${commonBlock.length} components`);
+          // Add all components from the common block
+          commonComponents.push(...commonBlock);
+        } else {
+          console.warn(`Common property block "${commonBlockUuid}" not found or empty`);
+        }
+      }
+      
+      console.log(`[JSON Processor] Total components: ${components.length} + ${commonComponents.length} common = ${components.length + commonComponents.length}`);
+      
+      // Append common components to the generated components
+      return [...components, ...commonComponents];
+    }
+    
+    return components;
   }
   
   private static generateMainContainer(blockConfig: BlockConfig, blockName: string): any {

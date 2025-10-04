@@ -23,6 +23,14 @@ import { generateComponents } from "../common-blocks/studio-theme-block.ts";
 // Memoization cache to prevent re-processing
 const componentCache = new Map<string, any[]>();
 
+// Clear cache in development for hot reload
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    componentCache.clear();
+    console.log('[Component Loader] Cache cleared for hot reload');
+  });
+}
+
 // Type definitions
 type CssVarItem = { 
   label: string; 

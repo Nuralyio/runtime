@@ -1,0 +1,12 @@
+{
+  "uuid": "rich_text_blocks",
+  "name": "Parent Rich Text Container",
+  "themeContainerId": "studio_rich_text_theme_container",
+  "configKey": "richtextFields",
+  "childrenIds": [
+    "rich_text_collapse_container",
+    "typography_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}
