@@ -1,4 +1,4 @@
-import type { ComponentElement } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators.js";
 import "@nuralyui/checkbox";

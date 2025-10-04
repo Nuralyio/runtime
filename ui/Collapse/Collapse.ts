@@ -5,7 +5,7 @@ import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/collapse";
 import { customElement, state } from "lit/decorators.js";
 import { renderComponent } from "@shared/utils/render-util.ts";
-import type { ComponentElement } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { $applicationComponents } from "@shared/redux/store/component/store.ts";
 import { styleMap } from "lit/directives/style-map.js";
 

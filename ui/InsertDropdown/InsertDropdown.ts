@@ -1,7 +1,7 @@
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/button";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { executeCodeWithClosure } from "@runtime/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";

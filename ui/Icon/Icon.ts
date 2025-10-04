@@ -2,7 +2,7 @@ import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import "@nuralyui/icon";
 import { ref } from "lit/directives/ref.js";

@@ -1,9 +1,9 @@
 import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import styles from "./Collections.style.ts";
-import type { ComponentElement, DraggingComponentInfo } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement, DraggingComponentInfo } from "@shared/redux/store/component/component.interface.ts";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import { renderComponent } from "@utils/render-util.ts";
+import { renderComponent } from "@shared/utils/render-util";
 import { $components } from "@shared/redux/store/component/store.ts";
 import { $resizing } from "@shared/redux/store/apps.ts";
 import { BaseElementBlock } from "../BaseElement.ts";

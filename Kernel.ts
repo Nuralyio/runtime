@@ -8,7 +8,7 @@ import {
   setComponentRuntimeValue,
   setComponentRuntimeValues
 } from "@shared/redux/store/component/store";
-import type { ComponentElement } from "@shared/redux/store/component/interface";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface";
 import { $context, getVar } from "@shared/redux/store/context";
 import { isServer } from "@shared/utils/envirement";
 import { eventDispatcher } from "@shared/utils/change-detection";
