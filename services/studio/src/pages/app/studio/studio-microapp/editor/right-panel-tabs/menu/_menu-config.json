@@ -1,0 +1,49 @@
+{
+  "menuFields": {
+    "container": {
+      "uuid": "menu_collapse_container",
+      "name": "Menu Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "menu_collapse",
+      "title": "Menu Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "value",
+        "label": "Value",
+        "type": "text",
+        "placeholder": "Enter value",
+        "valueHandler": { "ref": "componentInput", "params": ["value"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["value"] }
+      },
+      {
+        "name": "id",
+        "label": "ID",
+        "type": "text",
+        "placeholder": "Enter ID",
+        "valueHandler": { "ref": "componentInput", "params": ["id"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["id"] }
+      },
+      {
+        "name": "options",
+        "label": "Data",
+        "type": "event",
+        "handlerType": "input",
+        "handlerProperty": "options",
+        "handlerValueGetter": "const parameter = 'options';\nlet labelHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.options?.type === 'handler' && selectedComponent?.input?.options?.value) {\n    labelHandler = selectedComponent?.input?.options.value;\n}else if (selectedComponent?.input?.options?.type ===  \"array\" && selectedComponent?.input?.options?.value) {\n    labelHandler = JSON.stringify(selectedComponent?.input?.options.value, null, 2);\n}\nreturn [parameter, labelHandler];",
+        "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (EventData.value !== selectedComponent?.input?.options?.value) {\n    const isNotHandler = !EventData.value.includes('return');\n\n    if (isNotHandler) {\n        updateInput(\n            selectedComponent,\n            'options',\n            selectedComponent?.input?.options?.type,\n            JSON.parse(EventData.value)\n        );\n    } else {\n        updateInput(\n            selectedComponent,\n            'options',\n            'handler',\n            EventData.value\n        );\n    }\n}"
+      }
+    ]
+  }
+}

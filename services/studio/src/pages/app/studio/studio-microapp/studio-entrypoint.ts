@@ -28,12 +28,11 @@ import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
 import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
 
 
-import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument, StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink, StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo } from "./editor/right-panel-tabs/index.ts";
+import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument, StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink, StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo, StudioMenu } from "./editor/right-panel-tabs/index.ts";
 import { StudioCommonInputs } from "./editor/common/inputs";
 import { StudioFunction } from "./editor/left-panel-tabs/functions";
 import { StudioDashboard } from "./dashboard/index.ts";
 import { PageThemeStudio } from "./page-blocks/themes.ts";
-import { StudioMenu } from "./editor/right-panel-tabs/menu/index.ts";
 
 
 export default [
