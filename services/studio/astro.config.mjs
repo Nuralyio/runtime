@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from "@astrojs/react";
 import lit from "@astrojs/lit";
 import worker from "@astropub/worker";
+import yaml from '@rollup/plugin-yaml';
 
 import node from "@astrojs/node";
 
@@ -15,6 +16,7 @@ export default defineConfig({
     mode: "standalone"
   }),
   vite: {
+   plugins: [yaml()],
    resolve: {
      alias: {
        '$store': '/src/shared/redux/store',

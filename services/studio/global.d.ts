@@ -30,4 +30,15 @@ interface CustomSelf extends Worker {
     __MODULES_CONFIG__?: any;
     __URL__?: string;
   }
+
+  // YAML module declarations
+  declare module '*.yaml' {
+    const content: any;
+    export default content;
+  }
+
+  declare module '*.yml' {
+    const content: any;
+    export default content;
+  }
   

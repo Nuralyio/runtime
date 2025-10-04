@@ -1,8 +1,8 @@
-import "../../components-configuration/page/Page.ts";
-import "../../components-configuration/flow/Flow.ts";
-import "../../components-configuration/function/Function.ts";
-import "../../components-configuration/database/Database.ts";
-import "../../components-configuration/files/Files.ts";
+import "../../params/page/Page.ts";
+import "../../params/flow/Flow.ts";
+import "../../params/function/Function.ts";
+import "../../params/database/Database.ts";
+import "../../params/files/Files.ts";
 import "./EditorInteractivePanel.ts";
 import { $editorState } from "@shared/redux/store/apps.ts";
 import { css, html, LitElement } from "lit";

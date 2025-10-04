@@ -11,7 +11,7 @@
  */
 
 import { GenericJsonProcessor, type BlockConfig } from "../../processors/json-processor.ts";
-import commonInputsConfigRaw from "../../components-configuration/_shared/common-inputs.config.json";
+import commonInputsConfigRaw from "../../params/_shared/common-inputs.config.json";
 
 // Type assertion for the JSON config
 const commonInputsConfig = commonInputsConfigRaw as { commonInputs: BlockConfig };

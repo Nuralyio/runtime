@@ -1,0 +1,84 @@
+sizeInputs:
+  container:
+    uuid: size_collapse_container
+    name: Size Properties
+    style:
+      marginTop: 13px
+
+  collapse:
+    uuid: size_collapse
+    title: Size
+    style:
+      --hy-collapse-content-small-size-padding: 5px
+      --hy-collapse-font-weight: normal
+      --hy-collapse-border-radius: 0px
+      --hy-collapse-width: 292px
+      --hy-collapse-border: none
+      --hy-collapse-border-bottom: 1px solid #ccc
+      --hy-collapse-local-header-background-color: '#3d3d3d'
+
+  properties:
+    - name: width
+      label: Width
+      type: number
+      default: auto
+      unit: px
+      min: 0
+      max: 2000
+      step: 1
+      autoCheckbox: false
+
+    - name: height
+      label: Height
+      type: number
+      default: auto
+      unit: px
+      min: 0
+      max: 2000
+      step: 1
+      autoCheckbox: false
+
+    - name: position
+      label: Position
+      type: select
+      default: static
+      options:
+        - value: static
+          label: Static
+        - value: relative
+          label: Relative
+        - value: absolute
+          label: Absolute
+        - value: fixed
+          label: Fixed
+        - value: sticky
+          label: Sticky
+
+    - name: cursor
+      label: Cursor
+      type: select
+      default: default
+      options:
+        - value: default
+          label: Default
+        - value: pointer
+          label: Pointer
+        - value: text
+          label: Text
+        - value: move
+          label: Move
+        - value: not-allowed
+          label: Not Allowed
+        - value: grab
+          label: Grab
+        - value: grabbing
+          label: Grabbing
+
+    - name: fontSize
+      label: Font Size
+      type: number
+      default: '16'
+      unit: px
+      min: 8
+      max: 72
+      step: 1
