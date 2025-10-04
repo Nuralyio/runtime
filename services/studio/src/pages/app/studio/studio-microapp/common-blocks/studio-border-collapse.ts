@@ -1,50 +1,42 @@
+/**
+ * BORDER COLLAPSE BLOCK - JSON-DRIVEN APPROACH
+ * 
+ * Container for border-related properties (border radius, box shadow).
+ * The configuration is in border-config.json and processed by json-processor.ts
+ */
+
+import { GenericJsonProcessor, type BlockConfig } from "../config/json-processor.ts";
+import borderConfigRaw from "../config/border-config.json";
 import { ComponentType } from "$store/component/interface.ts";
-import { CollapseHeaderTheme } from "../editor/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../helper/common_attributes.ts";
 
-export default [
-  {
-    uuid: "border_collapse_container",
-    application_id: "1",
-    name: "position collapse container",
-    component_type: ComponentType.Container,
-    ...COMMON_ATTRIBUTES,
-    style: {
-      marginTop: "13px"
-    },
-    childrenIds: ["divider","border_text_label_collapse", "border_collapse"]
-  },
-  {
-    uuid: "border_text_label_collapse",
-    name: "border_text_label_collapse",
-    application_id: "1",
-    component_type: ComponentType.TextLabel,
-    style: {
-    ...CollapseHeaderTheme
-    },
-    input:{
-      value:{
-        type: "handler",
-        value: `return "Box"`
-      }
-    }
-  },
-  {
-    uuid: "border_collapse",
-    application_id: "1",
-    name: "border collapse",
-    component_type: ComponentType.Container,
-    style: {
-    },
-    childrenIds: ["border_collapse_container_childrens"]
-  },
-  {
-    uuid: "border_collapse_container_childrens",
-    application_id: "1",
-    name: "Left panel",
-    component_type: ComponentType.Container,
-    ...COMMON_ATTRIBUTES,
-    style: {},
-    childrenIds: ["border_radius_vertical_container", "box_shadow_block"]
-  }
-];
+// Type assertion for the JSON config
+const borderConfig = borderConfigRaw as { borderInputs: BlockConfig };
+
+// Generate border components from JSON config
+const generatedBorderComponents = GenericJsonProcessor.generateFromConfig(
+  borderConfig.borderInputs,
+  'border'
+);
+
+// Add the child container that references other blocks
+const borderChildrenContainer = {
+  uuid: "border_collapse_container_childrens",
+  application_id: "1",
+  name: "Border Children Container",
+  component_type: ComponentType.Container,
+  ...COMMON_ATTRIBUTES,
+  style: {},
+  childrenIds: ["border_radius_vertical_container", "box_shadow_block"]
+};
+
+// Add divider
+const divider = {
+  uuid: "divider",
+  name: "divider",
+  component_type: ComponentType.Divider,
+  application_id: "1",
+  input: {}
+};
+
+export default [divider, ...generatedBorderComponents, borderChildrenContainer];
