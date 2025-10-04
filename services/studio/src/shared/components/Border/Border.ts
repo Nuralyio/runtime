@@ -10,7 +10,7 @@ import "@nuralyui/color-picker";
 import {
   SelectTheme,
   SingleButtonTheme,
-} from "pages/app/studio/studio-microapp/editor/utils/common-editor-theme.ts";
+} from "pages/app/studio/studio-microapp/core/utils/common-editor-theme.ts";
 
 // Debounce function
 function debounce(func: Function, wait: number) {

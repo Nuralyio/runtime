@@ -1,0 +1,25 @@
+/**
+ * Blocks Export
+ * Centralized export for all studio block components
+ */
+
+// Page Blocks
+export { default as studioPageNameBlock } from "./page-blocks/studio-page-name-block.ts";
+export { default as studioPageUrlBlock } from "./page-blocks/studio-page-url-block.ts";
+export { default as studioPageSEOBlock } from "./page-blocks/studio-page-seo-block.ts";
+export { PageThemeStudio } from "./page-blocks/themes.ts";
+
+// Microapp Blocks
+export { default as microAppSelectionBlocks } from "./microapp-blocks/micro-app-selection-blocks.ts";
+export { default as microAppContainerBlocks } from "./microapp-blocks/micro-app-container-blocks.ts";
+
+// Common Blocks
+export { default as studioTypographyCollapseBlock } from "./common-blocks/typography-collapse-block.ts";
+export { default as studioSizeCollpaseBlock } from "./common-blocks/size-collpase-block.ts";
+export { default as commonInputsCollapseBlock } from "./common-blocks/common-inputs-collapse-block.ts";
+export { default as studioBorderCollapse } from "./common-blocks/studio-border-collapse.ts";
+export { default as studioBorderRadiusBlock } from "./common-blocks/studio-border-radius-block.ts";
+export { default as studioBoxShadowBlock } from "./common-blocks/studio-box-shadow-block.ts";
+
+// Dashboard Blocks
+export { StudioDashboard } from "./dashboard-blocks/index.ts";

@@ -1,5 +1,5 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { CommonButtonTheme } from "../../editor/utils/common-editor-theme.ts";
+import { CommonButtonTheme } from "../../core/utils/common-editor-theme.ts";
 import { createBaseComponent } from "../component-builders.ts";
 
 export const createRadioInput = (config: {

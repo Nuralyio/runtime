@@ -1,38 +1,53 @@
 import { ComponentType } from "$store/component/interface.ts";
-import { COMMON_ATTRIBUTES } from "./helper/common_attributes.ts";
-import studioBoxShadowBlock from "./common-blocks/studio-box-shadow-block.ts";
-import studioBorderRadiusBlock from "./common-blocks/studio-border-radius-block.ts";
-import studioDisplayBlock from "./editor/common/inputs/display.ts";
-import studioHelperTextBlock from "./editor/common/inputs/helper-text.ts";
-import studioPlaceholderBlock from "./editor/common/inputs/placeholder.ts";
-import studioIconPickerBlock from "./editor/common/inputs/icon.ts";
-import studioTypographyCollapseBlock from "./common-blocks/typography-collapse-block.ts";
-import studioSizeCollpaseBlock from "./common-blocks/size-collpase-block.ts";
-import commonInputsCollapseBlock from "./common-blocks/common-inputs-collapse-block.ts";
-import stduioTable from "./editor/right-panel-tabs/table/inputs/columns-block.ts";
-import tableSelectionModeBlock from "./editor/right-panel-tabs/table/inputs/selection-mode.ts";
-import tableFilterBlock from "./editor/right-panel-tabs/table/inputs/filter.ts";
 import QuickActions from "../components/editor-micro-apps/quick-action.ts";
 import QuickActionsButton from "../components/editor-micro-apps/quick-action-bottom.ts";
-import studioLabelBlock from "./editor/common/inputs/label.ts";
-import studioBorderCollapse from "./common-blocks/studio-border-collapse.ts";
-import studioTableValuesBlock from "./editor/right-panel-tabs/table/inputs/data.ts";
-import studioPageNameBlock from "./page-blocks/studio-page-name-block.ts";
-import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
-import studioPageSEOBlock from "./page-blocks/studio-page-seo-block.ts";
-import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks.ts";
-import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks.ts";
 import TopBar from "../components/editor-micro-apps/top-bar.ts";
 import LeftPanel from "../components/editor-micro-apps/left-panel.ts";
-import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
-import RightPanelFunctionTab from "./editor/right-panel-tabs/right_panel_function_tabs.ts";
+import stduioTable from "./components/data/table/inputs/columns-block.ts";
+import tableSelectionModeBlock from "./components/data/table/inputs/selection-mode.ts";
+import tableFilterBlock from "./components/data/table/inputs/filter.ts";
+import studioTableValuesBlock from "./components/data/table/inputs/data.ts";
 
+// Import from new organized structure
+import { 
+  StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, 
+  StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument, 
+  StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink, 
+  StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo, 
+  StudioMenu 
+} from "./components/index.ts";
 
-import { StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton, StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument, StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink, StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo, StudioMenu } from "./editor/right-panel-tabs/index.ts";
-import { StudioCommonInputs } from "./editor/common/inputs";
-import { StudioFunction } from "./editor/left-panel-tabs/functions";
-import { StudioDashboard } from "./dashboard/index.ts";
-import { PageThemeStudio } from "./page-blocks/themes.ts";
+import { 
+  RightPanelTabs, 
+  RightPanelFunctionTab, 
+  StudioFunction 
+} from "./panels/index.ts";
+
+import {
+  studioBoxShadowBlock,
+  studioBorderRadiusBlock,
+  studioTypographyCollapseBlock,
+  studioSizeCollpaseBlock,
+  commonInputsCollapseBlock,
+  studioBorderCollapse,
+  studioPageNameBlock,
+  studioPageUrlBlock,
+  studioPageSEOBlock,
+  microAppSelectionBlocks,
+  microAppContainerBlocks,
+  StudioDashboard,
+  PageThemeStudio
+} from "./blocks/index.ts";
+
+import { 
+  COMMON_ATTRIBUTES,
+  StudioCommonInputs,
+  studioDisplayBlock,
+  studioHelperTextBlock,
+  studioPlaceholderBlock,
+  studioIconPickerBlock,
+  studioLabelBlock
+} from "./core/index.ts";
 
 
 export default [

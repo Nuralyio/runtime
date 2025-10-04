@@ -10,7 +10,7 @@ import * as solidIcons from "@fortawesome/free-solid-svg-icons";
 import "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { ButtonTheme } from "../../../pages/app/studio/studio-microapp/editor/utils/common-editor-theme.ts";
+import { ButtonTheme } from "../../../pages/app/studio/studio-microapp/core/utils/common-editor-theme.ts";
 
 @customElement("icon-picker-block")
 export class IconPicker extends BaseElementBlock {
