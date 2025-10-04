@@ -15,6 +15,17 @@ export default defineConfig({
     mode: "standalone"
   }),
   vite: {
+   resolve: {
+     alias: {
+       '$store': '/src/shared/redux/store',
+       '@features': '/src/features',
+       '@shared': '/src/shared',
+       '@api': '/src/api',
+       '@runtime': '/src/features/runtime',
+       '@studio': '/src/features/studio',
+       '@utils': '/src/utils',
+     }
+   },
    build:{
     assetsInlineLimit:0,
     

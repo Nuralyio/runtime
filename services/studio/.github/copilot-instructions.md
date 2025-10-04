@@ -12,7 +12,7 @@ Nuraly is a visual web application builder with a component-based micro-frontend
 ## Core Design Patterns
 
 ### Component Architecture
-All UI components extend `BaseElementBlock` from `src/shared/components/BaseElement.ts`:
+All UI components extend `BaseElementBlock` from `src/shared/ui/BaseElement.ts`:
 ```typescript
 export class MyComponent extends BaseElementBlock {
   @property({ type: Object }) component;
@@ -57,17 +57,42 @@ Each app is isolated with own components/pages via `<micro-app>` element:
 ## Key Development Workflows
 
 ### Adding New Components
-1. Create in `src/shared/components/[ComponentName]/`
+1. Create in `src/shared/ui/[ComponentName]/`
 2. Extend `BaseElementBlock`
 3. Define in `ComponentType` enum
 4. Add to render mapping in `src/utils/render-util.ts`
 5. Register in studio panels for drag-and-drop
 
+### Studio Feature Structure
+The Studio feature is organized in `src/features/studio/`:
+- **components/** - Studio-specific feature components:
+  - `function/` - Function editor components
+  - `flow/` - Flow editor components
+  - `database/` - Database management components
+  - `files/` - File management components
+  - `page/` - Page management components
+  - `editor-micro-apps/` - Micro-app components for editor
+  - Plus: `_shared/`, `advanced/`, `content/`, `data/`, `inputs/`, `layout/`, `media/`, `navigation/`
+  
+- **panels/** - Studio UI panels and layouts:
+  - `control-panel/` - Property control panels
+  - `layout/` - Editor layout components
+  - `main-panel/` - Main editor panel
+  - `left-panel/`, `right-panel/` - Side panels
+  - `log-panel/`, `screen-panel/`, `top-bar/` - Utility panels
+  
+- **blocks/** - Configuration blocks
+- **core/** - Core studio utilities and helpers
+- **factories/** - Component factories for generating UI
+- **processors/** - Data processors
+
+Import from `@features/studio/*` for studio-specific code.
+
 ### Studio Component Configuration
 Studio uses factory pattern for generating property panels:
-- Configs in `src/pages/app/studio/studio-microapp/config/`
-- Factories in `src/pages/app/studio/studio-microapp/factories/`
-- Generated blocks in `src/pages/app/studio/studio-microapp/common-blocks/`
+- Configs in `src/features/studio/config/`
+- Factories in `src/features/studio/factories/`
+- Generated blocks in `src/features/studio/blocks/`
 
 Example: `size-configs.ts` + `style-block-factory.ts` → `size-collapse-block.ts`
 
@@ -91,7 +116,7 @@ JavaScript handlers execute in service worker context with globals:
 
 ### Component Structure
 ```
-src/shared/components/[ComponentName]/
+src/shared/ui/[ComponentName]/
 ├── [ComponentName].ts        # Main component class
 ├── [ComponentName].style.ts  # Component styles  
 └── templates/               # Sub-templates (optional)
@@ -105,6 +130,14 @@ addComponentAction(component, pageUuid)
 moveDraggedComponent(dropTargetId, draggedId)
 ```
 
+### API Integration
+```typescript
+// src/api/ - API service layer organized by domain
+import { fetchApplicationById, fetchAllApplications } from '@api';
+import { fetchPageComponentById } from '@api/components';
+import { fetchApplicationPagesById } from '@api/pages';
+```
+
 ### Service Integration
 - SSR data injection via `window["__INITIAL_COMPONENT_STATE__"]`
 - Worker communication via `src/utils/worker/worker.ts`
@@ -114,7 +147,7 @@ moveDraggedComponent(dropTargetId, draggedId)
 
 - **UUIDs**: Use `uuidv4()` for component/page identifiers
 - **Naming**: kebab-case for files, PascalCase for classes, camelCase for properties
-- **Imports**: Use `$store/*` aliases for store modules, `@utils/*` for utilities
+- **Imports**: Use `$store/*` for stores, `@api/*` for API calls, `@features/*` for features, `@shared/*` for shared code, `@utils/*` for utilities
 - **Event Handling**: Prefer handler-based approach over direct DOM events
 - **Styling**: CSS-in-JS via Lit `css` template, CSS variables for theming
 

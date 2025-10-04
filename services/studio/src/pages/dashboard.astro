@@ -1,12 +1,10 @@
 ---
 import Layout from './_layouts/LandingLayout.astro';
-import "../core/micro-app";
-import { MicroApp } from '../core/micro-app';
+import "../features/runtime/micro-app";
+import { MicroApp } from '../features/runtime/micro-app';
 import 'dotenv/config'
-import { processHeaders } from '@utils/api-calls-utils';
-import { fetchApplicationPagesById } from '@services/page.service';
-import { fetchApplicationComponentById } from '@services/component.service';
-import { fetchAllApplications } from '@services/applications.service';
+import { processHeaders } from '@shared/utils/api-calls-utils';
+import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@api';
 
 const dashboardAPPUUID = process.env.DASHBOARD_APP_UUID;
 const dashboardAPPPageUUID = process.env.DASHBOARD_PAGE_UUID;

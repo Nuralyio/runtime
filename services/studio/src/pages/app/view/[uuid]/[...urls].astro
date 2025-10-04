@@ -1,13 +1,11 @@
 ---
 import View from "../view.astro";
-import { $currentPageId, $pages } from "../../../../store/page"
-import { fetchApplicationById} from "@services/applications.service";
-import { fetchApplicationPagesById } from "$services/page.service";
+import { $currentPageId, $pages } from "../../../../shared/redux/store/page"
+import { fetchApplicationById, fetchApplicationPagesById, fetchPageComponentById } from "@api";
 
 
-import { $components } from "../../../../store/component/store";
-import { fetchPageComponentById } from "$services/component.service";
-import { processHeaders } from "utils/api-calls-utils";
+import { $components } from "../../../../shared/redux/store/component/store";
+import { processHeaders } from "@shared/utils/api-calls-utils";
 // here we will handle the routing
 const { title, uuid, urls = "" } = Astro.params;
 
