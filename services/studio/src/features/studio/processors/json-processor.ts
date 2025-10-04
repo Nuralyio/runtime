@@ -1,16 +1,20 @@
 import { ComponentType } from "@shared/redux/store/component/interface.ts";
 import { CollapseHeaderTheme } from "../core/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../core/helpers/common_attributes.ts";
+import * as yaml from 'js-yaml';
 // Force reload: 2025-10-03-16:55:00
-import sizeConfig from "../components-configuration/_shared/size.config.json";
+// Now supporting both JSON and YAML configs - YAML is preferred for better readability
+import sizeConfigYaml from "../params/_shared/size.config.yaml";
+import sizeConfigJson from "../params/_shared/size.config.json";
 import { ValueHandlers, StateHandlers, EventHandlers } from "./handler-library.ts";
 import { getCommonPropertyBlock } from "./common-properties-registry.ts";
 
 /**
- * GENERIC JSON-TO-COMPONENTS PROCESSOR
+ * GENERIC CONFIG-TO-COMPONENTS PROCESSOR
  * 
- * This replaces the complex factory system with a simple JSON processor
- * that can generate any type of studio block (size, typography, etc.) with much less code.
+ * This replaces the complex factory system with a simple config processor
+ * that can generate any   type of studio block (size, typography, etc.) with much less code.
+ * Supports both JSON and YAML configuration formats.
  */
 
 export interface PropertyConfig {
@@ -95,7 +99,54 @@ export class GenericJsonProcessor {
   }
 
   /**
-   * Generate components for any block type from JSON config
+   * Parse YAML configuration string
+   * @param yamlString - YAML configuration as string
+   * @returns Parsed configuration object
+   */
+  static parseYaml(yamlString: string): any {
+    try {
+      return yaml.load(yamlString);
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+      throw new Error(`YAML parsing failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Convert JSON configuration to YAML string
+   * @param config - Configuration object (JSON)
+   * @returns YAML string representation
+   */
+  static convertToYaml(config: any): string {
+    try {
+      return yaml.dump(config, {
+        indent: 2,
+        lineWidth: 120,
+        noRefs: true,
+        sortKeys: false
+      });
+    } catch (error) {
+      console.error('Failed to convert to YAML:', error);
+      throw new Error(`YAML conversion failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Load configuration from either JSON or YAML
+   * @param config - Either a parsed JSON object or YAML string
+   * @returns Parsed configuration object
+   */
+  static loadConfig(config: any | string): any {
+    if (typeof config === 'string') {
+      // Try to parse as YAML
+      return this.parseYaml(config);
+    }
+    // Already a parsed object (JSON)
+    return config;
+  }
+
+  /**
+   * Generate components for any block type from JSON/YAML config
    * @param blockConfig - The block configuration object
    * @param blockName - The name of the block (e.g., 'size', 'typography')
    */
@@ -124,9 +175,11 @@ export class GenericJsonProcessor {
   
   /**
    * Legacy method for backward compatibility with size block
+   * Now uses YAML config by default, falls back to JSON if YAML is not available
    */
   static generateSizeComponents(): any[] {
-    const config: SizeConfig = sizeConfig as SizeConfig;
+    // Prefer YAML config, fallback to JSON
+    const config: SizeConfig = (sizeConfigYaml || sizeConfigJson) as SizeConfig;
     return this.generateBlockComponents(config.sizeInputs, 'size');
   }
   

@@ -1,5 +1,5 @@
 import { ComponentType } from "@shared/redux/store/component/interface.ts";
-import { filesAppUUID, filesPageUUID } from "@features/studio/components-configuration/editor-micro-apps/left-panel.ts";
+import { filesAppUUID, filesPageUUID } from "@features/studio/params/editor-micro-apps/left-panel.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 import FunctionBlocks from './function/index.ts';
 export default [{

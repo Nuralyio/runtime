@@ -1,12 +1,12 @@
 import { ComponentType } from "@shared/redux/store/component/interface.ts";
-import QuickActions from "./components-configuration/editor-micro-apps/quick-action.ts";
-import QuickActionsButton from "./components-configuration/editor-micro-apps/quick-action-bottom.ts";
-import TopBar from "./components-configuration/editor-micro-apps/top-bar.ts";
-import LeftPanel from "./components-configuration/editor-micro-apps/left-panel.ts";
-import stduioTable from "./components-configuration/data/table/inputs/columns-block.ts";
-import tableSelectionModeBlock from "./components-configuration/data/table/inputs/selection-mode.ts";
-import tableFilterBlock from "./components-configuration/data/table/inputs/filter.ts";
-import studioTableValuesBlock from "./components-configuration/data/table/inputs/data.ts";
+import QuickActions from "./params/editor-micro-apps/quick-action.ts";
+import QuickActionsButton from "./params/editor-micro-apps/quick-action-bottom.ts";
+import TopBar from "./params/editor-micro-apps/top-bar.ts";
+import LeftPanel from "./params/editor-micro-apps/left-panel.ts";
+import stduioTable from "./params/data/table/inputs/columns-block.ts";
+import tableSelectionModeBlock from "./params/data/table/inputs/selection-mode.ts";
+import tableFilterBlock from "./params/data/table/inputs/filter.ts";
+import studioTableValuesBlock from "./params/data/table/inputs/data.ts";
 
 // Import from new organized structure
 import {
@@ -15,7 +15,7 @@ import {
     StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
     StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
     StudioMenu
-} from "./components-configuration/index.ts";
+} from "./params/index.ts";
 
 import {
     RightPanelTabs,

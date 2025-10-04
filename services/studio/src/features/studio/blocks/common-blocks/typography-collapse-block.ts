@@ -6,7 +6,7 @@
  */
 
 import { GenericJsonProcessor, type BlockConfig } from "../../processors/json-processor.ts";
-import typographyConfigRaw from "../../components-configuration/_shared/typography.config.json";
+import typographyConfigRaw from "../../params/_shared/typography.config.json";
 import { ComponentType } from "@shared/redux/store/component/interface.ts";
 
 // Type assertion for the JSON config
