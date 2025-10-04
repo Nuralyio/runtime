@@ -1,0 +1,12 @@
+{
+  "uuid": "video_blocks",
+  "name": "Parent Video Container",
+  "themeContainerId": "studio_video_theme_container",
+  "configKey": "videoFields",
+  "childrenIds": [
+    "video_collapse_container",
+    "typography_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}

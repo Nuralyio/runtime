@@ -1,0 +1,12 @@
+{
+  "uuid": "table_blocks",
+  "name": "Parent Table Container",
+  "themeContainerId": "studio_table_theme_container",
+  "configKey": "tableFields",
+  "childrenIds": [
+    "table_collapse_container",
+    "typography_collapse_container",
+    "size_collapse_container",
+    "border_collapse_container"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "handlerPrefix": "studio_table_handler",
+  "events": [
+    {
+      "name": "onSelect",
+      "label": "onSelect"
+    },
+    {
+      "name": "onSearch",
+      "label": "onSearch"
+    },
+    {
+      "name": "onPaginate",
+      "label": "onPaginate"
+    },
+    {
+      "name": "onSort",
+      "label": "onSort"
+    }
+  ]
+}
