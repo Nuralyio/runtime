@@ -7,7 +7,7 @@ import { updateFunctionHandler } from "$store/handlers/functions/update-function
 import { getVar, setVar } from "$store/context.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { invokeFunctionHandler } from "$store/handlers/functions/invoke-function-handler.ts";
-import { ButtonTheme } from "../../studio-microapp/editor/utils/common-editor-theme.ts";
+import { ButtonTheme } from "../../studio-microapp/core/utils/common-editor-theme.ts";
 import { buildFunctionHandler } from "$store/handlers/functions/build-function-handler.ts";
 import { deployFunctionHandler } from "$store/handlers/functions/deploy-function-handler.ts";
 import { ExecuteInstance } from "core/Kernel.ts";
