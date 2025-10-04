@@ -1,0 +1,9 @@
+{
+  "uuid": "ref_component_blocks",
+  "name": "Parent Ref Component Container",
+  "themeContainerId": "studio_ref_component_theme_container",
+  "configKey": "refComponentFields",
+  "childrenIds": [
+    "refcomponent_collapse_container"
+  ]
+}

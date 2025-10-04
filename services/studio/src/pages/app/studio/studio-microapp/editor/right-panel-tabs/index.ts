@@ -295,6 +295,45 @@ export const StudioLink = loadComponentProperties(
   linkMeta
 );
 
+// Ref Component
+import refComponentConfig from "./ref-component/_ref-component-config.json";
+import refComponentHandlers from "./ref-component/_ref-component-handlers.json";
+import refComponentTheme from "./ref-component/_ref-component-theme.json";
+import refComponentMeta from "./ref-component/_ref-component-meta.json";
+
+export const StudioRefComponent = loadComponentProperties(
+  refComponentConfig,
+  refComponentHandlers,
+  refComponentTheme,
+  refComponentMeta
+);
+
+// Richtext
+import richtextConfig from "./Richtext/_richtext-config.json";
+import richtextHandlers from "./Richtext/_richtext-handlers.json";
+import richtextTheme from "./Richtext/_richtext-theme.json";
+import richtextMeta from "./Richtext/_richtext-meta.json";
+
+export const StudioRichText = loadComponentProperties(
+  richtextConfig,
+  richtextHandlers,
+  richtextTheme,
+  richtextMeta
+);
+
+// RichtextEditor
+import richtextEditorConfig from "./RichtextEditor/_richtexteditor-config.json";
+import richtextEditorHandlers from "./RichtextEditor/_richtexteditor-handlers.json";
+import richtextEditorTheme from "./RichtextEditor/_richtexteditor-theme.json";
+import richtextEditorMeta from "./RichtextEditor/_richtexteditor-meta.json";
+
+export const StudioRichTextEditor = loadComponentProperties(
+  richtextEditorConfig,
+  richtextEditorHandlers,
+  richtextEditorTheme,
+  richtextEditorMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -313,6 +352,9 @@ export const StudioComponents = {
   StudioIcon,
   StudioImage,
   StudioLink,
+  StudioRefComponent,
+  StudioRichText,
+  StudioRichTextEditor,
   // Add more components here as they're migrated
 };
 
