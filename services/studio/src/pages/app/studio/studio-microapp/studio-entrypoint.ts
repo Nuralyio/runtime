@@ -22,7 +22,6 @@ import tableSelectionModeBlock from "./editor/right-panel-tabs/table/inputs/sele
 import tableFilterBlock from "./editor/right-panel-tabs/table/inputs/filter.ts";
 import QuickActions from "../components/editor-micro-apps/quick-action.ts";
 import QuickActionsButton from "../components/editor-micro-apps/quick-action-bottom.ts";
-import studioCheckboxChangedEventBlock from "./checkbox-blocks/studio-checkbox-changed-event-block.ts";
 import studioLabelBlock from "./editor/common/inputs/label.ts";
 import studioBorderCollapse from "./common-blocks/studio-border-collapse.ts";
 import studioTableValuesBlock from "./editor/right-panel-tabs/table/inputs/data.ts";
@@ -31,7 +30,6 @@ import studioPageUrlBlock from "./page-blocks/studio-page-url-block.ts";
 import studioPageSEOBlock from "./page-blocks/studio-page-seo-block.ts";
 import microAppSelectionBlocks from "./microapp-blocks/micro-app-selection-blocks.ts";
 import microAppContainerBlocks from "./microapp-blocks/micro-app-container-blocks.ts";
-import collectionContainerBlocks from "./collection-blocks/collection-blocks-container.ts";
 import TopBar from "../components/editor-micro-apps/top-bar.ts";
 import LeftPanel from "../components/editor-micro-apps/left-panel.ts";
 import RightPanelTabs from "./editor/right-panel-tabs/right_panel_tabs.ts";
@@ -273,14 +271,12 @@ export default [
   ...studioClickEvent,
   ...studioMouseEnterEvent,
   ...studioMouseLeaveEvent,
-  ...studioCheckboxChangedEventBlock,
   ...studioSizeCollpaseBlock,
   ...studioCursorBlock,
   ...QuickActions,
   ...QuickActionsButton,
   ...microAppSelectionBlocks,
   ...microAppContainerBlocks,
-  ...collectionContainerBlocks,
   ...TopBar,
   ...LeftPanel,
   ...StudioButton,
