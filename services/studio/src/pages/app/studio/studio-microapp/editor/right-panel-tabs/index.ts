@@ -334,6 +334,32 @@ export const StudioRichTextEditor = loadComponentProperties(
   richtextEditorMeta
 );
 
+// Table
+import tableConfig from "./table/_table-config.json";
+import tableHandlers from "./table/_table-handlers.json";
+import tableTheme from "./table/_table-theme.json";
+import tableMeta from "./table/_table-meta.json";
+
+export const StudioTable = loadComponentProperties(
+  tableConfig,
+  tableHandlers,
+  tableTheme,
+  tableMeta
+);
+
+// Video
+import videoConfig from "./video/_video-config.json";
+import videoHandlers from "./video/_video-handlers.json";
+import videoTheme from "./video/_video-theme.json";
+import videoMeta from "./video/_video-meta.json";
+
+export const StudioVideo = loadComponentProperties(
+  videoConfig,
+  videoHandlers,
+  videoTheme,
+  videoMeta
+);
+
 // Export all components as a single object (useful for dynamic access)
 export const StudioComponents = {
   StudioTextInput,
@@ -355,7 +381,8 @@ export const StudioComponents = {
   StudioRefComponent,
   StudioRichText,
   StudioRichTextEditor,
-  // Add more components here as they're migrated
+  StudioTable,
+  StudioVideo,
 };
 
 // Export async loader for future use
