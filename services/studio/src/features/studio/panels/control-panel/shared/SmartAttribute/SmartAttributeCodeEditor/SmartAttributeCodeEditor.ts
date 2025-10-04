@@ -44,7 +44,7 @@ export class SmartAttributeCodeeditor extends LitElement {
 
     // Lazy-load the code editor module
     if (!this.isEditorLoaded) {
-      await import("@runtime/ui/CodeEditor/CodeEditor");
+      await import("@runtime/components/advanced/CodeEditor/CodeEditor");
       this.isEditorLoaded = true;
     }
   }

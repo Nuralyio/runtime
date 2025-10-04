@@ -2,10 +2,10 @@ import { type ComponentElement } from "@shared/redux/store/component/component.i
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { isServer } from "@shared/utils/envirement.ts";
-import { executeCodeWithClosure } from "@runtime/Kernel.ts";
+import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import { BaseElementBlock } from "@runtime/ui/BaseElement.ts";
+import { BaseElementBlock } from "@runtime/components/base/BaseElement.ts";
 
 setTimeout(() => {
   if (!isServer) {

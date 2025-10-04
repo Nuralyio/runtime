@@ -1,4 +1,4 @@
-import { setupChangeDetection } from '@runtime/ui/BaseElement/base-change-detection';
+import { setupChangeDetection } from '@runtime/components/base/BaseElement/base-change-detection';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { share } from 'rxjs/operators';
 
