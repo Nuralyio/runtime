@@ -1,8 +1,8 @@
-import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/component.interface.ts";
 import { $applicationComponents } from "@shared/redux/store/component/store.ts";
 import { html, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { renderComponent } from "@utils/render-util.ts";
+import { renderComponent } from "@shared/utils/render-util";
 import { createRef, type Ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { setCurrentComponentIdAction } from "@shared/redux/actions/component/setCurrentComponentIdAction.ts";

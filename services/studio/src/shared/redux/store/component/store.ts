@@ -1,5 +1,5 @@
 import { persistentAtom } from "@nanostores/persistent";
-import { type ComponentElement } from "./interface";
+import { type ComponentElement } from "./component.interface";
 import { atom, computed, deepMap } from "nanostores";
 import { currentLoadedApplication } from "@shared/redux/store/ssr/server-data";
 import { fillApplicationComponents } from "./helper";

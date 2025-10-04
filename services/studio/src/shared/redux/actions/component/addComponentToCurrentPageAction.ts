@@ -1,6 +1,6 @@
 import { $currentApplication } from "@shared/redux/store/apps";
 import { $pages } from "@shared/redux/store/page";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { updatePageHandler } from "@shared/redux/handlers/pages/handler";
 import { ExecuteInstance } from "@runtime/Kernel";
 

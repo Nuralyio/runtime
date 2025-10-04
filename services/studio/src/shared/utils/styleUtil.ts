@@ -1,4 +1,4 @@
-import { TextLabelAttributes } from "@shared/redux/store/component/interface";
+import { TextLabelAttributes } from "@shared/redux/store/component/component.interface";
 
 export function getStyleFronmAttribute(attributes: TextLabelAttributes) {
 

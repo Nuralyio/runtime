@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { CollapseHeaderTheme } from "../core/utils/common-editor-theme.ts";
 import { COMMON_ATTRIBUTES } from "../core/helpers/common_attributes.ts";
 import * as yaml from 'js-yaml';

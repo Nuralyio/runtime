@@ -1,4 +1,4 @@
-import { type ComponentElement } from "@shared/redux/store/component/interface";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface";
 
 /**
  * Helper function to handle drag events in component wrappers

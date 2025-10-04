@@ -1,4 +1,4 @@
-import type { DraggingComponentInfo } from "@shared/redux/store/component/interface";
+import type { DraggingComponentInfo } from "@shared/redux/store/component/component.interface";
 import { $draggingComponentInfo } from "@shared/redux/store/component/store";
 
 export function setDraggingComponentInfo(

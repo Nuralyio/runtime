@@ -1,6 +1,6 @@
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../BaseElement.ts";
 import { $componentsByUUIDs, $selectedComponent } from "@shared/redux/store/component/store.ts";
 import { $currentApplication } from "@shared/redux/store/apps.ts";

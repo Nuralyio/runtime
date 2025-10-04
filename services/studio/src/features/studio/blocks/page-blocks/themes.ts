@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface";
+import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes";
 
 import inputs from "./pages-bg-color";

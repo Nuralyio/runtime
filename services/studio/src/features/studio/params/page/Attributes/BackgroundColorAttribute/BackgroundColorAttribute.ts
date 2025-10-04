@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
 import styles from "./BackgroundColorAttribute.style";
-import { type PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import { type PageElement } from "@shared/redux/handlers/pages/page.interface";
 
 import { updatePageStyleAttributes } from "@shared/redux/actions/page/updatePageStyleAttributes";
 

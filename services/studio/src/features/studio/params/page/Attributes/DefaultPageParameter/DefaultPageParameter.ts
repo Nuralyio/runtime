@@ -1,5 +1,5 @@
 import { $currentApplication } from "@shared/redux/store/apps";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { updateApplication } from "@shared/redux/actions/application/updateApplication";

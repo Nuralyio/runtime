@@ -5,7 +5,7 @@
  * studio microapp without any TypeScript factories or complex configurations.
  */
 
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../core/helpers/common_attributes.ts";
 import studioConfig from "./studio-config.json";
 

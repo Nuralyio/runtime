@@ -14,7 +14,7 @@
  * - Significantly reduces CPU usage and prevents infinite loops
  */
 
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../core/helpers/common_attributes.ts";
 import { GenericJsonProcessor, type BlockConfig } from "./json-processor.ts";
 import { createHandlersFromEvents } from "../core/utils/handler-generator.ts";

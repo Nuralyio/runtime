@@ -1,9 +1,9 @@
 // moveDraggedComponent.ts
 
-import type { ComponentElement } from "@shared/redux/store/component/interface";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface";
 import { $components, $componentWithChildren } from "@shared/redux/store/component/store";
 import { $pages } from "@shared/redux/store/page";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { $currentApplication } from "@shared/redux/store/apps";
 import { updatePageAction } from "../page/updatePageAction";
 import { updatePageHandler } from "@shared/redux/handlers/pages/handler";

@@ -1,4 +1,4 @@
-import { type ComponentElement } from "@shared/redux/store/component/interface";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface";
 
 const isServer = typeof window === "undefined";
 

@@ -1,4 +1,4 @@
-import type { PageElement } from "./interfaces/interface";
+import type { PageElement } from "./page.interface";
 import { refreshPagesActionHandler } from "./refresh-pages";
 
 export const deletePageHandler = async (page: PageElement, callback?: (page: any) => void) => {

@@ -1,5 +1,5 @@
 import { COMMON_ATTRIBUTES } from "@studio/core/helpers/common_attributes.ts";
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 
 export default [
   {

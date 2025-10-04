@@ -1,4 +1,4 @@
-import type { ComponentElement } from "./interface";
+import type { ComponentElement } from "./component.interface";
 
 
 /**

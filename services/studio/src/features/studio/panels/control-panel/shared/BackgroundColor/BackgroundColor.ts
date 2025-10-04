@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorHandler/BackgroundColorHandler.ts";
-import { type ComponentElement } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import styles from "./BackgroundColor.style.ts";
 import { updateComponentAttributes } from "@shared/redux/actions/component/updateComponentAttributes.ts";
 

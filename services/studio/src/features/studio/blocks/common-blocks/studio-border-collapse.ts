@@ -7,7 +7,7 @@
 
 import { GenericJsonProcessor, type BlockConfig } from "../../processors/json-processor.ts";
 import borderConfigRaw from "../../params/_shared/border.config.json";
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 // Type assertion for the JSON config

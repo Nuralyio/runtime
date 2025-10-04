@@ -1,4 +1,4 @@
-import type { ComponentElement } from "@shared/redux/store/component/interface.ts";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { BaseElementBlock } from "@runtime/ui/BaseElement.ts";

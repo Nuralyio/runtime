@@ -141,13 +141,13 @@ import { fetchApplicationPagesById } from '@api/pages';
 ### Service Integration
 - SSR data injection via `window["__INITIAL_COMPONENT_STATE__"]`
 - Worker communication via `src/utils/worker/worker.ts`
-- API utilities in `src/utils/api-calls-utils.ts`
+- API utilities in `src/shared/utils/api-calls-utils.ts`
 
 ## Common Conventions
 
 - **UUIDs**: Use `uuidv4()` for component/page identifiers
 - **Naming**: kebab-case for files, PascalCase for classes, camelCase for properties
-- **Imports**: Use `$store/*` for stores, `@api/*` for API calls, `@features/*` for features, `@shared/*` for shared code, `@utils/*` for utilities
+- **Imports**: Use `$store/*` for stores, `@api/*` for API calls, `@features/*` for features, `@shared/*` for shared code
 - **Event Handling**: Prefer handler-based approach over direct DOM events
 - **Styling**: CSS-in-JS via Lit `css` template, CSS variables for theming
 

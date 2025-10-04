@@ -1,4 +1,4 @@
-import { ComponentType, type ComponentElement } from "@shared/redux/store/component/interface";
+import { ComponentType, type ComponentElement } from "@shared/redux/store/component/component.interface";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";

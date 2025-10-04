@@ -1,4 +1,4 @@
-import type { ComponentElement } from "@shared/redux/store/component/interface";
+import type { ComponentElement } from "@shared/redux/store/component/component.interface";
 import { getVar } from "@shared/redux/store/context";
 import { eventDispatcher } from "@shared/utils/change-detection";
 

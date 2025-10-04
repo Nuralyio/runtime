@@ -2,7 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { createRef, type Ref } from "lit/directives/ref.js";
-import { type ComponentElement, ComponentType } from "@shared/redux/store/component/interface.ts";
+import { type ComponentElement, ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import styles from "./ResizeWrapper.style.ts";
 import { classMap } from "lit/directives/class-map.js";
 import { $pageZoom, $showBorder } from "@shared/redux/store/page.ts";

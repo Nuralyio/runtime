@@ -1,5 +1,5 @@
 import { updatePageHandler } from "@shared/redux/handlers/pages/handler";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { live } from "lit/directives/live.js";

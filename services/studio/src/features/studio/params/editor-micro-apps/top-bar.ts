@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface";
+import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { Edit } from "./top-menu/edit";
 import { Insert } from "./top-menu/insert";
 

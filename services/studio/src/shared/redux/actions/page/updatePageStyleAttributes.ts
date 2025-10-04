@@ -1,5 +1,5 @@
 import { $pages } from "@shared/redux/store/page";
-import type { PageElement } from "@shared/redux/handlers/pages/interfaces/interface";
+import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 
 export function updatePageStyleAttributes(pageId: string, style: any) {
   $pages.set([

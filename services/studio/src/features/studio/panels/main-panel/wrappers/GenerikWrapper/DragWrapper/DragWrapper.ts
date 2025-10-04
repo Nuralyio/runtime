@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/interface";
+import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/component.interface";
 import { createRef, type Ref } from "lit/directives/ref.js";
 import { setDraggingComponentInfo } from "@shared/redux/actions/component/setDraggingComponentInfo";
 import { moveDraggedComponent } from "@shared/redux/actions/component/moveDraggedComponent";

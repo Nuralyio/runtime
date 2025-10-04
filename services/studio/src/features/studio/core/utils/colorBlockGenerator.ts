@@ -1,4 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/interface.ts";
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme } from "./common-editor-theme.ts";
 
