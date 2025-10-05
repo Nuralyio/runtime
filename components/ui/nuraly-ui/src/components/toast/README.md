@@ -181,6 +181,7 @@ export default {
 | `defaultDuration` | `number` | `5000` | Default duration in milliseconds |
 | `animation` | `'fade' \| 'slide' \| 'bounce'` | `'fade'` | Animation style for toasts |
 | `stack` | `boolean` | `true` | Whether to stack toasts or replace |
+| `autoDismiss` | `boolean` | `true` | Auto dismiss toasts after duration |
 
 ### Methods
 
@@ -199,6 +200,7 @@ Show a toast notification.
   text: string;              // Toast message (required)
   type?: ToastType;          // Toast type variant
   duration?: number;         // Duration in milliseconds
+  autoDismiss?: boolean;     // Auto dismiss after duration (default: true)
   closable?: boolean;        // Show close button
   icon?: string;             // Icon name
   customClass?: string;      // Custom CSS class
@@ -322,8 +324,35 @@ toast.show({ text: 'Quick message', duration: 3000 });
 // Long duration
 toast.show({ text: 'Important message', duration: 10000 });
 
-// Persistent (no auto-dismiss)
+// Persistent (no auto-dismiss) - Option 1: Set autoDismiss to false
+toast.show({ text: 'Manual close only', autoDismiss: false });
+
+// Persistent (no auto-dismiss) - Option 2: Set duration to 0
 toast.show({ text: 'Manual close only', duration: 0 });
+```
+
+### Disable Auto-Dismiss
+
+```javascript
+// Disable auto-dismiss for all toasts in container
+const toast = document.querySelector('nr-toast');
+toast.autoDismiss = false;
+
+// Or set via HTML attribute
+<nr-toast auto-dismiss="false"></nr-toast>
+
+// Disable auto-dismiss for a specific toast
+toast.show({ 
+  text: 'This toast requires manual closing',
+  autoDismiss: false 
+});
+
+// Re-enable auto-dismiss for specific toast even if container has it disabled
+toast.show({ 
+  text: 'This toast will auto-dismiss',
+  autoDismiss: true,
+  duration: 5000
+});
 ```
 
 ### With Callbacks
