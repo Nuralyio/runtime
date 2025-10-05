@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { TemplateResult } from 'lit';
+
 /**
  * Toast type variants
  */
@@ -73,7 +75,10 @@ export interface ToastButton {
  */
 export interface ToastConfig {
   /** Toast message text */
-  text: string;
+  text?: string;
+  
+  /** Custom HTML content (overrides text) */
+  content?: TemplateResult;
   
   /** Toast type/variant */
   type?: ToastType;
