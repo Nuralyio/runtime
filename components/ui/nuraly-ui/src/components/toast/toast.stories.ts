@@ -8,6 +8,7 @@ import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 import './index.js';
 import '../icon/index.js';
+import '../button/index.js';
 import type { NrToastElement } from './toast.component.js';
 import { ToastType } from './toast.types.js';
 
@@ -536,6 +537,151 @@ export const AutoDismiss: Story = {
               style="padding: 0.5rem 1rem; cursor: pointer;"
             >
               Enable for One Toast
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * Toast with action buttons using nr-button
+ */
+export const WithButtons: Story = {
+  render: () => html`
+    <div style="padding: 2rem;">
+      <nr-toast id="toast-buttons"></nr-toast>
+      
+      <div style="display: flex; gap: 1rem; flex-direction: column; max-width: 600px;">
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Simple Action Button</h3>
+          <button 
+            @click=${() => {
+              const toast = document.getElementById('toast-buttons') as NrToastElement;
+              toast?.show({
+                text: 'Item added to cart',
+                type: ToastType.Success,
+                button: {
+                  label: 'View Cart',
+                  type: 'primary',
+                  onClick: () => alert('Navigate to cart')
+                }
+              });
+            }}
+            style="padding: 0.5rem 1rem; cursor: pointer;"
+          >
+            Show Toast with Action
+          </button>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Undo Action</h3>
+          <button 
+            @click=${() => {
+              const toast = document.getElementById('toast-buttons') as NrToastElement;
+              let undone = false;
+              toast?.show({
+                text: 'Message deleted',
+                type: ToastType.Success,
+                autoDismiss: false,
+                button: {
+                  label: 'Undo',
+                  type: 'secondary',
+                  onClick: (e) => {
+                    if (!undone) {
+                      undone = true;
+                      alert('Deletion undone!');
+                      const toastEl = (e.target as HTMLElement).closest('.toast');
+                      const closeBtn = toastEl?.querySelector('.toast__close') as HTMLElement;
+                      closeBtn?.click();
+                    }
+                  }
+                }
+              });
+            }}
+            style="padding: 0.5rem 1rem; cursor: pointer;"
+          >
+            Delete with Undo
+          </button>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Button with Icon</h3>
+          <button 
+            @click=${() => {
+              const toast = document.getElementById('toast-buttons') as NrToastElement;
+              toast?.show({
+                text: 'Update available for your app',
+                type: ToastType.Info,
+                button: {
+                  label: 'Refresh',
+                  icon: 'refresh',
+                  type: 'primary',
+                  size: 'small',
+                  onClick: () => alert('Refreshing app...')
+                }
+              });
+            }}
+            style="padding: 0.5rem 1rem; cursor: pointer;"
+          >
+            Show Update Toast
+          </button>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Different Button Types</h3>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button 
+              @click=${() => {
+                const toast = document.getElementById('toast-buttons') as NrToastElement;
+                toast?.show({
+                  text: 'Action required',
+                  button: {
+                    label: 'Default Button',
+                    type: 'default',
+                    onClick: () => console.log('Default clicked')
+                  }
+                });
+              }}
+              style="padding: 0.5rem 1rem; cursor: pointer;"
+            >
+              Default
+            </button>
+            <button 
+              @click=${() => {
+                const toast = document.getElementById('toast-buttons') as NrToastElement;
+                toast?.show({
+                  text: 'Confirm your action',
+                  type: ToastType.Warning,
+                  button: {
+                    label: 'Confirm',
+                    type: 'primary',
+                    onClick: () => console.log('Confirmed')
+                  }
+                });
+              }}
+              style="padding: 0.5rem 1rem; cursor: pointer;"
+            >
+              Primary
+            </button>
+            <button 
+              @click=${() => {
+                const toast = document.getElementById('toast-buttons') as NrToastElement;
+                toast?.show({
+                  text: 'This action cannot be undone',
+                  type: ToastType.Error,
+                  autoDismiss: false,
+                  button: {
+                    label: 'Delete Anyway',
+                    type: 'danger',
+                    onClick: () => console.log('Danger action')
+                  }
+                });
+              }}
+              style="padding: 0.5rem 1rem; cursor: pointer;"
+            >
+              Danger
             </button>
           </div>
         </div>

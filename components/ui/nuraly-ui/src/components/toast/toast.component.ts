@@ -17,19 +17,21 @@ import {
   ToastConfig,
   ToastItem,
   ToastEventDetail,
+  ToastButton,
   DEFAULT_TOAST_DURATION,
   DEFAULT_MAX_TOASTS,
   EMPTY_STRING
 } from './toast.types.js';
 
-// Import icon component
+// Import required components
 import '../icon/icon.component.js';
+import '../button/index.js';
 
 /**
  * Toast notification component for displaying temporary messages.
  * 
  * Provides a flexible notification system with multiple types, positions, and animations.
- * Supports stacking multiple toasts, auto-dismiss (enabled by default), and manual closing.
+ * Supports stacking multiple toasts, auto-dismiss (enabled by default), action buttons, and manual closing.
  * 
  * @example
  * ```html
@@ -47,6 +49,17 @@ import '../icon/icon.component.js';
  *   
  *   // Disable auto-dismiss for specific toast
  *   toast.show({ text: 'Persistent message', autoDismiss: false });
+ *   
+ *   // Toast with action button
+ *   toast.show({
+ *     text: 'Item deleted',
+ *     type: 'success',
+ *     button: {
+ *       label: 'Undo',
+ *       onClick: () => console.log('Undo clicked'),
+ *       type: 'primary'
+ *     }
+ *   });
  * </script>
  * ```
  * 
@@ -65,7 +78,7 @@ import '../icon/icon.component.js';
 export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
-  override requiredComponents = ['nr-icon'];
+  override requiredComponents = ['nr-icon', 'nr-button'];
 
   /** Position of toast container on screen */
   @property({ type: String, reflect: true })
@@ -118,6 +131,7 @@ export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
       closable: toastConfig.closable ?? true,
       icon: toastConfig.icon || this.getDefaultIcon(toastConfig.type),
       customClass: toastConfig.customClass,
+      button: toastConfig.button,
       onClose: toastConfig.onClose,
       onClick: toastConfig.onClick,
     };
@@ -317,7 +331,10 @@ export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
           </div>
         ` : nothing}
         
-        <div class="toast__content">${toast.text}</div>
+        <div class="toast__content">
+          <div class="toast__text">${toast.text}</div>
+          ${toast.button ? this.renderButton(toast.button) : nothing}
+        </div>
         
         ${toast.closable ? html`
           <button
@@ -329,6 +346,27 @@ export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
             <nr-icon name="x"></nr-icon>
           </button>
         ` : nothing}
+      </div>
+    `;
+  }
+
+  private renderButton(button: ToastButton) {
+    const handleButtonClick = (e: Event) => {
+      e.stopPropagation();
+      button.onClick(e);
+    };
+
+    return html`
+      <div class="toast__button">
+        <nr-button
+          type=${button.type || 'default'}
+          size=${button.size || 'small'}
+          ?disabled=${button.disabled || false}
+          @click=${handleButtonClick}
+        >
+          ${button.icon ? html`<nr-icon slot="icon-left" name=${button.icon}></nr-icon>` : nothing}
+          ${button.label}
+        </nr-button>
       </div>
     `;
   }

@@ -139,9 +139,27 @@ export const styles = css`
   /* Toast content */
   .toast__content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-2, 0.5rem);
+    min-width: 0;
+  }
+
+  .toast__text {
     font-size: var(--nuraly-font-size-sm, 0.875rem);
     line-height: 1.5;
     word-break: break-word;
+  }
+
+  /* Toast button */
+  .toast__button {
+    display: flex;
+    align-items: center;
+    margin-top: var(--nuraly-spacing-1, 0.25rem);
+  }
+
+  .toast__button nr-button {
+    flex-shrink: 0;
   }
 
   /* Close button */

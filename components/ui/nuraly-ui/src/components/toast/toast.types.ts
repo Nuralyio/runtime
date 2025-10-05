@@ -46,6 +46,29 @@ export const enum ToastDuration {
 }
 
 /**
+ * Toast action button configuration
+ */
+export interface ToastButton {
+  /** Button label text */
+  label: string;
+  
+  /** Button click handler */
+  onClick: (event: Event) => void;
+  
+  /** Button type/variant */
+  type?: 'default' | 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost';
+  
+  /** Button size */
+  size?: 'small' | 'medium' | 'large';
+  
+  /** Whether button is disabled */
+  disabled?: boolean;
+  
+  /** Icon name for button */
+  icon?: string;
+}
+
+/**
  * Individual toast configuration
  */
 export interface ToastConfig {
@@ -69,6 +92,9 @@ export interface ToastConfig {
   
   /** Custom CSS class */
   customClass?: string;
+  
+  /** Action button configuration */
+  button?: ToastButton;
   
   /** Callback when toast is closed */
   onClose?: () => void;
