@@ -1,4 +1,4 @@
-import { fetchApplicationPermission } from "@api";
+import { fetchApplicationPermission } from "@services";
 
 import { setApplicationPermissionAction } from "@shared/redux/actions/application/setApplicationPermissionAction";
 
