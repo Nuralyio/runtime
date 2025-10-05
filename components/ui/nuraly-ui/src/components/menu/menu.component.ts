@@ -5,11 +5,13 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LitElement, html, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { styles } from './menu.style.js';
 import { IMenu, IAction, MenuSize } from './menu.types.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { StateController, KeyboardController, AccessibilityController } from './controllers/index.js';
 import '../icon/icon.component.js';
 import '../dropdown/dropdown.component.js';
 
@@ -40,22 +42,29 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: String })
   size: MenuSize | string = MenuSize.Medium;
 
-  @state()
-  private _selectedPath: number[] = [];
-
-  @state()
-  private _openSubMenus: Set<string> = new Set();
-
-  @state()
-  private _hoveredSubMenus: Set<string> = new Set();
-
-  @state()
-  private _highlightedSubMenus: Set<string> = new Set();
+  // Controllers
+  private stateController: StateController;
+  // Keyboard controller is connected via Lit's controller system and listens to events
+  // @ts-ignore - Controller is used via Lit's reactive controller system
+  private keyboardController: KeyboardController;
+  private accessibilityController: AccessibilityController;
 
   private _linkIndex = 0;
 
+  constructor() {
+    super();
+    this.stateController = new StateController(this);
+    this.keyboardController = new KeyboardController(this, this.stateController);
+    this.accessibilityController = new AccessibilityController(this, this.stateController);
+  }
+
   override firstUpdated(): void {
     this._initializeSelectedState();
+    this.accessibilityController.updateAriaAttributes();
+  }
+
+  override updated(): void {
+    this.accessibilityController.updateAriaAttributes();
   }
 
   private _initializeSelectedState() {
@@ -74,7 +83,7 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
         }
       } else {
         if (item.selected) {
-          this._selectedPath = currentPath;
+          this.stateController.setSelectedPath(currentPath);
           return true;
         }
       }
@@ -87,8 +96,14 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
       return;
     }
 
-    this._selectedPath = path;
-    this._highlightedSubMenus.clear();
+    if (event?.type === 'click') {
+      const mouseEvent = event as MouseEvent;
+      if (mouseEvent.detail > 0) {
+        return;
+      }
+    }
+
+    this.stateController.setSelectedPath(path);
     
     this.dispatchEvent(
       new CustomEvent('change', {
@@ -102,19 +117,35 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private _handleSubMenuClick(path: number[], value: string, event: Event) {
-    const target = event?.target as HTMLElement;
-    if (target?.classList.contains('action-icon') || target?.id === 'toggle-icon') {
+    const mouseEvent = event as MouseEvent;
+    const target = event.target as HTMLElement;
+    
+    // Don't handle if clicking on toggle icon or its parent container
+    if (target.id === 'toggle-icon' || target.closest('#toggle-icon')) {
+      return;
+    }
+    
+    // If it's a click event
+    if (event.type === 'click') {
+      // Check if it's keyboard activation (Enter/Space) - detail will be 0
+      if (mouseEvent.detail === 0) {
+        // Keyboard activation - toggle the submenu
+        this.stateController.toggleSubMenu(path);
+        this.requestUpdate();
+        return;
+      }
+      // Real mouse click - already handled by mousedown, so return
       return;
     }
 
-    const pathKey = path.join('-');
-    if (!this._openSubMenus.has(pathKey)) {
-      this._openSubMenus.add(pathKey);
-    }
+    // This is a mousedown event - highlight and toggle the submenu
     
-    this._selectedPath = [];
-    this._highlightedSubMenus.clear();
-    this._highlightedSubMenus.add(pathKey);
+    this.stateController.setSelectedPath([]);
+    this.stateController.clearHighlights();
+    this.stateController.setHighlighted(path, true);
+    
+    // Toggle the submenu when clicking on header
+    this.stateController.toggleSubMenu(path);
 
     this.dispatchEvent(
       new CustomEvent('change', {
@@ -129,26 +160,17 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
 
   private _toggleSubMenu(path: number[], event: Event) {
     event.stopPropagation();
-    const pathKey = path.join('-');
-    
-    if (this._openSubMenus.has(pathKey)) {
-      this._openSubMenus.delete(pathKey);
-    } else {
-      this._openSubMenus.add(pathKey);
-    }
-    
+    this.stateController.toggleSubMenu(path);
     this.requestUpdate();
   }
 
   private _handleSubMenuMouseEnter(path: number[]) {
-    const pathKey = path.join('-');
-    this._hoveredSubMenus.add(pathKey);
+    this.stateController.setHovered(path, true);
     this.requestUpdate();
   }
 
   private _handleSubMenuMouseLeave(path: number[]) {
-    const pathKey = path.join('-');
-    this._hoveredSubMenus.delete(pathKey);
+    this.stateController.setHovered(path, false);
     this.requestUpdate();
   }
 
@@ -164,8 +186,7 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private _isPathSelected(path: number[]): boolean {
-    return path.length === this._selectedPath.length &&
-           path.every((val, idx) => val === this._selectedPath[idx]);
+    return this.stateController.isPathSelected(path);
   }
 
   private _convertActionsToDropdownItems(actions: IAction[]): any[] {
@@ -187,7 +208,8 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
         data-path=${pathKey}
         data-index=${linkIndex}
         tabindex="0"
-        @mousedown=${!menu.disabled ? (e: Event) => this._handleLinkClick(path, menu.text, e) : nothing}>
+        @mousedown=${!menu.disabled ? (e: Event) => this._handleLinkClick(path, menu.text, e) : nothing}
+        @click=${!menu.disabled ? (e: Event) => this._handleLinkClick(path, menu.text, e) : nothing}>
         <div class="icon-container">
           ${menu.icon ? html`
             ${!menu.text 
@@ -222,9 +244,9 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
 
   private _renderSubMenu(menu: IMenu, path: number[]): any {
     const pathKey = path.join('-');
-    const isOpen = this._openSubMenus.has(pathKey) || menu.opened;
-    const isHovered = this._hoveredSubMenus.has(pathKey);
-    const isHighlighted = this._highlightedSubMenus.has(pathKey);
+    const isOpen = this.stateController.isSubMenuOpen(path) || menu.opened;
+    const isHovered = this.stateController.isSubMenuHovered(path);
+    const isHighlighted = this.stateController.isSubMenuHighlighted(path);
     const isSelected = menu.selected;
     
     return html`
@@ -233,10 +255,22 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
         data-path=${pathKey}
         tabindex="0"
         @mouseenter=${() => this._handleSubMenuMouseEnter(path)}
-        @mouseleave=${() => this._handleSubMenuMouseLeave(path)}>
+        @mouseleave=${() => this._handleSubMenuMouseLeave(path)}
+        @click=${!menu.disabled ? (e: Event) => {
+          // Handle keyboard activation on the ul element
+          const target = e.target as HTMLElement;
+          const mouseEvent = e as MouseEvent;
+          // If click is on the ul itself (not children) and it's keyboard-generated
+          if (target.classList.contains('sub-menu') && mouseEvent.detail === 0) {
+            e.stopPropagation(); // Prevent bubbling to parent submenus
+            this.stateController.toggleSubMenu(path);
+            this.requestUpdate();
+          }
+        } : nothing}>
         <div 
           class="sub-menu-header"
-          @mousedown=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}>
+          @mousedown=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}
+          @click=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}>
           ${menu.icon ? html`<nr-icon class="text-icon" name="${menu.icon}"></nr-icon>` : nothing}
           <span>${menu.text}</span>
           <div class="icons-container">

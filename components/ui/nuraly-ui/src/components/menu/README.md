@@ -1,6 +1,6 @@
 # Menu Component (@nuralyui/menu)
 
-A versatile and hierarchical menu component built with Lit and TypeScript. Supports nested submenus, icons, status indicators, and custom actions.
+A versatile and hierarchical menu component built with Lit and TypeScript. Supports nested submenus, icons, status indicators, and custom actions with advanced keyboard navigation and accessibility features.
 
 ## Features
 
@@ -8,11 +8,14 @@ A versatile and hierarchical menu component built with Lit and TypeScript. Suppo
 - 🎨 Icon support for menu items
 - 🔗 Link navigation support
 - 📊 Status indicators
-- 🎯 Accessible by default
+- 🎯 Fully accessible with ARIA support
 - 🌗 Dark/light theme support
-- ⌨️ Full keyboard navigation
+- ⌨️ Advanced keyboard navigation (arrows, Enter, Space, Escape, Home/End, type-ahead)
 - 🚫 Disabled state handling
 - 📱 Responsive design
+- 🎛️ Controller-based architecture for state management
+- 🔊 Screen reader announcements
+- 📏 Multiple size variants (small, medium, large)
 
 ## Installation
 
@@ -240,6 +243,27 @@ The menu component supports three size variants for different use cases:
 - **Medium**: Default size, suitable for most applications
 - **Large**: Use for touch interfaces or when accessibility is a priority
 
+## Keyboard Navigation
+
+The menu component provides comprehensive keyboard navigation:
+
+| Key | Action |
+|-----|--------|
+| `↓` (Arrow Down) | Move focus to next menu item |
+| `↑` (Arrow Up) | Move focus to previous menu item |
+| `→` (Arrow Right) | Expand submenu (if collapsed) |
+| `←` (Arrow Left) | Collapse submenu (if expanded) |
+| `Enter` / `Space` | Activate/select focused item |
+| `Escape` | Close all open submenus |
+| `Home` | Move focus to first menu item |
+| `End` | Move focus to last menu item |
+| `Type characters` | Jump to item starting with typed characters (type-ahead search) |
+
+**Type-ahead Search:**
+- Type one or more characters to jump to items starting with those characters
+- The search buffer resets after 500ms of inactivity
+- Searches wrap around from the end to the beginning
+
 ## Events
 
 ### change
@@ -298,12 +322,35 @@ Set the theme using the `data-theme` attribute:
 
 The menu component is built with accessibility in mind:
 
-- Semantic HTML structure with `<ul>` and `<li>` elements
-- Proper ARIA attributes for navigation
-- Keyboard navigation support
-- Screen reader friendly
-- Focus management for nested menus
-- Disabled state properly communicated
+- **Semantic HTML**: Proper `<ul>` and `<li>` structure with role attributes
+- **ARIA Support**: 
+  - `role="menu"` on menu container
+  - `role="menuitem"` on menu items
+  - `aria-expanded` on expandable submenus
+  - `aria-selected` on selected items
+  - `aria-disabled` on disabled items
+  - `aria-haspopup` on items with submenus
+- **Keyboard Navigation**: Full keyboard support (see Keyboard Navigation section)
+- **Screen Reader**: Live announcements for state changes
+- **Focus Management**: Proper focus indicators and tab navigation
+- **Touch Friendly**: Large size variant for better touch targets
+
+## Architecture
+
+The menu component uses a controller-based architecture for better separation of concerns:
+
+### Controllers
+
+- **StateController**: Manages all component state (selection, open submenus, hover states)
+- **KeyboardController**: Handles all keyboard interactions and navigation
+- **AccessibilityController**: Manages ARIA attributes and screen reader announcements
+- **BaseMenuController**: Provides common functionality for error handling and events
+
+This architecture ensures:
+- ✅ Clean separation of concerns
+- ✅ Easier testing and maintenance
+- ✅ Better code organization
+- ✅ Reusable controller patterns
 
 ## Best Practices
 
