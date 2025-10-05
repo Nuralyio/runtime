@@ -39,10 +39,12 @@
     "license": "ISC",
     "nuralyui": {
         "requiredComponents": [
-            "nr-icon"
+            "nr-icon",
+            "nr-button"
         ]
     },
     "peerDependencies": {
-        "@nuralyui/icon": "^0.0.1"
+        "@nuralyui/icon": "^0.0.1",
+        "@nuralyui/button": "^0.0.1"
     }
 }
