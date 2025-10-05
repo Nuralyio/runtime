@@ -71,9 +71,9 @@ export const styles = css`
     align-items: center;
     gap: var(--nuraly-spacing-3, 0.75rem);
     padding: var(--nuraly-spacing-3, 0.75rem) var(--nuraly-spacing-4, 1rem);
-    background-color: var(--nuraly-color-background);
-    color: var(--nuraly-color-text);
-    border: 1px solid var(--nuraly-color-border);
+    background-color: var(--nuraly-color-background, #ffffff);
+    color: var(--nuraly-color-text, #161616);
+    border: 1px solid var(--nuraly-color-border, #e0e0e0);
     border-radius: var(--nuraly-border-radius-medium, 0.25rem);
     box-shadow: var(--nuraly-shadow-medium, 0 4px 6px rgba(0, 0, 0, 0.1));
     pointer-events: auto;
@@ -81,6 +81,8 @@ export const styles = css`
     transition: all var(--nuraly-transition-fast, 0.15s) ease;
     position: relative;
     overflow: hidden;
+    /* Ensure solid background */
+    backdrop-filter: none;
   }
 
   .toast:hover {
@@ -89,33 +91,33 @@ export const styles = css`
 
   /* Toast type variants */
   .toast--default {
-    background-color: var(--nuraly-toast-default-background, var(--nuraly-color-background));
-    border-color: var(--nuraly-toast-default-border, var(--nuraly-color-border));
-    color: var(--nuraly-toast-default-text, var(--nuraly-color-text));
+    background-color: var(--nuraly-toast-default-background, var(--nuraly-color-background, #ffffff));
+    border-color: var(--nuraly-toast-default-border, var(--nuraly-color-border, #e0e0e0));
+    color: var(--nuraly-toast-default-text, var(--nuraly-color-text, #161616));
   }
 
   .toast--success {
-    background-color: var(--nuraly-toast-success-background, var(--nuraly-color-success-subtle));
-    border-color: var(--nuraly-toast-success-border, var(--nuraly-color-success));
-    color: var(--nuraly-toast-success-text, var(--nuraly-color-success-text));
+    background-color: var(--nuraly-toast-success-background, #defbe6);
+    border-color: var(--nuraly-toast-success-border, #24a148);
+    color: var(--nuraly-toast-success-text, #0e6027);
   }
 
   .toast--error {
-    background-color: var(--nuraly-toast-error-background, var(--nuraly-color-danger-subtle));
-    border-color: var(--nuraly-toast-error-border, var(--nuraly-color-danger));
-    color: var(--nuraly-toast-error-text, var(--nuraly-color-danger-text));
+    background-color: var(--nuraly-toast-error-background, #fff1f1);
+    border-color: var(--nuraly-toast-error-border, #da1e28);
+    color: var(--nuraly-toast-error-text, #750e13);
   }
 
   .toast--warning {
-    background-color: var(--nuraly-toast-warning-background, var(--nuraly-color-warning-subtle));
-    border-color: var(--nuraly-toast-warning-border, var(--nuraly-color-warning));
-    color: var(--nuraly-toast-warning-text, var(--nuraly-color-warning-text));
+    background-color: var(--nuraly-toast-warning-background, #fcf4d6);
+    border-color: var(--nuraly-toast-warning-border, #f1c21b);
+    color: var(--nuraly-toast-warning-text, #684e00);
   }
 
   .toast--info {
-    background-color: var(--nuraly-toast-info-background, var(--nuraly-color-info-subtle));
-    border-color: var(--nuraly-toast-info-border, var(--nuraly-color-info));
-    color: var(--nuraly-toast-info-text, var(--nuraly-color-info-text));
+    background-color: var(--nuraly-toast-info-background, #edf5ff);
+    border-color: var(--nuraly-toast-info-border, #0043ce);
+    color: var(--nuraly-toast-info-text, #001d6c);
   }
 
   /* Toast icon */
