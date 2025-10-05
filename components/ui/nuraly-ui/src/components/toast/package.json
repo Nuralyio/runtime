@@ -1,17 +1,9 @@
 {
     "name": "@nuralyui/toast",
-    "version": "0.0.3",
-    "description": "",
+    "version": "0.0.4",
+    "description": "Toast notification component for NuralyUI library",
     "main": "index.js",
     "type": "module",
-    "dependencies": {
-        "dayjs": "^1.11.7"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Labidi Aymen",
-    "license": "ISC",
     "exports": {
         ".": {
             "import": "./index.js"
@@ -21,9 +13,36 @@
         }
     },
     "files": [
-        "bundle.js",
         "*.js",
         "*.d.ts",
-        "*.js.map"
-    ]
+        "*.js.map",
+        "toast.bundled.js",
+        "bundle.js"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NuralyUI/NuralyUI.git",
+        "directory": "src/components/toast"
+    },
+    "keywords": [
+        "web-components",
+        "lit-element",
+        "toast",
+        "notification",
+        "ui-components",
+        "typescript"
+    ],
+    "author": "Labidi Aymen",
+    "license": "ISC",
+    "nuralyui": {
+        "requiredComponents": [
+            "nr-icon"
+        ]
+    },
+    "peerDependencies": {
+        "@nuralyui/icon": "^0.0.1"
+    }
 }
