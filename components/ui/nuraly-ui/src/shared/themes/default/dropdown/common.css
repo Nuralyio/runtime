@@ -66,4 +66,8 @@
   /* Disabled state - Default Design System */
   --nuraly-dropdown-disabled-opacity: 0.5;
   --nuraly-dropdown-item-disabled-opacity: 0.5;
+
+  /* Focus state */
+  --nuraly-focus-color: #0f62fe;
+  --nuraly-dropdown-item-min-height: 2rem;
 }

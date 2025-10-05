@@ -241,9 +241,9 @@ export const styles = css`
     align-items: center;
     gap: var(--nuraly-dropdown-item-gap);
     padding: var(--nuraly-dropdown-item-padding);
-    background: transparent;
+    background: var(--nuraly-color-dropdown-item-background);
     border: none;
-    color: var(--nuraly-dropdown-item-color);
+    color: var(--nuraly-color-dropdown-item-text);
     cursor: pointer;
     text-align: left;
     width: 100%;
@@ -252,17 +252,30 @@ export const styles = css`
     font-size: inherit;
     font-family: inherit;
     line-height: var(--nuraly-dropdown-item-line-height);
+    position: relative;
   }
 
   .dropdown__item:hover:not(.dropdown__item--disabled) {
-    background: var(--nuraly-dropdown-item-hover-background);
-    color: var(--nuraly-dropdown-item-hover-color);
+    background: var(--nuraly-color-dropdown-item-background-hover);
+    color: var(--nuraly-color-dropdown-item-text-hover);
   }
 
   .dropdown__item:focus {
     outline: none;
-    background: var(--nuraly-dropdown-item-focus-background);
-    color: var(--nuraly-dropdown-item-focus-color);
+    background: var(--nuraly-color-dropdown-item-background-focus);
+    color: var(--nuraly-color-dropdown-item-text-focus);
+  }
+
+  .dropdown__item:focus-visible {
+    outline: 2px solid var(--nuraly-focus-color, #0f62fe);
+    outline-offset: -2px;
+    background: var(--nuraly-color-dropdown-item-background-focus);
+    color: var(--nuraly-color-dropdown-item-text-focus);
+  }
+
+  .dropdown__item:active:not(.dropdown__item--disabled) {
+    background: var(--nuraly-color-dropdown-item-background-active);
+    color: var(--nuraly-color-dropdown-item-text-active);
   }
 
   .dropdown__item--disabled {
