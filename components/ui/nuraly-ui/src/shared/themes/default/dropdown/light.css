@@ -22,8 +22,11 @@
   --nuraly-color-dropdown-item-text: #374151;
   --nuraly-color-dropdown-item-background: transparent;
   --nuraly-color-dropdown-item-background-hover: #f3f4f6;
+  --nuraly-color-dropdown-item-text-hover: #111827;
   --nuraly-color-dropdown-item-background-focus: #eff6ff;
+  --nuraly-color-dropdown-item-text-focus: #1e40af;
   --nuraly-color-dropdown-item-background-active: #e5e7eb;
+  --nuraly-color-dropdown-item-text-active: #111827;
 
   /* Disabled item colors */
   --nuraly-color-dropdown-item-text-disabled: #9ca3af;
