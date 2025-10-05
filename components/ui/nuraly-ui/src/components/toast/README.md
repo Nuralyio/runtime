@@ -197,13 +197,15 @@ Show a toast notification.
 **Configuration Object:**
 ```typescript
 {
-  text: string;              // Toast message (required)
+  text?: string;             // Toast message (text or content required)
+  content?: TemplateResult;  // Custom HTML content (overrides text)
   type?: ToastType;          // Toast type variant
   duration?: number;         // Duration in milliseconds
   autoDismiss?: boolean;     // Auto dismiss after duration (default: true)
   closable?: boolean;        // Show close button
   icon?: string;             // Icon name
   customClass?: string;      // Custom CSS class
+  button?: ToastButton;      // Action button configuration
   onClose?: () => void;      // Close callback
   onClick?: () => void;      // Click callback
 }
@@ -381,6 +383,117 @@ toast.show({
   icon: 'thumbs-up'
 });
 ```
+
+### Custom HTML Content
+
+For advanced use cases like GDPR consent banners, privacy notices, or complex layouts, you can provide custom HTML content:
+
+```javascript
+import { html } from 'lit';
+
+// GDPR Cookie Consent Example
+toast.show({
+  content: html`
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0;">🍪 Cookie Consent</h4>
+        <p style="margin: 0; font-size: 0.875rem;">
+          We use cookies to enhance your browsing experience.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <nr-button 
+          size="small" 
+          type="primary"
+          @click=${() => {
+            console.log('Accepted');
+            toast.clearAll();
+          }}
+        >
+          Accept All
+        </nr-button>
+        <nr-button 
+          size="small" 
+          type="secondary"
+          @click=${() => {
+            console.log('Declined');
+            toast.clearAll();
+          }}
+        >
+          Decline
+        </nr-button>
+      </div>
+    </div>
+  `,
+  type: 'info',
+  autoDismiss: false,
+  closable: true,
+  icon: '', // Remove default icon
+});
+
+// Privacy Notice Example
+toast.show({
+  content: html`
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <div style="display: flex; align-items: start; gap: 0.5rem;">
+        <nr-icon name="shield-check"></nr-icon>
+        <div>
+          <h4 style="margin: 0 0 0.25rem 0;">Privacy Policy Updated</h4>
+          <p style="margin: 0; font-size: 0.813rem;">
+            We've updated our privacy policy to give you more control.
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <nr-button size="small" type="primary">Review Policy</nr-button>
+        <nr-button size="small" type="ghost" @click=${() => toast.clearAll()}>
+          Got it
+        </nr-button>
+      </div>
+    </div>
+  `,
+  autoDismiss: false,
+  icon: '',
+});
+
+// Marketing Consent with Checkboxes
+toast.show({
+  content: html`
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <h4 style="margin: 0;">📧 Stay Updated</h4>
+      <p style="margin: 0; font-size: 0.875rem;">
+        Get the latest updates and exclusive offers.
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="email-consent" checked />
+          <span>Email newsletters</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="sms-consent" />
+          <span>SMS notifications</span>
+        </label>
+      </div>
+      <nr-button 
+        size="small" 
+        type="primary"
+        @click=${() => {
+          const emailConsent = document.getElementById('email-consent').checked;
+          const smsConsent = document.getElementById('sms-consent').checked;
+          console.log('Preferences:', { email: emailConsent, sms: smsConsent });
+          toast.clearAll();
+        }}
+      >
+        Save Preferences
+      </nr-button>
+    </div>
+  `,
+  autoDismiss: false,
+  icon: '',
+});
+```
+
+**Note:** When using `content`, the `text` property is ignored. The custom content receives full control over the toast's content area.
 
 ## Accessibility
 

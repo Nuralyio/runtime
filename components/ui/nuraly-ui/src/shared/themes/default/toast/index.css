@@ -1,0 +1,8 @@
+/**
+ * Default Theme - Toast Component
+ * Entry point that imports all toast theme variants
+ */
+
+@import './common.css';
+@import './light.css';
+@import './dark.css';

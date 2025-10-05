@@ -1,6 +1,6 @@
 {
     "name": "@nuralyui/toast",
-    "version": "0.0.5",
+    "version": "0.0.10",
     "description": "Toast notification component for NuralyUI library",
     "main": "index.js",
     "type": "module",
