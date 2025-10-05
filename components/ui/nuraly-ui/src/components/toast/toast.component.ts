@@ -29,18 +29,24 @@ import '../icon/icon.component.js';
  * Toast notification component for displaying temporary messages.
  * 
  * Provides a flexible notification system with multiple types, positions, and animations.
- * Supports stacking multiple toasts, auto-dismiss, and manual closing.
+ * Supports stacking multiple toasts, auto-dismiss (enabled by default), and manual closing.
  * 
  * @example
  * ```html
- * <!-- Basic usage -->
+ * <!-- Basic usage with auto-dismiss -->
  * <nr-toast position="top-right"></nr-toast>
+ * 
+ * <!-- Disable auto-dismiss to require manual closing -->
+ * <nr-toast position="top-right" auto-dismiss="false"></nr-toast>
  * 
  * <!-- Programmatic usage -->
  * <script>
  *   const toast = document.querySelector('nr-toast');
  *   toast.show({ text: 'Success!', type: 'success' });
  *   toast.show({ text: 'Error occurred', type: 'error', duration: 7000 });
+ *   
+ *   // Disable auto-dismiss for specific toast
+ *   toast.show({ text: 'Persistent message', autoDismiss: false });
  * </script>
  * ```
  * 
@@ -81,6 +87,10 @@ export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: Boolean })
   stack = true;
 
+  /** Auto dismiss toasts after duration (default: true) */
+  @property({ type: Boolean })
+  autoDismiss = true;
+
   /** Internal state: active toasts */
   @state()
   private toasts: ToastItem[] = [];
@@ -104,6 +114,7 @@ export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
       text: toastConfig.text,
       type: toastConfig.type || ToastType.Default,
       duration: toastConfig.duration ?? this.defaultDuration,
+      autoDismiss: toastConfig.autoDismiss ?? this.autoDismiss,
       closable: toastConfig.closable ?? true,
       icon: toastConfig.icon || this.getDefaultIcon(toastConfig.type),
       customClass: toastConfig.customClass,
@@ -125,7 +136,7 @@ export class NrToastElement extends NuralyUIBaseMixin(LitElement) {
     this.emitToastEvent('nr-toast-show', toast, 'show');
 
     // Set auto-dismiss timeout
-    if (toast.duration && toast.duration > 0) {
+    if (toast.autoDismiss && toast.duration && toast.duration > 0) {
       const timeoutId = window.setTimeout(() => {
         this.removeToast(toast.id);
       }, toast.duration);

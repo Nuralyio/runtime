@@ -58,6 +58,9 @@ export interface ToastConfig {
   /** Duration in milliseconds */
   duration?: number;
   
+  /** Auto dismiss after duration (default: true) */
+  autoDismiss?: boolean;
+  
   /** Show close button */
   closable?: boolean;
   

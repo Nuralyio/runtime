@@ -93,6 +93,14 @@ const meta: Meta = {
         defaultValue: { summary: 'true' },
       },
     },
+    autoDismiss: {
+      control: { type: 'boolean' },
+      description: 'Auto dismiss toasts after duration (default: true)',
+      table: {
+        category: 'Behavior',
+        defaultValue: { summary: 'true' },
+      },
+    },
   },
 };
 
@@ -109,6 +117,7 @@ export const Default: Story = {
     defaultDuration: 5000,
     animation: 'fade',
     stack: true,
+    autoDismiss: true,
   },
   render: (args) => html`
     <div style="padding: 2rem;">
@@ -449,6 +458,88 @@ export const Stacking: Story = {
       <p style="margin-top: 1rem; color: #666;">
         Max 3 toasts shown at once. Older toasts are removed when limit is reached.
       </p>
+    </div>
+  `,
+};
+
+/**
+ * Auto-dismiss behavior demonstration
+ */
+export const AutoDismiss: Story = {
+  render: () => html`
+    <div style="padding: 2rem;">
+      <nr-toast id="toast-auto" auto-dismiss></nr-toast>
+      <nr-toast id="toast-manual" auto-dismiss="false"></nr-toast>
+      
+      <div style="display: flex; gap: 1rem; flex-direction: column; max-width: 600px;">
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Auto-Dismiss Enabled (Default)</h3>
+          <p style="margin: 0 0 1rem 0; color: #666;">
+            Toasts will automatically close after 5 seconds
+          </p>
+          <button 
+            @click=${() => {
+              const toast = document.getElementById('toast-auto') as NrToastElement;
+              toast?.success('This toast will auto-dismiss in 5 seconds');
+            }}
+            style="padding: 0.5rem 1rem; cursor: pointer;"
+          >
+            Show Auto-Dismiss Toast
+          </button>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Auto-Dismiss Disabled</h3>
+          <p style="margin: 0 0 1rem 0; color: #666;">
+            Toasts must be manually closed with the close button
+          </p>
+          <button 
+            @click=${() => {
+              const toast = document.getElementById('toast-manual') as NrToastElement;
+              toast?.info('This toast requires manual closing');
+            }}
+            style="padding: 0.5rem 1rem; cursor: pointer;"
+          >
+            Show Manual Close Toast
+          </button>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">Per-Toast Control</h3>
+          <p style="margin: 0 0 1rem 0; color: #666;">
+            Override container setting for individual toasts
+          </p>
+          <div style="display: flex; gap: 0.5rem;">
+            <button 
+              @click=${() => {
+                const toast = document.getElementById('toast-auto') as NrToastElement;
+                toast?.show({ 
+                  text: 'This toast will NOT auto-dismiss',
+                  type: ToastType.Warning,
+                  autoDismiss: false
+                });
+              }}
+              style="padding: 0.5rem 1rem; cursor: pointer;"
+            >
+              Disable for One Toast
+            </button>
+            <button 
+              @click=${() => {
+                const toast = document.getElementById('toast-manual') as NrToastElement;
+                toast?.show({ 
+                  text: 'This toast WILL auto-dismiss',
+                  type: ToastType.Success,
+                  autoDismiss: true,
+                  duration: 3000
+                });
+              }}
+              style="padding: 0.5rem 1rem; cursor: pointer;"
+            >
+              Enable for One Toast
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
 };
