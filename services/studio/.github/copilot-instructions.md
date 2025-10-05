@@ -133,9 +133,9 @@ moveDraggedComponent(dropTargetId, draggedId)
 ### API Integration
 ```typescript
 // src/api/ - API service layer organized by domain
-import { fetchApplicationById, fetchAllApplications } from '@api';
-import { fetchPageComponentById } from '@api/components';
-import { fetchApplicationPagesById } from '@api/pages';
+import { fetchApplicationById, fetchAllApplications } from '@services';
+import { fetchPageComponentById } from '@services/components';
+import { fetchApplicationPagesById } from '@services/pages';
 ```
 
 ### Service Integration

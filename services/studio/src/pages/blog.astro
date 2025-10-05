@@ -4,7 +4,7 @@ import "../features/runtime/micro-app";
 import { MicroApp } from '../features/runtime/micro-app';
 import 'dotenv/config'
 import { processHeaders } from '@shared/utils/api-calls-utils';
-import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@api';
+import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@services';
 
 const blogAPPUUID = process.env.BLOG_APP_UUID;
 const blogAPPPageUUID = process.env.BLOG_PAGE_UUID;

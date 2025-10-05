@@ -16,8 +16,8 @@
       "@shared/*": [
         "shared/*"
       ],
-      "@api/*": [
-        "api/*"
+      "@services/*": [
+        "services/*"
       ],
       "@runtime/*": [
         "features/runtime/*"

@@ -22,7 +22,7 @@ export default defineConfig({
        '$store': '/src/shared/redux/store',
        '@features': '/src/features',
        '@shared': '/src/shared',
-       '@api': '/src/api',
+       '@services': '/src/services',
        '@runtime': '/src/features/runtime',
        '@studio': '/src/features/studio',
        '@utils': '/src/utils',

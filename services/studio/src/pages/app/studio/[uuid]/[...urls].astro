@@ -10,9 +10,9 @@ import { $pages } from "@shared/redux/store/page"
 import { $components } from "@shared/redux/store/component/store";
 import { $applications } from "@shared/redux/store/apps";
 import { processHeaders } from "@shared/utils/api-calls-utils";
-import { fetchAllApplications, fetchApplicationPagesById, fetchApplicationComponentById } from "@api";
+import { fetchAllApplications, fetchApplicationPagesById, fetchApplicationComponentById } from "@services";
 import { EditorSpinner } from '@studio/panels/layout/EditorSpinner'
-import { ApplicationNotFound } from "@api/applications/exceptions/ApplicationNotFound";
+import { ApplicationNotFound } from "@services/applications/exceptions/ApplicationNotFound";
 const { title, uuid, urls = "" } = Astro.params;
 const functionAppUUID = process.env.FUNCTION_APP_UUID;
 const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
