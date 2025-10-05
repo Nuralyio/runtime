@@ -1,11 +1,18 @@
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
 import { LitElement, PropertyValues, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './sub-menu.style.js';
 import { EMPTY_STRING } from '../menu.constants.js';
-import { IAction } from '../menu.types.js';
+import { IMenu } from '../menu.types.js';
+import '../../icon/icon.component.js';
 
 @customElement('nr-sub-menu')
-export class HySubMenu extends LitElement {
+export class NrSubMenu extends LitElement {
   @property()
   text!: string;
 
@@ -15,7 +22,7 @@ export class HySubMenu extends LitElement {
   @property({ type: Boolean })
   disabled = false;
 
-  @property({ type: Boolean})
+  @property({ type: Boolean })
   highlighted = false;
 
   @state()
@@ -24,14 +31,14 @@ export class HySubMenu extends LitElement {
   @state()
   hovered = false;
 
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   selected = false;
-  
-  @property({type: Object})
-  menu!: { icon: string, actions: IAction[], children: any  , menu : any , opened : boolean};
 
-  @property({type: Object})
-  status!: { icon: string, label: string };
+  @property({ type: Object })
+  menu!: IMenu;
+
+  @property({ type: Object })
+  status!: { icon: string; label: string };
 
   optionPath!: number[];
 
@@ -75,8 +82,8 @@ export class HySubMenu extends LitElement {
   protected override updated(_changedProperties: PropertyValues): void {
     if (_changedProperties.has('menu')) {
       const previousMenu = _changedProperties.get('menu') as typeof this.menu;
-      if (previousMenu?.opened !== this.menu.opened) {
-        if(this.menu.opened){
+      if (previousMenu?.opened !== this.menu?.opened) {
+        if (this.menu?.opened) {
           this.isOpen = this.menu.opened;
         }
       }
@@ -93,12 +100,12 @@ export class HySubMenu extends LitElement {
           ${this.status?.icon ? html`
               <nr-icon name=${this.status.icon} class="status-icon" ></nr-icon>
             `: nothing}
-          ${(this.highlighted || this.hovered) && this.menu?.menu.actions ? html`
+          ${(this.highlighted || this.hovered) && this.menu?.menu?.actions ? html`
             <hy-dropdown .options=${this.menu.menu.actions} @click-item=${this.onActionClick} .trigger=${"click"}>
               <nr-icon name="${this.menu.menu.icon}" class="action-icon"></nr-icon>
             </hy-dropdown>
             `: nothing}
-            ${this.menu.children.length ? html`<nr-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></nr-icon>` : nothing}
+            ${this.menu?.children && this.menu.children.length ? html`<nr-icon id="toggle-icon" name="${this.isOpen ? 'angle-up' : 'angle-down'}" @mousedown=${!this.disabled ? this.toggleIcon : nothing}></nr-icon>` : nothing}
           </div>
         </div>
         <slot @select-menu=${this._handleSelectedChild} @selected-link=${this._handleSelectedChild} style="display:${this.isOpen ? nothing : 'none'};"></slot>

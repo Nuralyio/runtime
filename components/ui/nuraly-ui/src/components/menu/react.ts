@@ -1,9 +1,11 @@
-import {createComponent} from '@lit-labs/react';
+import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
-import {HyMenuComponent} from './menu.component.js';
-export const HyDropdown = createComponent({
+import { NrMenuElement } from './menu.component.js';
+export const NrMenu = createComponent({
   tagName: 'nr-menu',
-  elementClass: HyMenuComponent,
+  elementClass: NrMenuElement,
   react: React,
-  events: {},
+  events: {
+    change: 'change',
+  },
 });

@@ -1,54 +1,61 @@
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './menu-link.style.js';
 import { EMPTY_STRING } from '../menu.constants.js';
 import { ICON_POSITION } from './menu-link.contants.js';
-import { IAction } from '../menu.types.js';
+import { IAction, IconPosition } from '../menu.types.js';
+import '../../icon/icon.component.js';
 
 @customElement('nr-menu-link')
-export class HyMenuLink extends LitElement {
+export class NrMenuLink extends LitElement {
   static index: number;
 
   @state()
   private linkPosition!: number;
 
-  @property({reflect: true})
+  @property({ reflect: true })
   text = EMPTY_STRING;
 
   @property()
   link!: string;
 
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   disabled = false;
 
-  @property({reflect: true})
+  @property({ reflect: true })
   icon = EMPTY_STRING;
 
-  @property({reflect: true})
-  iconPosition = ICON_POSITION.LEFT;
+  @property({ reflect: true })
+  iconposition: IconPosition | string = ICON_POSITION.LEFT;
 
-  @property({type: Boolean, reflect: true})
+  @property({ type: Boolean, reflect: true })
   selected = false;
 
-  @property({reflect: true})
-  menu!:{icon:string,actions:IAction[]}
+  @property({ type: Object })
+  menu!: { icon: string; actions: IAction[] };
 
-  @property()
-  status!:{icon:string,label:string}
+  @property({ type: Object })
+  status!: { icon: string; label: string };
 
-  optionPath!:number[];
+  optionPath!: number[];
 
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.optionPath=this.getAttribute('data-path')!.split('-').map((stringValue)=>+stringValue);
+    this.optionPath = this.getAttribute('data-path')!.split('-').map((stringValue) => +stringValue);
 
-    const isTheFirstOption=this.optionPath.filter((path)=>path!=0).length==0
+    const isTheFirstOption = this.optionPath.filter((path) => path != 0).length == 0;
     if (isTheFirstOption) {
-      HyMenuLink.index = 0;
+      NrMenuLink.index = 0;
     }
-    this.linkPosition = HyMenuLink.index;
-    HyMenuLink.index++;
+    this.linkPosition = NrMenuLink.index;
+    NrMenuLink.index++;
   }
 
   override firstUpdated(): void {
