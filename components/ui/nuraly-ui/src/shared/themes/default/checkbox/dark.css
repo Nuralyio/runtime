@@ -1,7 +1,6 @@
 /**
  * Default Theme - Checkbox Component - Dark Variant
  * Checkbox-specific CSS variables for the Default Design System dark theme
- * Based on official Ant Design v5 dark theme specifications
  */
 
 /* Use higher specificity and ensure proper cascade */
@@ -11,15 +10,15 @@ body[data-theme="default-dark"],
 html[data-theme="default-dark"] *,
 body[data-theme="default-dark"] * {
   /* ========================================
-   * CHECKBOX VARIABLES - ANT DESIGN DARK THEME
+   * CHECKBOX VARIABLES - DEFAULT DARK THEME
    * ======================================== */
 
-  /* Base checkbox styling - Ant Design dark style */
+  /* Base checkbox styling */
   --nuraly-color-checkbox-background: #1f1f1f;
   --nuraly-color-checkbox-text: rgba(255, 255, 255, 0.85);
   --nuraly-color-checkbox-label: rgba(255, 255, 255, 0.85);
 
-  /* Checkbox borders - Ant Design dark outlined style with gray tones */
+  /* Checkbox borders */
   --nuraly-color-checkbox-border: #434343;
   --nuraly-color-checkbox-border-focus: #8c8c8c;
   --nuraly-color-checkbox-border-hover: #737373;
@@ -29,7 +28,7 @@ body[data-theme="default-dark"] * {
   --nuraly-color-checkbox-checked-border: #8c8c8c;
   --nuraly-color-checkbox-indeterminate-background: #8c8c8c;
 
-  /* Disabled states - Ant Design dark */
+  /* Disabled states */
   --nuraly-color-checkbox-disabled-background: #262626;
   --nuraly-color-checkbox-disabled-border: #434343;
   --nuraly-color-checkbox-disabled-text: rgba(255, 255, 255, 0.25);

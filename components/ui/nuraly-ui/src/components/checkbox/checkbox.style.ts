@@ -5,7 +5,6 @@ const checkBoxStyles = css`
    * CHECKBOX CSS VARIABLES - FALLBACK VALUES
    * ========================================
    * These fallback values ensure the component works even without theme files
-   * They follow Ant Design v5 specifications
    */
   :host {
     /* Base checkbox appearance */

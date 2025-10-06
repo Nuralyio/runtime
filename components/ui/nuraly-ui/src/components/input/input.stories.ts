@@ -459,37 +459,37 @@ export const AllStates: Story = {
   render: () => html`
     <div style="display: flex; flex-direction: column; gap: 2rem; width: 100%; max-width: 1000px;">
       
-      <!-- Ant Design Theme (Default) -->
+      <!-- Default Theme -->
       <div data-theme="default-light" style="padding: 20px; border: 2px solid #1890ff; border-radius: 8px; background: #fafafa;">
-        <h3 style="margin-top: 0; color: #1890ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;">🎨 Ant Design Theme (Default)</h3>
+        <h3 style="margin-top: 0; color: #1890ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;">🎨 Default Theme</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <nr-input 
             state="default" 
             label="Default State" 
             placeholder="Default input" 
             value="Normal text"
-            helper-text="Ant Design styled input with clean borders"
+            helper-text="Default styled input with clean borders"
           ></nr-input>
           <nr-input 
             state="error" 
             label="Error State" 
             placeholder="Error input" 
             value="Invalid email format"
-            helper-text="Ant Design error state with red accent"
+            helper-text="Default error state with red accent"
           ></nr-input>
           <nr-input 
             state="warning" 
             label="Warning State" 
             placeholder="Warning input" 
             value="Password might be weak"
-            helper-text="Ant Design warning state with orange accent"
+            helper-text="Default warning state with orange accent"
           ></nr-input>
           <nr-input 
             state="default" 
             label="With Icons" 
             placeholder="Search..." 
             withCopy
-            helper-text="Clean Ant Design styling with icons"
+            helper-text="Clean default styling with icons"
           ></nr-input>
         </div>
       </div>
@@ -531,7 +531,7 @@ export const AllStates: Story = {
 
       <!-- Dark Theme Example -->
       <div data-theme="default-dark" style="padding: 20px; border: 2px solid #1890ff; border-radius: 8px; background: #141414; color: #fff;">
-        <h3 style="margin-top: 0; color: #40a9ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;">🌙 Dark Theme (Ant Design)</h3>
+        <h3 style="margin-top: 0; color: #40a9ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;">🌙 Dark Theme (Default)</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <nr-input 
             state="default" 
@@ -567,7 +567,7 @@ export const AllStates: Story = {
       <div style="background: #f9f9f9; padding: 15px; border-radius: 6px; margin-top: 10px;">
         <p style="margin: 0; color: #666; font-size: 14px;">
           💡 <strong>Theme Switching:</strong> This showcase demonstrates how the same input component 
-          automatically adapts to different design systems (Ant Design vs Carbon) and theme variants 
+          automatically adapts to different design systems (Default vs Carbon) and theme variants 
           (light vs dark) using CSS custom properties.
         </p>
       </div>

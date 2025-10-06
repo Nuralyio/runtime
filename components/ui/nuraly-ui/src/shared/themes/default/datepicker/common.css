@@ -10,7 +10,7 @@
    * SHARED DATEPICKER VARIABLES - DEFAULT THEME
    * ======================================== */
 
-  /* Datepicker borders - Default Design System (Ant Design style) */
+  /* Datepicker borders - Default Design System */
   --nuraly-border-width-datepicker: 1px;
   --nuraly-border-radius-datepicker: 6px;
   --nuraly-color-datepicker-primary: #1890ff;
@@ -80,7 +80,7 @@
   --nuraly-size-datepicker-large-height: 40px;
   --nuraly-size-datepicker-large-day: 40px;
 
-  /* Error/warning/success colors from Ant Design */
+  /* Error/warning/success colors */
   --nuraly-color-datepicker-error: #ff4d4f;
   --nuraly-color-datepicker-warning: #faad14;
   --nuraly-color-datepicker-success: #52c41a;

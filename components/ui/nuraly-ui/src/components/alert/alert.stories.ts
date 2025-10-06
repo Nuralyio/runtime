@@ -14,8 +14,9 @@ import { AlertType } from './alert.types.js';
 /**
  * ## Alert
  * 
- * Alert component displays important messages to users in a prominent way. Similar to Ant Design's alert,
- * it supports different severity levels and can include descriptions, icons, and close functionality.
+ * /**
+ * Alert component displays important messages to users in a prominent way.
+ * It provides visual feedback for different message types (success, info, warning, error)
  * 
  * ### When to use
  * - To display important information that requires user attention

@@ -1,14 +1,13 @@
 /**
  * Default Theme - Checkbox Component - Common Variables
  * Shared CSS variables for both light and dark variants
- * Based on Ant Design v5 specifications
  */
 
 :root,
 [data-theme="default-light"],
 [data-theme="default-dark"] {
   /* ========================================
-   * SHARED CHECKBOX VARIABLES - DEFAULT/ANT DESIGN THEME
+   * SHARED CHECKBOX VARIABLES - DEFAULT THEME
    * Variables that remain consistent across light and dark variants
    * ======================================== */
 
@@ -16,7 +15,7 @@
   --nuraly-border-width-checkbox: 1px;
   --nuraly-border-radius-checkbox: 2px;
 
-  /* Checkbox sizing - Ant Design */
+  /* Checkbox sizing */
   --nuraly-size-checkbox-small: 14px;
   --nuraly-size-checkbox-medium: 16px;
   --nuraly-size-checkbox-large: 18px;

@@ -1,14 +1,14 @@
 /**
- * Ant Design Theme - Input Component - Dark Variant
- * Input-specific CSS variables based on Ant Design v5 dark theme specifications
+ * Default Theme - Input Component - Dark Variant
+ * Input-specific CSS variables
  */
 
 [data-theme="default-dark"]{
   /* ========================================
-   * INPUT VARIABLES - ANT DESIGN DARK THEME
+   * INPUT VARIABLES - DEFAULT DARK THEME
    * ======================================== */
 
-  /* Base input styling - Ant Design dark style */
+  /* Base input styling */
   --nuraly-color-input-background: #374151;
   --nuraly-color-input-text: rgba(255, 255, 255, 0.88);
   --nuraly-color-input-placeholder: rgba(255, 255, 255, 0.25);
@@ -19,7 +19,7 @@
   --nuraly-color-input-border: #374151;
   --nuraly-color-input-border-bottom: #374151;
 
-  /* Input states - Ant Design dark */
+  /* Input states */
   --nuraly-color-input-disabled-background: rgba(255, 255, 255, 0.08);
   --nuraly-color-input-disabled-text: rgba(255, 255, 255, 0.25);
   --nuraly-color-input-disabled-placeholder: rgba(255, 255, 255, 0.25);
@@ -27,13 +27,13 @@
   --nuraly-color-input-disabled-helper-text: rgba(255, 255, 255, 0.25);
   --nuraly-color-input-disabled-border: #434343;
 
-  /* Error states - Ant Design dark error red */
+  /* Error states */
   --nuraly-color-input-error-border: #ff4d4f;
   --nuraly-color-input-error-text: #ff4d4f;
   --nuraly-color-input-error-icon: #ff4d4f;
   --nuraly-color-input-error-background: #2a1215;
 
-  /* Warning states - Ant Design dark warning orange */
+  /* Warning states */
   --nuraly-color-input-warning-border: #faad14;
   --nuraly-color-input-warning-text: #faad14;
   --nuraly-color-input-warning-icon: #faad14;

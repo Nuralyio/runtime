@@ -1,13 +1,11 @@
 /**
- * Default Design System Theme - Datepicker Component - Dark Variant
+ * Default Theme - Datepicker Component - Dark Variant
  * Datepicker-specific CSS variables for the Default Design System dark theme
- * Based on Ant Design v5 dark theme specifications
  */
 
 [data-theme="default-dark"] {
   /* ========================================
-   * DATEPICKER VARIABLES - DEFAULT DARK THEME
-   * Ant Design v5 Dark Theme Colors
+   * Default Theme Dark Colors
    * ======================================== */
 
   /* Background colors */
