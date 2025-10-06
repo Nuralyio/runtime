@@ -184,7 +184,7 @@ export class NrAlertElement extends NuralyUIBaseMixin(LitElement) {
             <slot name="icon">
               <nr-icon 
                 name=${this.getDefaultIcon()} 
-                size=${this.hasDescription() ? 'large' : 'medium'}
+                size=${this.hasDescription() ? 'large' : 'small'}
               ></nr-icon>
             </slot>
           </div>
