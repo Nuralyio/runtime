@@ -1,0 +1,18 @@
+/**
+ * Carbon Design System - Skeleton Component - Dark Variant
+ * Skeleton-specific CSS variables
+ */
+
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SKELETON VARIABLES - CARBON DARK THEME
+   * ======================================== */
+
+  /* Skeleton base colors */
+  --nuraly-skeleton-background: #393939;
+  --nuraly-skeleton-icon-color: #525252;
+  
+  /* Skeleton animation gradient */
+  --nuraly-skeleton-gradient-from: #393939;
+  --nuraly-skeleton-gradient-to: #525252;
+}

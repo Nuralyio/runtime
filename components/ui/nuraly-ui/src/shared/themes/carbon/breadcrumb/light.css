@@ -1,0 +1,17 @@
+/**
+ * Carbon Design System - Breadcrumb Component - Light Variant
+ * Breadcrumb-specific CSS variables
+ */
+
+[data-theme="carbon-light"] {
+  /* ========================================
+   * BREADCRUMB VARIABLES - CARBON LIGHT THEME
+   * ======================================== */
+
+  /* Breadcrumb colors */
+  --nuraly-breadcrumb-item-color: #161616;
+  --nuraly-breadcrumb-link-color: #0f62fe;
+  --nuraly-breadcrumb-link-hover-color: #0353e9;
+  --nuraly-breadcrumb-last-item-color: #161616;
+  --nuraly-breadcrumb-separator-color: #8d8d8d;
+}

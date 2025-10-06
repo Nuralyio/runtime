@@ -1,0 +1,17 @@
+/**
+ * Carbon Design System - Popconfirm Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SHARED POPCONFIRM VARIABLES - CARBON THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Popconfirm uses dropdown and button theme variables */
+  /* Icon colors are managed through global color system */
+  --nuraly-popconfirm-icon-color: var(--nuraly-color-text);
+}
