@@ -1,12 +1,15 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
+import { NrImageElement } from './image.component.js';
 
-export const HyImage = createComponent({
-  tagName: 'hy-image',
-  elementClass: class extends HTMLElement {},
+export const NrImage = createComponent({
+  tagName: 'nr-image',
+  elementClass: NrImageElement,
   react: React,
   events: {
-    load: 'load',
-    error: 'error',
+    onLoad: 'nr-image-load',
+    onError: 'nr-image-error',
+    onPreviewOpen: 'nr-image-preview-open',
+    onPreviewClose: 'nr-image-preview-close',
   },
 });
