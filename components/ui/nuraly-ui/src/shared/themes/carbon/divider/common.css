@@ -1,0 +1,29 @@
+/**
+ * Carbon Design System - Divider Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * SHARED DIVIDER VARIABLES - CARBON THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Typography */
+  --nuraly-divider-font-size: 0.875rem;
+  --nuraly-divider-text-padding: 1em;
+
+  /* Spacing - Horizontal divider */
+  --nuraly-divider-margin-vertical: 16px;
+  --nuraly-divider-margin-vertical-small: 8px;
+  --nuraly-divider-margin-vertical-middle: 16px;
+  --nuraly-divider-margin-vertical-large: 24px;
+
+  /* Spacing - Vertical divider */
+  --nuraly-divider-margin-horizontal: 8px;
+
+  /* Orientation margin (percentage for text positioning) */
+  --nuraly-divider-orientation-margin: 5%;
+}
