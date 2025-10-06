@@ -29,11 +29,11 @@ export const styles = css`
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: var(--nuraly-spacing-2);
-    padding: var(--nuraly-spacing-3) var(--nuraly-spacing-4);
+    gap: var(--nuraly-alert-gap);
+    padding: var(--nuraly-alert-padding);
     border: 1px solid transparent;
-    border-radius: var(--nuraly-border-radius-base);
-    transition: all var(--nuraly-transition-fast) ease;
+    border-radius: var(--nuraly-alert-border-radius);
+    transition: var(--nuraly-alert-transition);
   }
 
   .alert--banner {
@@ -88,7 +88,7 @@ export const styles = css`
 
   /* Alert with description */
   .alert--with-description {
-    padding: var(--nuraly-spacing-4) var(--nuraly-spacing-5);
+    padding: var(--nuraly-alert-padding-with-description);
   }
 
   .alert--with-description .alert__icon {

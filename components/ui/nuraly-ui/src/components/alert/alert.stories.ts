@@ -11,7 +11,6 @@ import '../icon/index.js';
 import '../button/index.js';
 import type { NrAlertElement } from './alert.component.js';
 import { AlertType } from './alert.types.js';
-
 /**
  * ## Alert
  * 
