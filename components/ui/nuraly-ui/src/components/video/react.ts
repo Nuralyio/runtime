@@ -1,13 +1,17 @@
 import { createComponent } from '@lit-labs/react';
 import * as React from 'react';
+import { NrVideoElement } from './video.component.js';
 
-export const HyVideo = createComponent({
+export const NrVideo = createComponent({
   tagName: 'nr-video',
-  elementClass: class extends HTMLElement {},
+  elementClass: NrVideoElement,
   react: React,
   events: {
-    play: 'play',
-    pause: 'pause',
-    ended: 'ended',
+    onPlay: 'nr-video-play',
+    onPause: 'nr-video-pause',
+    onEnded: 'nr-video-ended',
+    onError: 'nr-video-error',
+    onPreviewOpen: 'nr-video-preview-open',
+    onPreviewClose: 'nr-video-preview-close',
   },
 });
