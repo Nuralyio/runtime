@@ -1,0 +1,38 @@
+{
+  "name": "@nuralyui/layout",
+  "version": "0.0.1",
+  "description": "Layout components for NuralyUI - includes Layout, Header, Footer, Sider, and Content",
+  "type": "module",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.ts",
+    "!*.stories.ts",
+    "!*.test.ts"
+  ],
+  "keywords": [
+    "layout",
+    "header",
+    "footer",
+    "sider",
+    "sidebar",
+    "content",
+    "web-components",
+    "lit",
+    "nuralyui"
+  ],
+  "author": "NuralyUI Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  }
+}

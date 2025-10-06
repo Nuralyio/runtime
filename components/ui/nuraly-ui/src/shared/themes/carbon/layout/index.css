@@ -1,0 +1,9 @@
+/**
+ * Carbon Theme - Layout Component
+ * Entry point for Carbon Design System layout theme variables
+ * Imports all layout-specific theme files (common, light, dark)
+ */
+
+@import './common.css';
+@import './light.css';
+@import './dark.css';
