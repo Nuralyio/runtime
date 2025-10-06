@@ -1,215 +1,133 @@
-import { LitElement, html, css } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
+import { styleMap } from "lit/directives/style-map.js";
+import { NuralyUIBaseMixin } from "../../shared/base-mixin.js";
+import styles from "./document.style.js";
+import { DocumentType } from "./document.types.js";
 
-@customElement('hy-document-viewer')
-export class HyPdfViewer extends LitElement {
-  @property()
+@customElement('nr-document')
+export class NrDocumentElement extends NuralyUIBaseMixin(LitElement) {
+  static override styles = styles;
+
+  @property({ type: String })
   src!: string;
 
-  @property()
+  @property({ type: String })
+  type: DocumentType = DocumentType.PDF;
+
+  @property({ type: String })
   width = 'auto';
 
-  @property()
-  height = 'auto';
-
-  @property({type: Object})
-  fallback = null;
+  @property({ type: String })
+  height = '500px';
 
   @property({ type: Boolean })
   previewable = false;
 
+  @property({ type: Boolean, reflect: true })
+  block = false;
+
   @state()
-  private isFullscreen = false;
+  private showPreview = false;
 
-  defaultFallBack = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IS0tIFVwbG9hZGVkIHRvOiBTVkcgUmVwbywgd3d3LnN2Z3JlcG8uY29tLCBHZW5lcmF0b3I6IFNWRyBSZXBvIE1peGVyIFRvb2xzIC0tPg0KPHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAxMjAgMTIwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIGZpbGw9IiNFRkYxRjMiLz4NCjxwYXRoIGQ9Ik01OS40IDYyLjhWODAuNEg0OC4yVjQxLjZINjMuNEM2Ny4xIDQxLjYgNzAuMSA0Mi42IDcyLjQgNDQuN0M3NC43IDQ2LjggNzUuOCA0OS42IDc1LjggNTNDNzUuOCA1Ni41IDc0LjcgNTkuMiA3Mi40IDYxLjNDNzAuMiA2My40IDY3LjIgNjQuNCA2My40IDY0LjRINTkuNFY2Mi44Wk01OS40IDU0LjZINjMuNEM2NSA1NC42IDY2LjMgNTQuMSA2Ny4yIDUzQzY4LjEgNTEuOSA2OC42IDUwLjYgNjguNiA0OUM2OC42IDQ3LjUgNjguMSA0Ni4yIDY3LjIgNDUuMUM2Ni4zIDQ0IDY1IDQzLjQgNjMuNCA0My40SDU5LjRWNTQuNloiIGZpbGw9IiM2ODc3ODciLz4NCjwvc3ZnPg==';
+  @state()
+  private hasError = false;
 
-  static override styles = css`
-    :host {
-      display: block;
-    }
-    
-    .pdf-container {
-      position: relative;
-      overflow: hidden;
-      min-height: 100px;
-      background-color: #f5f5f5;
-      border: 1px solid #e0e0e0;
-    }
-    
-    .pdf-iframe {
-      border: none;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .preview-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: rgba(255, 255, 255, 0.8);
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 5px 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: 12px;
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .preview-button:hover {
-      background-color: rgba(255, 255, 255, 1);
-    }
+  private readonly defaultFallback = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIGZpbGw9IiNFRkYxRjMiLz48cGF0aCBkPSJNNTkuNCA2Mi44VjgwLjRINDguMlY0MS42SDYzLjRDNjcuMSA0MS42IDcwLjEgNDIuNiA3Mi40IDQ0LjdDNzQuNyA0Ni44IDc1LjggNDkuNiA3NS44IDUzQzc1LjggNTYuNSA3NC43IDU5LjIgNzIuNCA2MS4zQzcwLjIgNjMuNCA2Ny4yIDY0LjQgNjMuNCA2NC40SDU5LjRWNjIuOFpNNTkuNCA1NC42SDYzLjRDNjUgNTQuNiA2Ni4zIDU0LjEgNjcuMiA1M0M2OC4xIDUxLjkgNjguNiA1MC42IDY4LjYgNDlDNjguNiA0Ny41IDY4LjEgNDYuMiA2Ny4yIDQ1LjFDNjYuMyA0NCA2NSA0My40IDYzLjQgNDMuNEg1OS40VjU0LjZaIiBmaWxsPSIjNjg3Nzg3Ii8+PC9zdmc+';
 
-    .preview-button svg {
-      margin-right: 4px;
-    }
-    
-    .fullscreen-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.95);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .fullscreen-header {
-      display: flex;
-      justify-content: flex-end;
-      padding: 16px;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-    
-    .close-button {
-      background-color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+  private handleError() {
+    this.hasError = true;
+    this.dispatchEvent(new CustomEvent('nr-document-error', {
+      bubbles: true,
+      composed: true,
+      detail: { error: `Error loading document: ${this.src}`, src: this.src, type: this.type }
+    }));
+  }
 
-    .close-button:hover {
-      background-color: #f0f0f0;
+  private handleLoad() {
+    this.dispatchEvent(new CustomEvent('nr-document-load', {
+      bubbles: true,
+      composed: true,
+      detail: { src: this.src, type: this.type }
+    }));
+  }
+
+  private showPreviewModal() {
+    if (this.previewable && !this.hasError) {
+      this.showPreview = true;
+      this.dispatchEvent(new CustomEvent('nr-document-preview-open', {
+        bubbles: true,
+        composed: true,
+        detail: { src: this.src, type: this.type }
+      }));
     }
-    
-    .fullscreen-content {
-      flex: 1;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .fullscreen-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: white;
-    }
-  `;
+  }
+
+  private closePreviewModal() {
+    this.showPreview = false;
+    this.dispatchEvent(new CustomEvent('nr-document-preview-close', {
+      bubbles: true,
+      composed: true,
+      detail: { src: this.src, type: this.type }
+    }));
+  }
 
   override render() {
+    const containerClasses = {
+      'document-container': true,
+      'document--error': this.hasError
+    };
+
+    const containerStyles: Record<string, string> = {
+      width: typeof this.width === 'number' ? `${this.width}px` : this.width,
+      height: typeof this.height === 'number' ? `${this.height}px` : this.height,
+    };
+
+    if (this.hasError) {
+      return html`
+        <div class=${classMap(containerClasses)} style=${styleMap(containerStyles)}>
+          <div class="error-message">
+            <img class="error-icon" src=${this.defaultFallback} alt="Document error" />
+            <p>Unable to load document</p>
+          </div>
+        </div>
+      `;
+    }
+
     return html`
-      <div class="pdf-container" style="width:${this.width}; height:${this.height};">
-        <iframe 
-          class="pdf-iframe"
-          src="${this.src}" 
-          title="PDF Viewer"
-          @error=${this._handleError}
+      <div class=${classMap(containerClasses)} style=${styleMap(containerStyles)}>
+        <iframe
+          class="document-iframe"
+          src=${this.src}
+          @error=${this.handleError}
+          @load=${this.handleLoad}
+          title="Document viewer"
         ></iframe>
-        
         ${this.previewable ? html`
-          <button class="preview-button" @click=${this._openFullscreen}>
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5.5 1H1.5C1.22386 1 1 1.22386 1 1.5V5.5C1 5.77614 1.22386 6 1.5 6C1.77614 6 2 5.77614 2 5.5V2H5.5C5.77614 2 6 1.77614 6 1.5C6 1.22386 5.77614 1 5.5 1Z" fill="currentColor"/>
-              <path d="M14.5 1H10.5C10.2239 1 10 1.22386 10 1.5C10 1.77614 10.2239 2 10.5 2H14V5.5C14 5.77614 14.2239 6 14.5 6C14.7761 6 15 5.77614 15 5.5V1.5C15 1.22386 14.7761 1 14.5 1Z" fill="currentColor"/>
-              <path d="M5.5 14H2V10.5C2 10.2239 1.77614 10 1.5 10C1.22386 10 1 10.2239 1 10.5V14.5C1 14.7761 1.22386 15 1.5 15H5.5C5.77614 15 6 14.7761 6 14.5C6 14.2239 5.77614 14 5.5 14Z" fill="currentColor"/>
-              <path d="M14.5 10C14.2239 10 14 10.2239 14 10.5V14H10.5C10.2239 14 10 14.2239 10 14.5C10 14.7761 10.2239 15 10.5 15H14.5C14.7761 15 15 14.7761 15 14.5V10.5C15 10.2239 14.7761 10 14.5 10Z" fill="currentColor"/>
+          <button class="preview-button" @click=${this.showPreviewModal}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v3a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v3a.5.5 0 0 0 1 0V6z"/>
+              <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zM1 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2z"/>
             </svg>
             Fullscreen
           </button>
         ` : ''}
+        ${this.showPreview ? html`
+          <div class="preview-modal">
+            <div class="preview-header">
+              <button class="preview-close" @click=${this.closePreviewModal} aria-label="Close preview">×</button>
+            </div>
+            <iframe src=${this.src} title="Document viewer fullscreen"></iframe>
+          </div>
+        ` : ''}
       </div>
-      
-      ${this.isFullscreen ? html`
-        <div class="fullscreen-overlay">
-          <div class="fullscreen-header">
-            <button class="close-button" @click=${this._closeFullscreen}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.5 3.5L3.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12.5 12.5L3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-          <div class="fullscreen-content">
-            <iframe 
-              class="fullscreen-iframe"
-              src="${this.src}" 
-              title="Fullscreen PDF"
-            ></iframe>
-          </div>
-        </div>
-      ` : ''}
     `;
   }
+}
 
-  _handleError(e: Event) {
-    console.error('PDF loading error:', e);
-    this.dispatchEvent(new CustomEvent('onError', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        error: `Error loading PDF: PDF viewer not supported or file cannot be loaded`
-      }
-    }));
-    
-    // Show fallback image when error occurs
-    const container = this.shadowRoot?.querySelector('.pdf-container');
-    if (container) {
-      const iframe = container.querySelector('iframe');
-      if (iframe) {
-        const img = document.createElement('img');
-        img.src = this.fallback || this.defaultFallBack;
-        img.alt = "PDF failed to load";
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "contain";
-        container.replaceChild(img, iframe);
-      }
-    }
-  }
-
-  _openFullscreen() {
-    this.isFullscreen = true;
-    // Prevent scrolling of the background when fullscreen is active
-    document.body.style.overflow = 'hidden';
-  }
-
-  _closeFullscreen() {
-    this.isFullscreen = false;
-    // Restore scrolling when fullscreen is closed
-    document.body.style.overflow = '';
-  }
-
-  // Clean up when component is removed
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    // Ensure body scrolling is restored if component is removed while in fullscreen
-    if (this.isFullscreen) {
-      document.body.style.overflow = '';
-    }
+declare global {
+  interface HTMLElementTagNameMap {
+    'nr-document': NrDocumentElement;
   }
 }

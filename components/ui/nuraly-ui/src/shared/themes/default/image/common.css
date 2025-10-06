@@ -1,0 +1,21 @@
+/**
+ * Default Design System - Image Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="default-dark"] {
+  /* ========================================
+   * SHARED IMAGE VARIABLES - DEFAULT THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Border radius */
+  --nuraly-image-border-radius: 4px;
+
+  /* Preview modal */
+  --nuraly-image-preview-border-radius: 4px;
+  --nuraly-image-preview-zindex: 1000;
+  --nuraly-image-preview-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
