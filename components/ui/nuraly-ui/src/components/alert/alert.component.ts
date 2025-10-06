@@ -191,18 +191,18 @@ export class NrAlertElement extends NuralyUIBaseMixin(LitElement) {
         ` : nothing}
         
         <div class="alert__content">
-          <slot>
-            ${this.message ? html`
-              <div class="alert__message">${this.message}</div>
-            ` : nothing}
-            
-            ${this.description ? html`
-              <div class="alert__description">${this.description}</div>
-            ` : nothing}
-          </slot>
+          ${this.message ? html`
+            <div class="alert__message">${this.message}</div>
+          ` : nothing}
+          
+          ${this.description ? html`
+            <div class="alert__description">${this.description}</div>
+          ` : nothing}
+          
+          <slot></slot>
+          
+          <slot name="action"></slot>
         </div>
-
-        <slot name="action"></slot>
         
         ${this.closable ? html`
           <button

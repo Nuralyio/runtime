@@ -309,7 +309,7 @@ export const WithAction: Story = {
         show-icon
         closable
       >
-        <div slot="action" style="margin-left: 16px;">
+        <div slot="action">
           <nr-button size="small" type="primary">Accept</nr-button>
         </div>
       </nr-alert>
@@ -424,7 +424,7 @@ export const RealWorldExamples: Story = {
           show-icon
           closable
         >
-          <div slot="action" style="margin-left: 16px;">
+          <div slot="action">
             <nr-button size="small" type="primary">Review Activity</nr-button>
           </div>
         </nr-alert>
@@ -439,7 +439,7 @@ export const RealWorldExamples: Story = {
           show-icon
           closable
         >
-          <div slot="action" style="margin-left: 16px; display: flex; gap: 8px;">
+          <div slot="action" style="display: flex; gap: 8px;">
             <nr-button size="small" type="danger">Update Payment</nr-button>
             <nr-button size="small" type="default">Contact Support</nr-button>
           </div>
@@ -454,7 +454,7 @@ export const RealWorldExamples: Story = {
           type="info"
           show-icon
         >
-          <div slot="action" style="margin-left: 16px; display: flex; gap: 8px;">
+          <div slot="action" style="display: flex; gap: 8px;">
             <nr-button size="small" type="primary">Accept</nr-button>
             <nr-button size="small" type="default">Learn More</nr-button>
           </div>
