@@ -42,6 +42,7 @@
 @import './image/index.css';
 @import './video/index.css';
 @import './document/index.css';
+@import './layout/index.css';
 
 
 /* TODO: Import other component themes as they are created
