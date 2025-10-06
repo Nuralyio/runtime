@@ -37,7 +37,6 @@ export class NrLayoutElement extends NuralyUIBaseMixin(LitElement) {
   hasSider = false;
 
   @queryAssignedElements({ selector: 'nr-sider' })
-  private siderElements!: NodeListOf<Element>;
 
   override connectedCallback(): void {
     super.connectedCallback();
