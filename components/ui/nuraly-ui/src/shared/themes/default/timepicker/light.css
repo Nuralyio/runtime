@@ -1,7 +1,6 @@
 /**
- * Default Design System Theme - Timepicker Component - Light Variant
+ * Default Theme - Timepicker Component - Light Variant
  * Timepicker-specific CSS variables for the Default Design System light theme
- * Based on Ant Design v5 specifications
  */
 
 [data-theme="default-light"],
@@ -9,7 +8,6 @@
 :root {
   /* ========================================
    * TIMEPICKER VARIABLES - DEFAULT LIGHT THEME
-   * Ant Design v5 Light Theme Colors
    * ======================================== */
 
   /* Background colors */

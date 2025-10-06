@@ -311,7 +311,7 @@ const inputStyle = css`
    * Uses theme CSS custom properties for comprehensive border and layout control
    */
   #input-container {
-    /* Default Ant Design outlined style */
+    /* Default outlined style */
     border: var(--nuraly-border-width-input, 1px) solid var(--nuraly-color-input-border, #d9d9d9);
     border-radius: var(--nuraly-border-radius-input, 6px);
     

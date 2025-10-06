@@ -1,13 +1,11 @@
 /**
  * Default Design System Theme - Timepicker Component - Dark Variant
  * Timepicker-specific CSS variables for the Default Design System dark theme
- * Based on Ant Design v5 dark theme specifications
  */
 
 [data-theme="default-dark"] {
   /* ========================================
    * TIMEPICKER VARIABLES - DEFAULT DARK THEME
-   * Ant Design v5 Dark Theme Colors
    * ======================================== */
 
   /* Background colors */

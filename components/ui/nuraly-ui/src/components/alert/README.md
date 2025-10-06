@@ -1,6 +1,6 @@
 # Alert Component
 
-Alert component for displaying important messages with different severity levels, icons, and closable functionality. Similar to Ant Design's Alert component.
+Alert component for displaying important messages with different severity levels, icons, and closable functionality.
 
 ## Installation
 

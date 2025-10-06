@@ -10,9 +10,9 @@ import { classMap } from 'lit/directives/class-map.js';
 import { styles } from './alert.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 import {
-    AlertType,
-    AlertEventDetail,
-    EMPTY_STRING
+  AlertType,
+  AlertEventDetail,
+  EMPTY_STRING
 } from './alert.types.js';
 
 // Import required components
@@ -21,7 +21,9 @@ import '../icon/icon.component.js';
 /**
  * Alert component for displaying important messages.
  * 
- * Provides a flexible alert/banner system with multiple types similar to Ant Design.
+ /**
+ * Provides a flexible alert/banner system with multiple types.
+ * The alert component is used to display important messages, warnings, and notifications
  * Supports different severity levels, optional icons, descriptions, and closable functionality.
  * 
  * @example

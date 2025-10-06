@@ -1,7 +1,6 @@
 /**
  * Default Theme - Button Component - Common Variables
  * Shared CSS variables for both light and dark variants
- * Based on Ant Design v5 specifications
  */
 
 :root,
@@ -10,7 +9,7 @@
 [data-theme="default-dark"],
 [data-theme="dark"] {
   /* ========================================
-   * SHARED BUTTON VARIABLES - DEFAULT/ANT DESIGN THEME
+   * SHARED BUTTON VARIABLES - DEFAULT THEME
    * Variables that remain consistent across light and dark variants
    * ======================================== */
 
@@ -18,11 +17,11 @@
   --nuraly-color-button-focus-outline: #1890ff;
   --nuraly-color-button-focus-ring: rgba(24, 144, 255, 0.2);
 
-  /* Button shadows - Ant Design box-shadow system (light/dark variants handled separately) */
+  /* Button shadows (light/dark variants handled separately) */
   --nuraly-shadow-button-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
 
-  /* Ant Design specific button styling */
-  --nuraly-border-radius-button: 6px; /* Ant Design default border radius */
+  /* Button specific styling */
+  --nuraly-border-radius-button: 6px;
 
   /* Tertiary button - same colors as primary across themes */
   --nuraly-color-button-tertiary: #1890ff;
@@ -56,24 +55,24 @@
   --nuraly-color-button-ghost-text-active: #096dd9;
 
   /* ========================================
-   * ANT DESIGN BUTTON PADDING & SPACING
-   * Ant Design specific button dimensions - consistent across themes
+   * BUTTON PADDING & SPACING
+   * Button dimensions - consistent across themes
    * ======================================== */
   
-  /* Ant Design button padding */
-  --nuraly-button-padding-vertical: 4px;    /* Ant Design default vertical padding */
-  --nuraly-button-padding-horizontal: 15px; /* Ant Design default horizontal padding */
+  /* Button padding */
+  --nuraly-button-padding-vertical: 4px;
+  --nuraly-button-padding-horizontal: 15px;
   
-  /* Override default button spacing for Ant Design theme */
+  /* Override default button spacing */
   --nuraly-spacing-2: 4px;   /* Override vertical padding */
   --nuraly-spacing-4: 15px;  /* Override horizontal padding */
   
   /* For different sizes */
-  --nuraly-size-sm: 24px;    /* Ant Design small button height */
-  --nuraly-size-md: 32px;    /* Ant Design default button height */
-  --nuraly-size-lg: 40px;    /* Ant Design large button height */
+  --nuraly-size-sm: 24px;
+  --nuraly-size-md: 32px;
+  --nuraly-size-lg: 40px;
   
-  /* Ant Design icon spacing and alignment */
-  --nuraly-button-icon-spacing: 6px;   /* Space between icon and text - reduced */
-  --nuraly-button-icon-size: 12px;     /* Icon size for buttons - balanced size for Ant Design */
+  /* Icon spacing and alignment */
+  --nuraly-button-icon-spacing: 6px;
+  --nuraly-button-icon-size: 12px;
 }

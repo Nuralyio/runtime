@@ -1,7 +1,6 @@
 /**
- * Default Design System Theme - Datepicker Component - Light Variant
+ * Default Theme - Datepicker Component - Light Variant
  * Datepicker-specific CSS variables for the Default Design System light theme
- * Based on Ant Design v5 specifications
  */
 
 [data-theme="default-light"],
@@ -9,7 +8,6 @@
 :root {
   /* ========================================
    * DATEPICKER VARIABLES - DEFAULT LIGHT THEME
-   * Ant Design v5 Light Theme Colors
    * ======================================== */
 
   /* Background colors */
