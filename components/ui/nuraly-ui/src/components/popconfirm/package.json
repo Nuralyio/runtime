@@ -1,0 +1,31 @@
+{
+  "name": "@nuralyui/popconfirm",
+  "version": "0.0.1",
+  "description": "NuralyUI Popconfirm Component - A pop-up confirmation dialog",
+  "author": "Nuraly, Laabidi Aymen",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "module": "./index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "popconfirm",
+    "confirmation",
+    "dialog",
+    "ui",
+    "nuralyui"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuralyUI/NuralyUI.git"
+  }
+}
