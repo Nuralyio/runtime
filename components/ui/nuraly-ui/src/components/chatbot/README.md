@@ -54,7 +54,7 @@ npm install @nuralyui/chatbot
   ];
   
   // Listen for events
-  chatbot.addEventListener('chatbot-message-sent', (e) => {
+  chatbot.addEventListener('nr-chatbot-message-sent', (e) => {
     console.log('User sent:', e.detail.message);
   });
 </script>
@@ -137,13 +137,13 @@ function ChatExample() {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `chatbot-message-sent` | `{ message: ChatbotMessage }` | User sent a message |
-| `chatbot-suggestion-clicked` | `{ suggestion: ChatbotSuggestion }` | Suggestion was selected |
-| `chatbot-retry-requested` | `{ message: ChatbotMessage }` | Retry requested for failed message |
-| `chatbot-input-changed` | `{ value: string }` | Input value changed |
-| `chatbot-input-focused` | `{ event: Event }` | Input received focus |
-| `chatbot-input-blurred` | `{ event: Event }` | Input lost focus |
-| `chatbot-modules-selected` | `{ metadata: { selectedModules, selectedModuleIds } }` | Module selection changed |
+| `nr-chatbot-message-sent` | `{ message: ChatbotMessage }` | User sent a message |
+| `nr-chatbot-suggestion-clicked` | `{ suggestion: ChatbotSuggestion }` | Suggestion was selected |
+| `nr-chatbot-retry-requested` | `{ message: ChatbotMessage }` | Retry requested for failed message |
+| `nr-chatbot-input-changed` | `{ value: string }` | Input value changed |
+| `nr-chatbot-input-focused` | `{ event: Event }` | Input received focus |
+| `nr-chatbot-input-blurred` | `{ event: Event }` | Input lost focus |
+| `nr-chatbot-modules-selected` | `{ metadata: { selectedModules, selectedModuleIds } }` | Module selection changed |
 
 ## Methods
 
@@ -251,7 +251,7 @@ import { chatServiceInstance } from '@nuralyui/chatbot';
 
 const chatbot = document.querySelector('nr-chatbot');
 
-chatbot.addEventListener('chatbot-message-sent', async (e) => {
+chatbot.addEventListener('nr-chatbot-message-sent', async (e) => {
   const userMessage = e.detail.message;
   
   // Set typing indicator
@@ -359,7 +359,7 @@ The chatbot supports module selection via an integrated `nr-select` component wi
   }
 
   // Listen for module selection changes
-  chatbot.addEventListener('chatbot-modules-selected', (e) => {
+  chatbot.addEventListener('nr-chatbot-modules-selected', (e) => {
     console.log('Selected modules:', e.detail.metadata.selectedModules);
     console.log('Selected IDs:', e.detail.metadata.selectedModuleIds);
     
@@ -395,7 +395,7 @@ The chatbot supports module selection via an integrated `nr-select` component wi
   .modules=${this.modules}
   .selectedModules=${this.selectedModules}
   enableModuleSelection
-  @chatbot-modules-selected=${this.handleModulesChanged}>
+  @nr-chatbot-modules-selected=${this.handleModulesChanged}>
   
   <span slot="module-selected-display">
     ${this.renderModuleDisplay()}
@@ -436,7 +436,7 @@ The chatbot supports module selection via an integrated `nr-select` component wi
 - `module-selected-display` - Custom content for displaying selected modules
 
 **Module Selection Events:**
-- `chatbot-modules-selected` - Fired when module selection changes
+- `nr-chatbot-modules-selected` - Fired when module selection changes
 
 **Module Selection Methods:**
 - `setModules(modules)` - Set available modules
@@ -452,11 +452,13 @@ The chatbot supports module selection via an integrated `nr-select` component wi
 <span slot="module-selected-display" id="count-display">0 selected</span>
 
 <script>
-  chatbot.addEventListener('chatbot-modules-selected', () => {
+  chatbot.addEventListener('nr-chatbot-modules-selected', updateDisplay);
+
+  function updateDisplay() {
     const count = chatbot.getSelectedModules().length;
     document.getElementById('count-display').textContent = 
       count === 0 ? 'Select modules' : `${count} selected`;
-  });
+  }
 </script>
 ```
 
@@ -476,7 +478,7 @@ The chatbot supports module selection via an integrated `nr-select` component wi
     }
   }
   
-  chatbot.addEventListener('chatbot-modules-selected', updateDisplay);
+  chatbot.addEventListener('nr-chatbot-modules-selected', updateDisplay);
   updateDisplay();
 </script>
 ```
@@ -512,7 +514,7 @@ The chatbot supports module selection via an integrated `nr-select` component wi
     }
   }
   
-  chatbot.addEventListener('chatbot-modules-selected', updateRichDisplay);
+  chatbot.addEventListener('nr-chatbot-modules-selected', updateRichDisplay);
   updateRichDisplay();
 </script>
 ```
