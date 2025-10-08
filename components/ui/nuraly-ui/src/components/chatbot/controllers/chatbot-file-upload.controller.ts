@@ -244,6 +244,62 @@ export class ChatbotFileUploadController implements ReactiveController {
   }
 
   /**
+   * Add a file by URL (no upload). Emits chatbot-files-selected with the created file.
+   */
+  addUrlFile(url: string): ChatbotFile | null {
+    if (!url) return null;
+    try {
+      const parsed = new URL(url);
+      const nameFromUrl = decodeURIComponent(parsed.pathname.split('/').pop() || 'file');
+      const mimeGuess = this.guessMimeFromExtension(nameFromUrl);
+      const fileType = this.determineFileType(mimeGuess);
+
+      const chatbotFile: ChatbotFile = {
+        id: this.generateFileId(),
+        name: nameFromUrl,
+        size: 0,
+        type: fileType,
+        mimeType: mimeGuess,
+        url
+      };
+
+      this.uploadedFiles = [...this.uploadedFiles, chatbotFile];
+      this.host.requestUpdate();
+
+      this.host.dispatchEventWithMetadata('chatbot-files-selected', {
+        files: [chatbotFile],
+        metadata: { originalFiles: [], source: 'url' }
+      });
+
+      return chatbotFile;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Simple MIME guess from filename extension
+   */
+  private guessMimeFromExtension(fileName: string): string {
+    const ext = (fileName.split('.').pop() || '').toLowerCase();
+    switch (ext) {
+      case 'jpg':
+      case 'jpeg': return 'image/jpeg';
+      case 'png': return 'image/png';
+      case 'gif': return 'image/gif';
+      case 'webp': return 'image/webp';
+      case 'pdf': return 'application/pdf';
+      case 'json': return 'application/json';
+      case 'js': return 'application/javascript';
+      case 'txt': return 'text/plain';
+      case 'csv': return 'text/csv';
+      case 'html': return 'text/html';
+      case 'css': return 'text/css';
+      default: return 'application/octet-stream';
+    }
+  }
+
+  /**
    * Get upload progress for a file
    */
   getUploadProgress(fileId: string): ChatbotUploadProgress | undefined {
