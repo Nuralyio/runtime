@@ -394,7 +394,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
               @keydown=${this.handleKeyDown}
               @focus=${this.handleInputFocus}
               @blur=${this.handleInputBlur}
-              .innerText=${this.currentInput}
             ></div>
           </div>
           
