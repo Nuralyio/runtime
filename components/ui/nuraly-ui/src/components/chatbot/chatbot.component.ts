@@ -18,6 +18,7 @@ import '../input/input.component.js';
 import '../button/button.component.js';
 import '../icon/icon.component.js';
 import '../dropdown/dropdown.component.js';
+import '../select/select.component.js';
 
 import {
   ChatbotMessage,
@@ -31,11 +32,15 @@ import {
   ChatbotFile,
   ChatbotFileType,
   ChatbotThread,
+  ChatbotModule,
   EMPTY_STRING
 } from './chatbot.types.js';
 
 // Import dropdown types
 import { DropdownItem } from '../dropdown/dropdown.types.js';
+
+// Import select types
+import { SelectOption } from '../select/select.types.js';
 
 // Import controllers
 import {
@@ -53,7 +58,7 @@ import {
 
 /**
  * Enhanced chatbot component with ChatGPT-like features including file upload, 
- * conversation threads, and modern AI assistant capabilities.
+ * conversation threads, module selection, and modern AI assistant capabilities.
  * 
  * @example
  * ```html
@@ -61,7 +66,10 @@ import {
  *   .messages=${messages}
  *   .suggestions=${suggestions}
  *   .threads=${threads}
+ *   .modules=${modules}
+ *   .selectedModules=${selectedModuleIds}
  *   enableFileUpload
+ *   enableModuleSelection
  *   mode="assistant"
  *   isRTL
  *   size="medium"
@@ -77,11 +85,14 @@ import {
  * @fires chatbot-file-error - File upload error
  * @fires chatbot-thread-created - New conversation thread created
  * @fires chatbot-thread-selected - Thread selected
+ * @fires chatbot-modules-selected - Module selection changed
+ * @fires chatbot-query-stopped - Query stopped by user
  * 
  * @slot header - Custom header content
  * @slot footer - Custom footer content
  * @slot empty-state - Content shown when no messages
  * @slot thread-sidebar - Custom thread sidebar content
+ * @slot module-selected-display - Custom display for selected modules (when enableModuleSelection is true)
  */
 @localized()
 @customElement('nr-chatbot')
@@ -89,7 +100,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   implements ChatbotMessageControllerHost, ChatbotKeyboardControllerHost, 
              ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost {
   static override styles = styles;
-    override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown'];
+    override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select'];
 
   // Controllers
   private messageController = new ChatbotMessageController(this);
@@ -203,6 +214,22 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     'application/javascript'
   ];
 
+  /** Enable module selection dropdown */
+  @property({type: Boolean})
+  enableModuleSelection = false;
+
+  /** Available modules for selection */
+  @property({type: Array})
+  modules: ChatbotModule[] = [];
+
+  /** Selected module IDs (for multi-select) */
+  @property({type: Array})
+  selectedModules: string[] = [];
+
+  /** Module selection label */
+  @property({type: String})
+  moduleSelectionLabel = msg('Select Modules');
+
   @state() private focused = false;
   @state() private showFileUploadArea = false;
   @state() private dragOver = false;
@@ -223,6 +250,17 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         value: 'url'
       }
     ];
+  }
+
+  /** Convert modules to select options */
+  private get moduleSelectOptions(): SelectOption[] {
+    return this.modules.map(module => ({
+      value: module.id,
+      label: module.name,
+      icon: module.icon,
+      disabled: module.enabled === false,
+      description: module.description
+    }));
   }
 
   override render() {
@@ -423,6 +461,28 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
                   </nr-button>
                 </nr-dropdown>
               ` : nothing}
+              
+              ${this.enableModuleSelection && this.modules.length > 0 ? html`
+                <nr-select
+                  .options=${this.moduleSelectOptions}
+                  .value=${this.selectedModules}
+                  multiple
+                  placeholder="${this.moduleSelectionLabel}"
+                  size="medium"
+                  ?disabled=${this.disabled}
+                  searchable
+                  search-placeholder="${msg('Search modules...')}"
+                  use-custom-selected-display
+                  part="module-select"
+                  class="module-select"
+                  @nr-change=${this.handleModuleSelectionChange}
+                  aria-label="${msg('Select modules')}"
+                >
+                  <span slot="selected-display">
+                    ${this.renderModuleSelectedDisplay()}
+                  </span>
+                </nr-select>
+              ` : nothing}
             </div>
             
             <!-- Right side buttons -->
@@ -563,6 +623,30 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
           <nr-icon name="close" size="16"></nr-icon>
         </nr-button>
       </div>
+    `;
+  }
+
+  private renderModuleSelectedDisplay() {
+    const count = this.selectedModules.length;
+    
+    if (count === 0) {
+      return html`<span class="module-display-placeholder">${this.moduleSelectionLabel}</span>`;
+    }
+    
+    if (count === 1) {
+      const module = this.modules.find(m => m.id === this.selectedModules[0]);
+      return html`
+        <span class="module-display-single">
+          ${module?.icon ? html`<nr-icon name="${module.icon}" size="small"></nr-icon>` : nothing}
+          ${module?.name || this.selectedModules[0]}
+        </span>
+      `;
+    }
+    
+    return html`
+      <span class="module-display-multiple">
+        ${count} ${msg('modules selected')}
+      </span>
     `;
   }
 
@@ -731,6 +815,29 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       console.log('Upload from URL:', url);
       // Here you would implement the actual URL upload logic
     }
+  }
+
+  // Module selection handlers
+  private handleModuleSelectionChange(event: CustomEvent) {
+    const detail = event.detail;
+    
+    // nr-select returns value as string[] for multiple selection
+    const selectedValues = Array.isArray(detail.value) ? detail.value : [detail.value];
+    this.selectedModules = selectedValues.filter(Boolean);
+    
+    // Get full module objects for selected modules
+    const selectedModuleObjects = this.selectedModules
+      .map(id => this.modules.find(m => m.id === id))
+      .filter(Boolean) as ChatbotModule[];
+    
+    // Dispatch event with selected modules
+    this.dispatchEventWithMetadata('chatbot-modules-selected', {
+      metadata: {
+        selectedModules: selectedModuleObjects,
+        selectedModuleIds: this.selectedModules,
+        event: detail
+      }
+    });
   }
 
   private removeFile(fileId: string) {
@@ -1008,6 +1115,53 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
    */
   public toggleFileUploadArea(visible?: boolean): void {
     this.showFileUploadArea = visible !== undefined ? visible : !this.showFileUploadArea;
+  }
+
+  /**
+   * Set available modules
+   */
+  public setModules(modules: ChatbotModule[]): void {
+    this.modules = modules;
+  }
+
+  /**
+   * Get selected modules
+   */
+  public getSelectedModules(): ChatbotModule[] {
+    return this.selectedModules
+      .map(id => this.modules.find(m => m.id === id))
+      .filter(Boolean) as ChatbotModule[];
+  }
+
+  /**
+   * Set selected modules
+   */
+  public setSelectedModules(moduleIds: string[]): void {
+    // Filter to only include valid module IDs
+    this.selectedModules = moduleIds.filter(id => 
+      this.modules.some(m => m.id === id)
+    );
+  }
+
+  /**
+   * Clear module selection
+   */
+  public clearModuleSelection(): void {
+    this.selectedModules = [];
+  }
+
+  /**
+   * Toggle module selection
+   */
+  public toggleModule(moduleId: string): void {
+    const index = this.selectedModules.indexOf(moduleId);
+    if (index > -1) {
+      this.selectedModules = this.selectedModules.filter(id => id !== moduleId);
+    } else {
+      if (this.modules.some(m => m.id === moduleId)) {
+        this.selectedModules = [...this.selectedModules, moduleId];
+      }
+    }
   }
 
   /**

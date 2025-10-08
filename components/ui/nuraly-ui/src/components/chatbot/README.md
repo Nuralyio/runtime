@@ -7,6 +7,7 @@ A versatile chatbot component with message handling, suggestions, typing indicat
 - **Message Management**: Handle user and bot messages with timestamps
 - **Suggestions**: Interactive suggestion chips using nr-button for quick responses
 - **Typing Indicators**: Visual feedback when bot is processing
+- **Module Selection**: Multi-select dropdown for selecting AI modules/tools that interact with the chatbot
 - **RTL Support**: Full right-to-left text direction support
 - **Theme Aware**: Automatic theme detection and styling
 - **Accessibility**: Full keyboard navigation and screen reader support
@@ -127,6 +128,10 @@ function ChatExample() {
 | `placeholder` | `string` | `'Type your message...'` | Input placeholder text |
 | `showSendButton` | `boolean` | `true` | Show send button |
 | `autoScroll` | `boolean` | `true` | Auto-scroll to new messages |
+| `enableModuleSelection` | `boolean` | `false` | Enable module selection dropdown |
+| `modules` | `ChatbotModule[]` | `[]` | Available modules for selection |
+| `selectedModules` | `string[]` | `[]` | Selected module IDs |
+| `moduleSelectionLabel` | `string` | `'Select Modules'` | Label for module selection |
 
 ## Events
 
@@ -138,6 +143,7 @@ function ChatExample() {
 | `chatbot-input-changed` | `{ value: string }` | Input value changed |
 | `chatbot-input-focused` | `{ event: Event }` | Input received focus |
 | `chatbot-input-blurred` | `{ event: Event }` | Input lost focus |
+| `chatbot-modules-selected` | `{ metadata: { selectedModules, selectedModuleIds } }` | Module selection changed |
 
 ## Methods
 
@@ -147,6 +153,11 @@ function ChatExample() {
 | `clearMessages()` | - | Clear all messages |
 | `addMessage(message)` | `message` | Add a message programmatically |
 | `setTyping(isTyping: boolean)` | `isTyping` | Set typing indicator state |
+| `setModules(modules)` | `modules` | Set available modules |
+| `getSelectedModules()` | - | Get selected module objects |
+| `setSelectedModules(moduleIds)` | `moduleIds` | Set selected modules by IDs |
+| `clearModuleSelection()` | - | Clear all module selections |
+| `toggleModule(moduleId)` | `moduleId` | Toggle a single module |
 | `focusInput()` | - | Focus the input field |
 
 ## Types
@@ -269,6 +280,241 @@ chatbot.addEventListener('chatbot-message-sent', async (e) => {
     chatbot.setTyping(false);
   }
 });
+```
+
+### Module Selection (Multi-Select)
+
+The chatbot supports module selection via an integrated `nr-select` component with multi-select functionality. This allows users to choose which AI modules/tools should interact with the conversation.
+
+**Custom Display Slot:** Use the `module-selected-display` slot to fully customize how selected modules are displayed. This gives you complete control over the UI.
+
+```html
+<nr-chatbot 
+  id="chatbot"
+  enableModuleSelection
+  .modules=${modules}
+  .selectedModules=${['nlp', 'search']}>
+  
+  <!-- Custom display for selected modules -->
+  <span slot="module-selected-display" id="module-display">
+    <!-- Your custom content here -->
+  </span>
+</nr-chatbot>
+
+<script>
+  const modules = [
+    {
+      id: 'nlp',
+      name: 'Natural Language Processing',
+      description: 'Advanced text analysis and understanding',
+      icon: 'chat',
+      enabled: true,
+      metadata: { category: 'AI', version: '2.0' }
+    },
+    {
+      id: 'vision',
+      name: 'Computer Vision',
+      description: 'Image and video analysis',
+      icon: 'eye',
+      enabled: true
+    },
+    {
+      id: 'search',
+      name: 'Web Search',
+      description: 'Search the web for information',
+      icon: 'search',
+      enabled: true
+    },
+    {
+      id: 'code',
+      name: 'Code Analysis',
+      description: 'Analyze and generate code',
+      icon: 'code',
+      enabled: true
+    }
+  ];
+
+  const chatbot = document.getElementById('chatbot');
+  chatbot.modules = modules;
+
+  // Update display based on selection
+  function updateModuleDisplay() {
+    const selected = chatbot.getSelectedModules();
+    const display = document.getElementById('module-display');
+    
+    if (selected.length === 0) {
+      display.innerHTML = '<span style="color: #6f6f6f;">Select Modules</span>';
+    } else if (selected.length === 1) {
+      const module = selected[0];
+      display.innerHTML = `
+        ${module.icon ? `<nr-icon name="${module.icon}" style="font-size: 16px;"></nr-icon>` : ''}
+        <span>${module.name}</span>
+      `;
+      display.style.display = 'flex';
+      display.style.alignItems = 'center';
+      display.style.gap = '6px';
+    } else {
+      display.innerHTML = `<strong style="color: var(--nuraly-color-primary);">${selected.length} modules selected</strong>`;
+    }
+  }
+
+  // Listen for module selection changes
+  chatbot.addEventListener('chatbot-modules-selected', (e) => {
+    console.log('Selected modules:', e.detail.metadata.selectedModules);
+    console.log('Selected IDs:', e.detail.metadata.selectedModuleIds);
+    
+    // Update display
+    updateModuleDisplay();
+    
+    // Update your backend or AI service with selected modules
+    updateAIModules(e.detail.metadata.selectedModuleIds);
+  });
+
+  // Initial display
+  updateModuleDisplay();
+
+  // Programmatically set selected modules
+  chatbot.setSelectedModules(['nlp', 'vision']);
+  updateModuleDisplay();
+
+  // Get current selected modules
+  const selected = chatbot.getSelectedModules();
+  console.log('Currently selected:', selected);
+
+  // Clear selection
+  chatbot.clearModuleSelection();
+  updateModuleDisplay();
+</script>
+```
+
+**Alternative: Using Reactive Frameworks (Lit, React, etc.)**
+
+```html
+<!-- Lit example -->
+<nr-chatbot 
+  .modules=${this.modules}
+  .selectedModules=${this.selectedModules}
+  enableModuleSelection
+  @chatbot-modules-selected=${this.handleModulesChanged}>
+  
+  <span slot="module-selected-display">
+    ${this.renderModuleDisplay()}
+  </span>
+</nr-chatbot>
+
+<script>
+  renderModuleDisplay() {
+    const count = this.selectedModules.length;
+    const selected = this.selectedModules.map(id => 
+      this.modules.find(m => m.id === id)
+    ).filter(Boolean);
+    
+    if (count === 0) {
+      return html`<span class="placeholder">Select Modules</span>`;
+    }
+    
+    if (count === 1) {
+      const module = selected[0];
+      return html`
+        ${module.icon ? html`<nr-icon name="${module.icon}"></nr-icon>` : nothing}
+        <span>${module.name}</span>
+      `;
+    }
+    
+    return html`<strong>${count} modules selected</strong>`;
+  }
+</script>
+```
+
+**Module Selection Properties:**
+- `enableModuleSelection` - Enable module selection dropdown
+- `modules` - Array of available modules
+- `selectedModules` - Array of selected module IDs
+- `moduleSelectionLabel` - Label for the select button (default: "Select Modules")
+
+**Module Selection Slots:**
+- `module-selected-display` - Custom content for displaying selected modules
+
+**Module Selection Events:**
+- `chatbot-modules-selected` - Fired when module selection changes
+
+**Module Selection Methods:**
+- `setModules(modules)` - Set available modules
+- `getSelectedModules()` - Get selected module objects
+- `setSelectedModules(moduleIds)` - Set selected modules by IDs
+- `clearModuleSelection()` - Clear all selections
+- `toggleModule(moduleId)` - Toggle a single module
+
+**Custom Display Examples:**
+
+1. **Simple Count Display:**
+```html
+<span slot="module-selected-display" id="count-display">0 selected</span>
+
+<script>
+  chatbot.addEventListener('chatbot-modules-selected', () => {
+    const count = chatbot.getSelectedModules().length;
+    document.getElementById('count-display').textContent = 
+      count === 0 ? 'Select modules' : `${count} selected`;
+  });
+</script>
+```
+
+2. **Module Names List:**
+```html
+<span slot="module-selected-display" id="names-display"></span>
+
+<script>
+  function updateDisplay() {
+    const selected = chatbot.getSelectedModules();
+    const display = document.getElementById('names-display');
+    
+    if (selected.length === 0) {
+      display.textContent = 'No modules selected';
+    } else {
+      display.textContent = selected.map(m => m.name).join(', ');
+    }
+  }
+  
+  chatbot.addEventListener('chatbot-modules-selected', updateDisplay);
+  updateDisplay();
+</script>
+```
+
+3. **With Icons and Styling:**
+```html
+<div slot="module-selected-display" id="rich-display" 
+     style="display: flex; align-items: center; gap: 8px;">
+</div>
+
+<script>
+  function updateRichDisplay() {
+    const selected = chatbot.getSelectedModules();
+    const display = document.getElementById('rich-display');
+    
+    if (selected.length === 1) {
+      const module = selected[0];
+      display.innerHTML = `
+        <nr-icon name="${module.icon || 'cube'}" 
+                 style="color: var(--nuraly-color-primary);"></nr-icon>
+        <span style="font-weight: 500;">${module.name}</span>
+      `;
+    } else if (selected.length > 1) {
+      display.innerHTML = `
+        <nr-icon name="cube" 
+                 style="color: var(--nuraly-color-primary);"></nr-icon>
+        <span style="font-weight: 500;">${selected.length} Active Modules</span>
+      `;
+    } else {
+      display.innerHTML = `
+        <span style="color: #9ca3af;">Choose modules...</span>
+      `;
+    }
+  }
+  
+  chatbot.addEventListener('chatbot-modules-selected', updateRichDisplay);
+  updateRichDisplay();
+</script>
 ```
 
 ## Browser Support

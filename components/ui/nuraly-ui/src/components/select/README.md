@@ -60,6 +60,19 @@ Advanced select component with multiple selection modes, validation, keyboard na
 | `name` | `string` | `''` | Form field name |
 | `no-options-message` | `string` | `'No options available'` | Message when no options |
 | `no-options-icon` | `string` | `'inbox'` | Icon for no options message |
+| `searchable` | `boolean` | `false` | Enable search/filter functionality |
+| `clearable` | `boolean` | `false` | Show clear all button |
+| `search-placeholder` | `string` | `'Search options...'` | Search input placeholder |
+| `use-custom-selected-display` | `boolean` | `false` | Enable custom selected display slot (multi-select only) |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `label` | Custom label content |
+| `helper-text` | Helper text below select |
+| `trigger` | Custom trigger content (slot type only) |
+| `selected-display` | Custom display for selected values (multi-select, requires `use-custom-selected-display`) |
 
 ## Events
 
@@ -80,6 +93,9 @@ Advanced select component with multiple selection modes, validation, keyboard na
 // Get selected options
 const selected = selectElement.selectedOptions;
 const firstSelected = selectElement.selectedOption;
+
+// Get selected options (alternative method)
+const selectedOptions = selectElement.getSelectedOptions();
 
 // Programmatic selection
 selectElement.selectOption(option);
@@ -173,6 +189,77 @@ const options = [
 <nr-select multiple>
   <!-- Selected options appear as removable tags -->
 </nr-select>
+```
+
+### Custom Selected Display (Multi-Select)
+
+Override the default tag display with custom content using the `selected-display` slot. This is useful for showing counts or custom messages instead of individual tags.
+
+```html
+<nr-select 
+  multiple 
+  use-custom-selected-display
+  id="mySelect">
+  <span slot="selected-display">
+    <!-- Custom display logic here -->
+  </span>
+</nr-select>
+
+<script>
+  const select = document.getElementById('mySelect');
+  
+  // Access selected options in your custom display
+  select.addEventListener('nr-change', (e) => {
+    const count = e.detail.selectedOptions.length;
+    const display = select.querySelector('[slot="selected-display"]');
+    
+    if (count === 0) {
+      display.textContent = 'Select items...';
+    } else if (count === 1) {
+      display.textContent = e.detail.selectedOptions[0].label;
+    } else {
+      display.textContent = `${count} items selected`;
+    }
+  });
+  
+  // Or use the getSelectedOptions() method
+  const selected = select.getSelectedOptions();
+  console.log('Selected:', selected);
+</script>
+```
+
+**Example with Icons:**
+```html
+<nr-select 
+  multiple 
+  use-custom-selected-display
+  .options=${modules}>
+  <span slot="selected-display" id="module-display"></span>
+</nr-select>
+
+<script>
+  const select = document.querySelector('nr-select');
+  
+  function updateDisplay() {
+    const selected = select.getSelectedOptions();
+    const display = document.getElementById('module-display');
+    
+    if (selected.length === 0) {
+      display.innerHTML = '<span>Select Modules</span>';
+    } else if (selected.length === 1) {
+      const module = selected[0];
+      display.innerHTML = `
+        ${module.icon ? `<nr-icon name="${module.icon}"></nr-icon>` : ''}
+        <span>${module.label}</span>
+      `;
+    } else {
+      display.innerHTML = `<strong>${selected.length} modules selected</strong>`;
+    }
+  }
+  
+  select.addEventListener('nr-change', updateDisplay);
+  updateDisplay(); // Initial display
+</script>
 ```
 
 ### Custom Validation
