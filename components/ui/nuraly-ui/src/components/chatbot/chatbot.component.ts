@@ -20,6 +20,7 @@ import '../icon/icon.component.js';
 import '../dropdown/dropdown.component.js';
 import '../select/select.component.js';
 import '../tag/tag.component.js';
+import '../modal/modal.component.js';
 
 import {
   ChatbotMessage,
@@ -35,6 +36,7 @@ import {
   ChatbotModule,
   EMPTY_STRING
 } from './chatbot.types.js';
+import { VALIDATION_RULES, INPUT_TYPE } from '../input/input.types.js';
 
 // Import dropdown types
 import { DropdownItem } from '../dropdown/dropdown.types.js';
@@ -100,7 +102,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   implements ChatbotMessageControllerHost, ChatbotKeyboardControllerHost, 
              ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost {
   static override styles = styles;
-    override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select'];
+    override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
 
   // Controllers
   private messageController = new ChatbotMessageController(this);
@@ -233,6 +235,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @state() private focused = false;
   @state() private showFileUploadArea = false;
   @state() private dragOver = false;
+  @state() private showUrlModal = false;
+  @state() private urlInputValue: string = '';
+  @state() private urlInputValid: boolean = false;
   
   /** File upload dropdown options */
   private get fileUploadItems(): DropdownItem[] {
@@ -293,6 +298,30 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
           <slot name="footer"></slot>
         </div>
       </div>
+
+      ${this.showUrlModal ? html`
+        <nr-modal 
+          open
+          size="small"
+          modalTitle="${msg('Attach by URL')}"
+          @modal-close=${this.closeUrlModal}
+        >
+          <div>
+            <nr-input 
+              type=${INPUT_TYPE.URL}
+              placeholder="https://example.com/file.pdf"
+              .rules=${[VALIDATION_RULES.required(msg('URL is required')), VALIDATION_RULES.url(msg('Please enter a valid URL'))]}
+              .hasFeedback=${true}
+              @nr-input=${this.onUrlInputChange}
+              @nr-enter=${this.onUrlInputEnter}
+            ></nr-input>
+          </div>
+          <div slot="footer" style="display:flex; gap:8px; justify-content:flex-end; width:100%;">
+            <nr-button type="secondary" @click=${this.closeUrlModal}>${msg('Cancel')}</nr-button>
+            <nr-button type="primary" ?disabled=${!this.urlInputValid} @click=${this.confirmUrlModal}>${msg('Add')}</nr-button>
+          </div>
+        </nr-modal>
+      ` : nothing}
     `;
   }
 
@@ -756,19 +785,46 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
           this.fileUploadController.openFileDialog();
           break;
         case 'url':
-          this.handleUrlUpload();
+          this.openUrlModal();
           break;
       }
     }
   }
 
-  private handleUrlUpload() {
-    // TODO: Implement URL upload functionality
-    // This could open a modal or prompt for URL input
-    const url = prompt('Enter file URL:');
-    if (url) {
-      console.log('Upload from URL:', url);
-      // Here you would implement the actual URL upload logic
+  private openUrlModal() {
+    this.urlInputValue = '';
+    this.urlInputValid = false;
+    this.showUrlModal = true;
+  }
+
+  private closeUrlModal = () => {
+    this.showUrlModal = false;
+  };
+
+  private onUrlInputChange = (e: CustomEvent) => {
+    const value = (e.detail && e.detail.value) ?? '';
+    this.urlInputValue = value;
+    this.urlInputValid = this.isValidHttpUrl(value);
+  };
+
+  private onUrlInputEnter = () => {
+    if (this.urlInputValid) this.confirmUrlModal();
+  };
+
+  private confirmUrlModal = () => {
+    if (!this.urlInputValid) return;
+    const url = this.urlInputValue.trim();
+    // Add URL as a file via controller (will emit chatbot-files-selected)
+    (this.fileUploadController as any).addUrlFile?.(url);
+    this.closeUrlModal();
+  };
+
+  private isValidHttpUrl(value: string): boolean {
+    try {
+      const u = new URL(value);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
     }
   }
 
