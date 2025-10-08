@@ -8,13 +8,24 @@ import summary from 'rollup-plugin-summary';
 import { terser } from 'rollup-plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import fs from 'fs';
+import path from 'path';
 
-const components = [
-  'button', 'input', 'datepicker', 'icon', 'dropdown', 'image', 'tabs', 
-  'document', 'menu', 'radio', 'select', 'tooltips', 'colorpicker', 'modal', 
-  'checkbox', 'video', 'table', 'slider-input', 'collapse', 'label', 
-  'divider', 'canvas', 'chatbot', 'file-upload', 'card', 'carousel', 'toast'
-];
+// Discover components dynamically from built JS in dist/components
+const distComponentsDir = path.join(process.cwd(), 'dist', 'components');
+let components = [];
+try {
+  components = fs
+    .readdirSync(distComponentsDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .filter((d) => fs.existsSync(path.join(distComponentsDir, d.name, 'index.js')))
+    .map((d) => d.name)
+    .sort();
+} catch (e) {
+  // If dist not built yet, fallback to previous static list
+  components = [
+  ];
+}
 
 const createConfig = (component) => ({
   input: `dist/components/${component}/index.js`,

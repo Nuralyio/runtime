@@ -53,14 +53,13 @@ jobs:
       - name: Publish Components
         run: |
           npm install -g publish-if-not-published
-          for dir in \
-            button datepicker icon input dropdown image tabs document menu \
-            radio select tooltips colorpicker modal checkbox video table \
-            slider-input collapse label divider canvas chatbot file-upload \
-            card carousel toast; do
-            cd dist/components/$dir
-            publish-if-not-published -- --access=public
-            cd - >/dev/null
+          for dir in $(find dist/components -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | sort); do
+            if [ -f "dist/components/$dir/package.json" ]; then
+              echo "Publishing $dir..."
+              (cd dist/components/$dir && publish-if-not-published -- --access=public)
+            else
+              echo "Skipping $dir (no package.json)"
+            fi
           done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
