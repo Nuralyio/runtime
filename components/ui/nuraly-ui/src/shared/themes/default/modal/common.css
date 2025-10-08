@@ -2,6 +2,8 @@
  * Default Theme - Modal Component - Common Variables
  * Shared variables for both light and dark themes
  */
+
+:root,
 [data-theme="default-light"],
 [data-theme="default-dark"] {
   /* Modal dimensions */
@@ -42,4 +44,6 @@
   
   /* Modal z-index */
   --nuraly-z-modal-backdrop: 1000;
+
+  --nuraly-border-radius-modal: 10px;
 }
