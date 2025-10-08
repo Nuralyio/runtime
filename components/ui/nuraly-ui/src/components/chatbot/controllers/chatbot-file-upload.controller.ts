@@ -5,9 +5,9 @@
  */
 
 import { ReactiveController, ReactiveControllerHost } from 'lit';
-import { 
-  ChatbotFile, 
-  ChatbotFileType, 
+import {
+  ChatbotFile,
+  ChatbotFileType,
   ChatbotEventDetail,
   ChatbotUploadProgress,
   DEFAULT_MAX_FILE_SIZE,
@@ -139,6 +139,7 @@ export class ChatbotFileUploadController implements ReactiveController {
   async handleFileSelection(files: FileList | File[]): Promise<ChatbotFile[]> {
     const fileArray = Array.from(files);
     const validFiles: ChatbotFile[] = [];
+    const validOriginalFiles: File[] = [];
     const errors: string[] = [];
 
     for (const file of fileArray) {
@@ -158,7 +159,15 @@ export class ChatbotFileUploadController implements ReactiveController {
         uploadProgress: 0
       };
 
+      // Create preview URL for images upfront
+      if (chatbotFile.type === ChatbotFileType.Image) {
+        try {
+          chatbotFile.previewUrl = URL.createObjectURL(file);
+        } catch {}
+      }
+
       validFiles.push(chatbotFile);
+      validOriginalFiles.push(file);
     }
 
     // Dispatch errors if any
@@ -169,110 +178,19 @@ export class ChatbotFileUploadController implements ReactiveController {
       });
     }
 
-    // Process valid files
+    // Add all valid files at once so UI updates in a single render
     if (validFiles.length > 0) {
-      await this.processFiles(validFiles, fileArray.filter((_, index) => 
-        this.validateFile(fileArray[index]).valid
-      ));
+      this.uploadedFiles = [...this.uploadedFiles, ...validFiles];
+      this.host.requestUpdate();
+
+      // Emit a single event with all selected files; host (chatbot) can handle actual upload
+      this.host.dispatchEventWithMetadata('chatbot-files-selected', {
+        files: validFiles,
+        metadata: { originalFiles: validOriginalFiles }
+      });
     }
 
     return validFiles;
-  }
-
-  /**
-   * Process uploaded files
-   */
-  private async processFiles(chatbotFiles: ChatbotFile[], originalFiles: File[]): Promise<void> {
-    for (let i = 0; i < chatbotFiles.length; i++) {
-      const chatbotFile = chatbotFiles[i];
-      const originalFile = originalFiles[i];
-
-      try {
-        // Start upload process
-        this.uploadProgressMap.set(chatbotFile.id, {
-          fileId: chatbotFile.id,
-          progress: 0,
-          status: 'uploading'
-        });
-
-        // Create preview URL for images
-        if (chatbotFile.type === ChatbotFileType.Image) {
-          chatbotFile.previewUrl = URL.createObjectURL(originalFile);
-        }
-
-        // Simulate upload progress (replace with actual upload logic)
-        await this.simulateUpload(chatbotFile, originalFile);
-
-        // Add to uploaded files
-        this.uploadedFiles.push(chatbotFile);
-
-        // Dispatch success event
-        this.host.dispatchEventWithMetadata('chatbot-file-uploaded', {
-          file: chatbotFile,
-          metadata: { originalFile }
-        });
-
-      } catch (error) {
-        // Handle upload error
-        chatbotFile.error = error instanceof Error ? error.message : 'Upload failed';
-        this.uploadProgressMap.set(chatbotFile.id, {
-          fileId: chatbotFile.id,
-          progress: 0,
-          status: 'error',
-          error: chatbotFile.error
-        });
-
-        this.host.dispatchEventWithMetadata('chatbot-file-error', {
-          file: chatbotFile,
-          error: error instanceof Error ? error : new Error('Upload failed')
-        });
-      }
-    }
-  }
-
-  /**
-   * Simulate file upload with progress (replace with actual upload implementation)
-   */
-  private async simulateUpload(file: ChatbotFile, originalFile: File): Promise<void> {
-    return new Promise((resolve, reject) => {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 20;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-          
-          file.uploadProgress = 100;
-          file.url = URL.createObjectURL(originalFile); // Replace with actual URL
-          
-          this.uploadProgressMap.set(file.id, {
-            fileId: file.id,
-            progress: 100,
-            status: 'completed'
-          });
-          
-          resolve();
-        } else {
-          file.uploadProgress = progress;
-          this.uploadProgressMap.set(file.id, {
-            fileId: file.id,
-            progress,
-            status: 'uploading'
-          });
-          
-          // Trigger update
-          this.host.requestUpdate();
-        }
-      }, 100);
-
-      // Simulate occasional upload failures
-      if (Math.random() < 0.1) { // 10% chance of failure
-        setTimeout(() => {
-          clearInterval(interval);
-          reject(new Error('Upload failed'));
-        }, 500);
-      }
-    });
   }
 
   /**

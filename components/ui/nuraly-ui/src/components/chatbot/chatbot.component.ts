@@ -19,6 +19,7 @@ import '../button/button.component.js';
 import '../icon/icon.component.js';
 import '../dropdown/dropdown.component.js';
 import '../select/select.component.js';
+import '../tag/tag.component.js';
 
 import {
   ChatbotMessage,
@@ -30,7 +31,6 @@ import {
   ChatbotConfig,
   ChatbotEventDetail,
   ChatbotFile,
-  ChatbotFileType,
   ChatbotThread,
   ChatbotModule,
   EMPTY_STRING
@@ -414,11 +414,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     
     return html`
       <div class="input-box" part="input-box">
-        ${uploadedFiles.length > 0 ? this.renderUploadedFiles(uploadedFiles) : nothing}
-        
-        <!-- ChatGPT-style input container with buttons in second row -->
+        <!-- Input container with three rows: context tags, input, and action buttons -->
         <div class="input-container">
-          <!-- First row: Text input area -->
+          <!-- First row: Context tags (selected files) -->
+          ${uploadedFiles.length > 0 ? this.renderContextTags(uploadedFiles) : nothing}
+
+          <!-- Second row: Text input area -->
           <div class="input-row">
             <div
               class="input-box__input"
@@ -435,7 +436,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
             ></div>
           </div>
           
-          <!-- Second row: Action buttons with left and right sections -->
+          <!-- Third row: Action buttons with left and right sections -->
           <div class="action-buttons-row">
             <!-- Left side buttons -->
             <div class="action-buttons-left">
@@ -508,6 +509,21 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     `;
   }
 
+  private renderContextTags(files: ChatbotFile[]) {
+    return html`
+      <div class="context-tags-row" part="context-tags">
+        ${repeat(files, f => f.id, f => html`
+          <nr-tag 
+            class="context-tag"
+            size="small"
+            closable
+            @nr-tag-close=${() => this.removeFile(f.id)}
+            >${f.name}</nr-tag>
+        `)}
+      </div>
+    `;
+  }
+
   private renderThreadSidebar() {
     return html`
       <div class="thread-sidebar" part="thread-sidebar">
@@ -516,11 +532,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
           <nr-button 
             type="default"
             size="small"
+            .icon=${['add']}
             @click=${this.createNewThread}
             aria-label="${msg('New conversation')}"
-          >
-            <nr-icon name="add" size="16"></nr-icon>
-          </nr-button>
+          ></nr-button>
         </div>
         
         <div class="thread-list">
@@ -553,7 +568,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         'file-upload-area--drag-over': this.dragOver
       })}" part="file-upload-area">
         <div class="file-upload-area__content">
-          <nr-icon name="cloud-upload" size="48"></nr-icon>
+          <nr-icon name="cloud-upload" size="xlarge"></nr-icon>
           <p>${msg('Drop files here or click to upload')}</p>
           <p class="file-upload-area__help">
             ${msg('Supported files:')} ${this.allowedFileTypes.join(', ')}
@@ -562,66 +577,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
             ${msg('Max file size:')} ${this.fileUploadController.formatFileSize(this.maxFileSize)}
           </p>
         </div>
-      </div>
-    `;
-  }
-
-  private renderUploadedFiles(files: ChatbotFile[]) {
-    return html`
-      <div class="uploaded-files" part="uploaded-files">
-        ${repeat(files, file => file.id, file => this.renderUploadedFile(file))}
-      </div>
-    `;
-  }
-
-  private renderUploadedFile(file: ChatbotFile) {
-    const progress = this.fileUploadController.getUploadProgress(file.id);
-    
-    return html`
-      <div class="uploaded-file" part="uploaded-file" data-file-type="${file.type}">
-        ${file.type === ChatbotFileType.Image && file.previewUrl ? html`
-          <img 
-            src="${file.previewUrl}" 
-            alt="${file.name}"
-            class="uploaded-file__preview"
-          />
-        ` : html`
-          <nr-icon 
-            name="${this.getFileIcon(file.type)}" 
-            size="20"
-            class="uploaded-file__icon"
-          ></nr-icon>
-        `}
-        
-        <div class="uploaded-file__info">
-          <div class="uploaded-file__name">${file.name}</div>
-          <div class="uploaded-file__size">
-            ${this.fileUploadController.formatFileSize(file.size)}
-          </div>
-          
-          ${progress && progress.status === 'uploading' ? html`
-            <div class="uploaded-file__progress">
-              <div 
-                class="uploaded-file__progress-bar"
-                style="width: ${progress.progress}%"
-              ></div>
-            </div>
-          ` : nothing}
-          
-          ${file.error ? html`
-            <div class="uploaded-file__error">${file.error}</div>
-          ` : nothing}
-        </div>
-        
-        <nr-button 
-          type="ghost"
-          size="small"
-          class="uploaded-file__remove"
-          @click=${() => this.removeFile(file.id)}
-          aria-label="${msg('Remove file')}"
-        >
-          <nr-icon name="close" size="16"></nr-icon>
-        </nr-button>
       </div>
     `;
   }
@@ -844,24 +799,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     this.fileUploadController.removeFile(fileId);
   }
 
-  private getFileIcon(fileType: ChatbotFileType): string {
-    switch (fileType) {
-      case ChatbotFileType.Image:
-        return 'image';
-      case ChatbotFileType.Document:
-        return 'document';
-      case ChatbotFileType.Code:
-        return 'code';
-      case ChatbotFileType.Archive:
-        return 'archive';
-      case ChatbotFileType.Audio:
-        return 'volume-up';
-      case ChatbotFileType.Video:
-        return 'video';
-      default:
-        return 'document-unknown';
-    }
-  }
+  // Removed old uploaded files card view in favor of context tags row
 
   // Thread management
   private createNewThread() {
