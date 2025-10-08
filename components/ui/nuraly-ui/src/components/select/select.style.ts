@@ -16,6 +16,7 @@ export const styles = css`
     /* Dropdown settings */
     --nuraly-select-local-dropdown-z-index: 9999;
     --nuraly-select-local-dropdown-max-height: 200px;
+  --nuraly-select-local-dropdown-width: max-content; /* Default to auto-size to content */
     --nuraly-select-local-placeholder-font-size: 14px;
     --nuraly-select-local-option-font-size: 14px;
     
@@ -268,7 +269,12 @@ export const styles = css`
     animation: dropdown-enter var(--nuraly-select-dropdown-animation-duration, 0.15s) ease-out;
     /* Ensure proper containment and exact wrapper width */
     box-sizing: border-box;
-    width: 100%;
+    /* Allow overriding width via either of these custom props */
+    width: var(
+      --nuraly-select-dropdown-width,
+      var(--select-dropdown-width, var(--nuraly-select-local-dropdown-width))
+    );
+    min-width: 100%; /* Ensure dropdown is at least as wide as the wrapper */
     /* Create new stacking context to prevent layering issues */
     isolation: isolate;
     /* Ensure solid background to prevent visual bleed-through */
