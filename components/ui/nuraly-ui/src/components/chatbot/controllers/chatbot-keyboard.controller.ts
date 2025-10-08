@@ -97,7 +97,7 @@ export class ChatbotKeyboardController implements ReactiveController {
       event.preventDefault();
       handler();
       
-      this.host.dispatchEventWithMetadata('chatbot-keyboard-shortcut', {
+      this.host.dispatchEventWithMetadata('nr-chatbot-keyboard-shortcut', {
         metadata: { key, originalEvent: event }
       });
     }
@@ -125,7 +125,7 @@ export class ChatbotKeyboardController implements ReactiveController {
     }
 
     // Dispatch input keydown event
-    this.host.dispatchEventWithMetadata('chatbot-input-keydown', {
+    this.host.dispatchEventWithMetadata('nr-chatbot-input-keydown', {
       metadata: { key: event.key, originalEvent: event }
     });
   }

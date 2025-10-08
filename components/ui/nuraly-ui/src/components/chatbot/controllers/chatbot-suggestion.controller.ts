@@ -169,7 +169,7 @@ export class ChatbotSuggestionController implements ReactiveController {
   handleSuggestionClick(suggestion: ChatbotSuggestion): void {
     if (!suggestion.enabled) return;
 
-    this.host.dispatchEventWithMetadata('chatbot-suggestion-clicked', {
+    this.host.dispatchEventWithMetadata('nr-chatbot-suggestion-clicked', {
       suggestion,
       metadata: { categoryId: this.activeCategoryId }
     });

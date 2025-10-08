@@ -161,10 +161,10 @@ export const Default: Story = {
         .maxFiles=${args.maxFiles}
         .maxFileSize=${args.maxFileSize}
         .allowedFileTypes=${args.allowedFileTypes}
-        @chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-        @chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-        @chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-        @chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
+  @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
+  @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
+  @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
+  @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
       ></nr-chatbot>
     </div>
   `
@@ -247,10 +247,10 @@ export const Interactive: Story = {
           .maxFiles=${args.maxFiles}
           .maxFileSize=${args.maxFileSize}
           .allowedFileTypes=${args.allowedFileTypes}
-          @chatbot-message-sent=${handleMessageSent}
-          @chatbot-suggestion-clicked=${handleSuggestionClicked}
-          @chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-          @chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
+          @nr-chatbot-message-sent=${handleMessageSent}
+          @nr-chatbot-suggestion-clicked=${handleSuggestionClicked}
+          @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
+          @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
         ></nr-chatbot>
       </div>
     `;
@@ -283,10 +283,10 @@ export const BoxedLayout: Story = {
         .maxFiles=${args.maxFiles}
         .maxFileSize=${args.maxFileSize}
         .allowedFileTypes=${args.allowedFileTypes}
-        @chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-        @chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-        @chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-        @chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
+  @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
+  @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
+  @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
+  @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
       ></nr-chatbot>
     </div>
   `
@@ -376,11 +376,11 @@ export const BoxedWithMessages: Story = {
           .enableModuleSelection=${args.enableModuleSelection}
           .modules=${args.modules}
           .selectedModules=${args.selectedModules}
-          @chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-          @chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-          @chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-          @chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
-          @chatbot-modules-selected=${handleModulesSelected}
+          @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
+          @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
+          @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
+          @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
+          @nr-chatbot-modules-selected=${handleModulesSelected}
         ></nr-chatbot>
       </div>
     `;
@@ -412,9 +412,9 @@ export const WithModuleSelection: Story = {
           .modules=${args.modules}
           .selectedModules=${args.selectedModules}
           .enableFileUpload=${args.enableFileUpload}
-          @chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-          @chatbot-modules-selected=${handleModulesSelected}
-          @chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
+          @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
+          @nr-chatbot-modules-selected=${handleModulesSelected}
+          @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
         ></nr-chatbot>
       </div>
     `;

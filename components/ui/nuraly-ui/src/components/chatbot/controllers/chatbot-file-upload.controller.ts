@@ -172,7 +172,7 @@ export class ChatbotFileUploadController implements ReactiveController {
 
     // Dispatch errors if any
     if (errors.length > 0) {
-      this.host.dispatchEventWithMetadata('chatbot-file-error', {
+      this.host.dispatchEventWithMetadata('nr-chatbot-file-error', {
         error: new Error(errors.join(', ')),
         metadata: { errors }
       });
@@ -184,7 +184,7 @@ export class ChatbotFileUploadController implements ReactiveController {
       this.host.requestUpdate();
 
       // Emit a single event with all selected files; host (chatbot) can handle actual upload
-      this.host.dispatchEventWithMetadata('chatbot-files-selected', {
+      this.host.dispatchEventWithMetadata('nr-chatbot-files-selected', {
         files: validFiles,
         metadata: { originalFiles: validOriginalFiles }
       });
@@ -212,7 +212,7 @@ export class ChatbotFileUploadController implements ReactiveController {
       this.uploadedFiles.splice(index, 1);
       this.uploadProgressMap.delete(fileId);
       
-      this.host.dispatchEventWithMetadata('chatbot-file-removed', {
+      this.host.dispatchEventWithMetadata('nr-chatbot-file-removed', {
         file,
         metadata: { fileId }
       });
@@ -244,7 +244,7 @@ export class ChatbotFileUploadController implements ReactiveController {
   }
 
   /**
-   * Add a file by URL (no upload). Emits chatbot-files-selected with the created file.
+  * Add a file by URL (no upload). Emits nr-chatbot-files-selected with the created file.
    */
   addUrlFile(url: string): ChatbotFile | null {
     if (!url) return null;
@@ -266,7 +266,7 @@ export class ChatbotFileUploadController implements ReactiveController {
       this.uploadedFiles = [...this.uploadedFiles, chatbotFile];
       this.host.requestUpdate();
 
-      this.host.dispatchEventWithMetadata('chatbot-files-selected', {
+      this.host.dispatchEventWithMetadata('nr-chatbot-files-selected', {
         files: [chatbotFile],
         metadata: { originalFiles: [], source: 'url' }
       });

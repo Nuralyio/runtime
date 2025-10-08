@@ -79,16 +79,16 @@ import {
  * </nr-chatbot>
  * ```
  * 
- * @fires chatbot-message-sent - Message sent by user
- * @fires chatbot-suggestion-clicked - Suggestion selected
- * @fires chatbot-retry-requested - Retry requested for failed message
- * @fires chatbot-input-changed - Input value changed
- * @fires chatbot-file-uploaded - File uploaded successfully
- * @fires chatbot-file-error - File upload error
- * @fires chatbot-thread-created - New conversation thread created
- * @fires chatbot-thread-selected - Thread selected
- * @fires chatbot-modules-selected - Module selection changed
- * @fires chatbot-query-stopped - Query stopped by user
+ * @fires nr-chatbot-message-sent - Message sent by user
+ * @fires nr-chatbot-suggestion-clicked - Suggestion selected
+ * @fires nr-chatbot-retry-requested - Retry requested for failed message
+ * @fires nr-chatbot-input-changed - Input value changed
+ * @fires nr-chatbot-file-uploaded - File uploaded successfully
+ * @fires nr-chatbot-file-error - File upload error
+ * @fires nr-chatbot-thread-created - New conversation thread created
+ * @fires nr-chatbot-thread-selected - Thread selected
+ * @fires nr-chatbot-modules-selected - Module selection changed
+ * @fires nr-chatbot-query-stopped - Query stopped by user
  * 
  * @slot header - Custom header content
  * @slot footer - Custom footer content
@@ -306,7 +306,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
           modalTitle="${msg('Attach by URL')}"
           @modal-close=${this.closeUrlModal}
         >
-          <div>
+          <div slot="default">
             <nr-input 
               type=${INPUT_TYPE.URL}
               placeholder="https://example.com/file.pdf"
@@ -652,17 +652,17 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     const target = e.target as HTMLElement;
     const input = target.textContent || '';
     this.currentInput = input;
-    this.dispatchEventWithMetadata('chatbot-input-changed', { metadata: { value: input } });
+  this.dispatchEventWithMetadata('nr-chatbot-input-changed', { metadata: { value: input } });
   }
 
   private handleInputFocus(e: FocusEvent) {
     this.focused = true;
-    this.dispatchEventWithMetadata('chatbot-input-focused', { metadata: { event: e } });
+  this.dispatchEventWithMetadata('nr-chatbot-input-focused', { metadata: { event: e } });
   }
 
   private handleInputBlur(e: FocusEvent) {
     this.focused = false;
-    this.dispatchEventWithMetadata('chatbot-input-blurred', { metadata: { event: e } });
+  this.dispatchEventWithMetadata('nr-chatbot-input-blurred', { metadata: { event: e } });
   }
 
   private clearInput() {
@@ -721,7 +721,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     this.isQueryRunning = true;
 
     const messageDetail: ChatbotEventDetail = { message };
-    this.dispatchEventWithMetadata('chatbot-message-sent', messageDetail);
+  this.dispatchEventWithMetadata('nr-chatbot-message-sent', messageDetail);
   }
 
   private handleStopQuery() {
@@ -729,7 +729,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     this.isQueryRunning = false;
     this.isBotTyping = false;
     
-    this.dispatchEventWithMetadata('chatbot-query-stopped', { 
+    this.dispatchEventWithMetadata('nr-chatbot-query-stopped', { 
       metadata: { action: 'stop' }
     });
   }
@@ -814,7 +814,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   private confirmUrlModal = () => {
     if (!this.urlInputValid) return;
     const url = this.urlInputValue.trim();
-    // Add URL as a file via controller (will emit chatbot-files-selected)
+  // Add URL as a file via controller (will emit nr-chatbot-files-selected)
     (this.fileUploadController as any).addUrlFile?.(url);
     this.closeUrlModal();
   };
@@ -842,7 +842,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       .filter(Boolean) as ChatbotModule[];
     
     // Dispatch event with selected modules
-    this.dispatchEventWithMetadata('chatbot-modules-selected', {
+    this.dispatchEventWithMetadata('nr-chatbot-modules-selected', {
       metadata: {
         selectedModules: selectedModuleObjects,
         selectedModuleIds: this.selectedModules,
@@ -870,7 +870,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     this.threads = [...this.threads, newThread];
     this.selectThread(newThread.id);
     
-    this.dispatchEventWithMetadata('chatbot-thread-created', { 
+    this.dispatchEventWithMetadata('nr-chatbot-thread-created', { 
       metadata: { thread: newThread }
     });
   }
@@ -883,7 +883,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       this.messages = [...thread.messages];
       this.chatStarted = thread.messages.length > 0;
       
-      this.dispatchEventWithMetadata('chatbot-thread-selected', { 
+      this.dispatchEventWithMetadata('nr-chatbot-thread-selected', { 
         metadata: { thread, threadId }
       });
     }
@@ -895,7 +895,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       metadata: { action: 'retry' }
     };
     
-    this.dispatchEventWithMetadata('chatbot-retry-requested', eventDetail);
+  this.dispatchEventWithMetadata('nr-chatbot-retry-requested', eventDetail);
   }
 
   private handleSuggestionClick(suggestion: ChatbotSuggestion) {

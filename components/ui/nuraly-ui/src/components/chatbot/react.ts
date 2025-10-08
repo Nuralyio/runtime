@@ -44,12 +44,12 @@ export const NrChatbot = createComponent({
   elementClass: NrChatbotElement,
   react: React,
   events: {
-    onChatbotMessageSent: 'chatbot-message-sent',
-    onChatbotSuggestionClicked: 'chatbot-suggestion-clicked',
-    onChatbotRetryRequested: 'chatbot-retry-requested',
-    onChatbotInputChanged: 'chatbot-input-changed',
-    onChatbotInputFocused: 'chatbot-input-focused',
-    onChatbotInputBlurred: 'chatbot-input-blurred',
+    onChatbotMessageSent: 'nr-chatbot-message-sent',
+    onChatbotSuggestionClicked: 'nr-chatbot-suggestion-clicked',
+    onChatbotRetryRequested: 'nr-chatbot-retry-requested',
+    onChatbotInputChanged: 'nr-chatbot-input-changed',
+    onChatbotInputFocused: 'nr-chatbot-input-focused',
+    onChatbotInputBlurred: 'nr-chatbot-input-blurred',
   },
 });
 
