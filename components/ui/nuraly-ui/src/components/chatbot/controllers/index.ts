@@ -19,3 +19,7 @@ export type { ChatbotSuggestionControllerHost } from './chatbot-suggestion.contr
 // File upload controller
 export { ChatbotFileUploadController } from './chatbot-file-upload.controller.js';
 export type { ChatbotFileUploadControllerHost } from './chatbot-file-upload.controller.js';
+
+// Thread controller
+export { ChatbotThreadController } from './chatbot-thread.controller.js';
+export type { ChatbotThreadControllerHost } from './chatbot-thread.controller.js';

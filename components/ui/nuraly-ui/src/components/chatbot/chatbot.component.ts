@@ -51,7 +51,9 @@ import {
   ChatbotSuggestionController,
   ChatbotMessageControllerHost,
   ChatbotKeyboardControllerHost,
-  ChatbotSuggestionControllerHost
+  ChatbotSuggestionControllerHost,
+  ChatbotThreadController,
+  ChatbotThreadControllerHost
 } from './controllers/index.js';
 import {
   ChatbotFileUploadController,
@@ -100,7 +102,7 @@ import {
 @customElement('nr-chatbot')
 export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) 
   implements ChatbotMessageControllerHost, ChatbotKeyboardControllerHost, 
-             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost {
+             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost, ChatbotThreadControllerHost {
   static override styles = styles;
     override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
 
@@ -109,6 +111,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   private keyboardController = new ChatbotKeyboardController(this);
   private suggestionController = new ChatbotSuggestionController(this);
   private fileUploadController = new ChatbotFileUploadController(this);
+  private threadController = new ChatbotThreadController(this);
 
   /** Array of chat messages */
   @property({type: Array}) 
@@ -859,34 +862,11 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
 
   // Thread management
   private createNewThread() {
-    const newThread: ChatbotThread = {
-      id: `thread_${Date.now()}`,
-      title: msg('New Chat'),
-      messages: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    this.threads = [...this.threads, newThread];
-    this.selectThread(newThread.id);
-    
-    this.dispatchEventWithMetadata('nr-chatbot-thread-created', { 
-      metadata: { thread: newThread }
-    });
+    this.threadController.createNewThreadAndSelect();
   }
 
   private selectThread(threadId: string) {
-    this.activeThreadId = threadId;
-    const thread = this.threads.find(t => t.id === threadId);
-    
-    if (thread) {
-      this.messages = [...thread.messages];
-      this.chatStarted = thread.messages.length > 0;
-      
-      this.dispatchEventWithMetadata('nr-chatbot-thread-selected', { 
-        metadata: { thread, threadId }
-      });
-    }
+    this.threadController.selectThread(threadId);
   }
 
   private handleRetry(message: ChatbotMessage) {
@@ -1041,52 +1021,28 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
    * Create new conversation thread
    */
   public createThread(title?: string): ChatbotThread {
-    const newThread: ChatbotThread = {
-      id: `thread_${Date.now()}`,
-      title: title || msg('New Chat'),
-      messages: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    this.threads = [...this.threads, newThread];
-    return newThread;
+    return this.threadController.createThread(title);
   }
 
   /**
    * Switch to a specific thread
    */
   public switchToThread(threadId: string): void {
-    this.selectThread(threadId);
+    this.threadController.selectThread(threadId);
   }
 
   /**
    * Delete a thread
    */
   public deleteThread(threadId: string): void {
-    const index = this.threads.findIndex(t => t.id === threadId);
-    if (index !== -1) {
-      this.threads.splice(index, 1);
-      this.threads = [...this.threads]; // Trigger update
-      
-      // If this was the active thread, clear or switch to another
-      if (this.activeThreadId === threadId) {
-        if (this.threads.length > 0) {
-          this.selectThread(this.threads[0].id);
-        } else {
-          this.activeThreadId = undefined;
-          this.messages = [];
-          this.chatStarted = false;
-        }
-      }
-    }
+    this.threadController.deleteThread(threadId);
   }
 
   /**
    * Get current thread
    */
   public getCurrentThread(): ChatbotThread | undefined {
-    return this.threads.find(t => t.id === this.activeThreadId);
+    return this.threadController.getCurrentThread();
   }
 
   /**
