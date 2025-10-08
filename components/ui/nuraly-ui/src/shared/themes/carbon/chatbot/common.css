@@ -1,0 +1,109 @@
+/**
+ * Carbon Theme - Chatbot Component - Common Variables
+ * Shared variables across light and dark themes
+ * Following NuralyUI naming conventions from button and input components
+ */
+
+:root,
+[data-theme^="carbon"] {
+  /* ========================================
+   * SHARED CHATBOT VARIABLES - CARBON DESIGN SYSTEM
+   * ======================================== */
+
+  /* Chatbot container sizing */
+  --nuraly-size-chatbot-width: 100%;
+  --nuraly-size-chatbot-max-width: none; /* Allow full width like ChatGPT */
+  --nuraly-size-chatbot-height: 600px;
+  --nuraly-size-chatbot-min-height: 400px;
+  --nuraly-border-radius-chatbot: 0; /* Carbon uses sharp corners */
+  
+  /* Messages container spacing */
+  --nuraly-spacing-chatbot-messages-padding: var(--nuraly-spacing-04, 0.75rem);
+  --nuraly-spacing-chatbot-messages-gap: var(--nuraly-spacing-04, 0.75rem);
+  --nuraly-size-chatbot-messages-max-height: calc(100% - 140px);
+  --nuraly-size-chatbot-messages-max-width: none; /* Allow full width to prevent cropping */
+  
+  /* Message bubbles */
+  --nuraly-spacing-chatbot-message-padding-vertical: var(--nuraly-spacing-03, 0.5rem);
+  --nuraly-spacing-chatbot-message-padding-horizontal: var(--nuraly-spacing-04, 0.75rem);
+  --nuraly-spacing-chatbot-message-margin: var(--nuraly-spacing-03, 0.5rem) 0;
+  --nuraly-border-radius-chatbot-message: 18px; /* ChatGPT-style rounded */
+  --nuraly-size-chatbot-message-max-width: 90%;
+  --nuraly-font-size-chatbot-message: 16px;
+  --nuraly-line-height-chatbot-message: 1.5;
+  
+  /* Message timestamps */
+  --nuraly-font-size-chatbot-timestamp: 11px;
+  --nuraly-spacing-chatbot-timestamp-margin: var(--nuraly-spacing-02, 0.25rem) 0 0 0;
+  --nuraly-opacity-chatbot-timestamp: 0.7;
+  
+  /* Input area */
+  --nuraly-spacing-chatbot-input-area-padding: var(--nuraly-spacing-06, 1.5rem);
+  --nuraly-border-width-chatbot-input-area: 1px;
+  --nuraly-size-chatbot-input-min-height: 52px;
+  --nuraly-spacing-chatbot-input-gap: var(--nuraly-spacing-04, 0.75rem);
+  --nuraly-border-radius-chatbot-input: 26px; /* More pronounced pill shape */
+  
+  /* Suggestions */
+  --nuraly-spacing-chatbot-suggestions-gap: var(--nuraly-spacing-04, 0.75rem);
+  --nuraly-spacing-chatbot-suggestions-margin: var(--nuraly-spacing-05, 1rem) 0;
+  --nuraly-spacing-chatbot-suggestion-padding-vertical: var(--nuraly-spacing-02, 0.25rem);
+  --nuraly-spacing-chatbot-suggestion-padding-horizontal: var(--nuraly-spacing-04, 0.75rem);
+  --nuraly-border-radius-chatbot-suggestion: 24px; /* Larger rounded pill */
+  --nuraly-font-size-chatbot-suggestion: 15px;
+  
+  /* File upload area */
+  --nuraly-spacing-chatbot-file-upload-padding: var(--nuraly-spacing-05, 1rem);
+  --nuraly-border-radius-chatbot-file-upload: 12px;
+  --nuraly-border-width-chatbot-file-upload: 2px;
+  --nuraly-border-style-chatbot-file-upload: dashed;
+  --nuraly-size-chatbot-file-upload-min-height: 120px;
+  
+  /* File preview */
+  --nuraly-size-chatbot-file-preview: 32px;
+  --nuraly-spacing-chatbot-file-preview-gap: var(--nuraly-spacing-03, 0.5rem);
+  --nuraly-border-radius-chatbot-file-preview: var(--nuraly-spacing-02, 0.25rem);
+  
+  /* Typing indicator */
+  --nuraly-size-chatbot-typing-dot: 6px;
+  --nuraly-animation-chatbot-typing-duration: 1.4s;
+  
+  /* Action buttons */
+  --nuraly-size-chatbot-action-button: 32px;
+  --nuraly-spacing-chatbot-action-button-gap: var(--nuraly-spacing-02, 0.25rem);
+  --nuraly-border-radius-chatbot-action-button: 16px; /* Rounded like ChatGPT */
+  
+  /* Thread sidebar */
+  --nuraly-size-chatbot-sidebar-width: 260px;
+  --nuraly-spacing-chatbot-sidebar-padding: var(--nuraly-spacing-04, 0.75rem);
+  
+  /* Send Button */
+  --nuraly-size-chatbot-send-button-width: 32px;
+  --nuraly-size-chatbot-send-button-height: 32px;
+  --nuraly-border-radius-chatbot-send-button: 16px; /* More rounded like ChatGPT */
+  
+  /* Dropdown */
+  --nuraly-border-radius-chatbot-dropdown-panel: 8px;
+  --nuraly-size-chatbot-dropdown-panel-min-width: 160px;
+  --nuraly-shadow-chatbot-dropdown-panel: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  /* Transitions - Carbon motion tokens */
+  --nuraly-transition-chatbot-fast: var(--nuraly-transition-fast, 0.15s ease-out);
+  --nuraly-transition-chatbot-normal: var(--nuraly-transition-normal, 0.25s ease-out);
+  --nuraly-transition-chatbot-slow: var(--nuraly-transition-slow, 0.35s ease-out);
+  
+  /* Z-index layering */
+  --nuraly-z-index-chatbot-input: 10;
+  --nuraly-z-index-chatbot-suggestions: 20;
+  --nuraly-z-index-chatbot-file-upload: 30;
+  --nuraly-z-index-chatbot-typing: 5;
+  --nuraly-z-index-chatbot-dropdown: 100;
+
+  /* Boxed layout (ChatGPT-style) */
+  --nuraly-spacing-chatbot-boxed-padding: var(--nuraly-spacing-07, 1.5rem);
+  --nuraly-size-chatbot-boxed-max-width: 768px;
+  --nuraly-size-chatbot-boxed-content-max-width: 768px;
+  --nuraly-spacing-chatbot-boxed-content-padding: var(--nuraly-spacing-06, 1.5rem);
+  --nuraly-border-radius-chatbot-boxed: 12px;
+  --nuraly-shadow-chatbot-boxed: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
