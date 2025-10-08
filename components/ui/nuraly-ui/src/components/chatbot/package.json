@@ -1,14 +1,14 @@
 {
     "name": "@nuralyui/chatbot",
-    "version": "0.0.5",
-    "description": "",
+    "version": "0.0.6",
+    "description": "Versatile chatbot component with message handling, suggestions, and typing indicators",
     "main": "index.js",
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Labidi Aymen",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "dayjs": "^1.11.13"
     },
@@ -18,12 +18,24 @@
         },
         "./bundle": {
             "import": "./bundle.js"
+        },
+        "./react": {
+            "import": "./react.js"
         }
     },
     "files": [
         "bundle.js",
+        "react.js",
         "*.js",
         "*.d.ts",
         "*.js.map"
+    ],
+    "keywords": [
+        "chatbot",
+        "chat",
+        "ui",
+        "web-components",
+        "lit-element",
+        "nuralyui"
     ]
 }

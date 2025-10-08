@@ -1,0 +1,138 @@
+/**
+ * Carbon Theme - Chatbot Component - Light Theme
+ * Following NuralyUI naming conventions from button and input components
+ * Based on Carbon Design System color tokens
+ */
+
+:root,
+[data-theme="carbon-light"],
+[data-theme="carbon"] {
+  /* ========================================
+   * CHATBOT LIGHT THEME VARIABLES - CARBON
+   * ======================================== */
+
+  /* Container colors - ChatGPT style */
+  --nuraly-color-chatbot-background: #ffffff;
+  --nuraly-color-chatbot-surface: #f9f9f9;
+  --nuraly-color-chatbot-surface-hover: #f1f1f1;
+  --nuraly-color-chatbot-border: #e5e5e5;
+  --nuraly-shadow-chatbot: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  /* Thread sidebar colors */
+  --nuraly-color-chatbot-sidebar-background: #f7f7f8;
+  --nuraly-color-chatbot-sidebar-border: #d1d5db;
+  --nuraly-color-chatbot-sidebar-text: #374151;
+  
+  /* Message colors - User messages */
+  --nuraly-color-chatbot-message-user-background: #343541;
+  --nuraly-color-chatbot-message-user-text: #ffffff;
+  --nuraly-color-chatbot-message-user-border: transparent;
+  
+  /* Message colors - Bot messages */
+  --nuraly-color-chatbot-message-bot-background: #f7f7f8;
+  --nuraly-color-chatbot-message-bot-text: #374151;
+  --nuraly-color-chatbot-message-bot-border: #d1d5db;
+  
+  /* Message colors - Error messages */
+  --nuraly-color-chatbot-message-error-background: #fff1f1;
+  --nuraly-color-chatbot-message-error-text: #da1e28;
+  --nuraly-color-chatbot-message-error-border: #da1e28;
+  
+  /* Message colors - System messages */
+  --nuraly-color-chatbot-message-system-background: #f4f4f4;
+  --nuraly-color-chatbot-message-system-text: #6f6f6f;
+  --nuraly-color-chatbot-message-system-border: #e0e0e0;
+  
+  /* Text colors - ChatGPT style */
+  --nuraly-color-chatbot-text-primary: #2d2d2d;
+  --nuraly-color-chatbot-text-secondary: #676767;
+  --nuraly-color-chatbot-text-helper: #8e8e8e;
+  --nuraly-color-chatbot-text-on-accent: #ffffff;
+  --nuraly-color-chatbot-text-disabled: #c4c4c4;
+  
+  /* Timestamp colors */
+  --nuraly-color-chatbot-timestamp: #9ca3af;
+  
+  /* Input area colors - ChatGPT style */
+  --nuraly-color-chatbot-input-background: #ffffff;
+  --nuraly-color-chatbot-input-text: #2d2d2d;
+  --nuraly-color-chatbot-input-placeholder: #8e8ea0;
+  --nuraly-color-chatbot-input-border: #d9d9e3;
+  --nuraly-color-chatbot-input-border-focus: #10a37f;
+  
+  /* Suggestion colors - ChatGPT style */
+  --nuraly-color-chatbot-suggestion-background: #ffffff;
+  --nuraly-color-chatbot-suggestion-background-hover: #f7f7f8;
+  --nuraly-color-chatbot-suggestion-background-active: #eeeeef;
+  --nuraly-color-chatbot-suggestion-text: #2d2d2d;
+  --nuraly-color-chatbot-suggestion-border: #d9d9e3;
+  --nuraly-color-chatbot-suggestion-border-hover: #c5c5d2;
+  --nuraly-color-chatbot-suggestion-focus: #10a37f;
+  
+  /* Send Button colors */
+  --nuraly-color-chatbot-send-button-background: #10a37f;
+  --nuraly-color-chatbot-send-button-background-hover: #0d8f6e;
+  --nuraly-color-chatbot-send-button-background-active: #0a7c5d;
+  --nuraly-color-chatbot-send-button-background-disabled: #d9d9e3;
+  --nuraly-color-chatbot-send-button-text: #ffffff;
+  --nuraly-color-chatbot-send-button-text-disabled: #8e8ea0;
+  --nuraly-color-chatbot-send-button-focus: #10a37f;
+  
+  /* File upload colors */
+  --nuraly-color-chatbot-file-upload-background: rgba(15, 98, 254, 0.05);
+  --nuraly-color-chatbot-file-upload-background-hover: rgba(15, 98, 254, 0.1);
+  --nuraly-color-chatbot-file-upload-border: #0f62fe;
+  --nuraly-color-chatbot-file-upload-text: #161616;
+  --nuraly-color-chatbot-file-upload-helper: #6f6f6f;
+  
+  /* File preview colors */
+  --nuraly-color-chatbot-file-preview-background: #ffffff;
+  --nuraly-color-chatbot-file-preview-border: #e0e0e0;
+  --nuraly-color-chatbot-file-preview-text: #161616;
+  --nuraly-color-chatbot-file-preview-icon: #525252;
+  
+  /* Typing indicator colors */
+  --nuraly-color-chatbot-typing-dot: #8d8d8d;
+  --nuraly-color-chatbot-typing-background: #ffffff;
+  --nuraly-color-chatbot-typing-text: #6f6f6f;
+  
+  /* Action button colors */
+  --nuraly-color-chatbot-action-button-background: transparent;
+  --nuraly-color-chatbot-action-button-background-hover: #f4f4f4;
+  --nuraly-color-chatbot-action-button-text: #525252;
+  --nuraly-color-chatbot-action-button-text-hover: #161616;
+  --nuraly-color-chatbot-action-button-border: #e0e0e0;
+  --nuraly-color-chatbot-action-button-border-hover: #525252;
+  --nuraly-color-chatbot-action-button-focus: #0f62fe;
+  --nuraly-color-chatbot-action-button-background-disabled: #f4f4f4;
+  --nuraly-color-chatbot-action-button-text-disabled: #c6c6c6;
+  --nuraly-color-chatbot-action-button-border-disabled: #e0e0e0;
+  
+  /* Dropdown colors */
+  --nuraly-color-chatbot-dropdown-panel-background: #ffffff;
+  --nuraly-color-chatbot-dropdown-panel-border: #e5e5e5;
+
+  /* Boxed layout colors */
+  --nuraly-color-chatbot-boxed-background: #f7f7f8;
+  
+  /* Accent colors - ChatGPT green accent */
+  --nuraly-color-chatbot-accent: #10a37f;
+  --nuraly-color-chatbot-accent-hover: #0d8f72;
+  --nuraly-color-chatbot-accent-active: #0a7c66;
+  
+  /* Thread item colors */
+  --nuraly-color-chatbot-thread-background: transparent;
+  --nuraly-color-chatbot-thread-background-hover: #e8e8e8;
+  --nuraly-color-chatbot-thread-background-active: #0f62fe;
+  --nuraly-color-chatbot-thread-text: #161616;
+  --nuraly-color-chatbot-thread-text-active: #ffffff;
+  
+  /* Disabled states */
+  --nuraly-color-chatbot-disabled: #c6c6c6;
+  --nuraly-color-chatbot-disabled-text: #8d8d8d;
+  
+  /* Scrollbar colors */
+  --nuraly-color-chatbot-scrollbar-track: #f4f4f4;
+  --nuraly-color-chatbot-scrollbar-thumb: #c6c6c6;
+  --nuraly-color-chatbot-scrollbar-thumb-hover: #a8a8a8;
+}

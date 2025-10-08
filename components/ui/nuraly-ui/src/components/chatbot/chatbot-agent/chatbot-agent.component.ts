@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
 import {html, LitElement} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {chatServiceInstance} from '../shared/services/chat.service';
@@ -5,12 +11,34 @@ import {msg} from '@lit/localize';
 import styles from './chatbot-agent.style.js';
 import {Sender} from '../shared/interfaces/sender.enum';
 import {EMPTY_STRING} from '../shared/constant';
+import { NuralyUIBaseMixin } from '../../../shared/base-mixin.js';
 
+/**
+ * Chatbot agent container component that manages chat state and integrates with chat services.
+ * 
+ * @example
+ * ```html
+ * <chatbot-agent 
+ *   direction
+ *   suggestionCategory="1">
+ * </chatbot-agent>
+ * ```
+ * 
+ * @fires agent-message-sent - Message sent through agent
+ * @fires agent-suggestion-loaded - Suggestions loaded
+ */
 @customElement('chatbot-agent')
-export class ChatbotContainer extends LitElement {
+export class ChatbotContainer extends NuralyUIBaseMixin(LitElement) {
   @state() private messages: {sender: Sender; text: string; timestamp: string; error?: boolean, introduction?: boolean}[] = [];
-  @property({type: Boolean}) direction = false;
-  @property({type: Number}) suggestionCategory = 0;
+  
+  /** Right-to-left text direction */
+  @property({type: Boolean}) 
+  direction = false;
+  
+  /** Suggestion category for loading suggestions */
+  @property({type: Number}) 
+  suggestionCategory = 0;
+  
   @state() private currentInput = EMPTY_STRING;
   @state() private isBotTyping = false;
   @state() private suggestions: string[] = [];
@@ -19,6 +47,7 @@ export class ChatbotContainer extends LitElement {
   chatService = chatServiceInstance;
 
   static override styles = styles;
+  override requiredComponents = ['nr-chatbot'];
   override async connectedCallback() {
     super.connectedCallback();
     this.messages = [
