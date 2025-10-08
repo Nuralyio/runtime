@@ -24,10 +24,12 @@ export class SelectEventController extends BaseSelectController implements Event
     event.stopPropagation();
     if (option.disabled) return;
     
-    this.host.selectOption(option);
-    
-    // Auto-close dropdown for single selection mode
-    if (!this.host.multiple) {
+    // Use toggleOption for multi-select to allow deselecting
+    if (this.host.multiple) {
+      this.host.toggleOption(option);
+    } else {
+      this.host.selectOption(option);
+      // Auto-close dropdown for single selection mode
       this.host.closeDropdown();
     }
   };

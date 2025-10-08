@@ -36,6 +36,7 @@ export interface SelectHost {
   toggleDropdown(): void;
   selectOption(option: SelectOption): void;
   unselectOption(option: SelectOption): void;
+  toggleOption(option: SelectOption): void;
   clearSelection(): void;
   contains(element: Element): boolean;
 }

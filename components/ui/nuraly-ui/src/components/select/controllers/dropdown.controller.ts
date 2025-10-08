@@ -174,6 +174,7 @@ export class SelectDropdownController extends BaseSelectController implements Dr
         this._dropdownElement.style.removeProperty('top');
         this._dropdownElement.style.removeProperty('left');
         this._dropdownElement.style.removeProperty('width');
+        this._dropdownElement.style.removeProperty('min-width');
         
         // Only remove max-height if host doesn't have a custom maxHeight
         const customMaxHeight = (this.host as any).maxHeight;
@@ -266,15 +267,17 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       const hostMaxHeight = (this.host as any).maxHeight;
       const { placement } = this._position;
       
-      // Get the exact wrapper width including borders
-      const triggerBounds = this._triggerElement.getBoundingClientRect();
-      const wrapperWidth = triggerBounds.width;
+  // Get the exact wrapper width including borders
+  const triggerBounds = this._triggerElement.getBoundingClientRect();
+  const wrapperWidth = triggerBounds.width;
       
       // Use absolute positioning relative to the trigger element (combobox)
       this._dropdownElement.style.position = 'absolute';
       this._dropdownElement.style.left = '0';
       this._dropdownElement.style.right = 'auto';
-      this._dropdownElement.style.width = `${wrapperWidth}px`; // Exact wrapper width in pixels
+  // Ensure dropdown is at least as wide as the trigger, but allow it to be wider via CSS
+  this._dropdownElement.style.minWidth = `${wrapperWidth}px`;
+  this._dropdownElement.style.removeProperty('width');
       this._dropdownElement.style.zIndex = '1000';
       this._dropdownElement.style.height = 'auto';
       

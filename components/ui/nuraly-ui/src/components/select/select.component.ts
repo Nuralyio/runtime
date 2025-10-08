@@ -296,6 +296,14 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   }
 
   /**
+   * Toggles an option's selection state
+   * @param option - The option to toggle
+   */
+  toggleOption(option: SelectOption): void {
+    this.selectionController.toggleOption(option);
+  }
+
+  /**
    * Clears all current selections
    */
   clearSelection(): void {

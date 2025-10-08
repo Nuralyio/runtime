@@ -100,6 +100,7 @@ const selectedOptions = selectElement.getSelectedOptions();
 // Programmatic selection
 selectElement.selectOption(option);
 selectElement.unselectOption(option);
+selectElement.toggleOption(option); // Toggle selection state
 selectElement.clearSelection();
 
 // Check selection state
@@ -144,9 +145,10 @@ selectElement.setCustomValidity('Custom error message');
 | `--select-text-color` | Text color | Theme dependent |
 | `--select-focus-color` | Focus indicator color | Theme dependent |
 | `--select-dropdown-shadow` | Dropdown shadow | Theme dependent |
+| `--select-dropdown-width` | Dropdown width (can exceed input width) | `100%` |
+| `--select-dropdown-max-height` | Maximum dropdown height | `200px` |
 | `--select-no-options-color` | No options message text color | Theme dependent |
 | `--select-no-options-icon-color` | No options icon color | Theme dependent |
-| `--select-no-options-color` | No options message text color | Theme dependent |
 
 ## Option Configuration
 
@@ -188,8 +190,16 @@ const options = [
 ```html
 <nr-select multiple>
   <!-- Selected options appear as removable tags -->
+  <!-- Click options to toggle selection on/off -->
+  <!-- Selected options show a checkmark icon -->
 </nr-select>
 ```
+
+**Behavior:**
+- In multi-select mode, clicking an option toggles its selection state
+- Click once to select (checkmark appears)
+- Click again to deselect (checkmark disappears)
+- Use the "Clear All" button to deselect all items at once
 
 ### Custom Selected Display (Multi-Select)
 

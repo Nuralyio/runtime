@@ -296,7 +296,7 @@ export const BoxedLayout: Story = {
 const sampleModules = [
   {
     id: 'nlp',
-    name: 'Natural Language Processing',
+    name: 'NLP',
     description: 'Advanced text analysis and understanding',
     icon: 'chat',
     enabled: true,
@@ -304,7 +304,7 @@ const sampleModules = [
   },
   {
     id: 'vision',
-    name: 'Computer Vision',
+    name: 'Vision',
     description: 'Image and video analysis',
     icon: 'eye',
     enabled: true,
@@ -312,7 +312,7 @@ const sampleModules = [
   },
   {
     id: 'search',
-    name: 'Web Search',
+    name: 'Search',
     description: 'Search the web for information',
     icon: 'search',
     enabled: true,
@@ -320,7 +320,7 @@ const sampleModules = [
   },
   {
     id: 'code',
-    name: 'Code Analysis',
+    name: 'Code',
     description: 'Analyze and generate code',
     icon: 'code',
     enabled: true,
@@ -328,7 +328,7 @@ const sampleModules = [
   },
   {
     id: 'data',
-    name: 'Data Analytics',
+    name: 'Data',
     description: 'Statistical analysis and data processing',
     icon: 'chart-bar',
     enabled: false,
