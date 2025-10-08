@@ -512,12 +512,25 @@ export default css`
     position: relative; /* For dropdown positioning */
   }
 
+  /* First row: context tags (files) */
+  .context-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px 16px 0 16px;
+  }
+  .context-tag {
+    --nuraly-tag-font-size: 12px;
+    --nuraly-tag-padding-x: 6px;
+    --nuraly-tag-padding-y: 0px;
+  }
+
   .input-container:focus-within {
     border-color: var(--nuraly-color-chatbot-input-border-focus);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  /* First row: Input text area */
+  /* Second row: Input text area */
   .input-row {
     display: flex;
     align-items: flex-start;
