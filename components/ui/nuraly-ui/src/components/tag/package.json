@@ -1,0 +1,28 @@
+{
+  "name": "@nuralyui/tag",
+  "version": "0.0.1",
+  "description": "Tag component for NuralyUI library",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": { "import": "./index.js" },
+    "./bundle": { "import": "./bundle.js" }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "tag.bundled.js",
+    "bundle.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuralyUI/NuralyUI.git",
+    "directory": "src/components/tag"
+  },
+  "keywords": ["tag", "label", "chip", "web-components", "lit", "nuralyui"],
+  "author": "Nuraly",
+  "license": "MIT",
+  "bugs": { "url": "https://github.com/NuralyUI/NuralyUI/issues" },
+  "homepage": "https://github.com/NuralyUI/NuralyUI#readme"
+}

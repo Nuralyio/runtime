@@ -1,0 +1,12 @@
+/** Default Theme - Tag Dark */
+
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  --nuraly-tag-bg: #1f2937;
+  --nuraly-tag-color: #f9fafb;
+  --nuraly-tag-border-color: #374151;
+  --nuraly-tag-checkable-hover-bg: #374151;
+  --nuraly-tag-checked-bg: #1e40af33;
+  --nuraly-tag-checked-color: #93c5fd;
+  --nuraly-tag-checked-border-color: #60a5fa;
+}

@@ -86,7 +86,12 @@ const THEMES = {
       'colorpicker/index.css',
       'colorpicker/common.css',
       'colorpicker/light.css',
-      'colorpicker/dark.css'
+      'colorpicker/dark.css',
+      // Tag component
+      'tag/index.css',
+      'tag/common.css',
+      'tag/light.css',
+      'tag/dark.css'
     ]
   },
   default: {
@@ -161,7 +166,12 @@ const THEMES = {
       'colorpicker/index.css',
       'colorpicker/common.css',
       'colorpicker/light.css',
-      'colorpicker/dark.css'
+      'colorpicker/dark.css',
+      // Tag component
+      'tag/index.css',
+      'tag/common.css',
+      'tag/light.css',
+      'tag/dark.css'
     ]
   }
 };

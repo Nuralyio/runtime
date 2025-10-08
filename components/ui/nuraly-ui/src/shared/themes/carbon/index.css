@@ -44,6 +44,7 @@
 @import './document/index.css';
 @import './layout/index.css';
 @import './chatbot/index.css';
+@import './tag/index.css';
 
 /* TODO: Import other component themes as they are created
 @import './modal/index.css';
