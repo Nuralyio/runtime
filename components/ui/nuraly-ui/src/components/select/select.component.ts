@@ -75,6 +75,7 @@ import { SelectHost } from './interfaces/index.js';
  * @slot label - Select label content
  * @slot helper-text - Helper text below select
  * @slot trigger - Custom trigger content (slot type only)
+ * @slot selected-display - Custom display for selected values (multi-select only, when use-custom-selected-display is true)
  * 
  * @cssproperty --select-border-color - Border color
  * @cssproperty --select-background - Background color
@@ -163,6 +164,10 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   /** Current search query */
   @property({ type: String })
   searchQuery: string = '';
+
+  /** Enable custom selected display slot */
+  @property({ type: Boolean, attribute: 'use-custom-selected-display' })
+  useCustomSelectedDisplay: boolean = false;
 
   /** Maximum height of the options dropdown */
   @property({ type: String, attribute: 'max-height' })
@@ -405,6 +410,14 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   }
 
   /**
+   * Gets the currently selected options
+   * @returns Array of selected option objects
+   */
+  getSelectedOptions(): SelectOption[] {
+    return this.selectedOptions;
+  }
+
+  /**
    * Manually trigger setup of global event listeners
    */
   setupGlobalEventListeners(): void {
@@ -622,6 +635,12 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     }
 
     if (this.multiple) {
+      // Check if custom display slot should be used
+      if (this.useCustomSelectedDisplay) {
+        return html`<slot name="selected-display" .selectedOptions=${selectedOptions}></slot>`;
+      }
+      
+      // Default behavior: render tags
       return map(selectedOptions, (option) => html`
         <span class="tag">
           <span class="tag-label">${option.label}</span>

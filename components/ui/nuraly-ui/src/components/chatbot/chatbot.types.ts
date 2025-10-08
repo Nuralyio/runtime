@@ -213,6 +213,18 @@ export interface ChatbotThread {
 }
 
 /**
+ * Interface for module selection item
+ */
+export interface ChatbotModule {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  enabled?: boolean;
+  metadata?: Record<string, any>;
+}
+
+/**
  * Constants
  */
 export const EMPTY_STRING = '';

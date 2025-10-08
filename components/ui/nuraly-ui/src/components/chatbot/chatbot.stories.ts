@@ -72,6 +72,22 @@ const meta: Meta = {
     boxed: {
       control: { type: 'boolean' },
       description: 'Enable boxed layout for large widths (ChatGPT-style)'
+    },
+    enableModuleSelection: {
+      control: { type: 'boolean' },
+      description: 'Enable module selection dropdown'
+    },
+    modules: {
+      control: { type: 'object' },
+      description: 'Available modules for selection'
+    },
+    selectedModules: {
+      control: { type: 'object' },
+      description: 'Array of selected module IDs'
+    },
+    moduleSelectionLabel: {
+      control: { type: 'text' },
+      description: 'Label for module selection button'
     }
   }
 };
@@ -276,14 +292,140 @@ export const BoxedLayout: Story = {
   `
 };
 
+// Sample modules for module selection story
+const sampleModules = [
+  {
+    id: 'nlp',
+    name: 'Natural Language Processing',
+    description: 'Advanced text analysis and understanding',
+    icon: 'chat',
+    enabled: true,
+    metadata: { category: 'AI', version: '2.0' }
+  },
+  {
+    id: 'vision',
+    name: 'Computer Vision',
+    description: 'Image and video analysis',
+    icon: 'eye',
+    enabled: true,
+    metadata: { category: 'AI', version: '1.5' }
+  },
+  {
+    id: 'search',
+    name: 'Web Search',
+    description: 'Search the web for information',
+    icon: 'search',
+    enabled: true,
+    metadata: { category: 'Tools', version: '1.0' }
+  },
+  {
+    id: 'code',
+    name: 'Code Analysis',
+    description: 'Analyze and generate code',
+    icon: 'code',
+    enabled: true,
+    metadata: { category: 'Development', version: '2.1' }
+  },
+  {
+    id: 'data',
+    name: 'Data Analytics',
+    description: 'Statistical analysis and data processing',
+    icon: 'chart-bar',
+    enabled: false,
+    metadata: { category: 'Analytics', version: '1.0' }
+  }
+];
+
 export const BoxedWithMessages: Story = {
   args: {
     ...BoxedLayout.args,
     messages: sampleMessages,
-    chatStarted: true
+    chatStarted: true,
+    enableModuleSelection: true,
+    modules: sampleModules,
+    selectedModules: ['nlp']
   },
   parameters: {
     layout: 'fullscreen'
   },
-  render: BoxedLayout.render
+  render: (args) => {
+    const handleModulesSelected = (e: CustomEvent) => {
+      console.log('Modules selected:', e.detail);
+      console.log('Selected module IDs:', e.detail.metadata.selectedModuleIds);
+      console.log('Selected modules:', e.detail.metadata.selectedModules);
+    };
+
+    return html`
+      <div style="width: 100vw; height: 100vh;">
+        <nr-chatbot
+          .messages=${args.messages}
+          .suggestions=${args.suggestions}
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .isBotTyping=${args.isBotTyping}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .enableFileUpload=${args.enableFileUpload}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+          .maxFiles=${args.maxFiles}
+          .maxFileSize=${args.maxFileSize}
+          .allowedFileTypes=${args.allowedFileTypes}
+          .enableModuleSelection=${args.enableModuleSelection}
+          .modules=${args.modules}
+          .selectedModules=${args.selectedModules}
+          @chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
+          @chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
+          @chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
+          @chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
+          @chatbot-modules-selected=${handleModulesSelected}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+export const WithModuleSelection: Story = {
+  args: {
+    ...Default.args,
+    enableModuleSelection: true,
+    modules: sampleModules,
+    selectedModules: ['nlp', 'search']
+  },
+  render: (args) => {
+    const handleModulesSelected = (e: CustomEvent) => {
+      console.log('Modules selected:', e.detail);
+      console.log('Selected module IDs:', e.detail.metadata.selectedModuleIds);
+      console.log('Selected modules:', e.detail.metadata.selectedModules);
+    };
+
+    return html`
+      <div style="width: 500px; height: 600px; border-radius: 8px;">
+        <nr-chatbot
+          .messages=${args.messages}
+          .suggestions=${args.suggestions}
+          .size=${args.size}
+          .variant=${args.variant}
+          .enableModuleSelection=${args.enableModuleSelection}
+          .modules=${args.modules}
+          .selectedModules=${args.selectedModules}
+          .enableFileUpload=${args.enableFileUpload}
+          @chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
+          @chatbot-modules-selected=${handleModulesSelected}
+          @chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+export const WithModuleSelectionAndMessages: Story = {
+  args: {
+    ...WithModuleSelection.args,
+    messages: sampleMessages,
+    chatStarted: true
+  },
+  render: WithModuleSelection.render
 };

@@ -572,6 +572,35 @@ export default css`
     display: inline-block;
   }
 
+  /* Module select styling */
+  .module-select {
+    min-width: 180px;
+    max-width: 300px;
+  }
+
+  .module-display-placeholder {
+    color: var(--nuraly-color-chatbot-text-secondary, #6f6f6f);
+    font-size: 14px;
+  }
+
+  .module-display-single,
+  .module-display-multiple {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--nuraly-color-chatbot-text, inherit);
+  }
+
+  .module-display-single nr-icon {
+    font-size: 16px;
+  }
+
+  .module-display-multiple {
+    font-weight: 500;
+    color: var(--nuraly-color-chatbot-accent, var(--nuraly-color-primary));
+  }
+
     /* Dropdown styling inside chatbot */
   .input-box__upload-dropdown {
     position: relative;
