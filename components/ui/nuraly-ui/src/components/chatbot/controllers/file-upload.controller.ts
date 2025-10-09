@@ -6,14 +6,14 @@
 
 import { ReactiveController, ReactiveControllerHost } from 'lit';
 import {
-  ChatbotFile,
-  ChatbotFileType,
-  ChatbotEventDetail,
-  ChatbotUploadProgress,
-  DEFAULT_MAX_FILE_SIZE,
-  DEFAULT_MAX_FILES,
-  DEFAULT_ALLOWED_FILE_TYPES,
-  FILE_TYPE_MAPPINGS
+    ChatbotFile,
+    ChatbotFileType,
+    ChatbotEventDetail,
+    ChatbotUploadProgress,
+    DEFAULT_MAX_FILE_SIZE,
+    DEFAULT_MAX_FILES,
+    DEFAULT_ALLOWED_FILE_TYPES,
+    FILE_TYPE_MAPPINGS
 } from '../chatbot.types.js';
 
 /**
@@ -246,33 +246,98 @@ export class ChatbotFileUploadController implements ReactiveController {
   /**
   * Add a file by URL (no upload). Emits nr-chatbot-files-selected with the created file.
    */
-  addUrlFile(url: string): ChatbotFile | null {
+  /**
+   * Add file from URL by fetching and creating File object
+   */
+  async addUrlFile(url: string): Promise<ChatbotFile | null> {
     if (!url) return null;
+    
     try {
       const parsed = new URL(url);
       const nameFromUrl = decodeURIComponent(parsed.pathname.split('/').pop() || 'file');
+      
+      // Create temporary file entry for loading state
+      const tempId = this.generateFileId();
       const mimeGuess = this.guessMimeFromExtension(nameFromUrl);
       const fileType = this.determineFileType(mimeGuess);
 
-      const chatbotFile: ChatbotFile = {
-        id: this.generateFileId(),
+      const tempFile: ChatbotFile = {
+        id: tempId,
         name: nameFromUrl,
         size: 0,
         type: fileType,
         mimeType: mimeGuess,
-        url
+        url,
+        uploadProgress: 0
       };
 
-      this.uploadedFiles = [...this.uploadedFiles, chatbotFile];
+      this.uploadedFiles = [...this.uploadedFiles, tempFile];
       this.host.requestUpdate();
 
-      this.host.dispatchEventWithMetadata('nr-chatbot-files-selected', {
-        files: [chatbotFile],
-        metadata: { originalFiles: [], source: 'url' }
+      // Fetch the file from URL
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      // Get the blob and create File object
+      const blob = await response.blob();
+      const contentType = response.headers.get('content-type') || mimeGuess;
+      const file = new File([blob], nameFromUrl, { type: contentType });
+
+      // Validate the fetched file
+      const validation = this.validateFile(file);
+      if (!validation.valid) {
+        // Remove temp file
+        this.uploadedFiles = this.uploadedFiles.filter(f => f.id !== tempId);
+        this.host.requestUpdate();
+        
+        this.host.dispatchEventWithMetadata('nr-chatbot-file-error', {
+          error: new Error(validation.error),
+          metadata: { url, fileName: nameFromUrl }
+        });
+        return null;
+      }
+
+      // Create the final chatbot file
+      const chatbotFile: ChatbotFile = {
+        id: tempId,
+        name: file.name,
+        size: file.size,
+        type: this.determineFileType(file.type),
+        mimeType: file.type,
+        url,
+        uploadProgress: 100
+      };
+
+      // Create preview URL for images
+      if (chatbotFile.type === ChatbotFileType.Image) {
+        try {
+          chatbotFile.previewUrl = URL.createObjectURL(file);
+        } catch {}
+      }
+
+      // Update the temp file with actual data
+      this.uploadedFiles = this.uploadedFiles.map(f => 
+        f.id === tempId ? chatbotFile : f
+      );
+      this.host.requestUpdate();
+
+      this.host.dispatchEventWithMetadata('nr-chatbot-file-uploaded', {
+        file: chatbotFile,
+        metadata: { source: 'url', originalUrl: url, originalFile: file }
       });
 
       return chatbotFile;
-    } catch {
+    } catch (error) {
+      // Remove any temp file
+      this.uploadedFiles = this.uploadedFiles.filter(f => f.url !== url);
+      this.host.requestUpdate();
+      
+      this.host.dispatchEventWithMetadata('nr-chatbot-file-error', {
+        error: error instanceof Error ? error : new Error('Failed to load file from URL'),
+        metadata: { url }
+      });
       return null;
     }
   }
