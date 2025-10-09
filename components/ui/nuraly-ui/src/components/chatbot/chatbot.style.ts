@@ -312,20 +312,53 @@ export default css`
     box-shadow: var(--nuraly-shadow-chatbot-message-error, var(--nuraly-shadow-chatbot-message, none));
   }
 
+  /* Message footer - contains timestamp and copy icon */
+  .message__footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: var(--nuraly-spacing-chatbot-timestamp-margin);
+  }
+
+  .message.user .message__footer {
+    justify-content: flex-end;
+  }
+
+  .message.bot .message__footer {
+    justify-content: flex-start;
+  }
+
   .message__timestamp {
     font-size: var(--nuraly-font-size-chatbot-timestamp);
     color: var(--nuraly-color-chatbot-timestamp);
-    margin-top: var(--nuraly-spacing-chatbot-timestamp-margin);
     font-weight: var(--nuraly-font-weight-normal, 400);
     opacity: var(--nuraly-opacity-chatbot-timestamp);
   }
 
-  .message.user .message__timestamp {
-    text-align: right;
+  .message__copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--nuraly-transition-fast, 0.15s) ease, visibility var(--nuraly-transition-fast, 0.15s) ease;
+    color: var(--nuraly-color-chatbot-timestamp);
   }
 
-  .message.bot .message__timestamp {
-    text-align: left;
+  .message:hover .message__copy {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .message__copy:hover {
+    cursor: pointer !important;
+  }
+
+  .message__copy:focus {
+    outline: 2px solid var(--nuraly-focus-color, #0066cc);
+    outline-offset: 2px;
   }
 
   .message__retry {

@@ -11,10 +11,13 @@ import { ChatbotMessage, ChatbotLoadingType } from '../chatbot.types.js';
 
 // Import required components for template
 import '../../button/button.component.js';
+import '../../icon/icon.component.js';
 
 export interface MessageTemplateHandlers {
   onRetry: (message: ChatbotMessage) => void;
   onRetryKeydown: (e: KeyboardEvent) => void;
+  onCopy: (message: ChatbotMessage) => void;
+  onCopyKeydown: (e: KeyboardEvent, message: ChatbotMessage) => void;
 }
 
 /**
@@ -40,8 +43,22 @@ export function renderMessage(
       <div class="message__content" part="message-content">
         ${message.text}
       </div>
-      <div class="message__timestamp" part="message-timestamp">
-        ${message.timestamp}
+      <div class="message__footer" part="message-footer">
+        <div class="message__timestamp" part="message-timestamp">
+          ${message.timestamp}
+        </div>
+        <nr-icon
+          name="copy"
+          size="small"
+          color="var(--nuraly-color-chatbot-timestamp)"
+          class="message__copy"
+          @click=${() => handlers.onCopy(message)}
+          @keydown=${(e: KeyboardEvent) => handlers.onCopyKeydown(e, message)}
+          title="${msg('Copy message')}"
+          aria-label="${msg('Copy message')}"
+          role="button"
+          tabindex="0"
+        ></nr-icon>
       </div>
       ${message.error
         ? html`
