@@ -633,3 +633,242 @@ export const StopButtonDemo: Story = {
     `;
   }
 };
+
+// Sample threads data
+const sampleThreads = [
+  {
+    id: 'thread_1',
+    title: 'Account Help',
+    messages: [
+      {
+        id: 'msg1',
+        sender: ChatbotSender.Bot,
+        text: 'Hello! How can I help you today?',
+        timestamp: '10:00 AM',
+        introduction: true
+      },
+      {
+        id: 'msg2',
+        sender: ChatbotSender.User,
+        text: 'I need help with my account',
+        timestamp: '10:01 AM'
+      },
+      {
+        id: 'msg3',
+        sender: ChatbotSender.Bot,
+        text: 'I\'d be happy to help you with your account. What specific issue are you experiencing?',
+        timestamp: '10:01 AM'
+      }
+    ],
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+    updatedAt: new Date(Date.now() - 3600000).toISOString()
+  },
+  {
+    id: 'thread_2',
+    title: 'Product Information',
+    messages: [
+      {
+        id: 'msg4',
+        sender: ChatbotSender.User,
+        text: 'Tell me about your products',
+        timestamp: '11:30 AM'
+      },
+      {
+        id: 'msg5',
+        sender: ChatbotSender.Bot,
+        text: 'We offer a wide range of products including software solutions, cloud services, and consulting.',
+        timestamp: '11:30 AM'
+      }
+    ],
+    createdAt: new Date(Date.now() - 7200000).toISOString(),
+    updatedAt: new Date(Date.now() - 7200000).toISOString()
+  },
+  {
+    id: 'thread_3',
+    title: 'Technical Support',
+    messages: [
+      {
+        id: 'msg6',
+        sender: ChatbotSender.User,
+        text: 'I\'m having technical issues',
+        timestamp: 'Yesterday'
+      },
+      {
+        id: 'msg7',
+        sender: ChatbotSender.Bot,
+        text: 'I\'m sorry to hear that. Can you describe the issue you\'re experiencing?',
+        timestamp: 'Yesterday'
+      }
+    ],
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString()
+  }
+];
+
+/**
+ * With Thread Sidebar
+ * Demonstrates the thread sidebar feature that allows users to manage multiple conversation threads
+ */
+export const WithThreadSidebar: Story = {
+  args: {
+    messages: sampleThreads[0].messages,
+    suggestions: sampleSuggestions,
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showSendButton: true,
+    autoScroll: true,
+    enableFileUpload: true,
+    chatStarted: true,
+    showThreads: true,
+    threads: sampleThreads,
+    activeThreadId: 'thread_1'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Showcases the thread sidebar feature that allows users to switch between multiple conversation threads. Each thread maintains its own message history. Click the menu button in the header to toggle the sidebar visibility.'
+      }
+    }
+  },
+  render: (args) => {
+    return html`
+      <div style="width: 800px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <nr-chatbot
+          .messages=${args.messages}
+          .suggestions=${args.suggestions}
+          .size=${args.size}
+          .variant=${args.variant}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .enableFileUpload=${args.enableFileUpload}
+          .chatStarted=${args.chatStarted}
+          .showThreads=${args.showThreads}
+          .threads=${args.threads}
+          .activeThreadId=${args.activeThreadId}
+          @nr-chatbot-thread-selected=${(e: CustomEvent) => console.log('Thread selected:', e.detail)}
+          @nr-chatbot-thread-created=${(e: CustomEvent) => console.log('Thread created:', e.detail)}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Thread Sidebar Interactive
+ * Interactive demo of thread management with the ability to create new threads and switch between them
+ */
+export const ThreadSidebarInteractive: Story = {
+  args: {
+    messages: [],
+    suggestions: sampleSuggestions,
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showSendButton: true,
+    autoScroll: true,
+    enableFileUpload: true,
+    chatStarted: false,
+    showThreads: true,
+    threads: [],
+    activeThreadId: undefined
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Interactive demo where you can create new threads, switch between them, and see messages isolated per thread. Use the menu button to toggle sidebar visibility.'
+      }
+    }
+  },
+  render: (args) => {
+    let threads = [...sampleThreads];
+    let activeThreadId = 'thread_1';
+    let messages = threads.find(t => t.id === activeThreadId)?.messages || [];
+    
+    const handleThreadSelected = (e: CustomEvent) => {
+      activeThreadId = e.detail.threadId;
+      const selectedThread = threads.find(t => t.id === activeThreadId);
+      messages = selectedThread?.messages || [];
+      
+      const chatbot = document.querySelector('nr-chatbot');
+      if (chatbot) {
+        (chatbot as any).messages = messages;
+        (chatbot as any).activeThreadId = activeThreadId;
+      }
+    };
+    
+    const handleThreadCreated = (e: CustomEvent) => {
+      const newThread = e.detail.thread;
+      threads = [...threads, newThread];
+      activeThreadId = newThread.id;
+      messages = [];
+      
+      const chatbot = document.querySelector('nr-chatbot');
+      if (chatbot) {
+        (chatbot as any).threads = threads;
+        (chatbot as any).messages = messages;
+        (chatbot as any).activeThreadId = activeThreadId;
+      }
+    };
+    
+    const handleMessageSent = (e: CustomEvent) => {
+      const userMessage = e.detail.message;
+      messages = [...messages, userMessage];
+      
+      // Update the thread with new message
+      threads = threads.map(t => 
+        t.id === activeThreadId 
+          ? { ...t, messages: [...messages] }
+          : t
+      );
+      
+      const chatbot = document.querySelector('nr-chatbot');
+      if (chatbot) {
+        (chatbot as any).messages = messages;
+        (chatbot as any).threads = threads;
+      }
+      
+      // Simulate bot response
+      setTimeout(() => {
+        const botMessage: ChatbotMessage = {
+          id: `bot_${Date.now()}`,
+          sender: ChatbotSender.Bot,
+          text: `Response in thread: "${userMessage.text}"`,
+          timestamp: new Date().toLocaleTimeString()
+        };
+        messages = [...messages, botMessage];
+        
+        threads = threads.map(t => 
+          t.id === activeThreadId 
+            ? { ...t, messages: [...messages] }
+            : t
+        );
+        
+        if (chatbot) {
+          (chatbot as any).messages = messages;
+          (chatbot as any).threads = threads;
+        }
+      }, 1000);
+    };
+
+    return html`
+      <div style="width: 900px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <nr-chatbot
+          .messages=${messages}
+          .suggestions=${args.suggestions}
+          .size=${args.size}
+          .variant=${args.variant}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .enableFileUpload=${args.enableFileUpload}
+          .chatStarted=${true}
+          .showThreads=${true}
+          .enableThreadCreation=${true}
+          .threads=${threads}
+          .activeThreadId=${activeThreadId}
+          @nr-chatbot-thread-selected=${handleThreadSelected}
+          @nr-chatbot-thread-created=${handleThreadCreated}
+          @nr-chatbot-message-sent=${handleMessageSent}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};

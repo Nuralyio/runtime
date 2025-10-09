@@ -192,6 +192,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @property({type: Boolean})
   showThreads = false;
 
+  /** Enable creation of new threads */
+  @property({type: Boolean})
+  enableThreadCreation = false;
+
   /** Array of conversation threads */
   @property({type: Array})
   threads: ChatbotThread[] = [];
@@ -252,6 +256,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @state() private urlModalError: string = '';
   @state() private urlModalSelectedFile: File | null = null;
   @state() private urlModalSelectedFileName: string = '';
+  @state() private isThreadSidebarOpen: boolean = true; // Control sidebar visibility
   
   /** File upload dropdown options */
   private get fileUploadItems(): DropdownItem[] {
@@ -307,7 +312,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         renderModuleDisplay: this.renderModuleSelectedDisplay.bind(this)
       },
       enableThreads: this.showThreads,
-      isThreadSidebarOpen: this.showThreads,
+      enableThreadCreation: this.enableThreadCreation,
+      isThreadSidebarOpen: this.showThreads && this.isThreadSidebarOpen,
       threadSidebar: this.showThreads ? {
         threads: this.threads,
         activeThreadId: this.activeThreadId
@@ -362,7 +368,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         },
         onConfirm: this.confirmUrlModal.bind(this),
         onAttachFile: this.handleAttachFileClick.bind(this)
-      } : undefined
+      } : undefined,
+      onToggleThreadSidebar: this.showThreads ? this.toggleThreadSidebar : undefined
     };
 
     return html`
@@ -673,6 +680,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     
     this.moduleController.handleModuleSelectionChange(selectedValues);
   }
+
+  private toggleThreadSidebar = () => {
+    this.isThreadSidebarOpen = !this.isThreadSidebarOpen;
+  };
 
   private handleRetry(message: ChatbotMessage) {
     const eventDetail: ChatbotEventDetail = {

@@ -82,6 +82,28 @@ export const buttonStyles = css`
       color: inherit;
       /* Override any size attribute with CSS variable */
       font-size: var(--nuraly-button-icon-size, 1rem) !important;
+      transition: all var(--nuraly-transition-fast, 0.15s) ease;
+      /* Inherit cursor from button */
+      cursor: inherit;
+      /* Prevent icon from being focusable */
+      pointer-events: none;
+    }
+
+    /* Icon focus state */
+    &:focus:not(:disabled) nr-icon {
+      opacity: 1;
+      filter: brightness(1.1);
+    }
+
+    /* Icon active state */
+    &:active:not(:disabled) nr-icon {
+      opacity: 0.9;
+      transform: scale(0.95);
+    }
+
+    /* Icon hover state */
+    &:hover:not(:disabled) nr-icon {
+      opacity: 1;
     }
 
     /* Icon spacing - use gap for cleaner spacing */

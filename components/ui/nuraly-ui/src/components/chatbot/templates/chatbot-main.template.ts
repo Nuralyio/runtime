@@ -6,33 +6,35 @@
 
 import { nothing, html, TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
+import { msg } from '@lit/localize';
+import '../../button/button.component.js';
 import {
-    renderMessages,
-    renderBotTypingIndicator,
-    MessageTemplateHandlers
+  renderMessages,
+  renderBotTypingIndicator,
+  MessageTemplateHandlers
 } from './message.template.js';
 import {
-    renderSuggestions,
-    SuggestionTemplateHandlers
+  renderSuggestions,
+  SuggestionTemplateHandlers
 } from './suggestion.template.js';
 import {
-    renderInputBox,
-    InputBoxTemplateData,
-    InputBoxTemplateHandlers
+  renderInputBox,
+  InputBoxTemplateData,
+  InputBoxTemplateHandlers
 } from './input-box.template.js';
 import {
-    renderThreadSidebar,
-    ThreadSidebarTemplateData,
-    ThreadSidebarTemplateHandlers
+  renderThreadSidebar,
+  ThreadSidebarTemplateData,
+  ThreadSidebarTemplateHandlers
 } from './thread-sidebar.template.js';
 import {
-    renderFileUploadArea,
-    FileUploadAreaTemplateHandlers
+  renderFileUploadArea,
+  FileUploadAreaTemplateHandlers
 } from './file-upload-area.template.js';
 import {
-    renderUrlModal,
-    UrlModalTemplateData,
-    UrlModalTemplateHandlers
+  renderUrlModal,
+  UrlModalTemplateData,
+  UrlModalTemplateHandlers
 } from './url-modal.template.js';
 import { ChatbotMessage, ChatbotSuggestion, ChatbotLoadingType } from '../chatbot.types.js';
 
@@ -55,6 +57,7 @@ export interface ChatbotMainTemplateData {
   
   // Thread sidebar
   enableThreads: boolean;
+  enableThreadCreation: boolean;
   isThreadSidebarOpen: boolean;
   threadSidebar?: ThreadSidebarTemplateData;
   
@@ -72,6 +75,7 @@ export interface ChatbotMainTemplateHandlers {
   threadSidebar?: ThreadSidebarTemplateHandlers;
   fileUploadArea: FileUploadAreaTemplateHandlers;
   urlModal?: UrlModalTemplateHandlers;
+  onToggleThreadSidebar?: () => void;
 }
 
 /**
@@ -91,6 +95,29 @@ export function renderChatbotMain(
         : ''}
       
       <div class="chatbot-main" part="main">
+        ${data.enableThreads ? html`
+          <div class="chatbot-header" part="chatbot-header">
+            <nr-button
+              type="text"
+              size="small"
+              .icon=${['bars']}
+              @click=${handlers.onToggleThreadSidebar}
+              title="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
+              aria-label="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
+            ></nr-button>
+            ${data.enableThreadCreation ? html`
+              <nr-button
+                type="text"
+                size="small"
+                .icon=${['pencil-alt']}
+                @click=${handlers.threadSidebar?.onCreateNew}
+                title="${msg('New conversation')}"
+                aria-label="${msg('New conversation')}"
+              ></nr-button>
+            ` : ''}
+          </div>
+        ` : ''}
+        
         <slot name="header"></slot>
         
         <div class="chatbot-content" part="content">

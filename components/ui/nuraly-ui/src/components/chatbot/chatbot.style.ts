@@ -34,11 +34,24 @@ export default css`
     min-width: 450px;
   }
 
+  .chatbot-container--with-sidebar {
+    flex-direction: row;
+  }
+
   .chatbot-main {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
+  }
+
+  .chatbot-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--nuraly-color-chatbot-border, #e0e0e0);
   }
 
   .chatbot-content {
