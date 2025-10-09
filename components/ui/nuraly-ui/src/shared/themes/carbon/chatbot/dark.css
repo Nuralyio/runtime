@@ -26,10 +26,10 @@
   --nuraly-color-chatbot-message-user-text: #f4f4f4;
   --nuraly-color-chatbot-message-user-border: transparent;
   
-  /* Message colors - Bot messages */
-  --nuraly-color-chatbot-message-bot-background: #161616;
+  /* Message colors - Bot messages - Clean/minimal by default */
+  --nuraly-color-chatbot-message-bot-background: transparent;
   --nuraly-color-chatbot-message-bot-text: #f4f4f4;
-  --nuraly-color-chatbot-message-bot-border: #393939;
+  --nuraly-color-chatbot-message-bot-border: transparent;
   
   /* Message colors - Error messages */
   --nuraly-color-chatbot-message-error-background: rgba(218, 30, 40, 0.1);

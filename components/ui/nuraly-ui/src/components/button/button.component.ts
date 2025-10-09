@@ -6,6 +6,7 @@
 
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { ButtonType, ButtonSize, ButtonShape, EMPTY_STRING, IconPosition, ButtonIcons, ButtonIcon, ButtonIconsConfig } from './button.types.js';
 import { styles } from './button.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
@@ -15,9 +16,9 @@ import '../icon/icon.component.js';
 
 // Import controllers
 import {
-  ButtonRippleController,
-  ButtonKeyboardController,
-  ButtonLinkController
+    ButtonRippleController,
+    ButtonKeyboardController,
+    ButtonLinkController
 } from './controllers/index.js';
 
 // Import interfaces
@@ -164,9 +165,24 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
       return nothing;
     }
 
+    // Get appropriate icon size based on button size
+    const getIconSizeForButtonSize = (): 'small' | 'medium' | 'large' | undefined => {
+      switch (this.size) {
+        case ButtonSize.Small:
+          return 'small';
+        case ButtonSize.Medium:
+          return 'medium';
+        case ButtonSize.Large:
+          return 'large';
+        default:
+          return 'medium'; // Default to medium if no size specified
+      }
+    };
+
     // Handle simple string input (backward compatibility)
     if (typeof iconConfig === 'string') {
-      return html`<nr-icon name=${iconConfig}></nr-icon>`;
+      const iconSize = getIconSizeForButtonSize();
+      return html`<nr-icon name=${iconConfig} size=${ifDefined(iconSize)}></nr-icon>`;
     }
 
     // Handle enhanced icon configuration
@@ -178,11 +194,15 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
       alt
     } = iconConfig;
 
+    // Use explicit size if provided, otherwise use size based on button size
+    const resolvedSize = size || getIconSizeForButtonSize();
+    const iconSize = resolvedSize as 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | undefined;
+
     return html`<nr-icon 
       name=${name}
       type=${type}
       alt=${alt || ''}
-      size=${size || ''}
+      size=${ifDefined(iconSize)}
       color=${color || ''}
     ></nr-icon>`;
   }

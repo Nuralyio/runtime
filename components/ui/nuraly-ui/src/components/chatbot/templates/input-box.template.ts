@@ -79,7 +79,7 @@ function renderFileUploadButton(
       .items=${data.fileUploadItems}
       trigger="click"
       placement="top-start"
-      size="medium"
+      size="small"
       ?disabled=${data.disabled}
       @nr-dropdown-item-click=${handlers.onFileDropdownClick}
     >
@@ -87,6 +87,7 @@ function renderFileUploadButton(
         slot="trigger"
         part="file-button"
         type="default"
+        size="small"
         .icon=${["upload"]}
         ?disabled=${data.disabled}
         aria-label="${msg('Attach files')}"
@@ -111,7 +112,7 @@ function renderModuleSelector(
       .value=${data.selectedModules}
       multiple
       placeholder="${data.moduleSelectionLabel}"
-      size="medium"
+      size="small"
       ?disabled=${data.disabled}
       searchable
       search-placeholder="${msg('Search modules...')}"
@@ -140,6 +141,7 @@ function renderSendButton(
       class="input-box__send-button" 
       part="send-button"
       type="default"
+      size="small"
       .iconRight=${data.isQueryRunning ? 'stop' : 'arrow-up'}
       @click=${data.isQueryRunning ? handlers.onStop : handlers.onSend}
       @keydown=${handlers.onSendKeydown}
@@ -168,7 +170,7 @@ function renderActionButtons(
       </div>
       
       <div class="action-buttons-right">
-        ${data.showSendButton && !data.disabled && 
+        ${data.showSendButton && (!data.disabled || data.isQueryRunning) && 
           (data.currentInput.trim() || data.uploadedFiles.length > 0 || data.isQueryRunning)
           ? renderSendButton(data, handlers)
           : nothing}

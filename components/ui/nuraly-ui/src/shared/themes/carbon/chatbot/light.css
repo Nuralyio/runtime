@@ -28,10 +28,10 @@
   --nuraly-color-chatbot-message-user-text: #ffffff;
   --nuraly-color-chatbot-message-user-border: transparent;
   
-  /* Message colors - Bot messages */
-  --nuraly-color-chatbot-message-bot-background: #f7f7f8;
+  /* Message colors - Bot messages - Clean/minimal by default */
+  --nuraly-color-chatbot-message-bot-background: transparent;
   --nuraly-color-chatbot-message-bot-text: #374151;
-  --nuraly-color-chatbot-message-bot-border: #d1d5db;
+  --nuraly-color-chatbot-message-bot-border: transparent;
   
   /* Message colors - Error messages */
   --nuraly-color-chatbot-message-error-background: #fff1f1;
@@ -61,11 +61,11 @@
   --nuraly-color-chatbot-input-border-focus: #10a37f;
   
   /* Suggestion colors - ChatGPT style */
-  --nuraly-color-chatbot-suggestion-background: #ffffff;
-  --nuraly-color-chatbot-suggestion-background-hover: #f7f7f8;
-  --nuraly-color-chatbot-suggestion-background-active: #eeeeef;
+  --nuraly-color-chatbot-suggestion-background: #f4f4f4;
+  --nuraly-color-chatbot-suggestion-background-hover: #e8e8e8;
+  --nuraly-color-chatbot-suggestion-background-active: #d9d9d9;
   --nuraly-color-chatbot-suggestion-text: #2d2d2d;
-  --nuraly-color-chatbot-suggestion-border: #d9d9e3;
+  --nuraly-color-chatbot-suggestion-border: #e0e0e0;
   --nuraly-color-chatbot-suggestion-border-hover: #c5c5d2;
   --nuraly-color-chatbot-suggestion-focus: #10a37f;
   

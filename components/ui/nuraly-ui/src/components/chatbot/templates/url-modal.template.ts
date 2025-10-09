@@ -51,12 +51,14 @@ export function renderUrlModal(
       <div slot="footer">
         <nr-button 
           type="default"
+          size="small"
           @click=${handlers.onClose}
         >
           ${msg('Cancel')}
         </nr-button>
         <nr-button 
           type="primary"
+          size="small"
           @click=${handlers.onConfirm}
           ?disabled=${!data.urlInput}
         >

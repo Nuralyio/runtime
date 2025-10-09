@@ -3,7 +3,6 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     /* Layout and sizing */
-    --nuraly-select-local-width: 300px;
     --nuraly-select-local-min-height: 40px;
     --nuraly-select-local-padding-top: 8px;
     --nuraly-select-local-padding-bottom: 8px;
@@ -63,12 +62,13 @@ export const styles = css`
 
   /* Size variants */
   :host([size='small']) .wrapper {
-    min-height: var(--nuraly-select-small-height, 32px);
+    height: var(--nuraly-select-small-height, 24px);
+    min-height: var(--nuraly-select-small-height, 24px);
     font-size: var(--nuraly-select-small-font-size, var(--nuraly-select-local-small-font-size));
   }
 
   :host([size='small']) .select-trigger {
-    padding: var(--nuraly-select-small-padding, 4px 8px);
+    padding: var(--nuraly-select-small-padding, 2px 8px);
     padding-right: calc(var(--nuraly-select-icon-size, 16px) + 20px);
   }
 
@@ -116,6 +116,15 @@ export const styles = css`
     flex: 1;
   }
 
+  /* Block (full width) */
+  :host([block]) {
+    width: 100%;
+  }
+
+  :host([block]) .wrapper {
+    width: 100%;
+  }
+
   /* Show dropdown */
   :host([show]) .options {
     display: flex !important;
@@ -124,7 +133,7 @@ export const styles = css`
   /* Main wrapper container */
   .wrapper {
     position: relative;
-    width: var(--nuraly-select-width, var(--nuraly-select-local-width));
+    width: var(--nuraly-select-width, fit-content);
     background-color: var(--nuraly-select-background-color, #ffffff);
     border: var(--nuraly-select-border-width, var(--nuraly-select-local-border-width)) solid 
             var(--nuraly-select-border-color, #d9d9d9);
@@ -135,6 +144,9 @@ export const styles = css`
     outline: none;
     margin: var(--nuraly-select-wrapper-margin, 0);
     min-height: var(--nuraly-select-min-height, var(--nuraly-select-local-min-height));
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
     /* Ensure dropdown can overflow the wrapper */
     overflow: visible;
   }
@@ -167,9 +179,11 @@ export const styles = css`
     font-size: inherit;
     line-height: inherit;
     word-break: break-word;
-    min-height: inherit;
+    flex: 1;
+    min-height: 0;
     flex-wrap: wrap;
     gap: var(--nuraly-select-tag-margin, var(--nuraly-select-local-tag-margin));
+    box-sizing: border-box;
   }
 
   .select-trigger:empty:before {

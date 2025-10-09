@@ -28,15 +28,17 @@
   --nuraly-border-radius-button: 0;
 
   /* Common Carbon button padding & spacing */
-  --nuraly-button-padding-vertical: 1rem;      /* 16px */
-  --nuraly-button-padding-horizontal: 1.5rem;  /* 24px */
+  --nuraly-button-padding-vertical: 0.5rem;      /* 8px */
+  --nuraly-button-padding-horizontal: 1rem;      /* 16px */
   
   /* Common override default button spacing for Carbon theme */
-  --nuraly-spacing-2: 1rem;    /* Override vertical padding to 16px */
-  --nuraly-spacing-4: 1.5rem;  /* Override horizontal padding to 24px */
+  --nuraly-spacing-2: 0.5rem;    /* Override vertical padding to 8px */
+  --nuraly-spacing-4: 1rem;      /* Override horizontal padding to 16px */
   
-  /* Common medium size */
-  --nuraly-size-md: 3.5rem;    /* Increase button height to 56px */
+  /* Common button sizes */
+  --nuraly-size-sm: 1.5rem;    /* Small button height: 24px */
+  --nuraly-size-md: 2rem;      /* Medium button height: 32px */
+  --nuraly-size-lg: 2.5rem;    /* Large button height: 40px */
   
   /* Common Carbon icon spacing and alignment */
   --nuraly-button-icon-spacing: 0.5rem;  /* 8px gap between icon and text */

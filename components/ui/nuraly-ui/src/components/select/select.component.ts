@@ -63,6 +63,9 @@ import { SelectHost } from './interfaces/index.js';
  * 
  * <!-- With clear button -->
  * <nr-select clearable></nr-select>
+ * 
+ * <!-- Full width block select -->
+ * <nr-select block></nr-select>
  * ```
  * 
  * @fires nr-change - Selection changed
@@ -172,6 +175,10 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   /** Maximum height of the options dropdown */
   @property({ type: String, attribute: 'max-height' })
   maxHeight: string = '';
+
+  /** Makes select full width */
+  @property({ type: Boolean, reflect: true })
+  block: boolean = false;
 
   /** Options dropdown container element */
   @query('.options') 
@@ -557,6 +564,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
             ${this.renderClearButton(selectedOptions)}
             <nr-icon 
               name="angle-down" 
+              size="${this.size}"
               class="arrow-icon"
               aria-hidden="true"
             ></nr-icon>
@@ -654,6 +662,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
           <span class="tag-label">${option.label}</span>
           <nr-icon 
             name="remove"
+            size="${this.size}"
             class="tag-close"
             @click=${(e: Event) => this.handleTagRemove(e, option)}
             aria-label="Remove ${option.label}"
@@ -671,11 +680,11 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   private renderStatusIcon() {
     switch (this.status) {
       case SelectStatus.Warning:
-        return html`<nr-icon name="warning" class="status-icon warning"></nr-icon>`;
+        return html`<nr-icon name="warning" size="${this.size}" class="status-icon warning"></nr-icon>`;
       case SelectStatus.Error:
-        return html`<nr-icon name="exclamation-circle" class="status-icon error"></nr-icon>`;
+        return html`<nr-icon name="exclamation-circle" size="${this.size}" class="status-icon error"></nr-icon>`;
       case SelectStatus.Success:
-        return html`<nr-icon name="check-circle" class="status-icon success"></nr-icon>`;
+        return html`<nr-icon name="check-circle" size="${this.size}" class="status-icon success"></nr-icon>`;
       default:
         return nothing;
     }
@@ -692,6 +701,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
     return html`
       <nr-icon
         name="remove"
+        size="${this.size}"
         class="clear-icon"
         @click=${this.handleClearAll}
         aria-label="Clear selection"
@@ -751,18 +761,18 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
           title="${option.title || ''}"
         >
           <div class="option-content">
-            ${option.icon ? html`<nr-icon name="${option.icon}" class="option-icon"></nr-icon>` : nothing}
+            ${option.icon ? html`<nr-icon name="${option.icon}" size="${this.size}" class="option-icon"></nr-icon>` : nothing}
             <div class="option-text">
               ${option.htmlContent ? html`<div .innerHTML=${option.htmlContent}></div>` : option.label}
               ${option.description ? html`<div class="option-description">${option.description}</div>` : nothing}
             </div>
           </div>
           
-          ${isSelected ? html`<nr-icon name="check" class="check-icon" aria-hidden="true"></nr-icon>` : nothing}
+          ${isSelected ? html`<nr-icon name="check" size="${this.size}" class="check-icon" aria-hidden="true"></nr-icon>` : nothing}
           
           ${option.state && option.message ? html`
             <div class="option-message ${option.state}">
-              <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}"></nr-icon>
+              <nr-icon name="${option.state === 'error' ? 'exclamation-circle' : 'warning'}" size="${this.size}"></nr-icon>
               <span>${option.message}</span>
             </div>
           ` : nothing}
