@@ -225,13 +225,13 @@ export const styles = css`
 
   /* Modal footer */
   .modal-footer {
-    padding: var(--nuraly-spacing-modal-footer, var(--nuraly-spacing-05, 1rem) var(--nuraly-spacing-06, 1.5rem));
+    padding: var(--nuraly-spacing-modal-footer, var(--nuraly-spacing-03, 0.5rem) var(--nuraly-spacing-05, 1rem));
     border-top: var(--nuraly-border-modal-footer, 1px solid var(--nuraly-color-border, #e0e0e0));
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: var(--nuraly-spacing-03, 0.5rem);
-    min-height: var(--nuraly-modal-footer-height, 64px);
+    min-height: var(--nuraly-modal-footer-height, 48px);
     flex-shrink: 0;
   }
 
