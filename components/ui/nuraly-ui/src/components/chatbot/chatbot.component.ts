@@ -7,7 +7,6 @@
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { repeat } from 'lit/directives/repeat.js';
 import { localized, msg } from '@lit/localize';
 
 import styles from './chatbot.style.js';
@@ -36,13 +35,19 @@ import {
   ChatbotModule,
   EMPTY_STRING
 } from './chatbot.types.js';
-import { VALIDATION_RULES, INPUT_TYPE } from '../input/input.types.js';
 
 // Import dropdown types
 import { DropdownItem } from '../dropdown/dropdown.types.js';
 
 // Import select types
 import { SelectOption } from '../select/select.types.js';
+
+// Import templates
+import {
+  renderChatbotMain,
+  ChatbotMainTemplateData,
+  ChatbotMainTemplateHandlers
+} from './templates/index.js';
 
 // Import controllers
 import {
@@ -53,12 +58,12 @@ import {
   ChatbotKeyboardControllerHost,
   ChatbotSuggestionControllerHost,
   ChatbotThreadController,
-  ChatbotThreadControllerHost
-} from './controllers/index.js';
-import {
+  ChatbotThreadControllerHost,
+  ChatbotModuleController,
+  ChatbotModuleControllerHost,
   ChatbotFileUploadController,
   ChatbotFileUploadControllerHost
-} from './controllers/chatbot-file-upload.controller.js';
+} from './controllers/index.js';
 
 /**
  * Enhanced chatbot component with ChatGPT-like features including file upload, 
@@ -102,7 +107,7 @@ import {
 @customElement('nr-chatbot')
 export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) 
   implements ChatbotMessageControllerHost, ChatbotKeyboardControllerHost, 
-             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost, ChatbotThreadControllerHost {
+             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost, ChatbotThreadControllerHost, ChatbotModuleControllerHost {
   static override styles = styles;
     override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
 
@@ -112,6 +117,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   private suggestionController = new ChatbotSuggestionController(this);
   private fileUploadController = new ChatbotFileUploadController(this);
   private threadController = new ChatbotThreadController(this);
+  private moduleController = new ChatbotModuleController(this);
 
   /** Array of chat messages */
   @property({type: Array}) 
@@ -272,6 +278,85 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   }
 
   override render() {
+    // Prepare template data
+    const templateData: ChatbotMainTemplateData = {
+      messages: this.messages,
+      isTyping: this.isBotTyping,
+      loadingIndicator: this.loadingIndicator,
+      loadingText: this.loadingText,
+      chatStarted: this.chatStarted,
+      suggestions: this.suggestions,
+      inputBox: {
+        placeholder: this.placeholder,
+        disabled: this.disabled || this.isQueryRunning,
+        currentInput: this.currentInput,
+        uploadedFiles: this.fileUploadController.getUploadedFiles(),
+        isQueryRunning: this.isQueryRunning,
+        showSendButton: this.showSendButton,
+        enableFileUpload: this.enableFileUpload,
+        fileUploadItems: this.fileUploadItems,
+        enableModuleSelection: this.enableModuleSelection,
+        moduleOptions: this.moduleSelectOptions,
+        selectedModules: this.selectedModules,
+        moduleSelectionLabel: this.moduleSelectionLabel,
+        renderModuleDisplay: this.renderModuleSelectedDisplay.bind(this)
+      },
+      enableThreads: this.showThreads,
+      isThreadSidebarOpen: this.showThreads,
+      threadSidebar: this.showThreads ? {
+        threads: this.threads,
+        activeThreadId: this.activeThreadId
+      } : undefined,
+      isDragging: this.dragOver,
+      urlModal: this.showUrlModal ? {
+        isOpen: this.showUrlModal,
+        urlInput: this.urlInputValue
+      } : undefined
+    };
+
+    // Prepare template handlers
+    const templateHandlers: ChatbotMainTemplateHandlers = {
+      message: {
+        onRetry: this.handleRetry.bind(this),
+        onRetryKeydown: this.handleRetryKeydown.bind(this)
+      },
+      suggestion: {
+        onClick: this.handleSuggestionClick.bind(this),
+        onKeydown: this.handleSuggestionKeydown.bind(this)
+      },
+      inputBox: {
+        onInput: this.handleContentEditableInput.bind(this),
+        onKeydown: this.handleKeyDown.bind(this),
+        onFocus: this.handleInputFocus.bind(this),
+        onBlur: this.handleInputBlur.bind(this),
+        onSend: this.handleSendMessage.bind(this),
+        onStop: this.handleStopQuery.bind(this),
+        onSendKeydown: this.handleSendKeydown.bind(this),
+        onFileDropdownClick: this.handleFileUploadDropdownClick.bind(this),
+        onModuleChange: this.handleModuleSelectionChange.bind(this),
+        onFileRemove: (fileId: string) => this.fileUploadController.removeFile(fileId)
+      },
+      threadSidebar: this.showThreads ? {
+        onCreateNew: () => this.threadController.createNewThreadAndSelect(),
+        onSelectThread: (threadId: string) => this.threadController.selectThread(threadId)
+      } : undefined,
+      fileUploadArea: {
+        onDrop: this.handleDrop.bind(this),
+        onDragOver: this.handleDragOver.bind(this),
+        onDragLeave: () => { this.dragOver = false; }
+      },
+      urlModal: this.showUrlModal ? {
+        onClose: this.closeUrlModal.bind(this),
+        onUrlInputChange: (e: Event) => this.onUrlInputChange(e as CustomEvent),
+        onUrlInputKeydown: (e: KeyboardEvent) => {
+          if (e.key === 'Enter') {
+            this.onUrlInputEnter();
+          }
+        },
+        onConfirm: this.confirmUrlModal.bind(this)
+      } : undefined
+    };
+
     return html`
       <div 
         class="chat-container ${classMap({
@@ -291,324 +376,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         @dragleave=${this.handleDragLeave}
         @drop=${this.handleDrop}>
         
-        ${this.showThreads ? this.renderThreadSidebar() : nothing}
-        
-        <div class="chat-box" part="chat-box">
-          <slot name="header"></slot>
-          ${this.renderMessages()}
-          ${this.enableFileUpload ? this.renderFileUploadArea() : nothing}
-          ${this.renderInputBox()}
-          <slot name="footer"></slot>
-        </div>
-      </div>
-
-      ${this.showUrlModal ? html`
-        <nr-modal 
-          open
-          size="small"
-          modalTitle="${msg('Attach by URL')}"
-          @modal-close=${this.closeUrlModal}
-        >
-          <div slot="default">
-            <nr-input 
-              type=${INPUT_TYPE.URL}
-              placeholder="https://example.com/file.pdf"
-              .rules=${[VALIDATION_RULES.required(msg('URL is required')), VALIDATION_RULES.url(msg('Please enter a valid URL'))]}
-              .hasFeedback=${true}
-              @nr-input=${this.onUrlInputChange}
-              @nr-enter=${this.onUrlInputEnter}
-            ></nr-input>
-          </div>
-          <div slot="footer" style="display:flex; gap:8px; justify-content:flex-end; width:100%;">
-            <nr-button type="secondary" @click=${this.closeUrlModal}>${msg('Cancel')}</nr-button>
-            <nr-button type="primary" ?disabled=${!this.urlInputValid} @click=${this.confirmUrlModal}>${msg('Add')}</nr-button>
-          </div>
-        </nr-modal>
-      ` : nothing}
-    `;
-  }
-
-  private renderMessages() {
-    return html`
-      <div class="messages" part="messages">
-        ${this.messages.length === 0 ? this.renderEmptyState() : nothing}
-        ${this.messages.map((message) => this.renderMessage(message))}
-        ${this.renderSuggestions()}
-        ${this.renderBotTypingIndicator()}
-      </div>
-    `;
-  }
-
-  private renderEmptyState() {
-    return html`
-      <div class="empty-state" part="empty-state">
-        <slot name="empty-state">
-          <div class="empty-state__content">
-            ${msg('Start a conversation')}
-          </div>
-        </slot>
-      </div>
-    `;
-  }
-
-  private renderMessage(message: ChatbotMessage) {
-    const messageClasses = {
-      error: !!message.error,
-      introduction: !!message.introduction,
-      [message.sender]: true,
-    };
-
-    return html`
-      <div
-        class="message ${classMap(messageClasses)}"
-        part="message"
-        data-sender="${message.sender}"
-        data-id="${message.id}"
-      >
-        <div class="message__content" part="message-content">
-          ${message.text}
-        </div>
-        <div class="message__timestamp" part="message-timestamp">
-          ${message.timestamp}
-        </div>
-        ${message.error
-          ? html`
-            <nr-button 
-              type="secondary"
-              size="small"
-              class="message__retry" 
-              part="retry-button"
-              @click=${() => this.handleRetry(message)}
-              @keydown=${this.handleRetryKeydown}
-              aria-label="${msg('Retry message')}"
-            >
-              ${msg('Retry')}
-            </nr-button>`
-          : nothing}
-      </div>
-    `;
-  }
-
-  private renderSuggestions() {
-    return !this.chatStarted && this.suggestions.length
-      ? html`
-          <div class="suggestion-container" part="suggestions">
-            ${this.suggestions.map((suggestion) =>
-              this.renderSuggestion(suggestion)
-            )}
-          </div>
-        `
-      : nothing;
-  }
-
-  private renderSuggestion(suggestion: ChatbotSuggestion) {
-    return html`
-      <div 
-        class="suggestion ${classMap({ 'suggestion--disabled': !suggestion.enabled })}" 
-        part="suggestion"
-        role="button"
-        tabindex="0"
-        @click=${() => this.handleSuggestionClick(suggestion)}
-        @keydown=${this.handleSuggestionKeydown}
-        data-id="${suggestion.id}"
-        aria-label="${msg('Select suggestion: ')}${suggestion.text}"
-      >
-        ${suggestion.text}
-      </div>
-    `;
-  }
-
-  private renderBotTypingIndicator() {
-    if (!this.isBotTyping) return nothing;
-
-    const indicatorContent = this.loadingIndicator === ChatbotLoadingType.Dots
-      ? html`
-          <div class="dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        `
-      : html`<div class="spinner"></div>`;
-
-    return html`
-      <div class="message bot loading" part="typing-indicator">
-        <div class="message__content">
-          ${indicatorContent}
-          <span class="loading-text">${this.loadingText}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  private renderInputBox() {
-    const uploadedFiles = this.fileUploadController.getUploadedFiles();
-    
-    return html`
-      <div class="input-box" part="input-box">
-        <!-- Input container with three rows: context tags, input, and action buttons -->
-        <div class="input-container">
-          <!-- First row: Context tags (selected files) -->
-          ${uploadedFiles.length > 0 ? this.renderContextTags(uploadedFiles) : nothing}
-
-          <!-- Second row: Text input area -->
-          <div class="input-row">
-            <div
-              class="input-box__input"
-              part="input"
-              contenteditable="true"
-              role="textbox"
-              aria-multiline="true"
-              aria-label="${msg('Chat input')}"
-              data-placeholder="${this.placeholder}"
-              @input=${this.handleContentEditableInput}
-              @keydown=${this.handleKeyDown}
-              @focus=${this.handleInputFocus}
-              @blur=${this.handleInputBlur}
-            ></div>
-          </div>
-          
-          <!-- Third row: Action buttons with left and right sections -->
-          <div class="action-buttons-row">
-            <!-- Left side buttons -->
-            <div class="action-buttons-left">
-              ${this.enableFileUpload ? html`
-                <nr-dropdown 
-                  .items=${this.fileUploadItems}
-                  trigger="click"
-                  placement="top-start"
-                  size="medium"
-                  ?disabled=${this.disabled}
-                  @nr-dropdown-item-click=${this.handleFileUploadDropdownClick}
-                >
-                  <nr-button 
-                    slot="trigger"
-                    part="file-button"
-                    type="default"
-                    .icon=${["upload"]}
-                    ?disabled=${this.disabled}
-                    aria-label="${msg('Attach files')}"
-                    title="${msg('Attach files')}"
-                  >
-                  Attach
-                  </nr-button>
-                </nr-dropdown>
-              ` : nothing}
-              
-              ${this.enableModuleSelection && this.modules.length > 0 ? html`
-                <nr-select
-                  .options=${this.moduleSelectOptions}
-                  .value=${this.selectedModules}
-                  multiple
-                  placeholder="${this.moduleSelectionLabel}"
-                  size="medium"
-                  ?disabled=${this.disabled}
-                  searchable
-                  search-placeholder="${msg('Search modules...')}"
-                  use-custom-selected-display
-                  part="module-select"
-                  class="module-select"
-                  @nr-change=${this.handleModuleSelectionChange}
-                  aria-label="${msg('Select modules')}"
-                >
-                  <span slot="selected-display">
-                    ${this.renderModuleSelectedDisplay()}
-                  </span>
-                </nr-select>
-              ` : nothing}
-            </div>
-            
-            <!-- Right side buttons -->
-            <div class="action-buttons-right">
-              ${this.showSendButton && !this.disabled && (this.currentInput.trim() || uploadedFiles.length > 0 || this.isQueryRunning) ? html`
-                <nr-button 
-                  class="input-box__send-button" 
-                  part="send-button"
-                  type="default"
-                  .iconRight=${this.isQueryRunning ? 'stop' : 'arrow-up'}
-                  @click=${this.isQueryRunning ? this.handleStopQuery : this.handleSendMessage}
-                  @keydown=${this.handleSendKeydown}
-                  aria-label="${this.isQueryRunning ? msg('Stop query') : msg('Send message')}"
-                  title="${this.isQueryRunning ? msg('Stop query') : msg('Send message')}"
-                >
-                Send
-                </nr-button>
-              ` : nothing}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  private renderContextTags(files: ChatbotFile[]) {
-    return html`
-      <div class="context-tags-row" part="context-tags">
-        ${repeat(files, f => f.id, f => html`
-          <nr-tag 
-            class="context-tag"
-            size="small"
-            closable
-            @nr-tag-close=${() => this.removeFile(f.id)}
-            >${f.name}</nr-tag>
-        `)}
-      </div>
-    `;
-  }
-
-  private renderThreadSidebar() {
-    return html`
-      <div class="thread-sidebar" part="thread-sidebar">
-        <div class="thread-sidebar__header">
-          <h3>${msg('Conversations')}</h3>
-          <nr-button 
-            type="default"
-            size="small"
-            .icon=${['add']}
-            @click=${this.createNewThread}
-            aria-label="${msg('New conversation')}"
-          ></nr-button>
-        </div>
-        
-        <div class="thread-list">
-          ${repeat(this.threads, thread => thread.id, thread => html`
-            <div 
-              class="thread-item ${classMap({ 
-                'thread-item--active': thread.id === this.activeThreadId 
-              })}"
-              @click=${() => this.selectThread(thread.id)}
-              part="thread-item"
-            >
-              <div class="thread-item__title">${thread.title || msg('New Chat')}</div>
-              <div class="thread-item__preview">
-                ${thread.messages.length > 0 ? thread.messages[thread.messages.length - 1].text : ''}
-              </div>
-              <div class="thread-item__timestamp">${thread.updatedAt}</div>
-            </div>
-          `)}
-        </div>
-        
-        <slot name="thread-sidebar"></slot>
-      </div>
-    `;
-  }
-
-  private renderFileUploadArea() {
-    return html`
-      <div class="file-upload-area ${classMap({
-        'file-upload-area--visible': this.showFileUploadArea,
-        'file-upload-area--drag-over': this.dragOver
-      })}" part="file-upload-area">
-        <div class="file-upload-area__content">
-          <nr-icon name="cloud-upload" size="xlarge"></nr-icon>
-          <p>${msg('Drop files here or click to upload')}</p>
-          <p class="file-upload-area__help">
-            ${msg('Supported files:')} ${this.allowedFileTypes.join(', ')}
-          </p>
-          <p class="file-upload-area__help">
-            ${msg('Max file size:')} ${this.fileUploadController.formatFileSize(this.maxFileSize)}
-          </p>
-        </div>
+        ${renderChatbotMain(templateData, templateHandlers)}
       </div>
     `;
   }
@@ -817,7 +585,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   private confirmUrlModal = () => {
     if (!this.urlInputValid) return;
     const url = this.urlInputValue.trim();
-  // Add URL as a file via controller (will emit nr-chatbot-files-selected)
     (this.fileUploadController as any).addUrlFile?.(url);
     this.closeUrlModal();
   };
@@ -837,36 +604,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     
     // nr-select returns value as string[] for multiple selection
     const selectedValues = Array.isArray(detail.value) ? detail.value : [detail.value];
-    this.selectedModules = selectedValues.filter(Boolean);
     
-    // Get full module objects for selected modules
-    const selectedModuleObjects = this.selectedModules
-      .map(id => this.modules.find(m => m.id === id))
-      .filter(Boolean) as ChatbotModule[];
-    
-    // Dispatch event with selected modules
-    this.dispatchEventWithMetadata('nr-chatbot-modules-selected', {
-      metadata: {
-        selectedModules: selectedModuleObjects,
-        selectedModuleIds: this.selectedModules,
-        event: detail
-      }
-    });
-  }
-
-  private removeFile(fileId: string) {
-    this.fileUploadController.removeFile(fileId);
-  }
-
-  // Removed old uploaded files card view in favor of context tags row
-
-  // Thread management
-  private createNewThread() {
-    this.threadController.createNewThreadAndSelect();
-  }
-
-  private selectThread(threadId: string) {
-    this.threadController.selectThread(threadId);
+    this.moduleController.handleModuleSelectionChange(selectedValues);
   }
 
   private handleRetry(message: ChatbotMessage) {
@@ -1071,47 +810,35 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
    * Set available modules
    */
   public setModules(modules: ChatbotModule[]): void {
-    this.modules = modules;
+    this.moduleController.setModules(modules);
   }
 
   /**
    * Get selected modules
    */
   public getSelectedModules(): ChatbotModule[] {
-    return this.selectedModules
-      .map(id => this.modules.find(m => m.id === id))
-      .filter(Boolean) as ChatbotModule[];
+    return this.moduleController.getSelectedModules();
   }
 
   /**
    * Set selected modules
    */
   public setSelectedModules(moduleIds: string[]): void {
-    // Filter to only include valid module IDs
-    this.selectedModules = moduleIds.filter(id => 
-      this.modules.some(m => m.id === id)
-    );
+    this.moduleController.setSelectedModules(moduleIds);
   }
 
   /**
    * Clear module selection
    */
   public clearModuleSelection(): void {
-    this.selectedModules = [];
+    this.moduleController.clearModuleSelection();
   }
 
   /**
    * Toggle module selection
    */
   public toggleModule(moduleId: string): void {
-    const index = this.selectedModules.indexOf(moduleId);
-    if (index > -1) {
-      this.selectedModules = this.selectedModules.filter(id => id !== moduleId);
-    } else {
-      if (this.modules.some(m => m.id === moduleId)) {
-        this.selectedModules = [...this.selectedModules, moduleId];
-      }
-    }
+    this.moduleController.toggleModule(moduleId);
   }
 
   /**
