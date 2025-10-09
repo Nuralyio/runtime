@@ -11,7 +11,13 @@ import { ChatbotMessage, ChatbotSuggestion, ChatbotSender, ChatbotSize, ChatbotV
 // Import shared theme system
 import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
-
+import '../input/input.component.js';
+import '../button/button.component.js';
+import '../icon/icon.component.js';
+import '../dropdown/dropdown.component.js';
+import '../select/select.component.js';
+import '../tag/tag.component.js';
+import '../modal/modal.component.js';
 import './chatbot.component.js';
 
 const meta: Meta = {
