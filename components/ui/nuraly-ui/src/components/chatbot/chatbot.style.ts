@@ -29,43 +29,65 @@ export default css`
     border: 1px solid var(--nuraly-color-chatbot-border);
   }
 
-  /* Boxed layout for large widths - ChatGPT style */
-  :host(.boxed) {
-    background-color: var(--nuraly-color-chatbot-boxed-background);
-    padding: var(--nuraly-spacing-chatbot-boxed-padding);
+  .chatbot-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
-  :host(.boxed) .chat-container {
-    width: 100%;
-    max-width: none;
+  .chatbot-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .chatbot-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Boxed layout for large widths - ChatGPT style */
+  :host([boxed]) .chat-container {
     background-color: transparent;
     border: none;
     border-radius: 0;
   }
 
-  :host(.boxed) .chat-box {
+  :host([boxed]) .chatbot-container {
     width: 100%;
-    max-width: var(--nuraly-size-chatbot-boxed-max-width);
-    margin: 0 auto;
   }
 
-  :host(.boxed) .messages {
+  :host([boxed]) .chatbot-main {
     width: 100%;
-    max-width: var(--nuraly-size-chatbot-boxed-content-max-width);
+    max-width: var(--nuraly-size-chatbot-boxed-max-width, 768px);
     margin: 0 auto;
-    padding: var(--nuraly-spacing-chatbot-boxed-content-padding);
-    background-color: var(--nuraly-color-chatbot-background);
-    border-radius: var(--nuraly-border-radius-chatbot-boxed);
-    box-shadow: var(--nuraly-shadow-chatbot-boxed);
-    margin-bottom: var(--nuraly-spacing-chatbot-boxed-padding);
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    height: 100%;
   }
 
- 
+  /* When there are no messages, center the input vertically */
+  :host([boxed]) .chatbot-main:has(.empty-state) {
+    justify-content: center;
+  }
 
-  :host(.boxed) .input-container {
-    background-color: var(--nuraly-color-chatbot-input-background);
-    border-radius: var(--nuraly-border-radius-chatbot-boxed);
-    box-shadow: var(--nuraly-shadow-chatbot-boxed);
+  :host([boxed]) .messages {
+    box-shadow: none;
+    margin-bottom: 0;
+    background-color: transparent;
+  }
+
+  :host([boxed]) .input-container {
+    box-shadow: none;
+    margin: 0;
+    background-color: transparent;
   }
 
   .chat-container--with-threads {
