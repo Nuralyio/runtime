@@ -32,7 +32,8 @@ export class ChatbotThreadController implements ReactiveController {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    this.host.threads = [...this.host.threads, newThread];
+    // Add new thread at the beginning of the array (top)
+    this.host.threads = [newThread, ...this.host.threads];
     this.host.requestUpdate();
     return newThread;
   }
@@ -51,11 +52,27 @@ export class ChatbotThreadController implements ReactiveController {
   }
 
   createNewThreadAndSelect(): ChatbotThread {
+    // Check if we're already in an empty new thread
+    const currentThread = this.getCurrentThread();
+    if (currentThread && currentThread.messages.length === 0) {
+      // Already in an empty thread, don't create a new one
+      return currentThread;
+    }
+    
     const thread = this.createThread();
-    this.selectThread(thread.id);
+    
+    this.host.activeThreadId = thread.id;
+    this.host.messages = [];
+    this.host.chatStarted = false;
+    
     this.host.dispatchEventWithMetadata('nr-chatbot-thread-created', {
       metadata: { thread },
     });
+    this.host.dispatchEventWithMetadata('nr-chatbot-thread-selected', {
+      metadata: { thread, threadId: thread.id },
+    });
+    
+    this.host.requestUpdate();
     return thread;
   }
 
