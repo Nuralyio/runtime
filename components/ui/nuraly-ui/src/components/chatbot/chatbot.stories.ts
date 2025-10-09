@@ -308,7 +308,6 @@ const sampleModules = [
     id: 'nlp',
     name: 'NLP',
     description: 'Advanced text analysis and understanding',
-    icon: 'chat',
     enabled: true,
     metadata: { category: 'AI', version: '2.0' }
   },

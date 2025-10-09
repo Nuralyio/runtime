@@ -108,6 +108,7 @@ export interface ChatbotMessage {
   introduction?: boolean;
   state?: ChatbotMessageState;
   files?: ChatbotFile[];
+  suggestions?: ChatbotSuggestion[]; // Bot can include suggestions to display
   metadata?: Record<string, any>;
   parentId?: string; // For threaded conversations
   reactions?: string[]; // Emoji reactions
@@ -119,7 +120,6 @@ export interface ChatbotMessage {
 export interface ChatbotSuggestion {
   id: string;
   text: string;
-  category?: string;
   enabled?: boolean;
   icon?: string;
   description?: string;
@@ -145,7 +145,6 @@ export interface ChatbotAction {
  */
 export interface ChatbotConfig {
   apiEndpoint?: string;
-  suggestionCategories?: string[];
   maxMessages?: number;
   maxFileSize?: number; // in bytes
   allowedFileTypes?: string[];

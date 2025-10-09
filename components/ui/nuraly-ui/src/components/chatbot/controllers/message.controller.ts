@@ -5,13 +5,14 @@
  */
 
 import { ReactiveController, ReactiveControllerHost } from 'lit';
-import { ChatbotMessage, ChatbotValidationRule, ChatbotEventDetail } from '../chatbot.types.js';
+import { ChatbotMessage, ChatbotValidationRule, ChatbotEventDetail, ChatbotSuggestion } from '../chatbot.types.js';
 
 /**
  * Interface for chatbot message controller host
  */
 export interface ChatbotMessageControllerHost extends ReactiveControllerHost {
   messages: ChatbotMessage[];
+  suggestions: ChatbotSuggestion[];
   dispatchEventWithMetadata(type: string, detail?: ChatbotEventDetail): void;
 }
 
@@ -121,6 +122,11 @@ export class ChatbotMessageController implements ReactiveController {
     
     this.host.messages = [...this.host.messages, newMessage];
     this.addMessageToHistory(newMessage);
+    
+    if (newMessage.sender === 'bot' && newMessage.suggestions && newMessage.suggestions.length > 0) {
+      this.host.suggestions = [...newMessage.suggestions];
+    }
+    
     this.host.requestUpdate();
     
     return newMessage;
