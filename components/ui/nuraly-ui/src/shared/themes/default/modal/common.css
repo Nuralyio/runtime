@@ -11,7 +11,6 @@
   --nuraly-modal-width-medium: 600px;
   --nuraly-modal-width-large: 800px;
   --nuraly-modal-width-xl: 1000px;
-  
   --nuraly-modal-min-height-small: 200px;
   --nuraly-modal-min-height-medium: 300px;
   --nuraly-modal-min-height-large: 400px;
@@ -32,7 +31,7 @@
   --nuraly-spacing-modal-body: 1rem 1.5rem;
   
   /* Modal footer */
-  --nuraly-modal-footer-height: 64px;
+  --nuraly-modal-footer-height: 25px;
   --nuraly-spacing-modal-footer: 1rem 1.5rem;
   
   /* Modal close button */
