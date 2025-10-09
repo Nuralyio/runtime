@@ -12,15 +12,6 @@ import { localized, msg } from '@lit/localize';
 import styles from './chatbot.style.js';
 import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
 
-// Import required components
-import '../input/input.component.js';
-import '../button/button.component.js';
-import '../icon/icon.component.js';
-import '../dropdown/dropdown.component.js';
-import '../select/select.component.js';
-import '../tag/tag.component.js';
-import '../modal/modal.component.js';
-
 import {
   ChatbotMessage,
   ChatbotSuggestion,
@@ -36,20 +27,16 @@ import {
   EMPTY_STRING
 } from './chatbot.types.js';
 
-// Import dropdown types
 import { DropdownItem } from '../dropdown/dropdown.types.js';
 
-// Import select types
 import { SelectOption } from '../select/select.types.js';
 
-// Import templates
 import {
   renderChatbotMain,
   ChatbotMainTemplateData,
   ChatbotMainTemplateHandlers
 } from './templates/index.js';
 
-// Import controllers
 import {
   ChatbotMessageController,
   ChatbotKeyboardController,
@@ -204,7 +191,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   mode: string = 'chat';
 
   /** Enable boxed layout for large widths (ChatGPT-style) */
-  @property({type: Boolean})
+  @property({type: Boolean, reflect: true})
   boxed = false;
 
   /** Maximum number of files that can be uploaded */
@@ -278,8 +265,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   }
 
   override render() {
-    // Prepare template data
     const templateData: ChatbotMainTemplateData = {
+      boxed: this.boxed,
       messages: this.messages,
       isTyping: this.isBotTyping,
       loadingIndicator: this.loadingIndicator,
@@ -314,7 +301,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       } : undefined
     };
 
-    // Prepare template handlers
     const templateHandlers: ChatbotMainTemplateHandlers = {
       message: {
         onRetry: this.handleRetry.bind(this),
@@ -438,7 +424,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
 
   private clearInput() {
     this.currentInput = EMPTY_STRING;
-    // Also clear the contenteditable DOM element
     const inputElement = this.shadowRoot?.querySelector('.input-box__input') as HTMLElement;
     if (inputElement) {
       inputElement.textContent = '';
@@ -478,17 +463,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       files: uploadedFiles.length > 0 ? uploadedFiles : undefined
     };
 
-    // Use controller to add message
     const message = this.messageController.addMessage(messageData);
     
-    // Clear input and files
     this.clearInput();
     this.fileUploadController.clearFiles();
     
-    // Update chat started state
     this.chatStarted = this.messageController.hasChatStarted();
-
-    // Start query running state
     this.isQueryRunning = true;
 
     const messageDetail: ChatbotEventDetail = { message };
@@ -496,7 +476,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   }
 
   private handleStopQuery() {
-    // Stop the running query
     this.isQueryRunning = false;
     this.isBotTyping = false;
     
@@ -505,7 +484,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     });
   }
 
-  // Drag and drop handlers
   private handleDragOver(e: DragEvent) {
     if (!this.enableFileUpload) return;
     
@@ -521,7 +499,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     e.preventDefault();
     e.stopPropagation();
     
-    // Only hide if we're actually leaving the component
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const { clientX, clientY } = e;
     
@@ -547,7 +524,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     }
   }
 
-  // File upload handlers
   private handleFileUploadDropdownClick(event: CustomEvent) {
     const detail = event.detail;
     if (detail.item) {
@@ -598,11 +574,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     }
   }
 
-  // Module selection handlers
   private handleModuleSelectionChange(event: CustomEvent) {
     const detail = event.detail;
-    
-    // nr-select returns value as string[] for multiple selection
     const selectedValues = Array.isArray(detail.value) ? detail.value : [detail.value];
     
     this.moduleController.handleModuleSelectionChange(selectedValues);
@@ -656,9 +629,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
    */
   public setTyping(isTyping: boolean): void {
     this.isBotTyping = isTyping;
-    
-    // When bot starts typing, we're still running a query
-    // When bot stops typing, the query is complete
     if (!isTyping) {
       this.isQueryRunning = false;
     }
@@ -669,8 +639,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
    */
   public setQueryRunning(isRunning: boolean): void {
     this.isQueryRunning = isRunning;
-    
-    // If we stop the query, also stop typing
     if (!isRunning) {
       this.isBotTyping = false;
     }
