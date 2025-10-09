@@ -248,6 +248,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @state() private showUrlModal = false;
   @state() private urlInputValue: string = '';
   @state() private urlInputValid: boolean = false;
+  @state() private urlModalLoading: boolean = false;
+  @state() private urlModalError: string = '';
+  @state() private urlModalSelectedFile: File | null = null;
+  @state() private urlModalSelectedFileName: string = '';
   
   /** File upload dropdown options */
   private get fileUploadItems(): DropdownItem[] {
@@ -311,7 +315,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       isDragging: this.dragOver,
       urlModal: this.showUrlModal ? {
         isOpen: this.showUrlModal,
-        urlInput: this.urlInputValue
+        urlInput: this.urlInputValue,
+        isLoading: this.urlModalLoading,
+        error: this.urlModalError,
+        selectedFileName: this.urlModalSelectedFileName
       } : undefined
     };
 
@@ -353,7 +360,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
             this.onUrlInputEnter();
           }
         },
-        onConfirm: this.confirmUrlModal.bind(this)
+        onConfirm: this.confirmUrlModal.bind(this),
+        onAttachFile: this.handleAttachFileClick.bind(this)
       } : undefined
     };
 
@@ -555,28 +563,99 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   private openUrlModal() {
     this.urlInputValue = '';
     this.urlInputValid = false;
+    this.urlModalLoading = false;
+    this.urlModalError = '';
+    this.urlModalSelectedFile = null;
+    this.urlModalSelectedFileName = '';
     this.showUrlModal = true;
   }
 
   private closeUrlModal = () => {
+    if (this.urlModalLoading) return; // Don't close while loading
     this.showUrlModal = false;
+    this.urlModalError = '';
+    this.urlModalSelectedFile = null;
+    this.urlModalSelectedFileName = '';
   };
 
   private onUrlInputChange = (e: CustomEvent) => {
     const value = (e.detail && e.detail.value) ?? '';
     this.urlInputValue = value;
     this.urlInputValid = this.isValidHttpUrl(value);
+    this.urlModalError = ''; // Clear error on input change
   };
 
   private onUrlInputEnter = () => {
-    if (this.urlInputValid) this.confirmUrlModal();
+    if ((this.urlInputValid || this.urlModalSelectedFile) && !this.urlModalLoading) {
+      this.confirmUrlModal();
+    }
   };
 
-  private confirmUrlModal = () => {
-    if (!this.urlInputValid) return;
+  private handleAttachFileClick = async () => {
+    // Attach button should load file from URL and create File object
+    if (this.urlModalLoading) return;
+    
+    // Validate URL first
+    if (!this.urlInputValid) {
+      this.urlModalError = 'Please enter a valid URL.';
+      return;
+    }
+    
     const url = this.urlInputValue.trim();
-    (this.fileUploadController as any).addUrlFile?.(url);
-    this.closeUrlModal();
+    this.urlModalLoading = true;
+    this.urlModalError = '';
+    
+    try {
+      // Fetch the file from URL and create File object
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      // Get the blob and create File object
+      const blob = await response.blob();
+      const filename = decodeURIComponent(new URL(url).pathname.split('/').pop() || 'file');
+      const contentType = response.headers.get('content-type') || 'application/octet-stream';
+      const file = new File([blob], filename, { type: contentType });
+
+      // Store the file object
+      this.urlModalSelectedFile = file;
+      this.urlModalSelectedFileName = file.name;
+      this.urlModalLoading = false;
+      
+      // Show success message via the selectedFileName state
+    } catch (error) {
+      this.urlModalLoading = false;
+      this.urlModalError = error instanceof Error ? error.message : 'Failed to load file from URL.';
+    }
+  };
+
+  private confirmUrlModal = async () => {
+    if (this.urlModalLoading) return;
+    
+    // Check if we have a loaded file
+    if (!this.urlModalSelectedFile) return;
+    
+    this.urlModalLoading = true;
+    this.urlModalError = '';
+    
+    try {
+      // Add the already-loaded file to the chatbot
+      const result = await this.fileUploadController.handleFileSelection([this.urlModalSelectedFile]);
+      
+      if (result && result.length > 0) {
+        // Success - close modal
+        this.urlModalLoading = false;
+        this.closeUrlModal();
+      } else {
+        // Failed but no exception thrown
+        this.urlModalLoading = false;
+        this.urlModalError = 'Failed to add file. Please try again.';
+      }
+    } catch (error) {
+      this.urlModalLoading = false;
+      this.urlModalError = error instanceof Error ? error.message : 'An error occurred while adding the file.';
+    }
   };
 
   private isValidHttpUrl(value: string): boolean {
