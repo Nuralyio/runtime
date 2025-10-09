@@ -5,21 +5,25 @@
  */
 
 // Message controller
-export { ChatbotMessageController } from './chatbot-message.controller.js';
-export type { ChatbotMessageControllerHost } from './chatbot-message.controller.js';
+export { ChatbotMessageController } from './message.controller.js';
+export type { ChatbotMessageControllerHost } from './message.controller.js';
 
 // Keyboard controller
-export { ChatbotKeyboardController } from './chatbot-keyboard.controller.js';
-export type { ChatbotKeyboardControllerHost } from './chatbot-keyboard.controller.js';
+export { ChatbotKeyboardController } from './keyboard.controller.js';
+export type { ChatbotKeyboardControllerHost } from './keyboard.controller.js';
 
 // Suggestion controller
-export { ChatbotSuggestionController } from './chatbot-suggestion.controller.js';
-export type { ChatbotSuggestionControllerHost } from './chatbot-suggestion.controller.js';
+export { ChatbotSuggestionController } from './suggestion.controller.js';
+export type { ChatbotSuggestionControllerHost } from './suggestion.controller.js';
 
 // File upload controller
-export { ChatbotFileUploadController } from './chatbot-file-upload.controller.js';
-export type { ChatbotFileUploadControllerHost } from './chatbot-file-upload.controller.js';
+export { ChatbotFileUploadController } from './file-upload.controller.js';
+export type { ChatbotFileUploadControllerHost } from './file-upload.controller.js';
 
 // Thread controller
-export { ChatbotThreadController } from './chatbot-thread.controller.js';
-export type { ChatbotThreadControllerHost } from './chatbot-thread.controller.js';
+export { ChatbotThreadController } from './thread.controller.js';
+export type { ChatbotThreadControllerHost } from './thread.controller.js';
+
+// Module controller
+export { ChatbotModuleController } from './module.controller.js';
+export type { ChatbotModuleControllerHost } from './module.controller.js';
