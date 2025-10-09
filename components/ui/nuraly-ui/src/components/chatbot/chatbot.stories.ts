@@ -94,6 +94,10 @@ const meta: Meta = {
     moduleSelectionLabel: {
       control: { type: 'text' },
       description: 'Label for module selection button'
+    },
+    isQueryRunning: {
+      control: { type: 'boolean' },
+      description: 'Show stop button instead of send button (simulates active query)'
     }
   }
 };
@@ -434,4 +438,199 @@ export const WithModuleSelectionAndMessages: Story = {
     chatStarted: true
   },
   render: WithModuleSelection.render
+};
+
+/**
+ * Right Sidebar Copilot Style
+ * Chatbot positioned on the right side similar to GitHub Copilot or VSCode Copilot
+ */
+export const RightSidebarCopilot: Story = {
+  args: {
+    messages: sampleMessages,
+    suggestions: sampleSuggestions,
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showSendButton: true,
+    autoScroll: true,
+    enableFileUpload: true,
+    chatStarted: true,
+    enableModuleSelection: true,
+    modules: sampleModules,
+    selectedModules: ['nlp'],
+    isBotTyping: false,
+    isQueryRunning: false
+  },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story: 'Chatbot positioned as a right sidebar, similar to GitHub Copilot or VSCode Copilot chat interface.'
+      }
+    }
+  },
+  render: (args) => {
+    return html`
+      <style>
+        .copilot-layout {
+          display: flex;
+          height: 100vh;
+          background: #f5f5f5;
+        }
+        
+        .copilot-main-content {
+          flex: 1;
+          background: #ffffff;
+          border-right: 1px solid #e0e0e0;
+        }
+        
+        .copilot-sidebar {
+          width: 470px;
+          background: #ffffff;
+        }
+      </style>
+      
+      <div class="copilot-layout">
+        <div class="copilot-main-content"></div>
+        
+        <div class="copilot-sidebar">
+          <nr-chatbot
+            .messages=${args.messages}
+            .suggestions=${args.suggestions}
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${args.showSendButton}
+            .autoScroll=${args.autoScroll}
+            .enableFileUpload=${args.enableFileUpload}
+            .chatStarted=${args.chatStarted}
+            .enableModuleSelection=${args.enableModuleSelection}
+            .modules=${args.modules}
+            .selectedModules=${args.selectedModules}
+            .isBotTyping=${args.isBotTyping}
+            .isQueryRunning=${args.isQueryRunning}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Right Sidebar Copilot - Compact
+ * Narrower sidebar for split screen coding
+ */
+export const RightSidebarCopilotCompact: Story = {
+  args: {
+    ...RightSidebarCopilot.args,
+    messages: [
+      {
+        id: '1',
+        text: 'Hi! I can help you with code. What would you like to know?',
+        sender: ChatbotSender.Bot,
+        timestamp: new Date().toISOString()
+      }
+    ]
+  },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story: 'Compact version with a narrower sidebar (300px) for better split-screen coding experience.'
+      }
+    }
+  },
+  render: (args) => {
+    return html`
+      <style>
+        .copilot-layout-compact {
+          display: flex;
+          width: 100vw;
+          height: 100vh;
+          background: #f5f5f5;
+        }
+        
+        .copilot-main-compact {
+          flex: 1;
+          background: #ffffff;
+          border-right: 1px solid #e0e0e0;
+        }
+        
+        .copilot-sidebar-compact {
+          width: 300px;
+          background: #ffffff;
+        }
+      </style>
+      
+      <div class="copilot-layout-compact">
+        <div class="copilot-main-compact"></div>
+        
+        <div class="copilot-sidebar-compact">
+          <nr-chatbot
+            .messages=${args.messages}
+            .suggestions=${args.suggestions}
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${args.showSendButton}
+            .autoScroll=${args.autoScroll}
+            .enableFileUpload=${args.enableFileUpload}
+            .chatStarted=${args.chatStarted}
+            .enableModuleSelection=${args.enableModuleSelection}
+            .modules=${args.modules}
+            .selectedModules=${args.selectedModules}
+            .isBotTyping=${args.isBotTyping}
+            .isQueryRunning=${args.isQueryRunning}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Stop Button Demo
+ * Demonstrates the stop button functionality when a query is running
+ */
+export const StopButtonDemo: Story = {
+  args: {
+    messages: sampleMessages,
+    suggestions: [],
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showSendButton: true,
+    autoScroll: true,
+    enableFileUpload: true,
+    chatStarted: true,
+    enableModuleSelection: true,
+    modules: sampleModules,
+    selectedModules: ['nlp'],
+    isBotTyping: true,
+    isQueryRunning: true // This shows the stop button instead of send button
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Demonstrates the stop button that appears when a query is running. Toggle the isQueryRunning control to see the button change between Send and Stop.'
+      }
+    }
+  },
+  render: (args) => {
+    return html`
+      <div style="width: 400px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <nr-chatbot
+          .messages=${args.messages}
+          .suggestions=${args.suggestions}
+          .size=${args.size}
+          .variant=${args.variant}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .enableFileUpload=${args.enableFileUpload}
+          .chatStarted=${args.chatStarted}
+          .enableModuleSelection=${args.enableModuleSelection}
+          .modules=${args.modules}
+          .selectedModules=${args.selectedModules}
+          .isBotTyping=${args.isBotTyping}
+          .isQueryRunning=${args.isQueryRunning}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
 };

@@ -8,12 +8,22 @@
   /* Message Colors */
   --nuraly-color-chatbot-message-user-background: #0084ff;
   --nuraly-color-chatbot-message-user-text: #ffffff;
-  --nuraly-color-chatbot-message-assistant-background: #2d2d2d;
+  --nuraly-color-chatbot-message-user-border: transparent;
+  
+  /* Bot message colors - clean/minimal by default */
+  --nuraly-color-chatbot-message-bot-background: transparent;
+  --nuraly-color-chatbot-message-bot-text: #e5e5e5;
+  --nuraly-color-chatbot-message-bot-border: transparent;
+  
+  /* Legacy assistant naming (for compatibility) */
+  --nuraly-color-chatbot-message-assistant-background: transparent;
   --nuraly-color-chatbot-message-assistant-text: #e5e5e5;
+  
   --nuraly-color-chatbot-message-system-background: #3d3a00;
   --nuraly-color-chatbot-message-system-text: #ffeb3b;
   --nuraly-color-chatbot-message-error-background: #5c1a1a;
   --nuraly-color-chatbot-message-error-text: #ff6b6b;
+  --nuraly-color-chatbot-message-error-border: #8b2e2e;
   
   /* Input Colors */
   --nuraly-color-chatbot-input-background: #2d2d2d;

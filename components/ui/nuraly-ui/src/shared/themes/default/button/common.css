@@ -60,12 +60,12 @@
    * ======================================== */
   
   /* Button padding */
-  --nuraly-button-padding-vertical: 4px;
-  --nuraly-button-padding-horizontal: 15px;
+  --nuraly-button-padding-vertical: 2px;
+  --nuraly-button-padding-horizontal: 12px;
   
   /* Override default button spacing */
-  --nuraly-spacing-2: 4px;   /* Override vertical padding */
-  --nuraly-spacing-4: 15px;  /* Override horizontal padding */
+  --nuraly-spacing-2: 2px;   /* Override vertical padding */
+  --nuraly-spacing-4: 12px;  /* Override horizontal padding */
   
   /* For different sizes */
   --nuraly-size-sm: 24px;

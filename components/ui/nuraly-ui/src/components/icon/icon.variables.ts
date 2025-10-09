@@ -23,7 +23,7 @@ export const styleVariables = css`
     
     /* Size properties with fallbacks */
     --nuraly-icon-size-fallback: 18px;
-    --nuraly-icon-size-small-fallback: 16px;
+    --nuraly-icon-size-small-fallback: 14px;
     --nuraly-icon-size-medium-fallback: 20px;
     --nuraly-icon-size-large-fallback: 24px;
     --nuraly-icon-size-xlarge-fallback: 32px;

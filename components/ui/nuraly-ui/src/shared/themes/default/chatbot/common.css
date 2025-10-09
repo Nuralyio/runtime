@@ -26,13 +26,16 @@
   --nuraly-line-height-chatbot-message: 1.5;
   --nuraly-line-height-chatbot-input: 1.4;
   
-  /* Border Radius */
-  --nuraly-border-radius-chatbot-message: 18px;
-  --nuraly-border-radius-chatbot-input: 24px;
-  --nuraly-border-radius-chatbot-suggestion: 20px;
-  --nuraly-border-radius-chatbot-file-upload: 12px;
-  --nuraly-border-radius-chatbot-send-button: 16px; /* More rounded like ChatGPT */
-  --nuraly-border-radius-chatbot-action-button: 16px; /* Rounded like ChatGPT */
+  /* Border Radius - Unified roundness */
+  --nuraly-border-radius-chatbot: 8px; /* Default roundness for all interactive elements */
+  --nuraly-border-radius-chatbot-message: 0; /* Messages: no border radius for clean look */
+  --nuraly-border-radius-chatbot-message-user: var(--nuraly-border-radius-chatbot, 8px); /* User messages use unified roundness */
+  --nuraly-border-radius-chatbot-message-bot: 0; /* Bot messages: flat/clean by default */
+  --nuraly-border-radius-chatbot-input: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-suggestion: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-file-upload: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-send-button: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-action-button: var(--nuraly-border-radius-chatbot, 8px);
   
   /* Send Button */
   --nuraly-size-chatbot-send-button-width: 32px;
@@ -40,11 +43,15 @@
   
   /* Border */
   --nuraly-border-width-chatbot-input: 1px;
-  --nuraly-border-width-chatbot-message: 1px;
+  --nuraly-border-width-chatbot-message: 0; /* Default: no border */
+  --nuraly-border-width-chatbot-message-user: 1px; /* User messages can have border */
+  --nuraly-border-width-chatbot-message-bot: 0; /* Bot messages: no border by default */
   
   /* Shadows */
   --nuraly-shadow-chatbot-input: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --nuraly-shadow-chatbot-message: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-chatbot-message: none; /* Default: no shadow */
+  --nuraly-shadow-chatbot-message-user: 0 1px 3px rgba(0, 0, 0, 0.1); /* User messages can have shadow */
+  --nuraly-shadow-chatbot-message-bot: none; /* Bot messages: no shadow by default */
   --nuraly-shadow-chatbot-suggestion: 0 1px 3px rgba(0, 0, 0, 0.1);
   
   /* Transitions */

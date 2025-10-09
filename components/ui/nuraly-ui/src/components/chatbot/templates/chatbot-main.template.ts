@@ -37,6 +37,9 @@ import {
 import { ChatbotMessage, ChatbotSuggestion, ChatbotLoadingType } from '../chatbot.types.js';
 
 export interface ChatbotMainTemplateData {
+  // Display mode
+  boxed?: boolean;
+  
   // Messages
   messages: ChatbotMessage[];
   isTyping: boolean;
