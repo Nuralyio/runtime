@@ -34,13 +34,6 @@ export function renderThreadSidebar(
     <div class="thread-sidebar" part="thread-sidebar">
       <div class="thread-sidebar__header">
         <h3>${msg('Conversations')}</h3>
-        <nr-button 
-          type="default"
-          size="small"
-          .icon=${['add']}
-          @click=${handlers.onCreateNew}
-          aria-label="${msg('New conversation')}"
-        ></nr-button>
       </div>
       
       <div class="thread-list">
