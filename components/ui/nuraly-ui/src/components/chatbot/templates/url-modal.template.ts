@@ -40,7 +40,6 @@ export function renderUrlModal(
       <div slot="header">${msg('Add URL')}</div>
       
       <nr-input
-        slot="default"
         type="url"
         .value=${data.urlInput}
         placeholder="${msg('Enter URL...')}"
