@@ -331,7 +331,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     const templateHandlers: ChatbotMainTemplateHandlers = {
       message: {
         onRetry: this.handleRetry.bind(this),
-        onRetryKeydown: this.handleRetryKeydown.bind(this)
+        onRetryKeydown: this.handleRetryKeydown.bind(this),
+        onCopy: this.handleCopyMessage.bind(this),
+        onCopyKeydown: this.handleCopyKeydown.bind(this)
       },
       suggestion: {
         onClick: this.handleSuggestionClick.bind(this),
@@ -471,6 +473,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     this.keyboardController.handleElementKeydown(e, () => {
       const target = e.target as HTMLElement;
       target.click();
+    });
+  }
+
+  private handleCopyKeydown(e: KeyboardEvent, message: ChatbotMessage) {
+    this.keyboardController.handleElementKeydown(e, () => {
+      this.handleCopyMessage(message);
     });
   }
 
@@ -692,6 +700,40 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     };
     
   this.dispatchEventWithMetadata('nr-chatbot-retry-requested', eventDetail);
+  }
+
+  private handleCopyMessage(message: ChatbotMessage) {
+    // Copy message text to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(message.text).then(() => {
+        // Optionally dispatch event for copy success
+        this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
+          message,
+          metadata: { action: 'copy', text: message.text }
+        });
+      }).catch((err) => {
+        console.error('Failed to copy message:', err);
+      });
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = message.text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
+          message,
+          metadata: { action: 'copy', text: message.text }
+        });
+      } catch (err) {
+        console.error('Failed to copy message:', err);
+      }
+      document.body.removeChild(textArea);
+    }
   }
 
   private handleSuggestionClick(suggestion: ChatbotSuggestion) {
