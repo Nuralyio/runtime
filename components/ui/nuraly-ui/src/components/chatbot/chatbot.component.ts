@@ -73,6 +73,20 @@ import {
  * </nr-chatbot>
  * ```
  * 
+ * @example Bot message with suggestions
+ * ```javascript
+ * chatbot.addMessage({
+ *   sender: 'bot',
+ *   text: 'How can I help you today?',
+ *   timestamp: new Date().toLocaleTimeString(),
+ *   suggestions: [
+ *     { id: '1', text: 'Check status', icon: 'search' },
+ *     { id: '2', text: 'Get help', icon: 'help' },
+ *     { id: '3', text: 'Contact support', icon: 'email' }
+ *   ]
+ * });
+ * ```
+ * 
  * @fires nr-chatbot-message-sent - Message sent by user
  * @fires nr-chatbot-suggestion-clicked - Suggestion selected
  * @fires nr-chatbot-retry-requested - Retry requested for failed message
@@ -673,20 +687,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
    */
   public async validateMessage(text: string): Promise<any> {
     return this.messageController.validateMessage(text);
-  }
-
-  /**
-   * Add suggestion category
-   */
-  public addSuggestionCategory(categoryId: string, suggestions: ChatbotSuggestion[]): void {
-    this.suggestionController.addSuggestionCategory(categoryId, suggestions);
-  }
-
-  /**
-   * Set active suggestion category
-   */
-  public setActiveSuggestionCategory(categoryId: string): void {
-    this.suggestionController.setActiveCategory(categoryId);
   }
 
   /**
