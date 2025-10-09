@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "chrome-devtools": {
+      "command": "/bin/zsh",
+      "args": [
+        "-l",
+        "-c",
+        "npx chrome-devtools-mcp@latest"
+      ]
+    }
+  }
+}
