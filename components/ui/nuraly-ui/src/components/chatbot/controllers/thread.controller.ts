@@ -39,6 +39,9 @@ export class ChatbotThreadController implements ReactiveController {
   }
 
   selectThread(threadId: string): void {
+    // Save current thread messages before switching
+    this.saveCurrentThreadMessages();
+    
     this.host.activeThreadId = threadId;
     const thread = this.host.threads.find(t => t.id === threadId);
     if (thread) {
@@ -51,7 +54,23 @@ export class ChatbotThreadController implements ReactiveController {
     }
   }
 
+  /**
+   * Save current messages to the active thread
+   */
+  saveCurrentThreadMessages(): void {
+    if (!this.host.activeThreadId) return;
+    
+    const currentThread = this.getCurrentThread();
+    if (currentThread) {
+      currentThread.messages = [...this.host.messages];
+      currentThread.updatedAt = new Date().toISOString();
+    }
+  }
+
   createNewThreadAndSelect(): ChatbotThread {
+    // Save current thread messages before creating a new one
+    this.saveCurrentThreadMessages();
+    
     // Check if we're already in an empty new thread
     const currentThread = this.getCurrentThread();
     if (currentThread && currentThread.messages.length === 0) {
@@ -97,5 +116,13 @@ export class ChatbotThreadController implements ReactiveController {
 
   getCurrentThread(): ChatbotThread | undefined {
     return this.host.threads.find(t => t.id === this.host.activeThreadId);
+  }
+
+  /**
+   * Update messages in the current active thread
+   * Call this whenever messages change
+   */
+  updateCurrentThreadMessages(): void {
+    this.saveCurrentThreadMessages();
   }
 }

@@ -27,3 +27,7 @@ export type { ChatbotThreadControllerHost } from './thread.controller.js';
 // Module controller
 export { ChatbotModuleController } from './module.controller.js';
 export type { ChatbotModuleControllerHost } from './module.controller.js';
+
+// Scroll controller
+export { ChatbotScrollController } from './scroll.controller.js';
+export type { ChatbotScrollControllerHost } from './scroll.controller.js';
