@@ -37,21 +37,30 @@ export function renderThreadSidebar(
       </div>
       
       <div class="thread-list">
-        ${repeat(data.threads, thread => thread.id, thread => html`
-          <div 
-            class="thread-item ${classMap({ 
-              'thread-item--active': thread.id === data.activeThreadId 
-            })}"
-            @click=${() => handlers.onSelectThread(thread.id)}
-            part="thread-item"
-          >
-            <div class="thread-item__title">${thread.title || msg('New Chat')}</div>
-            <div class="thread-item__preview">
-              ${thread.messages.length > 0 ? thread.messages[thread.messages.length - 1].text : ''}
+        ${repeat(data.threads, thread => thread.id, thread => {
+          const lastMessage = thread.messages.length > 0 
+            ? thread.messages[thread.messages.length - 1] 
+            : null;
+          const previewText = lastMessage && typeof lastMessage.text === 'string' 
+            ? lastMessage.text 
+            : '';
+          
+          return html`
+            <div 
+              class="thread-item ${classMap({ 
+                'thread-item--active': thread.id === data.activeThreadId 
+              })}"
+              @click=${() => handlers.onSelectThread(thread.id)}
+              part="thread-item"
+            >
+              <div class="thread-item__title">${thread.title || msg('New Chat')}</div>
+              <div class="thread-item__preview">
+                ${previewText}
+              </div>
+              <div class="thread-item__timestamp">${thread.updatedAt}</div>
             </div>
-            <div class="thread-item__timestamp">${thread.updatedAt}</div>
-          </div>
-        `)}
+          `;
+        })}
       </div>
       
       <slot name="thread-sidebar"></slot>

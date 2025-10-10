@@ -49,7 +49,9 @@ import {
   ChatbotModuleController,
   ChatbotModuleControllerHost,
   ChatbotFileUploadController,
-  ChatbotFileUploadControllerHost
+  ChatbotFileUploadControllerHost,
+  ChatbotScrollController,
+  ChatbotScrollControllerHost
 } from './controllers/index.js';
 
 /**
@@ -108,17 +110,18 @@ import {
 @customElement('nr-chatbot')
 export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) 
   implements ChatbotMessageControllerHost, ChatbotKeyboardControllerHost, 
-             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost, ChatbotThreadControllerHost, ChatbotModuleControllerHost {
+             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost, 
+             ChatbotThreadControllerHost, ChatbotModuleControllerHost, ChatbotScrollControllerHost {
   static override styles = styles;
     override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
 
-  // Controllers
   private messageController = new ChatbotMessageController(this);
   private keyboardController = new ChatbotKeyboardController(this);
   private suggestionController = new ChatbotSuggestionController(this);
   private fileUploadController = new ChatbotFileUploadController(this);
   private threadController = new ChatbotThreadController(this);
   private moduleController = new ChatbotModuleController(this);
+  private scrollController = new ChatbotScrollController(this);
 
   /** Array of chat messages */
   @property({type: Array}) 
@@ -257,6 +260,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @state() private urlModalSelectedFile: File | null = null;
   @state() private urlModalSelectedFileName: string = '';
   @state() private isThreadSidebarOpen: boolean = true; // Control sidebar visibility
+  @state() private hasUserInteraction = false; // Track if user has sent a message
   
   /** File upload dropdown options */
   private get fileUploadItems(): DropdownItem[] {
@@ -296,6 +300,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       loadingText: this.loadingText,
       chatStarted: this.chatStarted,
       suggestions: this.suggestions,
+      hasUserInteraction: this.hasUserInteraction,
       inputBox: {
         placeholder: this.placeholder,
         disabled: this.disabled || this.isQueryRunning,
@@ -425,14 +430,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   override updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
     if (changedProperties.has('messages') && this.autoScroll) {
-      this.scrollToBottom();
-    }
-  }
-
-  private scrollToBottom() {
-    const messagesContainer = this.shadowRoot?.querySelector('.messages');
-    if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      this.scrollController.handleMessagesUpdate(
+        changedProperties.get('messages') as ChatbotMessage[] | undefined
+      );
     }
   }
 
@@ -501,6 +501,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     };
 
     const message = this.messageController.addMessage(messageData);
+    
+    this.hasUserInteraction = true;
+    
+    if (this.showThreads || this.enableThreadCreation) {
+      this.threadController.updateCurrentThreadMessages();
+    }
     
     this.clearInput();
     this.fileUploadController.clearFiles();
@@ -607,10 +613,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   };
 
   private handleAttachFileClick = async () => {
-    // Attach button should load file from URL and create File object
     if (this.urlModalLoading) return;
     
-    // Validate URL first
     if (!this.urlInputValid) {
       this.urlModalError = 'Please enter a valid URL.';
       return;
@@ -621,24 +625,19 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     this.urlModalError = '';
     
     try {
-      // Fetch the file from URL and create File object
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
       }
 
-      // Get the blob and create File object
       const blob = await response.blob();
       const filename = decodeURIComponent(new URL(url).pathname.split('/').pop() || 'file');
       const contentType = response.headers.get('content-type') || 'application/octet-stream';
       const file = new File([blob], filename, { type: contentType });
 
-      // Store the file object
       this.urlModalSelectedFile = file;
       this.urlModalSelectedFileName = file.name;
       this.urlModalLoading = false;
-      
-      // Show success message via the selectedFileName state
     } catch (error) {
       this.urlModalLoading = false;
       this.urlModalError = error instanceof Error ? error.message : 'Failed to load file from URL.';
@@ -648,22 +647,18 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   private confirmUrlModal = async () => {
     if (this.urlModalLoading) return;
     
-    // Check if we have a loaded file
     if (!this.urlModalSelectedFile) return;
     
     this.urlModalLoading = true;
     this.urlModalError = '';
     
     try {
-      // Add the already-loaded file to the chatbot
       const result = await this.fileUploadController.handleFileSelection([this.urlModalSelectedFile]);
       
       if (result && result.length > 0) {
-        // Success - close modal
         this.urlModalLoading = false;
         this.closeUrlModal();
       } else {
-        // Failed but no exception thrown
         this.urlModalLoading = false;
         this.urlModalError = 'Failed to add file. Please try again.';
       }
@@ -703,10 +698,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   }
 
   private handleCopyMessage(message: ChatbotMessage) {
-    // Copy message text to clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(message.text).then(() => {
-        // Optionally dispatch event for copy success
         this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
           message,
           metadata: { action: 'copy', text: message.text }
@@ -715,7 +708,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         console.error('Failed to copy message:', err);
       });
     } else {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = message.text;
       textArea.style.position = 'fixed';
@@ -765,6 +757,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     
     if (message.sender === ChatbotSender.User) {
       this.chatStarted = true;
+    }
+    
+    if (this.showThreads || this.enableThreadCreation) {
+      this.threadController.updateCurrentThreadMessages();
     }
     
     return newMessage;

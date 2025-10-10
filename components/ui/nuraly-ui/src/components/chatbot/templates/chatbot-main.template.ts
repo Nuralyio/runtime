@@ -51,6 +51,7 @@ export interface ChatbotMainTemplateData {
   // Suggestions
   chatStarted: boolean;
   suggestions: ChatbotSuggestion[];
+  hasUserInteraction?: boolean;
   
   // Input box
   inputBox: InputBoxTemplateData;
@@ -131,7 +132,8 @@ export function renderChatbotMain(
                   data.loadingText || ''
                 )
               : nothing,
-            handlers.message
+            handlers.message,
+            data.hasUserInteraction
           )}
           
           <slot name="messages"></slot>

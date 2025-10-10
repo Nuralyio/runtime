@@ -6,7 +6,7 @@
 
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import { ChatbotMessage, ChatbotSuggestion, ChatbotSender, ChatbotSize, ChatbotVariant, ChatbotLoadingType } from './chatbot.types.js';
+import { ChatbotMessage, ChatbotSuggestion, ChatbotSender, ChatbotSize, ChatbotVariant, ChatbotLoadingType, ChatbotThread } from './chatbot.types.js';
 
 // Import shared theme system
 import '../../shared/themes/carbon/index.css';
@@ -213,24 +213,33 @@ export const Interactive: Story = {
       messages = [...messages, userMessage];
       chatStarted = true;
       
-      // Simulate bot response
-      setTimeout(() => {
-        const botMessage: ChatbotMessage = {
-          id: `bot_${Date.now()}`,
-          sender: ChatbotSender.Bot,
-          text: `I received your message: "${userMessage.text}". How else can I help you?`,
-          timestamp: new Date().toLocaleTimeString()
-        };
-        messages = [...messages, botMessage];
-        
-        // Update the component
-        const chatbot = document.querySelector('nr-chatbot');
-        if (chatbot) {
-          (chatbot as any).messages = messages;
-          (chatbot as any).chatStarted = chatStarted;
-          (chatbot as any).currentInput = '';
-        }
-      }, 1000);
+      // Simulate 10 bot responses with 200ms intervals
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const botMessage: ChatbotMessage = {
+            id: `bot_${Date.now()}_${i}`,
+            sender: ChatbotSender.Bot,
+            text: `Bot response ${i + 1}/10: I received your message "${userMessage.text}". This is message ${i + 1} of 10.`,
+            timestamp: new Date().toLocaleTimeString()
+          };
+          messages = [...messages, botMessage];
+          
+          // Update the component
+          const chatbot = document.querySelector('nr-chatbot');
+          if (chatbot) {
+            (chatbot as any).messages = messages;
+            (chatbot as any).chatStarted = chatStarted;
+            (chatbot as any).currentInput = '';
+            
+            // Set typing indicator for all except the last message
+            if (i < 9) {
+              (chatbot as any).isBotTyping = true;
+            } else {
+              (chatbot as any).isBotTyping = false;
+            }
+          }
+        }, 200 * (i + 1)); // 200ms intervals: 200, 400, 600, 800, etc.
+      }
     };
 
     const handleSuggestionClicked = (e: CustomEvent) => {
@@ -852,6 +861,133 @@ export const ThreadSidebarInteractive: Story = {
     return html`
       <div style="width: 900px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
         <nr-chatbot
+          .messages=${messages}
+          .suggestions=${args.suggestions}
+          .size=${args.size}
+          .variant=${args.variant}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .enableFileUpload=${args.enableFileUpload}
+          .chatStarted=${true}
+          .showThreads=${true}
+          .enableThreadCreation=${true}
+          .threads=${threads}
+          .activeThreadId=${activeThreadId}
+          @nr-chatbot-thread-selected=${handleThreadSelected}
+          @nr-chatbot-thread-created=${handleThreadCreated}
+          @nr-chatbot-message-sent=${handleMessageSent}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Boxed layout with thread sidebar - ChatGPT-style interface
+ */
+export const BoxedWithThreads: Story = {
+  args: {
+    size: 'medium',
+    variant: 'rounded',
+    showSendButton: true,
+    autoScroll: true,
+    enableFileUpload: true,
+    chatStarted: true,
+  },
+  render: (args) => {
+    const threads: ChatbotThread[] = [
+      {
+        id: 'thread_1',
+        title: 'Product Design Discussion',
+        messages: [
+          {
+            id: 'msg_1',
+            sender: 'user' as ChatbotSender,
+            text: 'Can you help me with product design?',
+            timestamp: '10:00 AM'
+          },
+          {
+            id: 'msg_2',
+            sender: 'bot' as ChatbotSender,
+            text: 'Of course! I\'d be happy to help with your product design. What specific aspects are you working on?',
+            timestamp: '10:00 AM'
+          }
+        ],
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+        updatedAt: new Date(Date.now() - 3600000).toISOString()
+      },
+      {
+        id: 'thread_2',
+        title: 'Marketing Strategy',
+        messages: [
+          {
+            id: 'msg_3',
+            sender: 'user' as ChatbotSender,
+            text: 'What are some effective marketing strategies?',
+            timestamp: '9:30 AM'
+          },
+          {
+            id: 'msg_4',
+            sender: 'bot' as ChatbotSender,
+            text: 'Here are some key marketing strategies: 1) Content Marketing, 2) Social Media Marketing, 3) Email Campaigns, 4) SEO Optimization.',
+            timestamp: '9:31 AM'
+          }
+        ],
+        createdAt: new Date(Date.now() - 7200000).toISOString(),
+        updatedAt: new Date(Date.now() - 7200000).toISOString()
+      },
+      {
+        id: 'thread_3',
+        title: 'New Chat',
+        messages: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    let activeThreadId = 'thread_3';
+    let messages: ChatbotMessage[] = [...(threads.find(t => t.id === activeThreadId)?.messages || [])];
+
+    const handleThreadSelected = (e: CustomEvent) => {
+      const threadId = e.detail.metadata.threadId;
+      activeThreadId = threadId;
+      const thread = threads.find(t => t.id === threadId);
+      if (thread) {
+        messages = [...thread.messages];
+      }
+    };
+
+    const handleThreadCreated = (e: CustomEvent) => {
+      const newThread = e.detail.metadata.thread;
+      threads.unshift(newThread);
+      activeThreadId = newThread.id;
+      messages = [];
+    };
+
+    const handleMessageSent = (e: CustomEvent) => {
+      const messageText = e.detail.message;
+      const newMessage: ChatbotMessage = {
+        id: `msg_${Date.now()}`,
+        sender: 'user' as ChatbotSender,
+        text: messageText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      messages = [...messages, newMessage];
+      
+      // Update the active thread
+      const activeThread = threads.find(t => t.id === activeThreadId);
+      if (activeThread) {
+        activeThread.messages = [...messages];
+        if (activeThread.title === 'New Chat' && messages.length === 1) {
+          activeThread.title = messageText.substring(0, 50) + (messageText.length > 50 ? '...' : '');
+        }
+      }
+    };
+
+    return html`
+      <div style="width: 100%; height: 100vh; max-width: 1400px; margin: 0 auto;">
+        <nr-chatbot
+          boxed
           .messages=${messages}
           .suggestions=${args.suggestions}
           .size=${args.size}

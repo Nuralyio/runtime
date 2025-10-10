@@ -130,10 +130,13 @@ export function renderMessages(
   messages: ChatbotMessage[],
   suggestions: TemplateResult | typeof nothing,
   typingIndicator: TemplateResult | typeof nothing,
-  messageHandlers: MessageTemplateHandlers
+  messageHandlers: MessageTemplateHandlers,
+  hasUserInteraction?: boolean
 ): TemplateResult {
   return html`
-    <div class="messages" part="messages">
+    <div class="messages ${classMap({
+      'messages--has-user-interaction': hasUserInteraction || false
+    })}" part="messages">
       ${messages.length === 0 ? renderEmptyState() : nothing}
       ${messages.map((message) => renderMessage(message, messageHandlers))}
       ${suggestions}

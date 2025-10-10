@@ -83,23 +83,56 @@ export default css`
     height: 100%;
   }
 
-  :host([boxed]) .chatbot-main:has(.empty-state) {
-    justify-content: center;
-    gap: var(--nuraly-spacing-05, 1rem);
+  :host([boxed]) .chatbot-header {
+    /* Keep header at the top */
+    flex: 0 0 auto;
+    border-bottom: none;
   }
 
-    :host([boxed]) .chatbot-content:has(.empty-state) {
+  :host([boxed]) .chatbot-content:has(.empty-state) {
+    /* Don't let content flex grow when empty */
     flex: 0 0 auto;
-    gap: var(--nuraly-spacing-06, 1.5rem);
+  }
+
+  :host([boxed]) .chatbot-content:not(:has(.empty-state)) {
+    /* Normal flex behavior when messages exist */
+    flex: 1;
+    min-height: 0;
+  }
+
+  :host([boxed]) .chatbot-main:has(.empty-state) {
+    /* Make main container relative for absolute positioning */
+    position: relative;
   }
 
   :host([boxed]) .empty-state {
+    /* Position empty state in the center - moved up */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% - 80px));
+    width: 100%;
+    max-width: var(--nuraly-size-chatbot-boxed-max-width, 768px);
     height: auto;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--nuraly-spacing-06, 1.5rem);
   }
 
   :host([boxed]) .empty-state__content {
-    margin-bottom: var(--nuraly-spacing-06, 1.5rem);
+    margin-bottom: 0;
+  }
+
+  :host([boxed]) .chatbot-content:has(.empty-state) + .input-box {
+    /* Position input-box in the middle with empty state - moved up */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% + 40px));
+    width: 100%;
+    max-width: var(--nuraly-size-chatbot-boxed-max-width, 768px);
   }
 
   :host([boxed]) .suggestion-container {
@@ -110,6 +143,9 @@ export default css`
     box-shadow: none;
     margin-bottom: 0;
     background-color: transparent;
+    align-items: stretch;
+    width: 98%;
+    padding: var(--nuraly-spacing-chatbot-message-padding, 8px) var(--nuraly-spacing-06, 1.5rem);
   }
 
   :host([boxed]) .input-container {
@@ -230,6 +266,15 @@ export default css`
     gap: 0;
     background-color: var(--nuraly-color-chatbot-background);
     padding: var(--nuraly-spacing-chatbot-message-padding, 8px 12px);
+  }
+
+  /* Spacer to allow scrolling new messages to top - only show when user has sent a message */
+  .messages--has-user-interaction::after {
+    content: '';
+    display: block;
+    flex-shrink: 0;
+    height: calc(100% - 100px);
+    min-height: 400px;
   }
 
   .empty-state {
