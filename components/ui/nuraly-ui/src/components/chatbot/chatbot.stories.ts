@@ -20,6 +20,9 @@ import {
 import { ChatbotCoreController } from './core/chatbot-core.controller.js';
 import { MockProvider } from './providers/mock-provider.js';
 
+// Import storage implementations
+import { MemoryStorage, LocalStorageAdapter, IndexedDBStorage } from './storage/index.js';
+
 // Import shared theme system
 import '../../shared/themes/carbon/index.css';
 import '../../shared/themes/default/index.css';
@@ -749,6 +752,441 @@ export const BoxedWithThreads: Story = {
           .showThreads=${args.showThreads}
           .boxed=${args.boxed}
         ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Storage - Memory Storage (Non-persistent)
+ * Messages are stored in memory only - lost on page refresh.
+ * Try sending messages and note they disappear when you refresh the page.
+ */
+export const StorageMemory: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#storage-memory-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 5,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          storage: new MemoryStorage(),
+          enableThreads: true,
+          autoSaveInterval: 1000, // Auto-save every 1 second
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            },
+            showNotification: (message, type) => {
+              console.log(`[MemoryStorage ${type.toUpperCase()}] ${message}`);
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'mem1', text: 'Send a message', enabled: true },
+          { id: 'mem2', text: 'Create a thread', enabled: true },
+          { id: 'mem3', text: 'Messages will be lost on refresh!', enabled: true }
+        ];
+        chatbot.enableThreadCreation = true;
+        
+        // Display storage info
+        setTimeout(() => {
+          console.log('[MemoryStorage] Using in-memory storage - data will be lost on page refresh');
+        }, 100);
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="padding: 16px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;">
+          <h3 style="margin: 0 0 8px 0; color: #856404;">🔄 Memory Storage</h3>
+          <p style="margin: 0; color: #856404;">
+            Messages are stored in memory only and <strong>will be lost on page refresh</strong>.
+            Perfect for temporary conversations or demos.
+          </p>
+        </div>
+        <div style="width: 800px; height: 600px;">
+          <nr-chatbot
+            id="storage-memory-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .isRTL=${args.isRTL}
+            .disabled=${args.disabled}
+            .showSendButton=${args.showSendButton}
+            .autoScroll=${args.autoScroll}
+            .showThreads=${args.showThreads}
+            .boxed=${args.boxed}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Storage - LocalStorage (Persistent)
+ * Messages persist across page refreshes using browser's localStorage.
+ * Try sending messages, refresh the page, and see them still there!
+ */
+export const StorageLocalStorage: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#storage-localstorage-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 5,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          storage: new LocalStorageAdapter(),
+          enableThreads: true,
+          autoSaveInterval: 2000, // Auto-save every 2 seconds
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            },
+            showNotification: (message, type) => {
+              console.log(`[LocalStorage ${type.toUpperCase()}] ${message}`);
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'local1', text: 'Send a message and refresh!', enabled: true },
+          { id: 'local2', text: 'Create multiple threads', enabled: true },
+          { id: 'local3', text: 'Messages persist across refreshes', enabled: true }
+        ];
+        chatbot.enableThreadCreation = true;
+        
+        // Load persisted data
+        setTimeout(async () => {
+          try {
+            await controller.loadFromStorage('chatbot-state');
+            console.log('[LocalStorage] Successfully loaded persisted conversation history');
+          } catch (error) {
+            console.log('[LocalStorage] No persisted data found - starting fresh');
+          }
+        }, 100);
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="padding: 16px; background: #d1ecf1; border: 1px solid #17a2b8; border-radius: 8px;">
+          <h3 style="margin: 0 0 8px 0; color: #0c5460;">💾 LocalStorage Persistence</h3>
+          <p style="margin: 0 0 8px 0; color: #0c5460;">
+            Messages persist across page refreshes using <strong>localStorage</strong>.
+            Try sending messages, then refresh the page!
+          </p>
+          <button 
+            onclick="localStorage.clear(); location.reload();" 
+            style="padding: 8px 16px; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            🗑️ Clear Storage & Reload
+          </button>
+        </div>
+        <div style="width: 800px; height: 600px;">
+          <nr-chatbot
+            id="storage-localstorage-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .isRTL=${args.isRTL}
+            .disabled=${args.disabled}
+            .showSendButton=${args.showSendButton}
+            .autoScroll=${args.autoScroll}
+            .showThreads=${args.showThreads}
+            .boxed=${args.boxed}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Storage - IndexedDB (High Performance)
+ * Messages persist using IndexedDB for larger datasets and better performance.
+ * Ideal for production applications with extensive conversation history.
+ */
+export const StorageIndexedDB: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#storage-indexeddb-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const indexedDBStorage = new IndexedDBStorage('chatbot-demo-db', 'conversations');
+        
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 5,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          storage: indexedDBStorage,
+          enableThreads: true,
+          autoSaveInterval: 3000, // Auto-save every 3 seconds
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            },
+            showNotification: (message, type) => {
+              console.log(`[IndexedDB ${type.toUpperCase()}] ${message}`);
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'idb1', text: 'High performance storage', enabled: true },
+          { id: 'idb2', text: 'Handles large datasets', enabled: true },
+          { id: 'idb3', text: 'Production-ready persistence', enabled: true }
+        ];
+        chatbot.enableThreadCreation = true;
+        
+        // Load persisted data
+        setTimeout(async () => {
+          try {
+            await controller.loadFromStorage('chatbot-state');
+            console.log('[IndexedDB] Successfully loaded persisted conversation history');
+          } catch (error) {
+            console.log('[IndexedDB] No persisted data found - starting fresh');
+          }
+        }, 100);
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="padding: 16px; background: #d4edda; border: 1px solid #28a745; border-radius: 8px;">
+          <h3 style="margin: 0 0 8px 0; color: #155724;">🚀 IndexedDB Storage</h3>
+          <p style="margin: 0 0 8px 0; color: #155724;">
+            High-performance persistent storage using <strong>IndexedDB</strong>.
+            Perfect for production apps with extensive conversation history.
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <button 
+              onclick="
+                const db = indexedDB.open('chatbot-demo-db');
+                db.onsuccess = (e) => {
+                  const database = e.target.result;
+                  const transaction = database.transaction(['conversations'], 'readwrite');
+                  const store = transaction.objectStore('conversations');
+                  store.clear();
+                  console.log('[IndexedDB] Cleared all data');
+                  setTimeout(() => location.reload(), 500);
+                };
+              " 
+              style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              🗑️ Clear IndexedDB & Reload
+            </button>
+            <button 
+              onclick="
+                const db = indexedDB.open('chatbot-demo-db');
+                db.onsuccess = (e) => {
+                  const database = e.target.result;
+                  const transaction = database.transaction(['conversations'], 'readonly');
+                  const store = transaction.objectStore('conversations');
+                  const request = store.get('chatbot-state');
+                  request.onsuccess = () => {
+                    console.log('[IndexedDB] Current state:', request.result);
+                    alert('Check console for IndexedDB data');
+                  };
+                };
+              " 
+              style="padding: 8px 16px; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              🔍 Inspect Data
+            </button>
+          </div>
+        </div>
+        <div style="width: 800px; height: 600px;">
+          <nr-chatbot
+            id="storage-indexeddb-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .isRTL=${args.isRTL}
+            .disabled=${args.disabled}
+            .showSendButton=${args.showSendButton}
+            .autoScroll=${args.autoScroll}
+            .showThreads=${args.showThreads}
+            .boxed=${args.boxed}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Storage Comparison - See all three storage types side by side
+ * Compare Memory, LocalStorage, and IndexedDB implementations.
+ */
+export const StorageComparison: Story = {
+  args: {
+    ...Default.args,
+    showThreads: false
+  },
+  render: (args) => {
+    ['memory', 'localstorage', 'indexeddb'].forEach((storageType) => {
+      setTimeout(() => {
+        const chatbot = document.querySelector(`#chatbot-${storageType}`) as any;
+        if (chatbot && !chatbot.controller) {
+          let storage;
+          let storageLabel;
+          
+          if (storageType === 'memory') {
+            storage = new MemoryStorage();
+            storageLabel = 'Memory';
+          } else if (storageType === 'localstorage') {
+            storage = new LocalStorageAdapter();
+            storageLabel = 'LocalStorage';
+          } else {
+            storage = new IndexedDBStorage(`chatbot-${storageType}-db`, 'messages');
+            storageLabel = 'IndexedDB';
+          }
+          
+          const controller = new ChatbotCoreController({
+            provider: new MockProvider({
+              delay: 300,
+              streaming: true,
+              streamingSpeed: 8,
+              streamingInterval: 15,
+              contextualResponses: true
+            }),
+            storage,
+            enableThreads: false,
+            autoSaveInterval: 2000,
+            ui: {
+              onStateChange: (state) => {
+                chatbot.messages = state.messages;
+                chatbot.isBotTyping = state.isTyping;
+                chatbot.chatStarted = state.messages.length > 0;
+              },
+              showNotification: (message, type) => {
+                console.log(`[${storageLabel} ${type.toUpperCase()}] ${message}`);
+              }
+            }
+          });
+          
+          chatbot.controller = controller;
+          chatbot.suggestions = [
+            { id: `${storageType}-1`, text: `Test ${storageLabel}`, enabled: true }
+          ];
+        }
+      }, 0);
+    });
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="padding: 16px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;">
+          <h3 style="margin: 0 0 8px 0;">📊 Storage Comparison</h3>
+          <p style="margin: 0;">
+            Compare all three storage implementations side by side. 
+            Send messages to each and refresh to see persistence differences.
+          </p>
+        </div>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 300px;">
+            <h4 style="margin: 0 0 8px 0; padding: 8px; background: #fff3cd; border-radius: 4px;">
+              🔄 Memory Storage
+            </h4>
+            <div style="width: 100%; height: 450px;">
+              <nr-chatbot
+                id="chatbot-memory"
+                .size=${ChatbotSize.Small}
+                .variant=${args.variant}
+                .showSendButton=${true}
+                .autoScroll=${true}
+              ></nr-chatbot>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-top: 8px;">
+              ⚠️ Lost on refresh
+            </p>
+          </div>
+          <div style="flex: 1; min-width: 300px;">
+            <h4 style="margin: 0 0 8px 0; padding: 8px; background: #d1ecf1; border-radius: 4px;">
+              💾 LocalStorage
+            </h4>
+            <div style="width: 100%; height: 450px;">
+              <nr-chatbot
+                id="chatbot-localstorage"
+                .size=${ChatbotSize.Small}
+                .variant=${args.variant}
+                .showSendButton=${true}
+                .autoScroll=${true}
+              ></nr-chatbot>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-top: 8px;">
+              ✅ Persists across refreshes
+            </p>
+          </div>
+          <div style="flex: 1; min-width: 300px;">
+            <h4 style="margin: 0 0 8px 0; padding: 8px; background: #d4edda; border-radius: 4px;">
+              🚀 IndexedDB
+            </h4>
+            <div style="width: 100%; height: 450px;">
+              <nr-chatbot
+                id="chatbot-indexeddb"
+                .size=${ChatbotSize.Small}
+                .variant=${args.variant}
+                .showSendButton=${true}
+                .autoScroll=${true}
+              ></nr-chatbot>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-top: 8px;">
+              ✅ High performance persistence
+            </p>
+          </div>
+        </div>
       </div>
     `;
   }

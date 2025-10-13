@@ -290,15 +290,6 @@ export default css`
     justify-content: flex-start; /* Always align messages to top */
   }
 
-  /* Spacer to allow scrolling new messages to top - only show when user has sent a message */
-  .messages--has-user-interaction::after {
-    content: '';
-    display: block;
-    flex-shrink: 0;
-    height: calc(100% - 100px);
-    min-height: 400px;
-  }
-
   .empty-state {
     display: flex;
     flex-direction: column;

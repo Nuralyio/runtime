@@ -28,13 +28,6 @@ export * from './controllers/index.js';
 // Interfaces
 export * from './interfaces/index.js';
 
-// Sub-components
-export * from './chatbot-fab-container/chatbot-fab-container.component.js';
-export * from './chatbot-agent/chatbot-agent.component.js';
-
-// Services
-export * from './shared/services/chat.service.js';
-
 // Legacy exports for backward compatibility
 export { Message } from './shared/interfaces/message.interface.js';
 export { Sender } from './shared/interfaces/sender.enum.js';

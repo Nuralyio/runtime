@@ -9,32 +9,32 @@ import { classMap } from 'lit/directives/class-map.js';
 import { msg } from '@lit/localize';
 import '../../button/button.component.js';
 import {
-    renderMessages,
-    renderBotTypingIndicator,
-    MessageTemplateHandlers
+  renderMessages,
+  renderBotTypingIndicator,
+  MessageTemplateHandlers
 } from './message.template.js';
 import {
-    renderSuggestions,
-    SuggestionTemplateHandlers
+  renderSuggestions,
+  SuggestionTemplateHandlers
 } from './suggestion.template.js';
 import {
-    renderInputBox,
-    InputBoxTemplateData,
-    InputBoxTemplateHandlers
+  renderInputBox,
+  InputBoxTemplateData,
+  InputBoxTemplateHandlers
 } from './input-box.template.js';
 import {
-    renderThreadSidebar,
-    ThreadSidebarTemplateData,
-    ThreadSidebarTemplateHandlers
+  renderThreadSidebar,
+  ThreadSidebarTemplateData,
+  ThreadSidebarTemplateHandlers
 } from './thread-sidebar.template.js';
 import {
-    renderFileUploadArea,
-    FileUploadAreaTemplateHandlers
+  renderFileUploadArea,
+  FileUploadAreaTemplateHandlers
 } from './file-upload-area.template.js';
 import {
-    renderUrlModal,
-    UrlModalTemplateData,
-    UrlModalTemplateHandlers
+  renderUrlModal,
+  UrlModalTemplateData,
+  UrlModalTemplateHandlers
 } from './url-modal.template.js';
 import { ChatbotMessage, ChatbotSuggestion, ChatbotLoadingType } from '../chatbot.types.js';
 
@@ -51,7 +51,6 @@ export interface ChatbotMainTemplateData {
   // Suggestions
   chatStarted: boolean;
   suggestions: ChatbotSuggestion[];
-  hasUserInteraction?: boolean;
   
   // Input box
   inputBox: InputBoxTemplateData;
@@ -132,8 +131,7 @@ export function renderChatbotMain(
                   data.loadingText || ''
                 )
               : nothing,
-            handlers.message,
-            data.hasUserInteraction
+            handlers.message
           )}
           
           <slot name="messages"></slot>
