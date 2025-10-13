@@ -262,9 +262,10 @@ export class MockProvider implements ChatbotProvider {
       return `You said: "${text}"`;
     }
 
-    // Custom responses
+    // Custom responses (highest priority after echo mode)
     if (this.config.customResponses.length > 0) {
-      const index = this.messageCount % this.config.customResponses.length;
+      // Use messageCount - 1 because messageCount was already incremented in sendMessage
+      const index = (this.messageCount - 1) % this.config.customResponses.length;
       return this.config.customResponses[index];
     }
 

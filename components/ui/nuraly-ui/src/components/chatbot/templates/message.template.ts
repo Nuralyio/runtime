@@ -5,6 +5,7 @@
  */
 
 import { html, TemplateResult, nothing } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { msg } from '@lit/localize';
 import { ChatbotMessage, ChatbotLoadingType } from '../chatbot.types.js';
@@ -41,7 +42,7 @@ export function renderMessage(
       data-id="${message.id}"
     >
       <div class="message__content" part="message-content">
-        ${message.text}
+        ${message?.metadata?.renderAsHtml ? unsafeHTML(message.text) : message.text}
       </div>
       <div class="message__footer" part="message-footer">
         <div class="message__timestamp" part="message-timestamp">

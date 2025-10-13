@@ -195,6 +195,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @state() private urlModalError = '';
   @state() private isUrlLoading = false;
   @state() private selectedUrlFileName = '';
+  
+  // Keep track of controller event unsubscriptions
+  private controllerUnsubscribes: Array<() => void> = [];
 
   /** Convert modules to select options */
   private get moduleSelectOptions(): SelectOption[] {
@@ -227,6 +230,23 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   override updated(changedProperties: Map<string, any>): void {
     super.updated(changedProperties);
     
+    // If controller property changed after first render, (re)wire integration
+    if (changedProperties.has('controller')) {
+      // Clean up listeners from previous controller instance (if any)
+      this.cleanupControllerIntegration();
+      
+      if (this.controller) {
+        this.setupControllerIntegration();
+        // Sync current controller state into component immediately
+        try {
+          const state = this.controller.getState();
+          this.handleControllerStateChange(state);
+        } catch {
+          // no-op if controller not fully ready yet
+        }
+      }
+    }
+    
     // Auto-scroll when messages are added or updated
     if (changedProperties.has('messages') && this.autoScroll && this.messages.length > 0) {
       this.scrollToLatestMessage();
@@ -247,22 +267,34 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   private setupControllerIntegration(): void {
     if (!this.controller) return;
-
-    // Subscribe to controller state changes
-    this.controller.on('state:changed', this.handleControllerStateChange.bind(this));
-    this.controller.on('message:sent', this.handleControllerMessageSent.bind(this));
-    this.controller.on('message:received', this.handleControllerMessageReceived.bind(this));
-    this.controller.on('error', this.handleControllerError.bind(this));
+    
+    // Subscribe to controller events and keep unsubscribe fns
+    this.controllerUnsubscribes.push(
+      this.controller.on('state:changed', this.handleControllerStateChange.bind(this)),
+      this.controller.on('message:sent', this.handleControllerMessageSent.bind(this)),
+      this.controller.on('message:received', this.handleControllerMessageReceived.bind(this)),
+      this.controller.on('error', this.handleControllerError.bind(this))
+    );
   }
 
   private cleanupControllerIntegration(): void {
-    // Event listeners are automatically cleaned up when controller is destroyed
+    // Unsubscribe from previous controller event listeners
+    if (this.controllerUnsubscribes.length) {
+      try {
+        this.controllerUnsubscribes.forEach(unsub => {
+          try { unsub(); } catch { /* noop */ }
+        });
+      } finally {
+        this.controllerUnsubscribes = [];
+      }
+    }
   }
 
   private handleControllerStateChange(state: any): void {
     // Sync controller state to component properties
     if (state.messages) this.messages = state.messages;
     if (state.threads) this.threads = state.threads;
+    if (state.suggestions) this.suggestions = state.suggestions;
     if (state.currentThreadId) this.activeThreadId = state.currentThreadId;
     this.chatStarted = state.messages?.length > 0;
     this.isBotTyping = state.isTyping || false;
@@ -462,6 +494,11 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleSendMessage() {
     if (!this.currentInput.trim() || this.disabled) return;
+
+    if (!this.controller) {
+      console.warn('nr-chatbot: No controller is attached; message will not be sent.');
+      return;
+    }
 
     // Use controller to send message
     this.controller.sendMessage(this.currentInput.trim(), {

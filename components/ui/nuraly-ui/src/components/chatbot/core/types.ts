@@ -5,12 +5,12 @@
  */
 
 import type {
-    ChatbotMessage,
-    ChatbotThread,
-    ChatbotModule,
-    ChatbotFile,
-    ChatbotSuggestion,
-    ChatbotValidationRule
+  ChatbotMessage,
+  ChatbotThread,
+  ChatbotModule,
+  ChatbotFile,
+  ChatbotSuggestion,
+  ChatbotValidationRule
 } from '../chatbot.types.js';
 
 /**
@@ -406,6 +406,25 @@ export interface ChatbotPlugin {
    * Called on errors
    */
   onError?(error: Error): void;
+
+  /**
+   * Declare HTML-like block tags this plugin understands, e.g., [FLIGHT]...[/FLIGHT]
+   * PluginService/Provider will use these to tokenize the stream and hand off complete blocks.
+   */
+  htmlTags?: Array<{
+    /** Logical name for the tag */
+    name: string;
+    /** Opening marker (literal) */
+    open: string;
+    /** Closing marker (literal) */
+    close: string;
+  }>;
+
+  /**
+   * Optional renderer for a completed HTML-like block found during streaming.
+   * Should return a trusted HTML string (plugin is responsible for safety) or empty string to skip.
+   */
+  renderHtmlBlock?(name: string, content: string): string;
 }
 
 /**

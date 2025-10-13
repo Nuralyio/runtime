@@ -41,11 +41,11 @@ export function renderSuggestion(
  * Renders suggestions container
  */
 export function renderSuggestions(
-  chatStarted: boolean,
+  _chatStarted: boolean,
   suggestions: ChatbotSuggestion[],
   handlers: SuggestionTemplateHandlers
 ): TemplateResult | typeof nothing {
-  return !chatStarted && suggestions.length
+  return suggestions.length > 0
     ? html`
         <div class="suggestion-container" part="suggestions">
           ${suggestions.map((suggestion) =>

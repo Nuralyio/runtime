@@ -8,3 +8,5 @@
 export { PersistencePlugin } from './persistence-plugin.js';
 export { AnalyticsPlugin } from './analytics-plugin.js';
 export { MarkdownPlugin } from './markdown-plugin.js';
+export { ChatPluginBase } from './chat-plugin.js';
+export { FlightCardPlugin, type FlightInfo } from './flight-card-plugin.js';
