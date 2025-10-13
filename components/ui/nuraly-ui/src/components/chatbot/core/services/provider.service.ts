@@ -51,9 +51,18 @@ export class ProviderService {
       return;
     }
 
+    // Ensure provider is connected. Try to connect on-demand if needed.
     if (!this.provider.isConnected()) {
-      this.log('Provider not connected, skipping');
-      return;
+      this.log('Provider not connected, attempting to connect...');
+      try {
+        await this.provider.connect({});
+      } catch (err) {
+        this.logError('Failed to auto-connect provider:', err);
+      }
+      if (!this.provider.isConnected()) {
+        this.log('Provider is still not connected after attempt; aborting processing');
+        return;
+      }
     }
 
     try {
@@ -100,34 +109,101 @@ export class ProviderService {
    */
   async processStream(stream: AsyncIterator<string>): Promise<void> {
     let botMessage: ChatbotMessage | null = null;
+    // Prepare tag-aware parsing from plugins
+    const tagAwarePlugins = Array.from(this.plugins.values()).filter(p => Array.isArray((p as any).htmlTags)) as any[];
+    const openTags: Array<{ plugin: any; name: string; open: string; close: string; buffer: string }> = [];
+    // Track raw cumulative content to derive deltas for providers that emit cumulative text
+    let lastRaw = '';
 
     try {
       let done = false;
       while (!done) {
         const result = await stream.next();
         done = result.done || false;
-        
         if (done || !result.value) break;
-        
-        const chunk = result.value;
 
-        // Apply plugin transformations
-        let processedChunk = chunk;
-        for (const plugin of this.plugins.values()) {
-          if (plugin.afterReceive) {
-            processedChunk = await plugin.afterReceive(processedChunk);
+  // Derive delta from cumulative streaming when possible
+  const currentRaw = String(result.value);
+  let incoming = currentRaw.startsWith(lastRaw) ? currentRaw.slice(lastRaw.length) : currentRaw;
+  lastRaw = currentRaw;
+
+  let remaining = incoming;
+        let processedChunk = '';
+        let chunkHasHtml = false;
+
+        while (remaining.length) {
+          // If inside an open tag, look for its closing marker
+          const current = openTags[openTags.length - 1];
+          if (current) {
+            const closeIdx = remaining.indexOf(current.close);
+            if (closeIdx === -1) {
+              current.buffer += remaining;
+              remaining = '';
+              break;
+            }
+            current.buffer += remaining.slice(0, closeIdx);
+            const html = typeof current.plugin.renderHtmlBlock === 'function'
+              ? current.plugin.renderHtmlBlock(current.name, current.buffer)
+              : '';
+            if (html) {
+              processedChunk += html; // append HTML in-stream at the correct position
+              chunkHasHtml = true;
+            }
+            openTags.pop();
+            remaining = remaining.slice(closeIdx + current.close.length);
+            continue;
+          }
+
+          // Not inside a tag: search for next opening tag among all plugins
+          let nextOpen: { idx: number; plugin: any; name: string; open: string; close: string } | null = null;
+          for (const plugin of tagAwarePlugins) {
+            for (const tag of (plugin.htmlTags as any[])) {
+              const idx = remaining.indexOf(tag.open);
+              if (idx !== -1 && (!nextOpen || idx < nextOpen.idx)) {
+                nextOpen = { idx, plugin, name: tag.name, open: tag.open, close: tag.close };
+              }
+            }
+          }
+
+          if (!nextOpen) {
+            processedChunk += remaining;
+            remaining = '';
+          } else {
+            // Stream the plain text before the tag
+            processedChunk += remaining.slice(0, nextOpen.idx);
+            // Open the tag and start buffering its content
+            openTags.push({ plugin: nextOpen.plugin, name: nextOpen.name, open: nextOpen.open, close: nextOpen.close, buffer: '' });
+            remaining = remaining.slice(nextOpen.idx + nextOpen.open.length);
           }
         }
 
-        if (!botMessage) {
-          // First chunk - create new bot message
-          botMessage = this.messageHandler.createBotMessage(processedChunk);
-          this.stateHandler.addMessageToState(botMessage);
-        } else {
-          // Subsequent chunks - append to existing message
-          this.messageHandler.appendToBotMessage(botMessage.id, processedChunk);
-          botMessage.text += processedChunk; // Keep local reference in sync
+        // Apply normal afterReceive transforms to the plain text part only for plugins without htmlTags
+        if (processedChunk) {
+          for (const plugin of this.plugins.values()) {
+            const isTagAware = Array.isArray((plugin as any).htmlTags) && (plugin as any).htmlTags.length > 0;
+            if (!isTagAware && plugin.afterReceive) {
+              processedChunk = await plugin.afterReceive(processedChunk);
+            }
+          }
         }
+
+        const isHtml = chunkHasHtml || /<\w+[^>]*>/.test(processedChunk);
+        if (!botMessage) {
+          botMessage = this.messageHandler.createBotMessage(processedChunk, isHtml ? { renderAsHtml: true } : undefined);
+          this.stateHandler.addMessageToState(botMessage);
+        } else if (processedChunk) {
+          this.messageHandler.appendToBotMessage(botMessage.id, processedChunk);
+          botMessage.text += processedChunk;
+          if (isHtml && !botMessage.metadata?.renderAsHtml) {
+            this.messageHandler.updateMessage(botMessage.id, { metadata: { ...(botMessage.metadata || {}), renderAsHtml: true } });
+          }
+        }
+      }
+
+      // Flush any unterminated tags as literal text (open marker + buffered content)
+      if (botMessage && openTags.length > 0) {
+        const leftover = openTags.map(t => t.open + t.buffer).join('');
+        if (leftover) this.messageHandler.appendToBotMessage(botMessage.id, leftover);
       }
     } catch (error) {
       this.logError('Error processing stream:', error);

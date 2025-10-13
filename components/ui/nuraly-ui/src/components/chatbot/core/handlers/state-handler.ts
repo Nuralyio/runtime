@@ -68,6 +68,15 @@ export class StateHandler {
   addMessageToState(message: ChatbotMessage): void {
     this.state.messages = [...this.state.messages, message];
 
+    // Suggestions are tied to the most recent message.
+    // When a new message arrives, reset suggestions unless
+    // the new message provides its own suggestions (usually a bot message).
+    if (message.suggestions && message.suggestions.length > 0) {
+      this.state.suggestions = [...message.suggestions];
+    } else {
+      this.state.suggestions = [];
+    }
+
     // Apply max messages limit
     if (this.config.maxMessages && this.state.messages.length > this.config.maxMessages) {
       this.state.messages = this.state.messages.slice(-this.config.maxMessages);
@@ -77,6 +86,9 @@ export class StateHandler {
     if (this.ui.onStateChange) {
       this.ui.onStateChange(this.getState());
     }
+
+    // Emit full state change for subscribers (e.g., UI components)
+    this.eventBus.emit('state:changed', this.state);
 
     // Scroll to bottom
     if (this.ui.scrollToBottom) {
@@ -98,6 +110,9 @@ export class StateHandler {
       this.ui.onStateChange(this.getState());
     }
 
+    // Emit full state change for subscribers
+    this.eventBus.emit('state:changed', this.state);
+
     const updatedMessage = this.state.messages.find(m => m.id === id);
     if (updatedMessage) {
       this.eventBus.emit('message:updated', updatedMessage);
@@ -113,6 +128,9 @@ export class StateHandler {
     if (this.ui.onStateChange) {
       this.ui.onStateChange(this.getState());
     }
+
+    // Emit full state change for subscribers
+    this.eventBus.emit('state:changed', this.state);
 
     this.eventBus.emit('message:deleted', id);
   }

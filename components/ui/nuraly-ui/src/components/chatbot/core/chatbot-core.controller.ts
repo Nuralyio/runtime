@@ -79,6 +79,10 @@ export class ChatbotCoreController {
     // Initialize event bus
     this.eventBus = new EventBus();
 
+    // Initialize plugin service early and share its plugins map
+    this.pluginService = new PluginService();
+    this.plugins = this.pluginService.getPluginsMap();
+
     // Initialize state handler first (other handlers depend on it)
     const initialState = this.initializeState(config);
     this.stateHandler = new StateHandler(initialState, this.eventBus, this.ui, this.plugins, this.config);
@@ -105,7 +109,6 @@ export class ChatbotCoreController {
       this.stateHandler,
       this.config
     );
-    this.pluginService = new PluginService();
 
     // Register plugins
     if (config.plugins) {
@@ -165,7 +168,17 @@ export class ChatbotCoreController {
    */
   protected async onReady(): Promise<void> {
     this.log('Chatbot controller ready');
-    
+    // If the first message is an introduction with suggestions, surface them to state
+    try {
+      const state = this.stateHandler.getState();
+      const firstMsg = state.messages && state.messages.length > 0 ? state.messages[0] : undefined;
+      if (firstMsg && firstMsg.sender === 'bot' && firstMsg.introduction && Array.isArray(firstMsg.suggestions) && firstMsg.suggestions.length > 0) {
+        this.suggestionHandler.setSuggestions(firstMsg.suggestions);
+      }
+    } catch (e) {
+      this.logError('Error initializing suggestions from initial messages:', e);
+    }
+
     // Notify UI of initial state (important for initial messages)
     if (this.ui.onStateChange) {
       this.ui.onStateChange(this.getState());
