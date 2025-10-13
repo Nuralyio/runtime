@@ -390,7 +390,9 @@ export default css`
     font-size: var(--nuraly-font-size-chatbot-timestamp);
     color: var(--nuraly-color-chatbot-timestamp);
     font-weight: var(--nuraly-font-weight-normal, 400);
-    opacity: var(--nuraly-opacity-chatbot-timestamp);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--nuraly-transition-fast, 0.15s) ease, visibility var(--nuraly-transition-fast, 0.15s) ease;
   }
 
   .message__copy {
@@ -407,6 +409,11 @@ export default css`
 
   .message:hover .message__copy {
     opacity: 1;
+    visibility: visible;
+  }
+
+  .message:hover .message__timestamp {
+    opacity: var(--nuraly-opacity-chatbot-timestamp, 1);
     visibility: visible;
   }
 
