@@ -15,6 +15,7 @@ import {
   ChatbotLoadingType,
   ChatbotModule
 } from './chatbot.types.js';
+import { ChatbotFileType } from './chatbot.types.js';
 
 // Import the core controller and providers
 import { ChatbotCoreController } from './core/chatbot-core.controller.js';
@@ -752,6 +753,163 @@ export const BoxedWithThreads: Story = {
           .showThreads=${args.showThreads}
           .boxed=${args.boxed}
         ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Message attachments: initial message shows file tags
+ */
+export const WithInitialMessageAttachments: Story = {
+  args: {
+    ...Default.args,
+    boxed: false
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#attachments-initial-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 400,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          initialMessages: [
+            {
+              id: 'intro',
+              sender: ChatbotSender.Bot,
+              text: 'Hi! I can analyze your files. Try sending a message with attachments.',
+              timestamp: new Date().toISOString()
+            },
+            {
+              id: 'with-files',
+              sender: ChatbotSender.User,
+              text: 'Please analyze the attached documents.',
+              timestamp: new Date().toISOString(),
+              files: [
+                { id: 'f1', name: 'report.pdf', size: 123456, type: ChatbotFileType.Document, mimeType: 'application/pdf' },
+                { id: 'f2', name: 'notes.txt', size: 2048, type: ChatbotFileType.Document, mimeType: 'text/plain' }
+              ]
+            }
+          ],
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            }
+          }
+        });
+        chatbot.controller = controller;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="attachments-initial-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Message attachments: attach files, then send to see tags move to the message
+ */
+export const WithFileUploadAttachments: Story = {
+  args: {
+    ...Default.args,
+    boxed: false
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#attachments-upload-chatbot') as any;
+      const attachBtn = document.querySelector('#attach-sample-file') as HTMLButtonElement | null;
+      const sendBtn = document.querySelector('#send-with-files') as HTMLButtonElement | null;
+
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 400,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          enableFileUpload: true,
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+              chatbot.uploadedFiles = state.uploadedFiles;
+            }
+          }
+        });
+        chatbot.controller = controller;
+        chatbot.enableFileUpload = true;
+      }
+
+      // Wire demo buttons
+      if (attachBtn) {
+        attachBtn.onclick = async () => {
+          const chatbotEl = document.querySelector('#attachments-upload-chatbot') as any;
+          const controller = chatbotEl?.controller as ChatbotCoreController | undefined;
+          if (!controller) return;
+          // Create a sample File via Blob
+          const pdfBlob = new Blob([new Uint8Array([0x25,0x50,0x44,0x46])], { type: 'application/pdf' });
+          const txtBlob = new Blob(['Sample notes'], { type: 'text/plain' });
+          const pdf = new File([pdfBlob], 'sample.pdf', { type: 'application/pdf' });
+          const txt = new File([txtBlob], 'notes.txt', { type: 'text/plain' });
+          await controller.uploadFiles([pdf, txt]);
+        };
+      }
+
+      if (sendBtn) {
+        sendBtn.onclick = async () => {
+          const chatbotEl = document.querySelector('#attachments-upload-chatbot') as any;
+          const controller = chatbotEl?.controller as ChatbotCoreController | undefined;
+          if (!controller) return;
+          const files = controller.getUploadedFiles();
+          await controller.sendMessage('Analyze the attached files, please.', { files });
+          controller.clearFiles();
+        };
+      }
+    }, 0);
+
+    return html`
+      <div style="display: grid; gap: 12px; width: 520px;">
+        <div style="display:flex; gap: 8px; align-items:center;">
+          <button id="attach-sample-file" type="button">Attach sample files</button>
+          <button id="send-with-files" type="button">Send with files</button>
+          <span style="color:#666; font-size:12px;">Or use the Attach button inside the chatbot</span>
+        </div>
+        <div style="width: 500px; height: 600px;">
+          <nr-chatbot
+            id="attachments-upload-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .isRTL=${args.isRTL}
+            .disabled=${args.disabled}
+            .showSendButton=${args.showSendButton}
+            .autoScroll=${args.autoScroll}
+            .showThreads=${args.showThreads}
+            .boxed=${args.boxed}
+          ></nr-chatbot>
+        </div>
       </div>
     `;
   }

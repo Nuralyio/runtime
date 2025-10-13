@@ -502,11 +502,19 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     }
 
     // Use controller to send message
+    const filesToAttach = this.uploadedFiles && this.uploadedFiles.length > 0 ? [...this.uploadedFiles] : undefined;
     this.controller.sendMessage(this.currentInput.trim(), {
+      files: filesToAttach,
       metadata: {
         selectedModules: this.selectedModules
       }
     });
+    // Clear uploaded files from input context after sending
+    if (filesToAttach && filesToAttach.length > 0) {
+      try {
+        this.controller.clearFiles();
+      } catch {}
+    }
     
     this.clearInput();
     this.chatStarted = true;

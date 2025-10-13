@@ -13,6 +13,7 @@ import { ChatbotMessage, ChatbotLoadingType } from '../chatbot.types.js';
 // Import required components for template
 import '../../button/button.component.js';
 import '../../icon/icon.component.js';
+import '../../tag/tag.component.js';
 
 export interface MessageTemplateHandlers {
   onRetry: (message: ChatbotMessage) => void;
@@ -44,6 +45,13 @@ export function renderMessage(
       <div class="message__content" part="message-content">
         ${message?.metadata?.renderAsHtml ? unsafeHTML(message.text) : message.text}
       </div>
+      ${message.files && message.files.length > 0 ? html`
+        <div class="message__attachments" part="message-attachments" role="list" aria-label="${msg('Attached files')}">
+          ${message.files.map((f) => html`
+            <nr-tag class="message__attachment-tag" size="small">${f.name}</nr-tag>
+          `)}
+        </div>
+      ` : nothing}
       <div class="message__footer" part="message-footer">
         <div class="message__timestamp" part="message-timestamp">
           ${message.timestamp}
