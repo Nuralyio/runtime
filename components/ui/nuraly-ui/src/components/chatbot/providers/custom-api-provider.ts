@@ -1,0 +1,133 @@
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
+
+import type {
+    ChatbotProvider,
+    ProviderCapabilities,
+    ProviderConfig,
+    ChatbotContext
+} from '../core/types.js';
+
+/**
+ * Custom API provider for any REST/HTTP backend
+ * Can be extended for custom implementations
+ */
+export class CustomAPIProvider implements ChatbotProvider {
+  readonly id = 'custom-api';
+  readonly name = 'Custom API';
+  readonly capabilities: ProviderCapabilities = {
+    streaming: true,
+    fileUpload: false,
+    modules: false,
+    functions: false
+  };
+
+  protected apiUrl: string = '';
+  protected headers: Record<string, string> = {};
+  protected connected: boolean = false;
+
+  async connect(config: ProviderConfig): Promise<void> {
+    if (!config.apiUrl) {
+      throw new Error('API URL is required');
+    }
+
+    this.apiUrl = config.apiUrl;
+    
+    // Build headers
+    this.headers = {
+      'Content-Type': 'application/json',
+      ...config.headers
+    };
+
+    if (config.apiKey) {
+      this.headers['Authorization'] = `Bearer ${config.apiKey}`;
+    }
+
+    this.connected = true;
+    console.log('[CustomAPIProvider] Connected');
+  }
+
+  async disconnect(): Promise<void> {
+    this.connected = false;
+    console.log('[CustomAPIProvider] Disconnected');
+  }
+
+  isConnected(): boolean {
+    return this.connected;
+  }
+
+  async *sendMessage(text: string, context: ChatbotContext): AsyncIterator<string> {
+    if (!this.connected) {
+      throw new Error('Provider not connected');
+    }
+
+    const payload = this.buildPayload(text, context);
+
+    const response = await fetch(this.apiUrl, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.statusText}`);
+    }
+
+    if (!response.body) {
+      throw new Error('Response body is null');
+    }
+
+    // Check if response is streaming
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('text/event-stream') || contentType?.includes('stream')) {
+      // Handle streaming response
+      const streamIterator = this.handleStreamResponse(response);
+      let result = await streamIterator.next();
+      while (!result.done) {
+        yield result.value;
+        result = await streamIterator.next();
+      }
+    } else {
+      // Handle non-streaming response
+      const data = await response.json();
+      yield this.extractMessage(data);
+    }
+  }
+
+  protected async *handleStreamResponse(response: Response): AsyncIterator<string> {
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        yield chunk;
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  }
+
+  protected buildPayload(text: string, context: ChatbotContext): any {
+    return {
+      userMessage: text,
+      variables: context.metadata || {},
+      stream: true
+    };
+  }
+
+  protected extractMessage(data: any): string {
+    // Override this method to extract message from your API response
+    return data.message || data.text || data.response || JSON.stringify(data);
+  }
+
+  onError(error: Error): void {
+    console.error('[CustomAPIProvider] Error:', error);
+  }
+}

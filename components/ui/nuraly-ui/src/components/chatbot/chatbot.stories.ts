@@ -6,7 +6,19 @@
 
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import { ChatbotMessage, ChatbotSuggestion, ChatbotSender, ChatbotSize, ChatbotVariant, ChatbotLoadingType, ChatbotThread } from './chatbot.types.js';
+import {
+  ChatbotMessage,
+  ChatbotSuggestion,
+  ChatbotSender,
+  ChatbotSize,
+  ChatbotVariant,
+  ChatbotLoadingType,
+  ChatbotModule
+} from './chatbot.types.js';
+
+// Import the core controller and providers
+import { ChatbotCoreController } from './core/chatbot-core.controller.js';
+import { MockProvider } from './providers/mock-provider.js';
 
 // Import shared theme system
 import '../../shared/themes/carbon/index.css';
@@ -27,7 +39,36 @@ const meta: Meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A versatile chatbot component with message handling, suggestions, and typing indicators.'
+        component: `
+# Chatbot Component with Controller Architecture
+
+A modern, controller-based chatbot component that separates UI from business logic.
+
+## Architecture
+
+- **ChatbotCoreController**: Pure business logic, framework-agnostic
+- **Providers**: Pluggable AI/API backends (OpenAI, Custom, Mock)
+- **UI Component**: Lit-based web component that renders the chatbot
+
+## Basic Usage
+
+\`\`\`javascript
+import { ChatbotCoreController, MockProvider } from '@nuraly/chatbot';
+
+// Create controller with provider
+const controller = new ChatbotCoreController({
+  provider: new MockProvider(),
+  ui: {
+    onStateChange: (state) => {
+      chatbot.messages = state.messages;
+    }
+  }
+});
+
+// Attach to component
+chatbot.controller = controller;
+\`\`\`
+        `
       }
     }
   },
@@ -55,10 +96,6 @@ const meta: Meta = {
       control: { type: 'boolean' },
       description: 'Disable input and interactions'
     },
-    isBotTyping: {
-      control: { type: 'boolean' },
-      description: 'Show typing indicator'
-    },
     showSendButton: {
       control: { type: 'boolean' },
       description: 'Show send button'
@@ -66,10 +103,6 @@ const meta: Meta = {
     autoScroll: {
       control: { type: 'boolean' },
       description: 'Auto-scroll to new messages'
-    },
-    enableFileUpload: {
-      control: { type: 'boolean' },
-      description: 'Enable file upload functionality'
     },
     showThreads: {
       control: { type: 'boolean' },
@@ -82,22 +115,6 @@ const meta: Meta = {
     enableModuleSelection: {
       control: { type: 'boolean' },
       description: 'Enable module selection dropdown'
-    },
-    modules: {
-      control: { type: 'object' },
-      description: 'Available modules for selection'
-    },
-    selectedModules: {
-      control: { type: 'object' },
-      description: 'Array of selected module IDs'
-    },
-    moduleSelectionLabel: {
-      control: { type: 'text' },
-      description: 'Label for module selection button'
-    },
-    isQueryRunning: {
-      control: { type: 'boolean' },
-      description: 'Show stop button instead of send button (simulates active query)'
     }
   }
 };
@@ -105,177 +122,280 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-// Sample messages for stories
-const sampleMessages: ChatbotMessage[] = [
-  {
-    id: 'msg1',
-    sender: ChatbotSender.Bot,
-    text: 'Hello! How can I help you today?',
-    timestamp: '10:00 AM',
-    introduction: true
+// ===== SAMPLE DATA =====
+
+const sampleSuggestions: ChatbotSuggestion[] = [
+  { id: 'sugg1', text: 'What can you help me with?', enabled: true },
+  { id: 'sugg2', text: 'Tell me about your features', enabled: true },
+  { id: 'sugg3', text: 'How do I get started?', enabled: true },
+  { id: 'sugg4', text: 'Show me an example', enabled: true }
+];
+
+const sampleModules: ChatbotModule[] = [
+  { 
+    id: 'web-search', 
+    name: 'Web Search', 
+    description: 'Search the web for information',
+    icon: 'search',
+    enabled: true 
   },
-  {
-    id: 'msg2',
-    sender: ChatbotSender.User,
-    text: 'I need help with my account',
-    timestamp: '10:01 AM'
+  { 
+    id: 'file-analysis', 
+    name: 'File Analysis', 
+    description: 'Analyze uploaded files',
+    icon: 'file-text',
+    enabled: true 
   },
-  {
-    id: 'msg3',
-    sender: ChatbotSender.Bot,
-    text: 'I\'d be happy to help you with your account. What specific issue are you experiencing?',
-    timestamp: '10:01 AM'
+  { 
+    id: 'code-generation', 
+    name: 'Code Generation', 
+    description: 'Generate code snippets',
+    icon: 'code',
+    enabled: true 
   }
 ];
 
-const sampleSuggestions: ChatbotSuggestion[] = [
-  { id: 'sugg1', text: 'Check account balance', enabled: true },
-  { id: 'sugg2', text: 'Update personal information', enabled: true },
-  { id: 'sugg3', text: 'Reset password', enabled: true },
-  { id: 'sugg4', text: 'Contact support', enabled: true }
-];
+// ===== HELPER FUNCTIONS =====
 
+/**
+ * Create a controller and sync it with a chatbot element
+ */
+function createControllerForElement(element: any, providerConfig: any = {}) {
+  const controller = new ChatbotCoreController({
+    provider: new MockProvider(providerConfig),
+    ui: {
+      onStateChange: (state) => {
+        element.messages = state.messages;
+        element.threads = state.threads;
+        element.isBotTyping = state.isTyping;
+        element.chatStarted = state.messages.length > 0;
+      },
+      onTypingStart: () => {
+        element.isBotTyping = true;
+      },
+      onTypingEnd: () => {
+        element.isBotTyping = false;
+      }
+    }
+  });
+
+  return controller;
+}
+
+// ===== STORIES =====
+
+/**
+ * Default chatbot with mock provider - Fully interactive!
+ * Try asking questions and see contextual responses.
+ */
 export const Default: Story = {
   args: {
-    messages: [],
-    suggestions: sampleSuggestions,
     size: ChatbotSize.Medium,
     variant: ChatbotVariant.Default,
     isRTL: false,
     disabled: false,
-    isBotTyping: false,
     showSendButton: true,
     autoScroll: true,
-    enableFileUpload: true,
     showThreads: false,
-    boxed: false,
-    maxFiles: 5,
-    maxFileSize: 10 * 1024 * 1024, // 10MB
-    allowedFileTypes: ['image/*', 'text/*', 'application/pdf', 'application/json']
-  },
-  render: (args) => html`
-    <div style="width: 500px; height: 600px; ">
-      <nr-chatbot
-        .messages=${args.messages}
-        .suggestions=${args.suggestions}
-        .size=${args.size}
-        .variant=${args.variant}
-        .isRTL=${args.isRTL}
-        .disabled=${args.disabled}
-        .isBotTyping=${args.isBotTyping}
-        .showSendButton=${args.showSendButton}
-        .autoScroll=${args.autoScroll}
-        .enableFileUpload=${args.enableFileUpload}
-        .showThreads=${args.showThreads}
-        .boxed=${args.boxed}
-        .maxFiles=${args.maxFiles}
-        .maxFileSize=${args.maxFileSize}
-        .allowedFileTypes=${args.allowedFileTypes}
-  @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-  @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-  @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-  @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
-      ></nr-chatbot>
-    </div>
-  `
-};
-
-export const WithMessages: Story = {
-  args: {
-    ...Default.args,
-    messages: sampleMessages,
-    chatStarted: true
-  },
-  render: Default.render
-};
-
-export const WithTypingIndicator: Story = {
-  args: {
-    ...WithMessages.args,
-    isBotTyping: true,
-    loadingIndicator: ChatbotLoadingType.Dots
-  },
-  render: Default.render
-};
-
-export const Interactive: Story = {
-  args: {
-    ...Default.args,
-    enableFileUpload: true
+    boxed: false
   },
   render: (args) => {
-    let messages: ChatbotMessage[] = [...(args.messages || [])];
-    let suggestions: ChatbotSuggestion[] = [...sampleSuggestions];
-    let chatStarted = false;
-
-    const handleMessageSent = (e: CustomEvent) => {
-      const userMessage = e.detail.message;
-      messages = [...messages, userMessage];
-      chatStarted = true;
-      
-      // Simulate 10 bot responses with 200ms intervals
-      for (let i = 0; i < 10; i++) {
-        setTimeout(() => {
-          const botMessage: ChatbotMessage = {
-            id: `bot_${Date.now()}_${i}`,
-            sender: ChatbotSender.Bot,
-            text: `Bot response ${i + 1}/10: I received your message "${userMessage.text}". This is message ${i + 1} of 10.`,
-            timestamp: new Date().toLocaleTimeString()
-          };
-          messages = [...messages, botMessage];
-          
-          // Update the component
-          const chatbot = document.querySelector('nr-chatbot');
-          if (chatbot) {
-            (chatbot as any).messages = messages;
-            (chatbot as any).chatStarted = chatStarted;
-            (chatbot as any).currentInput = '';
-            
-            // Set typing indicator for all except the last message
-            if (i < 9) {
-              (chatbot as any).isBotTyping = true;
-            } else {
-              (chatbot as any).isBotTyping = false;
-            }
-          }
-        }, 200 * (i + 1)); // 200ms intervals: 200, 400, 600, 800, etc.
+    setTimeout(() => {
+      const chatbot = document.querySelector('nr-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 600,
+          streaming: true,
+          streamingSpeed: 4,
+          streamingInterval: 25,
+          contextualResponses: true
+        });
+        chatbot.controller = controller;
+        chatbot.suggestions = sampleSuggestions;
       }
-    };
-
-    const handleSuggestionClicked = (e: CustomEvent) => {
-      const suggestion = e.detail.suggestion;
-      suggestions = suggestions.filter(s => s.id !== suggestion.id);
-      
-      const chatbot = document.querySelector('nr-chatbot');
-      if (chatbot) {
-        (chatbot as any).suggestions = suggestions;
-        (chatbot as any).currentInput = suggestion.text;
-      }
-    };
+    }, 0);
 
     return html`
-      <div style="width: 500px; height: 600px;  border-radius: 8px;">
+      <div style="width: 500px; height: 600px;">
         <nr-chatbot
-          .messages=${messages}
-          .suggestions=${suggestions}
-          .chatStarted=${chatStarted}
           .size=${args.size}
           .variant=${args.variant}
-          .enableFileUpload=${args.enableFileUpload}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
           .boxed=${args.boxed}
-          .maxFiles=${args.maxFiles}
-          .maxFileSize=${args.maxFileSize}
-          .allowedFileTypes=${args.allowedFileTypes}
-          @nr-chatbot-message-sent=${handleMessageSent}
-          @nr-chatbot-suggestion-clicked=${handleSuggestionClicked}
-          @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-          @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
         ></nr-chatbot>
       </div>
     `;
   }
 };
 
+/**
+ * Chatbot with streaming responses
+ */
+export const WithStreaming: Story = {
+  args: {
+    ...Default.args
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#streaming-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          streaming: true,
+          streamingSpeed: 3,
+          streamingInterval: 30,
+          contextualResponses: true
+        });
+        chatbot.controller = controller;
+        chatbot.suggestions = sampleSuggestions;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="streaming-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Chatbot with thread support - Create multiple conversations!
+ * Try creating new threads and switching between them.
+ */
+export const WithThreads: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#threaded-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        // Create controller with thread support enabled
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 5,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          enableThreads: true,
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'thread1', text: 'Start a conversation about AI', enabled: true },
+          { id: 'thread2', text: 'Ask about programming', enabled: true },
+          { id: 'thread3', text: 'Create a new thread', enabled: true },
+          { id: 'thread4', text: 'Switch between threads', enabled: true }
+        ];
+        chatbot.enableThreadCreation = true;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 800px; height: 600px;">
+        <nr-chatbot
+          id="threaded-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Chatbot with module selection - Select modules and chat!
+ * Try selecting different modules before sending messages.
+ */
+export const WithModules: Story = {
+  args: {
+    ...Default.args,
+    enableModuleSelection: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#module-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          streaming: true,
+          streamingSpeed: 5,
+          streamingInterval: 20,
+          contextualResponses: true
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'mod1', text: 'Search the web for information', enabled: true },
+          { id: 'mod2', text: 'Analyze this file', enabled: true },
+          { id: 'mod3', text: 'Generate some code', enabled: true },
+          { id: 'mod4', text: 'What modules are available?', enabled: true }
+        ];
+        chatbot.modules = sampleModules;
+        chatbot.enableModuleSelection = true;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="module-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Boxed layout (ChatGPT-style) - Full-screen interactive experience!
+ * Experience a ChatGPT-like interface with centered conversation.
+ */
 export const BoxedLayout: Story = {
   args: {
     ...Default.args,
@@ -284,725 +404,350 @@ export const BoxedLayout: Story = {
   parameters: {
     layout: 'fullscreen'
   },
-  render: (args) => html`
-    <div style="width: 100vw; height: 100vh;">
-      <nr-chatbot
-        .messages=${args.messages}
-        .suggestions=${args.suggestions}
-        .size=${args.size}
-        .variant=${args.variant}
-        .isRTL=${args.isRTL}
-        .disabled=${args.disabled}
-        .isBotTyping=${args.isBotTyping}
-        .showSendButton=${args.showSendButton}
-        .autoScroll=${args.autoScroll}
-        .enableFileUpload=${args.enableFileUpload}
-        .showThreads=${args.showThreads}
-        .boxed=${args.boxed}
-        .maxFiles=${args.maxFiles}
-        .maxFileSize=${args.maxFileSize}
-        .allowedFileTypes=${args.allowedFileTypes}
-  @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-  @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-  @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-  @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
-      ></nr-chatbot>
-    </div>
-  `
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#boxed-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 400,
+          streaming: true,
+          streamingSpeed: 6,
+          streamingInterval: 15,
+          contextualResponses: true
+        });
+        chatbot.controller = controller;
+        chatbot.suggestions = sampleSuggestions;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 100vw; height: 100vh; background: var(--nr-color-background, #f5f5f5);">
+        <nr-chatbot
+          id="boxed-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
 };
 
-// Sample modules for module selection story
-const sampleModules = [
-  {
-    id: 'nlp',
-    name: 'NLP',
-    description: 'Advanced text analysis and understanding',
-    enabled: true,
-    metadata: { category: 'AI', version: '2.0' }
-  },
-  {
-    id: 'vision',
-    name: 'Vision',
-    description: 'Image and video analysis',
-    icon: 'eye',
-    enabled: true,
-    metadata: { category: 'AI', version: '1.5' }
-  },
-  {
-    id: 'search',
-    name: 'Search',
-    description: 'Search the web for information',
-    icon: 'search',
-    enabled: true,
-    metadata: { category: 'Tools', version: '1.0' }
-  },
-  {
-    id: 'code',
-    name: 'Code',
-    description: 'Analyze and generate code',
-    icon: 'code',
-    enabled: true,
-    metadata: { category: 'Development', version: '2.1' }
-  },
-  {
-    id: 'data',
-    name: 'Data',
-    description: 'Statistical analysis and data processing',
-    icon: 'chart-bar',
-    enabled: false,
-    metadata: { category: 'Analytics', version: '1.0' }
-  }
-];
-
-export const BoxedWithMessages: Story = {
+/**
+ * Interactive demo with initial messages
+ */
+export const WithInitialMessages: Story = {
   args: {
-    ...BoxedLayout.args,
-    messages: sampleMessages,
-    chatStarted: true,
-    enableModuleSelection: true,
-    modules: sampleModules,
-    selectedModules: ['nlp']
+    ...Default.args
+  },
+  render: (args) => {
+    const initialMessages: ChatbotMessage[] = [
+      {
+        id: 'welcome-1',
+        sender: ChatbotSender.Bot,
+        text: 'Hello! 👋 Welcome to the chatbot demo. I\'m powered by a mock provider that simulates realistic conversations.',
+        timestamp: new Date().toISOString(),
+        introduction: true
+      },
+      {
+        id: 'welcome-2',
+        sender: ChatbotSender.Bot,
+        text: 'Try asking me questions! I can respond contextually to greetings, questions about features, and more.',
+        timestamp: new Date().toISOString()
+      }
+    ];
+
+    setTimeout(() => {
+      const chatbot = document.querySelector('#initial-messages-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 600,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 25,
+            contextualResponses: true
+          }),
+          initialMessages,
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = sampleSuggestions;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="initial-messages-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * RTL (Right-to-Left) layout demo - Interactive Arabic interface!
+ * Try the Arabic suggestions or type your own messages.
+ */
+export const RTLLayout: Story = {
+  args: {
+    ...Default.args,
+    isRTL: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#rtl-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          streaming: true,
+          streamingSpeed: 3,
+          streamingInterval: 30,
+          contextualResponses: true
+        });
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'rtl1', text: 'مرحبا كيف حالك؟', enabled: true },
+          { id: 'rtl2', text: 'ما هي الميزات المتاحة؟', enabled: true },
+          { id: 'rtl3', text: 'كيف يمكنني البدء؟', enabled: true },
+          { id: 'rtl4', text: 'أخبرني عن نفسك', enabled: true }
+        ];
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="rtl-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Different size variants - All fully interactive!
+ */
+export const SizeVariants: Story = {
+  render: () => {
+    ['small', 'medium', 'large'].forEach((size) => {
+      setTimeout(() => {
+        const chatbot = document.querySelector(`#chatbot-${size}`) as any;
+        if (chatbot && !chatbot.controller) {
+          const controller = createControllerForElement(chatbot, {
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 25,
+            contextualResponses: true
+          });
+          chatbot.controller = controller;
+          chatbot.suggestions = sampleSuggestions;
+        }
+      }, 0);
+    });
+
+    return html`
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+          <h3>Small</h3>
+          <div style="width: 100%; height: 400px;">
+            <nr-chatbot
+              id="chatbot-small"
+              .size=${ChatbotSize.Small}
+            ></nr-chatbot>
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+          <h3>Medium</h3>
+          <div style="width: 100%; height: 500px;">
+            <nr-chatbot
+              id="chatbot-medium"
+              .size=${ChatbotSize.Medium}
+            ></nr-chatbot>
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+          <h3>Large</h3>
+          <div style="width: 100%; height: 600px;">
+            <nr-chatbot
+              id="chatbot-large"
+              .size=${ChatbotSize.Large}
+            ></nr-chatbot>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Custom provider configuration demo
+ */
+export const CustomConfiguration: Story = {
+  args: {
+    ...Default.args
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#custom-config-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        // Create controller with custom mock responses
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 400,
+            streaming: true,
+            streamingSpeed: 6,
+            streamingInterval: 20,
+            contextualResponses: true,
+            customResponses: [
+              "That's a great question! Let me provide you with a detailed answer...",
+              "I understand your concern. Here's what I can tell you:",
+              "Based on my knowledge, I would recommend the following approach:",
+              "Excellent point! This is an important topic to discuss.",
+              "Let me break this down for you in a simple way:"
+            ]
+          }),
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            showNotification: (message, type) => {
+              console.log(`[${type.toUpperCase()}]`, message);
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        chatbot.suggestions = sampleSuggestions;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="custom-config-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Boxed layout with threads - ChatGPT-style with conversation management
+ * Create multiple conversations and switch between them seamlessly!
+ */
+export const BoxedWithThreads: Story = {
+  args: {
+    ...Default.args,
+    boxed: true,
+    showThreads: true
   },
   parameters: {
     layout: 'fullscreen'
   },
   render: (args) => {
-    const handleModulesSelected = (e: CustomEvent) => {
-      console.log('Modules selected:', e.detail);
-      console.log('Selected module IDs:', e.detail.metadata.selectedModuleIds);
-      console.log('Selected modules:', e.detail.metadata.selectedModules);
-    };
+    setTimeout(() => {
+      const chatbot = document.querySelector('#boxed-threads-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        // Create controller with thread support and file upload enabled
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 5,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          enableThreads: true,
+          enableFileUpload: true,
+          maxFileSize: 10 * 1024 * 1024, // 10MB
+          maxFiles: 5,
+          allowedFileTypes: ['image/*', 'application/pdf', 'text/*', 'video/*', 'audio/*'],
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+              chatbot.uploadedFiles = state.uploadedFiles;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            },
+            focusInput: () => {
+              chatbot.focusInput();
+            },
+            showNotification: (message, type) => {
+              console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+          }
+        });
+        
+        chatbot.controller = controller;
+        //chatbot.suggestions;
+        chatbot.enableThreadCreation = true;
+        chatbot.enableFileUpload = true;
+        chatbot.actionButtons = [
+          { type: 'attach', enabled: true }
+        ];
+      }
+    }, 0);
 
     return html`
-      <div style="width: 100vw; height: 100vh;">
+      <div style="width: 100vw; height: 100vh; background: var(--nr-color-background, #f5f5f5);">
         <nr-chatbot
-          .messages=${args.messages}
-          .suggestions=${args.suggestions}
+          id="boxed-threads-chatbot"
           .size=${args.size}
           .variant=${args.variant}
           .isRTL=${args.isRTL}
           .disabled=${args.disabled}
-          .isBotTyping=${args.isBotTyping}
           .showSendButton=${args.showSendButton}
           .autoScroll=${args.autoScroll}
-          .enableFileUpload=${args.enableFileUpload}
           .showThreads=${args.showThreads}
           .boxed=${args.boxed}
-          .maxFiles=${args.maxFiles}
-          .maxFileSize=${args.maxFileSize}
-          .allowedFileTypes=${args.allowedFileTypes}
-          .enableModuleSelection=${args.enableModuleSelection}
-          .modules=${args.modules}
-          .selectedModules=${args.selectedModules}
-          @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-          @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-          @nr-chatbot-file-uploaded=${(e: CustomEvent) => console.log('File uploaded:', e.detail)}
-          @nr-chatbot-file-error=${(e: CustomEvent) => console.log('File error:', e.detail)}
-          @nr-chatbot-modules-selected=${handleModulesSelected}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
-};
-
-export const WithModuleSelection: Story = {
-  args: {
-    ...Default.args,
-    enableModuleSelection: true,
-    modules: sampleModules,
-    selectedModules: ['nlp', 'search']
-  },
-  render: (args) => {
-    const handleModulesSelected = (e: CustomEvent) => {
-      console.log('Modules selected:', e.detail);
-      console.log('Selected module IDs:', e.detail.metadata.selectedModuleIds);
-      console.log('Selected modules:', e.detail.metadata.selectedModules);
-    };
-
-    return html`
-      <div style="width: 500px; height: 600px; border-radius: 8px;">
-        <nr-chatbot
-          .messages=${args.messages}
-          .suggestions=${args.suggestions}
-          .size=${args.size}
-          .variant=${args.variant}
-          .enableModuleSelection=${args.enableModuleSelection}
-          .modules=${args.modules}
-          .selectedModules=${args.selectedModules}
-          .enableFileUpload=${args.enableFileUpload}
-          @nr-chatbot-message-sent=${(e: CustomEvent) => console.log('Message sent:', e.detail)}
-          @nr-chatbot-modules-selected=${handleModulesSelected}
-          @nr-chatbot-suggestion-clicked=${(e: CustomEvent) => console.log('Suggestion clicked:', e.detail)}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
-};
-
-export const WithModuleSelectionAndMessages: Story = {
-  args: {
-    ...WithModuleSelection.args,
-    messages: sampleMessages,
-    chatStarted: true
-  },
-  render: WithModuleSelection.render
-};
-
-/**
- * Right Sidebar Copilot Style
- * Chatbot positioned on the right side similar to GitHub Copilot or VSCode Copilot
- */
-export const RightSidebarCopilot: Story = {
-  args: {
-    messages: sampleMessages,
-    suggestions: sampleSuggestions,
-    size: ChatbotSize.Medium,
-    variant: ChatbotVariant.Default,
-    showSendButton: true,
-    autoScroll: true,
-    enableFileUpload: true,
-    chatStarted: true,
-    enableModuleSelection: true,
-    modules: sampleModules,
-    selectedModules: ['nlp'],
-    isBotTyping: false,
-    isQueryRunning: false
-  },
-  parameters: {
-    layout: 'fullscreen',
-    docs: {
-      description: {
-        story: 'Chatbot positioned as a right sidebar, similar to GitHub Copilot or VSCode Copilot chat interface.'
-      }
-    }
-  },
-  render: (args) => {
-    return html`
-      <style>
-        .copilot-layout {
-          display: flex;
-          height: 100vh;
-          background: #f5f5f5;
-        }
-        
-        .copilot-main-content {
-          flex: 1;
-          background: #ffffff;
-          border-right: 1px solid #e0e0e0;
-        }
-        
-        .copilot-sidebar {
-          width: 470px;
-          background: #ffffff;
-        }
-      </style>
-      
-      <div class="copilot-layout">
-        <div class="copilot-main-content"></div>
-        
-        <div class="copilot-sidebar">
-          <nr-chatbot
-            .messages=${args.messages}
-            .suggestions=${args.suggestions}
-            .size=${args.size}
-            .variant=${args.variant}
-            .showSendButton=${args.showSendButton}
-            .autoScroll=${args.autoScroll}
-            .enableFileUpload=${args.enableFileUpload}
-            .chatStarted=${args.chatStarted}
-            .enableModuleSelection=${args.enableModuleSelection}
-            .modules=${args.modules}
-            .selectedModules=${args.selectedModules}
-            .isBotTyping=${args.isBotTyping}
-            .isQueryRunning=${args.isQueryRunning}
-          ></nr-chatbot>
-        </div>
-      </div>
-    `;
-  }
-};
-
-/**
- * Right Sidebar Copilot - Compact
- * Narrower sidebar for split screen coding
- */
-export const RightSidebarCopilotCompact: Story = {
-  args: {
-    ...RightSidebarCopilot.args,
-    messages: [
-      {
-        id: '1',
-        text: 'Hi! I can help you with code. What would you like to know?',
-        sender: ChatbotSender.Bot,
-        timestamp: new Date().toISOString()
-      }
-    ]
-  },
-  parameters: {
-    layout: 'fullscreen',
-    docs: {
-      description: {
-        story: 'Compact version with a narrower sidebar (300px) for better split-screen coding experience.'
-      }
-    }
-  },
-  render: (args) => {
-    return html`
-      <style>
-        .copilot-layout-compact {
-          display: flex;
-          width: 100vw;
-          height: 100vh;
-          background: #f5f5f5;
-        }
-        
-        .copilot-main-compact {
-          flex: 1;
-          background: #ffffff;
-          border-right: 1px solid #e0e0e0;
-        }
-        
-        .copilot-sidebar-compact {
-          width: 300px;
-          background: #ffffff;
-        }
-      </style>
-      
-      <div class="copilot-layout-compact">
-        <div class="copilot-main-compact"></div>
-        
-        <div class="copilot-sidebar-compact">
-          <nr-chatbot
-            .messages=${args.messages}
-            .suggestions=${args.suggestions}
-            .size=${args.size}
-            .variant=${args.variant}
-            .showSendButton=${args.showSendButton}
-            .autoScroll=${args.autoScroll}
-            .enableFileUpload=${args.enableFileUpload}
-            .chatStarted=${args.chatStarted}
-            .enableModuleSelection=${args.enableModuleSelection}
-            .modules=${args.modules}
-            .selectedModules=${args.selectedModules}
-            .isBotTyping=${args.isBotTyping}
-            .isQueryRunning=${args.isQueryRunning}
-          ></nr-chatbot>
-        </div>
-      </div>
-    `;
-  }
-};
-
-/**
- * Stop Button Demo
- * Demonstrates the stop button functionality when a query is running
- */
-export const StopButtonDemo: Story = {
-  args: {
-    messages: sampleMessages,
-    suggestions: [],
-    size: ChatbotSize.Medium,
-    variant: ChatbotVariant.Default,
-    showSendButton: true,
-    autoScroll: true,
-    enableFileUpload: true,
-    chatStarted: true,
-    enableModuleSelection: true,
-    modules: sampleModules,
-    selectedModules: ['nlp'],
-    isBotTyping: true,
-    isQueryRunning: true // This shows the stop button instead of send button
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Demonstrates the stop button that appears when a query is running. Toggle the isQueryRunning control to see the button change between Send and Stop.'
-      }
-    }
-  },
-  render: (args) => {
-    return html`
-      <div style="width: 400px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
-        <nr-chatbot
-          .messages=${args.messages}
-          .suggestions=${args.suggestions}
-          .size=${args.size}
-          .variant=${args.variant}
-          .showSendButton=${args.showSendButton}
-          .autoScroll=${args.autoScroll}
-          .enableFileUpload=${args.enableFileUpload}
-          .chatStarted=${args.chatStarted}
-          .enableModuleSelection=${args.enableModuleSelection}
-          .modules=${args.modules}
-          .selectedModules=${args.selectedModules}
-          .isBotTyping=${args.isBotTyping}
-          .isQueryRunning=${args.isQueryRunning}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
-};
-
-// Sample threads data
-const sampleThreads = [
-  {
-    id: 'thread_1',
-    title: 'Account Help',
-    messages: [
-      {
-        id: 'msg1',
-        sender: ChatbotSender.Bot,
-        text: 'Hello! How can I help you today?',
-        timestamp: '10:00 AM',
-        introduction: true
-      },
-      {
-        id: 'msg2',
-        sender: ChatbotSender.User,
-        text: 'I need help with my account',
-        timestamp: '10:01 AM'
-      },
-      {
-        id: 'msg3',
-        sender: ChatbotSender.Bot,
-        text: 'I\'d be happy to help you with your account. What specific issue are you experiencing?',
-        timestamp: '10:01 AM'
-      }
-    ],
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000).toISOString()
-  },
-  {
-    id: 'thread_2',
-    title: 'Product Information',
-    messages: [
-      {
-        id: 'msg4',
-        sender: ChatbotSender.User,
-        text: 'Tell me about your products',
-        timestamp: '11:30 AM'
-      },
-      {
-        id: 'msg5',
-        sender: ChatbotSender.Bot,
-        text: 'We offer a wide range of products including software solutions, cloud services, and consulting.',
-        timestamp: '11:30 AM'
-      }
-    ],
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-    updatedAt: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: 'thread_3',
-    title: 'Technical Support',
-    messages: [
-      {
-        id: 'msg6',
-        sender: ChatbotSender.User,
-        text: 'I\'m having technical issues',
-        timestamp: 'Yesterday'
-      },
-      {
-        id: 'msg7',
-        sender: ChatbotSender.Bot,
-        text: 'I\'m sorry to hear that. Can you describe the issue you\'re experiencing?',
-        timestamp: 'Yesterday'
-      }
-    ],
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString()
-  }
-];
-
-/**
- * With Thread Sidebar
- * Demonstrates the thread sidebar feature that allows users to manage multiple conversation threads
- */
-export const WithThreadSidebar: Story = {
-  args: {
-    messages: sampleThreads[0].messages,
-    suggestions: sampleSuggestions,
-    size: ChatbotSize.Medium,
-    variant: ChatbotVariant.Default,
-    showSendButton: true,
-    autoScroll: true,
-    enableFileUpload: true,
-    chatStarted: true,
-    showThreads: true,
-    threads: sampleThreads,
-    activeThreadId: 'thread_1'
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Showcases the thread sidebar feature that allows users to switch between multiple conversation threads. Each thread maintains its own message history. Click the menu button in the header to toggle the sidebar visibility.'
-      }
-    }
-  },
-  render: (args) => {
-    return html`
-      <div style="width: 800px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
-        <nr-chatbot
-          .messages=${args.messages}
-          .suggestions=${args.suggestions}
-          .size=${args.size}
-          .variant=${args.variant}
-          .showSendButton=${args.showSendButton}
-          .autoScroll=${args.autoScroll}
-          .enableFileUpload=${args.enableFileUpload}
-          .chatStarted=${args.chatStarted}
-          .showThreads=${args.showThreads}
-          .threads=${args.threads}
-          .activeThreadId=${args.activeThreadId}
-          @nr-chatbot-thread-selected=${(e: CustomEvent) => console.log('Thread selected:', e.detail)}
-          @nr-chatbot-thread-created=${(e: CustomEvent) => console.log('Thread created:', e.detail)}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
-};
-
-/**
- * Thread Sidebar Interactive
- * Interactive demo of thread management with the ability to create new threads and switch between them
- */
-export const ThreadSidebarInteractive: Story = {
-  args: {
-    messages: [],
-    suggestions: sampleSuggestions,
-    size: ChatbotSize.Medium,
-    variant: ChatbotVariant.Default,
-    showSendButton: true,
-    autoScroll: true,
-    enableFileUpload: true,
-    chatStarted: false,
-    showThreads: true,
-    threads: [],
-    activeThreadId: undefined
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Interactive demo where you can create new threads, switch between them, and see messages isolated per thread. Use the menu button to toggle sidebar visibility.'
-      }
-    }
-  },
-  render: (args) => {
-    let threads = [...sampleThreads];
-    let activeThreadId = 'thread_1';
-    let messages = threads.find(t => t.id === activeThreadId)?.messages || [];
-    
-    const handleThreadSelected = (e: CustomEvent) => {
-      activeThreadId = e.detail.threadId;
-      const selectedThread = threads.find(t => t.id === activeThreadId);
-      messages = selectedThread?.messages || [];
-      
-      const chatbot = document.querySelector('nr-chatbot');
-      if (chatbot) {
-        (chatbot as any).messages = messages;
-        (chatbot as any).activeThreadId = activeThreadId;
-      }
-    };
-    
-    const handleThreadCreated = (e: CustomEvent) => {
-      const newThread = e.detail.thread;
-      threads = [...threads, newThread];
-      activeThreadId = newThread.id;
-      messages = [];
-      
-      const chatbot = document.querySelector('nr-chatbot');
-      if (chatbot) {
-        (chatbot as any).threads = threads;
-        (chatbot as any).messages = messages;
-        (chatbot as any).activeThreadId = activeThreadId;
-      }
-    };
-    
-    const handleMessageSent = (e: CustomEvent) => {
-      const userMessage = e.detail.message;
-      messages = [...messages, userMessage];
-      
-      // Update the thread with new message
-      threads = threads.map(t => 
-        t.id === activeThreadId 
-          ? { ...t, messages: [...messages] }
-          : t
-      );
-      
-      const chatbot = document.querySelector('nr-chatbot');
-      if (chatbot) {
-        (chatbot as any).messages = messages;
-        (chatbot as any).threads = threads;
-      }
-      
-      // Simulate bot response
-      setTimeout(() => {
-        const botMessage: ChatbotMessage = {
-          id: `bot_${Date.now()}`,
-          sender: ChatbotSender.Bot,
-          text: `Response in thread: "${userMessage.text}"`,
-          timestamp: new Date().toLocaleTimeString()
-        };
-        messages = [...messages, botMessage];
-        
-        threads = threads.map(t => 
-          t.id === activeThreadId 
-            ? { ...t, messages: [...messages] }
-            : t
-        );
-        
-        if (chatbot) {
-          (chatbot as any).messages = messages;
-          (chatbot as any).threads = threads;
-        }
-      }, 1000);
-    };
-
-    return html`
-      <div style="width: 900px; height: 600px; border: 1px solid #e0e0e0; border-radius: 8px;">
-        <nr-chatbot
-          .messages=${messages}
-          .suggestions=${args.suggestions}
-          .size=${args.size}
-          .variant=${args.variant}
-          .showSendButton=${args.showSendButton}
-          .autoScroll=${args.autoScroll}
-          .enableFileUpload=${args.enableFileUpload}
-          .chatStarted=${true}
-          .showThreads=${true}
-          .enableThreadCreation=${true}
-          .threads=${threads}
-          .activeThreadId=${activeThreadId}
-          @nr-chatbot-thread-selected=${handleThreadSelected}
-          @nr-chatbot-thread-created=${handleThreadCreated}
-          @nr-chatbot-message-sent=${handleMessageSent}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
-};
-
-/**
- * Boxed layout with thread sidebar - ChatGPT-style interface
- */
-export const BoxedWithThreads: Story = {
-  args: {
-    size: 'medium',
-    variant: 'rounded',
-    showSendButton: true,
-    autoScroll: true,
-    enableFileUpload: true,
-    chatStarted: true,
-  },
-  render: (args) => {
-    const threads: ChatbotThread[] = [
-      {
-        id: 'thread_1',
-        title: 'Product Design Discussion',
-        messages: [
-          {
-            id: 'msg_1',
-            sender: 'user' as ChatbotSender,
-            text: 'Can you help me with product design?',
-            timestamp: '10:00 AM'
-          },
-          {
-            id: 'msg_2',
-            sender: 'bot' as ChatbotSender,
-            text: 'Of course! I\'d be happy to help with your product design. What specific aspects are you working on?',
-            timestamp: '10:00 AM'
-          }
-        ],
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        updatedAt: new Date(Date.now() - 3600000).toISOString()
-      },
-      {
-        id: 'thread_2',
-        title: 'Marketing Strategy',
-        messages: [
-          {
-            id: 'msg_3',
-            sender: 'user' as ChatbotSender,
-            text: 'What are some effective marketing strategies?',
-            timestamp: '9:30 AM'
-          },
-          {
-            id: 'msg_4',
-            sender: 'bot' as ChatbotSender,
-            text: 'Here are some key marketing strategies: 1) Content Marketing, 2) Social Media Marketing, 3) Email Campaigns, 4) SEO Optimization.',
-            timestamp: '9:31 AM'
-          }
-        ],
-        createdAt: new Date(Date.now() - 7200000).toISOString(),
-        updatedAt: new Date(Date.now() - 7200000).toISOString()
-      },
-      {
-        id: 'thread_3',
-        title: 'New Chat',
-        messages: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    ];
-
-    let activeThreadId = 'thread_3';
-    let messages: ChatbotMessage[] = [...(threads.find(t => t.id === activeThreadId)?.messages || [])];
-
-    const handleThreadSelected = (e: CustomEvent) => {
-      const threadId = e.detail.metadata.threadId;
-      activeThreadId = threadId;
-      const thread = threads.find(t => t.id === threadId);
-      if (thread) {
-        messages = [...thread.messages];
-      }
-    };
-
-    const handleThreadCreated = (e: CustomEvent) => {
-      const newThread = e.detail.metadata.thread;
-      threads.unshift(newThread);
-      activeThreadId = newThread.id;
-      messages = [];
-    };
-
-    const handleMessageSent = (e: CustomEvent) => {
-      const messageText = e.detail.message;
-      const newMessage: ChatbotMessage = {
-        id: `msg_${Date.now()}`,
-        sender: 'user' as ChatbotSender,
-        text: messageText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      messages = [...messages, newMessage];
-      
-      // Update the active thread
-      const activeThread = threads.find(t => t.id === activeThreadId);
-      if (activeThread) {
-        activeThread.messages = [...messages];
-        if (activeThread.title === 'New Chat' && messages.length === 1) {
-          activeThread.title = messageText.substring(0, 50) + (messageText.length > 50 ? '...' : '');
-        }
-      }
-    };
-
-    return html`
-      <div style="width: 100%; height: 100vh; max-width: 1400px; margin: 0 auto;">
-        <nr-chatbot
-          boxed
-          .messages=${messages}
-          .suggestions=${args.suggestions}
-          .size=${args.size}
-          .variant=${args.variant}
-          .showSendButton=${args.showSendButton}
-          .autoScroll=${args.autoScroll}
-          .enableFileUpload=${args.enableFileUpload}
-          .chatStarted=${true}
-          .showThreads=${true}
-          .enableThreadCreation=${true}
-          .threads=${threads}
-          .activeThreadId=${activeThreadId}
-          @nr-chatbot-thread-selected=${handleThreadSelected}
-          @nr-chatbot-thread-created=${handleThreadCreated}
-          @nr-chatbot-message-sent=${handleMessageSent}
         ></nr-chatbot>
       </div>
     `;
