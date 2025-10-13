@@ -127,8 +127,7 @@ export function renderChatbotMain(
             data.isTyping 
               ? renderBotTypingIndicator(
                   data.isTyping, 
-                  data.loadingIndicator || ChatbotLoadingType.Dots, 
-                  data.loadingText || ''
+                  data.loadingIndicator || ChatbotLoadingType.Spinner
                 )
               : nothing,
             handlers.message

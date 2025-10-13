@@ -148,7 +148,7 @@ function renderSendButton(
       aria-label="${data.isQueryRunning ? msg('Stop query') : msg('Send message')}"
       title="${data.isQueryRunning ? msg('Stop query') : msg('Send message')}"
     >
-      Send
+      ${data.isQueryRunning ? msg('Stop') : msg('Send')}
     </nr-button>
   `;
 }

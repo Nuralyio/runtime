@@ -429,7 +429,8 @@ export default css`
     align-items: center;
     gap: var(--chatbot-spacing-sm);
     background-color: var(--chatbot-bot-message-bg);
-    color: var(--chatbot-bot-message-text);
+    /* Set indicator color (affects spinner currentColor) */
+    color: var(--chatbot-loading-indicator-color, var(--nuraly-color-chatbot-accent, var(--chatbot-text-secondary)));
   }
 
   .dots {
@@ -440,7 +441,7 @@ export default css`
   .dots span {
     width: var(--nuraly-spacing-03, 0.5rem);
     height: var(--nuraly-spacing-03, 0.5rem);
-    background-color: var(--chatbot-text-secondary);
+    background-color: currentColor;
     border-radius: 50%;
     animation: typing-dots 1.4s infinite;
   }
@@ -456,6 +457,26 @@ export default css`
   .loading-text {
     font-style: italic;
     color: var(--chatbot-text-secondary);
+  }
+
+  /* Spinner indicator (for loadingIndicator = Spinner) */
+  .spinner {
+    --_size: var(--chatbot-spinner-size, 1.25rem);
+    --_bw: var(--chatbot-spinner-border-width, 2px);
+    --_color: var(--chatbot-spinner-color, currentColor);
+    --_speed: var(--chatbot-spinner-speed, 0.8s);
+
+    display: inline-block;
+    width: var(--_size);
+    height: var(--_size);
+    border: var(--_bw) solid transparent;
+    border-top-color: var(--_color);
+    border-radius: 50%;
+    animation: chatbot-spin var(--_speed) linear infinite;
+  }
+
+  @keyframes chatbot-spin {
+    to { transform: rotate(360deg); }
   }
 
   @keyframes typing-dots {

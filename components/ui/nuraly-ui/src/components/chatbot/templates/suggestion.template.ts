@@ -23,7 +23,7 @@ export function renderSuggestion(
 ): TemplateResult {
   return html`
     <div 
-      class="suggestion ${classMap({ 'suggestion--disabled': !suggestion.enabled })}" 
+      class="suggestion ${classMap({ 'suggestion--disabled': suggestion.enabled === false })}" 
       part="suggestion"
       role="button"
       tabindex="0"

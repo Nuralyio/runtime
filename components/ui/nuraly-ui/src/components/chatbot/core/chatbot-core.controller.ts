@@ -266,6 +266,13 @@ export class ChatbotCoreController {
   }
 
   /**
+   * Stop the current provider processing/stream (best-effort cancellation)
+   */
+  public stop(): void {
+    this.providerService.stopCurrentProcessing();
+  }
+
+  /**
    * Add a message programmatically (e.g., bot response)
    */
   public addMessage(data: Partial<ChatbotMessage>): ChatbotMessage {

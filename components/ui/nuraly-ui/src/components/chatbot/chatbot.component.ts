@@ -298,6 +298,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     if (state.currentThreadId) this.activeThreadId = state.currentThreadId;
     this.chatStarted = state.messages?.length > 0;
     this.isBotTyping = state.isTyping || false;
+    // Keep Stop button in sync with provider processing lifecycle
+    this.isQueryRunning = state.isProcessing || false;
   }
 
   private handleControllerMessageSent(_data: any): void {
@@ -306,8 +308,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private handleControllerMessageReceived(_data: any): void {
-    this.isQueryRunning = false;
-    this.isBotTyping = false;
+    // Do not force-reset here; rely on state.isProcessing/isTyping updates
   }
 
   private handleControllerError(data: any): void {
@@ -516,8 +517,11 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private handleStopQuery() {
-    this.isQueryRunning = false;
-    this.isBotTyping = false;
+    try {
+      this.controller?.stop();
+    } catch (e) {
+      console.warn('nr-chatbot: stop failed', e);
+    }
     
     this.dispatchEventWithMetadata('nr-chatbot-query-stopped', { 
       metadata: { action: 'stop' }
