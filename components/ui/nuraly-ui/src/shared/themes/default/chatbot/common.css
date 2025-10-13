@@ -65,7 +65,7 @@
 
   /* Boxed layout (ChatGPT-style) */
   --nuraly-spacing-chatbot-boxed-padding: 24px;
-  --nuraly-size-chatbot-boxed-max-width: 768px;
+  --nuraly-size-chatbot-boxed-max-width: 868px;
   --nuraly-size-chatbot-boxed-content-max-width: 768px;
   --nuraly-spacing-chatbot-boxed-content-padding: 24px;
   --nuraly-border-radius-chatbot-boxed: 12px;

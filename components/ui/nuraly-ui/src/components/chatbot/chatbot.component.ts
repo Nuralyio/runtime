@@ -19,15 +19,12 @@ import {
   ChatbotSize,
   ChatbotVariant,
   ChatbotLoadingType,
-  ChatbotConfig,
-  ChatbotEventDetail,
-  ChatbotFile,
   ChatbotThread,
   ChatbotModule,
+  ChatbotFile,
+  ChatbotAction,
   EMPTY_STRING
 } from './chatbot.types.js';
-
-import { DropdownItem } from '../dropdown/dropdown.types.js';
 
 import { SelectOption } from '../select/select.types.js';
 
@@ -37,93 +34,42 @@ import {
   ChatbotMainTemplateHandlers
 } from './templates/index.js';
 
-import {
-  ChatbotMessageController,
-  ChatbotKeyboardController,
-  ChatbotSuggestionController,
-  ChatbotMessageControllerHost,
-  ChatbotKeyboardControllerHost,
-  ChatbotSuggestionControllerHost,
-  ChatbotThreadController,
-  ChatbotThreadControllerHost,
-  ChatbotModuleController,
-  ChatbotModuleControllerHost,
-  ChatbotFileUploadController,
-  ChatbotFileUploadControllerHost,
-  ChatbotScrollController,
-  ChatbotScrollControllerHost
-} from './controllers/index.js';
+import { ChatbotCoreController } from './core/chatbot-core.controller.js';
 
 /**
- * Enhanced chatbot component with ChatGPT-like features including file upload, 
- * conversation threads, module selection, and modern AI assistant capabilities.
+ * Enhanced chatbot component powered by ChatbotCoreController.
  * 
- * @example
- * ```html
- * <nr-chatbot 
- *   .messages=${messages}
- *   .suggestions=${suggestions}
- *   .threads=${threads}
- *   .modules=${modules}
- *   .selectedModules=${selectedModuleIds}
- *   enableFileUpload
- *   enableModuleSelection
- *   mode="assistant"
- *   isRTL
- *   size="medium"
- *   variant="rounded">
- * </nr-chatbot>
- * ```
+ * Requires an external ChatbotCoreController to function.
  * 
- * @example Bot message with suggestions
+ * @example With ChatbotCoreController
  * ```javascript
- * chatbot.addMessage({
- *   sender: 'bot',
- *   text: 'How can I help you today?',
- *   timestamp: new Date().toLocaleTimeString(),
- *   suggestions: [
- *     { id: '1', text: 'Check status', icon: 'search' },
- *     { id: '2', text: 'Get help', icon: 'help' },
- *     { id: '3', text: 'Contact support', icon: 'email' }
- *   ]
+ * import { ChatbotCoreController, OpenAIProvider } from '@nuraly/chatbot';
+ * 
+ * const controller = new ChatbotCoreController({
+ *   provider: new OpenAIProvider(),
+ *   ui: {
+ *     onStateChange: (state) => {
+ *       chatbot.messages = state.messages;
+ *       chatbot.threads = state.threads;
+ *     },
+ *     onTypingStart: () => chatbot.isBotTyping = true,
+ *     onTypingEnd: () => chatbot.isBotTyping = false
+ *   }
  * });
+ * 
+ * chatbot.controller = controller;
  * ```
  * 
  * @fires nr-chatbot-message-sent - Message sent by user
- * @fires nr-chatbot-suggestion-clicked - Suggestion selected
- * @fires nr-chatbot-retry-requested - Retry requested for failed message
  * @fires nr-chatbot-input-changed - Input value changed
- * @fires nr-chatbot-file-uploaded - File uploaded successfully
- * @fires nr-chatbot-file-error - File upload error
- * @fires nr-chatbot-thread-created - New conversation thread created
- * @fires nr-chatbot-thread-selected - Thread selected
- * @fires nr-chatbot-modules-selected - Module selection changed
- * @fires nr-chatbot-query-stopped - Query stopped by user
- * 
- * @slot header - Custom header content
- * @slot footer - Custom footer content
- * @slot empty-state - Content shown when no messages
- * @slot thread-sidebar - Custom thread sidebar content
- * @slot module-selected-display - Custom display for selected modules (when enableModuleSelection is true)
  */
 @localized()
 @customElement('nr-chatbot')
-export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) 
-  implements ChatbotMessageControllerHost, ChatbotKeyboardControllerHost, 
-             ChatbotSuggestionControllerHost, ChatbotFileUploadControllerHost, 
-             ChatbotThreadControllerHost, ChatbotModuleControllerHost, ChatbotScrollControllerHost {
+export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
-    override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
+  override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
 
-  private messageController = new ChatbotMessageController(this);
-  private keyboardController = new ChatbotKeyboardController(this);
-  private suggestionController = new ChatbotSuggestionController(this);
-  private fileUploadController = new ChatbotFileUploadController(this);
-  private threadController = new ChatbotThreadController(this);
-  private moduleController = new ChatbotModuleController(this);
-  private scrollController = new ChatbotScrollController(this);
-
-  /** Array of chat messages */
+  /** Array of chat messages (synced from controller) */
   @property({type: Array}) 
   messages: ChatbotMessage[] = [];
 
@@ -171,10 +117,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @property({type: Boolean})
   disabled = false;
 
-  /** Chatbot configuration */
-  @property({type: Object})
-  config: ChatbotConfig = {};
-
   /** Custom placeholder text */
   @property({type: String})
   placeholder = msg('Type your message...');
@@ -186,10 +128,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   /** Auto-scroll to new messages */
   @property({type: Boolean})
   autoScroll = true;
-
-  /** Enable file upload functionality */
-  @property({type: Boolean})
-  enableFileUpload = false;
 
   /** Show thread sidebar */
   @property({type: Boolean})
@@ -215,23 +153,17 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @property({type: Boolean, reflect: true})
   boxed = false;
 
-  /** Maximum number of files that can be uploaded */
-  @property({type: Number})
-  maxFiles = 5;
+  /** Enable file upload functionality */
+  @property({type: Boolean})
+  enableFileUpload = false;
 
-  /** Maximum file size in bytes */
-  @property({type: Number})
-  maxFileSize = 10 * 1024 * 1024; // 10MB
-
-  /** Allowed file types */
+  /** Uploaded files (synced from controller) */
   @property({type: Array})
-  allowedFileTypes: string[] = [
-    'image/*', 
-    'text/*', 
-    'application/pdf',
-    'application/json',
-    'application/javascript'
-  ];
+  uploadedFiles: ChatbotFile[] = [];
+
+  /** Action buttons configuration */
+  @property({type: Array})
+  actionButtons: ChatbotAction[] = [];
 
   /** Enable module selection dropdown */
   @property({type: Boolean})
@@ -249,36 +181,21 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
   @property({type: String})
   moduleSelectionLabel = msg('Select Modules');
 
+  /** 
+   * ChatbotCoreController instance (REQUIRED).
+   * The component delegates all business logic to this controller.
+   */
+  @property({type: Object})
+  controller!: ChatbotCoreController;
+
   @state() private focused = false;
-  @state() private showFileUploadArea = false;
-  @state() private dragOver = false;
-  @state() private showUrlModal = false;
-  @state() private urlInputValue: string = '';
-  @state() private urlInputValid: boolean = false;
-  @state() private urlModalLoading: boolean = false;
-  @state() private urlModalError: string = '';
-  @state() private urlModalSelectedFile: File | null = null;
-  @state() private urlModalSelectedFileName: string = '';
-  @state() private isThreadSidebarOpen: boolean = true; // Control sidebar visibility
-  @state() private hasUserInteraction = false; // Track if user has sent a message
-  
-  /** File upload dropdown options */
-  private get fileUploadItems(): DropdownItem[] {
-    return [
-      {
-        id: 'from-computer',
-        label: 'From computer',
-        icon: 'folder-open',
-        value: 'computer'
-      },
-      {
-        id: 'from-url',
-        label: 'From URL',
-        icon: 'link',
-        value: 'url'
-      }
-    ];
-  }
+  @state() private hasUserInteraction = false;
+  @state() private isThreadSidebarOpen = true;
+  @state() private isUrlModalOpen = false;
+  @state() private urlInput = '';
+  @state() private urlModalError = '';
+  @state() private isUrlLoading = false;
+  @state() private selectedUrlFileName = '';
 
   /** Convert modules to select options */
   private get moduleSelectOptions(): SelectOption[] {
@@ -289,6 +206,96 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
       disabled: module.enabled === false,
       description: module.description
     }));
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    
+    // Setup controller integration
+    if (this.controller) {
+      this.setupControllerIntegration();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    
+    if (this.controller) {
+      this.cleanupControllerIntegration();
+    }
+  }
+
+  override updated(changedProperties: Map<string, any>): void {
+    super.updated(changedProperties);
+    
+    // Auto-scroll only when a user message is added
+    if (changedProperties.has('messages') && this.autoScroll && this.messages.length > 0) {
+      const oldMessages = changedProperties.get('messages') as ChatbotMessage[] || [];
+      const newMessages = this.messages;
+      
+      // Check if a new message was added and if it's from the user
+      if (newMessages.length > oldMessages.length) {
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (lastMessage && lastMessage.sender === 'user') {
+          this.scrollToLatestMessage();
+        }
+      }
+    }
+  }
+
+  /**
+   * Scroll messages container to show the latest message at the top of viewport
+   * Since messages are rendered chronologically (oldest first), we need to scroll
+   * to the bottom where new messages appear, then they'll be visible at the top
+   * of the scrollable area due to the spacer pushing them up.
+   */
+  private scrollToLatestMessage(): void {
+    requestAnimationFrame(() => {
+      const messagesContainer = this.shadowRoot?.querySelector('.messages');
+      if (messagesContainer) {
+        // Scroll to the bottom to show the latest message
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    });
+  }
+
+  private setupControllerIntegration(): void {
+    if (!this.controller) return;
+
+    // Subscribe to controller state changes
+    this.controller.on('state:changed', this.handleControllerStateChange.bind(this));
+    this.controller.on('message:sent', this.handleControllerMessageSent.bind(this));
+    this.controller.on('message:received', this.handleControllerMessageReceived.bind(this));
+    this.controller.on('error', this.handleControllerError.bind(this));
+  }
+
+  private cleanupControllerIntegration(): void {
+    // Event listeners are automatically cleaned up when controller is destroyed
+  }
+
+  private handleControllerStateChange(state: any): void {
+    // Sync controller state to component properties
+    if (state.messages) this.messages = state.messages;
+    if (state.threads) this.threads = state.threads;
+    if (state.currentThreadId) this.activeThreadId = state.currentThreadId;
+    this.chatStarted = state.messages?.length > 0;
+    this.isBotTyping = state.isTyping || false;
+  }
+
+  private handleControllerMessageSent(_data: any): void {
+    this.isQueryRunning = true;
+    this.isBotTyping = true;
+  }
+
+  private handleControllerMessageReceived(_data: any): void {
+    this.isQueryRunning = false;
+    this.isBotTyping = false;
+  }
+
+  private handleControllerError(data: any): void {
+    this.isQueryRunning = false;
+    this.isBotTyping = false;
+    console.error('Controller error:', data.error);
   }
 
   override render() {
@@ -305,11 +312,14 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         placeholder: this.placeholder,
         disabled: this.disabled || this.isQueryRunning,
         currentInput: this.currentInput,
-        uploadedFiles: this.fileUploadController.getUploadedFiles(),
+        uploadedFiles: this.uploadedFiles,
         isQueryRunning: this.isQueryRunning,
         showSendButton: this.showSendButton,
         enableFileUpload: this.enableFileUpload,
-        fileUploadItems: this.fileUploadItems,
+        fileUploadItems: [
+          { id: 'upload-file', label: 'Upload File', icon: 'upload' },
+          { id: 'upload-url', label: 'Upload from URL', icon: 'link' }
+        ],
         enableModuleSelection: this.enableModuleSelection,
         moduleOptions: this.moduleSelectOptions,
         selectedModules: this.selectedModules,
@@ -323,26 +333,26 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         threads: this.threads,
         activeThreadId: this.activeThreadId
       } : undefined,
-      isDragging: this.dragOver,
-      urlModal: this.showUrlModal ? {
-        isOpen: this.showUrlModal,
-        urlInput: this.urlInputValue,
-        isLoading: this.urlModalLoading,
+      isDragging: false,
+      urlModal: this.isUrlModalOpen ? {
+        isOpen: this.isUrlModalOpen,
+        urlInput: this.urlInput,
+        isLoading: this.isUrlLoading,
         error: this.urlModalError,
-        selectedFileName: this.urlModalSelectedFileName
+        selectedFileName: this.selectedUrlFileName
       } : undefined
     };
 
     const templateHandlers: ChatbotMainTemplateHandlers = {
       message: {
         onRetry: this.handleRetry.bind(this),
-        onRetryKeydown: this.handleRetryKeydown.bind(this),
+        onRetryKeydown: () => {},
         onCopy: this.handleCopyMessage.bind(this),
-        onCopyKeydown: this.handleCopyKeydown.bind(this)
+        onCopyKeydown: () => {}
       },
       suggestion: {
         onClick: this.handleSuggestionClick.bind(this),
-        onKeydown: this.handleSuggestionKeydown.bind(this)
+        onKeydown: () => {}
       },
       inputBox: {
         onInput: this.handleContentEditableInput.bind(this),
@@ -351,32 +361,28 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         onBlur: this.handleInputBlur.bind(this),
         onSend: this.handleSendMessage.bind(this),
         onStop: this.handleStopQuery.bind(this),
-        onSendKeydown: this.handleSendKeydown.bind(this),
-        onFileDropdownClick: this.handleFileUploadDropdownClick.bind(this),
+        onSendKeydown: () => {},
+        onFileDropdownClick: this.handleFileDropdownClick.bind(this),
         onModuleChange: this.handleModuleSelectionChange.bind(this),
-        onFileRemove: (fileId: string) => this.fileUploadController.removeFile(fileId)
+        onFileRemove: this.handleFileRemove.bind(this)
       },
       threadSidebar: this.showThreads ? {
-        onCreateNew: () => this.threadController.createNewThreadAndSelect(),
-        onSelectThread: (threadId: string) => this.threadController.selectThread(threadId)
+        onCreateNew: () => this.controller?.createThread('New Chat'),
+        onSelectThread: (threadId: string) => this.controller?.switchThread(threadId)
       } : undefined,
       fileUploadArea: {
-        onDrop: this.handleDrop.bind(this),
-        onDragOver: this.handleDragOver.bind(this),
-        onDragLeave: () => { this.dragOver = false; }
+        onDrop: () => {},
+        onDragOver: () => {},
+        onDragLeave: () => {}
       },
-      urlModal: this.showUrlModal ? {
-        onClose: this.closeUrlModal.bind(this),
-        onUrlInputChange: (e: Event) => this.onUrlInputChange(e as CustomEvent),
-        onUrlInputKeydown: (e: KeyboardEvent) => {
-          if (e.key === 'Enter') {
-            this.onUrlInputEnter();
-          }
-        },
-        onConfirm: this.confirmUrlModal.bind(this),
-        onAttachFile: this.handleAttachFileClick.bind(this)
+      urlModal: this.isUrlModalOpen ? {
+        onClose: this.handleUrlModalClose.bind(this),
+        onUrlInputChange: this.handleUrlInputChange.bind(this),
+        onUrlInputKeydown: this.handleUrlInputKeydown.bind(this),
+        onConfirm: this.handleUrlConfirm.bind(this),
+        onAttachFile: this.handleUrlAttachFile.bind(this)
       } : undefined,
-      onToggleThreadSidebar: this.showThreads ? this.toggleThreadSidebar : undefined
+      onToggleThreadSidebar: this.showThreads ? this.toggleThreadSidebar.bind(this) : undefined
     };
 
     return html`
@@ -385,7 +391,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
           'chat-container--with-threads': this.showThreads,
           'chat-container--disabled': this.disabled,
           'chat-container--focused': this.focused,
-          'chat-container--drag-over': this.dragOver,
           'chat-container--boxed': this.boxed
         })}" 
         dir=${this.isRTL ? 'rtl' : 'ltr'}
@@ -393,10 +398,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
         data-variant="${this.variant}"
         data-theme="${this.currentTheme}"
         data-mode="${this.mode}"
-        part="chat-container"
-        @dragover=${this.handleDragOver}
-        @dragleave=${this.handleDragLeave}
-        @drop=${this.handleDrop}>
+        part="chat-container">
         
         ${renderChatbotMain(templateData, templateHandlers)}
       </div>
@@ -427,30 +429,25 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     `;
   }
 
-  override updated(changedProperties: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProperties);
-    if (changedProperties.has('messages') && this.autoScroll) {
-      this.scrollController.handleMessagesUpdate(
-        changedProperties.get('messages') as ChatbotMessage[] | undefined
-      );
-    }
+  private toggleThreadSidebar = () => {
+    this.isThreadSidebarOpen = !this.isThreadSidebarOpen;
   }
 
   private handleContentEditableInput(e: Event) {
     const target = e.target as HTMLElement;
     const input = target.textContent || '';
     this.currentInput = input;
-  this.dispatchEventWithMetadata('nr-chatbot-input-changed', { metadata: { value: input } });
+    this.dispatchEventWithMetadata('nr-chatbot-input-changed', { metadata: { value: input } });
   }
 
   private handleInputFocus(e: FocusEvent) {
     this.focused = true;
-  this.dispatchEventWithMetadata('nr-chatbot-input-focused', { metadata: { event: e } });
+    this.dispatchEventWithMetadata('nr-chatbot-input-focused', { metadata: { event: e } });
   }
 
   private handleInputBlur(e: FocusEvent) {
     this.focused = false;
-  this.dispatchEventWithMetadata('nr-chatbot-input-blurred', { metadata: { event: e } });
+    this.dispatchEventWithMetadata('nr-chatbot-input-blurred', { metadata: { event: e } });
   }
 
   private clearInput() {
@@ -461,61 +458,40 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     }
   }
 
+  /**
+   * Focus the input element (called by controller via UI callback)
+   */
+  public focusInput() {
+    const inputElement = this.shadowRoot?.querySelector('.input-box__input') as HTMLElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }
+
   private handleKeyDown(e: KeyboardEvent) {
-    this.keyboardController.handleInputKeydown(e);
-  }
-
-  private handleSendKeydown(e: KeyboardEvent) {
-    this.keyboardController.handleElementKeydown(e, () => this.handleSendMessage());
-  }
-
-  private handleRetryKeydown(e: KeyboardEvent) {
-    this.keyboardController.handleElementKeydown(e, () => {
-      const target = e.target as HTMLElement;
-      target.click();
-    });
-  }
-
-  private handleCopyKeydown(e: KeyboardEvent, message: ChatbotMessage) {
-    this.keyboardController.handleElementKeydown(e, () => {
-      this.handleCopyMessage(message);
-    });
-  }
-
-  private handleSuggestionKeydown(e: KeyboardEvent) {
-    this.keyboardController.handleElementKeydown(e, () => {
-      const target = e.target as HTMLElement;
-      target.click();
-    });
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.handleSendMessage();
+    }
   }
 
   private handleSendMessage() {
-    if ((!this.currentInput.trim() && this.fileUploadController.getUploadedFiles().length === 0) || this.disabled) return;
+    if (!this.currentInput.trim() || this.disabled) return;
 
-    const uploadedFiles = this.fileUploadController.getUploadedFiles();
-    const messageData = {
-      sender: ChatbotSender.User,
-      text: this.currentInput.trim(),
-      timestamp: new Date().toLocaleTimeString(),
-      files: uploadedFiles.length > 0 ? uploadedFiles : undefined
-    };
-
-    const message = this.messageController.addMessage(messageData);
+    // Use controller to send message
+    this.controller.sendMessage(this.currentInput.trim(), {
+      metadata: {
+        selectedModules: this.selectedModules
+      }
+    });
     
     this.hasUserInteraction = true;
-    
-    if (this.showThreads || this.enableThreadCreation) {
-      this.threadController.updateCurrentThreadMessages();
-    }
-    
     this.clearInput();
-    this.fileUploadController.clearFiles();
+    this.chatStarted = true;
     
-    this.chatStarted = this.messageController.hasChatStarted();
-    this.isQueryRunning = true;
-
-    const messageDetail: ChatbotEventDetail = { message };
-  this.dispatchEventWithMetadata('nr-chatbot-message-sent', messageDetail);
+    this.dispatchEventWithMetadata('nr-chatbot-message-sent', { 
+      metadata: { text: this.currentInput } 
+    });
   }
 
   private handleStopQuery() {
@@ -527,424 +503,173 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement)
     });
   }
 
-  private handleDragOver(e: DragEvent) {
-    if (!this.enableFileUpload) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    this.dragOver = true;
-    this.showFileUploadArea = true;
-  }
-
-  private handleDragLeave(e: DragEvent) {
-    if (!this.enableFileUpload) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const { clientX, clientY } = e;
-    
-    if (clientX < rect.left || clientX > rect.right || 
-        clientY < rect.top || clientY > rect.bottom) {
-      this.dragOver = false;
-      this.showFileUploadArea = false;
+  private handleRetry(message: ChatbotMessage) {
+    if (message.text) {
+      this.currentInput = message.text;
+      this.handleSendMessage();
     }
   }
 
-  private handleDrop(e: DragEvent) {
-    if (!this.enableFileUpload) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    this.dragOver = false;
-    this.showFileUploadArea = false;
-    
-    const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
-      this.fileUploadController.handleFileSelection(files);
+  private handleCopyMessage(message: ChatbotMessage) {
+    if (navigator.clipboard && message.text) {
+      navigator.clipboard.writeText(message.text).then(() => {
+        this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
+          metadata: { messageId: message.id }
+        });
+      });
     }
   }
 
-  private handleFileUploadDropdownClick(event: CustomEvent) {
-    const detail = event.detail;
-    if (detail.item) {
-      switch (detail.item.value) {
-        case 'computer':
-          this.fileUploadController.openFileDialog();
-          break;
-        case 'url':
-          this.openUrlModal();
-          break;
+  private handleSuggestionClick(suggestion: ChatbotSuggestion) {
+    this.currentInput = suggestion.text;
+    this.handleSendMessage();
+    
+    this.dispatchEventWithMetadata('nr-chatbot-suggestion-clicked', {
+      metadata: { suggestion }
+    });
+  }
+
+  private handleModuleSelectionChange(e: CustomEvent) {
+    const selectedValues = e.detail.value as string[];
+    this.selectedModules = selectedValues;
+    
+    this.dispatchEventWithMetadata('nr-chatbot-modules-selected', {
+      metadata: { modules: selectedValues }
+    });
+  }
+
+  private handleFileDropdownClick(e: CustomEvent) {
+    const item = e.detail.item;
+    const itemId = item.id;
+    
+    if (itemId === 'upload-file') {
+      this.openFileDialog();
+    } else if (itemId === 'upload-url') {
+      this.openUrlModal();
+    }
+  }
+
+  private openFileDialog() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    // Accept common file types
+    input.accept = 'image/*,application/pdf,text/*,video/*,audio/*';
+    
+    input.addEventListener('change', async (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        const filesArray = Array.from(target.files);
+        await this.controller?.uploadFiles(filesArray);
       }
-    }
+    });
+    
+    input.click();
   }
 
   private openUrlModal() {
-    this.urlInputValue = '';
-    this.urlInputValid = false;
-    this.urlModalLoading = false;
+    this.isUrlModalOpen = true;
+    this.urlInput = '';
     this.urlModalError = '';
-    this.urlModalSelectedFile = null;
-    this.urlModalSelectedFileName = '';
-    this.showUrlModal = true;
+    this.selectedUrlFileName = '';
   }
 
-  private closeUrlModal = () => {
-    if (this.urlModalLoading) return; // Don't close while loading
-    this.showUrlModal = false;
+  private handleUrlModalClose() {
+    this.isUrlModalOpen = false;
+    this.urlInput = '';
     this.urlModalError = '';
-    this.urlModalSelectedFile = null;
-    this.urlModalSelectedFileName = '';
-  };
+    this.isUrlLoading = false;
+    this.selectedUrlFileName = '';
+  }
 
-  private onUrlInputChange = (e: CustomEvent) => {
-    const value = (e.detail && e.detail.value) ?? '';
-    this.urlInputValue = value;
-    this.urlInputValid = this.isValidHttpUrl(value);
-    this.urlModalError = ''; // Clear error on input change
-  };
+  private handleUrlInputChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    this.urlInput = target.value;
+    this.urlModalError = '';
+  }
 
-  private onUrlInputEnter = () => {
-    if ((this.urlInputValid || this.urlModalSelectedFile) && !this.urlModalLoading) {
-      this.confirmUrlModal();
+  private handleUrlInputKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.handleUrlAttachFile();
     }
-  };
+  }
 
-  private handleAttachFileClick = async () => {
-    if (this.urlModalLoading) return;
-    
-    if (!this.urlInputValid) {
-      this.urlModalError = 'Please enter a valid URL.';
+  private handleUrlConfirm() {
+    this.handleUrlModalClose();
+  }
+
+  private async handleUrlAttachFile() {
+    if (!this.urlInput.trim()) {
+      this.urlModalError = 'Please enter a URL';
       return;
     }
-    
-    const url = this.urlInputValue.trim();
-    this.urlModalLoading = true;
+
+    this.isUrlLoading = true;
     this.urlModalError = '';
-    
+
     try {
-      const response = await fetch(url);
+      const response = await fetch(this.urlInput);
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
       }
 
       const blob = await response.blob();
-      const filename = decodeURIComponent(new URL(url).pathname.split('/').pop() || 'file');
-      const contentType = response.headers.get('content-type') || 'application/octet-stream';
-      const file = new File([blob], filename, { type: contentType });
+      const filename = this.urlInput.split('/').pop() || 'downloaded-file';
+      const file = new File([blob], filename, { type: blob.type });
 
-      this.urlModalSelectedFile = file;
-      this.urlModalSelectedFileName = file.name;
-      this.urlModalLoading = false;
-    } catch (error) {
-      this.urlModalLoading = false;
-      this.urlModalError = error instanceof Error ? error.message : 'Failed to load file from URL.';
-    }
-  };
-
-  private confirmUrlModal = async () => {
-    if (this.urlModalLoading) return;
-    
-    if (!this.urlModalSelectedFile) return;
-    
-    this.urlModalLoading = true;
-    this.urlModalError = '';
-    
-    try {
-      const result = await this.fileUploadController.handleFileSelection([this.urlModalSelectedFile]);
+      this.selectedUrlFileName = filename;
       
-      if (result && result.length > 0) {
-        this.urlModalLoading = false;
-        this.closeUrlModal();
-      } else {
-        this.urlModalLoading = false;
-        this.urlModalError = 'Failed to add file. Please try again.';
+      // Upload the file through the controller
+      if (this.controller) {
+        await this.controller.uploadFiles([file]);
       }
+
+      this.isUrlLoading = false;
+      
+      // Close modal after short delay to show success
+      setTimeout(() => {
+        this.handleUrlModalClose();
+      }, 1000);
     } catch (error) {
-      this.urlModalLoading = false;
-      this.urlModalError = error instanceof Error ? error.message : 'An error occurred while adding the file.';
-    }
-  };
-
-  private isValidHttpUrl(value: string): boolean {
-    try {
-      const u = new URL(value);
-      return u.protocol === 'http:' || u.protocol === 'https:';
-    } catch {
-      return false;
+      this.isUrlLoading = false;
+      this.urlModalError = error instanceof Error ? error.message : 'Failed to load file from URL';
     }
   }
 
-  private handleModuleSelectionChange(event: CustomEvent) {
-    const detail = event.detail;
-    const selectedValues = Array.isArray(detail.value) ? detail.value : [detail.value];
-    
-    this.moduleController.handleModuleSelectionChange(selectedValues);
+  private handleFileRemove(fileId: string) {
+    this.controller?.removeFile(fileId);
   }
 
-  private toggleThreadSidebar = () => {
-    this.isThreadSidebarOpen = !this.isThreadSidebarOpen;
-  };
-
-  private handleRetry(message: ChatbotMessage) {
-    const eventDetail: ChatbotEventDetail = {
-      message,
-      metadata: { action: 'retry' }
+  /**
+   * Public API: Add a message to the chat
+   */
+  addMessage(message: Partial<ChatbotMessage>): ChatbotMessage {
+    const fullMessage: ChatbotMessage = {
+      id: message.id || `msg-${Date.now()}`,
+      sender: message.sender || ChatbotSender.User,
+      text: message.text || '',
+      timestamp: message.timestamp || new Date().toISOString(),
+      ...message
     };
     
-  this.dispatchEventWithMetadata('nr-chatbot-retry-requested', eventDetail);
-  }
-
-  private handleCopyMessage(message: ChatbotMessage) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(message.text).then(() => {
-        this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
-          message,
-          metadata: { action: 'copy', text: message.text }
-        });
-      }).catch((err) => {
-        console.error('Failed to copy message:', err);
-      });
-    } else {
-      const textArea = document.createElement('textarea');
-      textArea.value = message.text;
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = '0';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
-          message,
-          metadata: { action: 'copy', text: message.text }
-        });
-      } catch (err) {
-        console.error('Failed to copy message:', err);
-      }
-      document.body.removeChild(textArea);
-    }
-  }
-
-  private handleSuggestionClick(suggestion: ChatbotSuggestion) {
-    this.suggestionController.handleSuggestionClick(suggestion);
+    this.controller?.addMessage(fullMessage);
+    this.chatStarted = true;
+    
+    return fullMessage;
   }
 
   /**
-   * Programmatically send a message
+   * Public API: Clear all messages
    */
-  public sendMessage(text: string): void {
-    this.currentInput = text;
-    this.handleSendMessage();
-    this.clearInput();
-  }
-
-  /**
-   * Clear all messages
-   */
-  public clearMessages(): void {
-    this.messageController.clearMessages();
+  clearMessages() {
+    this.messages = [];
     this.chatStarted = false;
   }
+}
 
-  /**
-   * Add a message programmatically
-   */
-  public addMessage(message: Omit<ChatbotMessage, 'id'>): ChatbotMessage {
-    const newMessage = this.messageController.addMessage(message);
-    
-    if (message.sender === ChatbotSender.User) {
-      this.chatStarted = true;
-    }
-    
-    if (this.showThreads || this.enableThreadCreation) {
-      this.threadController.updateCurrentThreadMessages();
-    }
-    
-    return newMessage;
-  }
-
-  /**
-   * Set typing indicator
-   */
-  public setTyping(isTyping: boolean): void {
-    this.isBotTyping = isTyping;
-    if (!isTyping) {
-      this.isQueryRunning = false;
-    }
-  }
-
-  /**
-   * Set query running state
-   */
-  public setQueryRunning(isRunning: boolean): void {
-    this.isQueryRunning = isRunning;
-    if (!isRunning) {
-      this.isBotTyping = false;
-    }
-  }
-
-  /**
-   * Focus the input
-   */
-  public focusInput(): void {
-    const input = this.shadowRoot?.querySelector('nr-input') as any;
-    if (input && input.focusInput) {
-      input.focusInput();
-    }
-  }
-
-  /**
-   * Add validation rule
-   */
-  public addValidationRule(rule: any): void {
-    this.messageController.addValidationRule(rule);
-  }
-
-  /**
-   * Remove validation rule
-   */
-  public removeValidationRule(ruleId: string): void {
-    this.messageController.removeValidationRule(ruleId);
-  }
-
-  /**
-   * Validate message
-   */
-  public async validateMessage(text: string): Promise<any> {
-    return this.messageController.validateMessage(text);
-  }
-
-  /**
-   * Add keyboard shortcut
-   */
-  public addKeyboardShortcut(key: string, handler: () => void): void {
-    this.keyboardController.addShortcut(key, handler);
-  }
-
-  /**
-   * Get message history
-   */
-  public getMessageHistory(): ChatbotMessage[] {
-    return this.messageController.getMessageHistory();
-  }
-
-  /**
-   * Upload files programmatically
-   */
-  public uploadFiles(files: FileList | File[]): Promise<ChatbotFile[]> {
-    return this.fileUploadController.handleFileSelection(files);
-  }
-
-  /**
-   * Get uploaded files
-   */
-  public getUploadedFiles(): ChatbotFile[] {
-    return this.fileUploadController.getUploadedFiles();
-  }
-
-  /**
-   * Clear uploaded files
-   */
-  public clearUploadedFiles(): void {
-    this.fileUploadController.clearFiles();
-  }
-
-  /**
-   * Create new conversation thread
-   */
-  public createThread(title?: string): ChatbotThread {
-    return this.threadController.createThread(title);
-  }
-
-  /**
-   * Switch to a specific thread
-   */
-  public switchToThread(threadId: string): void {
-    this.threadController.selectThread(threadId);
-  }
-
-  /**
-   * Delete a thread
-   */
-  public deleteThread(threadId: string): void {
-    this.threadController.deleteThread(threadId);
-  }
-
-  /**
-   * Get current thread
-   */
-  public getCurrentThread(): ChatbotThread | undefined {
-    return this.threadController.getCurrentThread();
-  }
-
-  /**
-   * Set file upload configuration
-   */
-  public setFileUploadConfig(config: {
-    maxFiles?: number;
-    maxFileSize?: number;
-    allowedFileTypes?: string[];
-    enableFileUpload?: boolean;
-  }): void {
-    if (config.maxFiles !== undefined) this.maxFiles = config.maxFiles;
-    if (config.maxFileSize !== undefined) this.maxFileSize = config.maxFileSize;
-    if (config.allowedFileTypes !== undefined) this.allowedFileTypes = config.allowedFileTypes;
-    if (config.enableFileUpload !== undefined) this.enableFileUpload = config.enableFileUpload;
-  }
-
-  /**
-   * Toggle file upload area visibility
-   */
-  public toggleFileUploadArea(visible?: boolean): void {
-    this.showFileUploadArea = visible !== undefined ? visible : !this.showFileUploadArea;
-  }
-
-  /**
-   * Set available modules
-   */
-  public setModules(modules: ChatbotModule[]): void {
-    this.moduleController.setModules(modules);
-  }
-
-  /**
-   * Get selected modules
-   */
-  public getSelectedModules(): ChatbotModule[] {
-    return this.moduleController.getSelectedModules();
-  }
-
-  /**
-   * Set selected modules
-   */
-  public setSelectedModules(moduleIds: string[]): void {
-    this.moduleController.setSelectedModules(moduleIds);
-  }
-
-  /**
-   * Clear module selection
-   */
-  public clearModuleSelection(): void {
-    this.moduleController.clearModuleSelection();
-  }
-
-  /**
-   * Toggle module selection
-   */
-  public toggleModule(moduleId: string): void {
-    this.moduleController.toggleModule(moduleId);
-  }
-
-  /**
-   * Dispatch event with metadata support
-   */
-  public override dispatchEventWithMetadata(type: string, detail?: ChatbotEventDetail): void {
-    this.dispatchEvent(new CustomEvent(type, {
-      detail,
-      bubbles: true,
-      composed: true
-    }));
+declare global {
+  interface HTMLElementTagNameMap {
+    'nr-chatbot': NrChatbotElement;
   }
 }

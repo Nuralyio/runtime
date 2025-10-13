@@ -10,7 +10,19 @@ export * from './chatbot.component.js';
 // Types and interfaces
 export * from './chatbot.types.js';
 
-// Controllers
+// Core Controller (NEW - Framework Agnostic)
+export * from './core/index.js';
+
+// Providers
+export * from './providers/index.js';
+
+// Plugins
+export * from './plugins/index.js';
+
+// Storage
+export * from './storage/index.js';
+
+// Controllers (Lit-specific)
 export * from './controllers/index.js';
 
 // Interfaces

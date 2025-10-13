@@ -83,6 +83,27 @@ export default css`
     height: 100%;
   }
 
+  /* Boxed layout with threads: white background for entire container */
+  :host([boxed]) .chat-container--boxed.chat-container--with-threads {
+    background-color: #ffffff;
+  }
+
+  .chat-container--boxed.chat-container--with-threads .chatbot-main {
+    background-color: #ffffff;
+  }
+
+  .chat-container--boxed.chat-container--with-threads .chat-box {
+    background-color: #ffffff;
+  }
+
+  .chat-container--boxed.chat-container--with-threads .messages {
+    background-color: #ffffff;
+  }
+
+  .chat-container--boxed.chat-container--with-threads .input-container {
+    background-color: #ffffff;
+  }
+
   :host([boxed]) .chatbot-header {
     /* Keep header at the top */
     flex: 0 0 auto;
@@ -266,6 +287,7 @@ export default css`
     gap: 0;
     background-color: var(--nuraly-color-chatbot-background);
     padding: var(--nuraly-spacing-chatbot-message-padding, 8px 12px);
+    justify-content: flex-start; /* Always align messages to top */
   }
 
   /* Spacer to allow scrolling new messages to top - only show when user has sent a message */
@@ -282,7 +304,7 @@ export default css`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    flex: 1; /* Take full height when empty */
     text-align: center;
     padding: var(--nuraly-spacing-09, 3rem) var(--nuraly-spacing-06, 1.5rem);
   }
