@@ -346,6 +346,20 @@ export default css`
     border: var(--nuraly-border-width-chatbot-message, 0) solid var(--nuraly-color-chatbot-message-border, transparent);
   }
 
+  /* Message attachments (file tags) */
+  .message__attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--nuraly-spacing-02, 0.25rem);
+    margin-top: var(--nuraly-spacing-02, 0.25rem);
+  }
+
+  .message__attachment-tag {
+    --nuraly-tag-font-size: var(--nuraly-font-size-01, 0.75rem);
+    --nuraly-tag-padding-x: 4px;
+    --nuraly-tag-padding-y: 0px;
+  }
+
   .message.user .message__content {
     background-color: var(--nuraly-color-chatbot-message-user-background);
     color: var(--nuraly-color-chatbot-message-user-text);
