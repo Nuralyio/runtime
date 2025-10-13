@@ -189,7 +189,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   controller!: ChatbotCoreController;
 
   @state() private focused = false;
-  @state() private hasUserInteraction = false;
   @state() private isThreadSidebarOpen = true;
   @state() private isUrlModalOpen = false;
   @state() private urlInput = '';
@@ -228,32 +227,19 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   override updated(changedProperties: Map<string, any>): void {
     super.updated(changedProperties);
     
-    // Auto-scroll only when a user message is added
+    // Auto-scroll when messages are added or updated
     if (changedProperties.has('messages') && this.autoScroll && this.messages.length > 0) {
-      const oldMessages = changedProperties.get('messages') as ChatbotMessage[] || [];
-      const newMessages = this.messages;
-      
-      // Check if a new message was added and if it's from the user
-      if (newMessages.length > oldMessages.length) {
-        const lastMessage = newMessages[newMessages.length - 1];
-        if (lastMessage && lastMessage.sender === 'user') {
-          this.scrollToLatestMessage();
-        }
-      }
+      this.scrollToLatestMessage();
     }
   }
 
   /**
-   * Scroll messages container to show the latest message at the top of viewport
-   * Since messages are rendered chronologically (oldest first), we need to scroll
-   * to the bottom where new messages appear, then they'll be visible at the top
-   * of the scrollable area due to the spacer pushing them up.
+   * Scroll messages container to the bottom to show the latest message
    */
   private scrollToLatestMessage(): void {
     requestAnimationFrame(() => {
       const messagesContainer = this.shadowRoot?.querySelector('.messages');
       if (messagesContainer) {
-        // Scroll to the bottom to show the latest message
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
     });
@@ -307,7 +293,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       loadingText: this.loadingText,
       chatStarted: this.chatStarted,
       suggestions: this.suggestions,
-      hasUserInteraction: this.hasUserInteraction,
       inputBox: {
         placeholder: this.placeholder,
         disabled: this.disabled || this.isQueryRunning,
@@ -485,7 +470,6 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       }
     });
     
-    this.hasUserInteraction = true;
     this.clearInput();
     this.chatStarted = true;
     
