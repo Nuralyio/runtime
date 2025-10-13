@@ -84,8 +84,7 @@ export function renderMessage(
  */
 export function renderBotTypingIndicator(
   isTyping: boolean,
-  loadingIndicator: ChatbotLoadingType,
-  loadingText: string
+  loadingIndicator: ChatbotLoadingType
 ): TemplateResult | typeof nothing {
   if (!isTyping) return nothing;
 
@@ -103,7 +102,6 @@ export function renderBotTypingIndicator(
     <div class="message bot loading" part="typing-indicator">
       <div class="message__content">
         ${indicatorContent}
-        <span class="loading-text">${loadingText}</span>
       </div>
     </div>
   `;

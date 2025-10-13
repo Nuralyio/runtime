@@ -16,6 +16,7 @@ import type { ChatbotMessage } from '../../chatbot.types.js';
  */
 export class ProviderService {
   private provider?: ChatbotProvider;
+  private cancelRequested = false;
 
   constructor(
     provider: ChatbotProvider | undefined,
@@ -33,6 +34,15 @@ export class ProviderService {
    */
   setProvider(provider: ChatbotProvider): void {
     this.provider = provider;
+  }
+
+  /**
+   * Stop current processing/stream consumption (best-effort cancellation)
+   */
+  stopCurrentProcessing(): void {
+    this.cancelRequested = true;
+    // UI updates will be driven by processMessage finally block
+    this.eventBus.emit('processing:stopped');
   }
 
   /**
@@ -66,6 +76,9 @@ export class ProviderService {
     }
 
     try {
+      // Reset cancellation before starting a new stream
+      this.cancelRequested = false;
+
       // Notify UI - processing started
       if (this.ui.onProcessingStart) {
         this.ui.onProcessingStart();
@@ -80,7 +93,7 @@ export class ProviderService {
 
       // Get response stream
       const context = this.buildContext();
-      const stream = this.provider.sendMessage(message.text, context);
+  const stream = this.provider.sendMessage(message.text, context);
 
       // Process stream
       await this.processStream(stream);
@@ -118,6 +131,10 @@ export class ProviderService {
     try {
       let done = false;
       while (!done) {
+        if (this.cancelRequested) {
+          // Best-effort cancellation: stop consuming the stream
+          break;
+        }
         const result = await stream.next();
         done = result.done || false;
         if (done || !result.value) break;
@@ -191,6 +208,11 @@ export class ProviderService {
         if (!botMessage) {
           botMessage = this.messageHandler.createBotMessage(processedChunk, isHtml ? { renderAsHtml: true } : undefined);
           this.stateHandler.addMessageToState(botMessage);
+          // Close the typing indicator on first token to match common LLM UIs
+          if (this.ui.onTypingEnd) {
+            this.ui.onTypingEnd();
+          }
+          this.stateHandler.setTyping(false);
         } else if (processedChunk) {
           this.messageHandler.appendToBotMessage(botMessage.id, processedChunk);
           botMessage.text += processedChunk;
@@ -201,7 +223,7 @@ export class ProviderService {
       }
 
       // Flush any unterminated tags as literal text (open marker + buffered content)
-      if (botMessage && openTags.length > 0) {
+      if (!this.cancelRequested && botMessage && openTags.length > 0) {
         const leftover = openTags.map(t => t.open + t.buffer).join('');
         if (leftover) this.messageHandler.appendToBotMessage(botMessage.id, leftover);
       }
