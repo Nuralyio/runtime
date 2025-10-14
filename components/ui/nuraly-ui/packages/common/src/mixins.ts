@@ -25,5 +25,8 @@ export { ThemeAwareMixin, type ThemeAware } from './shared/theme-mixin.js';
 export { DependencyValidationMixin, type DependencyAware } from './shared/dependency-mixin.js';
 export { EventHandlerMixin, type EventHandlerCapable } from './shared/event-handler-mixin.js';
 
+// Also export validation types
+export * from './shared/validation.types.js';
+
 // Export validation types
 export * from './shared/validation.types.js';
