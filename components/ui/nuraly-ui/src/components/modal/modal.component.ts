@@ -19,9 +19,6 @@ import { styles } from './modal.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { ModalManager } from './modal-manager.js';
 
-// Import icon component
-import '../icon/icon.component.js';
-import '../button/button.component.js';
 
 // Import controllers
 import {

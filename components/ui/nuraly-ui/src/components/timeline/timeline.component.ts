@@ -18,7 +18,6 @@ import {
     TimelineItemColor,
     TimelineItemPosition
 } from './timeline.types.js';
-import '../icon/index.js';
 
 /**
  * # Timeline Component

@@ -9,11 +9,6 @@ import { customElement, property } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 
-// Import dependencies
-import '../icon/icon.component.js';
-import '../button/button.component.js';
-import '../radio/radio.component.js';
-
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import {
   RadioGroupController,

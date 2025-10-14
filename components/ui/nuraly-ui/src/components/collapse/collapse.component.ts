@@ -21,8 +21,6 @@ import { map } from 'lit/directives/map.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
-// Import icon component
-import '../icon/icon.component.js';
 
 // Import controllers
 import {

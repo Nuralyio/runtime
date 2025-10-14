@@ -15,7 +15,6 @@ import {
     BreadcrumbSeparator,
     BreadcrumbSeparatorConfig
 } from './breadcrumb.types.js';
-import '../icon/index.js';
 
 /**
  * # Breadcrumb Component
