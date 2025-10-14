@@ -17,11 +17,12 @@
   },
   "scripts": {
     "start": "concurrently 'npm:build:watch' 'npm:serve'",
-    "build": "tsc && npm run packages:build",
+    "build": "npm run common:compile && tsc && npm run packages:build",
     "build:watch": "tsc --watch",
     "packages:build": "npm run common:build && npm run themes:build && npm run forms:build && npm run layout:build",
     "themes:build": "npm run build --workspace=@nuralyui/themes",
     "themes:dev": "npm run dev --workspace=@nuralyui/themes",
+    "common:compile": "tsc -p packages/common/tsconfig.json",
     "common:build": "npm run build --workspace=@nuralyui/common",
     "common:clean": "npm run clean --workspace=@nuralyui/common",
     "forms:build": "npm run build --workspace=@nuralyui/forms",

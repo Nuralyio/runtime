@@ -31,21 +31,21 @@ async function build() {
   try {
     console.log('🚀 Building @nuralyui/common package...\n');
 
-    // Clean dist directory
-    console.log('🧹 Cleaning dist directory...');
-    await fs.emptyDir(DIST_DIR);
-
-    // Compile TypeScript files from packages/common/src
-    console.log('🔨 Compiling TypeScript files...');
-    try {
-      execSync('tsc -p .', { 
-        cwd: PACKAGE_ROOT,
-        stdio: 'inherit'
-      });
-      console.log('✅ TypeScript compilation completed\n');
-    } catch (error) {
-      console.error('❌ TypeScript compilation failed');
-      throw error;
+    // Check if dist folder exists (should be created by tsc -p packages/common/tsconfig.json)
+    if (!await fs.pathExists(path.join(DIST_DIR, 'shared'))) {
+      console.log('🔨 Compiling TypeScript files...');
+      try {
+        execSync('tsc -p .', { 
+          cwd: PACKAGE_ROOT,
+          stdio: 'inherit'
+        });
+        console.log('✅ TypeScript compilation completed\n');
+      } catch (error) {
+        console.error('❌ TypeScript compilation failed');
+        throw error;
+      }
+    } else {
+      console.log('✅ TypeScript already compiled\n');
     }
 
     // Check if dist/components exists
