@@ -9,7 +9,6 @@ import { customElement, property, query } from 'lit/decorators.js';
 import { styles } from './radio.style.js';
 import { RadioSize } from './radio.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
-import '../label/label.component.js';
 
 /**
  * A simple radio button component that can be used standalone or within a form.

@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/badge",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Badge component for NuralyUI library",
   "main": "index.js",
   "type": "module",

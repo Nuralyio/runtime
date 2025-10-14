@@ -12,8 +12,6 @@ import { styles } from './menu.style.js';
 import { IMenu, IAction, MenuSize } from './menu.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { StateController, KeyboardController, AccessibilityController } from './controllers/index.js';
-import '../icon/icon.component.js';
-import '../dropdown/dropdown.component.js';
 
 /**
  * Versatile menu component for hierarchical navigation with support for nested submenus.

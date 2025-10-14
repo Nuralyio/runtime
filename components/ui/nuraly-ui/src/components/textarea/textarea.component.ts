@@ -7,7 +7,6 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { styles } from './textarea.style.js';
-import '../icon/icon.component.js';
 import {
   TEXTAREA_STATE,
   TEXTAREA_SIZE,

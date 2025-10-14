@@ -11,9 +11,6 @@ import { ButtonType, ButtonSize, ButtonShape, EMPTY_STRING, IconPosition, Button
 import { styles } from './button.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
-// Import icon component
-import '../icon/icon.component.js';
-
 // Import controllers
 import {
     ButtonRippleController,

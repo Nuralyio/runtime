@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/tabs",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Versatile tabs component with support for multiple orientations, editable tabs, and drag & drop functionality",
   "main": "index.js",
   "type": "module",

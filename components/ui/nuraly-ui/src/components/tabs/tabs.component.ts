@@ -22,9 +22,6 @@ import {
 } from './tabs.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
-// Import icon component
-import '../icon/icon.component.js';
-
 // Import controllers
 import {
   TabsKeyboardController,

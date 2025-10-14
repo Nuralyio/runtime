@@ -24,8 +24,6 @@ import {
 } from './toast.types.js';
 
 // Import required components
-import '../icon/icon.component.js';
-import '../button/index.js';
 
 /**
  * Toast notification component for displaying temporary messages.

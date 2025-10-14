@@ -7,9 +7,9 @@ import { repeat } from 'lit/directives/repeat.js';
 export class CarouselComponent extends LitElement {
   static override styles = styles;
 
-  @property() currentIndex = 0;
-  @property() autoPlay = false;
-  @property() autoplaySpeed = 3000;
+  @property({ type: Number }) currentIndex = 0;
+  @property({ type: Boolean }) autoPlay = false;
+  @property({ type: Number }) autoplaySpeed = 3000;
   @queryAssignedElements()
   private slideElements!: HTMLElement[];
   @state()

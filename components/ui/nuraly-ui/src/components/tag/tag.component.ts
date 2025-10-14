@@ -14,8 +14,6 @@ import { TagSize, type TagCheckedChangeDetail } from './tag.types.js';
 
 /**
  * Tag component
- * Inspired by Ant Design Tag: https://ant.design/components/tag
- *
  * Features:
  * - Preset colors and custom color support
  * - Closable tags with onClose event

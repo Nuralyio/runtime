@@ -10,11 +10,6 @@ import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import styles from './table.style.js';
 import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, EMPTY_STRING } from './table.types.js';
 
-// Import required components
-import '../select/select.component.js';
-import '../icon/icon.component.js';
-import '../radio/radio.component.js';
-
 // Import controllers
 import {
   TableSelectionController,

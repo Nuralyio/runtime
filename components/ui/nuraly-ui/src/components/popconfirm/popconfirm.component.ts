@@ -15,8 +15,6 @@ import {
     PopconfirmButtonType,
     PopconfirmIcon,
 } from './popconfirm.types.js';
-import '../dropdown/index.js';
-import '../icon/index.js';
 
 /**
  * # Popconfirm Component
