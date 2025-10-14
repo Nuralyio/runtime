@@ -18,19 +18,14 @@ export class ValidationService {
     this.validators = config.validators || [];
   }
 
-  /**
-   * Validate message text
-   */
   async validateMessage(text: string): Promise<ValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Basic validation
     if (!text.trim()) {
       errors.push('Message cannot be empty');
     }
 
-    // Run custom validators
     for (const validator of this.validators) {
       try {
         const isValid = await validator.validator(text);
@@ -53,20 +48,15 @@ export class ValidationService {
     };
   }
 
-  /**
-   * Validate file
-   */
   validateFile(file: File, config?: { maxFileSize?: number; allowedTypes?: string[] }): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Check file size
-    const maxSize = config?.maxFileSize || 10 * 1024 * 1024; // 10MB default
+    const maxSize = config?.maxFileSize || 10 * 1024 * 1024;
     if (file.size > maxSize) {
       errors.push(`File size exceeds maximum allowed (${this.formatFileSize(maxSize)})`);
     }
 
-    // Check file type
     if (config?.allowedTypes && config.allowedTypes.length > 0) {
       const isAllowed = config.allowedTypes.some(type => {
         if (type.startsWith('.')) {
@@ -87,37 +77,22 @@ export class ValidationService {
     };
   }
 
-  /**
-   * Add validation rule
-   */
   addValidator(validator: ChatbotValidationRule): void {
     this.validators.push(validator);
   }
 
-  /**
-   * Remove validation rule by ID
-   */
   removeValidator(ruleId: string): void {
     this.validators = this.validators.filter(v => v.id !== ruleId);
   }
 
-  /**
-   * Clear all validators
-   */
   clearValidators(): void {
     this.validators = [];
   }
 
-  /**
-   * Get all validators
-   */
   getValidators(): ChatbotValidationRule[] {
     return [...this.validators];
   }
 
-  /**
-   * Format file size for display
-   */
   private formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -126,9 +101,6 @@ export class ValidationService {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
-  /**
-   * Log error
-   */
   private logError(message: string, error: any): void {
     console.error(`[ValidationService] ${message}`, error);
   }
