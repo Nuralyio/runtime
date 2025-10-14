@@ -11,9 +11,6 @@ import { msg } from '@lit/localize';
 import { ChatbotMessage, ChatbotLoadingType } from '../chatbot.types.js';
 
 // Import required components for template
-import '../../button/button.component.js';
-import '../../icon/icon.component.js';
-import '../../tag/tag.component.js';
 
 export interface MessageTemplateHandlers {
   onRetry: (message: ChatbotMessage) => void;

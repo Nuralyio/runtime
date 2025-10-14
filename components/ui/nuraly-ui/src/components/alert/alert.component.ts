@@ -15,9 +15,6 @@ import {
   EMPTY_STRING
 } from './alert.types.js';
 
-// Import required components
-import '../icon/icon.component.js';
-
 /**
  * Alert component for displaying important messages.
  * 
