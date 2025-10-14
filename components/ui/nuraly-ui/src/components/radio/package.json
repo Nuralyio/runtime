@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/radio",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple radio button component",
   "main": "index.js",
   "type": "module",
