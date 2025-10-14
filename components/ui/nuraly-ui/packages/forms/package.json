@@ -1,0 +1,111 @@
+{
+  "name": "@nuralyui/forms",
+  "version": "0.1.0",
+  "description": "Form components package for Nuraly UI Library - includes all form input components",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./input": {
+      "import": "./dist/input/index.js",
+      "types": "./dist/input/index.d.ts"
+    },
+    "./textarea": {
+      "import": "./dist/textarea/index.js",
+      "types": "./dist/textarea/index.d.ts"
+    },
+    "./checkbox": {
+      "import": "./dist/checkbox/index.js",
+      "types": "./dist/checkbox/index.d.ts"
+    },
+    "./radio": {
+      "import": "./dist/radio/index.js",
+      "types": "./dist/radio/index.d.ts"
+    },
+    "./radio-group": {
+      "import": "./dist/radio-group/index.js",
+      "types": "./dist/radio-group/index.d.ts"
+    },
+    "./select": {
+      "import": "./dist/select/index.js",
+      "types": "./dist/select/index.d.ts"
+    },
+    "./slider-input": {
+      "import": "./dist/slider-input/index.js",
+      "types": "./dist/slider-input/index.d.ts"
+    },
+    "./datepicker": {
+      "import": "./dist/datepicker/index.js",
+      "types": "./dist/datepicker/index.d.ts"
+    },
+    "./timepicker": {
+      "import": "./dist/timepicker/index.js",
+      "types": "./dist/timepicker/index.d.ts"
+    },
+    "./colorpicker": {
+      "import": "./dist/colorpicker/index.js",
+      "types": "./dist/colorpicker/index.d.ts"
+    },
+    "./file-upload": {
+      "import": "./dist/file-upload/index.js",
+      "types": "./dist/file-upload/index.d.ts"
+    },
+    "./form": {
+      "import": "./dist/form/index.js",
+      "types": "./dist/form/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react.js",
+      "types": "./dist/react.d.ts"
+    },
+    "./versions.json": {
+      "import": "./dist/versions.json",
+      "require": "./dist/versions.json"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "VERSIONS.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist/*",
+    "versions": "node scripts/versions.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "ui-components",
+    "forms",
+    "input",
+    "checkbox",
+    "select",
+    "textarea",
+    "form-validation",
+    "nuralyui"
+  ],
+  "author": "Laabidi Aymen",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuralyUI/NuralyUI.git",
+    "directory": "packages/forms"
+  },
+  "bugs": {
+    "url": "https://github.com/NuralyUI/NuralyUI/issues"
+  },
+  "homepage": "https://github.com/NuralyUI/NuralyUI#readme",
+  "peerDependencies": {
+    "lit": "^2.2.4",
+    "@lit/reactive-element": "^1.6.1"
+  },
+  "devDependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}

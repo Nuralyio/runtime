@@ -1,0 +1,77 @@
+{
+  "name": "@nuralyui/layout",
+  "version": "0.1.0",
+  "description": "Layout components package for Nuraly UI Library - includes grid, flex, and layout containers",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./layout": {
+      "import": "./dist/layout/index.js",
+      "types": "./dist/layout/index.d.ts"
+    },
+    "./grid": {
+      "import": "./dist/grid/index.js",
+      "types": "./dist/grid/index.d.ts"
+    },
+    "./flex": {
+      "import": "./dist/flex/index.js",
+      "types": "./dist/flex/index.d.ts"
+    },
+    "./card": {
+      "import": "./dist/card/index.js",
+      "types": "./dist/card/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react.js",
+      "types": "./dist/react.d.ts"
+    },
+    "./versions.json": {
+      "import": "./dist/versions.json",
+      "require": "./dist/versions.json"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "VERSIONS.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist/*",
+    "versions": "node scripts/versions.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "ui-components",
+    "layout",
+    "grid",
+    "flex",
+    "responsive",
+    "nuralyui"
+  ],
+  "author": "Laabidi Aymen",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuralyUI/NuralyUI.git",
+    "directory": "packages/layout"
+  },
+  "bugs": {
+    "url": "https://github.com/NuralyUI/NuralyUI/issues"
+  },
+  "homepage": "https://github.com/NuralyUI/NuralyUI#readme",
+  "peerDependencies": {
+    "lit": "^2.2.4",
+    "@lit/reactive-element": "^1.6.1"
+  },
+  "devDependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}

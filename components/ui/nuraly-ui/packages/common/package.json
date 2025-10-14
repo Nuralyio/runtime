@@ -1,0 +1,78 @@
+{
+  "name": "@nuralyui/common",
+  "version": "0.1.0",
+  "description": "Common UI components for Nuraly UI Library - includes basic building blocks like Icon, Badge, Divider, and Label",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./icon": {
+      "import": "./dist/icon/index.js",
+      "types": "./dist/icon/index.d.ts"
+    },
+    "./badge": {
+      "import": "./dist/badge/index.js",
+      "types": "./dist/badge/index.d.ts"
+    },
+    "./divider": {
+      "import": "./dist/divider/index.js",
+      "types": "./dist/divider/index.d.ts"
+    },
+    "./label": {
+      "import": "./dist/label/index.js",
+      "types": "./dist/label/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react.js",
+      "types": "./dist/react.d.ts"
+    },
+    "./versions.json": {
+      "import": "./dist/versions.json",
+      "require": "./dist/versions.json"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "VERSIONS.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist/*",
+    "versions": "node scripts/versions.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "ui-components",
+    "icon",
+    "badge",
+    "divider",
+    "label",
+    "common",
+    "nuralyui"
+  ],
+  "author": "Laabidi Aymen",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuralyUI/NuralyUI.git",
+    "directory": "packages/common"
+  },
+  "bugs": {
+    "url": "https://github.com/NuralyUI/NuralyUI/issues"
+  },
+  "homepage": "https://github.com/NuralyUI/NuralyUI#readme",
+  "peerDependencies": {
+    "lit": "^2.2.4",
+    "@lit/reactive-element": "^1.6.1"
+  },
+  "devDependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}
