@@ -18,9 +18,6 @@ export class FileHandler {
     private eventBus: EventBus
   ) {}
 
-  /**
-   * Add file to uploaded files
-   */
   addFile(file: ChatbotFile): void {
     const state = this.stateHandler.getState();
     this.stateHandler.updateState({
@@ -29,9 +26,6 @@ export class FileHandler {
     this.eventBus.emit('file:uploaded', file);
   }
 
-  /**
-   * Remove file from uploaded files
-   */
   removeFile(fileId: string): void {
     const state = this.stateHandler.getState();
     this.stateHandler.updateState({
@@ -40,24 +34,15 @@ export class FileHandler {
     this.eventBus.emit('file:removed', fileId);
   }
 
-  /**
-   * Clear all uploaded files
-   */
   clearFiles(): void {
     this.stateHandler.updateState({ uploadedFiles: [] });
   }
 
-  /**
-   * Get all uploaded files
-   */
   getUploadedFiles(): ChatbotFile[] {
     const state = this.stateHandler.getState();
     return [...state.uploadedFiles];
   }
 
-  /**
-   * Get file by ID
-   */
   getFileById(fileId: string): ChatbotFile | undefined {
     const state = this.stateHandler.getState();
     return state.uploadedFiles.find(f => f.id === fileId);
@@ -79,9 +64,6 @@ export class FileHandler {
     return chatbotFile;
   }
 
-  /**
-   * Determine file type from MIME type
-   */
   private determineFileType(mimeType: string): ChatbotFileType {
     if (mimeType.startsWith('image/')) return 'image' as ChatbotFileType;
     if (mimeType.startsWith('video/')) return 'video' as ChatbotFileType;
@@ -91,9 +73,6 @@ export class FileHandler {
     return 'document' as ChatbotFileType;
   }
 
-  /**
-   * Generate unique ID
-   */
   private generateId(prefix: string): string {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }

@@ -16,31 +16,19 @@ export class SuggestionHandler {
     private stateHandler: StateHandler,
   ) {}
 
-  /**
-   * Set suggestions
-   */
   setSuggestions(suggestions: ChatbotSuggestion[]): void {
     this.stateHandler.updateState({ suggestions });
   }
 
-  /**
-   * Clear all suggestions
-   */
   clearSuggestions(): void {
     this.stateHandler.updateState({ suggestions: [] });
   }
 
-  /**
-   * Get current suggestions
-   */
   getSuggestions(): ChatbotSuggestion[] {
     const state = this.stateHandler.getState();
     return [...state.suggestions];
   }
 
-  /**
-   * Remove a specific suggestion
-   */
   removeSuggestion(suggestionId: string): void {
     const state = this.stateHandler.getState();
     this.stateHandler.updateState({

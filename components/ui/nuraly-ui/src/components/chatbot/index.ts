@@ -25,9 +25,6 @@ export * from './storage/index.js';
 // Controllers (Lit-specific)
 export * from './controllers/index.js';
 
-// Interfaces
-export * from './interfaces/index.js';
-
 // Legacy exports for backward compatibility
 export { Message } from './shared/interfaces/message.interface.js';
 export { Sender } from './shared/interfaces/sender.enum.js';

@@ -18,24 +18,15 @@ export class ModuleHandler {
     private eventBus: EventBus
   ) {}
 
-  /**
-   * Set available modules
-   */
   setModules(modules: ChatbotModule[]): void {
     this.stateHandler.updateState({ modules });
   }
 
-  /**
-   * Select modules by IDs
-   */
   selectModules(moduleIds: string[]): void {
     this.stateHandler.updateState({ selectedModules: moduleIds });
     this.eventBus.emit('module:selected', moduleIds);
   }
 
-  /**
-   * Toggle module selection
-   */
   toggleModule(moduleId: string): void {
     const state = this.stateHandler.getState();
     const isSelected = state.selectedModules.includes(moduleId);
@@ -47,17 +38,11 @@ export class ModuleHandler {
     this.selectModules(newSelection);
   }
 
-  /**
-   * Get selected modules
-   */
   getSelectedModules(): ChatbotModule[] {
     const state = this.stateHandler.getState();
     return (state.modules || []).filter(m => state.selectedModules.includes(m.id));
   }
 
-  /**
-   * Clear module selection
-   */
   clearSelection(): void {
     this.stateHandler.updateState({ selectedModules: [] });
   }

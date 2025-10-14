@@ -25,9 +25,6 @@ export class StateHandler {
     this.state = initialState;
   }
 
-  /**
-   * Get current state (readonly)
-   */
   getState(): Readonly<ChatbotState> {
     return Object.freeze({ ...this.state });
   }
@@ -38,7 +35,6 @@ export class StateHandler {
   updateState(updates: Partial<ChatbotState>): void {
     this.state = { ...this.state, ...updates };
 
-    // Notify UI through callback
     if (this.ui.onStateChange) {
       try {
         this.ui.onStateChange(this.getState());
@@ -47,10 +43,8 @@ export class StateHandler {
       }
     }
 
-    // Emit event for plugins
     this.eventBus.emit('state:changed', this.state);
 
-    // Notify plugins
     this.plugins.forEach(plugin => {
       if (plugin.onStateChange) {
         try {
@@ -62,35 +56,25 @@ export class StateHandler {
     });
   }
 
-  /**
-   * Add message to state
-   */
   addMessageToState(message: ChatbotMessage): void {
     this.state.messages = [...this.state.messages, message];
 
-    // Suggestions are tied to the most recent message.
-    // When a new message arrives, reset suggestions unless
-    // the new message provides its own suggestions (usually a bot message).
     if (message.suggestions && message.suggestions.length > 0) {
       this.state.suggestions = [...message.suggestions];
     } else {
       this.state.suggestions = [];
     }
 
-    // Apply max messages limit
     if (this.config.maxMessages && this.state.messages.length > this.config.maxMessages) {
       this.state.messages = this.state.messages.slice(-this.config.maxMessages);
     }
 
-    // Notify UI
     if (this.ui.onStateChange) {
       this.ui.onStateChange(this.getState());
     }
 
-    // Emit full state change for subscribers (e.g., UI components)
     this.eventBus.emit('state:changed', this.state);
 
-    // Scroll to bottom
     if (this.ui.scrollToBottom) {
       this.ui.scrollToBottom();
     }
@@ -98,9 +82,6 @@ export class StateHandler {
     this.eventBus.emit('message:added', message);
   }
 
-  /**
-   * Update a message in state
-   */
   updateMessageInState(id: string, updates: Partial<ChatbotMessage>): void {
     this.state.messages = this.state.messages.map(msg =>
       msg.id === id ? { ...msg, ...updates } : msg
@@ -110,7 +91,6 @@ export class StateHandler {
       this.ui.onStateChange(this.getState());
     }
 
-    // Emit full state change for subscribers
     this.eventBus.emit('state:changed', this.state);
 
     const updatedMessage = this.state.messages.find(m => m.id === id);
@@ -119,9 +99,6 @@ export class StateHandler {
     }
   }
 
-  /**
-   * Remove message from state
-   */
   removeMessageFromState(id: string): void {
     this.state.messages = this.state.messages.filter(msg => msg.id !== id);
 
@@ -129,23 +106,16 @@ export class StateHandler {
       this.ui.onStateChange(this.getState());
     }
 
-    // Emit full state change for subscribers
     this.eventBus.emit('state:changed', this.state);
 
     this.eventBus.emit('message:deleted', id);
   }
 
-  /**
-   * Reset state to initial values
-   */
   resetState(initialState: ChatbotState): void {
     this.state = { ...initialState };
     this.updateState(this.state);
   }
 
-  /**
-   * Get specific state properties
-   */
   getMessages(): ChatbotMessage[] {
     return [...this.state.messages];
   }
@@ -162,9 +132,6 @@ export class StateHandler {
     return this.state.isProcessing;
   }
 
-  /**
-   * Set typing state
-   */
   setTyping(isTyping: boolean): void {
     this.updateState({ isTyping });
 
@@ -175,16 +142,10 @@ export class StateHandler {
     }
   }
 
-  /**
-   * Set processing state
-   */
   setProcessing(isProcessing: boolean): void {
     this.updateState({ isProcessing });
   }
 
-  /**
-   * Log error
-   */
   private logError(message: string, error: any): void {
     console.error(`[StateHandler] ${message}`, error);
   }
