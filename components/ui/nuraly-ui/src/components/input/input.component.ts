@@ -7,7 +7,6 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './input.style.js';
-import '../icon/icon.component.js';
 import {
   INPUT_TYPE,
   INPUT_STATE,
