@@ -50,6 +50,20 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Publish Root Packages (@nuralyui/common, forms, layout, themes)
+        run: |
+          npm install -g publish-if-not-published
+          for pkg in common forms layout themes; do
+            if [ -f "packages/$pkg/package.json" ]; then
+              echo "Publishing @nuralyui/$pkg..."
+              (cd packages/$pkg && publish-if-not-published -- --access=public)
+            else
+              echo "Skipping @nuralyui/$pkg (no package.json)"
+            fi
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish Components
         run: |
           npm install -g publish-if-not-published
