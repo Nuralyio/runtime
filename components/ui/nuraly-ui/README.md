@@ -5,7 +5,13 @@
 </p>
 
 <p align="center">
-  <a href="https://badge.fury.io/js/@nuralyui%2Fworkspace"><img src="https://badge.fury.io/js/@nuralyui%2Fworkspace.svg" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/@nuralyui/common"><img src="https://img.shields.io/npm/v/@nuralyui/common?label=common&color=blue" alt="common" /></a>
+  <a href="https://www.npmjs.com/package/@nuralyui/forms"><img src="https://img.shields.io/npm/v/@nuralyui/forms?label=forms&color=green" alt="forms" /></a>
+  <a href="https://www.npmjs.com/package/@nuralyui/layout"><img src="https://img.shields.io/npm/v/@nuralyui/layout?label=layout&color=orange" alt="layout" /></a>
+  <a href="https://www.npmjs.com/package/@nuralyui/themes"><img src="https://img.shields.io/npm/v/@nuralyui/themes?label=themes&color=purple" alt="themes" /></a>
+</p>
+
+<p align="center">
   <a href="https://opensource.org/licenses/BSD-3-Clause"><img src="https://img.shields.io/badge/license-BSD--3--Clause-blue.svg" alt="License" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/built%20with-TypeScript-blue" alt="TypeScript" /></a>
 </p>
