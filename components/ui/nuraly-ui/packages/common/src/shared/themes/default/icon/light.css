@@ -1,0 +1,42 @@
+/**
+ * Default Design System Theme - Icon Component - Light Variant
+ * Icon-specific CSS variables based on Default Design System specifications
+ */
+
+:root,
+[data-theme="default-light"]{
+  /* ========================================
+   * ICON VARIABLES - DEFAULT LIGHT THEME
+   * ======================================== */
+
+  /* Base icon colors - Default Light Design System */
+  --nuraly-color-icon: #161616;
+  --nuraly-color-icon-fallback: #161616;
+
+  /* Interactive states - Default Light */
+  --nuraly-color-icon-hover: #0f62fe;
+  --nuraly-color-icon-hover-fallback: #0f62fe;
+  --nuraly-color-icon-active: #054ada;
+  --nuraly-color-icon-active-fallback: #054ada;
+
+  /* Disabled state - Default Light */
+  --nuraly-color-icon-disabled: #c6c6c6;
+  --nuraly-color-icon-disabled-fallback: #c6c6c6;
+
+  /* Focus states - Default Light */
+  --nuraly-color-icon-focus: #0f62fe;
+  --nuraly-icon-focus-outline: 2px solid #0f62fe;
+  --nuraly-icon-focus-outline-fallback: 2px solid #0f62fe;
+  --nuraly-icon-focus-background: rgba(15, 98, 254, 0.1);
+  --nuraly-icon-focus-background-fallback: rgba(15, 98, 254, 0.1);
+}
+
+/* Default Design System specific overrides */
+html[data-theme="default-light"] nr-icon .svg-icon.clickable:focus,
+body[data-theme="default-light"] nr-icon .svg-icon.clickable:focus,
+[data-theme="default-light"] nr-icon .svg-icon.clickable:focus {
+  outline: 2px solid #0f62fe !important;
+  outline-offset: 2px !important;
+  background: rgba(15, 98, 254, 0.1) !important;
+  border-radius: 4px !important;
+}

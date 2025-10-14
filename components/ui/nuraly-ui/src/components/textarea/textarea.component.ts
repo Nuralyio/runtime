@@ -21,8 +21,8 @@ import {
   TextareaResizeEvent,
   FocusOptions
 } from './textarea.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
-import { ValidatableComponent, ValidationStatus } from '../../shared/validation.types.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+import { ValidatableComponent, ValidationStatus } from '@nuralyui/common/mixins';
 import {
   TextareaValidationController,
   TextareaEventController,

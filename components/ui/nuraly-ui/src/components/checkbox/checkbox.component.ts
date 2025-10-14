@@ -8,7 +8,7 @@ import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styles } from './checkbox.style.js';
 import { CheckboxSize } from './checkbox.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { CheckboxFocusMixin, CheckboxEventMixin } from './mixins/index.js';
 
 /**

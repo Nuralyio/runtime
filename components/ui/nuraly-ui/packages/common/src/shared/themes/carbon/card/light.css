@@ -1,0 +1,32 @@
+/**
+ * Carbon Theme - Card Component - Light Variant
+ * Card-specific CSS variables for the Carbon Design System light theme
+ * Based on official Carbon Design System color tokens
+ */
+
+[data-theme="carbon-light"] {
+  /* ========================================
+   * CARD VARIABLES - CARBON LIGHT THEME
+   * Official Carbon Design System Colors
+   * ======================================== */
+
+  /* Card background colors - Carbon Gray 10 & White */
+  --nuraly-card-background-color: #f4f4f4;
+  --nuraly-card-header-background-color: #ffffff;
+
+  /* Card border colors - Carbon Gray 20 */
+  --nuraly-card-border: 1px solid #e0e0e0;
+  --nuraly-card-header-border-bottom: 1px solid #e0e0e0;
+
+  /* Card text colors - Carbon Gray 100 & Gray 70 */
+  --nuraly-card-header-color: #161616;
+  --nuraly-card-content-color: #525252;
+
+  /* Card hover states - subtle elevation */
+  --nuraly-card-hover-background-color: #f4f4f4;
+  --nuraly-card-hover-border-color: #c6c6c6;
+
+  /* Card focus states - Carbon Blue 60 */
+  --nuraly-card-focus-outline: 2px solid #0f62fe;
+  --nuraly-card-focus-offset: 2px;
+}

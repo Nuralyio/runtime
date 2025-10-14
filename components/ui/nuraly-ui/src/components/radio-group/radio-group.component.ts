@@ -14,7 +14,7 @@ import '../icon/icon.component.js';
 import '../button/button.component.js';
 import '../radio/radio.component.js';
 
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import {
   RadioGroupController,
   RadioKeyboardController,

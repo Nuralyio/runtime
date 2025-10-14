@@ -8,7 +8,7 @@ import { LitElement, html, nothing, PropertyValues, TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { styles } from './datepicker.style.js';
 import {
   DatePickerMode,
@@ -33,7 +33,7 @@ import {
   DatePickerKeyboardController,
   DatePickerPositioningController,
 } from './controllers/index.js';
-import { SharedDropdownController } from '../../shared/controllers/dropdown.controller.js';
+import { SharedDropdownController } from '@nuralyui/common/controllers';
 import { DatePickerHost } from './interfaces/base-controller.interface.js';
 import dayjs from 'dayjs';
 import { renderMonthsTemplate } from './templates/months.template.js';

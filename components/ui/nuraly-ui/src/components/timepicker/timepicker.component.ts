@@ -8,9 +8,9 @@ import '../button/button.component.js';
 import { INPUT_STATE } from '../input/input.types.js';
 
 // Import base mixin and types
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
-import { SharedDropdownController } from '../../shared/controllers/dropdown.controller.js';
-import { DropdownHost } from '../../shared/controllers/dropdown.interface.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+import { SharedDropdownController } from '@nuralyui/common/controllers';
+import { DropdownHost } from '@nuralyui/common/controllers';
 import {
     TimeValue,
     TimeFormat,

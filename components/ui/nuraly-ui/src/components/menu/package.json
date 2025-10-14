@@ -1,50 +1,50 @@
 {
-    "name": "@nuralyui/menu",
-    "version": "0.0.15",
-    "description": "Menu component for NuralyUI library with support for nested submenus",
-    "main": "index.js",
-    "type": "module",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
+  "name": "@nuralyui/menu",
+  "version": "0.0.16",
+  "description": "Menu component for NuralyUI library with support for nested submenus",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "files": [
-        "*.js",
-        "*.d.ts",
-        "*.js.map",
-        "bundle.js"
-    ],
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Nuralyio/NuralyUI.git",
-        "directory": "src/components/menu"
-    },
-    "keywords": [
-        "web-components",
-        "lit-element",
-        "menu",
-        "navigation",
-        "submenu",
-        "ui-components",
-        "typescript"
-    ],
-    "author": "Labidi Aymen",
-    "license": "ISC",
-    "nuralyui": {
-        "requiredComponents": [
-            "nr-icon",
-            "nr-dropdown"
-        ]
-    },
-    "peerDependencies": {
-        "@nuralyui/icon": "^0.0.1",
-        "@nuralyui/dropdown": "^0.0.1"
+    "./bundle": {
+      "import": "./bundle.js"
     }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "bundle.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/menu"
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "menu",
+    "navigation",
+    "submenu",
+    "ui-components",
+    "typescript"
+  ],
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "nuralyui": {
+    "requiredComponents": [
+      "nr-icon",
+      "nr-dropdown"
+    ]
+  },
+  "peerDependencies": {
+    "@nuralyui/icon": "^0.0.1",
+    "@nuralyui/dropdown": "^0.0.1"
+  }
 }

@@ -1,0 +1,20 @@
+/**
+ * Default Theme - Timeline Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"],
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * SHARED TIMELINE VARIABLES - DEFAULT THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Timeline sizing */
+  --nuraly-timeline-item-padding-bottom: 20px;
+  --nuraly-timeline-tail-width: 2px;
+  --nuraly-timeline-dot-border-width: 2px;
+}

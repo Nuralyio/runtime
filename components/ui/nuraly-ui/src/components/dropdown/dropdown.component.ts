@@ -9,7 +9,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { styles } from './dropdown.style';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { NrDropdownController } from './controllers/dropdown.controller.js';
 import '../icon/index.js';
 

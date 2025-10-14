@@ -1,0 +1,60 @@
+/**
+ * Default Design System Theme - Input Component - Common Variables
+ * Shared CSS variables across light and dark variants for Default Design System
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="default-dark"] {
+  /* ========================================
+   * SHARED INPUT VARIABLES - DEFAULT THEME
+   * ======================================== */
+
+  /* Input borders - Default Design System (shared properties) */
+  --nuraly-border-width-input: 1px;
+  --nuraly-border-radius-input: 6px;
+  --nuraly-color-input-border-focus: #1890ff;
+  --nuraly-color-input-border-hover: #40a9ff;
+
+  /* Input sizing - Default Design System */
+  --nuraly-size-input-small-height: 24px;
+  --nuraly-size-input-medium-height: 32px;
+  --nuraly-size-input-large-height: 40px;
+
+  /* Input padding - Default Design System */
+  --nuraly-spacing-input-small-vertical: 0px;
+  --nuraly-spacing-input-small-horizontal: 7px;
+  --nuraly-spacing-input-medium-vertical: 4px;
+  --nuraly-spacing-input-medium-horizontal: 11px;
+  --nuraly-spacing-input-large-vertical: 6px;
+  --nuraly-spacing-input-large-horizontal: 11px;
+
+  /* Input typography - Default Design System (system fonts) */
+  --nuraly-font-family-input: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --nuraly-font-size-input: 14px;
+  --nuraly-font-size-input-label: 14px;
+  --nuraly-font-size-input-helper: 14px;
+  --nuraly-font-size-input-placeholder: 14px;
+  --nuraly-font-size-input-small: 14px;
+  --nuraly-font-size-input-large: 16px;
+
+  /* Input icon sizing - Default Design System */
+  --nuraly-size-input-icon: 14px;
+
+  /* Input variant border radius - Default Design System */
+  --nuraly-border-radius-input-outlined: 6px;
+  --nuraly-border-radius-input-filled: 6px;
+
+  /* Default spacing values - shared */
+  --nuraly-spacing-input-label-bottom: 8px;
+  --nuraly-spacing-input-helper-top: 4px;
+  --nuraly-spacing-input-icon: 4px;
+
+  /* Input focus states - Default Design System (shared) */
+  --nuraly-shadow-input-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  --nuraly-shadow-input-error-focus: 0 0 0 2px rgba(255, 77, 79, 0.2);
+  --nuraly-shadow-input-warning-focus: 0 0 0 2px rgba(250, 173, 20, 0.2);
+
+  /* Input transitions - Default Design System */
+  --nuraly-transition-input: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}

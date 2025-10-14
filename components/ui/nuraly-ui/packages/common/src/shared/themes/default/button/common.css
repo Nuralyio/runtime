@@ -1,0 +1,78 @@
+/**
+ * Default Theme - Button Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"],
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * SHARED BUTTON VARIABLES - DEFAULT THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Button disabled states - shared focus/shadow properties */
+  --nuraly-color-button-focus-outline: #1890ff;
+  --nuraly-color-button-focus-ring: rgba(24, 144, 255, 0.2);
+
+  /* Button shadows (light/dark variants handled separately) */
+  --nuraly-shadow-button-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
+
+  /* Button specific styling */
+  --nuraly-border-radius-button: 6px;
+
+  /* Tertiary button - same colors as primary across themes */
+  --nuraly-color-button-tertiary: #1890ff;
+  --nuraly-color-button-tertiary-hover: #40a9ff;
+  --nuraly-color-button-tertiary-active: #096dd9;
+
+  /* Button gradients - consistent across light/dark themes */
+  --nuraly-color-button-gradient-bg-start: #1890ff;
+  --nuraly-color-button-gradient-bg-end: #096dd9;
+  --nuraly-color-button-gradient-text: #ffffff;
+
+  /* Primary button colors - consistent across light/dark */
+  --nuraly-color-button-primary: #1890ff;
+  --nuraly-color-button-primary-hover: #40a9ff;
+  --nuraly-color-button-primary-active: #096dd9;
+  --nuraly-color-button-primary-text: #ffffff;
+  --nuraly-color-button-primary-text-hover: #ffffff;
+  --nuraly-color-button-primary-text-active: #ffffff;
+
+  /* Danger button colors - consistent across light/dark */
+  --nuraly-color-button-danger: #ff4d4f;
+  --nuraly-color-button-danger-hover: #ff7875;
+  --nuraly-color-button-danger-active: #d9363e;
+  --nuraly-color-button-danger-text: #ffffff;
+  --nuraly-color-button-danger-text-hover: #ffffff;
+  --nuraly-color-button-danger-text-active: #ffffff;
+
+  /* Ghost/Text button colors - consistent text colors */
+  --nuraly-color-button-ghost-text: #1890ff;
+  --nuraly-color-button-ghost-text-hover: #40a9ff;
+  --nuraly-color-button-ghost-text-active: #096dd9;
+
+  /* ========================================
+   * BUTTON PADDING & SPACING
+   * Button dimensions - consistent across themes
+   * ======================================== */
+  
+  /* Button padding */
+  --nuraly-button-padding-vertical: 2px;
+  --nuraly-button-padding-horizontal: 12px;
+  
+  /* Override default button spacing */
+  --nuraly-spacing-2: 2px;   /* Override vertical padding */
+  --nuraly-spacing-4: 12px;  /* Override horizontal padding */
+  
+  /* For different sizes */
+  --nuraly-size-sm: 24px;
+  --nuraly-size-md: 32px;
+  --nuraly-size-lg: 40px;
+  
+  /* Icon spacing and alignment */
+  --nuraly-button-icon-spacing: 6px;
+  --nuraly-button-icon-size: 12px;
+}

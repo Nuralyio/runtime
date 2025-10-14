@@ -6,7 +6,7 @@
 
 import { LitElement, PropertyValueMap, html, nothing } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import styles from './table.style.js';
 import { IHeader, SelectionMode, Sizes, SortAttribute, SortOrder, EMPTY_STRING } from './table.types.js';
 

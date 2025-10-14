@@ -1,0 +1,19 @@
+/**
+ * Default Theme - Skeleton Component - Dark Variant
+ * Skeleton-specific CSS variables
+ */
+
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * SKELETON VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Skeleton base colors */
+  --nuraly-skeleton-background: rgba(255, 255, 255, 0.08);
+  --nuraly-skeleton-icon-color: rgba(255, 255, 255, 0.15);
+  
+  /* Skeleton animation gradient */
+  --nuraly-skeleton-gradient-from: rgba(255, 255, 255, 0.08);
+  --nuraly-skeleton-gradient-to: rgba(255, 255, 255, 0.18);
+}

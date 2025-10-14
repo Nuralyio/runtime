@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/layout",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Layout components for NuralyUI - includes Layout, Header, Footer, Sider, and Content",
   "type": "module",
   "main": "index.js",
@@ -10,11 +10,16 @@
     ".": {
       "import": "./index.js",
       "types": "./index.d.ts"
+    },
+    "./bundle": {
+      "import": "./bundle.js"
     }
   },
   "files": [
     "*.js",
     "*.d.ts",
+    "*.js.map",
+    "bundle.js",
     "*.ts",
     "!*.stories.ts",
     "!*.test.ts"

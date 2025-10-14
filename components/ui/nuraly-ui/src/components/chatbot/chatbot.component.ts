@@ -10,7 +10,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { localized, msg } from '@lit/localize';
 
 import styles from './chatbot.style.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
 import {
   ChatbotMessage,

@@ -6,7 +6,7 @@
 
 import { ReactiveControllerHost } from 'lit';
 import { RippleController } from '../interfaces/ripple-controller.interface.js';
-import { throttle } from '../../../shared/utils.js';
+import { throttle } from '@nuralyui/common/utils';
 
 /**
  * Controller that manages ripple effects for radio interactions

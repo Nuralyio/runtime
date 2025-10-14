@@ -1,0 +1,19 @@
+/**
+ * Default Theme - Popconfirm Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"],
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * SHARED POPCONFIRM VARIABLES - DEFAULT THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Popconfirm uses dropdown and button theme variables */
+  /* Icon colors are managed through global color system */
+  --nuraly-popconfirm-icon-color: var(--nuraly-color-text);
+}

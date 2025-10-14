@@ -1,0 +1,49 @@
+/**
+ * Default Theme - Datepicker Component - Dark Variant
+ * Datepicker-specific CSS variables for the Default Design System dark theme
+ */
+
+[data-theme="default-dark"] {
+  /* ========================================
+   * Default Theme Dark Colors
+   * ======================================== */
+
+  /* Background colors */
+  --nuraly-color-datepicker-background: #1f1f1f;
+  --nuraly-color-datepicker-header-background: #1f1f1f;
+  --nuraly-color-datepicker-hover-background: rgba(255, 255, 255, 0.04);
+  --nuraly-color-datepicker-active-background: rgba(255, 255, 255, 0.06);
+
+  /* Text colors */
+  --nuraly-color-datepicker-text: rgba(255, 255, 255, 0.85);
+  --nuraly-color-datepicker-selected-text: rgba(0, 0, 0, 0.88);
+  --nuraly-color-datepicker-weekday: rgba(255, 255, 255, 0.45);
+  --nuraly-color-datepicker-weekend: #ff7875;
+
+  /* Border colors */
+  --nuraly-color-datepicker-border: #424242;
+
+  /* Input field colors */
+  --nuraly-color-datepicker-input-background: #1f1f1f;
+  --nuraly-color-datepicker-input-border: #424242;
+  --nuraly-color-datepicker-input-text: rgba(255, 255, 255, 0.85);
+  --nuraly-color-datepicker-input-placeholder: rgba(255, 255, 255, 0.25);
+
+  /* Hover states */
+  --nuraly-color-datepicker-hover: #262626;
+
+  /* Range selection */
+  --nuraly-color-datepicker-range: #111b26;
+
+  /* Disabled states */
+  --nuraly-color-datepicker-disabled: #262626;
+  --nuraly-color-datepicker-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-datepicker-disabled-background: #1f1f1f;
+
+  /* Shadow color */
+  --nuraly-color-datepicker-shadow: rgba(0, 0, 0, 0.45);
+
+  /* States */
+  --nuraly-opacity-datepicker-disabled: 1;
+  --nuraly-opacity-datepicker-hover: 1;
+}

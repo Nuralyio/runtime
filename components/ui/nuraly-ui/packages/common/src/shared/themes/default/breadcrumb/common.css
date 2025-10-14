@@ -1,0 +1,23 @@
+/**
+ * Default Theme - Breadcrumb Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"],
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * SHARED BREADCRUMB VARIABLES - DEFAULT THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Breadcrumb sizing */
+  --nuraly-breadcrumb-font-size: 0.875rem;
+  --nuraly-breadcrumb-line-height: 1.5;
+  --nuraly-breadcrumb-icon-font-size: 14px;
+  
+  /* Breadcrumb spacing */
+  --nuraly-breadcrumb-separator-margin: 8px;
+}

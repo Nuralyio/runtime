@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { styles } from './card.style.js';
 import { CardSize } from './card.types.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
 /**
  * Card component for displaying content in a structured container

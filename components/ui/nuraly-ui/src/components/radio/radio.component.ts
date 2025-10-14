@@ -8,7 +8,7 @@ import { LitElement, html } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styles } from './radio.style.js';
 import { RadioSize } from './radio.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import '../label/label.component.js';
 
 /**
