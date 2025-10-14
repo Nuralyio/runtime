@@ -17,3 +17,6 @@
 
 // Export constants (currently empty, will be populated as needed)
 // export * from './shared/constants.js';
+
+// Make this file a module even if there are no exports yet
+export {};

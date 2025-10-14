@@ -9,22 +9,6 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./icon": {
-      "import": "./dist/icon/index.js",
-      "types": "./dist/icon/index.d.ts"
-    },
-    "./badge": {
-      "import": "./dist/badge/index.js",
-      "types": "./dist/badge/index.d.ts"
-    },
-    "./divider": {
-      "import": "./dist/divider/index.js",
-      "types": "./dist/divider/index.d.ts"
-    },
-    "./label": {
-      "import": "./dist/label/index.js",
-      "types": "./dist/label/index.d.ts"
-    },
     "./mixins": {
       "import": "./dist/mixins/index.js",
       "types": "./dist/mixins/index.d.ts"
@@ -38,20 +22,12 @@
       "types": "./dist/themes/index.d.ts"
     },
     "./utils": {
-      "import": "./dist/utils.js",
-      "types": "./dist/utils.d.ts"
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
     },
     "./constants": {
-      "import": "./dist/constants.js",
-      "types": "./dist/constants.d.ts"
-    },
-    "./react": {
-      "import": "./dist/react.js",
-      "types": "./dist/react.d.ts"
-    },
-    "./versions.json": {
-      "import": "./dist/versions.json",
-      "require": "./dist/versions.json"
+      "import": "./dist/constants/index.js",
+      "types": "./dist/constants/index.d.ts"
     }
   },
   "files": [

@@ -11,3 +11,6 @@ my-element.d.ts.map
 # only generated for size check
 my-element.bundled.js
 .idea
+packages/common/src/**/*.d*.*
+packages/common/src/**/*.js
+packages/common/src/**/*.js.*

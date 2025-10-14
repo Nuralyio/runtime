@@ -10,26 +10,17 @@
  * Common UI components package for Nuraly UI Library.
  * Contains basic building blocks used across the component library.
  * 
- * Included components:
- * - Icon: Scalable vector icons
- * - Badge: Numerical indicators and status badges
- * - Divider: Content separators
- * - Label: Enhanced text labels
- * 
+ * This package exposes shared utilities only (mixins, controllers, themes, utils).
+ * Components should be imported from their own packages (e.g., @nuralyui/button).
+ *
  * @example
  * ```typescript
- * // Import all common components
- * import '@nuralyui/common';
- * 
- * // Or import specific components
- * import '@nuralyui/common/icon';
- * import '@nuralyui/common/badge';
+ * import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+ * import { ThemeController } from '@nuralyui/common/controllers';
  * ```
  */
 
-// Note: Component exports are handled by the build script
-// which copies from dist/components after the main build
-// This file is for shared utilities only
+// This file exports shared utilities only.
 
 // Export shared utilities
 export * from './mixins.js';
