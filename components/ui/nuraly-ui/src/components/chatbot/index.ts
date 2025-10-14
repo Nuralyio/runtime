@@ -10,7 +10,7 @@ export * from './chatbot.component.js';
 // Types and interfaces
 export * from './chatbot.types.js';
 
-// Core Controller (NEW - Framework Agnostic)
+// Core Controller (Framework Agnostic)
 export * from './core/index.js';
 
 // Providers
@@ -25,6 +25,3 @@ export * from './storage/index.js';
 // Controllers (Lit-specific)
 export * from './controllers/index.js';
 
-// Legacy exports for backward compatibility
-export { Message } from './shared/interfaces/message.interface.js';
-export { Sender } from './shared/interfaces/sender.enum.js';
