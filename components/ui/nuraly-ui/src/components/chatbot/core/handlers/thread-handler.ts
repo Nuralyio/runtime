@@ -21,9 +21,6 @@ export class ThreadHandler {
     private config: ChatbotCoreConfig
   ) {}
 
-  /**
-   * Create a new thread
-   */
   createThread(title?: string): ChatbotThread {
     if (!this.config.enableThreads) {
       throw new Error('Threads are not enabled');
@@ -47,7 +44,6 @@ export class ThreadHandler {
     this.eventBus.emit('thread:created', thread);
     this.eventBus.emit('thread:selected', thread);
 
-    // Focus input after creating thread
     if (this.ui.focusInput) {
       setTimeout(() => {
         this.ui.focusInput!();
@@ -57,9 +53,6 @@ export class ThreadHandler {
     return thread;
   }
 
-  /**
-   * Switch to a different thread
-   */
   switchThread(threadId: string): void {
     const state = this.stateHandler.getState();
     const thread = state.threads.find(t => t.id === threadId);
@@ -67,12 +60,10 @@ export class ThreadHandler {
       throw new Error(`Thread "${threadId}" not found`);
     }
 
-    // Save current thread before switching
     if (state.currentThreadId) {
       this.saveCurrentThread();
     }
 
-    // Switch to new thread
     this.stateHandler.updateState({
       currentThreadId: threadId,
       messages: [...thread.messages]
@@ -81,15 +72,11 @@ export class ThreadHandler {
     this.eventBus.emit('thread:selected', thread);
   }
 
-  /**
-   * Delete a thread
-   */
   deleteThread(threadId: string): void {
     const state = this.stateHandler.getState();
     const newThreads = state.threads.filter(t => t.id !== threadId);
 
     if (state.currentThreadId === threadId) {
-      // Switch to first available thread or clear
       if (newThreads.length > 0) {
         this.stateHandler.updateState({ threads: newThreads });
         this.switchThread(newThreads[0].id);
@@ -107,25 +94,16 @@ export class ThreadHandler {
     this.eventBus.emit('thread:deleted', threadId);
   }
 
-  /**
-   * Get current active thread
-   */
   getCurrentThread(): ChatbotThread | undefined {
     const state = this.stateHandler.getState();
     return state.threads.find(t => t.id === state.currentThreadId);
   }
 
-  /**
-   * Get all threads
-   */
   getThreads(): ChatbotThread[] {
     const state = this.stateHandler.getState();
     return [...state.threads];
   }
 
-  /**
-   * Save current thread messages
-   */
   saveCurrentThread(): void {
     const state = this.stateHandler.getState();
     if (!state.currentThreadId) return;
@@ -133,9 +111,6 @@ export class ThreadHandler {
     this.updateThreadMessages(state.currentThreadId);
   }
 
-  /**
-   * Update thread messages
-   */
   updateThreadMessages(threadId: string): void {
     const state = this.stateHandler.getState();
     const newThreads = state.threads.map(t =>
@@ -147,9 +122,6 @@ export class ThreadHandler {
     this.stateHandler.updateState({ threads: newThreads });
   }
 
-  /**
-   * Generate unique ID
-   */
   private generateId(prefix: string): string {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }

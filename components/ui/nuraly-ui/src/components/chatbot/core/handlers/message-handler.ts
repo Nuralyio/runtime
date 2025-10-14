@@ -20,9 +20,6 @@ export class MessageHandler {
     private plugins: Map<string, ChatbotPlugin>
   ) {}
 
-  /**
-   * Create a new message
-   */
   createMessage(data: Partial<ChatbotMessage>): ChatbotMessage {
     return {
       id: this.generateId('msg'),
@@ -33,9 +30,6 @@ export class MessageHandler {
     } as ChatbotMessage;
   }
 
-  /**
-   * Create a user message
-   */
   createUserMessage(text: string, metadata?: Record<string, any>): ChatbotMessage {
     return this.createMessage({
       sender: 'user' as ChatbotSender,
@@ -44,9 +38,6 @@ export class MessageHandler {
     });
   }
 
-  /**
-   * Create a bot message
-   */
   createBotMessage(text: string, metadata?: Record<string, any>): ChatbotMessage {
     return this.createMessage({
       sender: 'bot' as ChatbotSender,
@@ -55,18 +46,13 @@ export class MessageHandler {
     });
   }
 
-  /**
-   * Add a message to the chat
-   */
   addMessage(data: Partial<ChatbotMessage>): ChatbotMessage {
     const message = this.createMessage(data);
     this.stateHandler.addMessageToState(message);
 
-    // Emit events based on sender
     if (message.sender === 'bot') {
       this.eventBus.emit('message:received', message);
       
-      // Notify plugins
       this.plugins.forEach(plugin => {
         if (plugin.onMessageReceived) {
           plugin.onMessageReceived(message);
@@ -75,7 +61,6 @@ export class MessageHandler {
     } else {
       this.eventBus.emit('message:sent', message);
       
-      // Notify plugins
       this.plugins.forEach(plugin => {
         if (plugin.onMessageSent) {
           plugin.onMessageSent(message);
@@ -86,43 +71,28 @@ export class MessageHandler {
     return message;
   }
 
-  /**
-   * Update an existing message
-   */
   updateMessage(id: string, updates: Partial<ChatbotMessage>): void {
     this.stateHandler.updateMessageInState(id, updates);
   }
 
-  /**
-   * Delete a message
-   */
   deleteMessage(id: string): void {
     this.stateHandler.removeMessageFromState(id);
   }
 
-  /**
-   * Clear all messages
-   */
   clearMessages(): void {
     this.stateHandler.updateState({ messages: [] });
   }
 
-  /**
-   * Get all messages
-   */
   getMessages(): ChatbotMessage[] {
     return this.stateHandler.getMessages();
   }
 
-  /**
-   * Get message by ID
-   */
   getMessageById(id: string): ChatbotMessage | undefined {
     return this.stateHandler.getMessageById(id);
   }
 
   /**
-   * Update bot message incrementally (for streaming)
+   * Update bot message text (for streaming)
    */
   updateBotMessageText(id: string, text: string): void {
     const message = this.getMessageById(id);
@@ -141,9 +111,6 @@ export class MessageHandler {
     }
   }
 
-  /**
-   * Generate unique ID
-   */
   private generateId(prefix: string): string {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
