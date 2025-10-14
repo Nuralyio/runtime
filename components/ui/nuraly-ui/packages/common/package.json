@@ -61,13 +61,13 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NuralyUI/NuralyUI.git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
     "directory": "packages/common"
   },
   "bugs": {
-    "url": "https://github.com/NuralyUI/NuralyUI/issues"
+    "url": "https://github.com/Nuralyio/NuralyUI/issues"
   },
-  "homepage": "https://github.com/NuralyUI/NuralyUI#readme",
+  "homepage": "https://github.com/Nuralyio/NuralyUI#readme",
   "peerDependencies": {
     "lit": "^2.2.4",
     "@lit/reactive-element": "^1.6.1"
