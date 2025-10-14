@@ -49,7 +49,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.i/common"><img 
 ### Install Package Bundles
 
 ```bash
-# Common UI components (icon, badge, divider, label)
+# Shared utilities (mixins, controllers, themes, utils)
 npm install @nuralyui/common
 
 # Form components (input, select, checkbox, radio, etc.)
@@ -131,7 +131,7 @@ export default {
 
 ### 📦 Package Bundles
 
-- **[@nuralyui/common](https://www.npmjs.com/package/@nuralyui/common)** - Icon, Badge, Divider, Label
+- **[@nuralyui/common](https://www.npmjs.com/package/@nuralyui/common)** - Mixins, Controllers, Themes, Utilities
 - **[@nuralyui/forms](https://www.npmjs.com/package/@nuralyui/forms)** - Input, Textarea, Checkbox, Radio, Select, Datepicker, Timepicker, Colorpicker, File Upload, Form, Slider
 - **[@nuralyui/layout](https://www.npmjs.com/package/@nuralyui/layout)** - Layout, Grid, Flex, Card
 - **[@nuralyui/themes](https://www.npmjs.com/package/@nuralyui/themes)** - Carbon & Default theme CSS

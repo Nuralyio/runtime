@@ -35,6 +35,16 @@ jobs:
       - name: Build Project
         run: npm run build --if-present
 
+      - name: Verify @nuralyui/common build outputs
+        run: |
+          set -e
+          ls -la packages/common/dist || (echo "common dist missing" && exit 1)
+          for p in mixins controllers themes utils constants; do
+            if [ ! -f "packages/common/dist/$p/index.js" ]; then
+              echo "Missing packages/common/dist/$p/index.js" && exit 1
+            fi
+          done
+
       - name: Build Component Bundles
         run: npm run roll
 
