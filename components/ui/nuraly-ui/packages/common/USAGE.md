@@ -24,11 +24,11 @@ import '@nuralyui/common';
   <script type="module">
     import '@nuralyui/common';
   </script>
-</head>
+### 1. Import Shared Utilities
 <body>
   <nr-icon name="heart" type="solid"></nr-icon>
   <nr-badge count="5">
-    <button>Notifications</button>
+import { NuralyUIBaseMixin, ThemeAwareMixin } from '@nuralyui/common/mixins';
   </nr-badge>
   <nr-divider>Section</nr-divider>
   <nr-label>Email</nr-label>
@@ -38,7 +38,7 @@ import '@nuralyui/common';
 
 ### 2. Import Individual Components (Tree-shakeable)
 
-```javascript
+    import { ThemeController, SharedDropdownController } from '@nuralyui/common/controllers';
 // Only import what you need
 import '@nuralyui/common/icon';
 import '@nuralyui/common/badge';
@@ -52,12 +52,12 @@ import '@nuralyui/common/badge';
 ```
 
 ### 3. TypeScript Usage
-
+### 2. Import Individual Utilities
 ```typescript
 import '@nuralyui/common';
 import type { NrIconElement } from '@nuralyui/common/icon';
-import type { NrBadgeElement } from '@nuralyui/common/badge';
-
+import { getCurrentTheme, type ThemeVariant } from '@nuralyui/common/themes';
+import { throttle, debounce, rafThrottle } from '@nuralyui/common/utils';
 const icon = document.querySelector<NrIconElement>('nr-icon');
 const badge = document.querySelector<NrBadgeElement>('nr-badge');
 
@@ -93,27 +93,11 @@ export default function App() {
       {/* Divider */}
       <NrDivider>Section Title</NrDivider>
       
-      {/* Label */}
+import { ThemeController } from '@nuralyui/common/controllers';
       <NrLabel>Email Address</NrLabel>
       <input type="email" />
-    </div>
-  );
-}
-```
-
-### Vue 3
-
-```vue
-<template>
-  <div>
-    <!-- Icon -->
-    <nr-icon name="heart" type="solid" :style="{ color: 'red' }"></nr-icon>
-    
-    <!-- Badge -->
-    <nr-badge :count="notificationCount">
-      <button>Notifications</button>
-    </nr-badge>
-    
+  const [themeCtrl] = React.useState(() => new ThemeController({ hostConnected() {}, hostDisconnected() {} } as any));
+  return <div>Current theme: {themeCtrl.currentTheme}</div>;
     <!-- Divider -->
     <nr-divider>Section Title</nr-divider>
     
@@ -141,7 +125,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 
 // Import common components
-import '@nuralyui/common';
+import { ThemeController } from '@nuralyui/common/controllers';
 
 @NgModule({
   declarations: [AppComponent],
@@ -157,6 +141,7 @@ export class AppModule { }
 <div>
   <!-- Icon -->
   <nr-icon name="heart" type="solid" [style.color]="'red'"></nr-icon>
+import { ThemeController } from '@nuralyui/common/controllers';
   
   <!-- Badge -->
   <nr-badge [count]="notificationCount">
@@ -192,7 +177,7 @@ export class AppComponent {
 <script>
   import '@nuralyui/common';
   
-  let notificationCount = 5;
+  import { getCurrentTheme } from '@nuralyui/common/themes';
   let email = '';
 </script>
 
