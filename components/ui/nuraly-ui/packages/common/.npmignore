@@ -1,0 +1,60 @@
+# Source files (only ship dist/)
+src/
+scripts/
+
+# Development files
+*.ts
+!*.d.ts
+tsconfig.json
+
+# Documentation (keep only README.md)
+USAGE.md
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Test files
+test/
+tests/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+coverage/
+
+# Build tools
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+.github/
+.circleci/
+
+# Misc
+*.md.backup
+*.swp
+*.swo
+*~

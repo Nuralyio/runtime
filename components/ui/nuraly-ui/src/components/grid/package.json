@@ -24,7 +24,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/NuralyUI/NuralyUI.git",
+        "url": "https://github.com/Nuralyio/NuralyUI.git",
         "directory": "src/components/grid"
     },
     "keywords": [
@@ -43,9 +43,9 @@
     "author": "Nuraly, Laabidi Aymen",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/NuralyUI/NuralyUI/issues"
+        "url": "https://github.com/Nuralyio/NuralyUI/issues"
     },
-    "homepage": "https://github.com/NuralyUI/NuralyUI#readme",
+    "homepage": "https://github.com/Nuralyio/NuralyUI#readme",
     "publishConfig": {
         "access": "public"
     }

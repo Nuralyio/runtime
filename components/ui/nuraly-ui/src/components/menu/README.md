@@ -387,4 +387,4 @@ Contributions are welcome! Please read the contributing guidelines before submit
 
 ## Repository
 
-[GitHub Repository](https://github.com/NuralyUI/NuralyUI/tree/main/src/components/menu)
+[GitHub Repository](https://github.com/Nuralyio/NuralyUI/tree/main/src/components/menu)
