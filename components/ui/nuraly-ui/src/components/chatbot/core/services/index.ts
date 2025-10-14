@@ -8,3 +8,4 @@ export { ProviderService } from './provider.service.js';
 export { ValidationService } from './validation.service.js';
 export { StorageService } from './storage.service.js';
 export { PluginService } from './plugin.service.js';
+export { getLocale, setLocale, setLocaleFromUrl } from './localization.service.js';

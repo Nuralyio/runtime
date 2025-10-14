@@ -1,7 +1,13 @@
-import {configureLocalization} from '@lit/localize';
-import {sourceLocale, targetLocales} from '../../locales/locale-codes';
+/**
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: MIT
+ */
 
-export const {getLocale, setLocale} = configureLocalization({
+import { configureLocalization } from '@lit/localize';
+import { sourceLocale, targetLocales } from '../../locales/locale-codes.js';
+
+export const { getLocale, setLocale } = configureLocalization({
   sourceLocale,
   targetLocales,
   loadLocale: (locale: string) => import(`../../locales/generated/${locale}.js`),
