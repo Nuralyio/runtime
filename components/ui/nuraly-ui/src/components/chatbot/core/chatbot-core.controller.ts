@@ -50,23 +50,16 @@ import {
  * Can be extended and overridden for custom behavior
  */
 export class ChatbotCoreController {
-  // Event bus (internal)
   protected eventBus: EventBus;
-
-  // Configuration
   protected config: ChatbotCoreConfig;
   protected ui: ChatbotUICallbacks;
   protected plugins: Map<string, ChatbotPlugin> = new Map();
-
-  // Handlers (domain operations)
   protected stateHandler: StateHandler;
   protected messageHandler: MessageHandler;
   protected threadHandler: ThreadHandler;
   protected fileHandler: FileHandler;
   protected moduleHandler: ModuleHandler;
   protected suggestionHandler: SuggestionHandler;
-
-  // Services (infrastructure)
   protected providerService: ProviderService;
   protected validationService: ValidationService;
   protected storageService: StorageService;
@@ -76,25 +69,20 @@ export class ChatbotCoreController {
     this.config = config;
     this.ui = config.ui || {};
 
-    // Initialize event bus
     this.eventBus = new EventBus();
 
-    // Initialize plugin service early and share its plugins map
     this.pluginService = new PluginService();
     this.plugins = this.pluginService.getPluginsMap();
 
-    // Initialize state handler first (other handlers depend on it)
     const initialState = this.initializeState(config);
     this.stateHandler = new StateHandler(initialState, this.eventBus, this.ui, this.plugins, this.config);
 
-    // Initialize handlers
     this.messageHandler = new MessageHandler(this.stateHandler, this.eventBus, this.plugins);
     this.threadHandler = new ThreadHandler(this.stateHandler, this.eventBus, this.ui, this.config);
     this.fileHandler = new FileHandler(this.stateHandler, this.eventBus);
     this.moduleHandler = new ModuleHandler(this.stateHandler, this.eventBus);
     this.suggestionHandler = new SuggestionHandler(this.stateHandler);
 
-    // Initialize services
     this.providerService = new ProviderService(
       config.provider,
       this.stateHandler,
@@ -110,12 +98,10 @@ export class ChatbotCoreController {
       this.config
     );
 
-    // Register plugins
     if (config.plugins) {
       config.plugins.forEach(plugin => this.pluginService.registerPlugin(plugin, this));
     }
 
-    // Connect provider if provided
     if (config.provider) {
       config.provider.connect({}).catch(error => {
         this.logError('Failed to connect provider:', error);
@@ -150,7 +136,6 @@ export class ChatbotCoreController {
    */
   protected setupLifecycleHooks(): void {
     this.onBeforeInit();
-    // Don't await - initialization happens asynchronously
     this.onReady().catch(error => {
       this.logError('Error during initialization:', error);
     });
@@ -168,7 +153,7 @@ export class ChatbotCoreController {
    */
   protected async onReady(): Promise<void> {
     this.log('Chatbot controller ready');
-    // If the first message is an introduction with suggestions, surface them to state
+
     try {
       const state = this.stateHandler.getState();
       const firstMsg = state.messages && state.messages.length > 0 ? state.messages[0] : undefined;
@@ -179,7 +164,6 @@ export class ChatbotCoreController {
       this.logError('Error initializing suggestions from initial messages:', e);
     }
 
-    // Notify UI of initial state (important for initial messages)
     if (this.ui.onStateChange) {
       this.ui.onStateChange(this.getState());
     }
@@ -193,22 +177,18 @@ export class ChatbotCoreController {
   protected onDestroy(): void {
     this.log('Destroying chatbot controller...');
     
-    // Stop auto-save
     this.storageService.stopAutoSave();
-
-    // Destroy plugins
     this.pluginService.clearPlugins();
     this.eventBus.removeAllListeners();
   }
 
   // ===== STATE MANAGEMENT =====
 
-  /**
-   * Update state and notify UI - delegates to StateHandler
-   */
   protected updateState(updates: Partial<ChatbotState>): void {
     this.stateHandler.updateState(updates);
-  }  // ===== MESSAGE OPERATIONS =====
+  }
+
+  // ===== MESSAGE OPERATIONS =====
 
   /**
    * Send a message (main public API)
@@ -219,15 +199,12 @@ export class ChatbotCoreController {
     try {
       const state = this.stateHandler.getState();
       
-      // Auto-create thread if threads are enabled and no thread is selected
       if (this.config.enableThreads && !state.currentThreadId && state.threads.length === 0) {
         this.threadHandler.createThread('New Chat');
       }
 
-      // Pre-send hook
       const processedText = await this.beforeMessageSent(text, options);
 
-      // Validate
       if (!options.skipValidation) {
         const validation = await this.validationService.validateMessage(processedText);
         if (!validation.isValid) {
@@ -237,23 +214,19 @@ export class ChatbotCoreController {
         }
       }
 
-      // Create and add user message
       const message = this.messageHandler.createUserMessage(processedText, options.metadata);
       if (options.files) {
         message.files = options.files;
       }
       this.messageHandler.addMessage(message);
 
-      // Update thread if specified
       const currentState = this.stateHandler.getState();
       if (options.threadId || currentState.currentThreadId) {
         this.threadHandler.updateThreadMessages(options.threadId || currentState.currentThreadId!);
       }
 
-      // Post-send hook
       await this.afterMessageSent(message);
 
-      // Process with provider (if available)
       this.providerService.processMessage(message).catch(error => {
         this.logError('Error processing with provider:', error);
       });
@@ -266,14 +239,14 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Stop the current provider processing/stream (best-effort cancellation)
+   * Stop the current provider processing/stream
    */
   public stop(): void {
     this.providerService.stopCurrentProcessing();
   }
 
   /**
-   * Add a message programmatically (e.g., bot response)
+   * Add a message programmatically
    */
   public addMessage(data: Partial<ChatbotMessage>): ChatbotMessage {
     const message = this.messageHandler.createMessage(data);
@@ -282,28 +255,28 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Update an existing message
+   * Update an existing message by ID
    */
   public updateMessage(id: string, updates: Partial<ChatbotMessage>): void {
     this.messageHandler.updateMessage(id, updates);
   }
 
   /**
-   * Delete a message
+   * Delete a message by ID
    */
   public deleteMessage(id: string): void {
     this.messageHandler.deleteMessage(id);
   }
 
   /**
-   * Clear all messages
+   * Clear all messages from the current conversation
    */
   public clearMessages(): void {
     this.updateState({ messages: [] });
   }
 
   /**
-   * Get message history
+   * Get all messages in the current conversation
    */
   public getMessages(): ChatbotMessage[] {
     return this.stateHandler.getState().messages;
@@ -312,7 +285,9 @@ export class ChatbotCoreController {
   // ===== FILE OPERATIONS =====
 
   /**
-   * Upload files
+   * Upload files to the chatbot
+   * @param files - Optional array of files to upload. If not provided, will trigger file dialog
+   * @returns Array of uploaded ChatbotFile objects
    */
   public async uploadFiles(files?: File[]): Promise<ChatbotFile[]> {
     if (!this.config.enableFileUpload) {
@@ -321,7 +296,6 @@ export class ChatbotCoreController {
 
     let filesToUpload = files;
 
-    // If no files provided, ask UI to open file dialog
     if (!filesToUpload && this.ui.openFileDialog) {
       filesToUpload = await this.ui.openFileDialog();
     }
@@ -334,7 +308,6 @@ export class ChatbotCoreController {
 
     for (const file of filesToUpload) {
       try {
-        // Validate
         const validation = await this.validationService.validateFile(file);
         if (!validation.isValid) {
           if (this.ui.showNotification) {
@@ -343,10 +316,8 @@ export class ChatbotCoreController {
           continue;
         }
 
-        // Process file - create ChatbotFile
         const chatbotFile = await this.fileHandler.createChatbotFile(file);
         
-        // Upload to provider if supported
         const uploaded = await this.providerService.uploadFileToProvider(file);
         if (uploaded) {
           Object.assign(chatbotFile, uploaded);
@@ -355,7 +326,6 @@ export class ChatbotCoreController {
         uploadedFiles.push(chatbotFile);
         this.fileHandler.addFile(chatbotFile);
 
-        // Show preview (optional)
         if (this.ui.showFilePreview) {
           this.ui.showFilePreview(chatbotFile);
         }
@@ -371,7 +341,7 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Remove a file
+   * Remove an uploaded file by ID
    */
   public removeFile(fileId: string): void {
     this.fileHandler.removeFile(fileId);
@@ -385,7 +355,7 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Get uploaded files
+   * Get all uploaded files
    */
   public getUploadedFiles(): ChatbotFile[] {
     return this.stateHandler.getState().uploadedFiles;
@@ -394,28 +364,28 @@ export class ChatbotCoreController {
   // ===== THREAD OPERATIONS =====
 
   /**
-   * Create a new thread
+   * Create a new conversation thread
    */
   public createThread(title?: string): ChatbotThread {
     return this.threadHandler.createThread(title);
   }
 
   /**
-   * Switch to a thread
+   * Switch to a different thread
    */
   public switchThread(threadId: string): void {
     this.threadHandler.switchThread(threadId);
   }
 
   /**
-   * Delete a thread
+   * Delete a thread by ID
    */
   public deleteThread(threadId: string): void {
     this.threadHandler.deleteThread(threadId);
   }
 
   /**
-   * Get current thread
+   * Get the currently active thread
    */
   public getCurrentThread(): ChatbotThread | undefined {
     const state = this.stateHandler.getState();
@@ -423,7 +393,7 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Get all threads
+   * Get all available threads
    */
   public getThreads(): ChatbotThread[] {
     return this.stateHandler.getState().threads;
@@ -432,28 +402,28 @@ export class ChatbotCoreController {
   // ===== MODULE OPERATIONS =====
 
   /**
-   * Set available modules
+   * Set available modules for the chatbot
    */
   public setModules(modules: ChatbotModule[]): void {
     this.moduleHandler.setModules(modules);
   }
 
   /**
-   * Select modules
+   * Select specific modules by their IDs
    */
   public selectModules(moduleIds: string[]): void {
     this.moduleHandler.selectModules(moduleIds);
   }
 
   /**
-   * Toggle module selection
+   * Toggle a module's selection state
    */
   public toggleModule(moduleId: string): void {
     this.moduleHandler.toggleModule(moduleId);
   }
 
   /**
-   * Get selected modules
+   * Get currently selected modules
    */
   public getSelectedModules(): ChatbotModule[] {
     return this.moduleHandler.getSelectedModules();
@@ -462,14 +432,14 @@ export class ChatbotCoreController {
   // ===== SUGGESTION OPERATIONS =====
 
   /**
-   * Set suggestions
+   * Set suggestion chips for user interaction
    */
   public setSuggestions(suggestions: ChatbotSuggestion[]): void {
     this.suggestionHandler.setSuggestions(suggestions);
   }
 
   /**
-   * Clear suggestions
+   * Clear all suggestions
    */
   public clearSuggestions(): void {
     this.suggestionHandler.clearSuggestions();
@@ -481,7 +451,6 @@ export class ChatbotCoreController {
    * Called before sending message - override to transform or validate
    */
   protected async beforeMessageSent(text: string, _options?: SendMessageOptions): Promise<string> {
-    // Apply plugin transformations
     let processedText = text;
     for (const plugin of this.plugins.values()) {
       if (plugin.beforeSend) {
@@ -532,7 +501,6 @@ export class ChatbotCoreController {
 
     this.emit('provider:error', error);
 
-    // Notify plugins
     await this.pluginService.executeHook('onError', error);
   }
 
@@ -556,7 +524,6 @@ export class ChatbotCoreController {
     this.logError('Error:', error);
     this.emit('error', error);
 
-    // Notify plugins
     this.plugins.forEach(plugin => {
       if (plugin.onError) {
         plugin.onError(error);
@@ -567,21 +534,21 @@ export class ChatbotCoreController {
   // ===== PLUGIN SYSTEM =====
 
   /**
-   * Register a plugin
+   * Register a new plugin with the chatbot
    */
   public registerPlugin(plugin: ChatbotPlugin): void {
     this.pluginService.registerPlugin(plugin, this);
   }
 
   /**
-   * Unregister a plugin
+   * Unregister a plugin by ID
    */
   public unregisterPlugin(pluginId: string): void {
     this.pluginService.unregisterPlugin(pluginId);
   }
 
   /**
-   * Get registered plugin
+   * Get a registered plugin by ID
    */
   public getPlugin<T extends ChatbotPlugin = ChatbotPlugin>(pluginId: string): T | undefined {
     return this.pluginService.getPlugin<T>(pluginId);
@@ -590,7 +557,7 @@ export class ChatbotCoreController {
   // ===== PROVIDER MANAGEMENT =====
 
   /**
-   * Set provider
+   * Set the AI provider for the chatbot
    */
   public setProvider(provider: ChatbotProvider): void {
     this.providerService.setProvider(provider);
@@ -603,14 +570,14 @@ export class ChatbotCoreController {
   // ===== STORAGE MANAGEMENT =====
 
   /**
-   * Set storage
+   * Set the storage adapter for persisting chatbot state
    */
   public setStorage(storage: ChatbotStorage): void {
     this.storageService.setStorage(storage);
   }
 
   /**
-   * Save state to storage
+   * Save current state to storage
    */
   public async saveToStorage(key: string = 'chatbot-state'): Promise<void> {
     await this.storageService.saveState(key);
@@ -626,14 +593,15 @@ export class ChatbotCoreController {
   // ===== EVENT BUS =====
 
   /**
-   * Subscribe to event
+   * Subscribe to an event
+   * @returns Unsubscribe function
    */
   public on(event: string, handler: (...args: any[]) => void): () => void {
     return this.eventBus.on(event, handler);
   }
 
   /**
-   * Emit event
+   * Emit an event
    */
   public emit(event: string, data?: any): void {
     this.eventBus.emit(event, data);
@@ -642,35 +610,35 @@ export class ChatbotCoreController {
   // ===== PUBLIC API =====
 
   /**
-   * Get current state (readonly)
+   * Get current chatbot state (readonly)
    */
   public getState(): Readonly<ChatbotState> {
     return this.stateHandler.getState();
   }
 
   /**
-   * Update state (use with caution)
+   * Update chatbot state (use with caution)
    */
   public setState(updates: Partial<ChatbotState>): void {
     this.updateState(updates);
   }
 
   /**
-   * Set UI callbacks
+   * Set or update UI callback functions
    */
   public setUICallbacks(callbacks: ChatbotUICallbacks): void {
     this.ui = { ...this.ui, ...callbacks };
   }
 
   /**
-   * Get configuration
+   * Get chatbot configuration (readonly)
    */
   public getConfig(): Readonly<ChatbotCoreConfig> {
     return Object.freeze({ ...this.config });
   }
 
   /**
-   * Set typing state
+   * Set typing indicator state
    */
   public setTyping(isTyping: boolean): void {
     this.updateState({ isTyping });
@@ -678,7 +646,7 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Get context for provider
+   * Get context for provider calls
    */
   protected getContext(): ChatbotContext {
     const state = this.stateHandler.getState();
@@ -691,7 +659,7 @@ export class ChatbotCoreController {
   }
 
   /**
-   * Destroy controller
+   * Destroy the chatbot controller and clean up resources
    */
   public destroy(): void {
     this.onDestroy();
@@ -699,34 +667,22 @@ export class ChatbotCoreController {
 
   // ===== UTILITIES =====
 
-  /**
-   * Generate unique ID
-   */
   protected generateId(prefix: string): string {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Format file size
-   */
   protected formatFileSize(bytes: number): string {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
-  /**
-   * Log message (if debug enabled)
-   */
   protected log(...args: any[]): void {
     if (this.config.debug) {
       console.log('[ChatbotCore]', ...args);
     }
   }
 
-  /**
-   * Log error
-   */
   protected logError(...args: any[]): void {
     console.error('[ChatbotCore]', ...args);
   }
