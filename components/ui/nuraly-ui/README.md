@@ -5,16 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://badge.fury.io/## 🤝 Contributing
-
-We welcome contributions! Here's how to help:
-
-- 🐛 Report bugs via [GitHub Issues](https://github.com/Nuralyio/NuralyUI/issues)
-- 💡 Suggest features in [Discussions](https://github.com/Nuralyio/NuralyUI/discussions)
-- 🔧 Submit pull requests for bug fixes or new components
-- 📝 Improve documentation
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.ui%2Fworkspace"><img src="https://badge.fury.io/js/@nuralyui%2Fworkspace.svg" alt="npm version" /></a>
+  <a href="https://badge.fury.io/js/@nuralyui%2Fworkspace"><img src="https://badge.fury.io/js/@nuralyui%2Fworkspace.svg" alt="npm version" /></a>
   <a href="https://opensource.org/licenses/BSD-3-Clause"><img src="https://img.shields.io/badge/license-BSD--3--Clause-blue.svg" alt="License" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/built%20with-TypeScript-blue" alt="TypeScript" /></a>
 </p>
