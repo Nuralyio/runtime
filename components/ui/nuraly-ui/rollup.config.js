@@ -34,13 +34,18 @@ const createConfig = (component) => ({
     format: 'esm',
     inlineDynamicImports: true,
   },
+  // Externalize shared deps so they are loaded once by the host (lean bundles)
+  external: (id) => (
+    id === 'lit' || id.startsWith('lit/') ||
+    id === '@nuralyui/common' || id.startsWith('@nuralyui/common/')
+  ),
   onwarn(warning) {
     if (warning.code !== 'THIS_IS_UNDEFINED') {
       console.error(`(!) ${warning.message}`);
     }
   },
   plugins: [
-    replace({'Reflect.decorate': 'undefined'}),
+    replace({ 'Reflect.decorate': 'undefined', preventAssignment: true }),
     resolve(),
     terser({
       ecma: 2017,
