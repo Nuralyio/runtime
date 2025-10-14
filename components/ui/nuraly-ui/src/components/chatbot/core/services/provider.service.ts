@@ -29,39 +29,28 @@ export class ProviderService {
     this.provider = provider;
   }
 
-  /**
-   * Set or update provider
-   */
   setProvider(provider: ChatbotProvider): void {
     this.provider = provider;
   }
 
   /**
-   * Stop current processing/stream consumption (best-effort cancellation)
+   * Stop current processing/stream consumption
    */
   stopCurrentProcessing(): void {
     this.cancelRequested = true;
-    // UI updates will be driven by processMessage finally block
     this.eventBus.emit('processing:stopped');
   }
 
-  /**
-   * Check if provider is available and connected
-   */
   hasProvider(): boolean {
     return !!this.provider && this.provider.isConnected();
   }
 
-  /**
-   * Process message with provider
-   */
   async processMessage(message: ChatbotMessage): Promise<void> {
     if (!this.provider) {
       this.log('No provider configured');
       return;
     }
 
-    // Ensure provider is connected. Try to connect on-demand if needed.
     if (!this.provider.isConnected()) {
       this.log('Provider not connected, attempting to connect...');
       try {
@@ -76,10 +65,8 @@ export class ProviderService {
     }
 
     try {
-      // Reset cancellation before starting a new stream
       this.cancelRequested = false;
 
-      // Notify UI - processing started
       if (this.ui.onProcessingStart) {
         this.ui.onProcessingStart();
       }
@@ -91,11 +78,9 @@ export class ProviderService {
       this.stateHandler.setProcessing(true);
       this.eventBus.emit('processing:start');
 
-      // Get response stream
       const context = this.buildContext();
-  const stream = this.provider.sendMessage(message.text, context);
+      const stream = this.provider.sendMessage(message.text, context);
 
-      // Process stream
       await this.processStream(stream);
 
     } catch (error) {
@@ -103,7 +88,6 @@ export class ProviderService {
       this.eventBus.emit('error', error);
       throw error;
     } finally {
-      // Notify UI - processing ended
       if (this.ui.onProcessingEnd) {
         this.ui.onProcessingEnd();
       }
@@ -122,34 +106,29 @@ export class ProviderService {
    */
   async processStream(stream: AsyncIterator<string>): Promise<void> {
     let botMessage: ChatbotMessage | null = null;
-    // Prepare tag-aware parsing from plugins
     const tagAwarePlugins = Array.from(this.plugins.values()).filter(p => Array.isArray((p as any).htmlTags)) as any[];
     const openTags: Array<{ plugin: any; name: string; open: string; close: string; buffer: string }> = [];
-    // Track raw cumulative content to derive deltas for providers that emit cumulative text
     let lastRaw = '';
 
     try {
       let done = false;
       while (!done) {
         if (this.cancelRequested) {
-          // Best-effort cancellation: stop consuming the stream
           break;
         }
         const result = await stream.next();
         done = result.done || false;
         if (done || !result.value) break;
 
-  // Derive delta from cumulative streaming when possible
-  const currentRaw = String(result.value);
-  let incoming = currentRaw.startsWith(lastRaw) ? currentRaw.slice(lastRaw.length) : currentRaw;
-  lastRaw = currentRaw;
+        const currentRaw = String(result.value);
+        let incoming = currentRaw.startsWith(lastRaw) ? currentRaw.slice(lastRaw.length) : currentRaw;
+        lastRaw = currentRaw;
 
-  let remaining = incoming;
+        let remaining = incoming;
         let processedChunk = '';
         let chunkHasHtml = false;
 
         while (remaining.length) {
-          // If inside an open tag, look for its closing marker
           const current = openTags[openTags.length - 1];
           if (current) {
             const closeIdx = remaining.indexOf(current.close);
@@ -163,7 +142,7 @@ export class ProviderService {
               ? current.plugin.renderHtmlBlock(current.name, current.buffer)
               : '';
             if (html) {
-              processedChunk += html; // append HTML in-stream at the correct position
+              processedChunk += html;
               chunkHasHtml = true;
             }
             openTags.pop();
@@ -171,7 +150,6 @@ export class ProviderService {
             continue;
           }
 
-          // Not inside a tag: search for next opening tag among all plugins
           let nextOpen: { idx: number; plugin: any; name: string; open: string; close: string } | null = null;
           for (const plugin of tagAwarePlugins) {
             for (const tag of (plugin.htmlTags as any[])) {
@@ -186,15 +164,12 @@ export class ProviderService {
             processedChunk += remaining;
             remaining = '';
           } else {
-            // Stream the plain text before the tag
             processedChunk += remaining.slice(0, nextOpen.idx);
-            // Open the tag and start buffering its content
             openTags.push({ plugin: nextOpen.plugin, name: nextOpen.name, open: nextOpen.open, close: nextOpen.close, buffer: '' });
             remaining = remaining.slice(nextOpen.idx + nextOpen.open.length);
           }
         }
 
-        // Apply normal afterReceive transforms to the plain text part only for plugins without htmlTags
         if (processedChunk) {
           for (const plugin of this.plugins.values()) {
             const isTagAware = Array.isArray((plugin as any).htmlTags) && (plugin as any).htmlTags.length > 0;
@@ -208,7 +183,6 @@ export class ProviderService {
         if (!botMessage) {
           botMessage = this.messageHandler.createBotMessage(processedChunk, isHtml ? { renderAsHtml: true } : undefined);
           this.stateHandler.addMessageToState(botMessage);
-          // Close the typing indicator on first token to match common LLM UIs
           if (this.ui.onTypingEnd) {
             this.ui.onTypingEnd();
           }
@@ -222,7 +196,6 @@ export class ProviderService {
         }
       }
 
-      // Flush any unterminated tags as literal text (open marker + buffered content)
       if (!this.cancelRequested && botMessage && openTags.length > 0) {
         const leftover = openTags.map(t => t.open + t.buffer).join('');
         if (leftover) this.messageHandler.appendToBotMessage(botMessage.id, leftover);
@@ -233,9 +206,6 @@ export class ProviderService {
     }
   }
 
-  /**
-   * Build context for provider
-   */
   buildContext(): ChatbotContext {
     const state = this.stateHandler.getState();
     
@@ -257,9 +227,6 @@ export class ProviderService {
     return await this.provider.uploadFile(file);
   }
 
-  /**
-   * Get provider capabilities
-   */
   getCapabilities() {
     return this.provider?.capabilities || {
       streaming: false,
@@ -268,16 +235,10 @@ export class ProviderService {
     };
   }
 
-  /**
-   * Log message
-   */
   private log(message: string, ...args: any[]): void {
     console.log(`[ProviderService] ${message}`, ...args);
   }
 
-  /**
-   * Log error
-   */
   private logError(message: string, error: any): void {
     console.error(`[ProviderService] ${message}`, error);
   }

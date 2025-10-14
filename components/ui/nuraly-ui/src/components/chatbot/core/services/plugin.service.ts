@@ -19,9 +19,6 @@ export class PluginService {
     }
   }
 
-  /**
-   * Register a plugin
-   */
   registerPlugin(plugin: ChatbotPlugin, controller?: any): void {
     if (this.plugins.has(plugin.id)) {
       this.log(`Plugin "${plugin.id}" is already registered, skipping`);
@@ -31,7 +28,6 @@ export class PluginService {
     this.plugins.set(plugin.id, plugin);
     this.log(`Registered plugin: ${plugin.name} v${plugin.version}`);
 
-    // Call plugin initialization hook
     if (plugin.onInit && controller) {
       try {
         plugin.onInit(controller);
@@ -41,9 +37,6 @@ export class PluginService {
     }
   }
 
-  /**
-   * Unregister a plugin
-   */
   unregisterPlugin(pluginId: string): void {
     const plugin = this.plugins.get(pluginId);
     if (plugin && plugin.onDestroy) {
@@ -57,30 +50,18 @@ export class PluginService {
     this.log(`Unregistered plugin: ${pluginId}`);
   }
 
-  /**
-   * Get plugin by ID
-   */
   getPlugin<T extends ChatbotPlugin = ChatbotPlugin>(pluginId: string): T | undefined {
     return this.plugins.get(pluginId) as T | undefined;
   }
 
-  /**
-   * Get all registered plugins
-   */
   getAllPlugins(): ChatbotPlugin[] {
     return Array.from(this.plugins.values());
   }
 
-  /**
-   * Check if plugin is registered
-   */
   hasPlugin(pluginId: string): boolean {
     return this.plugins.has(pluginId);
   }
 
-  /**
-   * Get plugins map (for iteration)
-   */
   getPluginsMap(): Map<string, ChatbotPlugin> {
     return this.plugins;
   }
@@ -101,34 +82,21 @@ export class PluginService {
     }
   }
 
-  /**
-   * Clear all plugins
-   */
   clearPlugins(): void {
-    // Destroy all plugins first
     this.plugins.forEach((_plugin, id) => {
       this.unregisterPlugin(id);
     });
     this.plugins.clear();
   }
 
-  /**
-   * Get plugin count
-   */
   getPluginCount(): number {
     return this.plugins.size;
   }
 
-  /**
-   * Log message
-   */
   private log(message: string): void {
     console.log(`[PluginService] ${message}`);
   }
 
-  /**
-   * Log error
-   */
   private logError(message: string, error: any): void {
     console.error(`[PluginService] ${message}`, error);
   }

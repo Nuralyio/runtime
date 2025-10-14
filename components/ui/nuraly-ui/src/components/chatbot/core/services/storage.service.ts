@@ -24,17 +24,11 @@ export class StorageService {
     this.setupAutoSave();
   }
 
-  /**
-   * Set or update storage
-   */
   setStorage(storage: ChatbotStorage): void {
     this.storage = storage;
     this.setupAutoSave();
   }
 
-  /**
-   * Save current state to storage
-   */
   async saveState(key: string = 'chatbot-state'): Promise<void> {
     if (!this.storage) {
       throw new Error('No storage configured');
@@ -50,9 +44,6 @@ export class StorageService {
     }
   }
 
-  /**
-   * Load state from storage
-   */
   async loadState(key: string = 'chatbot-state'): Promise<void> {
     if (!this.storage) {
       throw new Error('No storage configured');
@@ -70,9 +61,6 @@ export class StorageService {
     }
   }
 
-  /**
-   * Clear storage
-   */
   async clearStorage(): Promise<void> {
     if (!this.storage) {
       throw new Error('No storage configured');
@@ -87,16 +75,11 @@ export class StorageService {
     }
   }
 
-  /**
-   * Setup auto-save functionality
-   */
   private setupAutoSave(): void {
-    // Clear existing timer
     if (this.autoSaveTimer) {
       clearInterval(this.autoSaveTimer);
     }
 
-    // Setup new timer if configured
     if (this.config.autoSaveInterval && this.storage) {
       this.autoSaveTimer = setInterval(() => {
         this.saveState().catch(error => {
@@ -106,9 +89,6 @@ export class StorageService {
     }
   }
 
-  /**
-   * Stop auto-save
-   */
   stopAutoSave(): void {
     if (this.autoSaveTimer) {
       clearInterval(this.autoSaveTimer);
@@ -124,30 +104,18 @@ export class StorageService {
     this.setupAutoSave();
   }
 
-  /**
-   * Check if storage is configured
-   */
   hasStorage(): boolean {
     return !!this.storage;
   }
 
-  /**
-   * Cleanup on destroy
-   */
   destroy(): void {
     this.stopAutoSave();
   }
 
-  /**
-   * Log message
-   */
   private log(message: string): void {
     console.log(`[StorageService] ${message}`);
   }
 
-  /**
-   * Log error
-   */
   private logError(message: string, error: any): void {
     console.error(`[StorageService] ${message}`, error);
   }
