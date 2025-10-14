@@ -1,0 +1,67 @@
+/**
+ * Carbon Design System Theme - Icon Component - Dark Variant
+ * Icon-specific CSS variables based on IBM Carbon Design System dark theme specifications
+ */
+
+[data-theme="carbon-dark"]{
+  /* ========================================
+   * ICON VARIABLES - CARBON DARK THEME
+   * ======================================== */
+
+  /* Base icon colors - Carbon Dark Design System */
+  --nuraly-color-icon: #a6a6a6;
+  --nuraly-color-icon-fallback: #f4f4f4;
+
+  /* Interactive states - Carbon Dark */
+  --nuraly-color-icon-hover: #78a9ff;
+  --nuraly-color-icon-hover-fallback: #78a9ff;
+  --nuraly-color-icon-active: #a6c8ff;
+  --nuraly-color-icon-active-fallback: #a6c8ff;
+
+  /* Disabled state - Carbon Dark */
+  --nuraly-color-icon-disabled: #6f6f6f;
+  --nuraly-color-icon-disabled-fallback: #6f6f6f;
+
+  /* Focus states - Carbon Dark */
+  --nuraly-color-icon-focus: #78a9ff;
+  --nuraly-icon-focus-outline: 2px solid #78a9ff;
+  --nuraly-icon-focus-outline-fallback: 2px solid #78a9ff;
+  --nuraly-icon-focus-background-fallback: rgba(120, 169, 255, 0.1);
+
+  /* Semantic state colors - Carbon Dark (different from light) */
+  --nuraly-color-error: #fa4d56;
+  --nuraly-color-success: #42be65;
+  --nuraly-color-info: #78a9ff;
+}
+
+/* Carbon Design System specific overrides for dark theme */
+html[data-theme="carbon-dark"] nr-icon .svg-icon.clickable:focus,
+body[data-theme="carbon-dark"] nr-icon .svg-icon.clickable:focus,
+[data-theme="carbon-dark"] nr-icon .svg-icon.clickable:focus {
+  outline: 2px solid #78a9ff !important;
+  outline-offset: 1px !important;
+  background: none !important;
+  border-radius: 0 !important;
+}
+
+/* Carbon size overrides for dark theme */
+html[data-theme="carbon-dark"] nr-icon[size='small'] .svg-icon,
+body[data-theme="carbon-dark"] nr-icon[size='small'] .svg-icon,
+[data-theme="carbon-dark"] nr-icon[size='small'] .svg-icon {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+html[data-theme="carbon-dark"] nr-icon[size='medium'] .svg-icon,
+body[data-theme="carbon-dark"] nr-icon[size='medium'] .svg-icon,
+[data-theme="carbon-dark"] nr-icon[size='medium'] .svg-icon {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+html[data-theme="carbon-dark"] nr-icon[size='large'] .svg-icon,
+body[data-theme="carbon-dark"] nr-icon[size='large'] .svg-icon,
+[data-theme="carbon-dark"] nr-icon[size='large'] .svg-icon {
+  width: 24px !important;
+  height: 24px !important;
+}

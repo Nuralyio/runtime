@@ -1,0 +1,53 @@
+/**
+ * Carbon Theme - Tabs Component - Dark Variant
+ * Tabs-specific CSS variables for the Carbon Design System dark theme
+ * Based on official Carbon Design System color tokens
+ */
+
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * TABS VARIABLES - CARBON DARK THEME
+   * Official Carbon Design System Colors
+   * ======================================== */
+
+  /* Tabs header/container colors - Carbon Gray 90 */
+  --nuraly-color-tabs-header-background: #262626;
+  --nuraly-border-tabs-header: 1px solid #393939;
+
+  /* Tab label default state - Carbon Gray 90 background, Gray 10 text */
+  --nuraly-color-tabs-label-background: #262626;
+  --nuraly-color-tabs-label-text: #f4f4f4;
+  --nuraly-border-tabs-label: 1px solid #393939;
+
+  /* Tab label hover state - Carbon Gray 80 background */
+  --nuraly-color-tabs-label-background-hover: #393939;
+  --nuraly-color-tabs-label-text-hover: #f4f4f4;
+  --nuraly-color-tabs-label-border-hover: #525252;
+
+  /* Tab label active/selected state - Carbon Gray 100 background, Blue 50 border */
+  --nuraly-color-tabs-label-background-active: #161616;
+  --nuraly-color-tabs-label-text-active: #f4f4f4;
+  --nuraly-color-tabs-label-border-active: #4589ff; /* Carbon Blue 50 */
+
+  /* Tab content area - Carbon Gray 100 background */
+  --nuraly-color-tabs-content-background: #161616;
+  --nuraly-border-tabs-content: 1px solid #393939;
+
+  /* Editable tab states */
+  --nuraly-color-tabs-edit-background: rgba(69, 137, 255, 0.2); /* Carbon Blue 50 with 20% opacity */
+
+  /* Close/delete icon states - Carbon Gray 30 */
+  --nuraly-color-tabs-close-icon: #c6c6c6;
+  --nuraly-color-tabs-close-icon-hover: #ff8389; /* Carbon Red 40 on hover for dark theme */
+  --nuraly-color-tabs-close-icon-background-hover: rgba(255, 131, 137, 0.2);
+  --nuraly-color-tabs-close-icon-active: #ff6168; /* Carbon Red 50 */
+  --nuraly-color-tabs-close-icon-background-active: rgba(255, 131, 137, 0.3);
+
+  /* Add tab button states - Carbon Blue 50 */
+  --nuraly-color-tabs-add-icon: #4589ff;
+  --nuraly-color-tabs-add-icon-hover: #78a9ff; /* Carbon Blue 40 */
+  --nuraly-color-tabs-add-background-hover: rgba(69, 137, 255, 0.2);
+
+  /* Border colors */
+  --nuraly-color-border: #393939; /* Carbon Gray 80 */
+}

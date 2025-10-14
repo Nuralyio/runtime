@@ -1,0 +1,44 @@
+/**
+ * Default Theme - Radio Component - Dark Variant
+ * Radio-specific CSS variables based on default Nuraly design system
+ */
+
+[data-theme="default-dark"] {
+  /* ========================================
+   * RADIO VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Base radio styling - Default dark style */
+  --nuraly-color-radio-background: #1f1f1f;
+  --nuraly-color-radio-text: #ffffff;
+  --nuraly-color-radio-label: #ffffff;
+
+  /* Radio borders - Default dark design */
+  --nuraly-color-radio-border: #434343;
+  --nuraly-color-radio-border-focus: #a855f7;
+  --nuraly-color-radio-border-hover: #a855f7;
+
+  /* Radio states - Default dark design */
+  --nuraly-color-radio-checked-border: #a855f7;
+  --nuraly-color-radio-dot: #a855f7;
+  --nuraly-color-radio-hover-enhanced: #c084fc;
+
+  /* Error states - Default dark design */
+  --nuraly-color-radio-error-border: #f87171;
+  --nuraly-color-radio-error-icon: #f87171;
+  --nuraly-color-radio-error-text: #f87171;
+
+  /* Warning states - Default dark design */
+  --nuraly-color-radio-warning-icon: #fbbf24;
+
+  /* Disabled states - Default dark design */
+  --nuraly-color-radio-disabled-background: #1f1f1f;
+  --nuraly-color-radio-disabled-border: #434343;
+  --nuraly-color-radio-disabled-text: #8c8c8c;
+  --nuraly-color-radio-disabled-dot: #8c8c8c;
+
+  /* Focus and interaction - Default dark design */
+  --nuraly-color-radio-focus-outline: rgba(168, 85, 247, 0.3);
+  --nuraly-color-radio-hover-ring: rgba(168, 85, 247, 0.1);
+  --nuraly-color-radio-ripple: rgba(168, 85, 247, 0.2);
+}

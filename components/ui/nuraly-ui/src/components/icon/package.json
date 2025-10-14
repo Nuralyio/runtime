@@ -1,26 +1,26 @@
 {
-    "name": "@nuralyui/icon",
-    "version": "0.0.7",
-    "description": "",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@nuralyui/icon",
+  "version": "0.0.8",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "author": "Labidi Aymen",
-    "license": "ISC",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
-    },
-    "files": [
-        "bundle.js",
-        "*.js",
-        "*.d.ts",
-        "*.js.map"
-    ]
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "bundle.js",
+    "*.js",
+    "*.d.ts",
+    "*.js.map"
+  ]
 }

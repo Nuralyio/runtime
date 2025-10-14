@@ -23,6 +23,16 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
     "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nuralyui/input/*": ["src/components/input/*"],
+      "@nuralyui/common/mixins": ["packages/common/dist/mixins"],
+      "@nuralyui/common/controllers": ["packages/common/dist/controllers"],
+      "@nuralyui/common/themes": ["packages/common/dist/themes"],
+      "@nuralyui/common/utils": ["packages/common/dist/utils"],
+      "@nuralyui/common/constants": ["packages/common/dist/constants"],
+      "@nuralyui/common": ["packages/common/dist/index"]
+    },
     "plugins": [
       {
         "name": "ts-lit-plugin",
@@ -31,8 +41,5 @@
     ]
   },
   "include": ["src/**/*.ts","src/**/*.json"],
-  "exclude": ["src/**/*.stories.ts"],
-  "paths": {
-    "@nuralyui/input/*": ["src/components/input/*"],
-  }
+  "exclude": ["src/**/*.stories.ts"]
 }

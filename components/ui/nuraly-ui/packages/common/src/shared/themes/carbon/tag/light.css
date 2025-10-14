@@ -1,0 +1,12 @@
+/** Carbon Theme - Tag Light */
+
+:root,
+[data-theme="carbon-light"] {
+  --nuraly-tag-bg: var(--nuraly-color-surface, #f4f4f4);
+  --nuraly-tag-color: var(--nuraly-color-text, #161616);
+  --nuraly-tag-border-color: var(--nuraly-color-border, #e0e0e0);
+  --nuraly-tag-checkable-hover-bg: #e8e8e8;
+  --nuraly-tag-checked-bg: #ddeeff;
+  --nuraly-tag-checked-color: #0043ce;
+  --nuraly-tag-checked-border-color: #0f62fe;
+}

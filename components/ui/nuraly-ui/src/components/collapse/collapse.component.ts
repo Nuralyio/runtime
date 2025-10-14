@@ -16,7 +16,7 @@ import {
   EMPTY_STRING
 } from './collapse.type.js';
 import { styles } from './collapse.style.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { map } from 'lit/directives/map.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';

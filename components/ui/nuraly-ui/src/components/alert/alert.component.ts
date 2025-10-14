@@ -8,7 +8,7 @@ import { LitElement, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styles } from './alert.style.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import {
   AlertType,
   AlertEventDetail,

@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/themes",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Theme collection for Nuraly Hybrid UI Library",
   "main": "dist/index.js",
   "type": "module",

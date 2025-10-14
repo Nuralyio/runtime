@@ -1,0 +1,62 @@
+/**
+ * Carbon Theme - Table Component - Dark Variant
+ * Table-specific CSS variables for the Carbon Design System dark theme
+ * Based on official Carbon Design System G100 (dark) color tokens
+ */
+
+[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"],
+body[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"] *,
+body[data-theme="carbon-dark"] * {
+  /* ========================================
+   * TABLE VARIABLES - CARBON DARK THEME
+   * Official Carbon Design System Colors - G100 Theme
+   * ======================================== */
+
+  /* Table background colors - Carbon G100 pure blacks */
+  --nuraly-table-background: #161616 !important; /* Carbon Gray 100 - True black */
+  --nuraly-table-header-background: #262626 !important; /* Carbon Gray 90 - Dark header */
+  --nuraly-table-row-background: #161616 !important;
+  --nuraly-table-row-hover-background: #262626 !important; /* Carbon Gray 90 */
+  --nuraly-table-row-selected-background: #002d9c !important; /* Carbon Blue 80 - Deep blue */
+  --nuraly-table-row-expanded-background: #262626 !important;
+  
+  /* Table text colors - Carbon high contrast */
+  --nuraly-table-text-color: #f4f4f4 !important; /* Carbon Gray 10 - Bright white */
+  --nuraly-table-header-text-color: #ffffff !important; /* Pure white for headers */
+  --nuraly-table-secondary-text-color: #c6c6c6 !important; /* Carbon Gray 30 */
+  
+  /* Table border colors - Carbon stronger borders */
+  --nuraly-table-border-color: #393939 !important; /* Carbon Gray 80 */
+  --nuraly-table-header-border-color: #525252 !important; /* Carbon Gray 70 - Stronger header */
+  --nuraly-table-row-border-color: #393939 !important;
+  
+  /* Table action colors - Carbon Blue bright */
+  --nuraly-table-action-color: #78a9ff !important; /* Carbon Blue 40 - Bright blue */
+  --nuraly-table-action-hover-color: #a6c8ff !important; /* Carbon Blue 30 */
+  
+  /* Table sort indicator - Carbon high contrast */
+  --nuraly-table-sort-indicator-color: #c6c6c6 !important; /* Carbon Gray 30 */
+  --nuraly-table-sort-indicator-active-color: #78a9ff !important; /* Carbon Blue 40 */
+  
+  /* Table selection colors - Carbon Blue */
+  --nuraly-table-checkbox-background: #262626 !important; /* Carbon Gray 90 */
+  --nuraly-table-checkbox-border: #8d8d8d !important; /* Carbon Gray 50 */
+  --nuraly-table-checkbox-checked: #78a9ff !important; /* Carbon Blue 40 */
+  
+  /* Table filter/search - Carbon clean dark */
+  --nuraly-table-filter-background: #262626 !important; /* Carbon Gray 90 */
+  --nuraly-table-filter-border: #525252 !important; /* Carbon Gray 70 */
+  --nuraly-table-filter-text: #f4f4f4 !important;
+  
+  /* Table pagination - Carbon Gray scale dark */
+  --nuraly-table-pagination-background: #262626 !important; /* Carbon Gray 90 */
+  --nuraly-table-pagination-text: #f4f4f4 !important;
+  --nuraly-table-pagination-button-background: #393939 !important; /* Carbon Gray 80 */
+  --nuraly-table-pagination-button-hover: #525252 !important; /* Carbon Gray 70 */
+  --nuraly-table-pagination-button-active: #78a9ff !important; /* Carbon Blue 40 */
+  
+  /* Table empty state */
+  --nuraly-table-empty-state-color: #8d8d8d !important;
+}

@@ -1,0 +1,11 @@
+/** Carbon Theme - Tag Dark */
+
+[data-theme="carbon-dark"] {
+  --nuraly-tag-bg: #262626;
+  --nuraly-tag-color: #f4f4f4;
+  --nuraly-tag-border-color: #393939;
+  --nuraly-tag-checkable-hover-bg: #333333;
+  --nuraly-tag-checked-bg: #002d9c33;
+  --nuraly-tag-checked-color: #4589ff;
+  --nuraly-tag-checked-border-color: #78a9ff;
+}

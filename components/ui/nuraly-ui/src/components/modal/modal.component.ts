@@ -16,7 +16,7 @@ import {
   EMPTY_STRING
 } from './modal.types.js';
 import { styles } from './modal.style.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { ModalManager } from './modal-manager.js';
 
 // Import icon component

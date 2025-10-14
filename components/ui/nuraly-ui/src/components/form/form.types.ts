@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { ValidatableComponent, FormFieldInfo } from '../../shared/validation.types.js';
+import { ValidatableComponent, FormFieldInfo } from '@nuralyui/common/mixins';
 
 /**
  * Form validation states that can be applied to the form and its children

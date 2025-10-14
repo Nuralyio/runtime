@@ -1,47 +1,47 @@
 {
-    "name": "@nuralyui/button",
-    "version": "0.0.14",
-    "description": "Button component for NuralyUI library",
-    "main": "index.js",
-    "type": "module",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
+  "name": "@nuralyui/button",
+  "version": "0.0.15",
+  "description": "Button component for NuralyUI library",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "files": [
-        "*.js",
-        "*.d.ts",
-        "*.js.map",
-        "button.bundled.js",
-        "bundle.js"
-    ],
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Nuralyio/NuralyUI.git",
-        "directory": "src/components/button"
-    },
-    "keywords": [
-        "web-components",
-        "lit-element",
-        "button",
-        "ui-components",
-        "typescript"
-    ],
-    "author": "Labidi Aymen",
-    "license": "ISC",
-    "nuralyui": {
-        "requiredComponents": [
-            "nr-icon"
-        ]
-    },
-    "peerDependencies": {
-        "@nuralyui/icon": "^0.0.1"
+    "./bundle": {
+      "import": "./bundle.js"
     }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "button.bundled.js",
+    "bundle.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/button"
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "button",
+    "ui-components",
+    "typescript"
+  ],
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "nuralyui": {
+    "requiredComponents": [
+      "nr-icon"
+    ]
+  },
+  "peerDependencies": {
+    "@nuralyui/icon": "^0.0.1"
+  }
 }

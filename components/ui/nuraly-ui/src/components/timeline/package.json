@@ -1,47 +1,47 @@
 {
-    "name": "@nuralyui/timeline",
-    "version": "0.0.1",
-    "description": "Timeline component for NuralyUI library",
-    "main": "index.js",
-    "type": "module",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
+  "name": "@nuralyui/timeline",
+  "version": "0.0.2",
+  "description": "Timeline component for NuralyUI library",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "files": [
-        "*.js",
-        "*.d.ts",
-        "*.js.map",
-        "timeline.bundled.js",
-        "bundle.js"
-    ],
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Nuralyio/NuralyUI.git",
-        "directory": "src/components/timeline"
-    },
-    "keywords": [
-        "timeline",
-        "chronology",
-        "history",
-        "events",
-        "vertical-timeline",
-        "web-components",
-        "lit-element",
-        "nuralyui",
-        "ui-components"
-    ],
-    "author": "Nuraly, Laabidi Aymen",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/Nuralyio/NuralyUI/issues"
-    },
-    "homepage": "https://github.com/Nuralyio/NuralyUI#readme"
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "timeline.bundled.js",
+    "bundle.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/timeline"
+  },
+  "keywords": [
+    "timeline",
+    "chronology",
+    "history",
+    "events",
+    "vertical-timeline",
+    "web-components",
+    "lit-element",
+    "nuralyui",
+    "ui-components"
+  ],
+  "author": "Nuraly, Laabidi Aymen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Nuralyio/NuralyUI/issues"
+  },
+  "homepage": "https://github.com/Nuralyio/NuralyUI#readme"
 }

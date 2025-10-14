@@ -20,7 +20,7 @@ import {
   EMPTY_STRING,
   DEFAULT_ACTIVE_TAB
 } from './tabs.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
 // Import icon component
 import '../icon/icon.component.js';

@@ -5,21 +5,46 @@ Common UI components package for Nuraly UI Library. This package contains basic 
 [![npm version](https://badge.fury.io/js/@nuralyui%2Fcommon.svg)](https://badge.fury.io/js/@nuralyui%2Fcommon)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-## 📦 Included Components
+## 📦 Included Components & Utilities
 
-This package includes the following essential UI components:
+This package includes essential UI components and foundational utilities:
 
-### 🎨 Icon
+### 🎨 Components
+
+#### Icon
 Scalable vector icons powered by FontAwesome. Supports solid and regular icon types with customizable sizes and colors.
 
-### 🔔 Badge
+#### Badge
 Numerical indicators and status badges. Perfect for notification counts, status indicators, and decorative ribbons.
 
-### ➗ Divider
+#### Divider
 Content separators for organizing UI sections. Supports horizontal and vertical orientations with customizable styles.
 
-### 🏷️ Label
+#### Label
 Enhanced text labels with built-in accessibility features and styling options.
+
+### 🧩 Shared Utilities
+
+#### Mixins
+Base mixins that provide common functionality to all Nuraly UI components:
+- **`NuralyUIBaseMixin`** / **`BaseMixin`**: Combined mixin with theme, dependency, and event handling
+- **`ThemeAwareMixin`**: Theme management and observation
+- **`DependencyValidationMixin`**: Component dependency validation
+- **`EventHandlerMixin`**: Enhanced event handling capabilities
+
+#### Controllers
+Reactive controllers for component behavior:
+- **`ThemeController`**: Theme observation and management
+- **`SharedDropdownController`**: Dropdown positioning and behavior
+
+#### Theme Utilities
+- Theme detection and management
+- Theme variant types and utilities
+- getCurrentTheme, theme constants
+
+#### Utility Functions
+- `throttle`, `debounce`, `rafThrottle`
+- Performance optimization helpers
 
 ## 📊 Component Versions
 
@@ -55,11 +80,65 @@ import '@nuralyui/common';
 ### Import Individual Components
 
 ```javascript
-// Import only what you need
+// Import only the components you need
 import '@nuralyui/common/icon';
 import '@nuralyui/common/badge';
 import '@nuralyui/common/divider';
 import '@nuralyui/common/label';
+```
+
+### Import Shared Utilities
+
+```javascript
+// Import mixins for creating custom components
+import { NuralyUIBaseMixin, ThemeAwareMixin } from '@nuralyui/common/mixins';
+
+// Import controllers
+import { ThemeController, SharedDropdownController } from '@nuralyui/common/controllers';
+
+// Import theme utilities
+import { getCurrentTheme, type ThemeVariant } from '@nuralyui/common/themes';
+
+// Import utility functions
+import { throttle, debounce, rafThrottle } from '@nuralyui/common/utils';
+```
+
+### Creating Custom Components with Mixins
+
+```typescript
+import { LitElement, html } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+
+@customElement('my-component')
+export class MyComponent extends NuralyUIBaseMixin(LitElement) {
+  render() {
+    return html`
+      <div data-theme="${this.currentTheme}">
+        My themed component
+      </div>
+    `;
+  }
+}
+```
+
+### Using Controllers
+
+```typescript
+import { LitElement, html } from 'lit';
+import { ThemeController } from '@nuralyui/common/controllers';
+
+export class MyComponent extends LitElement {
+  private themeController = new ThemeController(this);
+
+  render() {
+    return html`
+      <div class="${this.themeController.isDark ? 'dark' : 'light'}">
+        Theme: ${this.themeController.currentTheme}
+      </div>
+    `;
+  }
+}
 ```
 
 ### HTML Usage

@@ -1,0 +1,8 @@
+/**
+ * Default Theme - Slider Input Component - Main Entry Point
+ * Imports all slider input theme variants for Default design system
+ */
+
+@import './common.css';
+@import './light.css';
+@import './dark.css';

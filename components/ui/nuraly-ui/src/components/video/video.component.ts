@@ -2,7 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { NuralyUIBaseMixin } from "../../shared/base-mixin.js";
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import styles from "./video.style.js";
 import { VideoPreload } from "./video.types.js";
 

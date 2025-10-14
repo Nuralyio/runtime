@@ -9,7 +9,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { ButtonType, ButtonSize, ButtonShape, EMPTY_STRING, IconPosition, ButtonIcons, ButtonIcon, ButtonIconsConfig } from './button.types.js';
 import { styles } from './button.style.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
 // Import icon component
 import '../icon/icon.component.js';

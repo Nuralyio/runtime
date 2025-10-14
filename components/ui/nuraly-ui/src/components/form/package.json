@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/form",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "NuralyUI Form - A comprehensive form component with validation coordination, submission handling, and state management",
   "type": "module",
   "main": "./index.js",
@@ -11,14 +11,19 @@
       "types": "./index.d.ts",
       "default": "./index.js"
     },
+    "./bundle": {
+      "import": "./bundle.js"
+    },
     "./form.component.js": {
-      "types": "./form.component.d.ts", 
+      "types": "./form.component.d.ts",
       "default": "./form.component.js"
     }
   },
   "files": [
     "*.js",
     "*.d.ts",
+    "*.js.map",
+    "bundle.js",
     "controllers/",
     "interfaces/",
     "mixins/",

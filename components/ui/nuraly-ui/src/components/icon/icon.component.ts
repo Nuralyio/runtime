@@ -15,7 +15,7 @@ dom.watch();
 
 import { styles } from './icon.style.js';
 import { IconTypes, regularIconPack, solidIconPack } from './icon.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { ClickableMixin } from './mixins/index.js';
 
 /**

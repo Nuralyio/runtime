@@ -1,0 +1,18 @@
+/**
+ * Default Theme - Tag Component - Common Variables
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"],
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  --nuraly-tag-padding-x: 8px;
+  --nuraly-tag-padding-y: 2px;
+  --nuraly-tag-padding-x-sm: 6px;
+  --nuraly-tag-padding-y-sm: 1px;
+  --nuraly-tag-font-size: var(--nuraly-font-size-sm);
+  --nuraly-tag-font-size-sm: var(--nuraly-font-size-xs);
+  --nuraly-tag-radius: var(--nuraly-border-radius-sm);
+  --nuraly-tag-gap: 6px;
+}

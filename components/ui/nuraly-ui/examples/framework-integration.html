@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuraly UI - Module Bundler Integration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f7fa;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .code-block .comment {
+            color: #75715e;
+        }
+        
+        .code-block .keyword {
+            color: #66d9ef;
+        }
+        
+        .code-block .string {
+            color: #e6db74;
+        }
+        
+        .code-block .function {
+            color: #a6e22e;
+        }
+        
+        .framework-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .framework-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-size: 1rem;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .framework-tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+        
+        .framework-content {
+            display: none;
+        }
+        
+        .framework-content.active {
+            display: block;
+        }
+        
+        .note {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .note strong {
+            color: #2980b9;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .warning strong {
+            color: #d39e00;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 Nuraly UI - Module Integration Guide</h1>
+        <p>Learn how to integrate Nuraly UI with modern build tools and frameworks</p>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Framework Integration Examples</h2>
+        
+        <div class="framework-tabs">
+            <button class="framework-tab active" data-framework="vanilla">Vanilla JS</button>
+            <button class="framework-tab" data-framework="react">React</button>
+            <button class="framework-tab" data-framework="vue">Vue 3</button>
+            <button class="framework-tab" data-framework="svelte">Svelte</button>
+            <button class="framework-tab" data-framework="angular">Angular</button>
+        </div>
+
+        <!-- Vanilla JS -->
+        <div class="framework-content active" data-framework="vanilla">
+            <h3>Vanilla JavaScript / HTML</h3>
+            
+            <div class="code-block">
+<span class="comment">// main.js</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/button'</span>;
+<span class="keyword">import</span> <span class="string">'@nuralyui/input'</span>;
+<span class="keyword">import</span> <span class="string">'@nuralyui/modal'</span>;
+
+<span class="comment">// Your application code</span>
+document.<span class="function">querySelector</span>(<span class="string">'#open-modal-btn'</span>)
+  .<span class="function">addEventListener</span>(<span class="string">'click'</span>, () => {
+    <span class="keyword">const</span> modal = document.<span class="function">querySelector</span>(<span class="string">'nr-modal'</span>);
+    modal.<span class="function">show</span>();
+  });
+            </div>
+
+            <div class="code-block">
+<span class="comment">&lt;!-- index.html --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=<span class="string">"en"</span>&gt;
+&lt;head&gt;
+  &lt;script type=<span class="string">"module"</span> src=<span class="string">"/src/main.js"</span>&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nr-button id=<span class="string">"open-modal-btn"</span> variant=<span class="string">"primary"</span>&gt;Open Modal&lt;/nr-button&gt;
+  
+  &lt;nr-modal id=<span class="string">"my-modal"</span> title=<span class="string">"Hello"</span>&gt;
+    &lt;p&gt;This is a modal!&lt;/p&gt;
+  &lt;/nr-modal&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </div>
+        </div>
+
+        <!-- React -->
+        <div class="framework-content" data-framework="react">
+            <h3>React Integration</h3>
+            
+            <div class="note">
+                <strong>Note:</strong> Nuraly UI provides React wrappers for all components!
+            </div>
+
+            <div class="code-block">
+<span class="comment">// App.jsx</span>
+<span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> { NrButton } <span class="keyword">from</span> <span class="string">'@nuralyui/button/react'</span>;
+<span class="keyword">import</span> { NrInput } <span class="keyword">from</span> <span class="string">'@nuralyui/input/react'</span>;
+<span class="keyword">import</span> { NrModal } <span class="keyword">from</span> <span class="string">'@nuralyui/modal/react'</span>;
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">const</span> [modalOpen, setModalOpen] = <span class="function">useState</span>(<span class="keyword">false</span>);
+  <span class="keyword">const</span> [inputValue, setInputValue] = <span class="function">useState</span>(<span class="string">''</span>);
+
+  <span class="keyword">return</span> (
+    &lt;div&gt;
+      &lt;<span class="function">NrInput</span>
+        label=<span class="string">"Name"</span>
+        value={inputValue}
+        onInput={(e) => <span class="function">setInputValue</span>(e.target.value)}
+      /&gt;
+
+      &lt;<span class="function">NrButton</span> 
+        variant=<span class="string">"primary"</span>
+        onClick={() => <span class="function">setModalOpen</span>(<span class="keyword">true</span>)}
+      &gt;
+        Open Modal
+      &lt;/<span class="function">NrButton</span>&gt;
+
+      &lt;<span class="function">NrModal</span>
+        open={modalOpen}
+        onClose={() => <span class="function">setModalOpen</span>(<span class="keyword">false</span>)}
+        title=<span class="string">"Hello"</span>
+      &gt;
+        &lt;p&gt;Input value: {inputValue}&lt;/p&gt;
+      &lt;/<span class="function">NrModal</span>&gt;
+    &lt;/div&gt;
+  );
+}
+
+<span class="keyword">export default</span> App;
+            </div>
+
+            <div class="code-block">
+<span class="comment">// Or use web components directly</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/button'</span>;
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    &lt;nr-button 
+      variant=<span class="string">"primary"</span>
+      onClick={(e) => console.<span class="function">log</span>(<span class="string">'clicked'</span>)}
+    &gt;
+      Click me
+    &lt;/nr-button&gt;
+  );
+}
+            </div>
+        </div>
+
+        <!-- Vue -->
+        <div class="framework-content" data-framework="vue">
+            <h3>Vue 3 Integration</h3>
+
+            <div class="code-block">
+<span class="comment">// main.js</span>
+<span class="keyword">import</span> { createApp } <span class="keyword">from</span> <span class="string">'vue'</span>;
+<span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App.vue'</span>;
+
+<span class="comment">// Import components</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/button'</span>;
+<span class="keyword">import</span> <span class="string">'@nuralyui/input'</span>;
+<span class="keyword">import</span> <span class="string">'@nuralyui/modal'</span>;
+
+<span class="function">createApp</span>(App).<span class="function">mount</span>(<span class="string">'#app'</span>);
+            </div>
+
+            <div class="code-block">
+<span class="comment">&lt;!-- App.vue --&gt;</span>
+&lt;template&gt;
+  &lt;div&gt;
+    &lt;nr-input
+      :label=<span class="string">"'Name'"</span>
+      :value=<span class="string">"inputValue"</span>
+      @input=<span class="string">"inputValue = $event.target.value"</span>
+    &gt;&lt;/nr-input&gt;
+
+    &lt;nr-button 
+      variant=<span class="string">"primary"</span>
+      @click=<span class="string">"modalOpen = true"</span>
+    &gt;
+      Open Modal
+    &lt;/nr-button&gt;
+
+    &lt;nr-modal
+      :open=<span class="string">"modalOpen"</span>
+      @close=<span class="string">"modalOpen = false"</span>
+      title=<span class="string">"Hello"</span>
+    &gt;
+      &lt;p&gt;Input value: {{ inputValue }}&lt;/p&gt;
+    &lt;/nr-modal&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+<span class="keyword">import</span> { ref } <span class="keyword">from</span> <span class="string">'vue'</span>;
+
+<span class="keyword">const</span> modalOpen = <span class="function">ref</span>(<span class="keyword">false</span>);
+<span class="keyword">const</span> inputValue = <span class="function">ref</span>(<span class="string">''</span>);
+&lt;/script&gt;
+            </div>
+
+            <div class="warning">
+                <strong>Vue Configuration:</strong> Add to vite.config.js or vue.config.js to properly handle custom elements:
+            </div>
+
+            <div class="code-block">
+<span class="comment">// vite.config.js</span>
+<span class="keyword">export default</span> {
+  plugins: [
+    <span class="function">vue</span>({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.<span class="function">startsWith</span>(<span class="string">'nr-'</span>)
+        }
+      }
+    })
+  ]
+}
+            </div>
+        </div>
+
+        <!-- Svelte -->
+        <div class="framework-content" data-framework="svelte">
+            <h3>Svelte Integration</h3>
+
+            <div class="code-block">
+<span class="comment">&lt;!-- App.svelte --&gt;</span>
+&lt;script&gt;
+  <span class="keyword">import</span> { onMount } <span class="keyword">from</span> <span class="string">'svelte'</span>;
+  
+  <span class="keyword">let</span> inputValue = <span class="string">''</span>;
+  <span class="keyword">let</span> modalOpen = <span class="keyword">false</span>;
+  <span class="keyword">let</span> modalElement;
+
+  <span class="function">onMount</span>(<span class="keyword">async</span> () => {
+    <span class="comment">// Dynamic import for better code splitting</span>
+    <span class="keyword">await import</span>(<span class="string">'@nuralyui/button'</span>);
+    <span class="keyword">await import</span>(<span class="string">'@nuralyui/input'</span>);
+    <span class="keyword">await import</span>(<span class="string">'@nuralyui/modal'</span>);
+  });
+
+  <span class="keyword">function</span> <span class="function">openModal</span>() {
+    modalElement?.<span class="function">show</span>();
+  }
+&lt;/script&gt;
+
+&lt;div&gt;
+  &lt;nr-input
+    label=<span class="string">"Name"</span>
+    bind:value={inputValue}
+    on:input={(e) => inputValue = e.target.value}
+  &gt;&lt;/nr-input&gt;
+
+  &lt;nr-button 
+    variant=<span class="string">"primary"</span>
+    on:click={openModal}
+  &gt;
+    Open Modal
+  &lt;/nr-button&gt;
+
+  &lt;nr-modal
+    bind:this={modalElement}
+    title=<span class="string">"Hello"</span>
+  &gt;
+    &lt;p&gt;Input value: {inputValue}&lt;/p&gt;
+  &lt;/nr-modal&gt;
+&lt;/div&gt;
+            </div>
+        </div>
+
+        <!-- Angular -->
+        <div class="framework-content" data-framework="angular">
+            <h3>Angular Integration</h3>
+
+            <div class="code-block">
+<span class="comment">// app.module.ts</span>
+<span class="keyword">import</span> { NgModule, CUSTOM_ELEMENTS_SCHEMA } <span class="keyword">from</span> <span class="string">'@angular/core'</span>;
+<span class="keyword">import</span> { BrowserModule } <span class="keyword">from</span> <span class="string">'@angular/platform-browser'</span>;
+<span class="keyword">import</span> { AppComponent } <span class="keyword">from</span> <span class="string">'./app.component'</span>;
+
+<span class="comment">// Import web components</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/button'</span>;
+<span class="keyword">import</span> <span class="string">'@nuralyui/input'</span>;
+<span class="keyword">import</span> <span class="string">'@nuralyui/modal'</span>;
+
+@<span class="function">NgModule</span>({
+  declarations: [AppComponent],
+  imports: [BrowserModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], <span class="comment">// Important!</span>
+  bootstrap: [AppComponent]
+})
+<span class="keyword">export class</span> <span class="function">AppModule</span> { }
+            </div>
+
+            <div class="code-block">
+<span class="comment">// app.component.ts</span>
+<span class="keyword">import</span> { Component } <span class="keyword">from</span> <span class="string">'@angular/core'</span>;
+
+@<span class="function">Component</span>({
+  selector: <span class="string">'app-root'</span>,
+  template: <span class="string">`
+    &lt;nr-input
+      [attr.label]="'Name'"
+      [attr.value]="inputValue"
+      (input)="onInput($event)"
+    &gt;&lt;/nr-input&gt;
+
+    &lt;nr-button 
+      variant="primary"
+      (click)="openModal()"
+    &gt;
+      Open Modal
+    &lt;/nr-button&gt;
+
+    &lt;nr-modal
+      #modal
+      [attr.title]="'Hello'"
+    &gt;
+      &lt;p&gt;Input value: {{ inputValue }}&lt;/p&gt;
+    &lt;/nr-modal&gt;
+  `</span>
+})
+<span class="keyword">export class</span> <span class="function">AppComponent</span> {
+  inputValue = <span class="string">''</span>;
+
+  <span class="function">onInput</span>(event: any) {
+    <span class="keyword">this</span>.inputValue = event.target.value;
+  }
+
+  <span class="function">openModal</span>() {
+    <span class="keyword">const</span> modal = document.<span class="function">querySelector</span>(<span class="string">'nr-modal'</span>) <span class="keyword">as any</span>;
+    modal?.<span class="function">show</span>();
+  }
+}
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>⚙️ Build Tool Configuration</h2>
+
+        <h3>Vite</h3>
+        <div class="code-block">
+<span class="comment">// vite.config.js</span>
+<span class="keyword">import</span> { defineConfig } <span class="keyword">from</span> <span class="string">'vite'</span>;
+
+<span class="keyword">export default</span> <span class="function">defineConfig</span>({
+  optimizeDeps: {
+    include: [
+      <span class="string">'@nuralyui/button'</span>,
+      <span class="string">'@nuralyui/input'</span>,
+      <span class="comment">// Add other components as needed</span>
+    ]
+  },
+  build: {
+    rollupOptions: {
+      external: [
+        <span class="comment">// Externalize large dependencies if needed</span>
+      ]
+    }
+  }
+});
+        </div>
+
+        <h3>Webpack</h3>
+        <div class="code-block">
+<span class="comment">// webpack.config.js</span>
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        <span class="keyword">use</span>: {
+          loader: <span class="string">'babel-loader'</span>,
+          options: {
+            presets: [
+              [<span class="string">'@babel/preset-env'</span>, {
+                targets: { esmodules: <span class="keyword">true</span> }
+              }]
+            ]
+          }
+        }
+      }
+    ]
+  },
+  resolve: {
+    extensions: [<span class="string">'.js'</span>, <span class="string">'.ts'</span>]
+  }
+};
+        </div>
+
+        <h3>Parcel</h3>
+        <div class="code-block">
+<span class="comment">// .parcelrc</span>
+{
+  <span class="string">"extends"</span>: <span class="string">"@parcel/config-default"</span>,
+  <span class="string">"transformers"</span>: {
+    <span class="string">"*.{js,mjs,jsx,cjs,ts,tsx}"</span>: [
+      <span class="string">"@parcel/transformer-js"</span>,
+      <span class="string">"@parcel/transformer-react-refresh-wrap"</span>
+    ]
+  }
+}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎨 Styling & Theming</h2>
+        
+        <h3>Using CSS Custom Properties</h3>
+        <div class="code-block">
+<span class="comment">/* styles.css */</span>
+:root {
+  <span class="comment">/* Primary colors */</span>
+  --nr-primary-color: #667eea;
+  --nr-secondary-color: #764ba2;
+  
+  <span class="comment">/* Typography */</span>
+  --nr-font-family: 'Inter', -apple-system, sans-serif;
+  --nr-font-size-base: 16px;
+  
+  <span class="comment">/* Spacing */</span>
+  --nr-spacing-sm: 8px;
+  --nr-spacing-md: 16px;
+  --nr-spacing-lg: 24px;
+  
+  <span class="comment">/* Border radius */</span>
+  --nr-border-radius: 6px;
+}
+        </div>
+
+        <h3>Using Pre-built Themes</h3>
+        <div class="code-block">
+<span class="comment">// Import theme CSS</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/themes/carbon.css'</span>;
+<span class="comment">// or</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/themes/default.css'</span>;
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📦 Package Bundle Usage</h2>
+        
+        <div class="note">
+            <strong>Tip:</strong> Use package bundles to import multiple related components at once!
+        </div>
+
+        <div class="code-block">
+<span class="comment">// Import all form components</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/forms'</span>;
+<span class="comment">// Includes: input, textarea, checkbox, radio, select, datepicker, etc.</span>
+
+<span class="comment">// Import all common components</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/common'</span>;
+<span class="comment">// Includes: icon, badge, divider, label</span>
+
+<span class="comment">// Import all layout components</span>
+<span class="keyword">import</span> <span class="string">'@nuralyui/layout'</span>;
+<span class="comment">// Includes: layout, grid, flex, card</span>
+        </div>
+
+        <h3>React Bundle Usage</h3>
+        <div class="code-block">
+<span class="comment">// Import React wrappers from bundles</span>
+<span class="keyword">import</span> {
+  NrInput,
+  NrTextarea,
+  NrCheckbox,
+  NrSelect
+} <span class="keyword">from</span> <span class="string">'@nuralyui/forms/react'</span>;
+
+<span class="keyword">import</span> {
+  NrIcon,
+  NrBadge,
+  NrLabel
+} <span class="keyword">from</span> <span class="string">'@nuralyui/common/react'</span>;
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.framework-tab');
+        const contents = document.querySelectorAll('.framework-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const framework = tab.dataset.framework;
+                
+                // Update active states
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.querySelector(`.framework-content[data-framework="${framework}"]`)
+                    .classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

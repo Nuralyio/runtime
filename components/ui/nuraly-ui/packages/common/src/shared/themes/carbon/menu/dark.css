@@ -1,0 +1,73 @@
+/**
+ * Carbon Theme - Menu Component - Dark Variant
+ * Menu-specific CSS variables for the Carbon Design System dark theme
+ * Based on official Carbon Design System G100 (dark) color tokens
+ */
+
+/* Use higher specificity and ensure proper cascade */
+[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"],
+body[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"] *,
+body[data-theme="carbon-dark"] * {
+  /* ========================================
+   * MENU VARIABLES - CARBON DARK THEME
+   * Official Carbon Design System Colors - G100 Theme
+   * ======================================== */
+
+  /* Menu link colors - Carbon uses Gray 10 for text on dark background */
+  --nuraly-menu-link-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+  --nuraly-menu-link-background-color: transparent !important;
+  --nuraly-menu-disabled-link-color: #525252 !important;  /* Carbon Gray 70 - disabled state */
+
+  /* Menu link hover state - Carbon uses Gray 90 for hover on dark */
+  --nuraly-menu-hover-link-background-color: #262626 !important;  /* Carbon Gray 90 */
+  --nuraly-menu-hover-link-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+
+  /* Menu link selected state - Carbon uses Gray 80 for selected on dark */
+  --nuraly-menu-selected-link-background-color: #393939 !important;  /* Carbon Gray 80 */
+  --nuraly-menu-selected-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+  --nuraly-menu-selected-link-border: 4px solid #0f62fe !important;  /* Carbon Blue 60 - active indicator */
+
+  /* Menu link focus state - Carbon Blue 60 */
+  --nuraly-menu-focus-border: 2px solid #0f62fe !important;  /* Carbon Blue 60 */
+  --nuraly-menu-focus-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+
+  /* Menu link active state - Carbon uses Gray 70 for active press on dark */
+  --nuraly-menu-active-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+  --nuraly-menu-active-background-color: #525252 !important;  /* Carbon Gray 70 - darker for active */
+
+  /* Submenu colors - Carbon uses consistent Gray palette for dark theme */
+  --nuraly-sub-menu-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+  --nuraly-sub-menu-disabled-color: #525252 !important;  /* Carbon Gray 70 */
+  
+  /* Submenu hover state */
+  --nuraly-sub-menu-hover-background-color: #262626 !important;  /* Carbon Gray 90 */
+  --nuraly-sub-menu-hover-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+
+  /* Submenu focus state */
+  --nuraly-sub-menu-focus-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+  --nuraly-sub-menu-focus-border: 2px solid #0f62fe !important;  /* Carbon Blue 60 */
+
+  /* Submenu active state */
+  --nuraly-sub-menu-active-background-color: #525252 !important;  /* Carbon Gray 70 - darker for active */
+  --nuraly-sub-menu-active-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+
+  /* Submenu highlighted state - used when submenu is opened or selected */
+  --nuraly-sub-menu-highlighted-color: #f4f4f4 !important;  /* Carbon Gray 10 */
+  --nuraly-sub-menu-highlighted-background-color: #393939 !important;  /* Carbon Gray 80 */
+
+  /* Icon colors - Carbon uses Gray 50 for icons on dark background */
+  --nuraly-menu-link-icon-color: #8d8d8d !important;  /* Carbon Gray 50 */
+  --nuraly-sub-menu-text-icon-color: #8d8d8d !important;  /* Carbon Gray 50 */
+  --nuraly-sub-menu-action-icon-color: #8d8d8d !important;  /* Carbon Gray 50 */
+  --nuraly-sub-menu-status-icon-color: #8d8d8d !important;  /* Carbon Gray 50 */
+  --nuraly-sub-menu-toggle-icon-color: #8d8d8d !important;  /* Carbon Gray 50 */
+}
+
+/* Additional strong selector for better cascade */
+[data-theme="carbon-dark"] nr-menu,
+[data-theme="carbon-dark"] nr-menu * {
+  /* Ensure dark theme always wins for menu components */
+  --theme-mode: dark;
+}

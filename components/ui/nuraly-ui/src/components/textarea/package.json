@@ -1,34 +1,34 @@
 {
-    "name": "@nuralyui/textarea",
-    "version": "0.1.0",
-    "description": "Textarea component for Nuraly UI Library with validation, resize options, and interactive features",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@nuralyui/textarea",
+  "version": "0.1.1",
+  "description": "Textarea component for Nuraly UI Library with validation, resize options, and interactive features",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "author": "Labidi Aymen",
-    "license": "MIT",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
-    },
-    "files": [
-        "bundle.js",
-        "*.js",
-        "*.d.ts",
-        "*.js.map"
-    ],
-    "keywords": [
-        "textarea",
-        "web-components",
-        "lit-element",
-        "ui-library",
-        "validation",
-        "form-control"
-    ]
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "bundle.js",
+    "*.js",
+    "*.d.ts",
+    "*.js.map"
+  ],
+  "keywords": [
+    "textarea",
+    "web-components",
+    "lit-element",
+    "ui-library",
+    "validation",
+    "form-control"
+  ]
 }

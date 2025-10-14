@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, queryAssignedElements } from 'lit/decorators.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { layoutStyles } from './layout.style.js';
 
 /**

@@ -1,50 +1,50 @@
 {
-    "name": "@nuralyui/toast",
-    "version": "0.0.10",
-    "description": "Toast notification component for NuralyUI library",
-    "main": "index.js",
-    "type": "module",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
+  "name": "@nuralyui/toast",
+  "version": "0.0.11",
+  "description": "Toast notification component for NuralyUI library",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "files": [
-        "*.js",
-        "*.d.ts",
-        "*.js.map",
-        "toast.bundled.js",
-        "bundle.js"
-    ],
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Nuralyio/NuralyUI.git",
-        "directory": "src/components/toast"
-    },
-    "keywords": [
-        "web-components",
-        "lit-element",
-        "toast",
-        "notification",
-        "ui-components",
-        "typescript"
-    ],
-    "author": "Labidi Aymen",
-    "license": "ISC",
-    "nuralyui": {
-        "requiredComponents": [
-            "nr-icon",
-            "nr-button"
-        ]
-    },
-    "peerDependencies": {
-        "@nuralyui/icon": "^0.0.1",
-        "@nuralyui/button": "^0.0.1"
+    "./bundle": {
+      "import": "./bundle.js"
     }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "toast.bundled.js",
+    "bundle.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/toast"
+  },
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "toast",
+    "notification",
+    "ui-components",
+    "typescript"
+  ],
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "nuralyui": {
+    "requiredComponents": [
+      "nr-icon",
+      "nr-button"
+    ]
+  },
+  "peerDependencies": {
+    "@nuralyui/icon": "^0.0.1",
+    "@nuralyui/button": "^0.0.1"
+  }
 }

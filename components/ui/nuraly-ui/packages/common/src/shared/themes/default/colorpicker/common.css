@@ -1,0 +1,47 @@
+/**
+ * Default Theme - ColorPicker Component - Common Variables
+ * Shared CSS variables for both light and dark variants
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"],
+[data-theme="default-dark"],
+[data-theme="dark"] {
+  /* ========================================
+   * SHARED COLORPICKER VARIABLES - DEFAULT THEME
+   * Variables that remain consistent across light and dark variants
+   * ======================================== */
+
+  /* Color picker sizing */
+  --nuraly-size-colorpicker-default: 32px;
+  --nuraly-size-colorpicker-default-height: 32px;
+  --nuraly-size-colorpicker-small: 24px;
+  --nuraly-size-colorpicker-small-height: 24px;
+  --nuraly-size-colorpicker-large: 40px;
+  --nuraly-size-colorpicker-large-height: 40px;
+
+  /* Color picker borders */
+  --nuraly-border-radius-colorpicker: 6px;
+  --nuraly-border-width-colorpicker: 1px;
+
+  /* Color picker dropdown */
+  --nuraly-z-index-dropdown: 1050;
+  --nuraly-border-radius-dropdown: 8px;
+
+  /* Color picker spacing */
+  --nuraly-spacing-colorpicker-padding: 12px;
+  --nuraly-spacing-colorpicker-preset-gap: 8px;
+
+  /* Color picker opacity states */
+  --nuraly-opacity-disabled: 0.5;
+  --nuraly-opacity-hover: 0.85;
+
+  /* Color picker focus ring */
+  --nuraly-color-focus: rgba(24, 144, 255, 0.5);
+  --nuraly-color-focus-active: rgba(24, 144, 255, 0.8);
+
+  /* Color picker transitions */
+  --nuraly-transition-fast: 0.15s;
+  --nuraly-transition-base: 0.2s;
+}

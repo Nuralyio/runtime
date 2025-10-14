@@ -1,0 +1,40 @@
+/**
+ * Carbon Theme - Slider Input Component - Light Mode
+ * Light mode color palette for Carbon design system
+ */
+
+:root,
+[data-theme="carbon"],
+[data-theme="carbon-light"] {
+  /* ========================================
+   * LIGHT MODE SLIDER INPUT COLORS - CARBON
+   * ======================================== */
+
+  /* Light mode slider input backgrounds - Carbon Gray 10/20 */
+  --nuraly-color-slider-input-background: #f4f4f4;
+  --nuraly-color-slider-input-track: #e0e0e0;
+  --nuraly-color-slider-input-track-filled: #0f62fe;
+
+  /* Light mode slider input text - Carbon Gray 100 */
+  --nuraly-color-slider-input-text: #161616;
+  --nuraly-color-slider-input-text-secondary: #525252;
+
+  /* Light mode slider input borders - Carbon Gray 30 */
+  --nuraly-color-slider-input-border: #c6c6c6;
+  --nuraly-color-slider-input-border-hover: #a8a8a8;
+
+  /* Light mode slider input thumb - Carbon Gray 10/100 */
+  --nuraly-color-slider-input-thumb: #ffffff;
+  --nuraly-color-slider-input-thumb-hover: #f4f4f4;
+  --nuraly-color-slider-input-thumb-active: #0f62fe;
+  --nuraly-color-slider-input-thumb-border: #8d8d8d;
+
+  /* Light mode slider input states */
+  --nuraly-color-slider-input-hover: #e5e5e5;
+  --nuraly-color-slider-input-active: #0f62fe;
+
+  /* Light mode slider input disabled - Carbon Gray 30/50 */
+  --nuraly-color-slider-input-disabled-track: #c6c6c6;
+  --nuraly-color-slider-input-disabled-thumb: #f4f4f4;
+  --nuraly-color-slider-input-disabled-border: #c6c6c6;
+}

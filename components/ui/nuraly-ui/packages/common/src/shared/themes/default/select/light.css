@@ -1,0 +1,65 @@
+/**
+ * Default Theme - Select Component - Light Variant
+ * Select-specific CSS variables based on default Nuraly design system
+ */
+
+[data-theme="default-light"] {
+  /* ========================================
+   * SELECT VARIABLES - DEFAULT LIGHT THEME
+   * ======================================== */
+
+  /* Base select styling - Default style */
+  --nuraly-select-background-color: #ffffff;
+  --nuraly-select-text-color: #262626;
+  --nuraly-select-placeholder-color: #8c8c8c;
+
+  /* Select borders - Default design */
+  --nuraly-select-border-color: #d9d9d9;
+  --nuraly-select-border-focus: #7c3aed;
+  --nuraly-select-border-hover: #7c3aed;
+
+  /* Dropdown styling - Default design */
+  --nuraly-select-dropdown-background: #ffffff;
+  --nuraly-select-dropdown-border-color: #d9d9d9;
+  --nuraly-select-dropdown-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+
+  /* Option styling - Default design */
+  --nuraly-select-option-hover-background: #f3f4f6;
+  --nuraly-select-option-selected-background: #ede9fe;
+  --nuraly-select-option-selected-color: #7c3aed;
+  --nuraly-select-option-text-color: #262626;
+
+  /* Error states - Default design */
+  --nuraly-select-error-border-color: #ef4444;
+  --nuraly-select-error-text-color: #ef4444;
+  --nuraly-select-error-message-color: #ef4444;
+
+  /* Warning states - Default design */
+  --nuraly-select-warning-border-color: #f59e0b;
+  --nuraly-select-warning-text-color: #f59e0b;
+  --nuraly-select-warning-message-color: #f59e0b;
+
+  /* Success states - Default design */
+  --nuraly-select-success-border-color: #10b981;
+  --nuraly-select-success-text-color: #10b981;
+  --nuraly-select-success-message-color: #10b981;
+
+  /* Disabled states - Default design */
+  --nuraly-select-disabled-background: #f9fafb;
+  --nuraly-select-disabled-border-color: #d9d9d9;
+  --nuraly-select-disabled-text-color: #8c8c8c;
+
+  /* Icon styling - Default design */
+  --nuraly-select-icon-color: #8c8c8c;
+  --nuraly-select-icon-hover-color: #7c3aed;
+
+  /* Multi-select tags - Default design */
+  --nuraly-select-tag-background: #f3f4f6;
+  --nuraly-select-tag-color: #262626;
+  --nuraly-select-tag-close-color: #8c8c8c;
+  --nuraly-select-tag-close-hover-color: #ef4444;
+
+  /* Focus and interaction - Default design */
+  --nuraly-select-focus-outline: rgba(124, 58, 237, 0.2);
+  --nuraly-select-hover-ring: rgba(124, 58, 237, 0.1);
+}

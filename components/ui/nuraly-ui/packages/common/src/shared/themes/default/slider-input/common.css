@@ -1,0 +1,58 @@
+/**
+ * Default Theme - Slider Input Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme="default"],
+[data-theme^="default"] {
+  /* ========================================
+   * SHARED SLIDER INPUT VARIABLES - DEFAULT DESIGN SYSTEM
+   * ======================================== */
+
+  /* Slider input borders - Default Design System */
+  --nuraly-border-width-slider-input: 0;
+  --nuraly-border-slider-input-radius: 6px;
+  --nuraly-border-slider-input-thumb-radius: 50%;
+  --nuraly-color-slider-input-primary: #1890ff;
+  --nuraly-color-slider-input-selected: #1890ff;
+  --nuraly-color-slider-input-focus: #1890ff;
+
+  /* Slider input sizing - Default Design System */
+  --nuraly-size-slider-input-width: 100%;
+  --nuraly-size-slider-input-height: 4px;
+  --nuraly-size-slider-input-thumb-diameter: 14px;
+
+  /* Common slider input disabled states */
+  --nuraly-color-slider-input-disabled: #f5f5f5;
+  --nuraly-color-slider-input-disabled-text: rgba(0, 0, 0, 0.25);
+  --nuraly-color-slider-input-disabled-background: #f5f5f5;
+
+  /* Slider input typography - Default Design System (system fonts) */
+  --nuraly-font-family-slider-input: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --nuraly-font-size-slider-input: 14px;
+  --nuraly-font-weight-slider-input: 400;
+
+  /* Slider input spacing - Default Design System */
+  --nuraly-spacing-slider-input-gap: 4px;
+  --nuraly-spacing-slider-input-padding: 8px;
+
+  /* Common borders */
+  --nuraly-border-width-slider-input-focus: 2px;
+
+  /* Common transitions - Default uses smooth transitions */
+  --nuraly-transition-duration-slider-input: 0.2s;
+  --nuraly-transition-timing-slider-input: ease-in-out;
+
+  /* Common z-index */
+  --nuraly-z-index-slider-input: 1;
+
+  /* Common error/warning/success colors - Default Design System */
+  --nuraly-color-slider-input-error: #ff4d4f;
+  --nuraly-color-slider-input-warning: #faad14;
+  --nuraly-color-slider-input-success: #52c41a;
+
+  /* Common slider input shadows - Default uses soft shadows */
+  --nuraly-shadow-slider-input-focus: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  --nuraly-shadow-slider-input-thumb: 0 2px 4px rgba(0, 0, 0, 0.12);
+}

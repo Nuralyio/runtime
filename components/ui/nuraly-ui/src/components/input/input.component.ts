@@ -17,7 +17,7 @@ import {
   ValidationRule,
   InputValidationResult
 } from './input.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { InputValidationUtils, InputRenderUtils } from './utils/index.js';
 import { SelectionMixin, FocusMixin, NumberMixin } from './mixins/index.js';
 import {

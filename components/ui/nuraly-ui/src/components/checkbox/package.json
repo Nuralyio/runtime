@@ -1,29 +1,29 @@
 {
-    "name": "@nuralyui/checkbox",
-    "version": "0.0.7",
-    "description": "",
-    "main": "index.js",
-    "type": "module",
-    "dependencies": {
-        "dayjs": "^1.11.7"
+  "name": "@nuralyui/checkbox",
+  "version": "0.0.8",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "dayjs": "^1.11.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Labidi Aymen",
-    "license": "ISC",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
-    },
-    "files": [
-        "bundle.js",
-        "*.js",
-        "*.d.ts",
-        "*.js.map"
-    ]
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "bundle.js",
+    "*.js",
+    "*.d.ts",
+    "*.js.map"
+  ]
 }

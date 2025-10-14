@@ -1,7 +1,7 @@
 import { LitElement, html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { siderStyles } from './sider.style.js';
 import {
     LayoutBreakpoint,

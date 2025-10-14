@@ -1,0 +1,12 @@
+/**
+ * Default Design System - Image Component - Dark Theme
+ */
+
+[data-theme="default-dark"] {
+  --nuraly-image-preview-bg: rgba(0, 0, 0, 0.95);
+  --nuraly-image-preview-close-bg: rgba(255, 255, 255, 0.1);
+  --nuraly-image-preview-close-hover-bg: rgba(255, 255, 255, 0.2);
+  --nuraly-image-preview-close-color: white;
+  --nuraly-image-placeholder-bg: rgba(255, 255, 255, 0.08);
+  --nuraly-image-placeholder-color: rgba(255, 255, 255, 0.3);
+}

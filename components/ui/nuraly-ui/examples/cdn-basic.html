@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuraly UI - CDN Basic Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        h2 {
+            color: #666;
+            margin-top: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .example-section {
+            margin: 1.5rem 0;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .component-demo {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Nuraly UI - CDN Basic Example</h1>
+        <p>This example demonstrates how to use Nuraly UI components directly from a CDN using modern ES modules.</p>
+        
+        <div class="note">
+            <strong>Note:</strong> Replace the CDN URLs with the actual CDN hosting your built components (e.g., unpkg.com, jsdelivr.net, or your own CDN).
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Button Components</h2>
+        
+        <div class="example-section">
+            <div class="component-demo">
+                <nr-button variant="primary">Primary Button</nr-button>
+                <nr-button variant="secondary">Secondary Button</nr-button>
+                <nr-button variant="success">Success Button</nr-button>
+                <nr-button variant="danger">Danger Button</nr-button>
+                <nr-button variant="warning">Warning Button</nr-button>
+                <nr-button variant="info">Info Button</nr-button>
+            </div>
+        </div>
+        
+        <h3>Sizes</h3>
+        <div class="component-demo">
+            <nr-button size="small">Small</nr-button>
+            <nr-button size="medium">Medium</nr-button>
+            <nr-button size="large">Large</nr-button>
+        </div>
+        
+        <h3>With Icons</h3>
+        <div class="component-demo">
+            <nr-button variant="primary" icon="fas fa-check">Save</nr-button>
+            <nr-button variant="danger" icon="fas fa-trash">Delete</nr-button>
+            <nr-button variant="info" icon="fas fa-download">Download</nr-button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Form Components</h2>
+        
+        <div class="example-section">
+            <nr-input 
+                label="Username" 
+                placeholder="Enter your username"
+                id="username-input">
+            </nr-input>
+        </div>
+        
+        <div class="example-section">
+            <nr-input 
+                label="Email" 
+                type="email"
+                placeholder="you@example.com"
+                id="email-input">
+            </nr-input>
+        </div>
+        
+        <div class="example-section">
+            <nr-textarea 
+                label="Message" 
+                placeholder="Enter your message"
+                rows="4"
+                id="message-input">
+            </nr-textarea>
+        </div>
+        
+        <div class="component-demo">
+            <nr-checkbox id="newsletter-check">Subscribe to newsletter</nr-checkbox>
+        </div>
+        
+        <div class="example-section">
+            <nr-button variant="primary" id="submit-btn">Submit Form</nr-button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Display Components</h2>
+        
+        <h3>Badges</h3>
+        <div class="component-demo">
+            <nr-badge variant="primary">Primary</nr-badge>
+            <nr-badge variant="success">Success</nr-badge>
+            <nr-badge variant="danger">Danger</nr-badge>
+            <nr-badge variant="warning">Warning</nr-badge>
+            <nr-badge variant="info">Info</nr-badge>
+        </div>
+        
+        <h3>Alert</h3>
+        <div class="example-section">
+            <nr-alert variant="info" dismissible>
+                This is an informational alert with a dismiss button.
+            </nr-alert>
+        </div>
+        
+        <div class="example-section">
+            <nr-alert variant="success">
+                Operation completed successfully!
+            </nr-alert>
+        </div>
+    </div>
+
+    <!-- Import ES modules from CDN -->
+    <script type="module">
+        // Using unpkg.com as example CDN
+        // Replace with your actual CDN URL or local paths
+        
+        // IMPORTANT: Use /bundle.js for standalone components to avoid shared module resolution issues
+        // The bundle includes all dependencies inlined
+        
+        // Import individual components (using bundled versions)
+        import 'https://unpkg.com/@nuralyui/button@latest/bundle.js';
+        import 'https://unpkg.com/@nuralyui/input@latest/bundle.js';
+        import 'https://unpkg.com/@nuralyui/textarea@latest/bundle.js';
+        import 'https://unpkg.com/@nuralyui/checkbox@latest/bundle.js';
+        import 'https://unpkg.com/@nuralyui/badge@latest/bundle.js';
+        import 'https://unpkg.com/@nuralyui/alert@latest/bundle.js';
+        
+        // Alternative: Import from package bundles (handles dependencies automatically)
+        // import 'https://unpkg.com/@nuralyui/forms@latest/dist/index.js';
+        // import 'https://unpkg.com/@nuralyui/common@latest/dist/index.js';
+        
+        // Add event listeners after components are loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitBtn = document.getElementById('submit-btn');
+            const usernameInput = document.getElementById('username-input');
+            const emailInput = document.getElementById('email-input');
+            const messageInput = document.getElementById('message-input');
+            const newsletterCheck = document.getElementById('newsletter-check');
+            
+            submitBtn?.addEventListener('click', () => {
+                const formData = {
+                    username: usernameInput?.value,
+                    email: emailInput?.value,
+                    message: messageInput?.value,
+                    newsletter: newsletterCheck?.checked
+                };
+                
+                console.log('Form submitted:', formData);
+                alert(`Form submitted!\n\n${JSON.stringify(formData, null, 2)}`);
+            });
+        });
+    </script>
+
+    <!-- Alternative: Using importmap for cleaner imports -->
+    <!--
+    <script type="importmap">
+    {
+        "imports": {
+            "@nuralyui/button": "https://unpkg.com/@nuralyui/button@latest/bundle.js",
+            "@nuralyui/input": "https://unpkg.com/@nuralyui/input@latest/bundle.js",
+            "@nuralyui/common": "https://unpkg.com/@nuralyui/common@latest/dist/index.js",
+            "@nuralyui/forms": "https://unpkg.com/@nuralyui/forms@latest/dist/index.js"
+        }
+    }
+    </script>
+    
+    <script type="module">
+        import '@nuralyui/button';
+        import '@nuralyui/input';
+        // Now you can use cleaner import paths
+    </script>
+    -->
+</body>
+</html>

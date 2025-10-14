@@ -1,0 +1,8 @@
+/**
+ * Carbon Theme - Label Component - Index
+ * Entry point for Carbon design system label theming
+ */
+
+@import './common.css';
+@import './light.css';
+@import './dark.css';

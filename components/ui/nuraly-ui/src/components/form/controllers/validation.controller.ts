@@ -10,7 +10,7 @@ import {
     FormValidationState,
     FORM_EVENTS
 } from '../form.types.js';
-import { ValidatableComponent } from '../../../shared/validation.types.js';
+import { ValidatableComponent } from '@nuralyui/common/mixins';
 
 /**
  * Controller that coordinates validation across all form fields

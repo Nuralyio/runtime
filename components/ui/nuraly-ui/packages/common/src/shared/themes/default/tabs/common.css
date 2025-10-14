@@ -1,0 +1,62 @@
+/**
+ * Default Theme - Tabs Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme^="default"] {
+  /* ========================================
+   * SHARED TABS VARIABLES - DEFAULT DESIGN SYSTEM
+   * ======================================== */
+
+  /* Common tabs spacing and sizing */
+  --nuraly-spacing-tabs-padding: 0.75rem 1rem; /* 12px 16px */
+  --nuraly-spacing-tabs-content-padding: 1.5rem; /* 24px */
+  
+  /* Common tabs borders - Default uses rounded corners for both states */
+  --nuraly-border-radius-tabs: 0.375rem; /* 6px - Rounded corners for inactive tabs */
+  --nuraly-border-radius-tabs-active: 0.375rem; /* 6px - Rounded corners for active tabs */
+  --nuraly-border-width-tabs: 1px;
+  
+  /* Horizontal tab positioning - rounded outer edges, sharp inner edges */
+  --nuraly-border-radius-tabs-first: 0.375rem 0 0 0.375rem; /* 6px - First tab: rounded left, sharp right */
+  --nuraly-border-radius-tabs-middle: 0; /* Middle tabs: sharp on both sides */
+  --nuraly-border-radius-tabs-last: 0 0.375rem 0.375rem 0; /* 6px - Last tab: sharp left, rounded right */
+  --nuraly-border-radius-tabs-single: 0.375rem; /* 6px - Single tab: fully rounded */
+  
+  /* Global border radius variables for tabs context */
+  --nuraly-border-radius-small: 0.25rem; /* 4px */
+  --nuraly-border-radius-medium: 0.5rem; /* 8px */
+  
+  /* Common tabs font settings */
+  --nuraly-font-tabs-weight: 500;
+  --nuraly-font-tabs-size: 0.875rem; /* 14px */
+  --nuraly-font-tabs-line-height: 1.25rem; /* 20px */
+  
+  /* Common tabs icon sizes */
+  --nuraly-tabs-icon-size: 1rem; /* 16px */
+  --nuraly-tabs-close-icon-size: 0.875rem; /* 14px */
+  --nuraly-tabs-add-icon-size: 1rem; /* 16px */
+  --nuraly-tabs-add-button-size: 2.5rem; /* 40px */
+  
+  /* Common tabs vertical layout width */
+  --nuraly-tabs-vertical-width: 12rem; /* 192px */
+  
+  /* Common tabs focus outline - Default Blue */
+  --nuraly-color-tabs-focus-outline: #3b82f6;
+  --nuraly-color-tabs-focus-ring: rgba(59, 130, 246, 0.3);
+  
+  /* Common tabs shadows - Default uses subtle shadows */
+  --nuraly-shadow-tabs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-tabs-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-tabs-active: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --nuraly-shadow-tabs-focus: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  
+  /* Common tabs transitions */
+  --nuraly-transition-tabs: all 0.2s ease;
+  
+  /* Common tabs disabled states */
+  --nuraly-color-tabs-disabled: #d1d5db;
+  --nuraly-color-tabs-disabled-text: #9ca3af;
+  --nuraly-color-tabs-disabled-border: #d1d5db;
+}

@@ -27,8 +27,12 @@
  * ```
  */
 
-// Export all common component modules
-export * from '../../src/components/icon/index.js';
-export * from '../../src/components/badge/index.js';
-export * from '../../src/components/divider/index.js';
-export * from '../../src/components/label/index.js';
+// Note: Component exports are handled by the build script
+// which copies from dist/components after the main build
+// This file is for shared utilities only
+
+// Export shared utilities
+export * from './mixins.js';
+export * from './controllers.js';
+export * from './themes.js';
+export * from './utils.js';

@@ -1,0 +1,33 @@
+/**
+ * Default Theme - Card Component - Light Variant
+ * Card-specific CSS variables for the Default Design System light theme
+ * Based on modern web design standards
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"] {
+  /* ========================================
+   * CARD VARIABLES - DEFAULT LIGHT THEME
+   * ======================================== */
+
+  /* Card background colors - Clean whites and light grays */
+  --nuraly-card-background-color: #ffffff;
+  --nuraly-card-header-background-color: #fafafa;
+
+  /* Card border colors - Subtle gray borders */
+  --nuraly-card-border: 1px solid #f0f0f0;
+  --nuraly-card-header-border-bottom: 1px solid #f0f0f0;
+
+  /* Card text colors - High contrast for readability */
+  --nuraly-card-header-color: rgba(0, 0, 0, 0.88);
+  --nuraly-card-content-color: rgba(0, 0, 0, 0.65);
+
+  /* Card hover states - gentle color shifts */
+  --nuraly-card-hover-background-color: #ffffff;
+  --nuraly-card-hover-border-color: #d9d9d9;
+
+  /* Card focus states - Primary brand color */
+  --nuraly-card-focus-outline: 2px solid #1890ff;
+  --nuraly-card-focus-offset: 2px;
+}

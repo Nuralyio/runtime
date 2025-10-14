@@ -2,7 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import styles from "./label.style.js";
 import { LabelSize, LabelVariant } from './label.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
 @customElement('nr-label')
 export class HyTextLabel extends NuralyUIBaseMixin(LitElement) {

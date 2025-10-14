@@ -1,0 +1,8 @@
+/**
+ * Default Theme - Skeleton Component
+ * Entry point for skeleton theme styles
+ */
+
+@import './common.css';
+@import './light.css';
+@import './dark.css';

@@ -1,0 +1,47 @@
+/**
+ * Carbon Theme - Datepicker Component - Light Variant
+ * Datepicker-specific CSS variables for the Carbon Design System light theme
+ * Based on official Carbon Design System color tokens
+ */
+
+[data-theme="carbon-light"],
+[data-theme="carbon"] {
+  /* ========================================
+   * DATEPICKER VARIABLES - CARBON LIGHT THEME
+   * Official Carbon Design System Colors
+   * ======================================== */
+
+  /* Background colors - Carbon Gray 10/White */
+  --nuraly-color-datepicker-background: #ffffff;
+  --nuraly-color-datepicker-header-background: #ffffff;
+  --nuraly-color-datepicker-hover-background: #e0e0e0;
+  --nuraly-color-datepicker-active-background: #c6c6c6;
+
+  /* Text colors - Carbon Gray 100/90 */
+  --nuraly-color-datepicker-text: #161616;
+  --nuraly-color-datepicker-selected-text: #ffffff;
+  --nuraly-color-datepicker-weekday: #6f6f6f;
+  --nuraly-color-datepicker-weekend: #da1e28;
+
+  /* Border colors - Carbon Gray 30 */
+  --nuraly-color-datepicker-border: #c6c6c6;
+
+  /* Input field colors */
+  --nuraly-color-datepicker-input-background: #ffffff;
+  --nuraly-color-datepicker-input-border: #8d8d8d;
+  --nuraly-color-datepicker-input-text: #161616;
+  --nuraly-color-datepicker-input-placeholder: #a8a8a8;
+
+  /* Hover states - Carbon Gray 20 */
+  --nuraly-color-datepicker-hover: #e0e0e0;
+
+  /* Range selection - Carbon Blue 10 */
+  --nuraly-color-datepicker-range: rgba(15, 98, 254, 0.1);
+
+  /* Shadow color */
+  --nuraly-color-datepicker-shadow: rgba(0, 0, 0, 0.3);
+
+  /* States */
+  --nuraly-opacity-datepicker-disabled: 0.5;
+  --nuraly-opacity-datepicker-hover: 1;
+}

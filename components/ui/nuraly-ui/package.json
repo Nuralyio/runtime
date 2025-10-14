@@ -17,9 +17,9 @@
   },
   "scripts": {
     "start": "concurrently 'npm:build:watch' 'npm:serve'",
-    "build": "tsc && npm run packages:build",
+    "build": "npm run common:build && tsc && npm run packages:build",
     "build:watch": "tsc --watch",
-    "packages:build": "npm run themes:build && npm run common:build && npm run forms:build && npm run layout:build",
+    "packages:build": "npm run themes:build && npm run forms:build && npm run layout:build",
     "themes:build": "npm run build --workspace=@nuralyui/themes",
     "themes:dev": "npm run dev --workspace=@nuralyui/themes",
     "common:build": "npm run build --workspace=@nuralyui/common",

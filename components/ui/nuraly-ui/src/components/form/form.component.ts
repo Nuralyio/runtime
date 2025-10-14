@@ -14,7 +14,7 @@ import {
   FormEventDetail,
   FORM_EVENTS
 } from './form.types.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { FormValidationController } from './controllers/validation.controller.js';
 import { FormSubmissionController } from './controllers/submission.controller.js';
 

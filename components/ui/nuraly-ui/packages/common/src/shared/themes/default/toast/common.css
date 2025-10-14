@@ -1,0 +1,45 @@
+/**
+ * Default Theme - Toast Component - Common Variables
+ * Shared CSS variables between light and dark variants
+ */
+
+:root,
+[data-theme^="default"] {
+  /* ========================================
+   * SHARED TOAST VARIABLES - DEFAULT THEME
+   * ======================================== */
+
+  /* Toast z-index */
+  --nuraly-z-index-toast: 9999;
+
+  /* Toast spacing and sizing */
+  --nuraly-toast-min-width: 300px;
+  --nuraly-toast-max-width: 500px;
+  --nuraly-toast-padding-vertical: 0.75rem;      /* 12px */
+  --nuraly-toast-padding-horizontal: 1rem;       /* 16px */
+  --nuraly-toast-gap: 0.75rem;                   /* 12px gap between elements */
+  --nuraly-toast-stack-gap: 0.5rem;              /* 8px gap between stacked toasts */
+
+  /* Toast border radius - Default uses rounded corners */
+  --nuraly-border-radius-toast: 0.5rem;          /* 8px */
+
+  /* Toast shadows */
+  --nuraly-shadow-toast: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-toast-hover: 0 10px 15px rgba(0, 0, 0, 0.15);
+
+  /* Toast icon size */
+  --nuraly-toast-icon-size: 1.25rem;            /* 20px */
+
+  /* Toast close button */
+  --nuraly-toast-close-size: 1.5rem;            /* 24px */
+  --nuraly-toast-close-icon-size: 1rem;         /* 16px */
+  --nuraly-toast-close-opacity: 0.7;
+  --nuraly-toast-close-opacity-hover: 1;
+
+  /* Toast animation duration */
+  --nuraly-transition-toast: 0.3s;
+
+  /* Toast progress bar */
+  --nuraly-toast-progress-height: 3px;
+  --nuraly-toast-progress-opacity: 0.3;
+}

@@ -3,6 +3,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,7 @@ const __dirname = path.dirname(__filename);
 const DIST_COMPONENTS_DIR = path.join(__dirname, '../../../dist/components');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PACKAGE_ROOT = path.join(__dirname, '..');
+const SRC_DIR = path.join(PACKAGE_ROOT, 'src');
 
 // Common components to include in the package
 const COMMON_COMPONENTS = [
@@ -32,6 +34,19 @@ async function build() {
     // Clean dist directory
     console.log('🧹 Cleaning dist directory...');
     await fs.emptyDir(DIST_DIR);
+
+    // Compile TypeScript files from packages/common/src
+    console.log('🔨 Compiling TypeScript files...');
+    try {
+      execSync('tsc -p .', { 
+        cwd: PACKAGE_ROOT,
+        stdio: 'inherit'
+      });
+      console.log('✅ TypeScript compilation completed\n');
+    } catch (error) {
+      console.error('❌ TypeScript compilation failed');
+      throw error;
+    }
 
     // Check if dist/components exists
     if (!await fs.pathExists(DIST_COMPONENTS_DIR)) {
@@ -57,6 +72,10 @@ async function build() {
       }
     }
 
+    // Note: Shared utilities (mixins, controllers, themes, utils) are now compiled
+    // from packages/common/src/shared during the main TypeScript build
+    // The compiled files will be in the dist folder automatically
+
     // Create main index.js that exports all components
     console.log('📝 Creating main index file...');
     const indexContent = COMMON_COMPONENTS
@@ -71,6 +90,16 @@ async function build() {
       .join('\n') + '\n';
     
     await fs.writeFile(path.join(DIST_DIR, 'index.d.ts'), indexDtsContent);
+
+    // Create re-export files for shared utilities (these will be compiled from src)
+    console.log('📝 Creating shared utility re-export files...');
+    
+    // These files are compiled from the src/ folder during the main build
+    // and copied from dist/shared during this build script
+    
+    // The source files (mixins.ts, controllers.ts, etc.) are in packages/common/src/
+    // They get compiled to dist/ by TypeScript during the main build
+    // Then this script copies from dist/shared to dist/ in the package
 
     // Create react.js that exports all React wrappers
     console.log('📝 Creating React exports file...');

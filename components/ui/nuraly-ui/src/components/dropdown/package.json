@@ -1,26 +1,26 @@
 {
-    "name": "@nuralyui/dropdown",
-    "version": "0.0.16",
-    "description": "Dropdown component for NuralyUI",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@nuralyui/dropdown",
+  "version": "0.0.17",
+  "description": "Dropdown component for NuralyUI",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./index.js"
     },
-    "author": "Labidi Aymen",
-    "license": "ISC",
-    "exports": {
-        ".": {
-            "import": "./index.js"
-        },
-        "./bundle": {
-            "import": "./bundle.js"
-        }
-    },
-    "files": [
-        "bundle.js",
-        "*.js",
-        "*.d.ts",
-        "*.js.map"
-    ]
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "bundle.js",
+    "*.js",
+    "*.d.ts",
+    "*.js.map"
+  ]
 }

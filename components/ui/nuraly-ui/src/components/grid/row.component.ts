@@ -7,7 +7,7 @@
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styles } from './row.style.js';
-import { NuralyUIBaseMixin } from '../../shared/base-mixin.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { RowAlign, RowJustify, Gutter, EMPTY_STRING, GridBreakpoint, BREAKPOINTS } from './grid.types.js';
 
 /**

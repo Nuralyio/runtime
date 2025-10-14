@@ -1,0 +1,73 @@
+/* Chatbot Common Variables - Default Theme */
+:root {
+  /* Layout */
+  --nuraly-size-chatbot-max-width: 1200px;
+  --nuraly-size-chatbot-messages-max-width: none; /* Allow full width to prevent cropping */
+  --nuraly-size-chatbot-suggestions-max-width: none; /* Allow full width to prevent cropping */
+  --nuraly-size-chatbot-input-max-width: none; /* Allow full width to prevent cropping */
+  --nuraly-size-chatbot-message-max-width: 90%;
+  --nuraly-size-chatbot-thread-sidebar-width: 260px;
+  
+  /* Spacing */
+  --nuraly-spacing-chatbot-container-padding: 12px;
+  --nuraly-spacing-chatbot-message-gap: 12px;
+  --nuraly-spacing-chatbot-message-padding: 8px 12px;
+  --nuraly-spacing-chatbot-input-padding: 16px 20px;
+  --nuraly-spacing-chatbot-suggestion-padding: 6px 12px;
+  --nuraly-spacing-chatbot-suggestion-gap: 8px;
+  --nuraly-spacing-chatbot-file-upload-padding: 12px;
+  
+  /* Typography */
+  --nuraly-font-family-chatbot-message: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --nuraly-font-family-chatbot-input: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --nuraly-font-size-chatbot-message: 15px;
+  --nuraly-font-size-chatbot-input: 15px;
+  --nuraly-font-size-chatbot-suggestion: 14px;
+  --nuraly-line-height-chatbot-message: 1.5;
+  --nuraly-line-height-chatbot-input: 1.4;
+  
+  /* Border Radius - Unified roundness */
+  --nuraly-border-radius-chatbot: 8px; /* Default roundness for all interactive elements */
+  --nuraly-border-radius-chatbot-message: 0; /* Messages: no border radius for clean look */
+  --nuraly-border-radius-chatbot-message-user: var(--nuraly-border-radius-chatbot, 8px); /* User messages use unified roundness */
+  --nuraly-border-radius-chatbot-message-bot: 0; /* Bot messages: flat/clean by default */
+  --nuraly-border-radius-chatbot-input: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-suggestion: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-file-upload: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-send-button: var(--nuraly-border-radius-chatbot, 8px);
+  --nuraly-border-radius-chatbot-action-button: var(--nuraly-border-radius-chatbot, 8px);
+  
+  /* Send Button */
+  --nuraly-size-chatbot-send-button-width: 32px;
+  --nuraly-size-chatbot-send-button-height: 32px;
+  
+  /* Border */
+  --nuraly-border-width-chatbot-input: 1px;
+  --nuraly-border-width-chatbot-message: 0; /* Default: no border */
+  --nuraly-border-width-chatbot-message-user: 1px; /* User messages can have border */
+  --nuraly-border-width-chatbot-message-bot: 0; /* Bot messages: no border by default */
+  
+  /* Shadows */
+  --nuraly-shadow-chatbot-input: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-chatbot-message: none; /* Default: no shadow */
+  --nuraly-shadow-chatbot-message-user: 0 1px 3px rgba(0, 0, 0, 0.1); /* User messages can have shadow */
+  --nuraly-shadow-chatbot-message-bot: none; /* Bot messages: no shadow by default */
+  --nuraly-shadow-chatbot-suggestion: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  /* Transitions */
+  --nuraly-transition-chatbot-all: all 0.2s ease;
+  --nuraly-transition-chatbot-hover: all 0.15s ease;
+  
+  /* Z-index */
+  --nuraly-z-index-chatbot-input: 10;
+  --nuraly-z-index-chatbot-sidebar: 5;
+  --nuraly-z-index-chatbot-dropdown: 1000;
+
+  /* Boxed layout (ChatGPT-style) */
+  --nuraly-spacing-chatbot-boxed-padding: 24px;
+  --nuraly-size-chatbot-boxed-max-width: 868px;
+  --nuraly-size-chatbot-boxed-content-max-width: 768px;
+  --nuraly-spacing-chatbot-boxed-content-padding: 24px;
+  --nuraly-border-radius-chatbot-boxed: 12px;
+  --nuraly-shadow-chatbot-boxed: 0 4px 24px rgba(0, 0, 0, 0.1);
+}

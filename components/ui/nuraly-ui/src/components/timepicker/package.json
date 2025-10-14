@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/timepicker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "NuralyUI TimePicker - A comprehensive time selection component with clock interface, multiple formats, and validation",
   "type": "module",
   "main": "./index.js",
@@ -11,14 +11,19 @@
       "types": "./index.d.ts",
       "default": "./index.js"
     },
+    "./bundle": {
+      "import": "./bundle.js"
+    },
     "./timepicker.component.js": {
-      "types": "./timepicker.component.d.ts", 
+      "types": "./timepicker.component.d.ts",
       "default": "./timepicker.component.js"
     }
   },
   "files": [
     "*.js",
     "*.d.ts",
+    "*.js.map",
+    "bundle.js",
     "controllers/",
     "interfaces/",
     "utils/",

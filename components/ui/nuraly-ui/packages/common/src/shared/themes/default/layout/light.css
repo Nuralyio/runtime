@@ -1,0 +1,59 @@
+/**
+ * Default Theme - Layout Component - Light Variant
+ * Layout-specific CSS variables for the default light theme
+ * Based on Ant Design's default color palette
+ */
+
+:root,
+[data-theme="default-light"],
+[data-theme="light"] {
+  /* ========================================
+   * LAYOUT VARIABLES - DEFAULT LIGHT THEME
+   * Ant Design inspired color palette
+   * ======================================== */
+
+  /* Layout background - Light gray */
+  --nuraly-layout-background: #f0f2f5;
+  
+  /* Header colors - Dark header on light background */
+  --nuraly-layout-header-background: #001529;
+  --nuraly-layout-header-text: #ffffff;
+  --nuraly-layout-header-border: #002140;
+  
+  /* Footer colors - Light footer */
+  --nuraly-layout-footer-background: #f0f2f5;
+  --nuraly-layout-footer-text: rgba(0, 0, 0, 0.85);
+  --nuraly-layout-footer-border: #d9d9d9;
+  
+  /* Content colors - White content area */
+  --nuraly-layout-content-background: #ffffff;
+  --nuraly-layout-content-text: rgba(0, 0, 0, 0.85);
+  
+  /* Sider colors - Dark theme (matching header) */
+  --nuraly-layout-sider-background: #001529;
+  --nuraly-layout-sider-text: rgba(255, 255, 255, 0.85);
+  --nuraly-layout-sider-border: #002140;
+  
+  /* Sider light theme variant - Light sidebar */
+  --nuraly-layout-sider-light-background: #ffffff;
+  --nuraly-layout-sider-light-text: rgba(0, 0, 0, 0.85);
+  --nuraly-layout-sider-light-border: #f0f0f0;
+  
+  /* Sider trigger - Dark */
+  --nuraly-layout-trigger-background: #002140;
+  --nuraly-layout-trigger-text: rgba(255, 255, 255, 0.85);
+  --nuraly-layout-trigger-background-hover: #0e3a5f;
+  --nuraly-layout-trigger-border: rgba(255, 255, 255, 0.1);
+  
+  /* Sider trigger - Light variant */
+  --nuraly-layout-trigger-light-background: #fafafa;
+  --nuraly-layout-trigger-light-text: rgba(0, 0, 0, 0.85);
+  --nuraly-layout-trigger-light-background-hover: #e6e6e6;
+  --nuraly-layout-trigger-light-border: #d9d9d9;
+  
+  /* Zero-width trigger */
+  --nuraly-layout-zero-trigger-background: #001529;
+  --nuraly-layout-zero-trigger-text: #ffffff;
+  --nuraly-layout-zero-trigger-background-hover: #002140;
+  --nuraly-layout-zero-trigger-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
