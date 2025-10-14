@@ -5,7 +5,16 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@nuralyui/common"><img src="https://img.shields.io/npm/v/@nuralyui/common?label=common&color=blue" alt="common" /></a>
+  <a href="https://www.npmjs.com/packag## 🤝 Contributing
+
+We welcome contributions! Here's how to help:
+
+- 🐛 Report bugs via [GitHub Issues](https://github.com/Nuralyio/NuralyUI/issues)
+- 💡 Suggest features in [Discussions](https://github.com/Nuralyio/NuralyUI/discussions)
+- 🔧 Submit pull requests for bug fixes or new components
+- 📝 Improve documentation
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.i/common"><img src="https://img.shields.io/npm/v/@nuralyui/common?label=common&color=blue" alt="common" /></a>
   <a href="https://www.npmjs.com/package/@nuralyui/forms"><img src="https://img.shields.io/npm/v/@nuralyui/forms?label=forms&color=green" alt="forms" /></a>
   <a href="https://www.npmjs.com/package/@nuralyui/layout"><img src="https://img.shields.io/npm/v/@nuralyui/layout?label=layout&color=orange" alt="layout" /></a>
   <a href="https://www.npmjs.com/package/@nuralyui/themes"><img src="https://img.shields.io/npm/v/@nuralyui/themes?label=themes&color=purple" alt="themes" /></a>
@@ -71,22 +80,22 @@ npm install @nuralyui/datepicker
   import '@nuralyui/input';
 </script>
 
-<hy-button variant="primary">Click me</hy-button>
+<nr-button variant="primary">Click me</nr-button>
 <nr-input placeholder="Enter text" label="Name"></nr-input>
 ```
 
 ### React
 
 ```jsx
-import { HyButton } from "@nuralyui/button/react";
+import { NrButton } from "@nuralyui/button/react";
 import { NrInput } from "@nuralyui/input/react";
 
 function App() {
   return (
     <>
-      <HyButton variant="primary" onClick={() => alert('Clicked!')}>
+      <NrButton variant="primary" onClick={() => alert('Clicked!')}>
         Click me
-      </HyButton>
+      </NrButton>
       <NrInput 
         placeholder="Enter text" 
         label="Name"
@@ -101,7 +110,7 @@ function App() {
 
 ```vue
 <template>
-  <hy-button variant="primary" @click="handleClick">Click me</hy-button>
+  <nr-button variant="primary" @click="handleClick">Click me</nr-button>
   <nr-input placeholder="Enter text" label="Name" @input="handleInput" />
 </template>
 
@@ -153,9 +162,9 @@ Customize components with CSS custom properties:
 
 ```css
 :root {
-  --hy-primary-color: #4F46E5;
-  --hy-font-family: 'Inter', sans-serif;
-  --hy-border-radius: 6px;
+  --nr-primary-color: #4F46E5;
+  --nr-font-family: 'Inter', sans-serif;
+  --nr-border-radius: 6px;
 }
 ```
 
