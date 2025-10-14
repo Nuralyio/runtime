@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/grid",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Grid layout system (Row and Col) components for NuralyUI library",
   "main": "index.js",
   "type": "module",

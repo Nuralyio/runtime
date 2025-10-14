@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/button",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Button component for NuralyUI library",
   "main": "index.js",
   "type": "module",
