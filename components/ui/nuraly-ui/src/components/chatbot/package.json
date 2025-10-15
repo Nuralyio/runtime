@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/chatbot",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Versatile chatbot component with message handling, suggestions, and typing indicators",
   "main": "index.js",
   "type": "module",
@@ -21,14 +21,42 @@
     },
     "./react": {
       "import": "./react.js"
+    },
+    "./core": {
+      "import": "./core/index.js"
+    },
+    "./providers": {
+      "import": "./providers/index.js"
+    },
+    "./plugins": {
+      "import": "./plugins/index.js"
+    },
+    "./storage": {
+      "import": "./storage/index.js"
+    },
+    "./controllers": {
+      "import": "./controllers/index.js"
     }
   },
   "files": [
     "bundle.js",
     "react.js",
-    "*.js",
+    "index.js",
     "*.d.ts",
-    "*.js.map"
+    "*.js.map",
+    "core/",
+    "providers/",
+    "plugins/",
+    "storage/",
+    "controllers/",
+    "assets/",
+    "templates/",
+    "locales/",
+    "mixins/",
+    "shared/",
+    "constants.js",
+    "api-constant.js",
+    "chatbot.*.js"
   ],
   "keywords": [
     "chatbot",
