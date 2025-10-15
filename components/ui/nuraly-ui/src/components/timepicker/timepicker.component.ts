@@ -2,9 +2,6 @@ import { LitElement, html, TemplateResult, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
-// Import UI components
-import '../input/input.component.js';
-import '../button/button.component.js';
 import { INPUT_STATE } from '../input/input.types.js';
 
 // Import base mixin and types

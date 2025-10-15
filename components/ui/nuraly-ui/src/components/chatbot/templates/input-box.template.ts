@@ -11,11 +11,6 @@ import { ChatbotFile } from '../chatbot.types.js';
 import { DropdownItem } from '../../dropdown/dropdown.types.js';
 import { SelectOption } from '../../select/select.types.js';
 
-// Import required components
-import '../../dropdown/dropdown.component.js';
-import '../../select/select.component.js';
-import '../../button/button.component.js';
-import '../../tag/tag.component.js';
 
 export interface InputBoxTemplateHandlers {
   onInput: (e: Event) => void;

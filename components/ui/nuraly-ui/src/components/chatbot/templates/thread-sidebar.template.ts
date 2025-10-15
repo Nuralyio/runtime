@@ -10,8 +10,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import { msg } from '@lit/localize';
 import { ChatbotThread } from '../chatbot.types.js';
 
-// Import required components
-import '../../button/button.component.js';
 
 export interface ThreadSidebarTemplateHandlers {
   onCreateNew: () => void;

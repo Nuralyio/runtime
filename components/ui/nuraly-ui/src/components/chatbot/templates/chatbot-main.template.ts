@@ -7,7 +7,6 @@
 import { nothing, html, TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { msg } from '@lit/localize';
-import '../../button/button.component.js';
 import {
   renderMessages,
   renderBotTypingIndicator,
