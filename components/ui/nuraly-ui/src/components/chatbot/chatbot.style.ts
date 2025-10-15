@@ -20,7 +20,7 @@ export default css`
     display: flex;
     width: 100%;
     height: 100%;
-    background-color: var(--nuraly-color-chatbot-background);
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
     border-radius: var(--nuraly-border-radius-chatbot);
     position: relative;
     border: var(--nuraly-border-width-chatbot-input, 1px) solid var(--nuraly-color-chatbot-border);
@@ -63,7 +63,7 @@ export default css`
   }
 
   :host([boxed]) .chat-container {
-    background-color: transparent;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
     border: none;
     border-radius: 0;
   }
@@ -76,32 +76,32 @@ export default css`
     width: 100%;
     max-width: var(--nuraly-size-chatbot-boxed-max-width, 768px);
     margin: 0 auto;
-    background-color: transparent;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
     border: none;
     border-radius: 0;
     box-shadow: none;
     height: 100%;
   }
 
-  /* Boxed layout with threads: white background for entire container */
+  /* Boxed layout with threads: background comes from theme variable with white fallback */
   :host([boxed]) .chat-container--boxed.chat-container--with-threads {
-    background-color: #ffffff;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
   }
 
   .chat-container--boxed.chat-container--with-threads .chatbot-main {
-    background-color: #ffffff;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
   }
 
   .chat-container--boxed.chat-container--with-threads .chat-box {
-    background-color: #ffffff;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
   }
 
   .chat-container--boxed.chat-container--with-threads .messages {
-    background-color: #ffffff;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
   }
 
   .chat-container--boxed.chat-container--with-threads .input-container {
-    background-color: #ffffff;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
   }
 
   :host([boxed]) .chatbot-header {
@@ -163,7 +163,7 @@ export default css`
   :host([boxed]) .messages {
     box-shadow: none;
     margin-bottom: 0;
-    background-color: transparent;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
     align-items: stretch;
     width: 98%;
     padding: var(--nuraly-spacing-chatbot-message-padding, 8px) var(--nuraly-spacing-06, 1.5rem);
@@ -172,7 +172,7 @@ export default css`
   :host([boxed]) .input-container {
     box-shadow: none;
     margin: 0;
-    background-color: transparent;
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
   }
 
   .chat-container--with-threads {
@@ -285,7 +285,7 @@ export default css`
     display: flex;
     flex-direction: column;
     gap: 0;
-    background-color: var(--nuraly-color-chatbot-background);
+    background-color: var(--nuraly-color-chatbot-background, #ffffff);
     padding: var(--nuraly-spacing-chatbot-message-padding, 8px 12px);
     justify-content: flex-start; /* Always align messages to top */
   }
