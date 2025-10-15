@@ -70,10 +70,39 @@ export class CustomAPIProvider implements ChatbotProvider {
 
     const payload = this.buildPayload(text, context);
 
+    // Check if Content-Type is multipart/form-data
+    const isMultipart = this.headers['Content-Type']?.includes('multipart/form-data');
+    
+    let body: any;
+    let headers: Record<string, string>;
+
+    if (isMultipart && typeof payload === 'object' && !(payload instanceof FormData)) {
+      // Convert payload object to FormData
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(payload)) {
+        if (value !== undefined && value !== null) {
+          formData.append(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+        }
+      }
+      body = formData;
+      // Don't set Content-Type header - browser will set it with boundary
+      headers = { ...this.headers };
+      delete headers['Content-Type'];
+    } else if (payload instanceof FormData) {
+      // Payload is already FormData
+      body = payload;
+      headers = { ...this.headers };
+      delete headers['Content-Type'];
+    } else {
+      // Use JSON
+      body = JSON.stringify(payload);
+      headers = this.headers;
+    }
+
     const response = await fetch(this.apiUrl, {
       method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify(payload)
+      headers,
+      body
     });
 
     if (!response.ok) {
