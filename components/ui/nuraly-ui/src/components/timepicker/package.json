@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/timepicker",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "NuralyUI TimePicker - A comprehensive time selection component with clock interface, multiple formats, and validation",
   "type": "module",
   "main": "./index.js",
