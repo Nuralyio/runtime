@@ -724,7 +724,7 @@ export default css`
 
   .chat-container--boxed .input-container {
     width: 100%;
-    max-width: var(--nuraly-size-chatbot-boxed-input-max-width, var(--nuraly-size-chatbot-boxed-content-max-width));
+    /* max-width: var(--nuraly-size-chatbot-boxed-input-max-width, var(--nuraly-size-chatbot-boxed-content-max-width)); */
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;

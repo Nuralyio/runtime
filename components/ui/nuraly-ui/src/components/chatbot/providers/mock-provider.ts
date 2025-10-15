@@ -257,9 +257,17 @@ export class MockProvider implements ChatbotProvider {
   }
 
   private generateResponse(text: string, context?: ChatbotContext): string {
+    const allMessages = context?.messages || [];
+    const lastUserIndex = [...allMessages].map((m, i) => ({ m, i }))
+      .reverse()
+      .find(({ m }) => m.sender === 'user' && !!m.text)?.i;
+    const effectiveText = (typeof lastUserIndex === 'number' && allMessages[lastUserIndex]?.text)
+      ? (allMessages[lastUserIndex].text as string)
+      : text;
+
     // Echo mode
     if (this.config.echoMode) {
-      return `You said: "${text}"`;
+      return `You said: "${effectiveText}"`;
     }
 
     // Custom responses (highest priority after echo mode)
@@ -271,22 +279,28 @@ export class MockProvider implements ChatbotProvider {
 
     // Contextual responses
     if (this.config.contextualResponses) {
-      const contextualResponse = this.getContextualResponse(text);
+      const contextualResponse = this.getContextualResponse(effectiveText);
       if (contextualResponse) {
         return contextualResponse;
       }
     }
 
-    // History-aware responses
-    if (this.config.useHistory && context?.messages && context.messages.length > 1) {
-      const previousMessages = context.messages.slice(-3);
-      if (previousMessages.length >= 2) {
-        return `Based on our conversation about "${previousMessages[0].text?.substring(0, 30)}...", I think ${this.getRandomResponse()}`;
+    // History-aware responses: always anchor to the latest message, optionally weave prior context
+    if (this.config.useHistory && allMessages.length > 0 && typeof lastUserIndex === 'number') {
+      const prevUser = [...allMessages]
+        .slice(0, lastUserIndex)
+        .reverse()
+        .find(m => m.sender === 'user' && !!m.text);
+
+      if (prevUser && prevUser.text) {
+        return `Great point about "${String(effectiveText).substring(0, 60)}". Considering your earlier message about "${String(prevUser.text).substring(0, 30)}...", ${this.getRandomResponse()}`;
       }
+
+      return `Regarding "${String(effectiveText).substring(0, 60)}", ${this.getRandomResponse()}`;
     }
 
-    // Default random response
-    return this.getRandomResponse();
+    // Default random response anchored to latest
+    return `Regarding "${String(effectiveText).substring(0, 60)}", ${this.getRandomResponse()}`;
   }
 
   private getContextualResponse(text: string): string | null {
