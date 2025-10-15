@@ -191,7 +191,7 @@ export default css`
   }
 
   .thread-sidebar {
-    width: var(--nuraly-size-chatbot-sidebar-width);
+    width: var(--nuraly-size-chatbot-thread-sidebar-width, 260px);
     background-color: var(--nuraly-color-chatbot-sidebar-background);
     border-right: var(--nuraly-border-width-chatbot-message, 1px) solid var(--nuraly-color-chatbot-sidebar-border);
     display: flex;

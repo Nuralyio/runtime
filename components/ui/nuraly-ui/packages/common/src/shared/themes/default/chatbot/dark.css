@@ -5,6 +5,13 @@
   --nuraly-color-chatbot-container-background: #1a1a1a;
   --nuraly-color-chatbot-sidebar-background: #2d2d2d;
   
+  /* Accent Colors */
+  --nuraly-color-chatbot-accent: #0084ff;
+  
+  /* Sidebar Colors */
+  --nuraly-color-chatbot-sidebar-border: #404040;
+  --nuraly-color-chatbot-sidebar-text: #e5e5e5;
+  
   /* Message Colors */
   --nuraly-color-chatbot-message-user-background: #0084ff;
   --nuraly-color-chatbot-message-user-text: #ffffff;
@@ -75,6 +82,7 @@
   --nuraly-color-chatbot-thread-background-hover: #404040;
   --nuraly-color-chatbot-thread-background-active: #1a3d5c;
   --nuraly-color-chatbot-thread-text: #e5e5e5;
+  --nuraly-color-chatbot-thread-text-active: #ffffff;
   --nuraly-color-chatbot-thread-text-secondary: #888888;
   --nuraly-color-chatbot-thread-border: #404040;
   

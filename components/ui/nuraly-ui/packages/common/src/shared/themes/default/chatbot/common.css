@@ -16,6 +16,7 @@
   --nuraly-spacing-chatbot-suggestion-padding: 6px 12px;
   --nuraly-spacing-chatbot-suggestion-gap: 8px;
   --nuraly-spacing-chatbot-file-upload-padding: 12px;
+  --nuraly-spacing-chatbot-sidebar-padding: 12px;
   
   /* Typography */
   --nuraly-font-family-chatbot-message: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
