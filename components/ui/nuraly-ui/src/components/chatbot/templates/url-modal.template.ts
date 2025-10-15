@@ -7,14 +7,6 @@
 import { html, TemplateResult, nothing } from 'lit';
 import { msg } from '@lit/localize';
 
-// Import required components
-import '../../modal/modal.component.js';
-import '../../input/input.component.js';
-import '../../button/button.component.js';
-import '../../alert/alert.component.js';
-import '../../label/label.component.js';
-import '../../grid/row.component.js';
-import '../../grid/col.component.js';
 
 export interface UrlModalTemplateHandlers {
   onClose: () => void;

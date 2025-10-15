@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuraly UI - CDN Basic Example</title>
+    
+    <!-- Nuraly UI Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@0.1.3/dist/default.css">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+       
+    </style>
+</head>
+<body>
+
+    <div class="container">
+       
+        
+        <div class="example-section">
+            <div style="width: 100%; height: 600px;">
+                <nr-chatbot
+                    id="demo-chatbot"
+                    size="medium"
+                    variant="default"
+                    show-send-button
+                    auto-scroll
+                ></nr-chatbot>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import map for resolving dependencies -->
+    <script type="importmap">
+    {
+        "imports": {
+            "lit": "https://cdn.jsdelivr.net/npm/lit@3/+esm",
+            "lit/": "https://cdn.jsdelivr.net/npm/lit@3/",
+            "lit-element": "https://cdn.jsdelivr.net/npm/lit-element@4/+esm",
+            "lit-element/": "https://cdn.jsdelivr.net/npm/lit-element@4/",
+            "lit-html": "https://cdn.jsdelivr.net/npm/lit-html@3/+esm",
+            "lit-html/": "https://cdn.jsdelivr.net/npm/lit-html@3/",
+            "@lit/reactive-element": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2/+esm",
+            "@lit/reactive-element/": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2/",
+            "@fortawesome/fontawesome-svg-core": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-svg-core@6/+esm",
+            "@fortawesome/fontawesome-svg-core/": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-svg-core@6/",
+            "@fortawesome/free-solid-svg-icons": "https://cdn.jsdelivr.net/npm/@fortawesome/free-solid-svg-icons@6/+esm",
+            "@fortawesome/free-regular-svg-icons": "https://cdn.jsdelivr.net/npm/@fortawesome/free-regular-svg-icons@6/+esm",
+            "@fortawesome/free-brands-svg-icons": "https://cdn.jsdelivr.net/npm/@fortawesome/free-brands-svg-icons@6/+esm",
+            "@lit/localize": "https://cdn.jsdelivr.net/npm/@lit/localize/+esm",
+            "@lit/localize/": "https://cdn.jsdelivr.net/npm/@lit/localize/",
+            "@nuralyui/common/mixins": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/mixins.js",
+            "@nuralyui/common/controllers": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/controllers.js",
+            "@nuralyui/common/utils": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/utils.js",
+            "@nuralyui/common/themes": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/themes.js",
+            "@nuralyui/common/constants": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/constants.js",
+            "@nuralyui/common": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/index.js",
+            "@nuralyui/chatbot": "https://cdn.jsdelivr.net/npm/@nuralyui/chatbot@0.0.13/+esm",
+            "@nuralyui/chatbot/": "https://cdn.jsdelivr.net/npm/@nuralyui/chatbot@0.0.13/",
+            "@nuralyui/chatbot/core": "https://cdn.jsdelivr.net/npm/@nuralyui/chatbot@0.0.13/core/index.js",
+            "@nuralyui/chatbot/providers": "https://cdn.jsdelivr.net/npm/@nuralyui/chatbot@0.0.13/providers/index.js"
+        }
+    }
+    </script>
+
+    <!-- Import ES modules from CDN using bundle.min.js -->
+    <script type="module">
+        // Using jsDelivr with specific versions for each component
+        
+        // Import individual components with their bundle.min.js files
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/icon@0.0.11/bundle.min.js';
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/button@0.0.18/bundle.min.js';
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/input@0.0.14/bundle.min.js';
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/textarea@0.1.4/bundle.min.js';
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/checkbox@0.0.11/bundle.min.js';
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/badge@0.0.5/bundle.min.js';
+        import 'https://cdn.jsdelivr.net/npm/@nuralyui/alert@0.0.5/bundle.min.js';
+        
+        // Import chatbot component and providers
+    // Pin to the same version used in the import map to avoid mismatches
+    import 'https://cdn.jsdelivr.net/npm/@nuralyui/chatbot@0.0.13/bundle.min.js';
+        
+        // Import ChatbotCoreController and MockProvider from ESM
+        import { ChatbotCoreController } from "@nuralyui/chatbot/core";
+        import { MockProvider } from "@nuralyui/chatbot/providers";
+
+        // Alternative: Import from package bundles
+        // import 'https://unpkg.com/@nuralyui/forms@latest/dist/index.js';
+        // import 'https://unpkg.com/@nuralyui/common@latest/dist/index.js';
+        
+        // Add event listeners after components are loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Chatbot initialization with mock provider
+            const chatbot = document.getElementById('demo-chatbot');
+            if (chatbot) {
+                // Create controller with MockProvider
+                const controller = new ChatbotCoreController({
+                    provider: new MockProvider({
+                        delay: 600,
+                        streaming: true,
+                        streamingSpeed: 4,
+                        streamingInterval: 25,
+                        contextualResponses: true
+                    }),
+                    ui: {
+                        onStateChange: (state) => {
+                            chatbot.messages = state.messages;
+                            chatbot.threads = state.threads;
+                            chatbot.isBotTyping = state.isTyping;
+                            chatbot.chatStarted = state.messages.length > 0;
+                        },
+                        onTypingStart: () => {
+                            chatbot.isBotTyping = true;
+                        },
+                        onTypingEnd: () => {
+                            chatbot.isBotTyping = false;
+                        }
+                    }
+                });
+                
+                // Attach controller to chatbot
+                chatbot.controller = controller;
+                
+                // Set initial suggestions
+                chatbot.suggestions = [
+                    { id: 'sugg1', text: 'What can you help me with?', enabled: true },
+                    { id: 'sugg2', text: 'Tell me about your features', enabled: true },
+                    { id: 'sugg3', text: 'How do I get started?', enabled: true },
+                    { id: 'sugg4', text: 'Show me an example', enabled: true }
+                ];
+                
+                console.log('Chatbot initialized with MockProvider from ESM');
+            }
+        });
+    </script>
+
+    <!-- Alternative: Using importmap for cleaner imports -->
+    <!--
+    <script type="importmap">
+    {
+        "imports": {
+            "@nuralyui/button": "https://unpkg.com/@nuralyui/button@latest/index.js",
+            "@nuralyui/input": "https://unpkg.com/@nuralyui/input@latest/index.js",
+            "@nuralyui/common": "https://unpkg.com/@nuralyui/common@latest/dist/index.js",
+            "@nuralyui/forms": "https://unpkg.com/@nuralyui/forms@latest/dist/index.js"
+        }
+    }
+    </script>
+    
+    <script type="module">
+        import '@nuralyui/button';
+        import '@nuralyui/input';
+        // Now you can use cleaner import paths
+    </script>
+    -->
+</body>
+</html>
