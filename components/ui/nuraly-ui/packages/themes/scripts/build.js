@@ -91,7 +91,12 @@ const THEMES = {
       'tag/index.css',
       'tag/common.css',
       'tag/light.css',
-      'tag/dark.css'
+      'tag/dark.css',
+      // Chatbot component
+      'chatbot/index.css',
+      'chatbot/common.css',
+      'chatbot/light.css',
+      'chatbot/dark.css'
     ]
   },
   default: {
@@ -171,7 +176,12 @@ const THEMES = {
       'tag/index.css',
       'tag/common.css',
       'tag/light.css',
-      'tag/dark.css'
+      'tag/dark.css',
+      // Chatbot component
+      'chatbot/index.css',
+      'chatbot/common.css',
+      'chatbot/light.css',
+      'chatbot/dark.css'
     ]
   }
 };
