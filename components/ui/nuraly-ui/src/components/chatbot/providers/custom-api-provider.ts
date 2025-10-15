@@ -36,11 +36,15 @@ export class CustomAPIProvider implements ChatbotProvider {
 
     this.apiUrl = config.apiUrl;
     
-    // Build headers
+    // Build headers - config.headers can override defaults
     this.headers = {
-      'Content-Type': 'application/json',
       ...config.headers
     };
+
+    // Set Content-Type default only if not provided
+    if (!this.headers['Content-Type']) {
+      this.headers['Content-Type'] = 'application/json';
+    }
 
     if (config.apiKey) {
       this.headers['Authorization'] = `Bearer ${config.apiKey}`;
