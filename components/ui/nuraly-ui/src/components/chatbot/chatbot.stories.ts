@@ -1349,3 +1349,362 @@ export const StorageComparison: Story = {
     `;
   }
 };
+
+/**
+ * Custom API Provider with Custom Headers - Test multipart/form-data streaming
+ * Tests CustomAPIProvider with custom Content-Type headers and streaming text/plain response.
+ */
+export const CustomAPIWithHeaders: Story = {
+  args: {
+    ...Default.args,
+    boxed: true,
+    showThreads: false
+  },
+  parameters: {
+    layout: 'fullscreen'
+  },
+  render: (args) => {
+    // Mock fetch to simulate streaming text/plain response
+    const originalFetch = window.fetch;
+    const mockFetch = async (url: string | URL | Request, options?: RequestInit) => {
+      if (url.toString().includes('/api/v3/iassistant/text-processing')) {
+        console.log('🎯 Intercepted API call to:', url);
+        console.log('📦 Request options:', options);
+        
+        // Simulate streaming text/plain response
+        const responseText = 'This is a simulated streaming response from the API. It demonstrates how the chatbot handles text/plain content type with streaming. Each chunk arrives progressively to create a typewriter effect. 🎉';
+        
+        const stream = new ReadableStream({
+          start(controller) {
+            let index = 0;
+            const interval = setInterval(() => {
+              if (index < responseText.length) {
+                // Send 1-3 characters at a time to simulate realistic streaming
+                const chunkSize = Math.floor(Math.random() * 3) + 1;
+                const chunk = responseText.slice(index, index + chunkSize);
+                controller.enqueue(new TextEncoder().encode(chunk));
+                index += chunkSize;
+              } else {
+                clearInterval(interval);
+                controller.close();
+              }
+            }, 50); // 50ms delay between chunks
+          }
+        });
+
+        return new Response(stream, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/plain',
+            'Transfer-Encoding': 'chunked'
+          }
+        });
+      }
+      return originalFetch(url, options);
+    };
+
+    setTimeout(async () => {
+      const chatbot = document.querySelector('#custom-api-headers-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        // Temporarily replace fetch
+        window.fetch = mockFetch as any;
+        
+        // Import CustomAPIProvider
+        const { CustomAPIProvider } = await import('./providers/custom-api-provider.js');
+        
+        // Extend CustomAPIProvider to override buildPayload
+        class ExtendedAPIProvider extends CustomAPIProvider {
+          buildPayload(text: string, context: any): any {
+            console.log('📤 Building payload with context:', context);
+            const payload = {
+              userText: text,
+              variables: context.metadata || {},
+              tag: context.metadata?.tag || 'default',
+              stream: true
+            };
+            console.log('📤 Payload:', payload);
+            return payload;
+          }
+        }
+
+        const provider = new ExtendedAPIProvider();
+        
+        // Connect with custom headers
+        try {
+          await provider.connect({
+            apiUrl: '/api/v3/iassistant/text-processing',
+            headers: {
+              'accept': 'text/plain',
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          console.log('✅ CustomAPIProvider connected with custom headers');
+          console.log('📋 Headers configured for multipart/form-data with text/plain streaming');
+        } catch (error) {
+          console.error('❌ Failed to connect:', error);
+        }
+
+        const controller = new ChatbotCoreController({
+          provider,
+          enableThreads: false,
+          enableFileUpload: true,
+          maxFileSize: 10 * 1024 * 1024, // 10MB
+          maxFiles: 5,
+          allowedFileTypes: ['image/*', 'application/pdf', 'text/*', 'video/*', 'audio/*'],
+          metadata: {
+            tag: 'summarize'
+          },
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+              chatbot.uploadedFiles = state.uploadedFiles;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; },
+            focusInput: () => { chatbot.focusInput(); },
+            showNotification: (message, type) => {
+              console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+          }
+        });
+
+        chatbot.controller = controller;
+        chatbot.enableThreadCreation = false;
+        chatbot.enableFileUpload = true;
+        chatbot.actionButtons = [
+          { type: 'attach', enabled: true }
+        ];
+        
+        chatbot.suggestions = [
+          { id: 'test1', text: 'Test streaming response', enabled: true },
+          { id: 'test2', text: 'Send with multipart/form-data', enabled: true },
+          { id: 'test3', text: 'Check console for logs', enabled: true }
+        ];
+
+        // Cleanup on unmount
+        const cleanup = () => {
+          window.fetch = originalFetch;
+        };
+        
+        // Store cleanup for later
+        (window as any).__storyCleanup = cleanup;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 100vw; height: 100vh; background: var(--nr-color-background, #f5f5f5);">
+        <div style="position: absolute; top: 16px; left: 16px; right: 16px; z-index: 1000; padding: 16px; background: #fff; border: 2px solid #28a745; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h3 style="margin: 0 0 8px 0; color: #155724;">🎬 Custom API Provider - Streaming Test</h3>
+          <p style="margin: 0 0 8px 0; color: #155724; font-size: 14px;">
+            This story tests <strong>multipart/form-data</strong> with <strong>text/plain streaming</strong>:
+          </p>
+          <ul style="margin: 0; padding-left: 20px; color: #155724; font-size: 13px;">
+            <li>✅ <strong>Request:</strong> multipart/form-data (FormData fields)</li>
+            <li>✅ <strong>Response:</strong> text/plain with streaming</li>
+            <li>✅ <strong>Metadata tag:</strong> summarize</li>
+            <li>✅ <strong>Effect:</strong> Typewriter streaming animation</li>
+          </ul>
+          <p style="margin: 8px 0 0 0; color: #0c5460; font-size: 12px; background: #d1ecf1; padding: 8px; border-radius: 4px;">
+            💡 <strong>Try it:</strong> Send a message and watch it stream character by character! 
+            Open the <strong>Console</strong> to see request/response logs.
+          </p>
+        </div>
+        <nr-chatbot
+          id="custom-api-headers-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+          style="padding-top: 220px;"
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Custom API Provider - Error Handling Showcase
+ * Demonstrates styled error messages in the chat.
+ */
+export const CustomAPIErrorHandling: Story = {
+  args: {
+    ...Default.args,
+    boxed: false
+  },
+  render: (args) => {
+    // Mock fetch to simulate different error scenarios
+    const originalFetch = window.fetch;
+    let errorScenario = 0;
+    
+    const mockFetch = async (url: string | URL | Request, options?: RequestInit) => {
+      if (url.toString().includes('/api/v3/iassistant/text-processing')) {
+        console.log('🎯 Intercepted API call - Scenario:', errorScenario);
+        
+        // Cycle through different error scenarios
+        const scenarios = [
+          // Scenario 0: Success
+          () => {
+            const stream = new ReadableStream({
+              start(controller) {
+                const text = '✅ Success! This is a successful streaming response.';
+                let index = 0;
+                const interval = setInterval(() => {
+                  if (index < text.length) {
+                    controller.enqueue(new TextEncoder().encode(text[index]));
+                    index++;
+                  } else {
+                    clearInterval(interval);
+                    controller.close();
+                  }
+                }, 30);
+              }
+            });
+            return new Response(stream, {
+              status: 200,
+              headers: { 'Content-Type': 'text/plain' }
+            });
+          },
+          // Scenario 1: 404 Not Found
+          () => new Response('The requested endpoint was not found on this server.', {
+            status: 404,
+            statusText: 'Not Found',
+            headers: { 'Content-Type': 'text/plain' }
+          }),
+          // Scenario 2: 500 Internal Server Error  
+          () => new Response('An internal server error occurred while processing your request.', {
+            status: 500,
+            statusText: 'Internal Server Error',
+            headers: { 'Content-Type': 'text/plain' }
+          }),
+          // Scenario 3: 401 Unauthorized
+          () => new Response('You must be authenticated to access this resource.', {
+            status: 401,
+            statusText: 'Unauthorized',
+            headers: { 'Content-Type': 'text/plain' }
+          }),
+          // Scenario 4: Network error (simulated)
+          () => Promise.reject(new Error('Failed to fetch: Network connection was lost')),
+          // Scenario 5: Streaming error mid-stream
+          () => {
+            const stream = new ReadableStream({
+              start(controller) {
+                const text = 'Starting to stream response... ';
+                controller.enqueue(new TextEncoder().encode(text));
+                setTimeout(() => {
+                  controller.error(new Error('Connection interrupted while streaming'));
+                }, 100);
+              }
+            });
+            return new Response(stream, {
+              status: 200,
+              headers: { 'Content-Type': 'text/plain' }
+            });
+          }
+        ];
+        
+        const scenario = scenarios[errorScenario % scenarios.length];
+        errorScenario = (errorScenario + 1) % scenarios.length;
+        
+        return scenario();
+      }
+      return originalFetch(url, options);
+    };
+
+    setTimeout(async () => {
+      const chatbot = document.querySelector('#error-handling-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        window.fetch = mockFetch as any;
+        
+        const { CustomAPIProvider } = await import('./providers/custom-api-provider.js');
+        
+        class ExtendedAPIProvider extends CustomAPIProvider {
+          buildPayload(text: string, context: any): any {
+            return {
+              userText: text,
+              variables: context.metadata || {},
+              tag: context.metadata?.tag || 'default',
+              stream: true
+            };
+          }
+        }
+
+        const provider = new ExtendedAPIProvider();
+        
+        await provider.connect({
+          apiUrl: '/api/v3/iassistant/text-processing',
+          headers: {
+            'accept': 'text/plain',
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        const controller = new ChatbotCoreController({
+          provider,
+          metadata: { tag: 'test' },
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; },
+            focusInput: () => { chatbot.focusInput(); }
+          }
+        });
+
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: 'test1', text: 'Test success (1st)', enabled: true },
+          { id: 'test2', text: 'Test 404 error (2nd)', enabled: true },
+          { id: 'test3', text: 'Test 500 error (3rd)', enabled: true },
+          { id: 'test4', text: 'Test 401 error (4th)', enabled: true },
+          { id: 'test5', text: 'Test network error (5th)', enabled: true },
+          { id: 'test6', text: 'Test stream error (6th)', enabled: true }
+        ];
+
+        (window as any).__storyCleanup = () => {
+          window.fetch = originalFetch;
+        };
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px; padding: 20px; max-width: 800px;">
+        <div style="padding: 16px; background: #fff; border: 2px solid #dc3545; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h3 style="margin: 0 0 8px 0; color: #721c24;">🚨 Styled Error Handling</h3>
+          <p style="margin: 0 0 8px 0; color: #721c24; font-size: 14px;">
+            Errors are displayed in a styled container with a title and description:
+          </p>
+          <ul style="margin: 0; padding-left: 20px; color: #721c24; font-size: 13px;">
+            <li><strong>1st message:</strong> ✅ Success - Normal streaming response</li>
+            <li><strong>2nd message:</strong> ⚠️ 404 Not Found error</li>
+            <li><strong>3rd message:</strong> ⚠️ 500 Internal Server Error</li>
+            <li><strong>4th message:</strong> ⚠️ 401 Unauthorized error</li>
+            <li><strong>5th message:</strong> ⚠️ Network connection error</li>
+            <li><strong>6th message:</strong> ⚠️ Streaming interrupted mid-stream</li>
+          </ul>
+          <p style="margin: 8px 0 0 0; color: #0c5460; font-size: 12px; background: #d1ecf1; padding: 8px; border-radius: 4px;">
+            💡 <strong>Try it:</strong> Send messages one by one to see each error type with styled formatting!
+          </p>
+        </div>
+        <div style="width: 100%; height: 600px; border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+          <nr-chatbot
+            id="error-handling-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${true}
+            .autoScroll=${true}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};

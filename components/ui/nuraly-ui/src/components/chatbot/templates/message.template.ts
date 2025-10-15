@@ -20,14 +20,36 @@ export interface MessageTemplateHandlers {
 }
 
 /**
+ * Parse and render error message with styled container
+ */
+function renderErrorMessage(text: string): TemplateResult {
+  const errorMatch = text.match(/\[ERROR_START\]\[ERROR_TITLE_START\]([\s\S]*?)\[ERROR_TITLE_END\]([\s\S]*?)\[ERROR_END\]/);
+  
+  if (errorMatch) {
+    const title = errorMatch[1];
+    const description = errorMatch[2];
+    
+    return html`
+      <div class="message__error-container" part="message-error">
+        ${title ? html`<div class="message__error-title" part="message-error-title">${title}</div>` : ''}
+        <div class="message__error-description" part="message-error-description">${description}</div>
+      </div>
+    `;
+  }
+  
+  return html`${text}`;
+}
+
+/**
  * Renders a single message
  */
 export function renderMessage(
   message: ChatbotMessage, 
   handlers: MessageTemplateHandlers
 ): TemplateResult {
+  const isError = message.text?.includes('[ERROR_START]');
   const messageClasses = {
-    error: !!message.error,
+    error: !!message.error || isError,
     introduction: !!message.introduction,
     [message.sender]: true,
   };
@@ -40,7 +62,12 @@ export function renderMessage(
       data-id="${message.id}"
     >
       <div class="message__content" part="message-content">
-        ${message?.metadata?.renderAsHtml ? unsafeHTML(message.text) : message.text}
+        ${isError 
+          ? renderErrorMessage(message.text) 
+          : message?.metadata?.renderAsHtml 
+            ? unsafeHTML(message.text) 
+            : message.text
+        }
       </div>
       ${message.files && message.files.length > 0 ? html`
         <div class="message__attachments" part="message-attachments" role="list" aria-label="${msg('Attached files')}">

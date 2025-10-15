@@ -384,6 +384,33 @@ export default css`
     box-shadow: var(--nuraly-shadow-chatbot-message-error, var(--nuraly-shadow-chatbot-message, none));
   }
 
+  /* Styled error message container */
+  .message__error-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: var(--nuraly-color-chatbot-error-background, #fee);
+    border-radius: var(--nuraly-border-radius-chatbot-message, 0.75rem);
+  }
+
+  .message__error-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--nuraly-color-chatbot-error-title, #c00);
+    margin: 0;
+  }
+
+  .message__error-description {
+    font-size: 0.875rem;
+    color: var(--nuraly-color-chatbot-error-description, #666);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .message.error .message__error-container {
+    background-color: var(--nuraly-color-chatbot-error-background, #fee);
+  }
+
   /* Message footer - contains timestamp and copy icon */
   .message__footer {
     display: flex;
@@ -511,7 +538,7 @@ export default css`
     }
   }
 
-  /* Suggestions - ChatGPT style pills */
+  /* Suggestions - styled pills */
     .suggestion-container {
       display: flex;
       flex-wrap: wrap;
@@ -865,7 +892,7 @@ export default css`
     outline: none;
   }
 
-  /* ChatGPT-style action buttons using nr-button with CSS variable overrides */
+  /* Styled action buttons using nr-button with CSS variable overrides */
   .input-box__file-button,
   .input-box__send-button {
     /* Remove any default margins */
