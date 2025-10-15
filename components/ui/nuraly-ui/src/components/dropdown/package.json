@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/dropdown",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Dropdown component for NuralyUI",
   "main": "index.js",
   "type": "module",

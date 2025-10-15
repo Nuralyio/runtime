@@ -112,12 +112,12 @@ const createConfig = (component) => ({
     replace({ 'Reflect.decorate': 'undefined', preventAssignment: true }),
     resolve(),
     // Minify HTML and CSS inside template literals (lit html`` and css``)
-    minifyHTML({
-      // aggressively minify CSS in css`` literals
-      minifyCSS: true,
-      // keep JS as-is; terser will handle it
-      minifyJS: false,
-    }),
+    // minifyHTML({
+    //   // aggressively minify CSS in css`` literals
+    //   minifyCSS: true,
+    //   // keep JS as-is; terser will handle it
+    //   minifyJS: false,
+    // }),
     terser({
       ecma: 2017,
       module: true,
