@@ -113,10 +113,14 @@ export class CustomAPIProvider implements ChatbotProvider {
       throw new Error('Response body is null');
     }
 
-    // Check if response is streaming
+    // Check if response is streaming or text/plain
     const contentType = response.headers.get('content-type');
-    if (contentType?.includes('text/event-stream') || contentType?.includes('stream')) {
-      // Handle streaming response
+    const isStreamingResponse = contentType?.includes('text/event-stream') || 
+                                contentType?.includes('stream') ||
+                                contentType?.includes('text/plain');
+    
+    if (isStreamingResponse) {
+      // Handle streaming response (including text/plain)
       const streamIterator = this.handleStreamResponse(response);
       let result = await streamIterator.next();
       while (!result.done) {
@@ -124,7 +128,7 @@ export class CustomAPIProvider implements ChatbotProvider {
         result = await streamIterator.next();
       }
     } else {
-      // Handle non-streaming response
+      // Handle non-streaming JSON response
       const data = await response.json();
       yield this.extractMessage(data);
     }
