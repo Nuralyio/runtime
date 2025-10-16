@@ -78,7 +78,7 @@ export class ChatbotCoreController {
     this.stateHandler = new StateHandler(initialState, this.eventBus, this.ui, this.plugins, this.config);
 
     this.messageHandler = new MessageHandler(this.stateHandler, this.eventBus, this.plugins);
-    this.threadHandler = new ThreadHandler(this.stateHandler, this.eventBus, this.ui, this.config);
+    this.threadHandler = new ThreadHandler(this.stateHandler, this.eventBus, this.ui, this.config, config.provider);
     this.fileHandler = new FileHandler(this.stateHandler, this.eventBus);
     this.moduleHandler = new ModuleHandler(this.stateHandler, this.eventBus);
     this.suggestionHandler = new SuggestionHandler(this.stateHandler);
@@ -200,7 +200,7 @@ export class ChatbotCoreController {
       const state = this.stateHandler.getState();
       
       if (this.config.enableThreads && !state.currentThreadId && state.threads.length === 0) {
-        this.threadHandler.createThread('New Chat');
+        await this.threadHandler.createThread('New Chat');
       }
 
       const processedText = await this.beforeMessageSent(text, options);
@@ -366,8 +366,8 @@ export class ChatbotCoreController {
   /**
    * Create a new conversation thread
    */
-  public createThread(title?: string): ChatbotThread {
-    return this.threadHandler.createThread(title);
+  public async createThread(title?: string): Promise<ChatbotThread> {
+    return await this.threadHandler.createThread(title);
   }
 
   /**

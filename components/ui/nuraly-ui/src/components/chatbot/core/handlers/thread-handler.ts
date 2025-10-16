@@ -6,7 +6,7 @@
 
 import { EventBus } from '../event-bus.js';
 import { StateHandler } from './state-handler.js';
-import type { ChatbotCoreConfig, ChatbotUICallbacks } from '../types.js';
+import type { ChatbotCoreConfig, ChatbotUICallbacks, ChatbotProvider } from '../types.js';
 import type { ChatbotThread } from '../../chatbot.types.js';
 
 /**
@@ -14,14 +14,23 @@ import type { ChatbotThread } from '../../chatbot.types.js';
  * Creates, switches, deletes, and manages threads
  */
 export class ThreadHandler {
+  private provider?: ChatbotProvider;
+
   constructor(
     private stateHandler: StateHandler,
     private eventBus: EventBus,
     private ui: ChatbotUICallbacks,
-    private config: ChatbotCoreConfig
-  ) {}
+    private config: ChatbotCoreConfig,
+    provider?: ChatbotProvider
+  ) {
+    this.provider = provider;
+  }
 
-  createThread(title?: string): ChatbotThread {
+  setProvider(provider: ChatbotProvider): void {
+    this.provider = provider;
+  }
+
+  async createThread(title?: string): Promise<ChatbotThread> {
     if (!this.config.enableThreads) {
       throw new Error('Threads are not enabled');
     }
@@ -35,9 +44,25 @@ export class ThreadHandler {
       updatedAt: new Date().toISOString()
     };
 
+    // Call provider's createConversation if available
+    if (this.provider && typeof (this.provider as any).createConversation === 'function') {
+      try {
+        const conversation = await (this.provider as any).createConversation(thread.title);
+        if (conversation && conversation.id) {
+          // Update thread with backend conversation ID
+          thread.id = String(conversation.id);
+          (thread as any).conversationId = conversation.id;
+        }
+      } catch (error) {
+        console.error('Error calling provider.createConversation:', error);
+        // Continue with local thread creation even if backend call fails
+      }
+    }
+
+    // Add the thread to state and select it
     this.stateHandler.updateState({
       threads: [thread, ...state.threads],
-      currentThreadId: thread.id,
+      currentThreadId: thread.id,  // Auto-select the newly created thread
       messages: []
     });
 
@@ -47,7 +72,7 @@ export class ThreadHandler {
     if (this.ui.focusInput) {
       setTimeout(() => {
         this.ui.focusInput!();
-      }, 0);
+      }, 100);
     }
 
     return thread;
