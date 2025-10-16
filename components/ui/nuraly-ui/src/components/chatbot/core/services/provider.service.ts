@@ -208,11 +208,15 @@ export class ProviderService {
 
   buildContext(): ChatbotContext {
     const state = this.stateHandler.getState();
+    const currentThread = state.currentThreadId 
+      ? state.threads.find(t => t.id === state.currentThreadId)
+      : undefined;
     
     return {
       messages: state.messages,
       metadata: state.metadata,
-      selectedModules: state.selectedModules
+      selectedModules: state.selectedModules,
+      currentThread: currentThread
     };
   }
 
