@@ -31,7 +31,10 @@ import { SelectOption } from '../select/select.types.js';
 import {
   renderChatbotMain,
   ChatbotMainTemplateData,
-  ChatbotMainTemplateHandlers
+  ChatbotMainTemplateHandlers,
+  renderFilePreviewModal,
+  FilePreviewModalTemplateData,
+  FilePreviewModalTemplateHandlers
 } from './templates/index.js';
 
 import { ChatbotCoreController } from './core/chatbot-core.controller.js';
@@ -195,6 +198,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @state() private urlModalError = '';
   @state() private isUrlLoading = false;
   @state() private selectedUrlFileName = '';
+  @state() private isFilePreviewModalOpen = false;
+  @state() private previewFile: ChatbotFile | null = null;
   
   // Keep track of controller event unsubscriptions
   private controllerUnsubscribes: Array<() => void> = [];
@@ -366,7 +371,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         onRetry: this.handleRetry.bind(this),
         onRetryKeydown: () => {},
         onCopy: this.handleCopyMessage.bind(this),
-        onCopyKeydown: () => {}
+        onCopyKeydown: () => {},
+        onFileClick: this.handleFilePreview.bind(this)
       },
       suggestion: {
         onClick: this.handleSuggestionClick.bind(this),
@@ -382,7 +388,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         onSendKeydown: () => {},
         onFileDropdownClick: this.handleFileDropdownClick.bind(this),
         onModuleChange: this.handleModuleSelectionChange.bind(this),
-        onFileRemove: this.handleFileRemove.bind(this)
+        onFileRemove: this.handleFileRemove.bind(this),
+        onFileClick: this.handleFilePreview.bind(this)
       },
       threadSidebar: this.showThreads ? {
         onCreateNew: () => this.controller?.createThread('New Chat'),
@@ -420,6 +427,16 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         
         ${renderChatbotMain(templateData, templateHandlers)}
       </div>
+      
+      ${renderFilePreviewModal(
+        {
+          isOpen: this.isFilePreviewModalOpen,
+          file: this.previewFile
+        },
+        {
+          onClose: this.handleFilePreviewModalClose.bind(this)
+        }
+      )}
     `;
   }
 
@@ -672,6 +689,16 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleFileRemove(fileId: string) {
     this.controller?.removeFile(fileId);
+  }
+
+  private handleFilePreview(file: ChatbotFile) {
+    this.previewFile = file;
+    this.isFilePreviewModalOpen = true;
+  }
+
+  private handleFilePreviewModalClose() {
+    this.isFilePreviewModalOpen = false;
+    this.previewFile = null;
   }
 
   /**

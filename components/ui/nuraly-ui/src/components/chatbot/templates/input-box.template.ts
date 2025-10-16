@@ -23,6 +23,7 @@ export interface InputBoxTemplateHandlers {
   onFileDropdownClick: (e: CustomEvent) => void;
   onModuleChange: (e: CustomEvent) => void;
   onFileRemove: (fileId: string) => void;
+  onFileClick?: (file: ChatbotFile) => void;
 }
 
 export interface InputBoxTemplateData {
@@ -42,21 +43,73 @@ export interface InputBoxTemplateData {
 }
 
 /**
- * Renders context tags for uploaded files
+ * Renders context tags for uploaded files with hover preview
  */
 function renderContextTags(
   files: ChatbotFile[], 
-  onRemove: (id: string) => void
+  onRemove: (id: string) => void,
+  onFileClick?: (file: ChatbotFile) => void
 ): TemplateResult {
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (mimeType: string): string => {
+    if (mimeType.startsWith('image/')) return 'image';
+    if (mimeType.startsWith('video/')) return 'video';
+    if (mimeType.startsWith('audio/')) return 'music';
+    if (mimeType === 'application/pdf') return 'file-pdf';
+    if (mimeType.startsWith('text/')) return 'file-text';
+    return 'file';
+  };
+
+  const isImage = (mimeType: string) => mimeType.startsWith('image/');
+
   return html`
     <div class="context-tags-row" part="context-tags">
       ${repeat(files, f => f.id, f => html`
-        <nr-tag 
-          class="context-tag"
+        <nr-dropdown 
+          trigger="hover" 
+          placement="top"
           size="small"
-          closable
-          @nr-tag-close=${() => onRemove(f.id)}
-        >${f.name}</nr-tag>
+          class="file-preview-dropdown"
+        >
+          <nr-tag 
+            slot="trigger"
+            class="context-tag"
+            size="small"
+            closable
+            @click=${() => onFileClick?.(f)}
+            @nr-tag-close=${() => onRemove(f.id)}
+            style="cursor: pointer;"
+          >${f.name}</nr-tag>
+          
+          <div slot="content" class="file-preview-content">
+            ${isImage(f.mimeType) && (f.url || f.previewUrl) ? html`
+              <img 
+                src="${f.previewUrl || f.url}" 
+                alt="${f.name}"
+                class="file-preview-image"
+              />
+            ` : html`
+              <nr-icon 
+                .name=${getFileIcon(f.mimeType)}
+                size="large"
+                class="file-preview-icon"
+              ></nr-icon>
+            `}
+            <div class="file-preview-info">
+              <div class="file-preview-name" title="${f.name}">${f.name}</div>
+              <div class="file-preview-details">
+                <span>${formatFileSize(f.size)}</span>
+              </div>
+            </div>
+          </div>
+        </nr-dropdown>
       `)}
     </div>
   `;
@@ -186,7 +239,7 @@ export function renderInputBox(
       <div class="input-container">
         <!-- Context tags -->
         ${data.uploadedFiles.length > 0 
-          ? renderContextTags(data.uploadedFiles, handlers.onFileRemove) 
+          ? renderContextTags(data.uploadedFiles, handlers.onFileRemove, handlers.onFileClick) 
           : nothing}
 
         <!-- Input area -->
