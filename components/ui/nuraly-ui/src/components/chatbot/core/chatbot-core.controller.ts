@@ -199,7 +199,7 @@ export class ChatbotCoreController {
     try {
       const state = this.stateHandler.getState();
       
-      if (this.config.enableThreads && !state.currentThreadId && state.threads.length === 0) {
+      if (this.config.enableThreads && !state.currentThreadId) {
         await this.threadHandler.createThread('New Chat');
       }
 
