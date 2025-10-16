@@ -32,9 +32,7 @@ import {
   renderChatbotMain,
   ChatbotMainTemplateData,
   ChatbotMainTemplateHandlers,
-  renderFilePreviewModal,
-  FilePreviewModalTemplateData,
-  FilePreviewModalTemplateHandlers
+  renderFilePreviewModal
 } from './templates/index.js';
 
 import { ChatbotCoreController } from './core/chatbot-core.controller.js';
