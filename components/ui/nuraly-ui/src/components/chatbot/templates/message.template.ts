@@ -17,6 +17,7 @@ export interface MessageTemplateHandlers {
   onRetryKeydown: (e: KeyboardEvent) => void;
   onCopy: (message: ChatbotMessage) => void;
   onCopyKeydown: (e: KeyboardEvent, message: ChatbotMessage) => void;
+  onFileClick?: (file: any) => void;
 }
 
 /**
@@ -38,6 +39,36 @@ function renderErrorMessage(text: string): TemplateResult {
   }
   
   return html`${text}`;
+}
+
+/**
+ * Format file size to human readable format
+ */
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+/**
+ * Get icon name based on MIME type
+ */
+function getFileIcon(mimeType: string): string {
+  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('video/')) return 'video';
+  if (mimeType.startsWith('audio/')) return 'music';
+  if (mimeType === 'application/pdf') return 'file-pdf';
+  if (mimeType.startsWith('text/')) return 'file-text';
+  return 'file';
+}
+
+/**
+ * Check if file is an image
+ */
+function isImageFile(mimeType: string): boolean {
+  return mimeType.startsWith('image/');
 }
 
 /**
@@ -72,7 +103,42 @@ export function renderMessage(
       ${message.files && message.files.length > 0 ? html`
         <div class="message__attachments" part="message-attachments" role="list" aria-label="${msg('Attached files')}">
           ${message.files.map((f) => html`
-            <nr-tag class="message__attachment-tag" size="small">${f.name}</nr-tag>
+            <nr-dropdown 
+              trigger="hover" 
+              placement="top"
+              size="small"
+              class="message-file-preview-dropdown"
+            >
+              <nr-tag 
+                slot="trigger"
+                class="message__attachment-tag" 
+                size="small"
+                @click=${() => handlers.onFileClick?.(f)}
+                style="cursor: pointer;"
+              >${f.name}</nr-tag>
+              
+              <div slot="content" class="message-file-preview-content">
+                ${isImageFile(f.mimeType) && (f.url || f.previewUrl) ? html`
+                  <img 
+                    src="${f.previewUrl || f.url}" 
+                    alt="${f.name}"
+                    class="message-file-preview-image"
+                  />
+                ` : html`
+                  <nr-icon 
+                    .name=${getFileIcon(f.mimeType)}
+                    size="large"
+                    class="message-file-preview-icon"
+                  ></nr-icon>
+                `}
+                <div class="message-file-preview-info">
+                  <div class="message-file-preview-name" title="${f.name}">${f.name}</div>
+                  <div class="message-file-preview-details">
+                    <span>${formatFileSize(f.size)}</span>
+                  </div>
+                </div>
+              </div>
+            </nr-dropdown>
           `)}
         </div>
       ` : nothing}

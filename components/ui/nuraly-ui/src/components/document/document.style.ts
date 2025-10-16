@@ -4,6 +4,58 @@ export default css`
   :host {
     display: block;
   }
+
+  .document-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: #f5f5f5;
+  }
+
+  .document-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    flex: 1;
+  }
+
+  .error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .error-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+  }
+
+  .preview-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    z-index: 10;
+  }
+
+  .preview-button:hover {
+    background-color: #fff;
+  }
   
   .pdf-container {
     display: flex;
@@ -75,6 +127,12 @@ export default css`
     justify-content: center;
     align-items: center;
   }
+
+  .preview-modal iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
   
   .preview-content {
     position: relative;
@@ -114,16 +172,31 @@ export default css`
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.9);
     border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
     font-size: 24px;
     cursor: pointer;
     z-index: 1010;
     color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .preview-close:hover {
+    background-color: #fff;
     color: #000;
+  }
+
+  .preview-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1010;
+    padding: 10px;
   }
   
   .preview-modal canvas {

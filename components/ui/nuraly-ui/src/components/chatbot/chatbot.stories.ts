@@ -34,6 +34,7 @@ import '../dropdown/dropdown.component.js';
 import '../select/select.component.js';
 import '../tag/tag.component.js';
 import '../modal/modal.component.js';
+import '../document/document.component.js';
 import './chatbot.component.js';
 
 const meta: Meta = {
