@@ -13,7 +13,8 @@ import {
   ChatbotSize,
   ChatbotVariant,
   ChatbotLoadingType,
-  ChatbotModule
+  ChatbotModule,
+  ChatbotThread
 } from './chatbot.types.js';
 import { ChatbotFileType } from './chatbot.types.js';
 
@@ -1703,6 +1704,459 @@ export const CustomAPIErrorHandling: Story = {
             .variant=${args.variant}
             .showSendButton=${true}
             .autoScroll=${true}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Mock API with Conversation Loading
+ * Tests overriding conversation loading by mocking fetch API to simulate:
+ * - Loading existing conversations from API
+ * - Creating new conversations
+ * - Switching between conversations
+ * - Deleting conversations
+ */
+export const MockAPIWithConversationLoading: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    const originalFetch = window.fetch;
+
+    // Mock conversation data
+    const mockConversations = [
+      {
+        id: 'conv_1',
+        title: 'Product Recommendations',
+        messages: [
+          {
+            id: 'msg_1',
+            text: 'Can you recommend a laptop for programming?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            id: 'msg_2',
+            text: 'I recommend the MacBook Pro M3 for development work. It offers excellent performance, long battery life, and a great development environment with macOS.',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 3590000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 7200000).toISOString(),
+        updatedAt: new Date(Date.now() - 3590000).toISOString()
+      },
+      {
+        id: 'conv_2',
+        title: 'Web Development Tips',
+        messages: [
+          {
+            id: 'msg_3',
+            text: 'What are the best practices for React development?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 86400000).toISOString()
+          },
+          {
+            id: 'msg_4',
+            text: 'Key React best practices include: 1) Use functional components with hooks, 2) Keep components small and focused, 3) Use proper state management, 4) Implement code splitting, and 5) Follow the single responsibility principle.',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 86395000).toISOString()
+          },
+          {
+            id: 'msg_5',
+            text: 'How about TypeScript integration?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 86300000).toISOString()
+          },
+          {
+            id: 'msg_6',
+            text: 'TypeScript with React is highly recommended! It provides type safety, better IDE support, and catches errors at compile time. Use proper typing for props, state, and events.',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 86295000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 172800000).toISOString(),
+        updatedAt: new Date(Date.now() - 86295000).toISOString()
+      },
+      {
+        id: 'conv_3',
+        title: 'Database Design Question',
+        messages: [
+          {
+            id: 'msg_7',
+            text: 'What database should I use for a high-traffic app?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 259200000).toISOString()
+          },
+          {
+            id: 'msg_8',
+            text: 'For high-traffic applications, consider PostgreSQL for relational data or MongoDB for document-based data. Redis is excellent for caching. The choice depends on your data structure and query patterns.',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 259195000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 259200000).toISOString(),
+        updatedAt: new Date(Date.now() - 259195000).toISOString()
+      }
+    ];
+
+    let conversationStore = [...mockConversations];
+
+    // Mock fetch implementation
+    const mockFetch = async (url: string | URL | Request, options?: RequestInit) => {
+      const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : url.url;
+      
+      // Mock: Load specific conversation (check this BEFORE the list endpoint)
+      if (urlString.match(/\/api\/conversations\/[^/?]+$/) && (!options?.method || options?.method === 'GET')) {
+        const conversationId = urlString.split('/').pop();
+        const conversation = conversationStore.find(c => c.id === conversationId);
+        
+        await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+        
+        if (conversation) {
+          return new Response(JSON.stringify(conversation), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        } else {
+          return new Response(JSON.stringify({ error: 'Conversation not found' }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      }
+      
+      // Mock: Load conversations list
+      if (urlString.includes('/api/conversations') && (!options?.method || options?.method === 'GET')) {
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+        return new Response(JSON.stringify({
+          conversations: conversationStore.map(c => ({
+            id: c.id,
+            title: c.title,
+            messageCount: c.messages.length,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAt
+          }))
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Mock: Create new conversation
+      if (urlString.includes('/api/conversations') && options?.method === 'POST') {
+        await new Promise(resolve => setTimeout(resolve, 400)); // Simulate network delay
+        
+        const body = JSON.parse(options?.body as string || '{}');
+        const newConversation = {
+          id: `conv_${Date.now()}`,
+          title: body.title || `Chat ${conversationStore.length + 1}`,
+          messages: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        conversationStore = [newConversation, ...conversationStore];
+        
+        return new Response(JSON.stringify(newConversation), {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Mock: Delete conversation
+      if (urlString.match(/\/api\/conversations\/[^/]+$/) && options?.method === 'DELETE') {
+        const conversationId = urlString.split('/').pop();
+        await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+        
+        conversationStore = conversationStore.filter(c => c.id !== conversationId);
+        
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Mock: Send message to conversation (streaming response)
+      if (urlString.includes('/api/chat') && options?.method === 'POST') {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        const body = JSON.parse(options?.body as string || '{}');
+        const userMessage = body.message || body.userMessage || body.text;
+        
+        // Generate AI response based on keywords
+        let aiResponse = 'I understand your question. Let me help you with that.';
+        
+        if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
+          aiResponse = 'Hello! 👋 How can I assist you today?';
+        } else if (userMessage.toLowerCase().includes('api')) {
+          aiResponse = 'APIs are essential for modern web development. They allow different applications to communicate with each other. RESTful APIs are the most common, using HTTP methods like GET, POST, PUT, and DELETE.';
+        } else if (userMessage.toLowerCase().includes('conversation') || userMessage.toLowerCase().includes('thread')) {
+          aiResponse = 'This chatbot supports multiple conversations! You can create new threads, switch between them, and each conversation maintains its own history. Try creating a new conversation using the sidebar.';
+        } else if (userMessage.toLowerCase().includes('help')) {
+          aiResponse = 'I can help you with:\n• Web development questions\n• Programming best practices\n• Technology recommendations\n• Code architecture advice\n\nJust ask me anything!';
+        }
+        
+        // Stream the response
+        const stream = new ReadableStream({
+          async start(controller) {
+            for (let i = 0; i < aiResponse.length; i++) {
+              await new Promise(resolve => setTimeout(resolve, 20));
+              controller.enqueue(new TextEncoder().encode(aiResponse[i]));
+            }
+            controller.close();
+          }
+        });
+        
+        return new Response(stream, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain' }
+        });
+      }
+
+      // Fallback to original fetch for other requests
+      return originalFetch(url, options);
+    };
+
+    setTimeout(async () => {
+      const chatbot = document.querySelector('#conversation-loading-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        // Override fetch
+        window.fetch = mockFetch as any;
+        
+        const { CustomAPIProvider } = await import('./providers/custom-api-provider.js');
+        
+        // Type definitions for API responses
+        interface ConversationSummary {
+          id: string;
+          title: string;
+          messageCount: number;
+          createdAt: string;
+          updatedAt: string;
+        }
+
+        interface ConversationDetail extends ConversationSummary {
+          messages: ChatbotMessage[];
+        }
+
+        interface ConversationsListResponse {
+          conversations: ConversationSummary[];
+        }
+        
+        // Extended provider with conversation loading support
+        class ConversationAPIProvider extends CustomAPIProvider {
+          async loadConversations(): Promise<ConversationSummary[]> {
+            try {
+              const response = await fetch('/api/conversations', { method: 'GET' });
+              const data: ConversationsListResponse = await response.json();
+              return data.conversations || [];
+            } catch (error) {
+              console.error('Failed to load conversations:', error);
+              return [];
+            }
+          }
+
+          async loadConversation(conversationId: string): Promise<ConversationDetail | null> {
+            try {
+              const response = await fetch(`/api/conversations/${conversationId}`, { method: 'GET' });
+              return await response.json() as ConversationDetail;
+            } catch (error) {
+              console.error(`Failed to load conversation ${conversationId}:`, error);
+              return null;
+            }
+          }
+
+          async createConversation(title?: string): Promise<ConversationDetail | null> {
+            try {
+              const response = await fetch('/api/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
+              });
+              return await response.json() as ConversationDetail;
+            } catch (error) {
+              console.error('Failed to create conversation:', error);
+              return null;
+            }
+          }
+
+          async deleteConversation(conversationId: string): Promise<boolean> {
+            try {
+              const response = await fetch(`/api/conversations/${conversationId}`, { method: 'DELETE' });
+              return response.ok;
+            } catch (error) {
+              console.error(`Failed to delete conversation ${conversationId}:`, error);
+              return false;
+            }
+          }
+
+          buildPayload(text: string, context: any): any {
+            return {
+              message: text,
+              conversationId: context.conversationId,
+              metadata: context.metadata || {}
+            };
+          }
+        }
+
+        const provider = new ConversationAPIProvider();
+        
+        await provider.connect({
+          apiUrl: '/api/chat',
+          headers: {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Create controller with threads enabled
+        const controller = new ChatbotCoreController({
+          provider,
+          enableThreads: true,
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; },
+            focusInput: () => { chatbot.focusInput(); }
+          }
+        });
+
+        chatbot.controller = controller;
+
+        // Listen to thread events for debugging and state sync
+        controller.on('thread:selected', (thread) => {
+          console.log('Thread selected event:', thread);
+          const state = controller.getState();
+          console.log('Current state after selection:', {
+            currentThreadId: state.currentThreadId,
+            messagesCount: state.messages.length,
+            threadsCount: state.threads.length
+          });
+          // Force update the UI
+          chatbot.messages = state.messages;
+          chatbot.threads = state.threads;
+          chatbot.chatStarted = state.messages.length > 0;
+        });
+
+        controller.on('thread:created', (thread) => {
+          console.log('Thread created event:', thread);
+          const state = controller.getState();
+          chatbot.threads = state.threads;
+        });
+
+        controller.on('thread:deleted', (threadId) => {
+          console.log('Thread deleted event:', threadId);
+          const state = controller.getState();
+          chatbot.threads = state.threads;
+          chatbot.messages = state.messages;
+          chatbot.chatStarted = state.messages.length > 0;
+        });
+
+        // Load existing conversations from API
+        try {
+          const conversations = await provider.loadConversations();
+          console.log('Loaded conversations:', conversations);
+          
+          // Convert API conversations to threads
+          const loadedThreads: ChatbotThread[] = [];
+          for (const conv of conversations) {
+            const fullConversation = await provider.loadConversation(conv.id);
+            if (fullConversation) {
+              console.log('Loaded full conversation:', fullConversation);
+              const thread: ChatbotThread = {
+                id: fullConversation.id,
+                title: fullConversation.title,
+                messages: fullConversation.messages || [],
+                createdAt: fullConversation.createdAt,
+                updatedAt: fullConversation.updatedAt
+              };
+              loadedThreads.push(thread);
+            }
+          }
+
+          // Add all threads to controller state at once
+          if (loadedThreads.length > 0) {
+            console.log('Setting initial state with threads:', loadedThreads);
+            const currentState = controller.getState();
+            controller.setState({
+              threads: loadedThreads,
+              currentThreadId: loadedThreads[0].id,
+              messages: [...loadedThreads[0].messages],
+              isTyping: false
+            });
+            
+            console.log('State after initialization:', controller.getState());
+            
+            // Force UI update
+            chatbot.threads = loadedThreads;
+            chatbot.messages = [...loadedThreads[0].messages];
+            chatbot.chatStarted = loadedThreads[0].messages.length > 0;
+            
+            console.log('UI updated - messages:', chatbot.messages.length, 'threads:', chatbot.threads.length);
+          }
+        } catch (error) {
+          console.error('Failed to initialize conversations:', error);
+        }
+
+        chatbot.suggestions = [
+          { id: 'api', text: 'Tell me about APIs', enabled: true },
+          { id: 'threads', text: 'How do conversations work?', enabled: true },
+          { id: 'help', text: 'What can you help with?', enabled: true }
+        ];
+
+        // Store cleanup function
+        (window as any).__storyCleanup = () => {
+          window.fetch = originalFetch;
+        };
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px; padding: 20px; max-width: 1200px;">
+        <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: white;">
+          <h3 style="margin: 0 0 12px 0; font-size: 20px;">💬 Mock API with Conversation Loading</h3>
+          <p style="margin: 0 0 12px 0; font-size: 14px; opacity: 0.95;">
+            This story demonstrates loading existing conversations from a mocked API backend.
+          </p>
+          <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+            <p style="margin: 0 0 8px 0; font-weight: 600; font-size: 14px;">🔄 Mocked API Endpoints:</p>
+            <ul style="margin: 0; padding-left: 20px; font-size: 13px; opacity: 0.9;">
+              <li><code>GET /api/conversations</code> - Load all conversations</li>
+              <li><code>GET /api/conversations/:id</code> - Load specific conversation</li>
+              <li><code>POST /api/conversations</code> - Create new conversation</li>
+              <li><code>DELETE /api/conversations/:id</code> - Delete conversation</li>
+              <li><code>POST /api/chat</code> - Send message (streaming response)</li>
+            </ul>
+          </div>
+          <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 6px;">
+            <p style="margin: 0 0 8px 0; font-weight: 600; font-size: 14px;">✨ Features:</p>
+            <ul style="margin: 0; padding-left: 20px; font-size: 13px; opacity: 0.9;">
+              <li>3 pre-loaded conversations with message history</li>
+              <li>Network delays simulated (300-500ms)</li>
+              <li>Create new conversations via the sidebar</li>
+              <li>Switch between conversations seamlessly</li>
+              <li>Delete conversations (with API sync)</li>
+              <li>Streaming AI responses</li>
+            </ul>
+          </div>
+        </div>
+        <div style="width: 100%; height: 700px; border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <nr-chatbot
+            id="conversation-loading-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${true}
+            .autoScroll=${true}
+            .showThreads=${true}
+            .boxed=${true}
           ></nr-chatbot>
         </div>
       </div>
