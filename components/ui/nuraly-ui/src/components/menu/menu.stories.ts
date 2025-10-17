@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 import './index.js';
-import '../../shared/themes/carbon/index.css';
-import '../../shared/themes/default/index.css';
 import '../icon/index.js';
 import '../dropdown/index.js';
 import '../card/index.js';

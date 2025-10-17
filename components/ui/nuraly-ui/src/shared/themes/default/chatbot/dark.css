@@ -79,8 +79,9 @@
   
   /* Thread Colors */
   --nuraly-color-chatbot-thread-background: #2d2d2d;
-  --nuraly-color-chatbot-thread-background-hover: #404040;
+  --nuraly-color-chatbot-thread-background-hover: #1a3a52;
   --nuraly-color-chatbot-thread-background-active: #0084ff;
+  --nuraly-color-chatbot-thread-background-active-hover: #0077e6;
   --nuraly-color-chatbot-thread-text: #e5e5e5;
   --nuraly-color-chatbot-thread-text-active: #ffffff;
   --nuraly-color-chatbot-thread-text-secondary: #888888;

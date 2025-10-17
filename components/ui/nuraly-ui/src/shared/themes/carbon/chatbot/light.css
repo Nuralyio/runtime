@@ -4,9 +4,7 @@
  * Based on Carbon Design System color tokens
  */
 
-:root,
-[data-theme="carbon-light"],
-[data-theme="carbon"] {
+[data-theme="carbon-light"] {
   /* ========================================
    * CHATBOT LIGHT THEME VARIABLES - CARBON
    * ======================================== */

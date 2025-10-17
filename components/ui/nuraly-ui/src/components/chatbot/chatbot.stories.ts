@@ -25,9 +25,8 @@ import { MockProvider } from './providers/mock-provider.js';
 // Import storage implementations
 import { MemoryStorage, LocalStorageAdapter, IndexedDBStorage } from './storage/index.js';
 
-// Import shared theme system
-import '../../shared/themes/carbon/index.css';
-import '../../shared/themes/default/index.css';
+// Note: Theme CSS is imported globally in .storybook/preview.ts
+// No need to import themes here to avoid conflicts
 import '../input/input.component.js';
 import '../button/button.component.js';
 import '../icon/icon.component.js';

@@ -1,5 +1,5 @@
 /* Chatbot Common Variables - Default Theme */
-:root {
+[data-theme^="default"] {
   /* Layout */
   --nuraly-size-chatbot-max-width: 1200px;
   --nuraly-size-chatbot-messages-max-width: none; /* Allow full width to prevent cropping */
@@ -24,6 +24,9 @@
   --nuraly-font-size-chatbot-message: 15px;
   --nuraly-font-size-chatbot-input: 15px;
   --nuraly-font-size-chatbot-suggestion: 14px;
+  --nuraly-font-size-chatbot-timestamp: 12px;
+  --nuraly-font-size-chatbot-thread-title: 14px;
+  --nuraly-font-size-chatbot-thread-preview: 13px;
   --nuraly-line-height-chatbot-message: 1.5;
   --nuraly-line-height-chatbot-input: 1.4;
   

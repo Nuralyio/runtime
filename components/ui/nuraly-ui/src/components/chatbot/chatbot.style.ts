@@ -239,9 +239,14 @@ export default css`
     border-color: var(--nuraly-color-chatbot-accent);
   }
 
+  .thread-item--active:hover {
+    background-color: var(--nuraly-color-chatbot-thread-background-active-hover, var(--nuraly-color-chatbot-thread-background-active));
+    opacity: 0.95;
+  }
+
   .thread-item__title {
     font-weight: var(--nuraly-font-weight-medium, 500);
-    font-size: var(--nuraly-font-size-chatbot-suggestion);
+    font-size: var(--nuraly-font-size-chatbot-thread-title, 14px);
     margin-bottom: var(--nuraly-spacing-chatbot-suggestions-gap);
     white-space: nowrap;
     overflow: hidden;
@@ -249,7 +254,7 @@ export default css`
   }
 
   .thread-item__preview {
-    font-size: var(--nuraly-font-size-chatbot-timestamp);
+    font-size: var(--nuraly-font-size-chatbot-thread-preview, 13px);
     color: var(--nuraly-color-chatbot-text-secondary);
     white-space: nowrap;
     overflow: hidden;

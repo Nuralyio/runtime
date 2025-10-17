@@ -10,8 +10,6 @@ import { ModalSize, ModalPosition, ModalAnimation, ModalBackdrop } from './modal
 import './modal.component.js';
 import '../button/index.js';
 import '../icon/index.js';
-import '../../shared/themes/carbon/index.css';
-import '../../shared/themes/default/index.css';
 
 const meta: Meta = {
   title: 'Feedback/Modal',

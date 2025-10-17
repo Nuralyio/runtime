@@ -249,7 +249,7 @@ export const ThemeComparison: Story = {
     <div style="display: flex; flex-direction: column; gap: 32px;">
       <div>
         <h3 style="margin: 0 0 16px 0;">Carbon Theme (Sharp Corners)</h3>
-        <div data-theme="carbon" style="padding: 16px; background: #f4f4f4; border-radius: 4px;">
+        <div data-theme="carbon-light" style="padding: 16px; background: #f4f4f4; border-radius: 4px;">
           <div style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
             <nr-slider-input value="30"></nr-slider-input>
             <nr-slider-input value="60" size="large"></nr-slider-input>
@@ -260,7 +260,7 @@ export const ThemeComparison: Story = {
       
       <div>
         <h3 style="margin: 0 0 16px 0;">Default Theme (Rounded Corners)</h3>
-        <div data-theme="default" style="padding: 16px; background: #fafafa; border-radius: 8px;">
+        <div data-theme="default-light" style="padding: 16px; background: #fafafa; border-radius: 8px;">
           <div style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
             <nr-slider-input value="30"></nr-slider-input>
             <nr-slider-input value="60" size="large"></nr-slider-input>

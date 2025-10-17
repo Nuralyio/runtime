@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../../shared/themes/carbon/index.css';
-import '../../shared/themes/default/index.css';
 import './index.js';
 
 const meta: Meta = {
