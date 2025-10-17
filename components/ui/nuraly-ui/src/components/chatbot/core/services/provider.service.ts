@@ -228,7 +228,8 @@ export class ProviderService {
       throw new Error('Provider does not support file upload');
     }
 
-    return await this.provider.uploadFile(file);
+    const context = this.buildContext();
+    return await this.provider.uploadFile(file, context);
   }
 
   getCapabilities() {

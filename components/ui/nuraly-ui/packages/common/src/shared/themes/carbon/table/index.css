@@ -1,9 +1,0 @@
-/**
- * Carbon Theme - Table Component
- * Index file that imports both light and dark variants
- * IMPORTANT: Dark theme must be loaded AFTER light theme to ensure proper cascade
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';

@@ -1,8 +1,0 @@
-/**
- * Default Theme - Collapse Component - Entry Point
- * Imports all Default collapse theme files
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';
