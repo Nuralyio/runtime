@@ -174,15 +174,13 @@
 }
 
 /* Light theme explicit declaration */
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* Ensure consistent theming when explicitly set */
   --nuraly-color-primary: #3b82f6;
 }
 
 /* Dark theme */
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme="default-dark"]{
   /* Base colors - Dark theme */
   --nuraly-color-primary: #60a5fa;
   --nuraly-color-primary-hover: #3b82f6;

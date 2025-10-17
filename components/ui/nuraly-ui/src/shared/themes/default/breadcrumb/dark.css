@@ -3,8 +3,7 @@
  * Breadcrumb-specific CSS variables
  */
 
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme="default-dark"]{
   /* ========================================
    * BREADCRUMB VARIABLES - DEFAULT DARK THEME
    * ======================================== */

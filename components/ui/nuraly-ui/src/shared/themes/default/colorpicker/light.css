@@ -3,9 +3,7 @@
  * Color picker-specific CSS variables for the Default Design System light theme
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"]{
   /* ========================================
    * COLORPICKER VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

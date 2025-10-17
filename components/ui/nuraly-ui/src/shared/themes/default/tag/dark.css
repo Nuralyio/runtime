@@ -1,7 +1,6 @@
 /** Default Theme - Tag Dark */
 
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme="default-dark"] {
   --nuraly-tag-bg: #1f2937;
   --nuraly-tag-color: #f9fafb;
   --nuraly-tag-border-color: #374151;

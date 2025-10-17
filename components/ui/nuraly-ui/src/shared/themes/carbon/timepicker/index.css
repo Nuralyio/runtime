@@ -14,10 +14,8 @@
     /* Ensure dark theme always wins */
     --theme-mode: dark;
   }
-  
-  [data-theme="carbon-light"], 
-  [data-theme="carbon"],
-  :root {
+
+  [data-theme="carbon-light"] {
     /* Ensure light theme is baseline */
     --theme-mode: light;
   }

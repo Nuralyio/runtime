@@ -3,8 +3,7 @@
  * Tabs-specific CSS variables for the Default Design System light theme
  */
 
-[data-theme="default-light"],
-[data-theme="default"] {
+[data-theme="default-light"]{
   /* ========================================
    * TABS VARIABLES - DEFAULT LIGHT THEME
    * Modern, clean design system colors

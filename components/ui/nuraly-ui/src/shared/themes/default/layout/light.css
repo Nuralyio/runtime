@@ -4,9 +4,7 @@
  * Based on Ant Design's default color palette
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* ========================================
    * LAYOUT VARIABLES - DEFAULT LIGHT THEME
    * Ant Design inspired color palette

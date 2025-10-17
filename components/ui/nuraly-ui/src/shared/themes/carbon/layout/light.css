@@ -4,9 +4,7 @@
  * Based on official Carbon Design System color tokens (Gray 100 theme)
  */
 
-:root,
-[data-theme="carbon-light"],
-[data-theme="carbon"] {
+[data-theme="carbon-light"] {
   /* ========================================
    * LAYOUT VARIABLES - CARBON LIGHT THEME
    * Official Carbon Design System Colors

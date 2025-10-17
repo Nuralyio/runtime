@@ -3,8 +3,6 @@
  * Light mode color palette for Carbon design system
  */
 
-:root,
-[data-theme="carbon"],
 [data-theme="carbon-light"] {
   /* ========================================
    * LIGHT MODE SLIDER INPUT COLORS - CARBON

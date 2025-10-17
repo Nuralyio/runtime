@@ -3,9 +3,7 @@
  * Button-specific CSS variables
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* ========================================
    * BUTTON VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

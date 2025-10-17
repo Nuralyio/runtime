@@ -3,11 +3,7 @@
  * Shared CSS variables for both light and dark variants
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"],
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme^="default"]{
   /* ========================================
    * SHARED LAYOUT VARIABLES - DEFAULT THEME
    * Variables that remain consistent across light and dark variants

@@ -16,7 +16,6 @@
   }
   
   [data-theme="default-light"], 
-  [data-theme="default"],
   :root {
     /* Ensure light theme is baseline */
     --theme-mode: light;

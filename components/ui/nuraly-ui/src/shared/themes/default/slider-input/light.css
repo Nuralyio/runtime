@@ -3,8 +3,6 @@
  * Light mode color palette for Default design system
  */
 
-:root,
-[data-theme="default"],
 [data-theme="default-light"] {
   /* ========================================
    * LIGHT MODE SLIDER INPUT COLORS - DEFAULT

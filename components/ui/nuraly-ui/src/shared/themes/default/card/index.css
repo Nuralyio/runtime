@@ -10,15 +10,12 @@
 
 /* Additional force override for dark theme to ensure it takes precedence */
 @media screen {
-  [data-theme="default-dark"],
-  [data-theme="dark"] {
+  [data-theme="default-dark"] {
     /* Ensure dark theme always wins */
     --theme-mode: dark;
   }
   
-  [data-theme="default-light"], 
-  [data-theme="light"],
-  :root {
+  [data-theme="default-light"] {
     /* Light theme fallback */
     --theme-mode: light;
   }

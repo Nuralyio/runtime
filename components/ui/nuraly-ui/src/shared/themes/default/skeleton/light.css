@@ -3,9 +3,7 @@
  * Skeleton-specific CSS variables
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* ========================================
    * SKELETON VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

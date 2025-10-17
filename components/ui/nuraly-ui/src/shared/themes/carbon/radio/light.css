@@ -3,7 +3,6 @@
  * Radio-specific CSS variables based on IBM Carbon Design System specifications
  */
 
-:root,
 [data-theme="carbon-light"]{
   /* ========================================
    * RADIO VARIABLES - CARBON DESIGN SYSTEM LIGHT THEME
@@ -35,7 +34,6 @@
  * Radio-specific CSS variables based on IBM Carbon Design System specifications
  */
 
-:root,
 [data-theme="carbon-light"]{
   /* ========================================
    * RADIO VARIABLES - CARBON DESIGN SYSTEM LIGHT THEME

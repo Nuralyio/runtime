@@ -3,7 +3,6 @@
  * Light mode color palette following IBM Carbon design system
  */
 
-:root,
 [data-theme="carbon-light"],
 [data-theme^="carbon"]:where([data-theme*="light"]) {
   /* ========================================
@@ -28,7 +27,7 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]),
-  [data-theme="carbon"]:not([data-theme*="dark"]) {
+  [data-theme^="carbon"]:not([data-theme*="dark"]) {
     /* Light mode label text colors - Carbon Gray */
     --nuraly-color-label-text: #161616;
     --nuraly-color-label-secondary: #525252;

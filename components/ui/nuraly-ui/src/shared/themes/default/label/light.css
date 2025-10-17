@@ -3,8 +3,6 @@
  * Light mode color palette for Default design system
  */
 
-:root,
-[data-theme="default"],
 [data-theme="default-light"],
 [data-theme^="default"]:where([data-theme*="light"]) {
   /* ========================================
@@ -29,7 +27,7 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]),
-  [data-theme="default"]:not([data-theme*="dark"]) {
+  [data-theme^="default"]:not([data-theme*="dark"]) {
     /* Light mode label text colors - Default Gray/Black */
     --nuraly-color-label-text: #000000;
     --nuraly-color-label-secondary: #666666;

@@ -1,8 +1,6 @@
 /** Default Theme - Tag Light */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"]{
   --nuraly-tag-bg: #fafafa;
   --nuraly-tag-color: rgba(0,0,0,0.88);
   --nuraly-tag-border-color: #d9d9d9;

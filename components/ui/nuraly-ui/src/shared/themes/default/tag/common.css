@@ -2,11 +2,7 @@
  * Default Theme - Tag Component - Common Variables
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"],
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme^="default"] {
   --nuraly-tag-padding-x: 8px;
   --nuraly-tag-padding-y: 2px;
   --nuraly-tag-padding-x-sm: 6px;

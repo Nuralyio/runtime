@@ -3,8 +3,7 @@
  * Toast-specific CSS variables for the default light theme
  */
 
-[data-theme="default-light"],
-[data-theme="default"] {
+[data-theme="default-light"] {
   /* ========================================
    * TOAST VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

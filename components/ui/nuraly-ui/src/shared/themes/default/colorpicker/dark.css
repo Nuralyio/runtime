@@ -3,8 +3,7 @@
  * Color picker-specific CSS variables for the Default Design System dark theme
  */
 
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme="default-dark"] {
   /* ========================================
    * COLORPICKER VARIABLES - DEFAULT DARK THEME
    * ======================================== */

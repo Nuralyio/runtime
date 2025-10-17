@@ -5,7 +5,6 @@
 
 
 
-:root,
 [data-theme^="carbon"]{
   /* Modal dimensions */
   --nuraly-modal-width-small: 400px;

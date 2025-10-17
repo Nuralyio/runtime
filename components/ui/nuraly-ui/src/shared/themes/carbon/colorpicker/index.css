@@ -15,8 +15,7 @@
     --theme-mode: dark;
   }
   
-  [data-theme="carbon-light"], 
-  [data-theme="carbon"],
+  [data-theme="carbon-light"]
   :root {
     /* Light theme mode */
     --theme-mode: light;

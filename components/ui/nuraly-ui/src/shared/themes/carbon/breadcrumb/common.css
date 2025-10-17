@@ -3,9 +3,8 @@
  * Shared CSS variables for both light and dark variants
  */
 
-:root,
-[data-theme="carbon-light"],
-[data-theme="carbon-dark"] {
+
+[data-theme^="carbon"]{
   /* ========================================
    * SHARED BREADCRUMB VARIABLES - CARBON THEME
    * Variables that remain consistent across light and dark variants
