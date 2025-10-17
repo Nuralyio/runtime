@@ -1,5 +1,5 @@
 /* Chatbot Light Theme - Default Design System */
-[data-theme="default-light"] {
+[data-theme="default-light"] {  
   /* Background Colors */
   --nuraly-color-chatbot-background: #ffffff;
   --nuraly-color-chatbot-container-background: #ffffff;
@@ -79,8 +79,9 @@
   
   /* Thread Colors */
   --nuraly-color-chatbot-thread-background: #ffffff;
-  --nuraly-color-chatbot-thread-background-hover: #f8f9fa;
-  --nuraly-color-chatbot-thread-background-active: #007bff;
+  --nuraly-color-chatbot-thread-background-hover: #e3f2fd;
+  --nuraly-color-chatbot-thread-background-active: #2196f3;
+  --nuraly-color-chatbot-thread-background-active-hover: #1e88e5;
   --nuraly-color-chatbot-thread-text: #495057;
   --nuraly-color-chatbot-thread-text-active: #ffffff;
   --nuraly-color-chatbot-thread-text-secondary: #6c757d;

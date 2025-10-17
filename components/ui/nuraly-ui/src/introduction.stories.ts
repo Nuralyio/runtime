@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 
 // Import theme CSS for preview
-import './shared/themes/default.css';
 
 const meta: Meta = {
   title: 'Introduction/Welcome',
@@ -110,12 +109,12 @@ export const Overview: Story = {
           
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
             
-            <div style="padding: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;" data-theme="default">
+            <div style="padding: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;" data-theme="default-light">
               <h4 style="margin: 0 0 1rem 0;">Default Theme</h4>
               <nr-button variant="primary" size="small">Default Button</nr-button>
             </div>
             
-            <div style="padding: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;" data-theme="carbon">
+            <div style="padding: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;" data-theme="carbon-light">
               <h4 style="margin: 0 0 1rem 0;">Carbon Theme</h4>
               <nr-button variant="primary" size="small">Carbon Button</nr-button>
             </div>
