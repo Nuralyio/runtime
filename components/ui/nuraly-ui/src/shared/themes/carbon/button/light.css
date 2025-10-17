@@ -4,8 +4,7 @@
  * Based on official Carbon Design System color tokens
  */
 
-[data-theme="carbon-light"],
-[data-theme="carbon"] {
+[data-theme="carbon-light"] {
   /* ========================================
    * BUTTON VARIABLES - CARBON LIGHT THEME
    * Official Carbon Design System Colors

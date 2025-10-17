@@ -2,8 +2,6 @@
  * Default Theme - Alert Component - Light Mode
  */
 
-:root,
-[data-theme="default"],
 [data-theme="default-light"] {
   /* ========================================
    * ALERT LIGHT MODE COLORS

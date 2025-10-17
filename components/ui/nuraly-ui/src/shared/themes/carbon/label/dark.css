@@ -28,7 +28,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
-  [data-theme="carbon"]:not([data-theme*="light"]) {
+  [data-theme^="carbon"]:not([data-theme*="light"]) {
     /* Dark mode label text colors - Carbon White/Gray */
     --nuraly-color-label-text: #f4f4f4;
     --nuraly-color-label-secondary: #c6c6c6;

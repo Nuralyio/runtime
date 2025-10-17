@@ -1,6 +1,5 @@
 /** Carbon Theme - Tag Light */
 
-:root,
 [data-theme="carbon-light"] {
   --nuraly-tag-bg: var(--nuraly-color-surface, #f4f4f4);
   --nuraly-tag-color: var(--nuraly-color-text, #161616);

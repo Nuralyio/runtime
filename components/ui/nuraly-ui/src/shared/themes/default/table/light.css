@@ -3,8 +3,7 @@
  * Table-specific CSS variables for the Default light theme
  */
 
-[data-theme="default-light"],
-[data-theme="default"] {
+[data-theme="default-light"] {
   /* ========================================
    * TABLE VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

@@ -4,16 +4,7 @@
  */
 
 /* Use higher specificity and ensure proper cascade */
-[data-theme="default"],
-[data-theme="default-light"],
-html[data-theme="default"],
-html[data-theme="default-light"],
-body[data-theme="default"],
-body[data-theme="default-light"],
-html[data-theme="default"] *,
-html[data-theme="default-light"] *,
-body[data-theme="default"] *,
-body[data-theme="default-light"] * {
+[data-theme^="default"]{
   /* ========================================
    * MENU VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */
@@ -69,9 +60,7 @@ body[data-theme="default-light"] * {
 }
 
 /* Additional strong selector for better cascade */
-[data-theme="default"] nr-menu,
 [data-theme="default-light"] nr-menu,
-[data-theme="default"] nr-menu *,
 [data-theme="default-light"] nr-menu * {
   --theme-mode: light;
 }

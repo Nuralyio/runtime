@@ -4,8 +4,7 @@
  * Based on official Carbon Design System color tokens (G10 theme)
  */
 
-[data-theme="carbon-light"],
-[data-theme="carbon"] {
+[data-theme="carbon-light"] {
   /* ========================================
    * COLORPICKER VARIABLES - CARBON LIGHT THEME
    * Official Carbon Design System Colors

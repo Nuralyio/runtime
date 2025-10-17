@@ -3,7 +3,6 @@
  * Input-specific CSS variables based on IBM Carbon Design System specifications
  */
 
-:root,
 [data-theme="carbon-light"]{
   /* ========================================
    * INPUT VARIABLES - CARBON LIGHT THEME
@@ -52,7 +51,6 @@
  * Input-specific CSS variables based on IBM Carbon Design System specifications
  */
 
-:root,
 [data-theme="carbon-light"]{
   /* ========================================
    * INPUT VARIABLES - CARBON LIGHT THEME

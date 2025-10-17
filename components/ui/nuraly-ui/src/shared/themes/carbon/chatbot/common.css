@@ -4,7 +4,6 @@
  * Following NuralyUI naming conventions from button and input components
  */
 
-:root,
 [data-theme^="carbon"] {
   /* ========================================
    * SHARED CHATBOT VARIABLES - CARBON DESIGN SYSTEM

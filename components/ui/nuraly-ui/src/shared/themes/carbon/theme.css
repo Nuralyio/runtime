@@ -174,8 +174,7 @@
 }
 
 /* Light theme explicit declaration */
-[data-theme="carbon-light"],
-[data-theme="carbon"] {
+[data-theme="carbon-light"]{
   /* Ensure consistent theming when explicitly set */
   --nuraly-color-primary: #0f62fe;
 }

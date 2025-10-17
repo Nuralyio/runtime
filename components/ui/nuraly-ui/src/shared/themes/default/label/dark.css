@@ -1,11 +1,9 @@
 /**
- * Default Theme - Label Component - Dark Mode
- * Dark mode color palette for Default design system
+ * Default Theme - Label Component - Dark Variant
+ * Label-specific CSS variables for dark mode
  */
 
-:root,
-[data-theme="default-dark"],
-[data-theme^="default"]:where([data-theme*="dark"]) {
+[data-theme="default-dark"] {
   /* ========================================
    * DARK MODE LABEL COLORS - DEFAULT
    * ======================================== */

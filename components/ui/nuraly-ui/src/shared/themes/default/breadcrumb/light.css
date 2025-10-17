@@ -3,9 +3,7 @@
  * Breadcrumb-specific CSS variables
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* ========================================
    * BREADCRUMB VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

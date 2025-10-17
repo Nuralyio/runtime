@@ -227,6 +227,7 @@ export default css`
     margin-bottom: var(--nuraly-spacing-chatbot-suggestions-gap);
     transition: background-color var(--nuraly-transition-chatbot-fast);
     border: var(--nuraly-border-width-chatbot-message, 1px) solid transparent;
+    line-height: 1.6;
   }
 
   .thread-item:hover {
@@ -251,28 +252,31 @@ export default css`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.4;
   }
 
   .thread-item__preview {
     font-size: var(--nuraly-font-size-chatbot-thread-preview, 13px);
-    color: var(--nuraly-color-chatbot-text-secondary);
+    color: rgba(128, 128, 128, 0.7);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: var(--nuraly-spacing-chatbot-suggestions-gap);
+    line-height: 1.5;
   }
 
   .thread-item--active .thread-item__preview {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.65);
   }
 
   .thread-item__timestamp {
     font-size: var(--nuraly-font-size-chatbot-timestamp);
-    color: var(--nuraly-color-chatbot-text-helper);
+    color: rgba(128, 128, 128, 0.6);
+    line-height: 1.4;
   }
 
   .thread-item--active .thread-item__timestamp {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.55);
   }
 
   .chat-box {

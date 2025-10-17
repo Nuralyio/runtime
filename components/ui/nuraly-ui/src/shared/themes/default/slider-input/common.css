@@ -4,7 +4,6 @@
  */
 
 :root,
-[data-theme="default"],
 [data-theme^="default"] {
   /* ========================================
    * SHARED SLIDER INPUT VARIABLES - DEFAULT DESIGN SYSTEM

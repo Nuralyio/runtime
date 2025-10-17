@@ -3,7 +3,6 @@
  * Shared CSS variables between light and dark variants
  */
 
-:root,
 [data-theme^="carbon"] {
   /* ========================================
    * SHARED TABLE VARIABLES - CARBON DESIGN SYSTEM

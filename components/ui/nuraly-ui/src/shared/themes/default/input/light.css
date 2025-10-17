@@ -3,7 +3,6 @@
  * Input-specific CSS variables based on Default Design System specifications
  */
 
-:root,
 [data-theme="default-light"]{
   /* ========================================
    * INPUT VARIABLES - DEFAULT LIGHT THEME
@@ -66,10 +65,8 @@
 
 /* Specific input container styling for light theme */
 :root nr-input #input-container,
-[data-theme="default"] nr-input #input-container,
 [data-theme="default-light"] nr-input #input-container,
 .input-wrapper:root #input-container,
-.input-wrapper[data-theme="default"] #input-container,
 .input-wrapper[data-theme="default-light"] #input-container {
   border-bottom: 1px solid #d9d9d9 !important;
   background-color: #ffffff !important;

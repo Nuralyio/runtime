@@ -4,9 +4,7 @@
  * Based on modern web design standards
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* ========================================
    * CARD VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

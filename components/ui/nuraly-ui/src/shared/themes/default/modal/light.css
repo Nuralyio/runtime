@@ -4,7 +4,6 @@
  */
 
 [data-theme="default-light"],
-[data-theme="default"],
 :root {
   /* Modal backdrop */
   --nuraly-color-modal-backdrop: rgba(0, 0, 0, 0.45);

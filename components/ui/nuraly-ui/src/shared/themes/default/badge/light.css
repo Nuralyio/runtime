@@ -3,9 +3,7 @@
  * Badge-specific CSS variables
  */
 
-:root,
-[data-theme="default-light"],
-[data-theme="light"] {
+[data-theme="default-light"] {
   /* ========================================
    * BADGE VARIABLES - DEFAULT LIGHT THEME
    * ======================================== */

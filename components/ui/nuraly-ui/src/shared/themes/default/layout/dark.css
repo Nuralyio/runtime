@@ -4,8 +4,7 @@
  * Based on Ant Design's dark color palette
  */
 
-[data-theme="default-dark"],
-[data-theme="dark"] {
+[data-theme="default-dark"] {
   /* ========================================
    * LAYOUT VARIABLES - DEFAULT DARK THEME
    * Ant Design inspired dark color palette
