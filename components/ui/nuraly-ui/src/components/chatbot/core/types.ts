@@ -106,13 +106,14 @@ export interface ChatbotUICallbacks {
 }
 
 /**
- * Context passed to providers and plugins
+ * Context passed to providers when sending messages
  */
 export interface ChatbotContext {
   messages: ChatbotMessage[];
   currentThread?: ChatbotThread;
   selectedModules: string[];
   metadata: Record<string, any>;
+  uploadedFiles?: ChatbotFile[];
 }
 
 /**

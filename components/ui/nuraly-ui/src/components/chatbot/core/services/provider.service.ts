@@ -216,7 +216,8 @@ export class ProviderService {
       messages: state.messages,
       metadata: state.metadata,
       selectedModules: state.selectedModules,
-      currentThread: currentThread
+      currentThread: currentThread,
+      uploadedFiles: state.uploadedFiles
     };
   }
 

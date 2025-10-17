@@ -347,7 +347,6 @@ export default css`
     position: relative;
     font-weight: var(--nuraly-font-weight-normal, 400);
     box-shadow: var(--nuraly-shadow-chatbot-message, none);
-    width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
     background-color: var(--nuraly-color-chatbot-message-background, transparent);
