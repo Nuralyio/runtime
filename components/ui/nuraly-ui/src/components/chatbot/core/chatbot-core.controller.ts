@@ -86,7 +86,8 @@ export class ChatbotCoreController {
     this.providerService = new ProviderService(
       config.provider,
       this.stateHandler,
-      this.messageHandler,
+       this.messageHandler,
+      this.fileHandler,
       this.eventBus,
       this.ui,
       this.plugins

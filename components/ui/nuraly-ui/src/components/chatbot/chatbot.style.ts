@@ -453,7 +453,6 @@ export default css`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    background-color: var(--nuraly-color-chatbot-error-background, #fee);
     border-radius: var(--nuraly-border-radius-chatbot-message, 0.75rem);
   }
 
@@ -469,10 +468,6 @@ export default css`
     color: var(--nuraly-color-chatbot-error-description, #666);
     margin: 0;
     line-height: 1.5;
-  }
-
-  .message.error .message__error-container {
-    background-color: var(--nuraly-color-chatbot-error-background, #fee);
   }
 
   /* Message footer - contains timestamp and copy icon */
