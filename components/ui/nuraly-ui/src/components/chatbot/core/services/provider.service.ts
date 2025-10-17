@@ -7,6 +7,7 @@
 import { EventBus } from '../event-bus.js';
 import { StateHandler } from '../handlers/state-handler.js';
 import { MessageHandler } from '../handlers/message-handler.js';
+import { FileHandler } from '../handlers/file-handler.js';
 import type { ChatbotProvider, ChatbotUICallbacks, ChatbotContext, ChatbotPlugin } from '../types.js';
 import type { ChatbotMessage } from '../../chatbot.types.js';
 
@@ -22,6 +23,7 @@ export class ProviderService {
     provider: ChatbotProvider | undefined,
     private stateHandler: StateHandler,
     private messageHandler: MessageHandler,
+    private fileHandler: FileHandler,
     private eventBus: EventBus,
     private ui: ChatbotUICallbacks,
     private plugins: Map<string, ChatbotPlugin>
@@ -98,6 +100,9 @@ export class ProviderService {
       this.stateHandler.setTyping(false);
       this.stateHandler.setProcessing(false);
       this.eventBus.emit('processing:end');
+      
+      // Clear uploaded files after message is processed
+      this.fileHandler.clearFiles();
     }
   }
 
