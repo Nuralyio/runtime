@@ -1,59 +1,15 @@
 /**
- * Theme CSS Variables Index
- * 
- * Import these CSS files to apply design system themes with light/dark variants:
- * 
- * @example
- * ```html
- * <!-- Apply Carbon Design System Light -->
- * <div data-theme="carbon-light">
- *   <nr-button type="primary">Carbon Light Button</nr-button>
- * </div>
- * 
- * <!-- Apply Carbon Design System Dark -->
- * <div data-theme="carbon-dark">
- *   <nr-button type="primary">Carbon Dark Button</nr-button>
- * </div>
- * 
- * <!-- Use default theme light -->
- * <div data-theme="default-light">
- *   <nr-button type="primary">Default Light Button</nr-button>
- * </div>
- * 
- * <!-- Use default theme dark -->
- * <div data-theme="default-dark">
- *   <nr-button type="primary">Default Dark Button</nr-button>
- * </div>
- * ```
- * 
- * @example JavaScript/TypeScript
- * ```ts
- * // In your app entry point
- * import './themes/carbon.css'; // for Carbon theme
- * // OR
- * import './themes/default.css'; // for default theme
- * ```
+ * @license
+ * Copyright 2023 Nuraly, Laabidi Aymen
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
-export const THEME_FILES = {
-  // Main theme files (import complete themes with all components)
-  default: './default.css',
-  carbon: './carbon.css',
-  
-  // Individual theme folders (for granular imports)
-  'default-folder': './default/index.css',
-  'carbon-folder': './carbon/index.css',
-  
-  // Component-specific theme files (for component-only imports)
-  'default-button': './default/button/index.css',
-  'carbon-button': './carbon/button/index.css',
-  
-  // Core theme variables only (no component styles)
-  'default-core': './default/theme.css',
-  'carbon-core': './carbon/theme.css'
-} as const;
-
-export type ThemeName = keyof typeof THEME_FILES;
+/**
+ * Theme utilities and type definitions
+ * 
+ * NOTE: CSS theme files are in the @nuralyui/themes package
+ * This file only contains TypeScript utilities and types
+ */
 
 export const THEME_VARIANTS = {
   'default-light': 'Default Light',
@@ -126,4 +82,15 @@ export function toggleThemeVariant(element: HTMLElement): void {
   if (newTheme) {
     applyTheme(element, newTheme);
   }
+}
+
+/**
+ * Get the theme system name from a theme variant
+ * @param theme - The theme variant
+ * @returns The theme system name ('carbon' or 'default')
+ */
+export function getThemeSystem(theme: ThemeVariant | null): 'carbon' | 'default' {
+  if (!theme) return 'default';
+  if (theme.startsWith('carbon')) return 'carbon';
+  return 'default';
 }

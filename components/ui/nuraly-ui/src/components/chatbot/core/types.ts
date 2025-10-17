@@ -310,7 +310,7 @@ export interface ChatbotProvider {
   /**
    * Upload file (if supported)
    */
-  uploadFile?(file: File): Promise<ChatbotFile>;
+  uploadFile?(file: File, context?: ChatbotContext): Promise<ChatbotFile>;
 
   /**
    * Error handler

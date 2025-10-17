@@ -16,7 +16,9 @@
  * const theme = getCurrentTheme(element);
  * console.log('Current theme:', theme);
  * ```
+ * 
+ * @note CSS theme files are in the @nuralyui/themes package
  */
 
-// Export theme utilities
-export * from './shared/themes/index.js';
+// Export theme utilities (types and functions only, no CSS)
+export * from './shared/themes.js';

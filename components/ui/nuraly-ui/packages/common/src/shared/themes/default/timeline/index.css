@@ -1,8 +1,0 @@
-/**
- * Default Theme - Timeline Component
- * Entry point for timeline theme styles
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';

@@ -5,7 +5,7 @@
  */
 
 import { ReactiveController, ReactiveControllerHost } from 'lit';
-import { ThemeVariant, getCurrentTheme } from '../themes/index.js';
+import { ThemeVariant, getCurrentTheme } from '../themes.js';
 
 /**
  * Theme controller that observes and reacts to theme changes on the host element or its parents
