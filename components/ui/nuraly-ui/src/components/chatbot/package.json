@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/chatbot",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "description": "Versatile chatbot component with message handling, suggestions, and typing indicators",
   "main": "index.js",
   "type": "module",

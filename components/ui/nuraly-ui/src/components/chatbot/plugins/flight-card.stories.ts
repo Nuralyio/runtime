@@ -8,7 +8,9 @@ import { html } from 'lit';
 import { FlightCardPlugin, type FlightInfo } from './flight-card-plugin.js';
 import { ChatbotCoreController } from '../core/chatbot-core.controller.js';
 import { MockProvider } from '../providers/mock-provider.js';
+import { CustomAPIProvider } from '../providers/custom-api-provider.js';
 import '../chatbot.component.js';
+import '.././../skeleton/index.js';
 import type { Meta, StoryObj } from '@storybook/web-components';
 
 const meta: Meta = {
@@ -811,6 +813,116 @@ ${JSON.stringify(jsonExample, null, 2)}</pre>
   source?: string;
 }</pre>
         </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Test with CustomAPIProvider streaming (simulates real production scenario)
+ * This mimics how the real API returns cumulative text chunks with [FLIGHT] tags
+ */
+export const WithCustomAPIProvider: Story = {
+  render: () => {
+    const flightData: FlightInfo = {
+      origin: 'JED',
+      destination: 'TUN',
+      departureTime: '11:40 PM',
+      arrivalTime: '2:35 AM',
+      departureDate: 'mar. 14 oct.',
+      arrivalDate: 'mer. 15 oct.',
+      duration: '4h 55min',
+      terminal: 'N',
+      gate: '12',
+      arrivalTerminal: 'M',
+      arrivalGate: '8',
+      flightNumber: 'SV123',
+      airline: 'Saudia',
+      status: 'On Time',
+      updated: 'Mis à jour il y a 1j 13h',
+      source: 'Cirium'
+    };
+
+    // Create a mock streaming API provider that returns cumulative text
+    class TestStreamingProvider extends CustomAPIProvider {
+      private responses = [
+        `reply with this [FLIGHT]${JSON.stringify(flightData)}[/FLIGHT]`,
+        `Here is your flight: [FLIGHT]${JSON.stringify(flightData)}[/FLIGHT]`,
+        `Flight found! [FLIGHT]${JSON.stringify(flightData)}[/FLIGHT] Let me know if you need anything else.`
+      ];
+      private currentIndex = 0;
+
+      async connect() {
+      console.log(this.responses);
+
+        this.apiUrl = 'mock://api';
+        this.connected = true;
+      }
+
+      async *sendMessage(text: string, context?: any): AsyncIterator<string> {
+        // Get the response to stream
+        const response = this.responses[this.currentIndex % this.responses.length];
+        this.currentIndex++;
+
+        // Simulate character-by-character streaming (like real backend tokens)
+        // This matches how the real API sends variable-length chunks
+        let cumulative = '';
+        
+        // Split into tokens (simulating real backend behavior shown in user logs)
+        const tokens = [];
+        let i = 0;
+        while (i < response.length) {
+          // Variable token length (1-8 chars) to simulate real LLM token streaming
+          const tokenLength = Math.floor(Math.random() * 7) + 1;
+          tokens.push(response.substring(i, i + tokenLength));
+          i += tokenLength;
+        }
+        
+        for (const token of tokens) {
+          await new Promise(resolve => setTimeout(resolve, 30)); // Faster streaming
+          cumulative += token;
+          yield cumulative; // Yield cumulative text (required for tag detection!)
+        }
+      }
+    }
+
+    const provider = new TestStreamingProvider();
+    provider.connect();
+
+    const controller = new ChatbotCoreController({
+      provider,
+      plugins: [new FlightCardPlugin()],
+      initialMessages: [
+        {
+          id: '1',
+          sender: 'bot' as any,
+          text: 'Hello! This story tests the FlightCardPlugin with CustomAPIProvider streaming (like production). Ask me about flights!',
+          timestamp: new Date().toISOString(),
+          introduction: true,
+          suggestions: [
+            { id: 'show-flight', text: 'Show me a flight', enabled: true },
+            { id: 'another-flight', text: 'Show another flight', enabled: true }
+          ]
+        }
+      ]
+    });
+
+    setTimeout(() => {
+      const chatbot = document.querySelector('nr-chatbot');
+      if (chatbot) {
+        (chatbot as any).controller = controller;
+      }
+    }, 0);
+
+    return html`
+      <div style="height: 100vh; display: flex; flex-direction: column;">
+        <nr-chatbot
+          placeholder="Ask about flights..."
+          size="full"
+          variant="default"
+          .showSendButton=${true}
+          .autoScroll=${true}
+        ></nr-chatbot>
       </div>
     `;
   }
