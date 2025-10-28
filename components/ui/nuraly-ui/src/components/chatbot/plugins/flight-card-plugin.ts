@@ -85,13 +85,12 @@ export class FlightCardPlugin extends ChatPluginBase implements ChatbotPlugin {
   renderHtmlBlockPlaceholder?(name: string): string {
     if (name.toLowerCase() !== 'flight') return '';
     
-    // Use the library's skeleton component with fixed width
-    return `
-      <nr-skeleton 
+    const placeholderId = `flight-skeleton-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `<div data-placeholder-id="${placeholderId}"><nr-skeleton 
         active 
         style="min-width: 400px; max-width: 600px; margin: 16px 0;"
-      ></nr-skeleton>
-    `;
+      ></nr-skeleton></div>`;
   }
   // Simplified: no shadow DOM observation or external style injection
   // All style-injection logic lives in ChatPluginBase

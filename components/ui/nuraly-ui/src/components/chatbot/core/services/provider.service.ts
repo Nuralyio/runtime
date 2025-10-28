@@ -112,7 +112,7 @@ export class ProviderService {
   async processStream(stream: AsyncIterator<string>): Promise<void> {
     let botMessage: ChatbotMessage | null = null;
     const tagAwarePlugins = Array.from(this.plugins.values()).filter(p => Array.isArray((p as any).htmlTags)) as any[];
-    const openTags: Array<{ plugin: any; name: string; open: string; close: string; buffer: string }> = [];
+    const openTags: Array<{ plugin: any; name: string; open: string; close: string; buffer: string; hasPlaceholder?: boolean }> = [];
     let textBuffer = ''; // Buffer for accumulating text to search for tags
     let lastCumulative = ''; // Track last cumulative value to detect incremental changes
     
@@ -171,9 +171,29 @@ export class ProviderService {
             const html = typeof current.plugin.renderHtmlBlock === 'function'
               ? current.plugin.renderHtmlBlock(current.name, content)
               : '';
+            
             if (html) {
-              processedChunk += html;
-              chunkHasHtml = true;
+              // Check if we showed a placeholder that needs to be replaced
+              if (current.hasPlaceholder && botMessage) {
+                // Use regex to find and replace the placeholder div with unique ID
+                const placeholderRegex = /<div data-placeholder-id="[^"]*">[\s\S]*?<\/div>/;
+                const hasPlaceholder = placeholderRegex.test(botMessage.text);
+                
+                if (hasPlaceholder) {
+                  // Replace skeleton with actual content in the existing message
+                  botMessage.text = botMessage.text.replace(placeholderRegex, html);
+                  this.messageHandler.updateMessage(botMessage.id, { text: botMessage.text });
+                  // Don't add to processedChunk since we already updated the message
+                } else {
+                  // No placeholder found, add normally
+                  processedChunk += html;
+                  chunkHasHtml = true;
+                }
+              } else {
+                // No placeholder was shown, add the HTML normally
+                processedChunk += html;
+                chunkHasHtml = true;
+              }
             }
             openTags.pop();
             
@@ -213,11 +233,13 @@ export class ProviderService {
             processedChunk += textBuffer.slice(0, nextOpen.idx);
             
             // Render skeleton placeholder if plugin supports it
+            let hasPlaceholder = false;
             if (typeof nextOpen.plugin.renderHtmlBlockPlaceholder === 'function') {
               const placeholder = nextOpen.plugin.renderHtmlBlockPlaceholder(nextOpen.name);
               if (placeholder) {
                 processedChunk += placeholder;
                 chunkHasHtml = true;
+                hasPlaceholder = true;
               }
             }
             
@@ -226,7 +248,8 @@ export class ProviderService {
               name: nextOpen.name, 
               open: nextOpen.open, 
               close: nextOpen.close, 
-              buffer: '' 
+              buffer: '',
+              hasPlaceholder: hasPlaceholder
             });
             textBuffer = textBuffer.slice(nextOpen.idx + nextOpen.open.length);
           }
