@@ -131,7 +131,6 @@ export class ProviderService {
 
         let remaining = incoming;
         let processedChunk = '';
-        let chunkHasHtml = false;
 
         while (remaining.length) {
           const current = openTags[openTags.length - 1];
@@ -148,7 +147,7 @@ export class ProviderService {
               : '';
             if (html) {
               processedChunk += html;
-              chunkHasHtml = true;
+              // chunkHasHtml = true;
             }
             openTags.pop();
             remaining = remaining.slice(closeIdx + current.close.length);
@@ -184,16 +183,7 @@ export class ProviderService {
           }
         }
 
-        // Check if this chunk contains plugin tags (even if not yet closed)
-        const hasPluginTags = Array.from(this.plugins.values()).some(plugin => {
-          const tags = (plugin as any).htmlTags;
-          if (Array.isArray(tags)) {
-            return tags.some((tag: any) => processedChunk.includes(tag.open));
-          }
-          return false;
-        });
-
-        const isHtml = chunkHasHtml || hasPluginTags || /<\w+[^>]*>/.test(processedChunk);
+        const isHtml = true;
         if (!botMessage) {
           botMessage = this.messageHandler.createBotMessage(processedChunk, isHtml ? { renderAsHtml: true } : undefined);
           this.stateHandler.addMessageToState(botMessage);
