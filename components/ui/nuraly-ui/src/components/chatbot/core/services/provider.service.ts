@@ -184,7 +184,16 @@ export class ProviderService {
           }
         }
 
-        const isHtml = chunkHasHtml || /<\w+[^>]*>/.test(processedChunk);
+        // Check if this chunk contains plugin tags (even if not yet closed)
+        const hasPluginTags = Array.from(this.plugins.values()).some(plugin => {
+          const tags = (plugin as any).htmlTags;
+          if (Array.isArray(tags)) {
+            return tags.some((tag: any) => processedChunk.includes(tag.open));
+          }
+          return false;
+        });
+
+        const isHtml = chunkHasHtml || hasPluginTags || /<\w+[^>]*>/.test(processedChunk);
         if (!botMessage) {
           botMessage = this.messageHandler.createBotMessage(processedChunk, isHtml ? { renderAsHtml: true } : undefined);
           this.stateHandler.addMessageToState(botMessage);
