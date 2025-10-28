@@ -113,7 +113,10 @@ export class ProviderService {
     let botMessage: ChatbotMessage | null = null;
     const tagAwarePlugins = Array.from(this.plugins.values()).filter(p => Array.isArray((p as any).htmlTags)) as any[];
     const openTags: Array<{ plugin: any; name: string; open: string; close: string; buffer: string }> = [];
-    let lastRaw = '';
+    let textBuffer = ''; // Buffer for accumulating text to search for tags
+    let lastCumulative = ''; // Track last cumulative value to detect incremental changes
+
+    console.log('[ProviderService] Starting stream processing, tagAwarePlugins:', tagAwarePlugins.map(p => p.id));
 
     try {
       let done = false;
@@ -125,39 +128,61 @@ export class ProviderService {
         done = result.done || false;
         if (done || !result.value) break;
 
-        const currentRaw = String(result.value);
-        let incoming = currentRaw.startsWith(lastRaw) ? currentRaw.slice(lastRaw.length) : currentRaw;
-        lastRaw = currentRaw;
+        // Handle cumulative streaming - extract only new characters
+        const currentCumulative = String(result.value);
+        const newChunk = currentCumulative.startsWith(lastCumulative) 
+          ? currentCumulative.slice(lastCumulative.length) 
+          : currentCumulative;
+        lastCumulative = currentCumulative;
+        
+        // Add only the NEW chunk to buffer
+        textBuffer += newChunk;
+        
+        console.log('[ProviderService] New chunk:', JSON.stringify(newChunk), 'buffer length:', textBuffer.length, 'openTags:', openTags.length);
 
-        let remaining = incoming;
         let processedChunk = '';
+        let chunkHasHtml = false;
 
-        while (remaining.length) {
+        // Process the entire buffer to find tags
+        while (textBuffer.length) {
           const current = openTags[openTags.length - 1];
+          
           if (current) {
-            const closeIdx = remaining.indexOf(current.close);
+            // We're inside a tag, look for closing tag in the combined buffer
+            // We need to check both the accumulated buffer AND new text
+            const combined = current.buffer + textBuffer;
+            const closeIdx = combined.indexOf(current.close);
+            
             if (closeIdx === -1) {
-              current.buffer += remaining;
-              remaining = '';
+              // Closing tag not found yet, keep buffering
+              current.buffer = combined;
+              textBuffer = '';
               break;
             }
-            current.buffer += remaining.slice(0, closeIdx);
+            
+            // Found closing tag in combined buffer
+            const content = combined.slice(0, closeIdx);
             const html = typeof current.plugin.renderHtmlBlock === 'function'
-              ? current.plugin.renderHtmlBlock(current.name, current.buffer)
+              ? current.plugin.renderHtmlBlock(current.name, content)
               : '';
+            console.log('[ProviderService] Closing tag:', current.name, 'content length:', content.length, 'html:', html ? 'rendered' : 'empty');
             if (html) {
               processedChunk += html;
-              // chunkHasHtml = true;
+              chunkHasHtml = true;
             }
             openTags.pop();
-            remaining = remaining.slice(closeIdx + current.close.length);
+            
+            // Put remaining text back in textBuffer
+            const afterClose = combined.slice(closeIdx + current.close.length);
+            textBuffer = afterClose;
             continue;
           }
 
+          // Not inside a tag, look for opening tags
           let nextOpen: { idx: number; plugin: any; name: string; open: string; close: string } | null = null;
           for (const plugin of tagAwarePlugins) {
             for (const tag of (plugin.htmlTags as any[])) {
-              const idx = remaining.indexOf(tag.open);
+              const idx = textBuffer.indexOf(tag.open);
               if (idx !== -1 && (!nextOpen || idx < nextOpen.idx)) {
                 nextOpen = { idx, plugin, name: tag.name, open: tag.open, close: tag.close };
               }
@@ -165,12 +190,26 @@ export class ProviderService {
           }
 
           if (!nextOpen) {
-            processedChunk += remaining;
-            remaining = '';
+            // No opening tag found - check if buffer might contain partial tag
+            let maxTagLength = 0;
+            for (const plugin of tagAwarePlugins) {
+              for (const tag of (plugin.htmlTags as any[])) {
+                maxTagLength = Math.max(maxTagLength, tag.open.length);
+              }
+            }
+            
+            // Keep last N characters in buffer (where N = max tag length - 1) in case tag is split
+            if (textBuffer.length > maxTagLength - 1) {
+              const safeLength = textBuffer.length - (maxTagLength - 1);
+              processedChunk += textBuffer.slice(0, safeLength);
+              textBuffer = textBuffer.slice(safeLength);
+            }
+            break;
           } else {
-            processedChunk += remaining.slice(0, nextOpen.idx);
+            console.log('[ProviderService] Found opening tag at idx:', nextOpen.idx, 'tag:', nextOpen.open);
+            processedChunk += textBuffer.slice(0, nextOpen.idx);
             openTags.push({ plugin: nextOpen.plugin, name: nextOpen.name, open: nextOpen.open, close: nextOpen.close, buffer: '' });
-            remaining = remaining.slice(nextOpen.idx + nextOpen.open.length);
+            textBuffer = textBuffer.slice(nextOpen.idx + nextOpen.open.length);
           }
         }
 
@@ -183,7 +222,9 @@ export class ProviderService {
           }
         }
 
-        const isHtml = true;
+        console.log('[ProviderService] Processed chunk:', JSON.stringify(processedChunk), 'chunkHasHtml:', chunkHasHtml);
+
+        const isHtml = chunkHasHtml || /<\w+[^>]*>/.test(processedChunk);
         if (!botMessage) {
           botMessage = this.messageHandler.createBotMessage(processedChunk, isHtml ? { renderAsHtml: true } : undefined);
           this.stateHandler.addMessageToState(botMessage);
@@ -198,19 +239,32 @@ export class ProviderService {
             this.messageHandler.updateMessage(botMessage.id, { metadata: { ...(botMessage.metadata || {}), renderAsHtml: true } });
           }
         }
-      }
+        }
 
-      if (!this.cancelRequested && botMessage && openTags.length > 0) {
-        const leftover = openTags.map(t => t.open + t.buffer).join('');
-        if (leftover) this.messageHandler.appendToBotMessage(botMessage.id, leftover);
+      if (!this.cancelRequested && botMessage) {
+        console.log('[ProviderService] Stream ended. textBuffer:', JSON.stringify(textBuffer), 'openTags:', openTags.length);
+        
+        // Flush any remaining text buffer at the end
+        if (textBuffer) {
+          console.log('[ProviderService] Flushing textBuffer:', JSON.stringify(textBuffer));
+          this.messageHandler.appendToBotMessage(botMessage.id, textBuffer);
+        }
+        
+        // Handle any unclosed tags
+        if (openTags.length > 0) {
+          for (const tag of openTags) {
+            console.log('[ProviderService] Unclosed tag:', tag.name, 'buffer:', JSON.stringify(tag.buffer.substring(0, 100)));
+          }
+          
+          const leftover = openTags.map(t => t.open + t.buffer).join('');
+          if (leftover) this.messageHandler.appendToBotMessage(botMessage.id, leftover);
+        }
       }
     } catch (error) {
       this.logError('Error processing stream:', error);
       throw error;
     }
-  }
-
-  buildContext(): ChatbotContext {
+  }  buildContext(): ChatbotContext {
     const state = this.stateHandler.getState();
     const currentThread = state.currentThreadId 
       ? state.threads.find(t => t.id === state.currentThreadId)
