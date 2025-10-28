@@ -115,8 +115,16 @@ export class ProviderService {
     const openTags: Array<{ plugin: any; name: string; open: string; close: string; buffer: string }> = [];
     let textBuffer = ''; // Buffer for accumulating text to search for tags
     let lastCumulative = ''; // Track last cumulative value to detect incremental changes
-
-    console.log('[ProviderService] Starting stream processing, tagAwarePlugins:', tagAwarePlugins.map(p => p.id));
+    
+    // Pre-calculate max tag length for performance
+    let maxTagLength = 0;
+    if (tagAwarePlugins.length > 0) {
+      for (const plugin of tagAwarePlugins) {
+        for (const tag of (plugin.htmlTags as any[])) {
+          maxTagLength = Math.max(maxTagLength, tag.open.length, tag.close.length);
+        }
+      }
+    }
 
     try {
       let done = false;
@@ -137,8 +145,6 @@ export class ProviderService {
         
         // Add only the NEW chunk to buffer
         textBuffer += newChunk;
-        
-        console.log('[ProviderService] New chunk:', JSON.stringify(newChunk), 'buffer length:', textBuffer.length, 'openTags:', openTags.length);
 
         let processedChunk = '';
         let chunkHasHtml = false;
@@ -165,7 +171,6 @@ export class ProviderService {
             const html = typeof current.plugin.renderHtmlBlock === 'function'
               ? current.plugin.renderHtmlBlock(current.name, content)
               : '';
-            console.log('[ProviderService] Closing tag:', current.name, 'content length:', content.length, 'html:', html ? 'rendered' : 'empty');
             if (html) {
               processedChunk += html;
               chunkHasHtml = true;
@@ -173,12 +178,18 @@ export class ProviderService {
             openTags.pop();
             
             // Put remaining text back in textBuffer
-            const afterClose = combined.slice(closeIdx + current.close.length);
-            textBuffer = afterClose;
+            textBuffer = combined.slice(closeIdx + current.close.length);
             continue;
           }
 
           // Not inside a tag, look for opening tags
+          // Only search if we have tag-aware plugins
+          if (tagAwarePlugins.length === 0) {
+            processedChunk += textBuffer;
+            textBuffer = '';
+            break;
+          }
+          
           let nextOpen: { idx: number; plugin: any; name: string; open: string; close: string } | null = null;
           for (const plugin of tagAwarePlugins) {
             for (const tag of (plugin.htmlTags as any[])) {
@@ -191,24 +202,32 @@ export class ProviderService {
 
           if (!nextOpen) {
             // No opening tag found - check if buffer might contain partial tag
-            let maxTagLength = 0;
-            for (const plugin of tagAwarePlugins) {
-              for (const tag of (plugin.htmlTags as any[])) {
-                maxTagLength = Math.max(maxTagLength, tag.open.length);
-              }
-            }
-            
             // Keep last N characters in buffer (where N = max tag length - 1) in case tag is split
-            if (textBuffer.length > maxTagLength - 1) {
+            if (maxTagLength > 0 && textBuffer.length > maxTagLength - 1) {
               const safeLength = textBuffer.length - (maxTagLength - 1);
               processedChunk += textBuffer.slice(0, safeLength);
               textBuffer = textBuffer.slice(safeLength);
             }
             break;
           } else {
-            console.log('[ProviderService] Found opening tag at idx:', nextOpen.idx, 'tag:', nextOpen.open);
             processedChunk += textBuffer.slice(0, nextOpen.idx);
-            openTags.push({ plugin: nextOpen.plugin, name: nextOpen.name, open: nextOpen.open, close: nextOpen.close, buffer: '' });
+            
+            // Render skeleton placeholder if plugin supports it
+            if (typeof nextOpen.plugin.renderHtmlBlockPlaceholder === 'function') {
+              const placeholder = nextOpen.plugin.renderHtmlBlockPlaceholder(nextOpen.name);
+              if (placeholder) {
+                processedChunk += placeholder;
+                chunkHasHtml = true;
+              }
+            }
+            
+            openTags.push({ 
+              plugin: nextOpen.plugin, 
+              name: nextOpen.name, 
+              open: nextOpen.open, 
+              close: nextOpen.close, 
+              buffer: '' 
+            });
             textBuffer = textBuffer.slice(nextOpen.idx + nextOpen.open.length);
           }
         }
@@ -221,8 +240,6 @@ export class ProviderService {
             }
           }
         }
-
-        console.log('[ProviderService] Processed chunk:', JSON.stringify(processedChunk), 'chunkHasHtml:', chunkHasHtml);
 
         const isHtml = chunkHasHtml || /<\w+[^>]*>/.test(processedChunk);
         if (!botMessage) {
@@ -242,20 +259,13 @@ export class ProviderService {
         }
 
       if (!this.cancelRequested && botMessage) {
-        console.log('[ProviderService] Stream ended. textBuffer:', JSON.stringify(textBuffer), 'openTags:', openTags.length);
-        
         // Flush any remaining text buffer at the end
         if (textBuffer) {
-          console.log('[ProviderService] Flushing textBuffer:', JSON.stringify(textBuffer));
           this.messageHandler.appendToBotMessage(botMessage.id, textBuffer);
         }
         
         // Handle any unclosed tags
         if (openTags.length > 0) {
-          for (const tag of openTags) {
-            console.log('[ProviderService] Unclosed tag:', tag.name, 'buffer:', JSON.stringify(tag.buffer.substring(0, 100)));
-          }
-          
           const leftover = openTags.map(t => t.open + t.buffer).join('');
           if (leftover) this.messageHandler.appendToBotMessage(botMessage.id, leftover);
         }
