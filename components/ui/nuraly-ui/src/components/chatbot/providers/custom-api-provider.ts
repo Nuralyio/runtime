@@ -154,6 +154,7 @@ export class CustomAPIProvider implements ChatbotProvider {
   protected async *handleStreamResponse(response: Response): AsyncIterator<string> {
     const reader = response.body!.getReader();
     const decoder = new TextDecoder();
+    let fullText = ''; // Track cumulative text
 
     try {
       while (true) {
@@ -161,7 +162,15 @@ export class CustomAPIProvider implements ChatbotProvider {
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        yield chunk;
+        fullText += chunk; // Accumulate text
+        
+        // Always yield the full cumulative text (required for tag detection)
+        yield fullText;
+      }
+      
+      // Yield final text if we haven't already
+      if (fullText.length > 0) {
+        yield fullText;
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
