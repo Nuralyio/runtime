@@ -78,6 +78,21 @@ export class FlightCardPlugin extends ChatPluginBase implements ChatbotPlugin {
    * CSS class prefix for styling
    */
   protected cssPrefix = 'nr-flight-card';
+  
+  /**
+   * Render a skeleton placeholder while the flight data is loading
+   */
+  renderHtmlBlockPlaceholder?(name: string): string {
+    if (name.toLowerCase() !== 'flight') return '';
+    
+    // Use the library's skeleton component with fixed width
+    return `
+      <nr-skeleton 
+        active 
+        style="min-width: 400px; max-width: 600px; margin: 16px 0;"
+      ></nr-skeleton>
+    `;
+  }
   // Simplified: no shadow DOM observation or external style injection
   // All style-injection logic lives in ChatPluginBase
 
