@@ -105,7 +105,7 @@ export function renderMessage(
           ${message.files.map((f) => html`
             <nr-dropdown 
               trigger="hover" 
-              placement="top"
+              placement="top-end"
               size="small"
               class="message-file-preview-dropdown"
             >
