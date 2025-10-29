@@ -74,6 +74,11 @@ export class ChatbotCoreController {
     this.pluginService = new PluginService();
     this.plugins = this.pluginService.getPluginsMap();
 
+    // Register plugins BEFORE initializing state so initial messages can be processed
+    if (config.plugins) {
+      config.plugins.forEach(plugin => this.pluginService.registerPlugin(plugin, this));
+    }
+
     const initialState = this.initializeState(config);
     this.stateHandler = new StateHandler(initialState, this.eventBus, this.ui, this.plugins, this.config);
 
@@ -99,10 +104,6 @@ export class ChatbotCoreController {
       this.config
     );
 
-    if (config.plugins) {
-      config.plugins.forEach(plugin => this.pluginService.registerPlugin(plugin, this));
-    }
-
     if (config.provider) {
       config.provider.connect({}).catch(error => {
         this.logError('Failed to connect provider:', error);
@@ -118,8 +119,13 @@ export class ChatbotCoreController {
    * Initialize state - override to customize initial state
    */
   protected initializeState(config: ChatbotCoreConfig): ChatbotState {
+    // Process initial messages through plugins to render tags
+    const processedMessages = config.initialMessages 
+      ? config.initialMessages.map(msg => this.processMessageThroughPlugins(msg))
+      : [];
+    
     return {
-      messages: config.initialMessages || [],
+      messages: processedMessages,
       threads: config.initialThreads || [],
       modules: config.enableModules ? [] : undefined,
       selectedModules: [],
@@ -130,6 +136,94 @@ export class ChatbotCoreController {
       currentThreadId: undefined,
       metadata: config.metadata || {}
     };
+  }
+
+  /**
+   * Process a message text through all registered plugins to render HTML tags
+   */
+  protected processMessageThroughPlugins(message: ChatbotMessage): ChatbotMessage {
+    if (!message.text || typeof message.text !== 'string') {
+      return message;
+    }
+
+    // Get all tag-aware plugins
+    const tagAwarePlugins = Array.from(this.plugins.values()).filter(
+      plugin => Array.isArray((plugin as any).htmlTags) && (plugin as any).htmlTags.length > 0
+    );
+
+    if (tagAwarePlugins.length === 0) {
+      return message;
+    }
+
+    let processedText = message.text;
+    let hasHtmlContent = false;
+
+    // Process each plugin's tags
+    for (const plugin of tagAwarePlugins) {
+      const tags = (plugin as any).htmlTags as Array<{ name: string; open: string; close: string }>;
+      
+      for (const tag of tags) {
+        const openTag = tag.open;
+        const closeTag = tag.close;
+        
+        // Find all instances of this tag in the text
+        let searchPos = 0;
+        while (true) {
+          const openIdx = processedText.indexOf(openTag, searchPos);
+          if (openIdx === -1) break;
+          
+          const contentStart = openIdx + openTag.length;
+          const closeIdx = processedText.indexOf(closeTag, contentStart);
+          
+          if (closeIdx === -1) {
+            // Tag not closed, skip
+            searchPos = contentStart;
+            continue;
+          }
+          
+          // Extract content between tags
+          const content = processedText.substring(contentStart, closeIdx);
+          
+          // Render the HTML block
+          let html = '';
+          if (typeof (plugin as any).renderHtmlBlock === 'function') {
+            try {
+              html = (plugin as any).renderHtmlBlock(tag.name, content);
+            } catch (error) {
+              console.error(`[ChatbotCore] Error rendering HTML block for plugin ${plugin.id}:`, error);
+            }
+          }
+          
+          if (html) {
+            // Replace the tag and content with rendered HTML
+            processedText = 
+              processedText.substring(0, openIdx) + 
+              html + 
+              processedText.substring(closeIdx + closeTag.length);
+            hasHtmlContent = true;
+            // Continue searching from after the replacement
+            searchPos = openIdx + html.length;
+          } else {
+            // No HTML rendered, continue searching after this tag
+            searchPos = closeIdx + closeTag.length;
+          }
+        }
+      }
+    }
+
+    // Return updated message with processed text and metadata flag
+    if (hasHtmlContent) {
+      return {
+        ...message,
+        text: processedText,
+        metadata: {
+          ...message.metadata,
+          renderAsHtml: true
+        }
+      };
+    }
+
+    return message;
   }
 
   /**
