@@ -105,9 +105,20 @@ export class ChatbotCoreController {
     );
 
     if (config.provider) {
-      config.provider.connect({}).catch(error => {
-        this.logError('Failed to connect provider:', error);
-      });
+      // Only connect if not already connected
+      if (!config.provider.isConnected()) {
+        config.provider.connect({}).then(async () => {
+          // Auto-load conversations if provider supports it
+          await this.autoLoadConversations(config.provider);
+        }).catch(error => {
+          this.logError('Failed to connect provider:', error);
+        });
+      } else {
+        // Provider already connected, just auto-load conversations
+        this.autoLoadConversations(config.provider).catch(error => {
+          this.logError('Failed to auto-load conversations:', error);
+        });
+      }
     }
 
     this.setupLifecycleHooks();
@@ -662,10 +673,23 @@ export class ChatbotCoreController {
    */
   public setProvider(provider: ChatbotProvider): void {
     this.providerService.setProvider(provider);
-    provider.connect({}).catch(error => {
-      this.logError('Failed to connect provider:', error);
-    });
-    this.emit('provider:connected', provider.id);
+    
+    // Only connect if not already connected
+    if (!provider.isConnected()) {
+      provider.connect({}).then(async () => {
+        // Auto-load conversations if provider supports it
+        await this.autoLoadConversations(provider);
+        this.emit('provider:connected', provider.id);
+      }).catch(error => {
+        this.logError('Failed to connect provider:', error);
+      });
+    } else {
+      // Provider already connected, just auto-load conversations and emit event
+      this.autoLoadConversations(provider).catch(error => {
+        this.logError('Failed to auto-load conversations:', error);
+      });
+      this.emit('provider:connected', provider.id);
+    }
   }
 
   // ===== STORAGE MANAGEMENT =====
@@ -759,6 +783,70 @@ export class ChatbotCoreController {
       currentThreadId: processedThreads.length > 0 ? processedThreads[0].id : undefined,
       messages: processedThreads.length > 0 ? processedThreads[0].messages : []
     });
+  }
+
+  /**
+   * Auto-load conversations from provider if it has loadConversations method
+   * This is called automatically when provider connects
+   */
+  protected async autoLoadConversations(provider?: ChatbotProvider): Promise<void> {
+    if (!provider) return;
+    
+    // Check if provider has loadConversations method
+    if (typeof (provider as any).loadConversations === 'function') {
+      try {
+        this.log('Auto-loading conversations from provider...');
+        const conversations = await (provider as any).loadConversations();
+        
+        if (Array.isArray(conversations) && conversations.length > 0) {
+          this.log(`Loaded ${conversations.length} conversation summaries`);
+          
+          // Load full conversation details if loadConversation method exists
+          const loadedThreads: ChatbotThread[] = [];
+          
+          if (typeof (provider as any).loadConversation === 'function') {
+            for (const conv of conversations) {
+              try {
+                const fullConversation = await (provider as any).loadConversation(conv.id);
+                if (fullConversation) {
+                  const thread: ChatbotThread = {
+                    id: fullConversation.id,
+                    title: fullConversation.title,
+                    messages: fullConversation.messages || [],
+                    createdAt: fullConversation.createdAt,
+                    updatedAt: fullConversation.updatedAt
+                  };
+                  loadedThreads.push(thread);
+                }
+              } catch (error) {
+                this.logError(`Failed to load conversation ${conv.id}:`, error);
+              }
+            }
+          } else {
+            // If no loadConversation method, convert summary to threads
+            for (const conv of conversations) {
+              const thread: ChatbotThread = {
+                id: conv.id,
+                title: conv.title,
+                messages: [],
+                createdAt: conv.createdAt,
+                updatedAt: conv.updatedAt
+              };
+              loadedThreads.push(thread);
+            }
+          }
+          
+          if (loadedThreads.length > 0) {
+            this.log(`Successfully loaded ${loadedThreads.length} conversations`);
+            this.loadConversations(loadedThreads);
+          }
+        } else {
+          this.log('No conversations to load from provider');
+        }
+      } catch (error) {
+        this.logError('Failed to auto-load conversations from provider:', error);
+      }
+    }
   }
 
   /**
