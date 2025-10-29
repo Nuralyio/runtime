@@ -345,8 +345,14 @@ export class ChatbotCoreController {
    */
   public addMessage(data: Partial<ChatbotMessage>): ChatbotMessage {
     const message = this.messageHandler.createMessage(data);
-    this.messageHandler.addMessage(message);
-    return message;
+    
+    // Process message through plugins if it's from the bot and has text content
+    const processedMessage = message.sender === 'bot' 
+      ? this.processMessageThroughPlugins(message)
+      : message;
+    
+    this.messageHandler.addMessage(processedMessage);
+    return processedMessage;
   }
 
   /**
@@ -683,6 +689,13 @@ export class ChatbotCoreController {
    */
   public async loadFromStorage(key: string = 'chatbot-state'): Promise<void> {
     await this.storageService.loadState(key);
+    
+    // Process loaded messages through plugins to render any HTML tags
+    const state = this.stateHandler.getState();
+    if (state.messages && state.messages.length > 0) {
+      const processedMessages = state.messages.map(msg => this.processMessageThroughPlugins(msg));
+      this.stateHandler.updateState({ messages: processedMessages });
+    }
   }
 
   // ===== EVENT BUS =====
@@ -715,7 +728,37 @@ export class ChatbotCoreController {
    * Update chatbot state (use with caution)
    */
   public setState(updates: Partial<ChatbotState>): void {
+    // If messages are being set, process them through plugins first
+    if (updates.messages && Array.isArray(updates.messages)) {
+      updates.messages = updates.messages.map(msg => this.processMessageThroughPlugins(msg));
+    }
+    
+    // If threads are being set, process their messages through plugins
+    if (updates.threads && Array.isArray(updates.threads)) {
+      updates.threads = updates.threads.map(thread => ({
+        ...thread,
+        messages: thread.messages.map(msg => this.processMessageThroughPlugins(msg))
+      }));
+    }
+    
     this.updateState(updates);
+  }
+
+  /**
+   * Load conversations from external source (API, database, etc.)
+   * This is a helper method that processes messages through plugins
+   */
+  public loadConversations(threads: ChatbotThread[]): void {
+    const processedThreads = threads.map(thread => ({
+      ...thread,
+      messages: thread.messages.map(msg => this.processMessageThroughPlugins(msg))
+    }));
+    
+    this.updateState({ 
+      threads: processedThreads,
+      currentThreadId: processedThreads.length > 0 ? processedThreads[0].id : undefined,
+      messages: processedThreads.length > 0 ? processedThreads[0].messages : []
+    });
   }
 
   /**
