@@ -14,6 +14,37 @@ import type {
 /**
  * Custom API provider for any REST/HTTP backend
  * Can be extended for custom implementations
+ * 
+ * @example Basic usage
+ * ```typescript
+ * const provider = new CustomAPIProvider();
+ * await provider.connect({
+ *   apiUrl: 'https://api.example.com/chat',
+ *   apiKey: 'your-api-key'
+ * });
+ * ```
+ * 
+ * @example Extending with conversation loading
+ * To enable automatic conversation loading on connect, override the
+ * `loadConversations` and optionally `loadConversation` methods:
+ * 
+ * ```typescript
+ * class MyAPIProvider extends CustomAPIProvider {
+ *   async loadConversations(): Promise<Array<{id: string, title: string, ...}>> {
+ *     const response = await fetch('/api/conversations');
+ *     const data = await response.json();
+ *     return data.conversations;
+ *   }
+ *   
+ *   async loadConversation(id: string): Promise<{id: string, title: string, messages: ChatbotMessage[]}> {
+ *     const response = await fetch(`/api/conversations/${id}`);
+ *     return await response.json();
+ *   }
+ * }
+ * ```
+ * 
+ * When the ChatbotCoreController connects a provider with these methods,
+ * it will automatically load existing conversations into the thread sidebar.
  */
 export class CustomAPIProvider implements ChatbotProvider {
   readonly id = 'custom-api';
