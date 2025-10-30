@@ -420,7 +420,10 @@ export class ChatbotCoreController {
 
     for (const file of filesToUpload) {
       try {
-        const validation = await this.validationService.validateFile(file);
+        const validation = await this.validationService.validateFile(file, {
+          maxFileSize: this.config.maxFileSize,
+          allowedTypes: this.config.allowedFileTypes
+        });
         if (!validation.isValid) {
           if (this.ui.showNotification) {
             this.ui.showNotification(validation.errors[0] || 'File validation failed', 'error');
