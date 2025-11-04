@@ -57,6 +57,10 @@ export class IconPicker extends BaseElementBlock {
       : this.icons;
   };
 
+  toggleDropdown = () => {
+    this.dropdownOpen = !this.dropdownOpen;
+  };
+
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     document.removeEventListener("click", this.onClickOutside);
@@ -65,59 +69,59 @@ export class IconPicker extends BaseElementBlock {
   override render() {
     this.selectedIcon = this.inputHandlersValue.value ?? EMPTY_STRING;
     const isDisabled = this.inputHandlersValue?.disable || false;
+    
+    const dropdownContent = html`
+      <style>
+        .icon-item .selected {
+          border: red;
+        }
+      </style>
+      <div class="dropdown-icon">
+        <div class="search-container">
+          <nr-input
+            .autocomplete="off"
+            placeholder=${this.inputHandlersValue.placeholder || "Search icons..."}
+            @nr-input=${this.handleIconChange}
+          ></nr-input>
+        </div>
+        <div style="height: 200px; overflow: auto; display: flex; background: var(--nuraly-input-background-color)" class="hello">
+          <lit-virtualizer
+            .items=${this.filteredIcons}
+            .layout=${grid({ itemSize: "30px" })}
+            .renderItem=${(icon: string) => html`
+              <div
+                class="icon-item ${icon === this.selectedIcon ? "selected" : EMPTY_STRING}"
+                @click=${() => this.handleIconSelect(icon)}
+              >
+                <nr-icon .name=${icon}></nr-icon>
+              </div>
+            `}
+          ></lit-virtualizer>
+        </div>
+      </div>
+    `;
+
     return html`
-      <hy-dropdown
-        style="--hybrid-dropdown-width: 215px;"
-        .show=${this.dropdownOpen}
-        .template=${html`
-          <style>
-            .icon-item .selected {
-              border: red;
-            }
-          </style>
-          <div class="dropdown-icon">
-            <div class="search-container">
-              <hy-input
-                .autocmplete="off"
-                placeholder=${this.inputHandlersValue.placeholder || "Search icons..."}
-                @valueChange=${this.handleIconChange}
-              ></hy-input>
-            </div>
-            <div style="height: 200px; overflow: auto; display: flex; background: var(--hybrid-input-background-color)" class="hello">
-            <lit-virtualizer
-              .items=${this.filteredIcons}
-              .layout=${grid({
-          itemSize: "30px"
-        })}
-              .renderItem=${(icon: string) => html`
-                <div
-                  class="icon-item ${icon === this.selectedIcon ? "selected" : EMPTY_STRING}"
-                  @click=${() => this.handleIconSelect(icon)}
-                >
-                  <hy-icon .name=${icon}></hy-icon>
-                </div>
-              `}
-            ></lit-virtualizer>
-            </div>
-          </div>
-        `}
+      <nr-dropdown
+        style="--nuraly-dropdown-width: 215px;"
+        .open=${this.dropdownOpen}
+        .items=${[{ content: dropdownContent }]}
       >
-
-
-        <hy-button
+        <nr-button
+          slot="trigger"
           .disabled=${isDisabled}
-          style=${
-            styleMap({
-              ...ButtonTheme,
-              "--hybrid-button-width": isDisabled ? "auto" : "35px"
-            })
-          }>
-          ${
-            isDisabled ? html`Dynamic` : html` <hy-icon class="icon-preview" .name=${this.selectedIcon}></hy-icon>`
+          @click=${this.toggleDropdown}
+          style=${styleMap({
+            ...ButtonTheme,
+            "--nuraly-button-width": isDisabled ? "auto" : "35px"
+          })}
+        >
+          ${isDisabled 
+            ? html`Dynamic` 
+            : html`<nr-icon class="icon-preview" .name=${this.selectedIcon}></nr-icon>`
           }
-        </hy-button>
-
-      </hy-dropdown>
+        </nr-button>
+      </nr-dropdown>
     `;
   }
 

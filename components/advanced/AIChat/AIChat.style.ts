@@ -15,7 +15,7 @@ export default css`
                 margin-top: 10px;
                 width: 100%;
             }
-            .chat-input hy-input {
+            .chat-input nr-input {
                 flex: 1;
                 margin-right: 10px;
             }

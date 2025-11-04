@@ -46,10 +46,10 @@ override  renderComponent() {
 
     return html`
     <span>
-      <hy-select  
+      <nr-select  
             ${ref(this.inputRef)}
             style=${styleMap({...this.getStyles(), 
-            "--hybrid-select-width" : this.getStyles()['--hybrid-select-width']  ?? this.getStyles().width    
+            "--nuraly-select-width" : this.getStyles()['--nuraly-select-width']  ?? this.getStyles().width    
           })}
                  selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : nothing}
                  .options=${this.inputHandlersValue?.options || options}
@@ -63,7 +63,7 @@ override  renderComponent() {
       >
         <span slot="label">${this.inputHandlersValue.label ?? nothing}</span>
         <span slot="helper-text">${this.inputHandlersValue.helper ?? nothing}</span>
-      </hy-select>
+      </nr-select>
         </span>
     `;
   }

@@ -1,40 +1,24 @@
-import { css, html, nothing } from "lit";
+import { css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
-
-let HyCheckbox: any;
-const loadHyCheckbox = async () => {
-  if (!HyCheckbox) {
-    const module = await import("@nuralyui/checkbox");
-    HyCheckbox = module.default || module;
-  }
-};
+import "@nuralyui/checkbox";
 
 @customElement("checkbox-block")
-export class TextInputBlock extends BaseElementBlock {
+export class CheckboxBlock extends BaseElementBlock {
   static styles = [
-    css`
-      :host {
-      }
-    `,
+    css``,
   ];
 
   @property({ type: Object })
   component: ComponentElement;
 
-  @property({ type: Object })
-  item: any;
-
   unsubscribe: () => void;
 
   override async connectedCallback() {
     await super.connectedCallback();
-    await loadHyCheckbox();
     this.registerCallback("value", () => {});
   }
 
@@ -43,36 +27,48 @@ export class TextInputBlock extends BaseElementBlock {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  handleCheckboxChange = (e) => {
-    if (this.component.event?.checkboxChanged) {
-      executeCodeWithClosure(
-        this.component,
-        getNestedAttribute(this.component, `event.checkboxChanged`),
-        { value: e.detail.value }
-      );
-    }
-  };
-
   renderComponent() {
     const checkBoxStyles = this.component?.style || {};
-    const checkboxAutoWidth = this.inputHandlersValue?.width;
-    const checkboxAutoHeight = this.inputHandlersValue?.height;
+    const size = checkBoxStyles.size as 'small' | 'medium' | 'large' | undefined;
 
     return html`
-            <hy-checkbox
-             ${ref(this.inputRef)}
-                    style=${styleMap({
-                      ...this.getStyles(),
-                    })}
-              .checked=${this.inputHandlersValue?.checked == "check"}
-              .indeterminate=${this.inputHandlersValue?.checked == "indeterminate"}
-              .disabled=${this.inputHandlersValue?.state == "disabled"}
-              .size=${checkBoxStyles.size ?? nothing}
-              @checkbox-changed=${this.handleCheckboxChange}
-            >
-              ${this.inputHandlersValue?.label ?? ""}
-            </hy-checkbox>
-          
+      <nr-checkbox
+        ${ref(this.inputRef)}
+        style=${styleMap({
+          ...this.getStyles(),
+        })}
+        .checked=${this.inputHandlersValue?.checked == "check"}
+        .indeterminate=${this.inputHandlersValue?.checked == "indeterminate"}
+        .disabled=${this.inputHandlersValue?.state == "disabled"}
+        .size=${size || 'medium'}
+        .name=${this.inputHandlersValue?.name || ''}
+        .value=${this.inputHandlersValue?.value || ''}
+        .required=${this.inputHandlersValue?.required || false}
+        .autoFocus=${this.inputHandlersValue?.autoFocus || false}
+        .id=${this.inputHandlersValue?.id || ''}
+        .title=${this.inputHandlersValue?.title || ''}
+        .tabIndex=${this.inputHandlersValue?.tabIndex || 0}
+        @nr-change=${(e) => {
+          this.executeEvent('onChange', e);
+        }}
+        @nr-focus=${(e) => {
+          this.executeEvent('onFocus', e);
+        }}
+        @nr-blur=${(e) => {
+          this.executeEvent('onBlur', e);
+        }}
+        @nr-keydown=${(e) => {
+          this.executeEvent('onKeydown', e);
+        }}
+        @nr-mouseenter=${(e) => {
+          this.executeEvent('onMouseEnter', e);
+        }}
+        @nr-mouseleave=${(e) => {
+          this.executeEvent('onMouseLeave', e);
+        }}
+      >
+        ${this.inputHandlersValue?.label ?? ""}
+      </nr-checkbox>
     `;
   }
 }

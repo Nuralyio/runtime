@@ -41,7 +41,7 @@ export class ExportImportBlock extends BaseElementBlock {
   renderDropdown(templateContent: string, buttonLabel: string, type: string) {
     const isExport = type === "export";
     return html`
-      <hy-dropdown
+      <nr-dropdown
         .template=${html`
           <div style="width: 700px; padding: 8px; background: #2d2d2d; border-radius: 4px; height: 300px; resize: both">
             <code-editor
@@ -53,23 +53,23 @@ export class ExportImportBlock extends BaseElementBlock {
             <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end;">
               ${isExport
       ? html`
-                    <hy-button @click=${() => this.copyToClipboard(templateContent)}>Copy</hy-button>
-                    <hy-button
+                    <nr-button @click=${() => this.copyToClipboard(templateContent)}>Copy</nr-button>
+                    <nr-button
                       @click=${() => this.downloadContent(templateContent, "exported-data.json")}
                     >
                       Download
-                    </hy-button>
+                    </nr-button>
                   `
       : nothing}
-              ${isExport ? nothing : html` <hy-button @click=${() => console.log(`${type} confirmed`)}>
+              ${isExport ? nothing : html` <nr-button @click=${() => console.log(`${type} confirmed`)}>
                 Confirm Import
-              </hy-button>`}
+              </nr-button>`}
              
             </div>
           </div>
         `}
       >
-        <hy-button @click=${() => {
+        <nr-button @click=${() => {
       $selectedComponent($currentApplication.get().uuid).subscribe((component) => {
 
         const uuidSet = new Set<string>();
@@ -95,8 +95,8 @@ export class ExportImportBlock extends BaseElementBlock {
       });
     }}>
           ${buttonLabel}
-        </hy-button>
-      </hy-dropdown>
+        </nr-button>
+      </nr-dropdown>
     `;
   }
 

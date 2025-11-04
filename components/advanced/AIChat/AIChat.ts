@@ -44,16 +44,16 @@ export class AiChat extends BaseElementBlock {
     const aiChatStyle = this.component?.style || {};
     return html`
             <div class="chat-input-container" style=${styleMap({ ...aiChatStyle })}>
-                <hy-button @click=${this.toggleChatBox}>Ask AI</hy-button>
+                <nr-button @click=${this.toggleChatBox}>Ask AI</nr-button>
                 ${this.isChatBoxVisible ? html`
                     <div class="chat-input">
-                        <hy-input value=${this.inputValue} placeholder="Type your message" @valueChange=${this.handleInputChange} @keyup=${this.handleKeyUp} ></hy-input>
-                        <hy-button @click=${this.handleSendMessage}>Send</hy-button>
+                        <nr-input value=${this.inputValue} placeholder="Type your message" @valueChange=${this.handleInputChange} @keyup=${this.handleKeyUp} ></nr-input>
+                        <nr-button @click=${this.handleSendMessage}>Send</nr-button>
                     </div>
                     ${this.messages.length > 0 ? html`
                         <div class="chat-messages">
                             ${this.preview ? html`<micro-app uuid=${this.chatUuid} componentToRenderUUID=${this.rootUUID}></micro-app>` : ""}
-                        <hy-button @click=${() => addGeneratedComponents(this.structureComponent)}>Insert</hy-button>
+                        <nr-button @click=${() => addGeneratedComponents(this.structureComponent)}>Insert</nr-button>
                         </div>
                     ` : ""}
                     ${this.errorMessage ? html`<div class="error-message">${this.errorMessage}</div>` : ""}

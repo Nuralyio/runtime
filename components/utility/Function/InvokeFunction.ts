@@ -23,7 +23,7 @@ export class InvokeFunctionBlock extends BaseElementBlock {
   override render() {
     return html`
       ${false  ? html`
-        <hy-label>Payload</hy-label>
+        <nr-label>Payload</nr-label>
       <div class="code-editor">
         <code-editor
           theme="vs"
@@ -44,7 +44,7 @@ export class InvokeFunctionBlock extends BaseElementBlock {
         >
         </code-editor>
         <br/>
-        <hy-button .icon=${["bug"]} 
+        <nr-button .icon=${["bug"]} 
         @click=${()=>{
           window.dispatchEvent(new CustomEvent('add-log', {detail: {result:"invoking function ..." }}));
           invokeFunctionHandler(getVar('global','currentFunction').value.id, {payload: {data: "Hello World"}})
@@ -52,10 +52,10 @@ export class InvokeFunctionBlock extends BaseElementBlock {
               const _result = await result.text() 
               window.dispatchEvent(new CustomEvent('add-log', {detail: {result:_result }}));
           })
-        }}>Submit</hy-button>
+        }}>Submit</nr-button>
       </div>` : html`
         <div style="padding :15px 5px; margin: 10px">
-          <hy-label>Click Invoke to test the function with custom payload</hy-label>
+          <nr-label>Click Invoke to test the function with custom payload</nr-label>
         </div>
       `}
     `;

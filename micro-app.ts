@@ -12,6 +12,7 @@ import EditorInstance, { getInitPlatform } from "./core/Editor";
 import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { ExecuteInstance } from "./core/Kernel";
+import "@shared/ui/nuraly-ui/src/shared/themes/default.css";
 
 
 @customElement("micro-app")
@@ -211,7 +212,9 @@ private initializeAppComponents(): void {
     if (!this.uuid || !this.componentsToRender.length) return nothing;
 
     return html`
-      <div style=${styleMap({
+      <div 
+       
+      style=${styleMap({
         "height": "100%",
       })}>
         ${renderComponent(this.componentsToRender, null, this.isPreviewMode())}

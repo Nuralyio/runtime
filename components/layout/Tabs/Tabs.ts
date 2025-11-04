@@ -40,13 +40,14 @@ export class TabsBlock extends BaseElementBlock {
   override render() {
     return html`
       ${this.editableTabs?.length > 0 ? html`
-        <hy-tabs
+        <nr-tabs
           style=${styleMap({
 
       ...this.component.style
     })}
           .activeTab=${this.inputHandlersValue.index ?? 0}
           .tabs=${this.editableTabs}
+          size=${this.inputHandlersValue?.size ?? 'medium'}
           @tabTilteClick=${(e: CustomEvent) => {
             //@todo pass the object
           this.executeEvent('onTabChanged', e, {
@@ -59,7 +60,7 @@ export class TabsBlock extends BaseElementBlock {
           canAddTab: false,
           canMove: false
         }}
-        ></hy-tabs>
+        ></nr-tabs>
       ` : EMPTY_STRING}
     `;
   }

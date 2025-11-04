@@ -13,7 +13,7 @@ export class ButtonBlock extends BaseElementBlock {
   static styles = [
     css`
       :host {
-        --hybrid-button-icon-width: 19px;
+        --nuraly-button-icon-width: 19px;
       }
     `,
   ];
@@ -31,39 +31,47 @@ export class ButtonBlock extends BaseElementBlock {
 
   renderComponent() {
     const buttonStyles = this.getStyles();
+    
+    // Support multiple icon API formats
+    const iconArray = this.inputHandlersValue.icon ? [this.inputHandlersValue.icon] : [];
+    
     return html`
-            <hy-button
+            <nr-button
               ${ref(this.inputRef)}
-              .size=${buttonStyles?.size
-                ? buttonStyles.size
-                : buttonStyles?.size
-                ? buttonStyles.size
-                : nothing}
-              .type=${buttonStyles?.type
-                ? buttonStyles.type
-                : buttonStyles?.type
-                ? buttonStyles.type
-                : nothing}
+              .size=${buttonStyles?.size || nothing}
+              .type=${buttonStyles?.type || nothing}
+              .shape=${this.inputHandlersValue.shape || nothing}
               .disabled=${this.inputHandlersValue.state == "disabled"}
-              .icon="${this.inputHandlersValue.icon ? [this.inputHandlersValue.icon] : nothing}"
-              .iconPosition=${this.inputHandlersValue.iconPosition ?? nothing}
-              @mousedown=${(e) => {
-
+              .loading=${this.inputHandlersValue.loading || false}
+              .block=${this.inputHandlersValue.block || false}
+              .dashed=${this.inputHandlersValue.dashed || false}
+              .icon=${iconArray}
+              .iconLeft=${this.inputHandlersValue.iconLeft || nothing}
+              .iconRight=${this.inputHandlersValue.iconRight || nothing}
+              .icons=${this.inputHandlersValue.icons || nothing}
+              .iconPosition=${this.inputHandlersValue.iconPosition || 'left'}
+              .href=${this.inputHandlersValue.href || nothing}
+              .target=${this.inputHandlersValue.target || nothing}
+              .ripple=${this.inputHandlersValue.ripple !== false}
+              .buttonAriaLabel=${this.inputHandlersValue.ariaLabel || nothing}
+              .htmlType=${this.inputHandlersValue.htmlType || nothing}
+              @click=${(e) => {
                this.executeEvent('onClick' , e)
               }}
-              style=${styleMap({ ...this.getStyles() , 
-                "--hybrid-button-width": buttonStyles?.width,
-                "--hybrid-button-height": buttonStyles?.height,
-                "--hybrid-button-local-border-top-left-radius": buttonStyles?.["border-top-left-radius"] ?? "",
-                "--hybrid-button-local-border-top-right-radius": buttonStyles?.["border-top-right-radius"] ?? "",
-                "--hybrid-button-local-border-bottom-left-radius": buttonStyles?.["border-bottom-left-radius"] ?? "",
-                "--hybrid-button-local-border-bottom-right-radius": buttonStyles?.["border-bottom-right-radius"] ?? "",
-                "--hybrid-button-margin-y": buttonStyles?.["margin-top"] ?? "",
-
+              @button-clicked=${(e) => {
+               this.executeEvent('onButtonClicked' , e)
+              }}
+              @link-navigation=${(e) => {
+               this.executeEvent('onLinkNavigation' , e)
+              }}
+              style=${styleMap({ 
+                ...this.getStyles(),
+                width: buttonStyles?.width,
+                height: buttonStyles?.height,
                })}
             >
-             <hy-label> ${this.inputHandlersValue.label ?? "Button"}</hy-label>
-            </hy-button>
+              ${this.inputHandlersValue.label ?? "Button"}
+            </nr-button>
     `;
   }
 }

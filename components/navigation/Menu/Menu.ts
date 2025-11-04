@@ -1,23 +1,21 @@
 import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/menu/templates/hy-sub-menu.js";
-import "@nuralyui/menu/templates/hy-menu-link.js";
+import "@nuralyui/menu";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/menu";
 
 @customElement("menu-block")
 export class MenuBlock extends BaseElementBlock {
 
   static override styles = [
     css`
-        hy-menu {
-            --hybrid-menu-width: 100%;
+        nr-menu {
+            --nuraly-menu-width: 100%;
 
         }
         :host {
@@ -64,13 +62,14 @@ export class MenuBlock extends BaseElementBlock {
   override renderComponent() {
     return html`
       
-        <hy-menu
+        <nr-menu
                     ${ref(this.inputRef)}
 
           style=${styleMap({ ...this.getStyles(), 
             display : 'block',
            })}
           placeholder="Select an option"
+          size=${this.inputHandlersValue?.size ?? 'medium'}
           .items=${this.inputHandlersValue?.options ?? []}
           @action-click=${this.onActionClick}
           @change="${(customEvent: CustomEvent) => {
@@ -86,7 +85,7 @@ export class MenuBlock extends BaseElementBlock {
         page: selectedPage
       });
     }}">
-        </hy-menu>
+        </nr-menu>
     `;
   }
 }

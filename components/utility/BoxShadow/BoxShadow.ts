@@ -21,18 +21,18 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
         :host {
             display: block;
         }
-        hy-slider-input{
+        nr-slider-input{
     	    width: 100%;
     	    margin-left: 14px;
         }
-        hy-input {
-			--hybrid-input-container-padding-top : 0px;
-			--hybrid-input-container-padding-bottom : 0px;
-			--hybrid-input-container-padding-left : 0px;
-			--hybrid-input-container-padding-right : 0px;
-			--hybrid-input-text-align:center
+        nr-input {
+			--nuraly-input-container-padding-top : 0px;
+			--nuraly-input-container-padding-bottom : 0px;
+			--nuraly-input-container-padding-left : 0px;
+			--nuraly-input-container-padding-right : 0px;
+			--nuraly-input-text-align:center
 		}
-		hy-icon{
+		nr-icon{
 			font-size: 20px;
 		}
 
@@ -42,8 +42,8 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 		.second-row{
 			flex: 20%;
 		}
-		hy-checkbox{
-			--hy-checkbox-size: 15px;
+		nr-checkbox{
+			--nr-checkbox-size: 15px;
 			}
         `
   ];
@@ -102,20 +102,20 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
     this.insetValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[4] : false;
     this.colorValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[5] : "#000000";
     return html`
-		<hy-checkbox 
+		<nr-checkbox 
 		.disabled=${isDisabled}
 		.checked=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[4] : false} 
 		@checkbox-changed=${(e) => {
 			this.handleColorChange(e);
     }}
 		 >
-		${this.insetValue ? html`<hy-label>Disable</hy-label>` : html`<hy-label>Enable</hy-label>`}<hy-label> Shodow Box</hy-label>
-		</hy-checkbox>
+		${this.insetValue ? html`<nr-label>Disable</nr-label>` : html`<nr-label>Enable</nr-label>`}<nr-label> Shodow Box</nr-label>
+		</nr-checkbox>
 		<div>
 			<div style="display : flex">
 				<div class="first-row">
-	    			<hy-icon name="arrows-alt-h"></hy-icon>
-					<hy-slider-input
+	    			<nr-icon name="arrows-alt-h"></nr-icon>
+					<nr-slider-input
 			          id="slider-change-via-textbox"
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
@@ -126,10 +126,10 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
       this.horizontalValue = e.detail.value;
       this.boxShadow();
     }}"
-			        ></hy-slider-input>
+			        ></nr-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input 
+		        	 <nr-input 
 					 .value=${this.horizontalValue} 				
 					 .disabled=${isDisabled}
 					 @valueChange=${(e) => {
@@ -139,14 +139,14 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
       }
     }}
 					 >
-					 </hy-input>
+					 </nr-input>
 		        </div>
 			</div>
 
 			<div style="display : flex">
 				<div class="first-row">
-	    			<hy-icon name="arrows-alt-v"></hy-icon>
-					<hy-slider-input
+	    			<nr-icon name="arrows-alt-v"></nr-icon>
+					<nr-slider-input
 			          id="slider-change-via-textbox"
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
@@ -157,10 +157,10 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
       this.verticalValue = e.detail.value;
       this.boxShadow();
     }}"
-			        ></hy-slider-input>
+			        ></nr-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input 
+		        	 <nr-input 
 					 .value=${this.verticalValue} 					  
 					 .disabled=${isDisabled}
 					 @valueChange=${(e) => {
@@ -171,14 +171,14 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
     }}
 					 
 					 >
-					 </hy-input>
+					 </nr-input>
 		        </div>
 			</div>
 
 			<div style="display : flex">
 				<div class="first-row">
-	    			<hy-icon name="burn"></hy-icon>
-					<hy-slider-input
+	    			<nr-icon name="burn"></nr-icon>
+					<nr-slider-input
 			          id="slider-change-via-textbox"
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
@@ -190,10 +190,10 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
       this.boxShadow();
     }}"
 
-			        ></hy-slider-input>
+			        ></nr-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input   
+		        	 <nr-input   
 					 .disabled=${isDisabled}
 					 .value=${this.blurValue} 
 					 @valueChange=${(e) => {
@@ -203,14 +203,14 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
       }
     }}
 					>
-					</hy-input>
+					</nr-input>
 		        </div>
 			</div>
 
 			<div style="display : flex">
 				<div class="first-row">
-	    			<hy-icon name="compress"></hy-icon>
-					<hy-slider-input
+	    			<nr-icon name="compress"></nr-icon>
+					<nr-slider-input
 			          id="slider-change-via-textbox"
 			          data-prop="slider-change-via-textbox"
 			          .min=${-50}
@@ -221,10 +221,10 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
       this.spreadValue = e.detail.value;
       this.boxShadow();
     }}"
-			        ></hy-slider-input>
+			        ></nr-slider-input>
 				</div>
 		        <div class="second-row">
-		        	 <hy-input 					  
+		        	 <nr-input 					  
 					 .disabled=${isDisabled}
 					 .value=${this.spreadValue}
 					 @valueChange=${(e) => {
@@ -233,17 +233,17 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
         this.boxShadow();
       }
     }}
-					 ></hy-input>
+					 ></nr-input>
 		        </div>
 			</div>
 			<div>
-			<hy-color-picker
+			<nr-color-picker
 			style="height: 100px; width: 100%;"
 			.disabled=${isDisabled}
             .color="${this.inputHandlersValue?.value ? this.inputHandlersValue.value[5] : "#000000"}"
             @color-changed="${this.handleColorChange}"
              >
-			 </hy-color-picker>
+			 </nr-color-picker>
     </div>			
 		</div>
         `;

@@ -4,9 +4,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "@nuralyui/input";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
-import { debounce } from "@shared/utils/time.ts";
 import { ref } from "lit/directives/ref.js";
 
 @customElement("text-input-block")
@@ -28,18 +25,6 @@ export class TextInputBlock extends BaseElementBlock {
   private _focusResetTimeout: NodeJS.Timeout | null = null;
   private _inputElement: HTMLInputElement | null = null;
 
-  handleValueChange = debounce((customEvent: CustomEvent) => {
-   
-    if (this.component?.event?.valueChange) {
-      executeCodeWithClosure(
-        this.component,
-        getNestedAttribute(this.component, `event.valueChange`),
-        { value: customEvent.detail.value }
-      );
-    }
-    this.resetFocusAfterInactivity();
-  }, 0);
-
   unsubscribe: () => void;
 
   constructor() {
@@ -56,52 +41,14 @@ export class TextInputBlock extends BaseElementBlock {
     });
 
     // Récupération de l'élément input
-    this._inputElement = this.renderRoot.querySelector("hy-input");
+    this._inputElement = this.renderRoot.querySelector("nr-input");
   }
-
-  private handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "ArrowUp" && this.component.event?.onArrowUp) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onArrowUp`));
-    }
-  };
-
-  private handleKeyUp = (event: KeyboardEvent) => {
-    if (event.key === "ArrowDown" && this.component.event?.onArrowDown) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onArrowDown`));
-    }
-  };
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.unsubscribe) this.unsubscribe();
     if (this._focusResetTimeout) clearTimeout(this._focusResetTimeout);
-    if (this._inputElement) {
-      this._inputElement.removeEventListener("keydown", this.handleKeyDown);
-      this._inputElement.removeEventListener("keyup", this.handleKeyUp);
-    }
   }
-
-  onFocus = () => {
-    this._isUserFocused = true;
-    if (this._inputElement) {
-      this._inputElement.addEventListener("keydown", this.handleKeyDown);
-      this._inputElement.addEventListener("keyup", this.handleKeyUp);
-    }
-    if (this.component?.event?.focus) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.focus`));
-    }
-  };
-
-  onBlur = (e: Event) => {
-    this._isUserFocused = false;
-    if (this._inputElement) {
-      this._inputElement.removeEventListener("keydown", this.handleKeyDown);
-      this._inputElement.removeEventListener("keyup", this.handleKeyUp);
-    }
-    if (this.component?.event?.blur) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.blur`));
-    }
-  };
 
   private resetFocusAfterInactivity() {
     if (this._focusResetTimeout) {
@@ -114,32 +61,66 @@ export class TextInputBlock extends BaseElementBlock {
 
   override renderComponent() {
    const inputStyles = this.getStyles();
+   const componentStyles = this.component?.style || {};
+   const size = (componentStyles?.size as 'small' | 'medium' | 'large') || 'medium';
 
     return html`
-        <hy-input
+        <nr-input
         ${ref(this.inputRef)}
           style=${styleMap({...this.getStyles(),
-              "--hybrid-input-local-border-top-left-radius": inputStyles?.["border-top-left-radius"] ?? "",
-              "--hybrid-input-local-border-top-right-radius": inputStyles?.["border-top-right-radius"] ?? "",
-              "--hybrid-input-local-border-bottom-left-radius": inputStyles?.["border-bottom-left-radius"] ?? "",
-              "--hybrid-input-local-border-bottom-right-radius": inputStyles?.["border-bottom-right-radius"] ?? "",
+              "--nuraly-input-local-border-top-left-radius": inputStyles?.["border-top-left-radius"] ?? "",
+              "--nuraly-input-local-border-top-right-radius": inputStyles?.["border-top-right-radius"] ?? "",
+              "--nuraly-input-local-border-bottom-left-radius": inputStyles?.["border-bottom-left-radius"] ?? "",
+              "--nuraly-input-local-border-bottom-right-radius": inputStyles?.["border-bottom-right-radius"] ?? "",
           })}
-          @valueChange=${this.handleValueChange}
-          @focused=${this.onFocus}
-          @blur=${this.onBlur}
           .value=${this.inputHandlersValue?.value ?? nothing}
-          .size=${this.componentStyles?.size
-            ? this.componentStyles.size
-            : this.componentStyles?.size
-              ? this.componentStyles.size
-              : nothing}
+          .size=${size}
           .state=${this.inputHandlersValue.status ?? nothing}
           .type=${this.inputHandlersValue.type ?? nothing}
+          .variant=${this.inputHandlersValue.variant ?? nothing}
           .disabled=${this.inputHandlersValue.state === "disabled"}
-          placeholder=${this.inputHandlersValue?.placeholder ?? "Text input"}
+          .readonly=${this.inputHandlersValue.readonly || false}
+          .placeholder=${this.inputHandlersValue?.placeholder ?? "Text input"}
           .step=${this.inputHandlersValue?.step ?? nothing}
           .min=${this.inputHandlersValue?.min ?? nothing}
           .max=${this.inputHandlersValue?.max ?? nothing}
+          .name=${this.inputHandlersValue?.name ?? nothing}
+          .required=${this.inputHandlersValue?.required || false}
+          .withCopy=${this.inputHandlersValue?.withCopy || false}
+          .allowClear=${this.inputHandlersValue?.allowClear || false}
+          .showCount=${this.inputHandlersValue?.showCount || false}
+          .maxLength=${this.inputHandlersValue?.maxLength ?? nothing}
+          .rules=${this.inputHandlersValue?.rules ?? []}
+          .validateOnChangeInput=${this.inputHandlersValue?.validateOnChange !== false}
+          .validateOnBlurInput=${this.inputHandlersValue?.validateOnBlur !== false}
+          .hasFeedback=${this.inputHandlersValue?.hasFeedback || false}
+          .autocomplete=${this.inputHandlersValue?.autocomplete ?? 'off'}
+          @nr-input=${(e) => {
+            this._isUserFocused = true;
+            this.executeEvent('onChange', e);
+            this.resetFocusAfterInactivity();
+          }}
+          @nr-focus=${(e) => {
+            this._isUserFocused = true;
+            this.executeEvent('onFocus', e);
+          }}
+          @nr-blur=${(e) => {
+            this._isUserFocused = false;
+            this.executeEvent('onBlur', e);
+          }}
+          @nr-enter=${(e) => {
+            this.executeEvent('onEnter', e);
+          }}
+          @nr-clear=${(e) => {
+            this.executeEvent('onClear', e);
+          }}
+          @keydown=${(e) => {
+            if (e.key === "ArrowUp") {
+              this.executeEvent('onArrowUp', e);
+            } else if (e.key === "ArrowDown") {
+              this.executeEvent('onArrowDown', e);
+            }
+          }}
         >
           <span
             slot="label"
@@ -153,7 +134,7 @@ export class TextInputBlock extends BaseElementBlock {
           >
             ${this.inputHandlersValue?.helper ?? ""}
           </span>
-        </hy-input>
+        </nr-input>
     `;
   }
 }

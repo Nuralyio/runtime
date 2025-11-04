@@ -3,67 +3,62 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
-import { debounce } from "@shared/utils/time.ts";
+import { ref } from "lit/directives/ref.js";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
-
-let HyColorPicker: any;
-const loadHyColorPicker = async () => {
-  if (!HyColorPicker) {
-    const module = await import("@nuralyui/color-picker");
-    HyColorPicker = module.default || module;
-  }
-};
+import "@nuralyui/colorpicker";
 
 @customElement("color-picker-block")
 export class ColorPickerBlock extends BaseElementBlock {
   static styles = [
-    css`
-      :host {
-        width: fit-content;
-      }
-    `,
+    css``,
   ];
 
   @property({ type: Object })
   component: ComponentElement;
 
-  @property({ type: Object })
-  item: any;
-
-  handleValueChange = debounce((event: { detail: { value: any } }) => {
-    if (this.component.event.valueChange) {
-      event?.detail?.value &&
-        executeCodeWithClosure(
-          this.component,
-          getNestedAttribute(this.component, `event.valueChange`),
-          {
-            value: event.detail?.value ?? "",
-          }
-        );
-    }
-  },0);
-
-  constructor() {
-    super();
-    this.registerCallback("value", this.handleValueChange);
+  override async connectedCallback() {
+    await super.connectedCallback();
+    this.registerCallback("value", () => {});
   }
 
-
   render() {
+    const colorPickerStyles = this.component?.style || {};
+    const size = (colorPickerStyles.size as 'small' | 'default' | 'large') || 'default';
+
     return html`
-      <hy-color-picker
+      <nr-color-picker
+        ${ref(this.inputRef)}
         style=${styleMap({
           width: "28px",
           height: "28px",
-          ...this.component.style,
+          ...this.getStyles(),
         })}
-        @color-changed=${this.handleValueChange}
         .color=${this.inputHandlersValue.value ?? EMPTY_STRING}
         .disabled=${this.inputHandlersValue?.state == "disabled"}
-        placeholder="Text input"
-      ></hy-color-picker>
+        .size=${size}
+        .trigger=${this.inputHandlersValue?.trigger || 'click'}
+        .placement=${this.inputHandlersValue?.placement || 'auto'}
+        .animation=${this.inputHandlersValue?.animation || 'fade'}
+        .closeOnSelect=${this.inputHandlersValue?.closeOnSelect || false}
+        .closeOnOutsideClick=${this.inputHandlersValue?.closeOnOutsideClick !== false}
+        .closeOnEscape=${this.inputHandlersValue?.closeOnEscape !== false}
+        .showInput=${this.inputHandlersValue?.showInput !== false}
+        .showCopyButton=${this.inputHandlersValue?.showCopyButton !== false}
+        .format=${this.inputHandlersValue?.format || 'hex'}
+        .inputPlaceholder=${this.inputHandlersValue?.inputPlaceholder || 'Enter color'}
+        .label=${this.inputHandlersValue?.label || ''}
+        .helperText=${this.inputHandlersValue?.helperText || ''}
+        .defaultColorSets=${this.inputHandlersValue?.defaultColorSets || []}
+        @hy-color-change=${(e) => {
+          this.executeEvent('onChange', e);
+        }}
+        @nr-colorpicker-open=${(e) => {
+          this.executeEvent('onOpen', e);
+        }}
+        @nr-colorpicker-close=${(e) => {
+          this.executeEvent('onClose', e);
+        }}
+      ></nr-color-picker>
     `;
   }
 }

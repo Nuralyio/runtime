@@ -5,38 +5,50 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
+import "@nuralyui/button";
 
 @customElement("icon-button-block")
 export class IconButtonBlock extends BaseElementBlock {
   static styles = css``;
+  
   @property({ type: Object })
   component: ComponentElement;
-  @property({ type: Object })
-  item: any;
 
   handleClick = () => {
     setTimeout(() => {
       if (this.component?.event?.click) {
-        const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.click`));
+        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.click`));
       }
     }, 0);
   };
 
-  render() {
-    const { style } = this.component ?? {};
+  renderComponent() {
+    const buttonStyles = this.getStyles();
     const { icon } = this.component?.parameters ?? {};
-    const color = this.thisvalue ?? this.item?.value ?? "";
-    const type = this.inputHandlersValue.value ?? "default";
+    const iconArray = icon ? [icon] : [];
+    const type = this.inputHandlersValue.value || buttonStyles?.type || 'default';
+    const size = buttonStyles?.size || 'medium';
 
     return html`
-      <span style=${styleMap(style)}>
-        <hy-button 
-          @mousedown=${this.handleClick}
-          .color=${color}
-          .icon=${[icon]}
-          .type=${type}
-        ></hy-button>
-      </span>
+      <nr-button 
+        ${ref(this.inputRef)}
+        .size=${size}
+        .type=${type}
+        .disabled=${this.inputHandlersValue.state == "disabled"}
+        .loading=${this.inputHandlersValue.loading || false}
+        .block=${this.inputHandlersValue.block || false}
+        .dashed=${this.inputHandlersValue.dashed || false}
+        .icon=${iconArray}
+        .iconPosition=${this.inputHandlersValue.iconPosition || 'left'}
+        @click=${this.handleClick}
+        style=${styleMap({ 
+          ...this.getStyles(),
+          width: buttonStyles?.width,
+          height: buttonStyles?.height,
+        })}
+      >
+      </nr-button>
     `;
   }
 }

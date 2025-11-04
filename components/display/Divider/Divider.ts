@@ -3,8 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
+import { ref } from "lit/directives/ref.js";
 import "@nuralyui/divider";
 
 @customElement("divider-block")
@@ -33,15 +32,6 @@ export class DividerBlock extends BaseElementBlock {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  handleDividerEvent = () => {
-    if (this.component.event?.dividerInteracted) {
-      executeCodeWithClosure(
-        this.component,
-        getNestedAttribute(this.component, `event.dividerInteracted`)
-      );
-    }
-  };
-
   render() {
     const dividerStyles = this.component?.style || {};
     const dividerAutoWidth = this.inputHandlersValue?.width;
@@ -50,19 +40,26 @@ export class DividerBlock extends BaseElementBlock {
     return html`
     ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show" ?
       html`
-      <hy-divider
+      <nr-divider
+        ${ref(this.inputRef)}
         style=${styleMap({
-        ...dividerStyles,
-        width: dividerAutoWidth ? "100%" : dividerStyles.width,
-        height: dividerAutoHeight ? "auto" : dividerStyles.height
-      })}
-        .color=${dividerStyles.color ?? nothing}
-        .darkColor=${dividerStyles.darkColor ?? nothing}
-        .lightColor=${dividerStyles.lightColor ?? nothing}
-        .orientation=${this.inputHandlersValue?.orientation ?? "horizontal"}
-        .thickness=${dividerStyles.thickness ?? 1}
-        @divider-interacted=${this.handleDividerEvent}
-      ></hy-divider>
+          ...dividerStyles,
+          width: dividerAutoWidth ? "100%" : dividerStyles.width,
+          height: dividerAutoHeight ? "auto" : dividerStyles.height
+        })}
+        .type=${this.inputHandlersValue?.orientation === "vertical" ? "vertical" : "horizontal"}
+        .variant=${this.inputHandlersValue?.variant || 'solid'}
+        .orientation=${this.inputHandlersValue?.textOrientation || 'center'}
+        .orientationMargin=${this.inputHandlersValue?.orientationMargin ?? nothing}
+        .plain=${this.inputHandlersValue?.plain !== false}
+        .size=${this.inputHandlersValue?.size ?? nothing}
+        .dashed=${this.inputHandlersValue?.dashed || false}
+        @click=${(e) => {
+          this.executeEvent("onClick", e);
+        }}
+      >
+        ${this.inputHandlersValue?.text || ''}
+      </nr-divider>
       ` : nothing}
     `;
   }
