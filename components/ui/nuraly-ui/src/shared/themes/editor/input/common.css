@@ -23,13 +23,13 @@
   --nuraly-font-size-input-large: 0.9375rem; /* 15px */
   --nuraly-font-size-input-placeholder: 0.875rem; /* 14px */
 
-  /* Input border - VvvebJS uses 6px rounded corners */
+  /* Input border -  uses 6px rounded corners */
   --nuraly-input-border-width: 1px;
   --nuraly-input-border-radius: 6px;
   --nuraly-input-border-style: solid;
   --nuraly-input-border: 1px solid var(--nuraly-color-input-border, #dee2e6);
   
-  /* Input variant border radius - VvvebJS style rounded corners for all variants */
+  /* Input variant border radius -  style rounded corners for all variants */
   --nuraly-input-underlined-border-radius: 6px;
   --nuraly-input-outlined-border-radius: 6px;
   --nuraly-outlined-border-radius: 6px;

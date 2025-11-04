@@ -594,3 +594,70 @@ export const DragAndDrop: Story = {
     `;
   },
 };
+
+/**
+ * Editor Theme - VvvebJS style minimal tabs
+ */
+export const EditorTheme: Story = {
+  args: {
+    tabs: basicTabs,
+    activeTab: 0,
+  },
+  render: (args) => html`
+    <div style="display: flex; flex-direction: column; gap: 3rem;">
+      <!-- Light Mode -->
+      <div data-theme="editor-light" style="padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="margin: 0 0 1.5rem 0; color: #212529;">Editor Theme - Light Mode</h3>
+        
+        <div style="margin-bottom: 2rem;">
+          <h4 style="margin: 0 0 1rem 0; color: #495057; font-size: 0.875rem; font-weight: 600;">Default Variant</h4>
+          <div style="background: white; padding: 1rem; border-radius: 4px;">
+            <nr-tabs
+              .tabs=${args.tabs}
+              .activeTab=${args.activeTab}
+              variant=${TabType.Default}
+            ></nr-tabs>
+          </div>
+        </div>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; color: #495057; font-size: 0.875rem; font-weight: 600;">Line Variant</h4>
+          <div style="background: white; padding: 1rem; border-radius: 4px;">
+            <nr-tabs
+              .tabs=${args.tabs}
+              .activeTab=${args.activeTab}
+              variant=${TabType.Line}
+            ></nr-tabs>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dark Mode -->
+      <div data-theme="editor-dark" style="padding: 2rem; background: #2d2d2d; border-radius: 8px;">
+        <h3 style="margin: 0 0 1.5rem 0; color: #f8f9fa;">Editor Theme - Dark Mode</h3>
+        
+        <div style="margin-bottom: 2rem;">
+          <h4 style="margin: 0 0 1rem 0; color: #adb5bd; font-size: 0.875rem; font-weight: 600;">Default Variant</h4>
+          <div style="background: #1e1e1e; padding: 1rem; border-radius: 4px;">
+            <nr-tabs
+              .tabs=${args.tabs}
+              .activeTab=${args.activeTab}
+              variant=${TabType.Default}
+            ></nr-tabs>
+          </div>
+        </div>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; color: #adb5bd; font-size: 0.875rem; font-weight: 600;">Line Variant</h4>
+          <div style="background: #1e1e1e; padding: 1rem; border-radius: 4px;">
+            <nr-tabs
+              .tabs=${args.tabs}
+              .activeTab=${args.activeTab}
+              variant=${TabType.Line}
+            ></nr-tabs>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+};
