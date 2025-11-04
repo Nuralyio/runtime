@@ -1,7 +1,7 @@
 import type { Preview } from '@storybook/web-components';
 
 // Import both theme CSS files for theme switcher
-import '../src/shared/themes/editor.css';
+import '../src/shared/themes/default.css';
 
 const preview: Preview = {
   parameters: {
