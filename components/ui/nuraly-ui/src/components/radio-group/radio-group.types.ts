@@ -10,6 +10,7 @@ export type RadioButtonOption = {
   style?: string; // Inline styles for the option
   title?: string; // Tooltip text
   id?: string; // Custom ID for the option
+  autoWidth?: boolean; // Override global auto-width setting for this specific option
 };
 
 export type RadioButtonState = 'error' | 'warning';

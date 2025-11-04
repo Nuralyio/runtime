@@ -39,7 +39,6 @@ export const buttonStyles = css`
     font-weight: var(--nuraly-font-weight-regular);
     line-height: 1.125rem;
     letter-spacing: 0.16px;
-    min-width: 5rem;
     height: 3rem;
     padding: var(--nuraly-spacing-2) var(--nuraly-spacing-4);
     border: 1px solid transparent;
@@ -287,6 +286,7 @@ export const buttonStyles = css`
   :host(:not([size])) button {
     height: var(--nuraly-size-md);
     padding: var(--nuraly-spacing-2) var(--nuraly-spacing-4);
+    min-width: var(--nr-button-min-width, 5rem);
   }
 
   /* Size variants */
@@ -307,6 +307,7 @@ export const buttonStyles = css`
   :host([size="medium"]) button {
     height: var(--nuraly-size-md);
     padding: var(--nuraly-spacing-2) var(--nuraly-spacing-4);
+    min-width: var(--nr-button-min-width, 5rem);
   }
 
   :host([size="large"]) button {

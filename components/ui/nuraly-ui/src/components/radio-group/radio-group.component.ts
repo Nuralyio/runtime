@@ -47,6 +47,17 @@ import { ButtonType } from '../button/button.types.js';
  *   default-value="option1"
  *   direction="horizontal">
  * </nr-radio-group>
+ * 
+ * <!-- Button style with auto-width -->
+ * <nr-radio-group
+ *   type="button"
+ *   auto-width
+ *   .options='[
+ *     { value: "yes", label: "Yes" },
+ *     { value: "no", label: "No" },
+ *     { value: "maybe", label: "Maybe" }
+ *   ]'>
+ * </nr-radio-group>
  * ```
  * 
  * @fires nr-change - Dispatched when the selected option changes
@@ -68,6 +79,7 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: Boolean }) disabled: boolean = false;
   @property({ type: String }) size: 'small' | 'medium' | 'large' = 'medium';
   @property({ type: String }) position: 'left' | 'right' = 'left';
+  @property({ type: Boolean, attribute: 'auto-width' }) autoWidth: boolean = false;
 
   // Reactive Controllers - PROPERLY implemented now
   private groupController = new RadioGroupController(this);
@@ -97,6 +109,13 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
    */
   isOptionDisabled(option: RadioButtonOption): boolean {
     return this.groupController.isOptionDisabled(option);
+  }
+
+  /**
+   * Check if an option is icon-only (has icon but no meaningful label)
+   */
+  isOptionIconOnly(option: RadioButtonOption): boolean {
+    return !!(option.icon && (!option.label || option.label.trim() === ''));
   }
 
   /**
@@ -263,15 +282,23 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
         @keydown="${this.handleKeyDown}"
       >
         ${this.options.map(
-          (option: RadioButtonOption, index: number) => html`
+          (option: RadioButtonOption, index: number) => {
+            const isSelected = this.isOptionSelected(option);
+            const isIconOnly = this.isOptionIconOnly(option);
+            const classes = [
+              isSelected ? 'selected' : '',
+              isIconOnly && this.autoWidth ? 'icon-only' : ''
+            ].filter(Boolean).join(' ');
+
+            return html`
             <nr-button
-              class="${this.isOptionSelected(option) ? 'selected' : ''}"
-              type="${this.isOptionSelected(option) ? ButtonType.Primary : ButtonType.Default}"
+              class="${classes}"
+              type="${isSelected ? ButtonType.Primary : ButtonType.Default}"
               size="${this.size}"
               role="radio"
-              aria-checked="${this.isOptionSelected(option)}"
+              aria-checked="${isSelected}"
               aria-describedby="${option.state && option.message ? `${option.value}-message` : nothing}"
-              tabindex="${this.isOptionSelected(option) ? '0' : '-1'}"
+              tabindex="${isSelected ? '0' : '-1'}"
               .icon="${option.icon ? [option.icon] : []}"
               .disabled="${this.isOptionDisabled(option)}"
               @click="${() => this.handleSelectionChange(option)}"
@@ -285,7 +312,7 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
                   <span>${option.message}</span>
                 </div>`
               : nothing}
-          `
+          `}
         )}
       </div>
     `;
