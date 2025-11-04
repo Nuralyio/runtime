@@ -86,7 +86,7 @@ const meta: Meta = {
     allowClear: false,
     showCount: false,
     maxLength: undefined,
-    variant: 'underlined',
+    variant: 'outlined',
   },
 };
 

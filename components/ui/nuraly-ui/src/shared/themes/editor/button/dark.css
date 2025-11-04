@@ -1,0 +1,55 @@
+/**
+ * Editor Theme - Button Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  /* Primary button - same in dark mode */
+  --nuraly-button-primary-background: #4a90e2;
+  --nuraly-button-primary-color: #ffffff;
+  --nuraly-button-primary-border: #4a90e2;
+  --nuraly-button-primary-hover-background: #5fa3f5;
+  --nuraly-button-primary-hover-color: #ffffff;
+  --nuraly-button-primary-hover-border: #5fa3f5;
+  --nuraly-button-primary-active-background: #3680d8;
+  --nuraly-button-primary-active-color: #ffffff;
+  --nuraly-button-primary-active-border: #3680d8;
+
+  /* Secondary button */
+  --nuraly-button-secondary-background: #495057;
+  --nuraly-button-secondary-color: #e8e8e8;
+  --nuraly-button-secondary-border: #495057;
+  --nuraly-button-secondary-hover-background: #5a6268;
+  --nuraly-button-secondary-hover-color: #ffffff;
+  --nuraly-button-secondary-hover-border: #5a6268;
+  --nuraly-button-secondary-active-background: #3e4347;
+  --nuraly-button-secondary-active-color: #ffffff;
+  --nuraly-button-secondary-active-border: #3e4347;
+
+  /* Default button */
+  --nuraly-button-default-background: #3a3d40;
+  --nuraly-button-default-color: #e8e8e8;
+  --nuraly-button-default-border: #3e4144;
+  --nuraly-button-default-hover-background: #4a4d50;
+  --nuraly-button-default-hover-color: #ffffff;
+  --nuraly-button-default-hover-border: #4e5154;
+  --nuraly-button-default-active-background: #2b2d30;
+  --nuraly-button-default-active-color: #ffffff;
+  --nuraly-button-default-active-border: #2e3134;
+
+  /* Disabled button */
+  --nuraly-button-disabled-background: #2b2d30;
+  --nuraly-button-disabled-color: #6c757d;
+  --nuraly-button-disabled-border: #3e4144;
+  --nuraly-button-disabled-opacity: 0.65;
+
+  /* Text button */
+  --nuraly-button-text-background: transparent;
+  --nuraly-button-text-color: #4a90e2;
+  --nuraly-button-text-border: transparent;
+  --nuraly-button-text-hover-background: rgba(74, 144, 226, 0.15);
+  --nuraly-button-text-hover-color: #5fa3f5;
+  --nuraly-button-text-hover-border: transparent;
+  --nuraly-button-text-active-background: rgba(74, 144, 226, 0.2);
+  --nuraly-button-text-active-color: #3680d8;
+  --nuraly-button-text-active-border: transparent;
+}

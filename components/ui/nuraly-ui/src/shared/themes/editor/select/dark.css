@@ -1,0 +1,21 @@
+/**
+ * Editor Theme - Select Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  --nuraly-select-background: var(--nuraly-input-background);
+  --nuraly-select-color: var(--nuraly-input-color);
+  --nuraly-select-border-color: var(--nuraly-input-border-color);
+
+  /* Dropdown panel */
+  --nuraly-select-dropdown-background: #2b2d30;
+  --nuraly-select-dropdown-border-color: #3e4144;
+
+  /* Select option */
+  --nuraly-select-option-color: #e8e8e8;
+  --nuraly-select-option-hover-background: #3a3d40;
+  --nuraly-select-option-hover-color: #ffffff;
+  --nuraly-select-option-selected-background: rgba(74, 144, 226, 0.2);
+  --nuraly-select-option-selected-color: #5fa3f5;
+  --nuraly-select-option-disabled-color: #6c757d;
+}

@@ -1,0 +1,303 @@
+/**
+ * Editor Theme -  Inspired
+ * Professional dark panel editor aesthetic with modern UI elements
+ * Perfect for visual editors, admin panels, and professional tools
+ */
+
+/* Default Editor light theme (fallback and [data-theme="editor-light"]) */
+:root,
+[data-theme="editor-light"] {
+  /* ========================================
+   * EDITOR THEME VARIABLES - LIGHT MODE
+   * ======================================== */
+
+  /* Typography - Clean and professional */
+  --nuraly-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nuraly-font-weight-regular: 400;
+  --nuraly-font-weight-medium: 500;
+  --nuraly-font-weight-semibold: 600;
+  --nuraly-font-weight-bold: 700;
+
+  /* Font sizes */
+  --nuraly-font-size-xs: 0.6875rem;   /* 11px */
+  --nuraly-font-size-sm: 0.8125rem;   /* 13px */
+  --nuraly-font-size-base: 0.875rem;  /* 14px */
+  --nuraly-font-size-lg: 0.9375rem;   /* 15px */
+  --nuraly-font-size-xl: 1rem;        /* 16px */
+  --nuraly-font-size-2xl: 1.125rem;   /* 18px */
+
+  /* Line heights */
+  --nuraly-line-height-tight: 1.3;
+  --nuraly-line-height-normal: 1.5;
+  --nuraly-line-height-relaxed: 1.7;
+
+  /* Editor-specific color palette - Matching  style */
+  
+  /* Primary - Bootstrap blue for actions */
+  --nuraly-color-primary: #0d6efd;
+  --nuraly-color-primary-hover: #0b5ed7;
+  --nuraly-color-primary-active: #0a58ca;
+  --nuraly-color-primary-light: #cfe2ff;
+  --nuraly-color-primary-dark: #084298;
+  
+  /* Secondary - Neutral grays for panels */
+  --nuraly-color-secondary: #6c757d;
+  --nuraly-color-secondary-hover: #7c858e;
+  --nuraly-color-secondary-active: #5a6268;
+  --nuraly-color-secondary-light: #e9ecef;
+  --nuraly-color-secondary-dark: #343a40;
+  
+  /* Success - Green for confirmations */
+  --nuraly-color-success: #28a745;
+  --nuraly-color-success-hover: #34ce57;
+  --nuraly-color-success-active: #218838;
+  --nuraly-color-success-light: #d4edda;
+  --nuraly-color-success-dark: #155724;
+  
+  /* Warning - Amber for warnings */
+  --nuraly-color-warning: #ffc107;
+  --nuraly-color-warning-hover: #ffcd39;
+  --nuraly-color-warning-active: #e0a800;
+  --nuraly-color-warning-light: #fff3cd;
+  --nuraly-color-warning-dark: #856404;
+  
+  /* Danger - Red for destructive actions */
+  --nuraly-color-danger: #dc3545;
+  --nuraly-color-danger-hover: #e4606d;
+  --nuraly-color-danger-active: #bd2130;
+  --nuraly-color-danger-light: #f8d7da;
+  --nuraly-color-danger-dark: #721c24;
+  
+  /* Info - Cyan for informational */
+  --nuraly-color-info: #17a2b8;
+  --nuraly-color-info-hover: #1fc8e3;
+  --nuraly-color-info-active: #117a8b;
+  --nuraly-color-info-light: #d1ecf1;
+  --nuraly-color-info-dark: #0c5460;
+
+  /* Background colors - Light editor panels like  */
+  --nuraly-color-background: #f8f9fa;           /* Main canvas */
+  --nuraly-color-background-panel: #ffffff;     /* Side panels - white like  */
+  --nuraly-color-background-panel-alt: #f8f9fa; /* Alternate panel */
+  --nuraly-color-background-hover: #f8f9fa;     /* Hover state */
+  --nuraly-color-background-active: #e9ecef;    /* Active state */
+  --nuraly-color-background-disabled: #e9ecef;
+  --nuraly-color-background-overlay: rgba(0, 0, 0, 0.5);
+  --nuraly-color-background-toolbar: #ffffff;   /* Toolbar background - white */
+  --nuraly-color-background-header: #ffffff;    /* Header background - white */
+  
+  /* Text colors - Bootstrap-style text */
+  --nuraly-color-text: #212529;                 /* Main text - Bootstrap dark */
+  --nuraly-color-text-panel: #212529;           /* Text on panels */
+  --nuraly-color-text-secondary: #6c757d;       /* Bootstrap gray-600 */
+  --nuraly-color-text-panel-secondary: #6c757d; /* Secondary text on panels */
+  --nuraly-color-text-tertiary: #adb5bd;        /* Bootstrap gray-500 */
+  --nuraly-color-text-on-color: #ffffff;
+  --nuraly-color-text-disabled: #adb5bd;
+  --nuraly-color-text-inverse: #ffffff;
+  --nuraly-color-text-muted: #6c757d;
+
+  /* Border colors - Bootstrap borders */
+  --nuraly-color-border: #dee2e6;               /* Bootstrap gray-300 */
+  --nuraly-color-border-panel: #dee2e6;         /* Panel borders */
+  --nuraly-color-border-subtle: #f1f3f5;
+  --nuraly-color-border-strong: #adb5bd;
+  --nuraly-color-border-inverse: #495057;
+  --nuraly-color-border-brand: #0d6efd;
+  --nuraly-color-border-danger: #dc3545;
+  --nuraly-color-border-success: #198754;
+  --nuraly-color-border-warning: #ffc107;
+
+  /* Border radius - Modern rounded corners */
+  --nuraly-border-radius-none: 0;
+  --nuraly-border-radius-xs: 2px;
+  --nuraly-border-radius-sm: 3px;
+  --nuraly-border-radius-md: 4px;
+  --nuraly-border-radius-lg: 6px;
+  --nuraly-border-radius-xl: 8px;
+  --nuraly-border-radius-2xl: 12px;
+  --nuraly-border-radius-full: 9999px;
+
+  /* Spacing scale */
+  --nuraly-spacing-xs: 4px;
+  --nuraly-spacing-sm: 8px;
+  --nuraly-spacing-md: 12px;
+  --nuraly-spacing-lg: 16px;
+  --nuraly-spacing-xl: 24px;
+  --nuraly-spacing-2xl: 32px;
+
+  /* Shadows - Subtle depth */
+  --nuraly-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --nuraly-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --nuraly-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --nuraly-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --nuraly-shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.25);
+  
+  /* Editor-specific shadows */
+  --nuraly-shadow-panel: 2px 0 8px rgba(0, 0, 0, 0.15);
+  --nuraly-shadow-dropdown: 0 3px 12px rgba(0, 0, 0, 0.2);
+  --nuraly-shadow-modal: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+  /* Transitions */
+  --nuraly-transition-fast: 150ms ease-in-out;
+  --nuraly-transition-base: 200ms ease-in-out;
+  --nuraly-transition-slow: 300ms ease-in-out;
+
+  /* Z-index scale */
+  --nuraly-z-index-dropdown: 1000;
+  --nuraly-z-index-sticky: 1020;
+  --nuraly-z-index-fixed: 1030;
+  --nuraly-z-index-modal-backdrop: 1040;
+  --nuraly-z-index-modal: 1050;
+  --nuraly-z-index-popover: 1060;
+  --nuraly-z-index-tooltip: 1070;
+
+  /* Editor-specific dimensions */
+  --nuraly-sidebar-width: 260px;
+  --nuraly-toolbar-height: 48px;
+  --nuraly-header-height: 56px;
+  --nuraly-panel-min-width: 220px;
+  --nuraly-panel-max-width: 360px;
+
+  /* Icon sizes */
+  --nuraly-icon-size-sm: 14px;
+  --nuraly-icon-size-md: 16px;
+  --nuraly-icon-size-lg: 20px;
+  --nuraly-icon-size-xl: 24px;
+
+  /* Component-specific overrides */
+  
+  /* Layout */
+  --nuraly-layout-background: #f8f9fa;
+  --nuraly-layout-sider-background: var(--nuraly-color-background-panel);
+  --nuraly-layout-sider-text: var(--nuraly-color-text-panel);
+  --nuraly-layout-sider-border: var(--nuraly-color-border-panel);
+  --nuraly-layout-header-background: var(--nuraly-color-background-header);
+  --nuraly-layout-footer-background: #f8f9fa;
+
+  /* Buttons */
+  --nuraly-button-height-sm: 28px;
+  --nuraly-button-height-md: 32px;
+  --nuraly-button-height-lg: 40px;
+  --nuraly-button-padding-sm: 0 12px;
+  --nuraly-button-padding-md: 0 16px;
+  --nuraly-button-padding-lg: 0 20px;
+  --nuraly-button-border-radius: var(--nuraly-border-radius-md);
+  
+  /* Inputs */
+  --nuraly-input-height-sm: 28px;
+  --nuraly-input-height-md: 32px;
+  --nuraly-input-height-lg: 40px;
+  --nuraly-input-border-radius: var(--nuraly-border-radius-md);
+  --nuraly-input-border-color: var(--nuraly-color-border);
+  --nuraly-input-focus-border-color: var(--nuraly-color-primary);
+  --nuraly-input-background: #ffffff;
+
+  /* Cards */
+  --nuraly-card-background: #ffffff;
+  --nuraly-card-border: var(--nuraly-color-border);
+  --nuraly-card-border-radius: var(--nuraly-border-radius-lg);
+  --nuraly-card-shadow: var(--nuraly-shadow-sm);
+  --nuraly-card-padding: 16px;
+
+  /* Modals */
+  --nuraly-modal-background: #ffffff;
+  --nuraly-modal-border-radius: var(--nuraly-border-radius-lg);
+  --nuraly-modal-shadow: var(--nuraly-shadow-modal);
+  --nuraly-modal-header-background: #f8f9fa;
+  --nuraly-modal-header-border: var(--nuraly-color-border);
+
+  /* Dropdowns */
+  --nuraly-dropdown-background: #ffffff;
+  --nuraly-dropdown-border: var(--nuraly-color-border);
+  --nuraly-dropdown-shadow: var(--nuraly-shadow-dropdown);
+  --nuraly-dropdown-item-hover: #f8f9fa;
+  --nuraly-dropdown-item-active: #e9ecef;
+
+  /* Tabs */
+  --nuraly-tabs-border: var(--nuraly-color-border);
+  --nuraly-tabs-active-color: var(--nuraly-color-primary);
+  --nuraly-tabs-background: transparent;
+
+  /* Menu */
+  --nuraly-menu-background: transparent;
+  --nuraly-menu-item-color: var(--nuraly-color-text-panel);
+  --nuraly-menu-item-hover-background: var(--nuraly-color-background-hover);
+  --nuraly-menu-item-active-background: var(--nuraly-color-background-active);
+  --nuraly-menu-item-active-color: #ffffff;
+
+  /* Scrollbars - Modern thin scrollbars */
+  --nuraly-scrollbar-width: 8px;
+  --nuraly-scrollbar-track: #3a3d40;
+  --nuraly-scrollbar-thumb: #5a5d60;
+  --nuraly-scrollbar-thumb-hover: #6a6d70;
+}
+
+/* Dark mode - Inverse for light content areas */
+[data-theme="editor-dark"] {
+  /* Invert backgrounds for true dark mode */
+  --nuraly-color-background: #1e1e1e;
+  --nuraly-color-background-panel: #252729;
+  --nuraly-color-background-panel-alt: #2b2d30;
+  
+  /* Text adjustments for dark mode */
+  --nuraly-color-text: #e8e8e8;
+  --nuraly-color-text-secondary: #abb2bf;
+  --nuraly-color-text-tertiary: #6c757d;
+  
+  /* Borders for dark mode */
+  --nuraly-color-border: #3e4144;
+  --nuraly-color-border-subtle: #2b2d30;
+  
+  /* Component backgrounds */
+  --nuraly-card-background: #252729;
+  --nuraly-modal-background: #2b2d30;
+  --nuraly-input-background: #1e1e1e;
+  --nuraly-dropdown-background: #2b2d30;
+}
+
+/* Panel-specific styling classes */
+.editor-panel {
+  background: var(--nuraly-color-background-panel);
+  color: var(--nuraly-color-text-panel);
+  border-right: 1px solid var(--nuraly-color-border-panel);
+}
+
+.editor-toolbar {
+  background: var(--nuraly-color-background-toolbar);
+  border-bottom: 1px solid var(--nuraly-color-border-panel);
+  height: var(--nuraly-toolbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--nuraly-spacing-md);
+  gap: var(--nuraly-spacing-sm);
+}
+
+.editor-canvas {
+  background: var(--nuraly-color-background);
+  flex: 1;
+  overflow: auto;
+}
+
+/* Scrollbar styling */
+.editor-panel::-webkit-scrollbar,
+.editor-toolbar::-webkit-scrollbar {
+  width: var(--nuraly-scrollbar-width);
+  height: var(--nuraly-scrollbar-width);
+}
+
+.editor-panel::-webkit-scrollbar-track,
+.editor-toolbar::-webkit-scrollbar-track {
+  background: var(--nuraly-scrollbar-track);
+}
+
+.editor-panel::-webkit-scrollbar-thumb,
+.editor-toolbar::-webkit-scrollbar-thumb {
+  background: var(--nuraly-scrollbar-thumb);
+  border-radius: var(--nuraly-border-radius-sm);
+}
+
+.editor-panel::-webkit-scrollbar-thumb:hover,
+.editor-toolbar::-webkit-scrollbar-thumb:hover {
+  background: var(--nuraly-scrollbar-thumb-hover);
+}

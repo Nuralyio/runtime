@@ -14,6 +14,45 @@ const PACKAGE_ROOT = path.join(__dirname, '..');
 
 // Theme configurations
 const THEMES = {
+  editor: {
+    name: 'editor',
+    files: [
+      'theme.css',
+      'index.css',
+      'button/index.css',
+      'button/common.css',
+      'button/light.css',
+      'button/dark.css',
+      'input/index.css',
+      'input/common.css',
+      'input/light.css',
+      'input/dark.css',
+      'select/index.css',
+      'select/common.css',
+      'select/light.css',
+      'select/dark.css',
+      'modal/index.css',
+      'modal/common.css',
+      'modal/light.css',
+      'modal/dark.css',
+      'card/index.css',
+      'card/common.css',
+      'card/light.css',
+      'card/dark.css',
+      'tabs/index.css',
+      'tabs/common.css',
+      'tabs/light.css',
+      'tabs/dark.css',
+      'dropdown/index.css',
+      'dropdown/common.css',
+      'dropdown/light.css',
+      'dropdown/dark.css',
+      'menu/index.css',
+      'menu/common.css',
+      'menu/light.css',
+      'menu/dark.css'
+    ]
+  },
   carbon: {
     name: 'carbon',
     files: [

@@ -3,7 +3,6 @@
  * Shared CSS variables across light and dark variants for Default Design System
  */
 
-:root,
 [data-theme="default-light"],
 [data-theme="default-dark"] {
   /* ========================================

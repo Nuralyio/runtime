@@ -1,0 +1,26 @@
+/**
+ * Editor Theme - Select Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Select inherits most input styles */
+  --nuraly-select-height-small: var(--nuraly-input-height-small);
+  --nuraly-select-height-medium: var(--nuraly-input-height-medium);
+  --nuraly-select-height-large: var(--nuraly-input-height-large);
+
+  --nuraly-select-padding-small: var(--nuraly-input-padding-small);
+  --nuraly-select-padding-medium: var(--nuraly-input-padding-medium);
+  --nuraly-select-padding-large: var(--nuraly-input-padding-large);
+
+  --nuraly-select-border-radius: var(--nuraly-input-border-radius); /* 6px - matches  */
+  --nuraly-select-transition: var(--nuraly-input-transition);
+
+  /* Dropdown panel */
+  --nuraly-select-dropdown-max-height: 256px;
+  --nuraly-select-dropdown-border-radius: 6px; /* 6px - matches  */
+  --nuraly-select-dropdown-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+
+  /* Select option */
+  --nuraly-select-option-padding: 6px 12px;
+  --nuraly-select-option-min-height: 32px;
+}

@@ -1,0 +1,23 @@
+/**
+ * Editor Theme - Tabs Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Tab spacing */
+  --nuraly-tabs-padding: 8px 16px;
+  --nuraly-tabs-gap: 4px;
+  --nuraly-tabs-content-padding: 16px 0;
+
+  /* Tab visual */
+  --nuraly-tabs-border-width: 2px;
+  --nuraly-tabs-border-radius: 4px 4px 0 0;
+  --nuraly-tabs-indicator-height: 2px;
+
+  /* Tab font */
+  --nuraly-tabs-font-size: 0.875rem;
+  --nuraly-tabs-font-weight: 500;
+  --nuraly-tabs-active-font-weight: 600;
+
+  /* Tab transition */
+  --nuraly-tabs-transition: all 0.2s ease-in-out;
+}

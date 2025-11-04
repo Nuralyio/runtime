@@ -1,0 +1,45 @@
+/**
+ * Editor Theme - Menu Component - Dark Mode
+ * VvvebJS-inspired dark panel menu styling
+ */
+
+[data-theme="editor-dark"] {
+  /* Link colors - Lighter blue for dark mode */
+  --nuraly-menu-link-color: #6ea8fe !important;
+  --nuraly-menu-link-background-color: transparent !important;
+  --nuraly-menu-disabled-link-color: #6c757d !important;
+
+  /* Hover state */
+  --nuraly-menu-hover-link-background-color: #1a3a52 !important;
+  --nuraly-menu-hover-link-color: #9ec5fe !important;
+
+  /* Selected/Active state */
+  --nuraly-menu-selected-link-background-color: #1a3a52 !important;
+  --nuraly-menu-selected-color: #9ec5fe !important;
+  --nuraly-menu-selected-link-border: 3px solid #0d6efd !important;
+
+  /* Focus state */
+  --nuraly-menu-focus-border: 2px solid #0d6efd !important;
+  --nuraly-menu-focus-color: #9ec5fe !important;
+
+  /* Active (click) state */
+  --nuraly-menu-active-color: #9ec5fe !important;
+  --nuraly-menu-active-background-color: #0d3a5c !important;
+
+  /* Submenu */
+  --nuraly-menu-submenu-background-color: #212529 !important;
+  --nuraly-menu-submenu-border-color: #495057 !important;
+  --nuraly-menu-submenu-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+
+  /* Divider */
+  --nuraly-menu-divider-color: #495057 !important;
+
+  /* Icon color */
+  --nuraly-menu-link-icon-color: #6ea8fe !important;
+  --nuraly-menu-hover-link-icon-color: #9ec5fe !important;
+  --nuraly-menu-selected-link-icon-color: #9ec5fe !important;
+
+  /* Chevron/Arrow icon color */
+  --nuraly-menu-chevron-color: #adb5bd !important;
+  --nuraly-menu-hover-chevron-color: #dee2e6 !important;
+}

@@ -1,0 +1,51 @@
+/**
+ * Editor Theme - Input Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Input heights - Matching  */
+  --nuraly-input-height-small: 28px;
+  --nuraly-input-height-medium: 39px; /*  uses ~39px */
+  --nuraly-input-height-large: 44px;
+
+  /* Input padding - Matching  (6.4px 8px) */
+  --nuraly-spacing-input-small-vertical: 3px;
+  --nuraly-spacing-input-small-horizontal: 8px;
+  --nuraly-spacing-input-medium-vertical: 6px; /* ~6.4px */
+  --nuraly-spacing-input-medium-horizontal: 8px;
+  --nuraly-spacing-input-large-vertical: 8px;
+  --nuraly-spacing-input-large-horizontal: 12px;
+
+  /* Input font sizes -  uses 16px */
+  --nuraly-font-size-input: 16px;
+  --nuraly-font-size-input-small: 0.8125rem; /* 13px */
+  --nuraly-font-size-input-medium: 0.875rem; /* 14px */
+  --nuraly-font-size-input-large: 0.9375rem; /* 15px */
+  --nuraly-font-size-input-placeholder: 0.875rem; /* 14px */
+
+  /* Input border - VvvebJS uses 6px rounded corners */
+  --nuraly-input-border-width: 1px;
+  --nuraly-input-border-radius: 6px;
+  --nuraly-input-border-style: solid;
+  --nuraly-input-border: 1px solid var(--nuraly-color-input-border, #dee2e6);
+  
+  /* Input variant border radius - VvvebJS style rounded corners for all variants */
+  --nuraly-input-underlined-border-radius: 6px;
+  --nuraly-input-outlined-border-radius: 6px;
+  --nuraly-outlined-border-radius: 6px;
+  --nuraly-border-radius-input: 6px;
+
+  /* Input transitions */
+  --nuraly-input-transition: all 0.15s ease-in-out;
+
+  /* Input shadows - Bootstrap primary focus shadow */
+  --nuraly-input-shadow: none;
+  --nuraly-input-focus-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+  
+  /* Input prefix/suffix */
+  --nuraly-input-prefix-color: #6c757d;
+  --nuraly-input-suffix-color: #6c757d;
+  
+  /* Input font family */
+  --nuraly-font-family-input: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
