@@ -173,21 +173,45 @@ export const styles = css`
     width: auto;
   }
 
-  /* Icon-only buttons with auto-width should have minimal padding */
+  /* Ensure minimum padding for auto-width buttons to prevent them from becoming too small */
+  :host([auto-width]) .type-button nr-button button {
+    min-width: auto;
+    padding-left: max(var(--nuraly-spacing-2), 0.5rem);
+    padding-right: max(var(--nuraly-spacing-2), 0.5rem);
+  }
+
+  /* Icon-only buttons with auto-width should have minimal but adequate padding */
   :host([auto-width]) .type-button nr-button.icon-only {
     padding: 0.375rem; /* Even more minimal padding for icon-only */
     min-width: auto;
     width: auto;
   }
 
-  /* For small size icon-only buttons, use even less padding */
-  :host([auto-width]) .type-button nr-button.icon-only[size="small"] {
-    padding: 0.25rem;
+  :host([auto-width]) .type-button nr-button.icon-only button {
+    padding: max(0.375rem, var(--nuraly-spacing-2)); /* Ensure minimum 6px padding for icon-only */
+    min-width: auto;
   }
 
-  /* For large size icon-only buttons, use slightly more padding */
-  :host([auto-width]) .type-button nr-button.icon-only[size="large"] {
-    padding: 0.5rem;
+  /* For small size buttons, use proportionally smaller but still adequate padding */
+  :host([auto-width]) .type-button nr-button[size="small"] button {
+    padding-left: max(var(--nuraly-spacing-1-5), 0.375rem);
+    padding-right: max(var(--nuraly-spacing-1-5), 0.375rem);
+  }
+
+  /* For small size icon-only buttons, use even less but still minimum padding */
+  :host([auto-width]) .type-button nr-button.icon-only[size="small"] button {
+    padding: max(0.25rem, var(--nuraly-spacing-1-5));
+  }
+
+  /* For large size buttons, maintain larger minimum padding */
+  :host([auto-width]) .type-button nr-button[size="large"] button {
+    padding-left: max(var(--nuraly-spacing-4), 0.75rem);
+    padding-right: max(var(--nuraly-spacing-4), 0.75rem);
+  }
+
+  /* For large size icon-only buttons, use proportionally larger padding */
+  :host([auto-width]) .type-button nr-button.icon-only[size="large"] button {
+    padding: max(0.5rem, var(--nuraly-spacing-3));
   }
 
   /* ========================================
