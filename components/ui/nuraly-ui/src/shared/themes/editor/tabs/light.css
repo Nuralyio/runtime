@@ -2,7 +2,6 @@
  * Editor Theme - Tabs Light Mode
  */
 
-:root,
 [data-theme="editor-light"] {
   --nuraly-tabs-background: transparent;
   --nuraly-tabs-border-color: #dee2e6;

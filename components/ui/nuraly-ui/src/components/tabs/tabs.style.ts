@@ -296,6 +296,75 @@ export const styles = css`
   }
 
   /* Type variations */
+  
+  /* Default variant - minimal style, just text */
+  .tabs-container[data-type="default"] {
+    .tab-labels {
+      gap: var(--nuraly-tabs-gap, 0);
+      border-bottom: none;
+    }
+    
+    .tab-label {
+      padding: var(--nuraly-tabs-padding, 0.5rem 0);
+      border: none;
+      border-radius: 0;
+      background-color: transparent;
+      font-weight: var(--nuraly-tabs-font-weight, 400);
+      font-size: var(--nuraly-tabs-font-size, 1rem);
+      
+      &:hover {
+        background-color: transparent;
+        border-bottom-color: transparent;
+      }
+      
+      &.active {
+        background-color: transparent;
+        border-bottom-color: transparent;
+        font-weight: var(--nuraly-tabs-active-font-weight, 700);
+        color: var(--nuraly-tabs-active-color, inherit);
+      }
+    }
+    
+    .tab-content {
+      border-top: none;
+    }
+  }
+  
+  /* Line variant - underline on active tab */
+  .tabs-container[data-type="line"] {
+    .tab-labels {
+      gap: var(--nuraly-tabs-gap, 1rem);
+      border-bottom: var(--nuraly-tabs-indicator-height, 1px) solid var(--nuraly-tabs-border-color, var(--nuraly-color-border, #e0e0e0));
+    }
+    
+    .tab-label {
+      padding: var(--nuraly-tabs-padding, 0.5rem 0);
+      border: none;
+      border-bottom: var(--nuraly-tabs-indicator-height, 2px) solid transparent;
+      border-radius: 0;
+      background-color: transparent;
+      font-weight: var(--nuraly-tabs-font-weight, 400);
+      font-size: var(--nuraly-tabs-font-size, 1rem);
+      margin-bottom: calc(-1 * var(--nuraly-tabs-indicator-height, 1px));
+      
+      &:hover {
+        background-color: transparent;
+        border-bottom-color: var(--nuraly-tabs-item-hover-color, var(--nuraly-tabs-active-indicator-color, currentColor));
+      }
+      
+      &.active {
+        background-color: transparent;
+        border-bottom-color: var(--nuraly-tabs-active-indicator-color, var(--nuraly-tabs-active-border-color, currentColor));
+        font-weight: var(--nuraly-tabs-active-font-weight, 700);
+        color: var(--nuraly-tabs-active-color, inherit);
+      }
+    }
+    
+    .tab-content {
+      border-top: none;
+    }
+  }
+  
   .tabs-container[data-type="card"] {
     .tab-label {
       border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);

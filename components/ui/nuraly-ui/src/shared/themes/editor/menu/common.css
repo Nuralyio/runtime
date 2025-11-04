@@ -1,6 +1,6 @@
 /**
  * Editor Theme - Menu Component - Common Variables
- * VvvebJS-inspired minimal menu styling
+ * -inspired minimal menu styling
  */
 
 [data-theme^="editor"] {
@@ -11,7 +11,7 @@
   --nuraly-menu-font-weight: 400;
   --nuraly-menu-line-height: 1.5;
 
-  /* Spacing - VvvebJS uses minimal padding */
+  /* Spacing -  uses minimal padding */
   --nuraly-menu-link-padding-vertical: 4px;
   --nuraly-menu-link-padding-horizontal: 8px;
 
@@ -28,14 +28,14 @@
   --nuraly-menu-link-padding-vertical-large: 6px;
   --nuraly-menu-link-padding-horizontal-large: 12px;
 
-  /* Icon spacing - VvvebJS uses tight icon spacing */
+  /* Icon spacing -  uses tight icon spacing */
   --nuraly-menu-icon-padding-right: 4px;
   --nuraly-menu-icon-padding-left: 0px;
   
-  /* Icon size - Small icons to match VvvebJS compact style */
+  /* Icon size - Small icons to match  compact style */
   --nuraly-menu-icon-size: 14px;
 
-  /* Border radius - minimal/none for VvvebJS style */
+  /* Border radius - minimal/none for  style */
   --nuraly-menu-border-radius: 0px;
 
   /* Transitions */

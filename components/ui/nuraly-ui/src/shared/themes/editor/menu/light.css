@@ -1,11 +1,11 @@
 /**
  * Editor Theme - Menu Component - Light Mode
- * VvvebJS-inspired light panel menu styling
+ * -inspired light panel menu styling
  */
 
 :root,
 [data-theme="editor-light"] {
-  /* Link colors - VvvebJS uses Bootstrap blue for links */
+  /* Link colors -  uses Bootstrap blue for links */
   --nuraly-menu-link-color: #0a58ca !important;
   --nuraly-menu-link-background-color: transparent !important;
   --nuraly-menu-disabled-link-color: #6c757d !important;
@@ -35,7 +35,7 @@
   /* Divider */
   --nuraly-menu-divider-color: #dee2e6 !important;
 
-  /* Icon color - VvvebJS uses muted gray icons, not blue */
+  /* Icon color -  uses muted gray icons, not blue */
   --nuraly-menu-link-icon-color: #6c757d !important;
   --nuraly-menu-hover-link-icon-color: #495057 !important;
   --nuraly-menu-selected-link-icon-color: #495057 !important;
