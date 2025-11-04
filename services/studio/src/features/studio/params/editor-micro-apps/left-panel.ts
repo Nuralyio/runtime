@@ -113,30 +113,23 @@ leftPanelTabs,
     name: "add page",
     component_type: ComponentType.Button,
     style: {
-      "--nuraly-button-padding-y": "2px",
-      "--nuraly-button-padding-x": "2px",
-      "type": "ghost",
-      "--nuraly-button-ghost-border-color": "transparent",
-      "--nuraly-button-ghost-background-color": "transparent"
     },
     input: {
       label: {
-        type: "handler",
-        value: /* js */`
-            const addPageLabelBtn='Page';
-            return addPageLabelBtn;
-        `
+        type: "string",
+        value: "Page"
       },
       iconPosition:{
         type: "string",
         value: "left"
       },
+      size:{
+        type: "string",
+        value: "small"
+      },
       icon: {
-        type: "handler",
-        value: /* js */`
-            const addBtnIcon='plus';
-            return addBtnIcon;
-        `
+        type: "string",
+        value: "plus"
       }
 
     },

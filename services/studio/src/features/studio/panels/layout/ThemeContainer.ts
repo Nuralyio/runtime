@@ -7,18 +7,8 @@ import { customElement, state } from "lit/decorators.js";
 export class LeftPanel extends LitElement {
   static styles = [
     css`
-      .thecontainer {
-      --nuraly-tabs-content-background-color: #f8fafc;
-      background: #f8fafc;
-    }
-    @media (prefers-color-scheme: dark) {
-        .thecontainer {
-        --nuraly-tabs-content-background-color: #313131;
-      background: #313131;
-
-        color:#f8fafc;
-      }
-    }
+     
+ 
     `
   ];
 

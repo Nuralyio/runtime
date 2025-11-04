@@ -15,12 +15,6 @@ export class RightPanel extends LitElement {
         --nuraly-tabs-content-maring: 10px;
         --nuraly-tabs-container-background-color : white;
       }
-      @media (prefers-color-scheme: dark) {
-        :host{
-        --nuraly-tabs-container-background-color : #313131;
-
-      }
-    }
       aside.visible {
         display: flex;
       }`];
