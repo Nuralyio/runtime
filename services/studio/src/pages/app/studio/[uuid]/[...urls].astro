@@ -111,12 +111,11 @@ try {
         );
       default:
         return (
-          <div class="H-full flex flex-wrap mx-auto" style="
-">
+          <div class="H-full flex flex-wrap" style="margin: 0; padding: 0;">
             <TopbarPanelWrapper client:load>
               <div
-                class="border border-blue-300 shadow rounded-md p-4 m-4"
-                style="width :98vw; margin-top: 4%;"
+                class="border border-blue-300 shadow rounded-md"
+                style="width: 98vw; margin-top: 4%;"
               >
                 <div class="animate-pulse flex space-x-4">
                   <div class="flex-1 space-y-6 py-1">
@@ -131,8 +130,8 @@ try {
                 </div>
               </div>
               <div
-                class="border border-blue-300 shadow rounded-md p-4 m-4"
-                style="width :98vw; "
+                class="border border-blue-300 shadow rounded-md"
+                style="width: 98vw;"
               >
                 <div class="animate-pulse flex space-x-4">
                   <div class="flex-1 space-y-6 py-1">
@@ -147,8 +146,8 @@ try {
                 </div>
               </div>
               <div
-                class="border border-blue-300 shadow rounded-md p-4 m-4"
-                style="width :98vw; "
+                class="border border-blue-300 shadow rounded-md"
+                style="width: 98vw;"
               >
                 <div class="animate-pulse flex space-x-4">
                   <div class="flex-1 space-y-6 py-1">
@@ -164,10 +163,11 @@ try {
               </div>
             </TopbarPanelWrapper>
           </div>
-          <div class="flex flex-row text-gray-800">
+          <div class="flex flex-row text-gray-800" style="height: calc(100vh - 41px); max-height: calc(100vh - 41px); overflow: hidden;">
             <LeftPanel client:load />
             <main
-              class="main flex flex-grow flex-col transition-all duration-150 ease-in md:ml-0"
+              class=""
+              style="height: 100%; overflow-y: auto;"
             >
               <TabsPanel client:only="lit" />
               <EditorSpinner client:load data=`${applications}`/>
@@ -352,20 +352,26 @@ try {
   }
 }
 html {
-    --hybrid-button-ghost-text-color: #525252;
-
+    --nuraly-button-ghost-text-color: #525252;
+    height: 100vh;
+    overflow: hidden;
 }
 body{
     margin: 0;
-
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
 }
 @media (prefers-color-scheme: dark) {
   body {
-    --hybrid-tabs-content-background-color: #313131;
+    --nuraly-tabs-content-background-color: #313131;
     
     background: #313131;
     height: 100vh;
 
+  }
+  html {
+    background: #1e293b;
   }
 }
 </style>

@@ -158,8 +158,8 @@ export class PageContent extends LitElement {
 
     eventDispatcher.on('Vars:currentPage', (data)=>{
      this.refreshComponent();
-    this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
-    this.style.setProperty('--hybrid-page-background-color-dark', this.currentPage?.style?.["--hybrid-page-background-color-dark"]);
+    this.style.setProperty('--nuraly-page-background-color',  this.currentPage?.style?.["--nuraly-page-background-color"]);
+    this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
 
      
     })
@@ -187,8 +187,8 @@ export class PageContent extends LitElement {
     };
    
     window.addEventListener("keydown", this.handleEscapeKey.bind(this));
-    this.style.setProperty('--hybrid-page-background-color',  this.currentPage?.style?.["--hybrid-page-background-color"]);
-    this.style.setProperty('--hybrid-page-background-color-dark', this.currentPage?.style?.["--hybrid-page-background-color-dark"]);
+    this.style.setProperty('--nuraly-page-background-color',  this.currentPage?.style?.["--nuraly-page-background-color"]);
+    this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
   }
 
   disconnectedCallback() {
@@ -311,13 +311,13 @@ export class PageContent extends LitElement {
     <style>
       
       .page-container {
-        --page-background-color : var(--hybrid-page-background-color);
+        --page-background-color : var(--nuraly-page-background-color);
         margin-top: 20px;
 
       }
       @media (prefers-color-scheme: dark) {
         .page-container {
-          --page-background-color : var(--hybrid-page-background-color-dark);
+          --page-background-color : var(--nuraly-page-background-color-dark);
         }
       }
     </style>

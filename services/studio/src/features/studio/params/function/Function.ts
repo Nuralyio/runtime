@@ -57,7 +57,7 @@ export class FunctionContent extends LitElement {
         margin-bottom: 4px;
       }
 
-      .buttons hy-button {
+      .buttons nr-button {
           margin-right: 8px;
       }
 
@@ -127,24 +127,24 @@ export class FunctionContent extends LitElement {
     return html`
       <div class="content">
         <div class="buttons">
-          <hy-button
+          <nr-button
             style=${styleMap({
               ...ButtonTheme
             })
             }
             .iconPosition="${"right"}" .icon="${["hammer"]}" @click=${() => this.handleAction("Build")}>
             Build
-          </hy-button>
-          <hy-button
+          </nr-button>
+          <nr-button
             style=${styleMap({
               ...ButtonTheme
             })
             }
             .iconPosition="${"right"}" .icon="${["paper-plane"]}" @click=${() => this.handleAction("Deploy")}>
             Deploy
-          </hy-button>
+          </nr-button>
 
-          <hy-dropdown
+          <nr-dropdown
             placeholder="Select an option"
 
             .template=${html`
@@ -171,10 +171,10 @@ padding-bottom: 50px;">
                 language="json"
                 >
                 </code-editor>
-                <hy-button
+                <nr-button
                   style=${styleMap({
                     ...ButtonTheme,
-                    "--hybrid-button-margin-y": "10px"
+                    "--nuraly-button-margin-y": "10px"
                   })}
                   .icon=${["bug"]}
                   @click=${() => {
@@ -185,9 +185,9 @@ padding-bottom: 50px;">
                         window.dispatchEvent(new CustomEvent("add-log", { detail: { result: _result } }));
                       });
                   }}>Submit
-                </hy-button>
+                </nr-button>
             `}>
-            <hy-button
+            <nr-button
               style=${styleMap({
                 ...ButtonTheme
               })
@@ -195,8 +195,8 @@ padding-bottom: 50px;">
               .iconPosition="${"right"}" .icon="${["drafting-compass"]}"
               @click=${() => this.handleAction("Invoke")}>
               Invoke
-            </hy-button>
-          </hy-dropdown>
+            </nr-button>
+          </nr-dropdown>
         </div>
         <code-editor
           theme="vs"

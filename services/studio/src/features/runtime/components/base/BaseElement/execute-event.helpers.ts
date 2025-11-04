@@ -18,15 +18,35 @@ export function handleComponentEvent({
   data?: any;
   onSelect?: (e: Event) => void;
 }) {
+  console.log('handleComponentEvent called:', { 
+    isViewMode, 
+    eventName, 
+    componentEvents: component.event,
+    hasEvent: !!component.event?.[eventName],
+    data 
+  });
+
   if (isViewMode) {
     const code = component.event?.[eventName];
     if (code) {
+      console.log('Executing event code:', eventName, code);
+      
+      // Create EventData object that matches the expected structure
+      const EventData = {
+        ...data,
+        event
+      };
+      
+      console.log('EventData being passed:', EventData);
+      
       executeCodeWithClosure(
         component,
         getNestedAttribute(component, `event.${eventName}`),
-        { event, ...data },
+        EventData,
         item
       );
+    } else {
+      console.warn(`Event "${eventName}" not found in component.event`, component.event);
     }
     return;
   }

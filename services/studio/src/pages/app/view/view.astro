@@ -10,7 +10,7 @@ import { $componentWithChildren, $components } from "@shared/redux/store/compone
 import "@studio/params/page/Page";
 import { PageContent } from "@studio/params/page/Page";
 import { processHeaders } from "@shared/utils/api-calls-utils";
-import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from "@api";
+import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from "@services";
 import { $applications } from "@shared/redux/store/apps";
 // TODO: handle error
 const { app } = Astro.props;
@@ -60,7 +60,7 @@ try {
   }
   @media (prefers-color-scheme: dark) {
       html {
-        --hybrid-tabs-content-background-color: #313131;
+        --nuraly-tabs-content-background-color: #313131;
       background: #313131;
 
         color:#f8fafc;

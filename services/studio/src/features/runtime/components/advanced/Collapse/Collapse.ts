@@ -47,12 +47,12 @@ export class Collapse extends BaseElementBlock {
 
   override render() {
     return html`
-      <hy-collapse
+      <nr-collapse
         style=${styleMap(this.component.style)}
         .sections=${[...this.sections]}
         .size=${this.inputHandlersValue?.size ?? nothing}
         @section-toggled=${this.handleSectionToggled}
-      ></hy-collapse>
+      ></nr-collapse>
     `;
   }
 

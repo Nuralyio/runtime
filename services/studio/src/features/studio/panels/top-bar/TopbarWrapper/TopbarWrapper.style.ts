@@ -4,7 +4,7 @@ export default css`
 
     @media (prefers-color-scheme: dark) {
         micro-app{
-            --hybrid-button-ghost-text-color:white;
+            --nuraly-button-ghost-text-color:white;
         }
     }
 `;

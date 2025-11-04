@@ -10,15 +10,13 @@ export default {
     width: "100%",
     height: "100%",
     display: "grid",
-    "--hybrid-tabs-content-padding": "0px",
-    "--hybrid-button-font-size": "12px",
-    "--text-label-dark-color": "#c2c2c2",
-    "--hybrid-tabs-container-box-shadow":"0px 0px 4px 0px #dbdbdbbf",
-    "--hybrid-tabs-container-background-local-color": "transparent",
-    "--hybrid-tabs-label-active-background-color": "transparent",
-    "--hybrid-tabs-border-radius": "8px",
+
   },
   input: {
+    size: {
+        type: "string",
+        value: "small"
+      },
     tabs: {
       type: "handler",
       value: /* js */ `
@@ -50,6 +48,28 @@ export default {
                             ];
                             themes = [
                                 "text_input_icon_theme_container"
+                            ]
+                            break;
+                        case "Textarea":
+                            parameters=[
+                                'textarea_blocks'
+                            ];
+                            handlers=[
+                                "studio_textarea_handler"
+                            ];
+                            themes = [
+                                "textarea_theme_container"
+                            ]
+                            break;
+                        case "Slider":
+                            parameters=[
+                                'slider_blocks'
+                            ];
+                            handlers=[
+                                "studio_slider_handler"
+                            ];
+                            themes = [
+                                "slider_theme_container"
                             ]
                             break;
                         case "button_input":
@@ -109,6 +129,7 @@ export default {
                         
                         case "Table":
                             parameters=[
+                                "table_fields_collapse_container",
                                 "table_blocks"
                             ];
                             handlers=[
@@ -126,6 +147,28 @@ export default {
                                 "studio_icon_theme_container"
                             ];
                             break;
+                        case "Badge":
+                            parameters=[
+                                "badge_blocks"
+                            ];
+                            handlers=[
+                                "studio_badge_handler"
+                            ];
+                            themes=[
+                                "badge_theme_container"
+                            ];
+                            break;
+                        case "Tag":
+                            parameters=[
+                                "tag_blocks"
+                            ];
+                            handlers=[
+                                "studio_tag_handler"
+                            ];
+                            themes=[
+                                "tag_theme_container"
+                            ];
+                            break;
                         case "vertical-container-block":
                             parameters=[
                                 "container_blocks"
@@ -135,6 +178,17 @@ export default {
                             ];
                             themes=[
                                 "studio_container_theme_container"
+                            ];
+                            break;
+                        case "Card":
+                            parameters=[
+                                "card_blocks"
+                            ]
+                            handlers=[
+                                "studio_card_handler"
+                            ];
+                            themes=[
+                                "card_theme_container"
                             ];
                             break;
 

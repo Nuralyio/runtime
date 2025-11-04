@@ -27,14 +27,14 @@ export class SmartAttributeEditorDropDown extends LitElement {
   }
 
   render() {
-    return html`<hy-dropdown
+    return html`<nr-dropdown
       placeholder="Select an option"
       @closed=${() => {
     }}
       .template=${html`lorem text`}
     >
-        <hy-button icon="code" type="text" class="unit"></hy-button
+        <nr-button icon="code" type="text" class="unit"></nr-button
       >
-    </hy-dropdown>`;
+    </nr-dropdown>`;
   }
 }

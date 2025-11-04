@@ -8,12 +8,12 @@ export class LeftPanel extends LitElement {
   static styles = [
     css`
       .thecontainer {
-      --hybrid-tabs-content-background-color: #f8fafc;
+      --nuraly-tabs-content-background-color: #f8fafc;
       background: #f8fafc;
     }
     @media (prefers-color-scheme: dark) {
         .thecontainer {
-        --hybrid-tabs-content-background-color: #313131;
+        --nuraly-tabs-content-background-color: #313131;
       background: #313131;
 
         color:#f8fafc;

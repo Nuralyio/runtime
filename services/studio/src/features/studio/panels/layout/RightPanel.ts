@@ -11,13 +11,13 @@ export class RightPanel extends LitElement {
         display: none;
       }
       :host{
-        --hybrid-tabs-content-padding: 20px;
-        --hybrid-tabs-content-maring: 10px;
-        --hybrid-tabs-container-background-color : white;
+        --nuraly-tabs-content-padding: 20px;
+        --nuraly-tabs-content-maring: 10px;
+        --nuraly-tabs-container-background-color : white;
       }
       @media (prefers-color-scheme: dark) {
         :host{
-        --hybrid-tabs-container-background-color : #313131;
+        --nuraly-tabs-container-background-color : #313131;
 
       }
     }
@@ -44,13 +44,13 @@ export class RightPanel extends LitElement {
     return html`
 
       <aside
-        class=" sidebar w-96 -translate-x-full transform p-4 transition-transform duration-150 ease-in md:translate-x-0 md:shadow-md flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
-        style="height: 100%;">
+        class=" sidebar  flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
+        style="height: 100%; width: 350px; min-width: 350px; max-width: 350px; flex: 0 0 450px;">
         <div class="my-4 w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"></span>
         </div>
-        <div class="my flex-grow" style="width:290px;height: 100%; margin:10px">
-          <control-panel class="w-full h-full" style="width:345px;height: 100%;"></control-panel>
+        <div class="my flex-grow w-full h-full" style="width:100%">
+          <control-panel class="w-full h-full" style=""></control-panel>
         </div>
       </aside>`;
   }

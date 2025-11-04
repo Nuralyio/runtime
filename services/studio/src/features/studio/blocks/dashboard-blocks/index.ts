@@ -104,8 +104,8 @@ export const StudioDashboard = [
       "style": {
         "size": "medium",
         "type": "ghost",
-        "--hybrid-button-text-color": "#572020",
-        "--hybrid-button-background-color": "#a13030"
+        "--nuraly-button-text-color": "#572020",
+        "--nuraly-button-background-color": "#a13030"
       },
       "pageId": "c81948a2-5816-4eb7-8f87-f429d0dc0562",
       "childrenIds": [],

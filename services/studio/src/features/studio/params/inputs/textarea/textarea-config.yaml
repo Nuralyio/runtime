@@ -1,0 +1,287 @@
+textareaFields:
+  container:
+    uuid: textarea_fields_collapse_container
+    name: Textarea Fields Container
+    style: {}
+
+  collapse:
+    uuid: textarea_fields_collapse
+    title: Textarea Properties
+    style:
+      --hy-collapse-content-small-size-padding: 5px
+      --hy-collapse-font-weight: normal
+      --hy-collapse-border-radius: 0px
+      --hy-collapse-width: 292px
+      --hy-collapse-border: none
+      --hy-collapse-border-bottom: 1px solid #ccc
+      --hy-collapse-local-header-background-color: '#3d3d3d'
+
+  properties:
+    - name: label
+      label: Label
+      type: text
+      default: ''
+      width: 180px
+      placeholder: Enter label
+      valueHandler:
+        ref: componentInput
+        params: [label]
+      stateHandler:
+        ref: inputHandler
+        params: [label]
+      eventHandlers:
+        valueChange:
+          ref: updateInput
+          params: [label, string]
+
+    - name: placeholder
+      label: Placeholder
+      type: text
+      default: ''
+      width: 180px
+      placeholder: Enter placeholder
+      valueHandler:
+        ref: componentInput
+        params: [placeholder]
+      stateHandler:
+        ref: inputHandler
+        params: [placeholder]
+      eventHandlers:
+        valueChange:
+          ref: updateInput
+          params: [placeholder, string]
+
+    - name: helperText
+      label: Helper Text
+      type: text
+      default: ''
+      width: 180px
+      placeholder: Enter helper text
+      valueHandler:
+        ref: componentInput
+        params: [helperText]
+      stateHandler:
+        ref: inputHandler
+        params: [helperText]
+      eventHandlers:
+        valueChange:
+          ref: updateInput
+          params: [helperText, string]
+
+    - name: rows
+      label: Rows
+      type: number
+      default: '4'
+      width: 80px
+      placeholder: 4
+      valueHandler:
+        ref: componentInput
+        params: [rows]
+      stateHandler:
+        ref: inputHandler
+        params: [rows]
+      eventHandlers:
+        onChange:
+          ref: updateInput
+          params: [rows, number]
+
+    - name: cols
+      label: Columns
+      type: number
+      default: '50'
+      width: 80px
+      placeholder: 50
+      valueHandler:
+        ref: componentInput
+        params: [cols]
+      stateHandler:
+        ref: inputHandler
+        params: [cols]
+      eventHandlers:
+        onChange:
+          ref: updateInput
+          params: [cols, number]
+
+    - name: maxLength
+      label: Max Length
+      type: number
+      default: ''
+      width: 80px
+      placeholder: No limit
+      valueHandler:
+        ref: componentInput
+        params: [maxLength]
+      stateHandler:
+        ref: inputHandler
+        params: [maxLength]
+      eventHandlers:
+        onChange:
+          ref: updateInput
+          params: [maxLength, number]
+
+    - name: autoResize
+      label: Auto Resize
+      type: radio
+      default: false
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentValue = false;
+        let isDisabled = false;
+        if (selectedComponent?.input?.autoResize?.type == 'handler' && selectedComponent?.input?.autoResize?.value) {
+          isDisabled = true;
+        } else {
+          currentValue = selectedComponent?.input?.autoResize?.value || false;
+        }
+        const options = [
+          { value: false, icon: 'toggle-off', disabled: isDisabled },
+          { value: true, icon: 'toggle-on', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentValue, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'autoResize', 'boolean', EventData.value);
+          }
+
+    - name: allowClear
+      label: Allow Clear
+      type: radio
+      default: false
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentValue = false;
+        let isDisabled = false;
+        if (selectedComponent?.input?.allowClear?.type == 'handler' && selectedComponent?.input?.allowClear?.value) {
+          isDisabled = true;
+        } else {
+          currentValue = selectedComponent?.input?.allowClear?.value || false;
+        }
+        const options = [
+          { value: false, icon: 'toggle-off', disabled: isDisabled },
+          { value: true, icon: 'toggle-on', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentValue, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'allowClear', 'boolean', EventData.value);
+          }
+
+    - name: showCount
+      label: Show Count
+      type: radio
+      default: false
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentValue = false;
+        let isDisabled = false;
+        if (selectedComponent?.input?.showCount?.type == 'handler' && selectedComponent?.input?.showCount?.value) {
+          isDisabled = true;
+        } else {
+          currentValue = selectedComponent?.input?.showCount?.value || false;
+        }
+        const options = [
+          { value: false, icon: 'toggle-off', disabled: isDisabled },
+          { value: true, icon: 'toggle-on', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentValue, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'showCount', 'boolean', EventData.value);
+          }
+
+    - name: size
+      label: Size
+      type: radio
+      default: medium
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentSize = '';
+        let isDisabled = false;
+        if (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {
+          isDisabled = true;
+        } else {
+          currentSize = selectedComponent?.input?.size?.value || 'medium';
+        }
+        const options = [
+          { value: 'small', label: 'S', disabled: isDisabled },
+          { value: 'medium', label: 'M', disabled: isDisabled },
+          { value: 'large', label: 'L', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentSize, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'size', 'string', EventData.value);
+          }
+
+    - name: state
+      label: State
+      type: radio
+      default: default
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentState = '';
+        let isDisabled = false;
+        if (selectedComponent?.input?.state?.type == 'handler' && selectedComponent?.input?.state?.value) {
+          isDisabled = true;
+        } else {
+          currentState = selectedComponent?.input?.state?.value || 'default';
+        }
+        const options = [
+          { value: 'default', icon: 'font-awesome', disabled: isDisabled },
+          { value: 'disabled', icon: 'ban', disabled: isDisabled },
+          { value: 'error', icon: 'circle-exclamation', disabled: isDisabled },
+          { value: 'warning', icon: 'triangle-exclamation', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentState, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'state', 'string', EventData.value);
+          }
+
+    - name: resize
+      label: Resize Mode
+      type: radio
+      default: vertical
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentResize = '';
+        let isDisabled = false;
+        if (selectedComponent?.input?.resize?.type == 'handler' && selectedComponent?.input?.resize?.value) {
+          isDisabled = true;
+        } else {
+          currentResize = selectedComponent?.input?.resize?.value || 'vertical';
+        }
+        const options = [
+          { value: 'none', icon: 'ban', disabled: isDisabled },
+          { value: 'vertical', icon: 'up-down', disabled: isDisabled },
+          { value: 'horizontal', icon: 'left-right', disabled: isDisabled },
+          { value: 'both', icon: 'maximize', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentResize, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'resize', 'string', EventData.value);
+          }

@@ -1,11 +1,12 @@
-import { css, html, nothing } from "lit";
+import { css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/button";
+import "@nuralyui/dropdown";
+import "@nuralyui/label";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
+import { ref } from "lit/directives/ref.js";
 
 
 @customElement("insert-dropdown-block")
@@ -15,52 +16,61 @@ export class InsertDropdownBlock extends BaseElementBlock {
 
 
   static override  styles = [
-    css`
-    hy-dropdown{
-      --hybrid-dropdown-padding: 7px;
-    }
-   `
+    css``
   ]
 
 
   renderComponent() {
+    const options = this.inputHandlersValue?.options || [];
+    
     return html`
-      <hy-dropdown
-      style=${styleMap({ ...this.getStyles() , 
-    "--hybrid-icon-color": "#515151",
-        
-               })}
-        trigger=${this.inputHandlersValue?.trigger ?? nothing}
-        .options=${this.inputHandlersValue?.options ?? []}
-        @click-item=${(e) => {
-      if (this.component.event?.onClick) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onClick`), {
-          value: e.detail.value.value,
-          additionalData : e.detail.value.additionalData
-        });
-      }
-    }
-    }
-      >
-        <!-- <hy-button
-          .type=${this.inputHandlersValue.buttonType ?? nothing}
-          .icon="${this.inputHandlersValue.buttonIcon ? [this.inputHandlersValue.buttonIcon] : nothing}"
-          style=${styleMap({
-              " --hybrid-button-height": "23px",
-               "--hybrid-button-margin-y":" -9px",
-      "--hybrid-button-padding-y": "1px",
-      "--hybrid-button-padding-x": "2px",
-      "--hybrid-button-ghost-border-color": "transparent",
-      "--hybrid-button-ghost-background-color": "transparent"
-    })}
-        > qsd
-        </hy-button> -->
-        <hy-label
-        style=${styleMap({
-          "--resolved-text-label-color": this.getStyles()["title-color"],
+      <nr-dropdown
+        ${ref(this.inputRef)}
+        style=${styleMap({ 
+          ...this.getStyles(),
+          "--nuraly-icon-color": "#515161",
         })}
-        >${this.inputHandlersValue?.title}</hy-label>
-      </hy-dropdown>
+        .items=${options}
+        .trigger=${this.inputHandlersValue?.trigger || 'click'}
+        .placement=${this.inputHandlersValue?.placement || 'bottom-start'}
+        .size=${this.inputHandlersValue?.size || 'medium'}
+        .animation=${this.inputHandlersValue?.animation || 'fade'}
+        .disabled=${this.inputHandlersValue?.state === 'disabled'}
+        .arrow=${this.inputHandlersValue?.arrow || false}
+        .autoClose=${this.inputHandlersValue?.autoClose !== false}
+        .closeOnOutsideClick=${this.inputHandlersValue?.closeOnOutsideClick !== false}
+        .closeOnEscape=${this.inputHandlersValue?.closeOnEscape !== false}
+        .offset=${this.inputHandlersValue?.offset || 4}
+        .delay=${this.inputHandlersValue?.delay || 50}
+        .maxHeight=${this.inputHandlersValue?.maxHeight || '300px'}
+        .minWidth=${this.inputHandlersValue?.minWidth || 'auto'}
+        @nr-dropdown-item-click=${(e: CustomEvent) => {
+          // e.detail contains { item, dropdown }
+          // item has properties: { label, value, additionalData, icon, etc. }
+          const item = e.detail.item;
+          
+          this.executeEvent('onClick', e, {
+            value: item.value,
+            item: item,
+            additionalData: item.additionalData
+          });
+        }}
+        @nr-dropdown-open=${(e: CustomEvent) => {
+          this.executeEvent('onOpen', e);
+        }}
+        @nr-dropdown-close=${(e: CustomEvent) => {
+          this.executeEvent('onClose', e);
+        }}
+      >
+        <nr-label
+          slot="trigger"
+          style=${styleMap({
+            "--resolved-text-label-color": this.getStyles()["title-color"],
+          })}
+        >
+          ${this.inputHandlersValue?.title}
+        </nr-label>
+      </nr-dropdown>
     `;
   }
 }

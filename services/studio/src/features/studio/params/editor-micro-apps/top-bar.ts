@@ -11,11 +11,11 @@ export default [{
   style: {
     width: "100vw",
     "height": "40px",
-    "--hybrid-button-font-size": "12px",
+    "--nuraly-button-font-size": "12px",
     "border-bottom": "1px solid #888888",
     "--text-label-dark-color": "#c2c2c2",
     "--container-bg-color": "#26327b",
-    "--hybrid-button-ghost-text-color": "white",
+    "--nuraly-button-ghost-text-color": "white",
     "--text-label-color": "white",
 
   },
@@ -54,9 +54,9 @@ export default [{
   application_id: "1",
   style: {
     "--text-label-color": "#515151",
-    "--hybrid-icon-color": "#515151",
+    "--nuraly-icon-color": "#515151",
     "title-color": "white",
-    "--hybrid-button-hover-background-color": "white",
+    "--nuraly-button-hover-background-color": "white",
     // "border-left": "1px solid grey",
     "padding-left": "12px",
     "padding-right": "12px",
@@ -91,17 +91,23 @@ export default [{
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
             if(currentPage){
-              const action = EventData.additionalData.action;
-              delete EventData.additionalData.action;
-              if( action == "add"){
+              // EventData.value contains the item's value property (which is an object {value: "...", additionalData: {...}})
+              const itemValue = EventData.value || EventData;
+              const componentType = itemValue.value;
+              const additionalData = itemValue.additionalData || {};
+              const action = additionalData.action;
+              
+              if(action === "add"){
+                const cleanAdditionalData = {...additionalData};
+                delete cleanAdditionalData.action;
                 AddComponent({
                   application_id : currentEditingApplication.uuid,
                   pageId : currentPage,
-                  componentType : EventData.value,
-                  additionalData : EventData.additionalData
+                  componentType : componentType,
+                  additionalData : cleanAdditionalData
                 })
-             }else if( action == "paste"){
-              TraitCompoentFromSchema(EventData.additionalData.schema)
+             }else if(action === "paste"){
+              TraitCompoentFromSchema(additionalData.schema)
              }
             }
           `
@@ -114,9 +120,9 @@ export default [{
   application_id: "1",
   style: {
     "--text-label-color": "#515151",
-    "--hybrid-icon-color": "#515151",
+    "--nuraly-icon-color": "#515151",
     "title-color": "white",
-    "--hybrid-button-hover-background-color": "white",
+    "--nuraly-button-hover-background-color": "white",
     // "border-left": "1px solid grey",
     "padding-left": "12px",
     "padding-right": "12px",
@@ -150,17 +156,23 @@ export default [{
     const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
     const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
     if(currentPage){
-      const action = EventData.additionalData.action;
-      delete EventData.additionalData.action;
-      if( action == "add"){
+      // EventData.value contains the item's value property (object with value and additionalData)
+      const itemData = EventData.value || EventData;
+      const componentType = itemData.value || itemData;
+      const additionalData = itemData.additionalData || {};
+      const action = additionalData.action;
+      
+      if(action === "add"){
+        const cleanAdditionalData = {...additionalData};
+        delete cleanAdditionalData.action;
         AddComponent({
           application_id : currentEditingApplication.uuid,
           pageId : currentPage,
-          componentType : EventData.value,
-          additionalData : EventData.additionalData
+          componentType : componentType,
+          additionalData : cleanAdditionalData
         })
-     }else if( action == "paste"){
-      TraitCompoentFromSchema(EventData.additionalData.schema)
+     }else if(action === "paste"){
+      TraitCompoentFromSchema(additionalData.schema)
      }
     }
 
@@ -175,7 +187,7 @@ export default [{
     "--text-label-color": "black",
     "--resolved-text-label-color" : "black",
     "title-color": "white", 
-    "--hybrid-button-hover-background-color": "white",
+    "--nuraly-button-hover-background-color": "white",
     "border-left": "1px solid grey",
     "padding-left": "14px",
   },
@@ -207,6 +219,7 @@ export default [{
     const currentEditingApplication = GetVar("currentEditingApplication");
     const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
     const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+    debugger
     if(currentPage){
       const action = EventData.additionalData.action;
       delete EventData.additionalData.action;
@@ -263,10 +276,10 @@ export default [{
   style: {
     "margin-left": "5px",
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-ghost-background-color": "transparent",
-    "--hybrid-button-ghost-border-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-ghost-background-color": "transparent",
+    "--nuraly-button-ghost-border-color": "transparent"
 
   },
   input: {
@@ -369,8 +382,8 @@ export default [{
   component_type: ComponentType.TextInput,
   style: {
     "size": "small",
-    "--hybrid-input-border-bottom": "none",
-    "--hybrid-input-number-icons-container-width": "48px",
+    "--nuraly-input-border-bottom": "none",
+    "--nuraly-input-number-icons-container-width": "48px",
     "width": "100px"
   },
   event: {
@@ -503,12 +516,12 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-height": "40px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent",
-    "--hybrid-button-ghost-text-color": "white"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-height": "40px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent",
+    "--nuraly-button-ghost-text-color": "white"
   },
   event: {
     onClick: /* js */`
@@ -553,11 +566,11 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-height": "40px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent",
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-height": "40px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent",
     "--resolved-text-label-color": "white"
   },
   event: {
@@ -604,11 +617,11 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-height": "40px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent",
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-height": "40px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent",
     "--text-label-color": "white",
     "border-left": "1px solid grey",
     "padding-left": "14px",
@@ -652,8 +665,6 @@ export default [{
 
   component_type: ComponentType.Container,
   style: {
-    "margin-top": "7px",
-    "margin-right": "4px",
     "justify-content": "space-between",
   },
   childrenIds: ["primary_platform_container", "tablet_platform_container", "mobile_platform_container"]
@@ -679,12 +690,12 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-width": "30px",
-    "--hybrid-button-height": "40px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-width": "30px",
+    "--nuraly-button-height": "40px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   event: {
     onClick: /* js */`
@@ -748,12 +759,12 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-width": "30px",
-    "--hybrid-button-height": "40px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-width": "30px",
+    "--nuraly-button-height": "40px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   event: {
     onClick: /* js */`
@@ -819,12 +830,12 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-width": "30px",
-    "--hybrid-button-height": "40px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-width": "30px",
+    "--nuraly-button-height": "40px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   event: {
     onClick: /* js */`
@@ -899,10 +910,10 @@ export default [{
   style: {
     "type": "ghost",
     "margin-right": "4px",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   input: {
     label: {
@@ -930,10 +941,10 @@ export default [{
   style: {
     "type": "ghost",
     "margin-left": "4px",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   input: {
     label: {
@@ -977,10 +988,10 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
 
   },
   input: {
@@ -1001,10 +1012,10 @@ export default [{
   component_type: ComponentType.Button,
   style: {
     "type": "ghost",
-    "--hybrid-button-padding-y": "2px",
-    "--hybrid-button-padding-x": "2px",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-padding-y": "2px",
+    "--nuraly-button-padding-x": "2px",
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   input: {
     label: {
@@ -1023,13 +1034,13 @@ export default [{
   name: "logout",
   component_type: ComponentType.Button,
   style: {
-    "--hybrid-button-padding-y": "9px",
-    "--hybrid-button-padding-x": "2px",
+    "--nuraly-button-padding-y": "9px",
+    "--nuraly-button-padding-x": "2px",
     "margin-right": "5px",
 
     "type": "ghost",
-    "--hybrid-button-ghost-border-color": "transparent",
-    "--hybrid-button-ghost-background-color": "transparent"
+    "--nuraly-button-ghost-border-color": "transparent",
+    "--nuraly-button-ghost-background-color": "transparent"
   },
   input: {
     label: {

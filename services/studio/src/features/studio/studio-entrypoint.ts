@@ -10,43 +10,44 @@ import studioTableValuesBlock from "./params/data/table/inputs/data.ts";
 
 // Import from new organized structure
 import {
-    StudioTextInput, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton,
-    StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioDocument,
-    StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
-    StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
-    StudioMenu
+  StudioTextInput, StudioTextarea, StudioSlider, StudioTextLabel, StudioDatepicker, StudioSelect, StudioButton,
+  StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioCard, StudioDocument,
+  StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
+  StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
+  StudioMenu, StudioBadge, StudioTag
 } from "./params/index.ts";
 
 import {
-    RightPanelTabs,
-    RightPanelFunctionTab,
-    StudioFunction
+  RightPanelTabs,
+  RightPanelFunctionTab,
+  StudioFunction
 } from "./panels/index.ts";
 
 import {
-    studioBoxShadowBlock,
-    studioBorderRadiusBlock,
-    studioTypographyCollapseBlock,
-    studioSizeCollpaseBlock,
-    commonInputsCollapseBlock,
-    studioBorderCollapse,
-    studioPageNameBlock,
-    studioPageUrlBlock,
-    studioPageSEOBlock,
-    microAppSelectionBlocks,
-    microAppContainerBlocks,
-    StudioDashboard,
-    PageThemeStudio
+  studioBoxShadowBlock,
+  studioBorderRadiusBlock,
+  studioTypographyCollapseBlock,
+  studioSizeCollpaseBlock,
+  commonInputsCollapseBlock,
+  studioBorderCollapse,
+  studioPageNameBlock,
+  studioPageUrlBlock,
+  studioPageSEOBlock,
+  microAppSelectionBlocks,
+  microAppContainerBlocks,
+  StudioDashboard,
+  PageThemeStudio,
+  studioTablePropertiesBlock
 } from "./blocks/index.ts";
 
 import {
-    COMMON_ATTRIBUTES,
-    StudioCommonInputs,
-    studioDisplayBlock,
-    studioHelperTextBlock,
-    studioPlaceholderBlock,
-    studioIconPickerBlock,
-    studioLabelBlock
+  COMMON_ATTRIBUTES,
+  StudioCommonInputs,
+  studioDisplayBlock,
+  studioHelperTextBlock,
+  studioPlaceholderBlock,
+  studioIconPickerBlock,
+  studioLabelBlock
 } from "./core/index.ts";
 
 
@@ -115,18 +116,14 @@ export default [
 
     },
     ...COMMON_ATTRIBUTES,
-    style: {
-      "--hybrid-menu-border": "none",
-      "--hybrid-tabs-container-box-shadow":" 0px 0px 4px 0px #dbdbdbbf",
-      "--hybrid-tabs-content-background-color": "transparent",
-     "--hybrid-tabs-border-radius": "8px",
+    style:{
       "width": "295px",
-      "--hybrid-tabs-container-background-local-color": "transparent",
-      "--hybrid-tabs-label-active-background-color": "transparent",
-      
-
     },
     input: {
+      size: {
+        type: "string",
+        value: "small"
+      },
       index:{
         type: "number",
         value: 0
@@ -204,13 +201,13 @@ export default [
     name: " collapse",
     component_type: ComponentType.Collapse,
     style: {
-      "--hy-collapse-content-small-size-padding": "5px",
-      "--hy-collapse-font-weight": "normal",
-      "--hy-collapse-border-radius": "0px",
-      "--hy-collapse-width": "292px",
-      "--hy-collapse-border": "none",
-      "--hy-collapse-border-bottom": "1px solid #636363",
-      "--hy-collapse-local-header-background-color": "#3d3d3d"
+      "--nr-collapse-content-small-size-padding": "5px",
+      "--nr-collapse-font-weight": "normal",
+      "--nr-collapse-border-radius": "0px",
+      "--nr-collapse-width": "292px",
+      "--nr-collapse-border": "none",
+      "--nr-collapse-border-bottom": "1px solid #636363",
+      "--nr-collapse-local-header-background-color": "#3d3d3d"
     },
     input: {
       size: {
@@ -253,6 +250,7 @@ export default [
   ...studioPageNameBlock,
   ...studioPageUrlBlock,
   ...studioPageSEOBlock,
+  ...studioTablePropertiesBlock,
   ...studioTableValuesBlock,
   ...stduioTable,
   ...tableSelectionModeBlock,
@@ -283,10 +281,15 @@ export default [
   ...StudioImage,
   ...StudioTable,
   ...StudioContainer,
+  ...StudioCard,
   ...StudioCommonInputs,
   ...StudioCollection,
   ...StudioFunction,
   ...StudioTextInput,
+  ...StudioTextarea,
+  ...StudioSlider,
+  ...StudioBadge,
+  ...StudioTag,
   ...commonInputsCollapseBlock,
   ...studioTypographyCollapseBlock,
   ...studioSizeCollpaseBlock,

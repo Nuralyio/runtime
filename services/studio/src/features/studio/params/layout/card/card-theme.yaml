@@ -1,0 +1,41 @@
+- name: Card Theme
+  open: true
+  items:
+    - name: General
+      items:
+        - label: Background Color
+          cssVar: --card-background-color
+          type: color
+
+        - label: Border Color
+          cssVar: --card-border-color
+          type: color
+
+        - label: Border Radius
+          cssVar: --card-border-radius
+          type: text
+          defaultValue: 8px
+
+        - label: Shadow
+          cssVar: --card-shadow
+          type: text
+
+    - name: Header
+      items:
+        - label: Header Background
+          cssVar: --card-header-background
+          type: color
+
+        - label: Title Color
+          cssVar: --card-title-color
+          type: color
+
+    - name: Hover State
+      items:
+        - label: Hover Shadow
+          cssVar: --card-hover-shadow
+          type: text
+
+        - label: Hover Border Color
+          cssVar: --card-hover-border-color
+          type: color

@@ -55,10 +55,10 @@ export class AttributeBackgroundColorValue extends LitElement {
 
   render() {
     return html`
-    <hy-color-picker
+    <nr-color-picker
     .color="${this.backgroundColor}"
     @color-changed="${this.handleColorChange}"
-    ></hy-color-picker>
+    ></nr-color-picker>
 
 `;
   }

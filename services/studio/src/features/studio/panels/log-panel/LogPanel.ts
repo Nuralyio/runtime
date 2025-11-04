@@ -417,11 +417,11 @@ export class LogPanel extends LitElement {
           </div>
         `
         : html`
-          <hy-button 
+          <nr-button 
             class="show-log-button" 
             @click=${this.toggleLog}>
             Console
-          </hy-button>
+          </nr-button>
         `}
     `;
   }

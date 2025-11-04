@@ -45,16 +45,16 @@
         "width": "100%",
         "valueHandler": {
           "ref": "componentStyleSelect",
-          "params": ["--hybrid-icon-color"]
+          "params": ["--nuraly-icon-color"]
         },
         "stateHandler": {
           "ref": "componentStyleSelect",
-          "params": ["--hybrid-icon-color"]
+          "params": ["--nuraly-icon-color"]
         },
         "eventHandlers": {
           "colorChange": {
             "ref": "componentStyleSelect",
-            "params": ["--hybrid-icon-color", "EventData.value"]
+            "params": ["--nuraly-icon-color", "EventData.value"]
           }
         }
       }

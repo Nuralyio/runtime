@@ -16,8 +16,8 @@ const iconPickerStyles = css`
         --icon-picker-icon-item-hover-background: #e0e0e0;
         --icon-picker-icon-item-selected-border: 1px solid #d0d0d0;
         --icon-picker-input-background-color: #ffffff;
-        --hybrid-input-background-color: #f4f4f4;
-        --hybrid-input-border-bottom : 2px solid #ddd;
+        --nuraly-input-background-color: #f4f4f4;
+        --nuraly-input-border-bottom : 2px solid #ddd;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -31,8 +31,8 @@ const iconPickerStyles = css`
             --icon-picker-icon-item-hover-background: #4c4c4c;
             --icon-picker-icon-item-selected-border: 1px solid #ffffff;
             --icon-picker-input-background-color: #2d2d2d;
-            --hybrid-input-background-color: #393939;
-            --hybrid-input-border-bottom : 2px solid #ddd;
+            --nuraly-input-background-color: #393939;
+            --nuraly-input-border-bottom : 2px solid #ddd;
         }
     }
 
@@ -71,8 +71,8 @@ const iconPickerStyles = css`
         border: red;
     }
 
-    hy-icon {
-        --hybrid-icon-color: var(--icon-picker-icon-preview);
+    nr-icon {
+        --nuraly-icon-color: var(--icon-picker-icon-preview);
         font-size: 1.25rem;
     }
 

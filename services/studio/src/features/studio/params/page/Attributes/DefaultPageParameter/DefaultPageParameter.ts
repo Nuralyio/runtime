@@ -47,11 +47,11 @@ export class AttributePageDefault extends LitElement {
       html`This page is set to Default` :
       html`
                             This page is not set to Default <br/><br/>
-                        <hy-button @click=${() => {
+                        <nr-button @click=${() => {
         updateApplication({
           default_page_uuid: this.currentPage.uuid
         });
-      }}>Set as default</hy-button>`}</div>
+      }}>Set as default</nr-button>`}</div>
                     </div>
                     `;
   }

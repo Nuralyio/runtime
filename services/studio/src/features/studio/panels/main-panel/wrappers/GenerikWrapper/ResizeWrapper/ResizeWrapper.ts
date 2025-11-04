@@ -211,14 +211,14 @@ export class ResizeWrapper extends LitElement {
     
     switch(type) {
       case ComponentType.Button:
-        styleUpdates["--hybrid-button-width"] = el.style.width;
+        styleUpdates["--nuraly-button-width"] = el.style.width;
         break;
       case ComponentType.Icon:
-        styleUpdates["--hybrid-icon-width"] = el.style.width;
-        styleUpdates["--hybrid-icon-height"] = el.style.height;
+        styleUpdates["--nuraly-icon-width"] = el.style.width;
+        styleUpdates["--nuraly-icon-height"] = el.style.height;
         break;
       case ComponentType.Select:
-        styleUpdates["--hybrid-select-width"] = el.style.width;
+        styleUpdates["--nuraly-select-width"] = el.style.width;
         break;
       case ComponentType.TextInput:
       case ComponentType.DatePicker:

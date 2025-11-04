@@ -23,7 +23,7 @@ export class ImageBlock extends BaseElementBlock {
             ? this.inputHandlersValue.darkSrc ?? this.inputHandlersValue.src
             : this.inputHandlersValue.src;
         return html`
-      <hy-video-player
+      <nr-video-player
       ${ref(this.inputRef)}
       @click=${(e: MouseEvent) => {
                 this.executeEvent("onClick", e);
@@ -40,7 +40,7 @@ export class ImageBlock extends BaseElementBlock {
         .width=${imageStyleHandlers?.width ? imageStyleHandlers.width : imageStyles?.width}
         .height=${imageStyleHandlers?.height ? imageStyleHandlers?.height : imageStyles?.height}
       >
-      </<hy-video-player>
+      </<nr-video-player>
     `;
     }
 }

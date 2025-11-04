@@ -6,53 +6,53 @@
       {
         "name": "General",
         "items": [
-          { "label": "Background Color", "cssVar": "--hybrid-select-background-color", "type": "color" },
-          { "label": "Trigger Text Color", "cssVar": "--hybrid-select-trigger-text-color", "type": "color" },
-          { "label": "Option Text Color", "cssVar": "--hybrid-select-option-text-color", "type": "color" },
-          { "label": "Helper Text Color", "cssVar": "--hybrid-select-helper-text-color", "type": "color" },
-          { "label": "Label Text Color", "cssVar": "--hybrid-select-label-text-color", "type": "color" }
+          { "label": "Background Color", "cssVar": "--nuraly-select-background-color", "type": "color" },
+          { "label": "Trigger Text Color", "cssVar": "--nuraly-select-trigger-text-color", "type": "color" },
+          { "label": "Option Text Color", "cssVar": "--nuraly-select-option-text-color", "type": "color" },
+          { "label": "Helper Text Color", "cssVar": "--nuraly-select-helper-text-color", "type": "color" },
+          { "label": "Label Text Color", "cssVar": "--nuraly-select-label-text-color", "type": "color" }
         ],
         "open": true
       },
       {
         "name": "Hover",
         "items": [
-          { "label": "Hover Background Color", "cssVar": "--hybrid-select-hover-background-color", "type": "color" },
-          { "label": "Option Hover Background Color", "cssVar": "--hybrid-select-option-hover", "type": "color" },
-          { "label": "Focus Border Color", "cssVar": "--hybrid-select-focus-border", "type": "color" }
+          { "label": "Hover Background Color", "cssVar": "--nuraly-select-hover-background-color", "type": "color" },
+          { "label": "Option Hover Background Color", "cssVar": "--nuraly-select-option-hover", "type": "color" },
+          { "label": "Focus Border Color", "cssVar": "--nuraly-select-focus-border", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Active",
         "items": [
-          { "label": "Active Background Color", "cssVar": "--hybrid-select-active-background-color", "type": "color" },
-          { "label": "Active Border Color", "cssVar": "--hybrid-select-active-border-color", "type": "color" }
+          { "label": "Active Background Color", "cssVar": "--nuraly-select-active-background-color", "type": "color" },
+          { "label": "Active Border Color", "cssVar": "--nuraly-select-active-border-color", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Error",
         "items": [
-          { "label": "Error Border Color", "cssVar": "--hybrid-select-error-border", "type": "color" },
-          { "label": "Error Icon Color", "cssVar": "--hybrid-select-error-icon-color", "type": "color" },
-          { "label": "Error Helper Text Color", "cssVar": "--hybrid-select-error-helper-text", "type": "color" }
+          { "label": "Error Border Color", "cssVar": "--nuraly-select-error-border", "type": "color" },
+          { "label": "Error Icon Color", "cssVar": "--nuraly-select-error-icon-color", "type": "color" },
+          { "label": "Error Helper Text Color", "cssVar": "--nuraly-select-error-helper-text", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Warning",
         "items": [
-          { "label": "Warning Icon Color", "cssVar": "--hybrid-select-warning-icon-color", "type": "color" }
+          { "label": "Warning Icon Color", "cssVar": "--nuraly-select-warning-icon-color", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Disabled",
         "items": [
-          { "label": "Disabled Background Color", "cssVar": "--hybrid-select-disabled-background-color", "type": "color" },
-          { "label": "Disabled Text Color", "cssVar": "--hybrid-select-disabled-text-color", "type": "color" },
-          { "label": "Disabled Border Color", "cssVar": "--hybrid-select-disabled-border-color", "type": "color" }
+          { "label": "Disabled Background Color", "cssVar": "--nuraly-select-disabled-background-color", "type": "color" },
+          { "label": "Disabled Text Color", "cssVar": "--nuraly-select-disabled-text-color", "type": "color" },
+          { "label": "Disabled Border Color", "cssVar": "--nuraly-select-disabled-border-color", "type": "color" }
         ],
         "open": false
       }
@@ -65,53 +65,53 @@
       {
         "name": "General",
         "items": [
-          { "label": "Background Color", "cssVar": "--hybrid-select-background-color", "type": "color" },
-          { "label": "Trigger Text Color", "cssVar": "--hybrid-select-trigger-text-color", "type": "color" },
-          { "label": "Option Text Color", "cssVar": "--hybrid-select-option-text-color", "type": "color" },
-          { "label": "Helper Text Color", "cssVar": "--hybrid-select-helper-text-color", "type": "color" },
-          { "label": "Label Text Color", "cssVar": "--hybrid-select-label-text-color", "type": "color" }
+          { "label": "Background Color", "cssVar": "--nuraly-select-background-color", "type": "color" },
+          { "label": "Trigger Text Color", "cssVar": "--nuraly-select-trigger-text-color", "type": "color" },
+          { "label": "Option Text Color", "cssVar": "--nuraly-select-option-text-color", "type": "color" },
+          { "label": "Helper Text Color", "cssVar": "--nuraly-select-helper-text-color", "type": "color" },
+          { "label": "Label Text Color", "cssVar": "--nuraly-select-label-text-color", "type": "color" }
         ],
         "open": true
       },
       {
         "name": "Hover",
         "items": [
-          { "label": "Hover Background Color", "cssVar": "--hybrid-select-hover-background-color", "type": "color" },
-          { "label": "Option Hover Background Color", "cssVar": "--hybrid-select-option-hover", "type": "color" },
-          { "label": "Focus Border Color", "cssVar": "--hybrid-select-focus-border", "type": "color" }
+          { "label": "Hover Background Color", "cssVar": "--nuraly-select-hover-background-color", "type": "color" },
+          { "label": "Option Hover Background Color", "cssVar": "--nuraly-select-option-hover", "type": "color" },
+          { "label": "Focus Border Color", "cssVar": "--nuraly-select-focus-border", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Active",
         "items": [
-          { "label": "Active Background Color", "cssVar": "--hybrid-select-active-background-color", "type": "color" },
-          { "label": "Active Border Color", "cssVar": "--hybrid-select-active-border-color", "type": "color" }
+          { "label": "Active Background Color", "cssVar": "--nuraly-select-active-background-color", "type": "color" },
+          { "label": "Active Border Color", "cssVar": "--nuraly-select-active-border-color", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Error",
         "items": [
-          { "label": "Error Border Color", "cssVar": "--hybrid-select-error-border", "type": "color" },
-          { "label": "Error Icon Color", "cssVar": "--hybrid-select-error-icon-color", "type": "color" },
-          { "label": "Error Helper Text Color", "cssVar": "--hybrid-select-error-helper-text", "type": "color" }
+          { "label": "Error Border Color", "cssVar": "--nuraly-select-error-border", "type": "color" },
+          { "label": "Error Icon Color", "cssVar": "--nuraly-select-error-icon-color", "type": "color" },
+          { "label": "Error Helper Text Color", "cssVar": "--nuraly-select-error-helper-text", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Warning",
         "items": [
-          { "label": "Warning Icon Color", "cssVar": "--hybrid-select-warning-icon-color", "type": "color" }
+          { "label": "Warning Icon Color", "cssVar": "--nuraly-select-warning-icon-color", "type": "color" }
         ],
         "open": false
       },
       {
         "name": "Disabled",
         "items": [
-          { "label": "Disabled Background Color", "cssVar": "--hybrid-select-disabled-background-color", "type": "color" },
-          { "label": "Disabled Text Color", "cssVar": "--hybrid-select-disabled-text-color", "type": "color" },
-          { "label": "Disabled Border Color", "cssVar": "--hybrid-select-disabled-border-color", "type": "color" }
+          { "label": "Disabled Background Color", "cssVar": "--nuraly-select-disabled-background-color", "type": "color" },
+          { "label": "Disabled Text Color", "cssVar": "--nuraly-select-disabled-text-color", "type": "color" },
+          { "label": "Disabled Border Color", "cssVar": "--nuraly-select-disabled-border-color", "type": "color" }
         ],
         "open": false
       }

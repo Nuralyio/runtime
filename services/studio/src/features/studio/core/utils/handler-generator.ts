@@ -27,13 +27,13 @@ export const createHandlersFromEvents = (
       name: "collapse",
       component_type: ComponentType.Collapse,
       style: {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "280px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #636363",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
+        "--nr-collapse-content-small-size-padding": "5px",
+        "--nr-collapse-font-weight": "normal",
+        "--nr-collapse-border-radius": "0px",
+        "--nr-collapse-width": "280px",
+        "--nr-collapse-border": "none",
+        "--nr-collapse-border-bottom": "1px solid #636363",
+        "--nr-collapse-local-header-background-color": "#3d3d3d"
       },
       input: {
         size: {
