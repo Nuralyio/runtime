@@ -37,6 +37,10 @@ const meta: Meta = {
       options: ['vertical', 'horizontal'],
       description: 'Layout direction of radio group',
     },
+    autoWidth: {
+      control: { type: 'boolean' },
+      description: 'Remove minimum width from button-type radio groups',
+    },
   },
   args: {
     options: [
@@ -48,6 +52,7 @@ const meta: Meta = {
     type: 'default',
     position: 'left',
     direction: 'vertical',
+    autoWidth: false,
   },
 };
 
@@ -70,6 +75,7 @@ export const Default: Story = {
       type="${args.type}"
       position="${args.position}"
       direction="${args.direction}"
+      ?auto-width="${args.autoWidth}"
       @change="${action('change')}"
     ></nr-radio-group>
   `,
@@ -763,6 +769,565 @@ export const WithSlots: Story = {
             </ul>
           </div>
         </nr-radio-group>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * ## Auto Width Buttons
+ * 
+ * By default, button-type radio groups have a minimum width for consistent sizing.
+ * You can use the `auto-width` attribute to make buttons size to their content.
+ */
+export const AutoWidth: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Comparison of default button sizing vs auto-width sizing. Auto-width is useful when you have buttons with varying text lengths and want them to be sized optimally.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 3rem;">
+      <!-- Default Button Width -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Default Min-Width (5rem)</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Buttons have consistent minimum widths for better visual alignment
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          value="no"
+          .options="${[
+            { value: 'yes', label: 'Yes' },
+            { value: 'no', label: 'No' },
+            { value: 'maybe', label: 'Maybe' },
+            { value: 'definitely-not', label: 'Definitely Not' }
+          ]}"
+          @change="${action('default-width-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- Auto Width -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Auto Width</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Buttons size to their content for optimal space usage
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          value="no"
+          auto-width
+          .options="${[
+            { value: 'yes', label: 'Yes' },
+            { value: 'no', label: 'No' },
+            { value: 'maybe', label: 'Maybe' },
+            { value: 'definitely-not', label: 'Definitely Not' }
+          ]}"
+          @change="${action('auto-width-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- Different Sizes Comparison -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Size Comparison with Auto Width</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">Small</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              size="small"
+              value="sm"
+              auto-width
+              .options="${[
+                { value: 'xs', label: 'XS' },
+                { value: 'sm', label: 'Small' },
+                { value: 'md', label: 'Medium' },
+                { value: 'lg', label: 'Large' },
+                { value: 'xl', label: 'Extra Large' }
+              ]}"
+              @change="${action('small-auto-width-change')}"
+            ></nr-radio-group>
+          </div>
+
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">Medium</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              size="medium"
+              value="sm"
+              auto-width
+              .options="${[
+                { value: 'xs', label: 'XS' },
+                { value: 'sm', label: 'Small' },
+                { value: 'md', label: 'Medium' },
+                { value: 'lg', label: 'Large' },
+                { value: 'xl', label: 'Extra Large' }
+              ]}"
+              @change="${action('medium-auto-width-change')}"
+            ></nr-radio-group>
+          </div>
+
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">Large</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              size="large"
+              value="sm"
+              auto-width
+              .options="${[
+                { value: 'xs', label: 'XS' },
+                { value: 'sm', label: 'Small' },
+                { value: 'md', label: 'Medium' },
+                { value: 'lg', label: 'Large' },
+                { value: 'xl', label: 'Extra Large' }
+              ]}"
+              @change="${action('large-auto-width-change')}"
+            ></nr-radio-group>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * ## Auto Width User Stories
+ * 
+ * Real-world scenarios where auto-width provides better user experience and visual design.
+ */
+export const AutoWidthUserStories: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Collection of common use cases where auto-width radio groups provide better UX and visual design than fixed-width buttons.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 4rem;">
+      
+      <!-- User Story 1: Yes/No Questions -->
+      <div style="padding: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin: 0 0 1rem 0; color: #2563eb; font-weight: 600;">📋 User Story 1: Survey Yes/No Questions</h3>
+        <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+          <strong>As a</strong> survey designer<br>
+          <strong>I want</strong> compact Yes/No buttons that don't waste space<br>
+          <strong>So that</strong> I can fit more questions on screen and reduce scrolling
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 600;">Do you enjoy using this component library?</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              auto-width
+              value="yes"
+              .options="${[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' }
+              ]}"
+              @change="${action('survey-1-change')}"
+            ></nr-radio-group>
+          </div>
+          
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 600;">Would you recommend it to others?</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              auto-width
+              value="definitely"
+              .options="${[
+                { value: 'definitely', label: 'Definitely' },
+                { value: 'probably', label: 'Probably' },
+                { value: 'maybe', label: 'Maybe' },
+                { value: 'no', label: 'No' }
+              ]}"
+              @change="${action('survey-2-change')}"
+            ></nr-radio-group>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Story 2: Size Selector -->
+      <div style="padding: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin: 0 0 1rem 0; color: #2563eb; font-weight: 600;">👕 User Story 2: E-commerce Size Selector</h3>
+        <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+          <strong>As an</strong> e-commerce customer<br>
+          <strong>I want</strong> size buttons that are clearly readable but not overly wide<br>
+          <strong>So that</strong> I can quickly scan and select my size without visual clutter
+        </p>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Select Size:</h4>
+          <nr-radio-group
+            type="button"
+            direction="horizontal"
+            auto-width
+            value="m"
+            .options="${[
+              { value: 'xs', label: 'XS' },
+              { value: 's', label: 'S' },
+              { value: 'm', label: 'M' },
+              { value: 'l', label: 'L' },
+              { value: 'xl', label: 'XL' },
+              { value: 'xxl', label: 'XXL' }
+            ]}"
+            @change="${action('size-selector-change')}"
+          ></nr-radio-group>
+        </div>
+      </div>
+
+      <!-- User Story 3: Rating Scale -->
+      <div style="padding: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin: 0 0 1rem 0; color: #2563eb; font-weight: 600;">⭐ User Story 3: Compact Rating Scale</h3>
+        <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+          <strong>As a</strong> UX researcher<br>
+          <strong>I want</strong> a horizontal rating scale that doesn't dominate the form<br>
+          <strong>So that</strong> users focus on the question content rather than large buttons
+        </p>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">How satisfied are you with our service?</h4>
+          <nr-radio-group
+            type="button"
+            direction="horizontal"
+            auto-width
+            value="4"
+            .options="${[
+              { value: '1', label: '1' },
+              { value: '2', label: '2' },
+              { value: '3', label: '3' },
+              { value: '4', label: '4' },
+              { value: '5', label: '5' }
+            ]}"
+            @change="${action('rating-change')}"
+          ></nr-radio-group>
+          <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+            <span>Very Unsatisfied</span>
+            <span>Very Satisfied</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Story 4: Navigation Filters -->
+      <div style="padding: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin: 0 0 1rem 0; color: #2563eb; font-weight: 600;">🔍 User Story 4: Content Filter Navigation</h3>
+        <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+          <strong>As a</strong> content manager<br>
+          <strong>I want</strong> filter buttons that adapt to their labels<br>
+          <strong>So that</strong> the interface looks clean regardless of text length variations
+        </p>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Filter by Status:</h4>
+          <nr-radio-group
+            type="button"
+            direction="horizontal"
+            auto-width
+            value="published"
+            .options="${[
+              { value: 'all', label: 'All' },
+              { value: 'draft', label: 'Draft' },
+              { value: 'published', label: 'Published' },
+              { value: 'archived', label: 'Archived' },
+              { value: 'pending-review', label: 'Pending Review' }
+            ]}"
+            @change="${action('filter-change')}"
+          ></nr-radio-group>
+        </div>
+      </div>
+
+      <!-- User Story 5: Payment Method -->
+      <div style="padding: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin: 0 0 1rem 0; color: #2563eb; font-weight: 600;">💳 User Story 5: Payment Method Selection</h3>
+        <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+          <strong>As a</strong> checkout flow designer<br>
+          <strong>I want</strong> payment method buttons to be proportional to their labels<br>
+          <strong>So that</strong> the checkout process feels streamlined and professional
+        </p>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Choose Payment Method:</h4>
+          <nr-radio-group
+            type="button"
+            direction="horizontal"
+            auto-width
+            value="card"
+            .options="${[
+              { value: 'card', label: 'Card' },
+              { value: 'paypal', label: 'PayPal' },
+              { value: 'apple-pay', label: 'Apple Pay' },
+              { value: 'bank', label: 'Bank Transfer' }
+            ]}"
+            @change="${action('payment-change')}"
+          ></nr-radio-group>
+        </div>
+      </div>
+
+      <!-- User Story 6: Dashboard Time Range -->
+      <div style="padding: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa;">
+        <h3 style="margin: 0 0 1rem 0; color: #2563eb; font-weight: 600;">📊 User Story 6: Dashboard Time Range Selector</h3>
+        <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+          <strong>As a</strong> dashboard user<br>
+          <strong>I want</strong> time range buttons that don't take up excessive header space<br>
+          <strong>So that</strong> more screen real estate is available for data visualization
+        </p>
+        
+        <div>
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Time Range:</h4>
+          <nr-radio-group
+            type="button"
+            direction="horizontal"
+            auto-width
+            value="7d"
+            .options="${[
+              { value: '1d', label: '1D' },
+              { value: '7d', label: '7D' },
+              { value: '30d', label: '30D' },
+              { value: '90d', label: '90D' },
+              { value: '1y', label: '1Y' },
+              { value: 'all', label: 'All Time' }
+            ]}"
+            @change="${action('timerange-change')}"
+          ></nr-radio-group>
+        </div>
+      </div>
+
+      <!-- Summary Box -->
+      <div style="padding: 2rem; border: 2px solid #dbeafe; border-radius: 8px; background: #eff6ff;">
+        <h3 style="margin: 0 0 1rem 0; color: #1d4ed8; font-weight: 600;">💡 When to Use Auto-Width</h3>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #374151; line-height: 1.6;">
+          <li><strong>Short labels:</strong> Yes/No, numbers, abbreviations (XS, S, M, L)</li>
+          <li><strong>Mixed lengths:</strong> When some options are short and others longer</li>
+          <li><strong>Space constraints:</strong> Mobile interfaces, compact dashboards, sidebars</li>
+          <li><strong>Visual hierarchy:</strong> When buttons shouldn't dominate the layout</li>
+          <li><strong>Form efficiency:</strong> Surveys, filters, quick selectors</li>
+        </ul>
+        
+        <h3 style="margin: 2rem 0 1rem 0; color: #1d4ed8; font-weight: 600;">⚠️ When to Keep Default Width</h3>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #374151; line-height: 1.6;">
+          <li><strong>Consistent alignment:</strong> When visual uniformity is important</li>
+          <li><strong>Touch targets:</strong> Mobile apps where larger buttons improve usability</li>
+          <li><strong>Similar length labels:</strong> When all options are roughly the same length</li>
+          <li><strong>Emphasis:</strong> When buttons should be prominent UI elements</li>
+        </ul>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * ## Auto Width Icon-Only Groups
+ * 
+ * Icon-only radio groups with auto-width for compact toolbars and action buttons.
+ */
+export const AutoWidthIconOnly: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Icon-only radio groups with auto-width are perfect for toolbars, formatting controls, and compact UI elements where space is at a premium.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 3rem;">
+      
+      <!-- Text Alignment Toolbar -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Text Alignment Toolbar</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Compact icon-only buttons for text alignment controls
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          auto-width
+          value="left"
+          .options="${[
+            { value: 'left', label: '', icon: 'align-left' },
+            { value: 'center', label: '', icon: 'align-center' },
+            { value: 'right', label: '', icon: 'align-right' },
+            { value: 'justify', label: '', icon: 'align-justify' }
+          ]}"
+          @change="${action('text-align-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- View Mode Selector -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">View Mode Selector</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Switch between different view modes using only icons
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          auto-width
+          value="grid"
+          .options="${[
+            { value: 'list', label: '', icon: 'list' },
+            { value: 'grid', label: '', icon: 'grid' },
+            { value: 'card', label: '', icon: 'card' },
+            { value: 'table', label: '', icon: 'table' }
+          ]}"
+          @change="${action('view-mode-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- Media Controls -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Media Controls</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Playback controls with auto-width for optimal spacing
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          auto-width
+          value="play"
+          .options="${[
+            { value: 'previous', label: '', icon: 'skip-back' },
+            { value: 'play', label: '', icon: 'play' },
+            { value: 'pause', label: '', icon: 'pause' },
+            { value: 'next', label: '', icon: 'skip-forward' }
+          ]}"
+          @change="${action('media-controls-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- Size Comparison: Different Sizes -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Size Variations</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">Small</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              size="small"
+              auto-width
+              value="bold"
+              .options="${[
+                { value: 'bold', label: '', icon: 'bold' },
+                { value: 'italic', label: '', icon: 'italic' },
+                { value: 'underline', label: '', icon: 'underline' },
+                { value: 'strikethrough', label: '', icon: 'strikethrough' }
+              ]}"
+              @change="${action('small-format-change')}"
+            ></nr-radio-group>
+          </div>
+
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">Medium</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              size="medium"
+              auto-width
+              value="bold"
+              .options="${[
+                { value: 'bold', label: '', icon: 'bold' },
+                { value: 'italic', label: '', icon: 'italic' },
+                { value: 'underline', label: '', icon: 'underline' },
+                { value: 'strikethrough', label: '', icon: 'strikethrough' }
+              ]}"
+              @change="${action('medium-format-change')}"
+            ></nr-radio-group>
+          </div>
+
+          <div>
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">Large</h4>
+            <nr-radio-group
+              type="button"
+              direction="horizontal"
+              size="large"
+              auto-width
+              value="bold"
+              .options="${[
+                { value: 'bold', label: '', icon: 'bold' },
+                { value: 'italic', label: '', icon: 'italic' },
+                { value: 'underline', label: '', icon: 'underline' },
+                { value: 'strikethrough', label: '', icon: 'strikethrough' }
+              ]}"
+              @change="${action('large-format-change')}"
+            ></nr-radio-group>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Type Selector -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Chart Type Selector</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Select chart types using visual icons only
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          auto-width
+          value="bar-chart"
+          .options="${[
+            { value: 'bar-chart', label: '', icon: 'bar-chart' },
+            { value: 'line-chart', label: '', icon: 'line-chart' },
+            { value: 'pie-chart', label: '', icon: 'pie-chart' },
+            { value: 'area-chart', label: '', icon: 'area-chart' },
+            { value: 'scatter-plot', label: '', icon: 'scatter-plot' }
+          ]}"
+          @change="${action('chart-type-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- Zoom Controls -->
+      <div>
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 600;">Zoom Controls</h3>
+        <p style="margin: 0 0 1rem 0; color: #6f6f6f; font-size: 0.875rem;">
+          Minimal zoom control buttons with perfect spacing
+        </p>
+        <nr-radio-group
+          type="button"
+          direction="horizontal"
+          auto-width
+          value="100"
+          .options="${[
+            { value: '50', label: '', icon: 'zoom-out' },
+            { value: '100', label: '', icon: 'maximize' },
+            { value: 'fit', label: '', icon: 'maximize-2' },
+            { value: '200', label: '', icon: 'zoom-in' }
+          ]}"
+          @change="${action('zoom-change')}"
+        ></nr-radio-group>
+      </div>
+
+      <!-- Usage Guidelines -->
+      <div style="padding: 2rem; border: 2px solid #dbeafe; border-radius: 8px; background: #eff6ff;">
+        <h3 style="margin: 0 0 1rem 0; color: #1d4ed8; font-weight: 600;">💡 Icon-Only Design Guidelines</h3>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #374151; line-height: 1.6;">
+          <li><strong>Use recognizable icons:</strong> Choose universally understood icons (play, pause, align, etc.)</li>
+          <li><strong>Provide tooltips:</strong> Always include tooltip attributes for accessibility</li>
+          <li><strong>Consistent icon style:</strong> Use icons from the same icon set for visual harmony</li>
+          <li><strong>Appropriate sizing:</strong> Ensure icons are large enough to be easily clickable</li>
+          <li><strong>Context matters:</strong> Icon-only works best in toolbars and repeated UI patterns</li>
+        </ul>
+        
+        <h3 style="margin: 2rem 0 1rem 0; color: #1d4ed8; font-weight: 600;">🎯 Best Use Cases</h3>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #374151; line-height: 1.6;">
+          <li><strong>Toolbars:</strong> Text formatting, drawing tools, media controls</li>
+          <li><strong>View switchers:</strong> List/grid views, chart types, layout modes</li>
+          <li><strong>Quick actions:</strong> Save, edit, delete, share, favorite</li>
+          <li><strong>Toggle states:</strong> On/off, enabled/disabled, visible/hidden</li>
+          <li><strong>Navigation:</strong> Previous/next, directional controls</li>
+        </ul>
       </div>
     </div>
   `,

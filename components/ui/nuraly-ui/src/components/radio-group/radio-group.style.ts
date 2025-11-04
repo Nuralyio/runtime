@@ -164,6 +164,34 @@ export const styles = css`
   }
 
   /* ========================================
+   * AUTO WIDTH STYLING
+   * ======================================== */
+
+  :host([auto-width]) .type-button nr-button {
+    --nr-button-min-width: auto;
+    min-width: auto;
+    width: auto;
+  }
+
+  /* Icon-only buttons with auto-width should have minimal padding */
+  :host([auto-width]) .type-button nr-button.icon-only {
+    --nr-button-min-width: auto;
+    padding: 0.375rem; /* Even more minimal padding for icon-only */
+    min-width: auto;
+    width: auto;
+  }
+
+  /* For small size icon-only buttons, use even less padding */
+  :host([auto-width]) .type-button nr-button.icon-only[size="small"] {
+    padding: 0.25rem;
+  }
+
+  /* For large size icon-only buttons, use slightly more padding */
+  :host([auto-width]) .type-button nr-button.icon-only[size="large"] {
+    padding: 0.5rem;
+  }
+
+  /* ========================================
    * SLOT-BASED RADIO STYLING
    * ======================================== */
 
