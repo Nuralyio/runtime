@@ -38,23 +38,23 @@ export class ButtonBlock extends BaseElementBlock {
     return html`
             <nr-button
               ${ref(this.inputRef)}
-              .size=${buttonStyles?.size || nothing}
-              .type=${buttonStyles?.type || nothing}
-              .shape=${this.inputHandlersValue.shape || nothing}
-              .disabled=${this.inputHandlersValue.state == "disabled"}
-              .loading=${this.inputHandlersValue.loading || false}
-              .block=${this.inputHandlersValue.block || false}
-              .dashed=${this.inputHandlersValue.dashed || false}
+              .size=${this.inputHandlersValue?.size || nothing}
+              .type=${this.inputHandlersValue?.type || nothing}
+              .shape=${this.inputHandlersValue?.shape || nothing}
+              .disabled=${this.inputHandlersValue?.state == "disabled"}
+              .loading=${this.inputHandlersValue?.loading || false}
+              .block=${this.inputHandlersValue?.block || false}
+              .dashed=${this.inputHandlersValue?.dashed || false}
               .icon=${iconArray}
-              .iconLeft=${this.inputHandlersValue.iconLeft || nothing}
-              .iconRight=${this.inputHandlersValue.iconRight || nothing}
-              .icons=${this.inputHandlersValue.icons || nothing}
-              .iconPosition=${this.inputHandlersValue.iconPosition || 'left'}
-              .href=${this.inputHandlersValue.href || nothing}
-              .target=${this.inputHandlersValue.target || nothing}
-              .ripple=${this.inputHandlersValue.ripple !== false}
-              .buttonAriaLabel=${this.inputHandlersValue.ariaLabel || nothing}
-              .htmlType=${this.inputHandlersValue.htmlType || nothing}
+              .iconLeft=${this.inputHandlersValue?.iconLeft || nothing}
+              .iconRight=${this.inputHandlersValue?.iconRight || nothing}
+              .icons=${this.inputHandlersValue?.icons || nothing}
+              .iconPosition=${this.inputHandlersValue?.iconPosition || 'left'}
+              .href=${this.inputHandlersValue?.href || nothing}
+              .target=${this.inputHandlersValue?.target || nothing}
+              .ripple=${this.inputHandlersValue?.ripple !== false}
+              .buttonAriaLabel=${this.inputHandlersValue?.ariaLabel || nothing}
+              .htmlType=${this.inputHandlersValue?.htmlType || nothing}
               @click=${(e) => {
                this.executeEvent('onClick' , e)
               }}

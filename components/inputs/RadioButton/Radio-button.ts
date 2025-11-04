@@ -4,7 +4,6 @@ import type { ComponentElement } from "@shared/redux/store/component/component.i
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import "@nuralyui/radio-group";
-import { ref } from "lit/directives/ref.js";
 
 @customElement("radio-button-block")
 export class RadioButtonBlock extends BaseElementBlock {
@@ -30,6 +29,8 @@ export class RadioButtonBlock extends BaseElementBlock {
     const disabled = this.inputHandlersValue?.disabled || false;
     const required = this.inputHandlersValue?.required || false;
     const name = this.inputHandlersValue?.name || 'radioGroup';
+    // Force autoWidth to true when size is "small", otherwise use the configured value
+    const autoWidth = this.inputHandlersValue?.autoWidth || false;
 
     console.log('[RadioButton] Rendering with:', {
       options,
@@ -40,13 +41,14 @@ export class RadioButtonBlock extends BaseElementBlock {
       size,
       disabled,
       required,
-      name
+      name,
+      autoWidth
     });
 
     return html`
       <span style=${styleMap(radioStyles)}>
         <nr-radio-group
-          ${ref(this.inputRef)}
+        
           .options=${options}
           .defaultValue=${defaultValue}
           .value=${defaultValue}
@@ -57,6 +59,7 @@ export class RadioButtonBlock extends BaseElementBlock {
           .name=${name}
           ?disabled=${disabled}
           ?required=${required}
+          ?auto-width=${autoWidth}
           @nr-change=${(e: CustomEvent) => {
             console.log('[RadioButton] nr-change event:', {
               detail: e.detail,

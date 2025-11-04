@@ -35,10 +35,5 @@ export default css`
     height:100%
   }
 
-  @media (prefers-color-scheme: dark) {
-    .container {
-    --container-bg-color-local: var(--container-dark-bg-color,  var(--container-bg-color));
-  }
-}
 
 `;
