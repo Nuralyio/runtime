@@ -1,0 +1,22 @@
+/**
+ * Editor Theme - Card Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  --nuraly-card-background: #252729;
+  --nuraly-card-color: #e8e8e8;
+  --nuraly-card-border-color: #3e4144;
+
+  /* Card header */
+  --nuraly-card-header-background: #2b2d30;
+  --nuraly-card-header-color: #e8e8e8;
+  --nuraly-card-header-border-color: #3e4144;
+
+  /* Card footer */
+  --nuraly-card-footer-background: #2b2d30;
+  --nuraly-card-footer-color: #e8e8e8;
+  --nuraly-card-footer-border-color: #3e4144;
+
+  /* Card hover */
+  --nuraly-card-hover-border-color: #4e5154;
+}

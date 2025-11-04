@@ -1,0 +1,23 @@
+/**
+ * Editor Theme - Card Light Mode
+ */
+
+:root,
+[data-theme="editor-light"] {
+  --nuraly-card-background: #ffffff;
+  --nuraly-card-color: #333333;
+  --nuraly-card-border-color: #dee2e6;
+
+  /* Card header */
+  --nuraly-card-header-background: #f8f9fa;
+  --nuraly-card-header-color: #333333;
+  --nuraly-card-header-border-color: #dee2e6;
+
+  /* Card footer */
+  --nuraly-card-footer-background: #f8f9fa;
+  --nuraly-card-footer-color: #333333;
+  --nuraly-card-footer-border-color: #dee2e6;
+
+  /* Card hover */
+  --nuraly-card-hover-border-color: #c8cdd1;
+}

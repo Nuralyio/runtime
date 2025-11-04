@@ -1,0 +1,47 @@
+/**
+ * Editor Theme - Menu Component - Common Variables
+ * VvvebJS-inspired minimal menu styling
+ */
+
+[data-theme^="editor"] {
+  /* Typography */
+  --nuraly-menu-font-size: 12px;
+  --nuraly-menu-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --nuraly-menu-font-weight: 400;
+  --nuraly-menu-line-height: 1.5;
+
+  /* Spacing - VvvebJS uses minimal padding */
+  --nuraly-menu-link-padding-vertical: 4px;
+  --nuraly-menu-link-padding-horizontal: 8px;
+
+  /* Size variations */
+  /* Small */
+  --nuraly-menu-link-padding-vertical-small: 2px;
+  --nuraly-menu-link-padding-horizontal-small: 6px;
+
+  /* Medium (default) */
+  --nuraly-menu-link-padding-vertical-medium: 4px;
+  --nuraly-menu-link-padding-horizontal-medium: 8px;
+
+  /* Large */
+  --nuraly-menu-link-padding-vertical-large: 6px;
+  --nuraly-menu-link-padding-horizontal-large: 12px;
+
+  /* Icon spacing - VvvebJS uses tight icon spacing */
+  --nuraly-menu-icon-padding-right: 4px;
+  --nuraly-menu-icon-padding-left: 0px;
+  
+  /* Icon size - Small icons to match VvvebJS compact style */
+  --nuraly-menu-icon-size: 14px;
+
+  /* Border radius - minimal/none for VvvebJS style */
+  --nuraly-menu-border-radius: 0px;
+
+  /* Transitions */
+  --nuraly-menu-transition-duration: 0.15s;
+  --nuraly-menu-transition-timing: ease;
+
+  /* Z-index */
+  --nuraly-menu-z-index: 1;
+}

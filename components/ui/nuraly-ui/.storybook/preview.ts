@@ -1,7 +1,7 @@
 import type { Preview } from '@storybook/web-components';
 
 // Import both theme CSS files for theme switcher
-import '../src/shared/themes/default.css';
+import '../src/shared/themes/editor.css';
 
 const preview: Preview = {
   parameters: {
@@ -51,6 +51,8 @@ const preview: Preview = {
           { value: 'default-dark', title: 'Default Dark', icon: 'circlehollow' },
           { value: 'carbon-light', title: 'Carbon Light', icon: 'sun' },
           { value: 'carbon-dark', title: 'Carbon Dark', icon: 'moon' },
+          { value: 'editor-light', title: 'Editor Light', icon: 'sun' },
+          { value: 'editor-dark', title: 'Editor Dark', icon: 'moon' },
         ],
         dynamicTitle: true,
       },

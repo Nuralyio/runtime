@@ -1,0 +1,46 @@
+/**
+ * Editor Theme - Menu Component - Light Mode
+ * VvvebJS-inspired light panel menu styling
+ */
+
+:root,
+[data-theme="editor-light"] {
+  /* Link colors - VvvebJS uses Bootstrap blue for links */
+  --nuraly-menu-link-color: #0a58ca !important;
+  --nuraly-menu-link-background-color: transparent !important;
+  --nuraly-menu-disabled-link-color: #6c757d !important;
+
+  /* Hover state - subtle background */
+  --nuraly-menu-hover-link-background-color: #e7f1ff !important;
+  --nuraly-menu-hover-link-color: #0842a0 !important;
+
+  /* Selected/Active state */
+  --nuraly-menu-selected-link-background-color: #e7f1ff !important;
+  --nuraly-menu-selected-color: #0842a0 !important;
+  --nuraly-menu-selected-link-border: 3px solid #0d6efd !important;
+
+  /* Focus state */
+  --nuraly-menu-focus-border: 2px solid #0d6efd !important;
+  --nuraly-menu-focus-color: #0842a0 !important;
+
+  /* Active (click) state */
+  --nuraly-menu-active-color: #0842a0 !important;
+  --nuraly-menu-active-background-color: #cfe2ff !important;
+
+  /* Submenu */
+  --nuraly-menu-submenu-background-color: #ffffff !important;
+  --nuraly-menu-submenu-border-color: #dee2e6 !important;
+  --nuraly-menu-submenu-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+
+  /* Divider */
+  --nuraly-menu-divider-color: #dee2e6 !important;
+
+  /* Icon color - VvvebJS uses muted gray icons, not blue */
+  --nuraly-menu-link-icon-color: #6c757d !important;
+  --nuraly-menu-hover-link-icon-color: #495057 !important;
+  --nuraly-menu-selected-link-icon-color: #495057 !important;
+
+  /* Chevron/Arrow icon color */
+  --nuraly-menu-chevron-color: #6c757d !important;
+  --nuraly-menu-hover-chevron-color: #495057 !important;
+}

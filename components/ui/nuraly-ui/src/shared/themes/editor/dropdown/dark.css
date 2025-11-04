@@ -1,0 +1,26 @@
+/**
+ * Editor Theme - Dropdown Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  --nuraly-dropdown-background: #2b2d30;
+  --nuraly-dropdown-border-color: #3e4144;
+
+  /* Dropdown item */
+  --nuraly-dropdown-item-color: #e8e8e8;
+  --nuraly-dropdown-item-background: transparent;
+  --nuraly-dropdown-item-hover-color: #ffffff;
+  --nuraly-dropdown-item-hover-background: #3a3d40;
+  --nuraly-dropdown-item-active-color: #5fa3f5;
+  --nuraly-dropdown-item-active-background: rgba(74, 144, 226, 0.2);
+  --nuraly-dropdown-item-disabled-color: #6c757d;
+  --nuraly-dropdown-item-disabled-background: transparent;
+
+  /* Dropdown divider */
+  --nuraly-dropdown-divider-color: #3e4144;
+
+  /* Dropdown header */
+  --nuraly-dropdown-header-color: #abb2bf;
+  --nuraly-dropdown-header-font-size: 0.8125rem;
+  --nuraly-dropdown-header-font-weight: 600;
+}

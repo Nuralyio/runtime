@@ -39,14 +39,17 @@ export const THEME_FILES = {
   // Main theme files (import complete themes with all components)
   default: './default.css',
   carbon: './carbon.css',
+  editor: './editor.css',
   
   // Individual theme folders (for granular imports)
   'default-folder': './default/index.css',
   'carbon-folder': './carbon/index.css',
+  'editor-folder': './editor/index.css',
   
   // Component-specific theme files (for component-only imports)
   'default-button': './default/button/index.css',
   'carbon-button': './carbon/button/index.css',
+  'editor-button': './editor/button/index.css',
   
   // Core theme variables only (no component styles)
   'default-core': './default/theme.css',
