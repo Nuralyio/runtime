@@ -8,7 +8,6 @@
     "sourceMap": true,
     "inlineSources": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "skipLibCheck":true,
     "noUnusedLocals": true,
@@ -26,12 +25,12 @@
     "baseUrl": ".",
     "paths": {
       "@nuralyui/input/*": ["src/components/input/*"],
-      "@nuralyui/common/mixins": ["packages/common/dist/mixins"],
-      "@nuralyui/common/controllers": ["packages/common/dist/controllers"],
-      "@nuralyui/common/themes": ["packages/common/dist/themes"],
-      "@nuralyui/common/utils": ["packages/common/dist/utils"],
-      "@nuralyui/common/constants": ["packages/common/dist/constants"],
-      "@nuralyui/common": ["packages/common/dist/index"]
+      "@nuralyui/common/mixins": ["packages/common/src/mixins"],
+      "@nuralyui/common/controllers": ["packages/common/src/controllers"],
+      "@nuralyui/common/themes": ["packages/common/src/themes"],
+      "@nuralyui/common/utils": ["packages/common/src/utils"],
+      "@nuralyui/common/constants": ["packages/common/src/constants"],
+      "@nuralyui/common": ["packages/common/src/index"]
     },
     "plugins": [
       {
@@ -40,6 +39,6 @@
       }
     ]
   },
-  "include": ["src/**/*.ts","src/**/*.json"],
+  "include": ["src/**/*.ts","src/**/*.json", "packages/**/*.ts"],
   "exclude": ["src/**/*.stories.ts"]
 }

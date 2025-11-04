@@ -82,7 +82,7 @@ export class NrInputElement extends NumberMixin(
 
   /** Visual variant (outlined, underlined, filled) */
   @property({ type: String, reflect: true })
-  variant = INPUT_VARIANT.Underlined;
+  variant = INPUT_VARIANT.Outlined;
 
   /** Input type (text, password, number, email, etc.) */
   @property({ reflect: true })
