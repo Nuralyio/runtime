@@ -267,6 +267,7 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
             <nr-button
               class="${this.isOptionSelected(option) ? 'selected' : ''}"
               type="${this.isOptionSelected(option) ? ButtonType.Primary : ButtonType.Default}"
+              size="${this.size}"
               role="radio"
               aria-checked="${this.isOptionSelected(option)}"
               aria-describedby="${option.state && option.message ? `${option.value}-message` : nothing}"

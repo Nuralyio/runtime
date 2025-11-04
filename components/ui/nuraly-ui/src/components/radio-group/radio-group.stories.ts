@@ -119,6 +119,245 @@ export const RightPosition: Story = {
   `,
 };
 
+/**
+ * ## Radio Group Sizes
+ * 
+ * Radio groups support three sizes: small, medium (default), and large.
+ * The size affects both the radio buttons and their labels for consistent scaling.
+ */
+export const Sizes: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Comprehensive comparison of radio group sizes in different layouts and styles. Small, Medium (default), and Large sizes adapt to both default and button styles.',
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 3rem;">
+      <!-- Default Style - All Sizes -->
+      <div>
+        <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; font-weight: 600;">Default Style</h3>
+        
+        <!-- Small -->
+        <div style="margin-bottom: 2rem;">
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Small</h4>
+          <div style="display: flex; gap: 3rem;">
+            <div>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #6f6f6f;">Vertical</p>
+              <nr-radio-group
+                size="small"
+                direction="vertical"
+                .options="${[
+                  { value: 'small-v1', label: 'Option 1' },
+                  { value: 'small-v2', label: 'Option 2' },
+                  { value: 'small-v3', label: 'Option 3' }
+                ]}"
+                value="small-v1"
+                @change="${action('small-vertical-change')}"
+              ></nr-radio-group>
+            </div>
+            <div>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #6f6f6f;">Horizontal</p>
+              <nr-radio-group
+                size="small"
+                direction="horizontal"
+                .options="${[
+                  { value: 'small-h1', label: 'Option 1' },
+                  { value: 'small-h2', label: 'Option 2' },
+                  { value: 'small-h3', label: 'Option 3' }
+                ]}"
+                value="small-h1"
+                @change="${action('small-horizontal-change')}"
+              ></nr-radio-group>
+            </div>
+          </div>
+          <p style="font-size: 0.875rem; color: #6f6f6f; margin-top: 12px;">
+            Use in compact layouts or when space is limited
+          </p>
+        </div>
+
+        <!-- Medium -->
+        <div style="margin-bottom: 2rem;">
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Medium (Default)</h4>
+          <div style="display: flex; gap: 3rem;">
+            <div>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #6f6f6f;">Vertical</p>
+              <nr-radio-group
+                size="medium"
+                direction="vertical"
+                .options="${[
+                  { value: 'medium-v1', label: 'Option 1' },
+                  { value: 'medium-v2', label: 'Option 2' },
+                  { value: 'medium-v3', label: 'Option 3' }
+                ]}"
+                value="medium-v1"
+                @change="${action('medium-vertical-change')}"
+              ></nr-radio-group>
+            </div>
+            <div>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #6f6f6f;">Horizontal</p>
+              <nr-radio-group
+                size="medium"
+                direction="horizontal"
+                .options="${[
+                  { value: 'medium-h1', label: 'Option 1' },
+                  { value: 'medium-h2', label: 'Option 2' },
+                  { value: 'medium-h3', label: 'Option 3' }
+                ]}"
+                value="medium-h1"
+                @change="${action('medium-horizontal-change')}"
+              ></nr-radio-group>
+            </div>
+          </div>
+          <p style="font-size: 0.875rem; color: #6f6f6f; margin-top: 12px;">
+            Default size - most common for forms and standard interfaces
+          </p>
+        </div>
+
+        <!-- Large -->
+        <div>
+          <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Large</h4>
+          <div style="display: flex; gap: 3rem;">
+            <div>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #6f6f6f;">Vertical</p>
+              <nr-radio-group
+                size="large"
+                direction="vertical"
+                .options="${[
+                  { value: 'large-v1', label: 'Option 1' },
+                  { value: 'large-v2', label: 'Option 2' },
+                  { value: 'large-v3', label: 'Option 3' }
+                ]}"
+                value="large-v1"
+                @change="${action('large-vertical-change')}"
+              ></nr-radio-group>
+            </div>
+            <div>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #6f6f6f;">Horizontal</p>
+              <nr-radio-group
+                size="large"
+                direction="horizontal"
+                .options="${[
+                  { value: 'large-h1', label: 'Option 1' },
+                  { value: 'large-h2', label: 'Option 2' },
+                  { value: 'large-h3', label: 'Option 3' }
+                ]}"
+                value="large-h1"
+                @change="${action('large-horizontal-change')}"
+              ></nr-radio-group>
+            </div>
+          </div>
+          <p style="font-size: 0.875rem; color: #6f6f6f; margin-top: 12px;">
+            Use for mobile interfaces, touch screens, or when radio groups need more prominence
+          </p>
+        </div>
+      </div>
+
+      <!-- Button Style - All Sizes -->
+      <div>
+        <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; font-weight: 600;">Button Style</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <!-- Small -->
+          <div>
+            <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Small</h4>
+            <nr-radio-group
+              size="small"
+              type="button"
+              direction="horizontal"
+              .options="${[
+                { value: 'btn-small-1', label: 'Left', icon: 'align-left' },
+                { value: 'btn-small-2', label: 'Center', icon: 'align-center' },
+                { value: 'btn-small-3', label: 'Right', icon: 'align-right' }
+              ]}"
+              value="btn-small-2"
+              @change="${action('button-small-change')}"
+            ></nr-radio-group>
+          </div>
+
+          <!-- Medium -->
+          <div>
+            <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Medium (Default)</h4>
+            <nr-radio-group
+              size="medium"
+              type="button"
+              direction="horizontal"
+              .options="${[
+                { value: 'btn-medium-1', label: 'Left', icon: 'align-left' },
+                { value: 'btn-medium-2', label: 'Center', icon: 'align-center' },
+                { value: 'btn-medium-3', label: 'Right', icon: 'align-right' }
+              ]}"
+              value="btn-medium-2"
+              @change="${action('button-medium-change')}"
+            ></nr-radio-group>
+          </div>
+
+          <!-- Large -->
+          <div>
+            <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Large</h4>
+            <nr-radio-group
+              size="large"
+              type="button"
+              direction="horizontal"
+              .options="${[
+                { value: 'btn-large-1', label: 'Left', icon: 'align-left' },
+                { value: 'btn-large-2', label: 'Center', icon: 'align-center' },
+                { value: 'btn-large-3', label: 'Right', icon: 'align-right' }
+              ]}"
+              value="btn-large-2"
+              @change="${action('button-large-change')}"
+            ></nr-radio-group>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-Side Comparison -->
+      <div>
+        <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; font-weight: 600;">Side-by-Side Comparison</h3>
+        <div style="display: flex; gap: 3rem; align-items: flex-start;">
+          <div>
+            <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 500;">Small</p>
+            <nr-radio-group
+              size="small"
+              direction="vertical"
+              .options="${[
+                { value: 'compare-s1', label: 'Option 1' },
+                { value: 'compare-s2', label: 'Option 2' }
+              ]}"
+              value="compare-s1"
+            ></nr-radio-group>
+          </div>
+          <div>
+            <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 500;">Medium</p>
+            <nr-radio-group
+              size="medium"
+              direction="vertical"
+              .options="${[
+                { value: 'compare-m1', label: 'Option 1' },
+                { value: 'compare-m2', label: 'Option 2' }
+              ]}"
+              value="compare-m1"
+            ></nr-radio-group>
+          </div>
+          <div>
+            <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 500;">Large</p>
+            <nr-radio-group
+              size="large"
+              direction="vertical"
+              .options="${[
+                { value: 'compare-l1', label: 'Option 1' },
+                { value: 'compare-l2', label: 'Option 2' }
+              ]}"
+              value="compare-l1"
+            ></nr-radio-group>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
 export const ButtonStyle: Story = {
   args: {
     options: [

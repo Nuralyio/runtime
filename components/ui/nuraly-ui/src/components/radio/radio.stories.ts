@@ -60,13 +60,124 @@ export const Default: Story = {
   `,
 };
 
+/**
+ * ## Radio Button Sizes
+ * 
+ * Radio buttons come in three sizes: small (16px), medium (20px - default), and large (24px).
+ * Each size maintains consistent proportions while adapting to different design contexts.
+ */
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Comprehensive comparison of radio button sizes. Small (16px), Medium (20px - default), and Large (24px). Label text size also adjusts accordingly.',
+      },
+    },
+  },
   render: () => html`
-    <div style="display: flex; flex-direction: column; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <nr-radio name="size-demo" value="small" size="small" checked>Small</nr-radio>
-        <nr-radio name="size-demo" value="medium" size="medium">Medium</nr-radio>
-        <nr-radio name="size-demo" value="large" size="large">Large</nr-radio>
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+      <!-- Small Size -->
+      <div>
+        <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Small (16px)</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <nr-radio name="small-demo" value="option1" size="small" checked>Option 1</nr-radio>
+            <nr-radio name="small-demo" value="option2" size="small">Option 2</nr-radio>
+            <nr-radio name="small-demo" value="option3" size="small">Option 3</nr-radio>
+          </div>
+          <div style="margin-top: 8px;">
+            <nr-radio name="small-disabled" value="d1" size="small" disabled>Disabled</nr-radio>
+            <span style="margin-left: 16px;">
+              <nr-radio name="small-disabled" value="d2" size="small" disabled checked>Disabled Checked</nr-radio>
+            </span>
+          </div>
+        </div>
+        <p style="font-size: 0.875rem; color: #6f6f6f; margin-top: 12px;">
+          Use in compact layouts, sidebars, or when space is limited
+        </p>
+      </div>
+
+      <!-- Medium Size (Default) -->
+      <div>
+        <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Medium (20px) - Default</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <nr-radio name="medium-demo" value="option1" size="medium" checked>Option 1</nr-radio>
+            <nr-radio name="medium-demo" value="option2" size="medium">Option 2</nr-radio>
+            <nr-radio name="medium-demo" value="option3" size="medium">Option 3</nr-radio>
+          </div>
+          <div style="margin-top: 8px;">
+            <nr-radio name="medium-disabled" value="d1" size="medium" disabled>Disabled</nr-radio>
+            <span style="margin-left: 16px;">
+              <nr-radio name="medium-disabled" value="d2" size="medium" disabled checked>Disabled Checked</nr-radio>
+            </span>
+          </div>
+        </div>
+        <p style="font-size: 0.875rem; color: #6f6f6f; margin-top: 12px;">
+          Default size - most common for forms and standard interfaces
+        </p>
+      </div>
+
+      <!-- Large Size -->
+      <div>
+        <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Large (24px)</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <nr-radio name="large-demo" value="option1" size="large" checked>Option 1</nr-radio>
+            <nr-radio name="large-demo" value="option2" size="large">Option 2</nr-radio>
+            <nr-radio name="large-demo" value="option3" size="large">Option 3</nr-radio>
+          </div>
+          <div style="margin-top: 8px;">
+            <nr-radio name="large-disabled" value="d1" size="large" disabled>Disabled</nr-radio>
+            <span style="margin-left: 16px;">
+              <nr-radio name="large-disabled" value="d2" size="large" disabled checked>Disabled Checked</nr-radio>
+            </span>
+          </div>
+        </div>
+        <p style="font-size: 0.875rem; color: #6f6f6f; margin-top: 12px;">
+          Use for mobile interfaces, touch screens, or when radio buttons need more prominence
+        </p>
+      </div>
+
+      <!-- Side-by-Side Comparison -->
+      <div style="margin-top: 1rem;">
+        <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Side-by-Side Comparison</h4>
+        <div style="display: flex; gap: 24px; align-items: center;">
+          <nr-radio name="comparison" value="small" size="small" checked>Small</nr-radio>
+          <nr-radio name="comparison" value="medium" size="medium">Medium</nr-radio>
+          <nr-radio name="comparison" value="large" size="large">Large</nr-radio>
+        </div>
+      </div>
+
+      <!-- Vertical Layout Comparison -->
+      <div style="margin-top: 1rem;">
+        <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">Vertical Layout</h4>
+        <div style="display: flex; gap: 48px;">
+          <div>
+            <p style="margin: 0 0 8px 0; font-size: 0.875rem; font-weight: 500;">Small</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <nr-radio name="vertical-small" value="1" size="small" checked>First Option</nr-radio>
+              <nr-radio name="vertical-small" value="2" size="small">Second Option</nr-radio>
+              <nr-radio name="vertical-small" value="3" size="small">Third Option</nr-radio>
+            </div>
+          </div>
+          <div>
+            <p style="margin: 0 0 8px 0; font-size: 0.875rem; font-weight: 500;">Medium</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <nr-radio name="vertical-medium" value="1" size="medium" checked>First Option</nr-radio>
+              <nr-radio name="vertical-medium" value="2" size="medium">Second Option</nr-radio>
+              <nr-radio name="vertical-medium" value="3" size="medium">Third Option</nr-radio>
+            </div>
+          </div>
+          <div>
+            <p style="margin: 0 0 8px 0; font-size: 0.875rem; font-weight: 500;">Large</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <nr-radio name="vertical-large" value="1" size="large" checked>First Option</nr-radio>
+              <nr-radio name="vertical-large" value="2" size="large">Second Option</nr-radio>
+              <nr-radio name="vertical-large" value="3" size="large">Third Option</nr-radio>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   `,

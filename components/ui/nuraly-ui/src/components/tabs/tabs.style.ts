@@ -243,10 +243,25 @@ export const styles = css`
   }
 
   /* Size variations */
-  :host([data-size="small"]) {
+  .tabs-container[data-size="small"] {
     .tab-label {
       padding: var(--nuraly-spacing-2) var(--nuraly-spacing-3);
       font-size: var(--nuraly-font-size-small);
+      gap: var(--nuraly-spacing-1);
+    }
+    
+    .tab-text {
+      font-size: var(--nuraly-font-size-small);
+    }
+    
+    .tab-icon {
+      width: calc(var(--nuraly-tabs-icon-size, 1rem) * 0.875);
+      height: calc(var(--nuraly-tabs-icon-size, 1rem) * 0.875);
+    }
+    
+    .close-icon {
+      width: calc(var(--nuraly-tabs-close-icon-size, 0.875rem) * 0.875);
+      height: calc(var(--nuraly-tabs-close-icon-size, 0.875rem) * 0.875);
     }
     
     .tab-content {
@@ -254,10 +269,25 @@ export const styles = css`
     }
   }
 
-  :host([data-size="large"]) {
+  .tabs-container[data-size="large"] {
     .tab-label {
       padding: var(--nuraly-spacing-4) var(--nuraly-spacing-6);
       font-size: var(--nuraly-font-size-large);
+      gap: var(--nuraly-spacing-3);
+    }
+    
+    .tab-text {
+      font-size: var(--nuraly-font-size-large);
+    }
+    
+    .tab-icon {
+      width: calc(var(--nuraly-tabs-icon-size, 1rem) * 1.25);
+      height: calc(var(--nuraly-tabs-icon-size, 1rem) * 1.25);
+    }
+    
+    .close-icon {
+      width: calc(var(--nuraly-tabs-close-icon-size, 0.875rem) * 1.25);
+      height: calc(var(--nuraly-tabs-close-icon-size, 0.875rem) * 1.25);
     }
     
     .tab-content {
@@ -266,7 +296,7 @@ export const styles = css`
   }
 
   /* Type variations */
-  :host([data-type="card"]) {
+  .tabs-container[data-type="card"] {
     .tab-label {
       border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
       border-radius: var(--nuraly-border-radius-medium);
@@ -280,11 +310,9 @@ export const styles = css`
     }
   }
 
-  :host([data-type="bordered"]) {
-    .tabs-container {
-      border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
-      border-radius: var(--nuraly-border-radius-medium);
-    }
+  .tabs-container[data-type="bordered"] {
+    border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+    border-radius: var(--nuraly-border-radius-medium);
   }
 
   /* Drag and drop states */
