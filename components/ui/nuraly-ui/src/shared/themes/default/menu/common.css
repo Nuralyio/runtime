@@ -23,7 +23,7 @@ body {
   --nuraly-menu-link-padding-horizontal: 16px;
   --nuraly-sub-menu-padding-vertical: 10px;
   --nuraly-sub-menu-padding-horizontal: 16px;
-  --nuraly-sub-menu-nested-padding-left: 32px;  /* Indent for nested items */
+  --nuraly-sub-menu-nested-padding-left: 10px;  /* Indent for nested items */
 
   /* Size variants - Small */
   --nuraly-menu-link-padding-vertical-small: 6px;

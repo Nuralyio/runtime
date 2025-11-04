@@ -58,53 +58,53 @@ export const styles = css`
     font-weight: var(--nuraly-font-weight-regular);
     user-select: none;
     white-space: nowrap;
+  }
 
-    &:hover {
-      color: var(--nuraly-color-tabs-label-text-hover);
-      background-color: var(--nuraly-color-tabs-label-background-hover);
-      border-color: var(--nuraly-color-tabs-label-border-hover);
-    }
+  .tab-label:hover {
+    color: var(--nuraly-color-tabs-label-text-hover);
+    background-color: var(--nuraly-color-tabs-label-background-hover);
+    border-color: var(--nuraly-color-tabs-label-border-hover);
+  }
 
-    &:focus {
-      outline: var(--nuraly-focus-outline);
-      outline-offset: var(--nuraly-focus-outline-offset);
-    }
+  .tab-label:focus {
+    outline: var(--nuraly-focus-outline);
+    outline-offset: var(--nuraly-focus-outline-offset);
+  }
 
-    &.active {
-      color: var(--nuraly-color-tabs-label-text-active);
-      background-color: var(--nuraly-color-tabs-label-background-active);
-      border-color: var(--nuraly-color-tabs-label-border-active);
-      font-weight: var(--nuraly-font-weight-semibold);
-    }
+  .tab-label.active {
+    color: var(--nuraly-color-tabs-label-text-active);
+    background-color: var(--nuraly-color-tabs-label-background-active);
+    border-color: var(--nuraly-color-tabs-label-border-active);
+    font-weight: var(--nuraly-font-weight-semibold);
+  }
 
-    /* Positioning-specific border radius for horizontal tabs */
-    &.first-tab {
-      border-radius: var(--nuraly-border-radius-tabs-first);
-    }
+  /* Positioning-specific border radius for horizontal tabs */
+  .tab-label.first-tab {
+    border-radius: var(--nuraly-border-radius-tabs-first);
+  }
 
-    &.middle-tab {
-      border-radius: var(--nuraly-border-radius-tabs-middle);
-    }
+  .tab-label.middle-tab {
+    border-radius: var(--nuraly-border-radius-tabs-middle);
+  }
 
-    &.last-tab {
-      border-radius: var(--nuraly-border-radius-tabs-last);
-    }
+  .tab-label.last-tab {
+    border-radius: var(--nuraly-border-radius-tabs-last);
+  }
 
-    &.single-tab {
-      border-radius: var(--nuraly-border-radius-tabs-single);
-    }
+  .tab-label.single-tab {
+    border-radius: var(--nuraly-border-radius-tabs-single);
+  }
 
-    &.disabled {
-      cursor: not-allowed;
-      color: var(--nuraly-color-text-disabled);
-      background-color: var(--nuraly-color-background-disabled);
-      
-      &:hover {
-        color: var(--nuraly-color-text-disabled);
-        background-color: var(--nuraly-color-background-disabled);
-        border-color: transparent;
-      }
-    }
+  .tab-label.disabled {
+    cursor: not-allowed;
+    color: var(--nuraly-color-text-disabled);
+    background-color: var(--nuraly-color-background-disabled);
+  }
+  
+  .tab-label.disabled:hover {
+    color: var(--nuraly-color-text-disabled);
+    background-color: var(--nuraly-color-background-disabled);
+    border-color: transparent;
   }
 
   /* Tab icon styling */
@@ -119,17 +119,17 @@ export const styles = css`
   .tab-text {
     flex: 1;
     color: inherit;
-    
-    &[contenteditable="true"] {
-      cursor: text;
-      outline: none;
-      
-      &:focus {
-        background-color: var(--nuraly-color-tabs-edit-background);
-        border-radius: var(--nuraly-border-radius-small);
-        padding: var(--nuraly-spacing-1);
-      }
-    }
+  }
+  
+  .tab-text[contenteditable="true"] {
+    cursor: text;
+    outline: none;
+  }
+  
+  .tab-text[contenteditable="true"]:focus {
+    background-color: var(--nuraly-color-tabs-edit-background);
+    border-radius: var(--nuraly-border-radius-small);
+    padding: var(--nuraly-spacing-1);
   }
 
   /* Close/delete icon styling */
@@ -141,16 +141,16 @@ export const styles = css`
     cursor: pointer;
     padding: var(--nuraly-spacing-1);
     border-radius: var(--nuraly-border-radius-small);
+  }
 
-    &:hover {
-      color: var(--nuraly-color-tabs-close-icon-hover);
-      background-color: var(--nuraly-color-tabs-close-icon-background-hover);
-    }
+  .close-icon:hover {
+    color: var(--nuraly-color-tabs-close-icon-hover);
+    background-color: var(--nuraly-color-tabs-close-icon-background-hover);
+  }
 
-    &:active {
-      color: var(--nuraly-color-tabs-close-icon-active);
-      background-color: var(--nuraly-color-tabs-close-icon-background-active);
-    }
+  .close-icon:active {
+    color: var(--nuraly-color-tabs-close-icon-active);
+    background-color: var(--nuraly-color-tabs-close-icon-background-active);
   }
 
   /* Add tab button styling */
@@ -158,11 +158,11 @@ export const styles = css`
     min-width: auto;
     width: var(--nuraly-tabs-add-button-size, 2.5rem);
     color: var(--nuraly-color-tabs-add-icon);
-    
-    &:hover {
-      color: var(--nuraly-color-tabs-add-icon-hover);
-      background-color: var(--nuraly-color-tabs-add-background-hover);
-    }
+  }
+  
+  .add-tab-label:hover {
+    color: var(--nuraly-color-tabs-add-icon-hover);
+    background-color: var(--nuraly-color-tabs-add-background-hover);
   }
 
   .add-tab-icon {
@@ -200,32 +200,32 @@ export const styles = css`
     .tab-label {
       border-bottom: var(--nuraly-border-tabs-label);
       border-right: var(--nuraly-border-width-medium, 2px) solid transparent;
-      
-      &:hover,
-      &.active {
-        border-right-color: var(--nuraly-color-tabs-label-border-active);
-      }
     }
+  }
+
+  .vertical-align .tab-label:hover,
+  .vertical-align .tab-label.active {
+    border-right-color: var(--nuraly-color-tabs-label-border-active);
   }
 
   .vertical-align.right-align {
     flex-direction: row-reverse;
-    
-    .tab-content {
-      border-left: none;
-      border-right: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
-    }
-    
-    .tab-label {
-      border-right: var(--nuraly-border-tabs-label);
-      border-left: var(--nuraly-border-width-medium, 2px) solid transparent;
-      
-      &:hover,
-      &.active {
-        border-left-color: var(--nuraly-color-tabs-label-border-active);
-        border-right-color: transparent;
-      }
-    }
+  }
+  
+  .vertical-align.right-align .tab-content {
+    border-left: none;
+    border-right: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+  }
+  
+  .vertical-align.right-align .tab-label {
+    border-right: var(--nuraly-border-tabs-label);
+    border-left: var(--nuraly-border-width-medium, 2px) solid transparent;
+  }
+  
+  .vertical-align.right-align .tab-label:hover,
+  .vertical-align.right-align .tab-label.active {
+    border-left-color: var(--nuraly-color-tabs-label-border-active);
+    border-right-color: transparent;
   }
 
   /* Alignment specific styles */
@@ -297,86 +297,79 @@ export const styles = css`
 
   /* Type variations */
   
-  /* Default variant - minimal style, just text */
-  .tabs-container[data-type="default"] {
-    .tab-labels {
-      gap: var(--nuraly-tabs-gap, 0);
-      border-bottom: none;
-    }
-    
-    .tab-label {
-      padding: var(--nuraly-tabs-padding, 0.5rem 0);
-      border: none;
-      border-radius: 0;
-      background-color: transparent;
-      font-weight: var(--nuraly-tabs-font-weight, 400);
-      font-size: var(--nuraly-tabs-font-size, 1rem);
-      
-      &:hover {
-        background-color: transparent;
-        border-bottom-color: transparent;
-      }
-      
-      &.active {
-        background-color: transparent;
-        border-bottom-color: transparent;
-        font-weight: var(--nuraly-tabs-active-font-weight, 700);
-        color: var(--nuraly-tabs-active-color, inherit);
-      }
-    }
-    
-    .tab-content {
-      border-top: none;
-    }
+  /* Default variant - uses standard theme variables */
+  .tabs-container[data-type="default"] .tab-labels {
+    gap: var(--nuraly-spacing-2);
+    border-bottom: var(--nuraly-border-tabs-header);
+  }
+  
+  .tabs-container[data-type="default"] .tab-label {
+    /* Use theme variables for proper visibility */
+    background-color: var(--nuraly-color-tabs-label-background);
+    border: var(--nuraly-border-tabs-label);
+    color: var(--nuraly-color-tabs-label-text);
+    border-radius: var(--nuraly-border-radius-tabs-first);
+  }
+  
+  .tabs-container[data-type="default"] .tab-label:hover {
+    background-color: var(--nuraly-color-tabs-label-background-hover);
+    color: var(--nuraly-color-tabs-label-text-hover);
+  }
+  
+  .tabs-container[data-type="default"] .tab-label.active {
+    background-color: var(--nuraly-color-tabs-label-background-active);
+    color: var(--nuraly-color-tabs-label-text-active);
+    border-color: var(--nuraly-color-tabs-label-border-active);
+    font-weight: var(--nuraly-font-weight-semibold);
+  }
+  
+  .tabs-container[data-type="default"] .tab-content {
+    border-top: var(--nuraly-border-tabs-content);
   }
   
   /* Line variant - underline on active tab */
-  .tabs-container[data-type="line"] {
-    .tab-labels {
-      gap: var(--nuraly-tabs-gap, 1rem);
-      border-bottom: var(--nuraly-tabs-indicator-height, 1px) solid var(--nuraly-tabs-border-color, var(--nuraly-color-border, #e0e0e0));
-    }
-    
-    .tab-label {
-      padding: var(--nuraly-tabs-padding, 0.5rem 0);
-      border: none;
-      border-bottom: var(--nuraly-tabs-indicator-height, 2px) solid transparent;
-      border-radius: 0;
-      background-color: transparent;
-      font-weight: var(--nuraly-tabs-font-weight, 400);
-      font-size: var(--nuraly-tabs-font-size, 1rem);
-      margin-bottom: calc(-1 * var(--nuraly-tabs-indicator-height, 1px));
-      
-      &:hover {
-        background-color: transparent;
-        border-bottom-color: var(--nuraly-tabs-item-hover-color, var(--nuraly-tabs-active-indicator-color, currentColor));
-      }
-      
-      &.active {
-        background-color: transparent;
-        border-bottom-color: var(--nuraly-tabs-active-indicator-color, var(--nuraly-tabs-active-border-color, currentColor));
-        font-weight: var(--nuraly-tabs-active-font-weight, 700);
-        color: var(--nuraly-tabs-active-color, inherit);
-      }
-    }
-    
-    .tab-content {
-      border-top: none;
-    }
+  .tabs-container[data-type="line"] .tab-labels {
+    gap: var(--nuraly-tabs-gap, 1rem);
+    border-bottom: var(--nuraly-tabs-indicator-height, 1px) solid var(--nuraly-tabs-border-color, var(--nuraly-color-border, #e0e0e0));
   }
   
-  .tabs-container[data-type="card"] {
-    .tab-label {
-      border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
-      border-radius: var(--nuraly-border-radius-medium);
-      margin: 0 var(--nuraly-spacing-1);
-      
-      &.active {
-        background-color: var(--nuraly-color-primary);
-        color: var(--nuraly-color-primary-text);
-        border-color: var(--nuraly-color-primary);
-      }
-    }
+  .tabs-container[data-type="line"] .tab-label {
+    padding: var(--nuraly-tabs-padding, 0.5rem 0);
+    border: none;
+    border-bottom: var(--nuraly-tabs-indicator-height, 2px) solid transparent;
+    border-radius: 0;
+    background-color: transparent;
+    font-weight: var(--nuraly-tabs-font-weight, 400);
+    font-size: var(--nuraly-tabs-font-size, 1rem);
+    margin-bottom: calc(-1 * var(--nuraly-tabs-indicator-height, 1px));
+  }
+  
+  .tabs-container[data-type="line"] .tab-label:hover {
+    background-color: transparent;
+    border-bottom-color: var(--nuraly-tabs-item-hover-color, var(--nuraly-tabs-active-indicator-color, currentColor));
+  }
+  
+  .tabs-container[data-type="line"] .tab-label.active {
+    background-color: transparent;
+    border-bottom-color: var(--nuraly-tabs-active-indicator-color, var(--nuraly-tabs-active-border-color, currentColor));
+    font-weight: var(--nuraly-tabs-active-font-weight, 700);
+    color: var(--nuraly-tabs-active-color, inherit);
+  }
+  
+  .tabs-container[data-type="line"] .tab-content {
+    border-top: none;
+  }
+  
+  .tabs-container[data-type="card"] .tab-label {
+    border: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+    border-radius: var(--nuraly-border-radius-medium);
+    margin: 0 var(--nuraly-spacing-1);
+  }
+  
+  .tabs-container[data-type="card"] .tab-label.active {
+    background-color: var(--nuraly-color-primary);
+    color: var(--nuraly-color-primary-text);
+    border-color: var(--nuraly-color-primary);
   }
 
   .tabs-container[data-type="bordered"] {

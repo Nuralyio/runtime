@@ -212,7 +212,7 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
           ${menu.icon ? html`
             ${!menu.text 
               ? html`<div class="icon-only"><nr-icon name="${menu.icon}"></nr-icon></div>`
-              : html`<nr-icon name="${menu.icon}"></nr-icon>`}
+              : html`<nr-icon name="${menu.icon}" size="small"></nr-icon>`}
           ` : nothing}
         </div>
         ${menu.text ? html`
@@ -222,7 +222,7 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
             </div>
             <div class="icon-container">
               ${menu.status?.icon ? html`
-                <nr-icon name=${menu.status.icon} class="status-icon"></nr-icon>
+                <nr-icon name=${menu.status.icon} class="status-icon"  size="small"></nr-icon>
               ` : nothing}
               ${menu.menu?.actions ? html`
                 <nr-dropdown 
@@ -230,7 +230,7 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
                   trigger="click" 
                   placement="bottom-end"
                   @nr-dropdown-item-click=${(e: CustomEvent) => this._handleActionClick(path, e)}>
-                  <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger"></nr-icon>
+                  <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger"  size="small"></nr-icon>
                 </nr-dropdown>
               ` : nothing}
             </div>
@@ -269,11 +269,11 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
           class="sub-menu-header"
           @mousedown=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}
           @click=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}>
-          ${menu.icon ? html`<nr-icon class="text-icon" name="${menu.icon}"></nr-icon>` : nothing}
+          ${menu.icon ? html`<nr-icon class="text-icon" name="${menu.icon}" size="small"></nr-icon>` : nothing}
           <span>${menu.text}</span>
           <div class="icons-container">
             ${menu.status?.icon ? html`
-              <nr-icon name=${menu.status.icon} class="status-icon"></nr-icon>
+              <nr-icon name=${menu.status.icon} class="status-icon" size="small"></nr-icon>
             ` : nothing}
             ${(isHighlighted || isHovered) && menu.menu?.actions ? html`
               <nr-dropdown 
@@ -281,14 +281,15 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
                 trigger="click" 
                 placement="bottom-end"
                 @nr-dropdown-item-click=${(e: CustomEvent) => this._handleActionClick(path, e)}>
-                <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger"></nr-icon>
+                <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger" size="small"></nr-icon>
               </nr-dropdown>
             ` : nothing}
             ${menu.children && menu.children.length ? html`
               <nr-icon 
                 id="toggle-icon" 
                 name="${isOpen ? 'angle-up' : 'angle-down'}" 
-                @mousedown=${!menu.disabled ? (e: Event) => this._toggleSubMenu(path, e) : nothing}>
+                @mousedown=${!menu.disabled ? (e: Event) => this._toggleSubMenu(path, e) : nothing}
+                size="small">
               </nr-icon>
             ` : nothing}
           </div>
