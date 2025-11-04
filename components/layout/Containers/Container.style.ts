@@ -4,13 +4,13 @@ export default css`
   :host{
   }
   .container {
-    --container-bg-color-local: var(--container-bg-color);
+    /* --container-bg-color-local: var(--container-bg-color); */
 
     display: flex;
     width: fit-content;
     min-height: 300px;
     flex-wrap: wrap;
-    background-color: var(--container-bg-color-local, var(--container-bg-color));
+    /* background-color: var(--container-bg-color-local, var(--container-bg-color)); */
 }
 
 .boxed{
