@@ -39,6 +39,14 @@ export const enum ComponentType {
   ExportImport = "ExportImport",
   InvokeFunction = "InvokeFunction",
   Dropdown = "dropdown",
+  Textarea = "Textarea",
+  Badge = "Badge",
+  Card = "Card",
+  Tag = "Tag",
+  Slider = "Slider",
+  Alert = "Alert",
+  Modal = "Modal",
+  Toast = "Toast",
 }
 
 export interface DraggingComponentInfo {

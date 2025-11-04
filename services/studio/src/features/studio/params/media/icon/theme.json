@@ -6,7 +6,7 @@
       {
         "name": "General",
         "items": [
-          { "label": "Icon Color", "cssVar": "--hybrid-icon-color" }
+          { "label": "Icon Color", "cssVar": "--nuraly-icon-color" }
         ],
         "open": true
       }
@@ -18,7 +18,7 @@
       {
         "name": "General",
         "items": [
-          { "label": "Icon Color", "cssVar": "--hybrid-icon-color" }
+          { "label": "Icon Color", "cssVar": "--nuraly-icon-color" }
         ]
       }
     ]

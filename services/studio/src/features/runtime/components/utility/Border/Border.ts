@@ -6,7 +6,7 @@ import "@nuralyui/slider-input";
 import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import "@nuralyui/color-picker";
+import "@nuralyui/colorpicker";
 import {
     SelectTheme,
     SingleButtonTheme,
@@ -29,18 +29,18 @@ export class AttributeBorderValue extends BaseElementBlock {
         display: block;
         --box-manager-background-color: transparent;
       }
-      hy-slider-input {
+      nr-slider-input {
         width: 100%;
         margin-left: 14px;
       }
-      hy-input {
-        --hybrid-input-container-padding-top: 0px;
-        --hybrid-input-container-padding-bottom: 0px;
-        --hybrid-input-container-padding-left: 0px;
-        --hybrid-input-container-padding-right: 0px;
-        --hybrid-input-text-align: center;
+      nr-input {
+        --nuraly-input-container-padding-top: 0px;
+        --nuraly-input-container-padding-bottom: 0px;
+        --nuraly-input-container-padding-left: 0px;
+        --nuraly-input-container-padding-right: 0px;
+        --nuraly-input-text-align: center;
       }
-      hy-icon {
+      nr-icon {
         font-size: 20px;
       }
       .first-row {
@@ -51,13 +51,13 @@ export class AttributeBorderValue extends BaseElementBlock {
         flex: 20%;
       }
 
-      hy-input {
-        --hybrid-input-container-border-color: transparent;
-        --hybrid-input-container-padding-top: 0px;
-        --hybrid-input-container-padding-bottom: 0px;
-        --hybrid-input-container-padding-left: 0px;
-        --hybrid-input-container-padding-right: 0px;
-        --hybrid-input-text-align: center;
+      nr-input {
+        --nuraly-input-container-border-color: transparent;
+        --nuraly-input-container-padding-top: 0px;
+        --nuraly-input-container-padding-bottom: 0px;
+        --nuraly-input-container-padding-left: 0px;
+        --nuraly-input-container-padding-right: 0px;
+        --nuraly-input-text-align: center;
       }
 
       .margin-label,
@@ -285,7 +285,7 @@ export class AttributeBorderValue extends BaseElementBlock {
   renderBorder() {
     return html`
       <div>
-        <hy-button
+        <nr-button
           style=${styleMap({
             ...SingleButtonTheme,
           })}
@@ -293,8 +293,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           @click=${() => this.toggleBorder("all")}
         >
           ALL
-        </hy-button>
-        <hy-button
+        </nr-button>
+        <nr-button
           style=${styleMap({
             ...SingleButtonTheme,
           })}
@@ -302,8 +302,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           @click=${() => this.toggleBorder("top")}
         >
           TOP
-        </hy-button>
-        <hy-button
+        </nr-button>
+        <nr-button
           style=${styleMap({
             ...SingleButtonTheme,
           })}
@@ -311,8 +311,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           @click=${() => this.toggleBorder("right")}
         >
           RIGHT
-        </hy-button>
-        <hy-button
+        </nr-button>
+        <nr-button
           style=${styleMap({
             ...SingleButtonTheme,
           })}
@@ -320,8 +320,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           @click=${() => this.toggleBorder("bottom")}
         >
           BOTTOM
-        </hy-button>
-        <hy-button
+        </nr-button>
+        <nr-button
           style=${styleMap({
             ...SingleButtonTheme,
           })}
@@ -329,24 +329,24 @@ export class AttributeBorderValue extends BaseElementBlock {
           @click=${() => this.toggleBorder("left")}
         >
           LEFT
-        </hy-button>
+        </nr-button>
         <div style="display: flex; align-items: center;">
           <div style="width : 60px; margin-right : 10px">
-            <hy-input
+            <nr-input
               value=${this.borderSize.size ?? 0}
               @valueChange=${(e: any) => {
                 this.borderSize.size = e.detail.value;
                 this.updateBorders();
               }}
-            ></hy-input>
+            ></nr-input>
           </div>
           <div>
-            <hy-select
+            <nr-select
               style=${styleMap({
                 ...SelectTheme,
               })}
               size="small"
-              style="--hybrid-select-width:150px;size:small;width:auto;"
+              style="--nuraly-select-width:150px;size:small;width:auto;"
               palceholder="Solid"
               .defaultSelected="${[this.borderSize.type ?? "solid"]}"
               @changed=${(e: any) => {
@@ -363,13 +363,13 @@ export class AttributeBorderValue extends BaseElementBlock {
                 { label: "Inset", value: "inset" },
                 { label: "Outset", value: "outset" },
               ]}
-            ></hy-select>
+            ></nr-select>
           </div>
           <div>
-            <hy-color-picker
+            <nr-color-picker
               .color=${this.borderSize.color ?? "#000000"}
               @color-changed=${this.handleValueChange}
-            ></hy-color-picker>
+            ></nr-color-picker>
           </div>
         </div>
       </div>
@@ -494,9 +494,9 @@ export class AttributeBorderValue extends BaseElementBlock {
       ${this.renderBorder()}
       <div class="container-outside">
         <div class="margin-label" style="margin-left: -43px; margin-top: 2px">
-          <hy-label>Margin</hy-label>
+          <nr-label>Margin</nr-label>
         </div>
-        <hy-input
+        <nr-input
           .size=${"default"}
           @valueChange="${(e) => {
             this.cassAttributes["margin-left"] = e.detail.value;
@@ -505,8 +505,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           class="position-input margin-left"
           placeholder="margin left"
           value=${this.cassAttributes["margin-left"]}
-        ></hy-input>
-        <hy-input
+        ></nr-input>
+        <nr-input
           .size=${"default"}
           @valueChange="${(e) => {
             this.cassAttributes["margin-right"] = e.detail.value;
@@ -515,8 +515,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           class="position-input margin-right"
           placeholder="margin right"
           .value=${this.cassAttributes["margin-right"]}
-        ></hy-input>
-        <hy-input
+        ></nr-input>
+        <nr-input
           .size=${"default"}
           @valueChange="${(e) => {
             this.cassAttributes["margin-top"] = e.detail.value;
@@ -525,8 +525,8 @@ export class AttributeBorderValue extends BaseElementBlock {
           class="position-input margin-top"
           placeholder="margin top"
           .value=${this.cassAttributes["margin-top"]}
-        ></hy-input>
-        <hy-input
+        ></nr-input>
+        <nr-input
           .size=${"default"}
           @valueChange="${(e) => {
             this.cassAttributes["margin-bottom"] = e.detail.value;
@@ -535,7 +535,7 @@ export class AttributeBorderValue extends BaseElementBlock {
           class="position-input margin-bottom"
           placeholder="margin bottom"
           .value=${this.cassAttributes["margin-bottom"]}
-        ></hy-input>
+        ></nr-input>
         <div
           class="container "
           style=${styleMap({
@@ -549,8 +549,8 @@ export class AttributeBorderValue extends BaseElementBlock {
               this.cassAttributes["border-top-left-radius"],
           })}
         >
-          <div class="padding-label"><hy-label>Padding</hy-label></div>
-          <hy-input
+          <div class="padding-label"><nr-label>Padding</nr-label></div>
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["padding-left"] = e.detail.value;
@@ -559,9 +559,9 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input padding-left"
             placeholder="padding left"
             .value=${this.cassAttributes["padding-left"]}
-          ></hy-input>
+          ></nr-input>
 
-          <hy-input
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["padding-right"] = e.detail.value;
@@ -570,8 +570,8 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input padding-right"
             placeholder="padding right"
             .value=${this.cassAttributes["padding-right"]}
-          ></hy-input>
-          <hy-input
+          ></nr-input>
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["padding-top"] = e.detail.value;
@@ -580,8 +580,8 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input padding-top"
             placeholder="padding top"
             .value=${this.cassAttributes["padding-top"]}
-          ></hy-input>
-          <hy-input
+          ></nr-input>
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["padding-bottom"] = e.detail.value;
@@ -590,9 +590,9 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input padding-bottom"
             placeholder="padding bottom"
             .value=${this.cassAttributes["padding-bottom"]}
-          ></hy-input>
+          ></nr-input>
 
-          <hy-input
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["border-bottom-right-radius"] =
@@ -602,9 +602,9 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input border-bottom-right-radius"
             placeholder="padding bottom"
             .value=${this.cassAttributes["border-bottom-right-radius"]}
-          ></hy-input>
+          ></nr-input>
 
-          <hy-input
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["border-top-right-radius"] = e.detail.value;
@@ -613,9 +613,9 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input border-top-right-radius"
             placeholder="padding bottom"
             .value=${this.cassAttributes["border-top-right-radius"]}
-          ></hy-input>
+          ></nr-input>
 
-          <hy-input
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["border-bottom-left-radius"] = e.detail.value;
@@ -624,9 +624,9 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input border-bottom-left-radius"
             placeholder="padding bottom"
             .value=${this.cassAttributes["border-bottom-left-radius"]}
-          ></hy-input>
+          ></nr-input>
 
-          <hy-input
+          <nr-input
             .size=${"default"}
             @valueChange="${(e) => {
               this.cassAttributes["border-top-left-radius"] = e.detail.value;
@@ -635,7 +635,7 @@ export class AttributeBorderValue extends BaseElementBlock {
             class="position-input border-top-left-radius"
             placeholder="padding bottom"
             .value=${this.cassAttributes["border-top-left-radius"]}
-          ></hy-input>
+          ></nr-input>
         </div>
       </div>
     `;

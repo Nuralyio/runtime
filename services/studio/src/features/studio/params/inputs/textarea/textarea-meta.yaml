@@ -1,0 +1,10 @@
+uuid: textarea_blocks
+name: Parent Textarea Container
+themeContainerId: textarea_theme_container
+configKey: textareaFields
+
+childrenIds:
+  - textarea_fields_collapse_container
+  - typography_collapse_container
+  - size_collapse_container
+  - border_collapse_container

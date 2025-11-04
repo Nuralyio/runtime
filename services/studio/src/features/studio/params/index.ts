@@ -24,6 +24,32 @@ export const StudioTextInput = loadComponentProperties(
   textInputMeta
 );
 
+// Textarea
+import textareaConfig from "./inputs/textarea/textarea-config.yaml";
+import textareaHandlers from "./inputs/textarea/textarea-handlers.yaml";
+import textareaTheme from "./inputs/textarea/textarea-theme.yaml";
+import textareaMeta from "./inputs/textarea/textarea-meta.yaml";
+
+export const StudioTextarea = loadComponentProperties(
+  textareaConfig,
+  textareaHandlers,
+  textareaTheme,
+  textareaMeta
+);
+
+// Slider
+import sliderConfig from "./inputs/slider/slider-config.yaml";
+import sliderHandlers from "./inputs/slider/slider-handlers.yaml";
+import sliderTheme from "./inputs/slider/slider-theme.yaml";
+import sliderMeta from "./inputs/slider/slider-meta.yaml";
+
+export const StudioSlider = loadComponentProperties(
+  sliderConfig,
+  sliderHandlers,
+  sliderTheme,
+  sliderMeta
+);
+
 // Text Label
 import textLabelConfig from "./inputs/text-label/config.json";
 import textLabelHandlers from "./inputs/text-label/handlers.json";
@@ -91,6 +117,19 @@ export const StudioContainer = loadComponentProperties(
   containerHandlers,
   containerTheme,
   containerMeta
+);
+
+// Card
+import cardConfig from "./layout/card/card-config.yaml";
+import cardHandlers from "./layout/card/card-handlers.yaml";
+import cardTheme from "./layout/card/card-theme.yaml";
+import cardMeta from "./layout/card/card-meta.yaml";
+
+export const StudioCard = loadComponentProperties(
+  cardConfig,
+  cardHandlers,
+  cardTheme,
+  cardMeta
 );
 
 // ========================================
@@ -177,6 +216,32 @@ export const StudioIcon = loadComponentProperties(
   iconHandlers,
   iconTheme,
   iconMeta
+);
+
+// Badge
+import badgeConfig from "./display/badge/badge-config.yaml";
+import badgeHandlers from "./display/badge/badge-handlers.yaml";
+import badgeTheme from "./display/badge/badge-theme.yaml";
+import badgeMeta from "./display/badge/badge-meta.yaml";
+
+export const StudioBadge = loadComponentProperties(
+  badgeConfig,
+  badgeHandlers,
+  badgeTheme,
+  badgeMeta
+);
+
+// Tag
+import tagConfig from "./display/tag/tag-config.yaml";
+import tagHandlers from "./display/tag/tag-handlers.yaml";
+import tagTheme from "./display/tag/tag-theme.yaml";
+import tagMeta from "./display/tag/tag-meta.yaml";
+
+export const StudioTag = loadComponentProperties(
+  tagConfig,
+  tagHandlers,
+  tagTheme,
+  tagMeta
 );
 
 // File Upload
@@ -328,6 +393,8 @@ export const StudioRefComponent = loadComponentProperties(
 export const StudioComponents = {
   // Inputs
   StudioTextInput,
+  StudioTextarea,
+  StudioSlider,
   StudioTextLabel,
   StudioSelect,
   StudioCheckbox,
@@ -335,6 +402,7 @@ export const StudioComponents = {
   
   // Layout
   StudioContainer,
+  StudioCard,
   
   // Data
   StudioTable,
@@ -346,6 +414,10 @@ export const StudioComponents = {
   StudioVideo,
   StudioIcon,
   StudioFileUpload,
+  
+  // Display
+  StudioBadge,
+  StudioTag,
   
   // Content
   StudioCode,

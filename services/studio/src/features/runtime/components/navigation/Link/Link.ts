@@ -60,11 +60,11 @@ export class DropdownBlock extends BaseElementBlock {
         ${this.childrenComponents.length
                 ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode)
                 : html`
-                     <hy-label
+                     <nr-label
                 style=${styleMap({
                     "--resolved-text-label-color": this.getStyles()["title-color"],
                 })}
-                >${this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ?? nothing}</hy-label>
+                >${this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ?? nothing}</nr-label>
                   
                 <drag-wrapper
                         .where=${"inside"}

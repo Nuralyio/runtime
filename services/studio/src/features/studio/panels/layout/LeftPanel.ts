@@ -6,34 +6,7 @@ import { customElement, state } from "lit/decorators.js";
 @customElement("left-panel")
 export class LeftPanel extends LitElement {
   static styles = [
-    css`
-      hy-tabs {
-        font-size: 12px;
-        
-      }
-      :host{
-        --hybrid-tabs-content-padding: 20px;
-        --hybrid-tabs-content-maring: 10px;
-        --hybrid-tabs-container-background-color : white;
-      }
-       
-      @media (prefers-color-scheme: dark) {
-        hy-tabs {
-          --hybrid-tabs-content-background-color: #2c2c2c;
-          color: #f3f3f3;
-          font-weight: 400;
-        }
-        :host{
-          --hybrid-tabs-container-background-color : #313131;
-        }
-      }
-      aside {
-        display: none;
-      }
-      aside.visible {
-        display: flex;
-      }
-    `
+    css``
   ];
 
   @state()
@@ -55,7 +28,7 @@ export class LeftPanel extends LitElement {
     return html`
       <aside
         class="flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
-        style="height: 100%;width : 300px;"
+        style="height: 100%;width : 100%;"
       >
         <div class="w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"> </span>

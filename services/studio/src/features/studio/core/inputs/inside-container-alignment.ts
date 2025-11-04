@@ -111,7 +111,7 @@ export const StudioInnerContainerInputAlignment = [
     name: "type handler",
     style: {
       display: "block",
-      "--hybrid-button-width": "120px"
+      "--nuraly-button-width": "120px"
     },
     input: {
       value: {

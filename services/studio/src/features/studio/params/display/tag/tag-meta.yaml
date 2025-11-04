@@ -1,0 +1,7 @@
+uuid: tag_blocks
+name: Parent Tag Container
+themeContainerId: tag_theme_container
+configKey: tagFields
+
+childrenIds:
+  - tag_fields_collapse_container

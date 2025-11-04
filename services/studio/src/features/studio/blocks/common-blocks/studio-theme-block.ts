@@ -52,14 +52,14 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       name: `${category.name} Collapse`,
       component_type: ComponentType.Collapse,
       style: {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "none",
-        "--hy-collapse-local-header-background-color": "none",
-        "--hy-collapse-header-collapsed-background-color": "none"
+        "--nr-collapse-content-small-size-padding": "5px",
+        "--nr-collapse-font-weight": "normal",
+        "--nr-collapse-border-radius": "0px",
+        "--nr-collapse-width": "292px",
+        "--nr-collapse-border": "none",
+        "--nr-collapse-border-bottom": "none",
+        "--nr-collapse-local-header-background-color": "none",
+        "--nr-collapse-header-collapsed-background-color": "none"
       },
       input: {
         size: {
@@ -135,9 +135,9 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       componentType = ComponentType.TextInput;
       inputStyle = {
         width: "120px",
-        "--hybrid-input-background-color": "#2a2a2a",
-        "--hybrid-input-text-color": "#ffffff",
-        "--hybrid-input-border-bottom": "1px solid #444"
+        "--nuraly-input-background-color": "#2a2a2a",
+        "--nuraly-input-text-color": "#ffffff",
+        "--nuraly-input-border-bottom": "1px solid #444"
       };
       inputConfig = {
         placeholder: {
@@ -149,9 +149,9 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       componentType = ComponentType.TextInput;
       inputStyle = {
         width: "80px",
-        "--hybrid-input-background-color": "#2a2a2a",
-        "--hybrid-input-text-color": "#ffffff",
-        "--hybrid-input-border-bottom": "1px solid #444"
+        "--nuraly-input-background-color": "#2a2a2a",
+        "--nuraly-input-text-color": "#ffffff",
+        "--nuraly-input-border-bottom": "1px solid #444"
       };
       inputConfig = {
         type: {
@@ -167,10 +167,10 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       componentType = ComponentType.Select;
       inputStyle = {
         width: "140px",
-        "--hy-select-background-color": "#2a2a2a",
-        "--hy-select-text-color": "#ffffff",
-        "--hy-select-border": "1px solid #444",
-        "--hy-select-hover-background": "#3a3a3a"
+        "--nr-select-background-color": "#2a2a2a",
+        "--nr-select-text-color": "#ffffff",
+        "--nr-select-border": "1px solid #444",
+        "--nr-select-hover-background": "#3a3a3a"
       };
       // No need for options in inputConfig, will be in value handler
       inputConfig = {};
@@ -339,13 +339,13 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       name: `${mode.name} Collapse`,
       component_type: ComponentType.Collapse,
       style: {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "none"
+        "--nr-collapse-content-small-size-padding": "5px",
+        "--nr-collapse-font-weight": "normal",
+        "--nr-collapse-border-radius": "0px",
+        "--nr-collapse-width": "292px",
+        "--nr-collapse-border": "none",
+        "--nr-collapse-border-bottom": "1px solid #ccc",
+        "--nr-collapse-local-header-background-color": "none"
       },
       input: {
         size: {

@@ -3,10 +3,8 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
-import "@nuralyui/radio";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
-import { EMPTY_STRING } from "@shared/utils/constants.ts";
+import "@nuralyui/radio-group";
+import { ref } from "lit/directives/ref.js";
 
 @customElement("radio-button-block")
 export class RadioButtonBlock extends BaseElementBlock {
@@ -16,39 +14,64 @@ export class RadioButtonBlock extends BaseElementBlock {
 
   @property({ type: Object })
   item: any;
-  constructor() {
-    super();
-    this.registerCallback("value", (value: any) => {
-      this.requestUpdate();
-    }
-    );
-  }
-
-  handleChange = (customEvent: CustomEvent) => {
-    if (this.component.event.changed) {
-      const { value } = customEvent.detail;
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.changed`), { value });
-
-    }
-  };
 
   renderComponent() {
-    const options = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[0] : [];
-    const defaultValue = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[1] : EMPTY_STRING;
-    const type = this.inputHandlersValue?.value ? this.inputHandlersValue?.value[2] : "default";
+    const radioStyles = this.component?.style || {};
+    
+    // Extract values from the handler structure [options, defaultValue, type]
+    const options = this.inputHandlersValue?.value?.[0] || [];
+    const defaultValue = this.inputHandlersValue?.value?.[1] || '';
+    const type = this.inputHandlersValue?.value?.[2] || 'default';
+    
+    // Get other properties
+    const direction = this.inputHandlersValue?.direction || 'vertical';
+    const position = this.inputHandlersValue?.position || 'left';
+    const size = this.inputHandlersValue?.size || 'medium';
+    const disabled = this.inputHandlersValue?.disabled || false;
+    const required = this.inputHandlersValue?.required || false;
+    const name = this.inputHandlersValue?.name || 'radioGroup';
+
+    console.log('[RadioButton] Rendering with:', {
+      options,
+      defaultValue,
+      type,
+      direction,
+      position,
+      size,
+      disabled,
+      required,
+      name
+    });
 
     return html`
-    <!-- <pre>${
-      JSON.stringify(options, null, 2)
-    }</pre> -->
-      <span style=${styleMap({ ...this.component.style })}>
-            <hy-radio-input
-              .type=${type}
-              .options=${[...options]}
-              .defaultValue="${defaultValue}"
-              @change=${this.handleChange}
-            ></hy-radio-input>
-          </span>
+      <span style=${styleMap(radioStyles)}>
+        <nr-radio-group
+          ${ref(this.inputRef)}
+          .options=${options}
+          .defaultValue=${defaultValue}
+          .value=${defaultValue}
+          .type=${type}
+          .direction=${direction}
+          .position=${position}
+          .size=${size}
+          .name=${name}
+          ?disabled=${disabled}
+          ?required=${required}
+          @nr-change=${(e: CustomEvent) => {
+            console.log('[RadioButton] nr-change event:', {
+              detail: e.detail,
+              value: e.detail.value,
+              option: e.detail.option,
+              oldValue: e.detail.oldValue
+            });
+            this.executeEvent('onChange', e, { 
+              value: e.detail.value,
+              option: e.detail.option,
+              oldValue: e.detail.oldValue
+            });
+          }}
+        ></nr-radio-group>
+      </span>
     `;
   }
 }

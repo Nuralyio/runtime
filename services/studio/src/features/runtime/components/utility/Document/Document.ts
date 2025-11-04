@@ -24,7 +24,7 @@ export class ImageBlock extends BaseElementBlock {
       ? this.inputHandlersValue.darkSrc ?? this.inputHandlersValue.src 
       : this.inputHandlersValue.src;
     return html`
-      <hy-document-viewer
+      <nr-document-viewer
       ${ref(this.inputRef)}
       @click=${(e: MouseEvent) => {
         this.executeEvent("onClick", e);
@@ -41,7 +41,7 @@ export class ImageBlock extends BaseElementBlock {
         .width=${documentStyleHandlers?.width ? documentStyleHandlers.width : documentStyles?.width}
         .height=${documentStyleHandlers?.height ? documentStyleHandlers?.height : documentStyles?.height}
       >
-      </hy-document-viewer>
+      </nr-document-viewer>
     `;
   }
 }

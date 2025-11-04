@@ -1,0 +1,143 @@
+cardFields:
+  container:
+    uuid: card_fields_collapse_container
+    name: Card Fields Container
+    style: {}
+
+  collapse:
+    uuid: card_fields_collapse
+    title: Card Properties
+    style:
+      --hy-collapse-content-small-size-padding: 5px
+      --hy-collapse-font-weight: normal
+      --hy-collapse-border-radius: 0px
+      --hy-collapse-width: 292px
+      --hy-collapse-border: none
+      --hy-collapse-border-bottom: 1px solid #ccc
+      --hy-collapse-local-header-background-color: '#3d3d3d'
+
+  properties:
+    - name: title
+      label: Title
+      type: text
+      default: ''
+      width: 180px
+      placeholder: Card title
+      valueHandler:
+        ref: componentInput
+        params: [title]
+      stateHandler:
+        ref: inputHandler
+        params: [title]
+      eventHandlers:
+        valueChange:
+          ref: updateInput
+          params: [title, string]
+
+    - name: size
+      label: Size
+      type: radio
+      default: default
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentSize = '';
+        let isDisabled = false;
+        if (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {
+          isDisabled = true;
+        } else {
+          currentSize = selectedComponent?.input?.size?.value || 'default';
+        }
+        const options = [
+          { value: 'small', label: 'S', disabled: isDisabled },
+          { value: 'default', label: 'M', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentSize, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'size', 'string', EventData.value);
+          }
+
+    - name: bordered
+      label: Bordered
+      type: radio
+      default: true
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentValue = true;
+        let isDisabled = false;
+        if (selectedComponent?.input?.bordered?.type == 'handler' && selectedComponent?.input?.bordered?.value) {
+          isDisabled = true;
+        } else {
+          currentValue = selectedComponent?.input?.bordered?.value !== false;
+        }
+        const options = [
+          { value: false, icon: 'toggle-off', disabled: isDisabled },
+          { value: true, icon: 'toggle-on', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentValue, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'bordered', 'boolean', EventData.value);
+          }
+
+    - name: hoverable
+      label: Hoverable
+      type: radio
+      default: false
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentValue = false;
+        let isDisabled = false;
+        if (selectedComponent?.input?.hoverable?.type == 'handler' && selectedComponent?.input?.hoverable?.value) {
+          isDisabled = true;
+        } else {
+          currentValue = selectedComponent?.input?.hoverable?.value || false;
+        }
+        const options = [
+          { value: false, icon: 'toggle-off', disabled: isDisabled },
+          { value: true, icon: 'toggle-on', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentValue, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'hoverable', 'boolean', EventData.value);
+          }
+
+    - name: loading
+      label: Loading
+      type: radio
+      default: false
+      width: 180px
+      valueHandler: |
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        let currentValue = false;
+        let isDisabled = false;
+        if (selectedComponent?.input?.loading?.type == 'handler' && selectedComponent?.input?.loading?.value) {
+          isDisabled = true;
+        } else {
+          currentValue = selectedComponent?.input?.loading?.value || false;
+        }
+        const options = [
+          { value: false, icon: 'toggle-off', disabled: isDisabled },
+          { value: true, icon: 'toggle-on', disabled: isDisabled }
+        ];
+        const radioType = 'button';
+        return [options, currentValue, radioType];
+      eventHandlers:
+        changed: |
+          const selectedComponent = Utils.first(Vars.selectedComponents);
+          if (selectedComponent) {
+            updateInput(selectedComponent, 'loading', 'boolean', EventData.value);
+          }

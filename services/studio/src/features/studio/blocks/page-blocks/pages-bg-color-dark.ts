@@ -52,7 +52,7 @@ export default [
         const currentPage = appPages?.find((page)=>page.uuid == currentPageId);
         const newPage = {...currentPage,style:{
             ...currentPage.style || {},
-          "--hybrid-page-background-color-dark": newPageName
+          "--nuraly-page-background-color-dark": newPageName
         }};
         UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
         }).catch((e) => {

@@ -10,8 +10,8 @@ export class ResponsiveSelection extends LitElement {
                 display: block;
             }
 
-            hy-radio-input{
-              --hybrid-button-font-size : 15px;
+            nr-radio-input{
+              --nuraly-button-font-size : 15px;
             }
         `
   ];
@@ -68,12 +68,12 @@ export class ResponsiveSelection extends LitElement {
 
   override render() {
     return html`
-        <hy-radio-input
+        <nr-radio-input
       display="button"
       .selectedOption=${this.label}
       @change=${e => setCurrentPageViewPort(e.detail.value)}
       .options=${this.options}
-    ></hy-radio-input>
+    ></nr-radio-input>
        
         `;
   }

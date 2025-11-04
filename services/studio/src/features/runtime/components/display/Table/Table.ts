@@ -4,8 +4,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "@nuralyui/table";
-import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
-import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 
 
@@ -110,58 +108,70 @@ export class TextInputBlock extends BaseElementBlock {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  onSelect(e: CustomEvent) {
-    if (this.component.event?.onSelect) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`) , {
-        selected : e.detail
-      });
-      console.log(fn);
-    }
-  }
-
-  onSearch(e: CustomEvent) {
-    if (this.component.event?.onSearch) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSearch`));
-      console.log(fn);
-    }
-  }
-
-  onPaginate(e: CustomEvent) {
-    if (this.component.event?.onPaginate) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onPaginate`));
-      console.log(fn);
-    }
-  }
-
-  onSort(e: CustomEvent) {
-    if (this.component.event?.onSort) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSort`));
-      console.log(fn);
-    }
-  }
-
-
   renderComponent() {
     const tableStyles = this.component?.style || {};
     const tableAutoWidth = this.inputHandlersValue?.width;
     const tableAutoHeight = this.inputHandlersValue?.height;
+    
+    // Get data from inputHandlers or use defaults
     const headers = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.headers : this.headers;
     const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.rows : this.rows;
+    
+    // Properly type the size (from style)
+    const size = (tableStyles.size as 'small' | 'normal' | 'large') || 'normal';
+    
+    // Get selection mode from input or inputHandlers
+    const selectionModeValue = this.component?.input?.selectionMode?.value || this.inputHandlersValue?.selectionMode;
+    const selectionMode = selectionModeValue === "multiple" 
+      ? "multiple" as const
+      : selectionModeValue === "single" 
+        ? "single" as const
+        : undefined;
+    
+    // Get other properties from input or inputHandlers
+    const filter = this.component?.input?.filter?.value || this.inputHandlersValue?.filter;
+    const fixedHeader = this.component?.input?.fixedHeader?.value ?? this.inputHandlersValue?.fixedHeader ?? false;
+    const loading = this.component?.input?.loading?.value ?? this.inputHandlersValue?.loading ?? false;
+    const expandable = this.component?.input?.expandable?.value || this.inputHandlersValue?.expandable;
+    const emptyText = this.component?.input?.emptyText?.value || this.inputHandlersValue?.emptyText || 'No data available';
+    const emptyIcon = this.component?.input?.emptyIcon?.value || this.inputHandlersValue?.emptyIcon;
+    const expansionRenderer = this.inputHandlersValue?.expansionRenderer;
+    const scrollConfig = this.inputHandlersValue?.scrollConfig;
+    
     return html`
-      <hy-table
+      <nr-table
         ${ref(this.inputRef)}
-        style=${styleMap({ ...tableStyles, width: tableAutoWidth ? "auto" : tableStyles.width, "overflow": "auto" })}
+        style=${styleMap({ 
+          ...tableStyles, 
+          width: tableAutoWidth ? "auto" : tableStyles.width, 
+          "overflow": "auto" 
+        })}
         .headers="${headers}"
         .rows="${rows}"
-        .size=${tableStyles.size ?? nothing}
-        .withFilter=${(this.inputHandlersValue.filter == "filter")}
-        .selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : this.inputHandlersValue?.selectionMode === "single" ? "single" : nothing}
-        @onSelect=${this.onSelect}
-        @onSearch=${this.onSearch}
-        @onSort=${this.onSort}
-        @onPaginate=${this.onPaginate}
+        .size=${size}
+        .withFilter=${filter === "filter"}
+        .expandable=${expandable ?? nothing}
+        .expansionRenderer=${expansionRenderer ?? nothing}
+        .selectionMode=${selectionMode}
+        .fixedHeader=${fixedHeader}
+        .scrollConfig=${scrollConfig ?? nothing}
+        .loading=${loading}
+        .emptyText=${emptyText}
+        .emptyIcon=${emptyIcon ?? nothing}
+        @onPaginate=${(e) => {
+          this.executeEvent('onPaginate', e);
+        }}
+        @nr-select=${(e) => {
+          this.executeEvent('onSelect', e);
+        }}
+        @onSearch=${(e) => {
+          this.executeEvent('onSearch', e);
+        }}
+        @onSort=${(e) => {
+          this.executeEvent('onSort', e);
+        }}
       >
-      </hy-table>
+      </nr-table>
 
     `;
   }

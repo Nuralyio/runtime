@@ -33,8 +33,8 @@ const processedHeaders = processHeaders(Astro.request.headers);
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
-  document.documentElement.style.setProperty('--hybrid-page-background-color', pageData[0]?.style?.['--hybrid-page-background-color'] || '#ffffff');
-  document.documentElement.style.setProperty('--hybrid-page-background-color-dark', pageData[0]?.style?.['--hybrid-page-background-color-dark'] || '#000000');
+  document.documentElement.style.setProperty('--nuraly-page-background-color', pageData[0]?.style?.['--nuraly-page-background-color'] || '#ffffff');
+  document.documentElement.style.setProperty('--nuraly-page-background-color-dark', pageData[0]?.style?.['--nuraly-page-background-color-dark'] || '#000000');
 
 </script>
 <Layout title="Welcome to Astrolus.">
@@ -49,16 +49,16 @@ const processedHeaders = processHeaders(Astro.request.headers);
 </Layout>
 <style>
   html {
-    background-color : var(--hybrid-page-background-color, #ffffff);
+    background-color : var(--nuraly-page-background-color, #ffffff);
 
   }
   @media (prefers-color-scheme: dark) {
       html {
-        --hybrid-tabs-content-background-color: #313131;
+        --nuraly-tabs-content-background-color: #313131;
          background: #313131;
 
         color:#f8fafc;
-        background-color : var(--hybrid-page-background-color-dark, #313131);
+        background-color : var(--nuraly-page-background-color-dark, #313131);
 
       }
     }

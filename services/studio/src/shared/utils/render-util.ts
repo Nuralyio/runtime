@@ -40,6 +40,11 @@ import "@runtime/components/navigation/Link/Link.ts";
 import "@runtime/components/inputs/FileUpload/FileUpload.ts";
 import "@runtime/components/utility/Document/Document.ts";
 import "@runtime/components/display/Video/Video.ts";
+import "@runtime/components/inputs/Textarea/Textarea.ts";
+import "@runtime/components/display/Badge/Badge.ts";
+import "@runtime/components/layout/Card/Card.ts";
+import "@runtime/components/display/Tag/Tag.ts";
+import "@runtime/components/inputs/Slider/Slider.ts";
 
 // Reusable templates for common components
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></select-block>`;
@@ -79,6 +84,11 @@ const linkTemplate = (props: any, isViewMode: boolean)  => html`<link-block .isV
 const fileUploadTemplate = (props: any, isViewMode: boolean)  => html`<file-upload-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></file-upload-block>`;
 const videoTemplate = (props: any, isViewMode: boolean)  => html`<video-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></video-block>`;
 const documentTemplate = (props: any, isViewMode: boolean)  => html`<document-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></document-block>`;
+const textareaTemplate = (props: any, isViewMode: boolean)  => html`<textarea-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></textarea-block>`;
+const badgeTemplate = (props: any, isViewMode: boolean)  => html`<badge-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></badge-block>`;
+const cardTemplate = (props: any, isViewMode: boolean)  => html`<card-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></card-block>`;
+const tagTemplate = (props: any, isViewMode: boolean)  => html`<tag-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></tag-block>`;
+const sliderTemplate = (props: any, isViewMode: boolean)  => html`<slider-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></slider-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -173,6 +183,16 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return videoTemplate(commonProps, isViewMode);
     case ComponentType.Document:
         return documentTemplate(commonProps, isViewMode);
+    case ComponentType.Textarea:
+        return textareaTemplate(commonProps, isViewMode);
+    case ComponentType.Badge:
+        return badgeTemplate(commonProps, isViewMode);
+    case ComponentType.Card:
+        return cardTemplate(commonProps, isViewMode);
+    case ComponentType.Tag:
+        return tagTemplate(commonProps, isViewMode);
+    case ComponentType.Slider:
+        return sliderTemplate(commonProps, isViewMode);
     default:
       return html``;
   }

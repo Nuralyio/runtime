@@ -2,7 +2,7 @@
  * TYPOGRAPHY COLLAPSE BLOCK - JSON-DRIVEN APPROACH
  * 
  * This file now uses the generic JSON-driven approach instead of the complex factory system.
- * The configuration is in typography-config.json and processed by json-processor.ts
+ * The configuration is in typograpnr-config.json and processed by json-processor.ts
  */
 
 import { GenericJsonProcessor, type BlockConfig } from "../../processors/json-processor.ts";

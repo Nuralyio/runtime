@@ -49,34 +49,34 @@ export class ParameterEventLabel extends BaseElementBlock {
   render() {
     return html`
   
-    <hy-dropdown
+    <nr-dropdown
       placeholder="Select an option"
       @closed=${() => {
     }}
       .template=${this.renderCodeEditorTemplate()}
     >
-        <hy-button 
+        <nr-button 
           
         style=${styleMap(
       {
-        "--hybrid-button-text-color": "#b8b8b8",
-        "--hybrid-button-height": "39px",
-        "--hybrid-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
-        "--hybrid-button-background-color": "transparent",
-        "--hybrid-button-border-left": "none",
-        "--hybrid-button-border-right": "none",
-        "--hybrid-button-border-top": "none",
-        "--hybrid-button-border-bottom": "none"
+        "--nuraly-button-text-color": "#b8b8b8",
+        "--nuraly-button-height": "39px",
+        "--nuraly-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+        "--nuraly-button-background-color": "transparent",
+        "--nuraly-button-border-left": "none",
+        "--nuraly-button-border-right": "none",
+        "--nuraly-button-border-top": "none",
+        "--nuraly-button-border-bottom": "none"
 
       })}
         .icon=${["code"]} 
          class="unit"
         iconPosition=${!this.inputHandlersValue?.triggerText ? "left" : "right"}
-         >${this.inputHandlersValue?.triggerText ?? ""}</hy-button>
-      <hy-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
+         >${this.inputHandlersValue?.triggerText ?? ""}</nr-button>
+      <nr-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
         Set the value programmatically using Javascript script
-      </hy-tooltip>
-    </hy-dropdown>
+      </nr-tooltip>
+    </nr-dropdown>
   
      `;
   }

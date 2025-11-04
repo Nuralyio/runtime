@@ -73,7 +73,7 @@ textInputFields:
       type: radio
       default: text
       width: 180px
-      valueHandler: >
+      valueHandler: >  #javascript
         const selectedComponent = Utils.first(Vars.selectedComponents);
         let currentType = '';
         let isDisabled = false;

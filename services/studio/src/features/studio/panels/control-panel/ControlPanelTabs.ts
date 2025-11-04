@@ -28,35 +28,35 @@ export class ParametersPanel extends LitElement {
 
       micro-app {
           /* Input Styles */
-          --hybrid-input-border-radius: 5px;
-          /* --hybrid-input-border-bottom: 1px solid #a8a8a8;
-          --hybrid-input-border-top: 1px solid #a8a8a8;
-          --hybrid-input-border-left: 1px solid #a8a8a8;
-          --hybrid-input-border-right: 1px solid #a8a8a8;*/
-          --hybrid-input-border-bottom: 2px solid transparent;
-          --hybrid-input-number-icons-container-width: 48px;
-          --hybrid-input-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
-          --hybrid-input-font-size: 12px;
+          --nuraly-input-border-radius: 5px;
+          /* --nuraly-input-border-bottom: 1px solid #a8a8a8;
+          --nuraly-input-border-top: 1px solid #a8a8a8;
+          --nuraly-input-border-left: 1px solid #a8a8a8;
+          --nuraly-input-border-right: 1px solid #a8a8a8;*/
+          --nuraly-input-border-bottom: 2px solid transparent;
+          --nuraly-input-number-icons-container-width: 48px;
+          --nuraly-input-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, SFProLocalRange;
+          --nuraly-input-font-size: 12px;
 
           /* Select Styles */
-          --hybrid-select-icon-width: 11px;
-          --hybrid-select-border-bottom: 1px solid #a8a8a8;
-          --hybrid-select-border-top: 1px solid #a8a8a8;
-          --hybrid-select-border-left: 1px solid #a8a8a8;
-          --hybrid-select-border-right: 1px solid #a8a8a8;
-          --hybrid-select-border-radius: 5px;
-          --hybrid-select-focus-border: 1px solid gray;
+          --nuraly-select-icon-width: 11px;
+          --nuraly-select-border-bottom: 1px solid #a8a8a8;
+          --nuraly-select-border-top: 1px solid #a8a8a8;
+          --nuraly-select-border-left: 1px solid #a8a8a8;
+          --nuraly-select-border-right: 1px solid #a8a8a8;
+          --nuraly-select-border-radius: 5px;
+          --nuraly-select-focus-border: 1px solid gray;
 
           /* Button Styles */
-          --hybrid-button-background-color: rgb(245, 245, 245);;
-          --hybrid-button-text-color: #535353;
-          --hybrid-button-border-left: 1px solid #a8a8a8;
-          --hybrid-button-border-right: 1px solid #a8a8a8;
-          --hybrid-button-border-top: 1px solid #a8a8a8;
-          --hybrid-button-border-bottom: 1px solid #a8a8a8;
+          --nuraly-button-background-color: rgb(245, 245, 245);;
+          --nuraly-button-text-color: #535353;
+          --nuraly-button-border-left: 1px solid #a8a8a8;
+          --nuraly-button-border-right: 1px solid #a8a8a8;
+          --nuraly-button-border-top: 1px solid #a8a8a8;
+          --nuraly-button-border-bottom: 1px solid #a8a8a8;
 
           /* Collapse Styles */
-          --hy-collapse-content-background-color: transparent;
+          --nr-collapse-content-background-color: transparent;
       }
 
       /* ===============================
@@ -67,36 +67,36 @@ export class ParametersPanel extends LitElement {
               /* Input Styles (Dark Mode) */
 
               /* Select Styles (Dark Mode) */
-              --hybrid-input-border-bottom: 1px solid transparent;
-              --hybrid-input-border-top: 1px solid transparent;
-              --hybrid-input-border-left: 1px solid transparent;
-              --hybrid-input-border-right: 1px solid transparent;
-              --hybrid-input-focus-border: 1px solid #a8a8a8;
+              --nuraly-input-border-bottom: 1px solid transparent;
+              --nuraly-input-border-top: 1px solid transparent;
+              --nuraly-input-border-left: 1px solid transparent;
+              --nuraly-input-border-right: 1px solid transparent;
+              --nuraly-input-focus-border: 1px solid #a8a8a8;
 
-              --hybrid-select-focus-border: 1px solid #ffffff;
+              --nuraly-select-focus-border: 1px solid #ffffff;
 
               /* Button Styles (Dark Mode) */
-              --hybrid-button-border-left: 1px solid #272626;
-              --hybrid-button-border-right: 1px solid #272626;
-              --hybrid-button-border-top: 1px solid #272626;
-              --hybrid-button-border-bottom: 1px solid #272626;
-              --hybrid-button-background-color: #494949;
-              --hybrid-button-text-color: #ffffff;
-              --hybrid-button-primary-background-color: #212121;
-              --hybrid-button-primary-border-color: #212121;
-              --hybrid-button-primary-hover-border-color: #212121;
-              --hybrid-button-hover-border-color : #212121;
-              --hybrid-button-active-border-color: #212121;
-              --hybrid-button-active-background-color: #212121;
-              --hybrid-button-primary-hover-border-color: #212121;
-              --hybrid-button-primary-hover-background-color: #212121;
-              --hybrid-button-hover-background-color: #3b3b3b;
+              --nuraly-button-border-left: 1px solid #272626;
+              --nuraly-button-border-right: 1px solid #272626;
+              --nuraly-button-border-top: 1px solid #272626;
+              --nuraly-button-border-bottom: 1px solid #272626;
+              --nuraly-button-background-color: #494949;
+              --nuraly-button-text-color: #ffffff;
+              --nuraly-button-primary-background-color: #212121;
+              --nuraly-button-primary-border-color: #212121;
+              --nuraly-button-primary-hover-border-color: #212121;
+              --nuraly-button-hover-border-color : #212121;
+              --nuraly-button-active-border-color: #212121;
+              --nuraly-button-active-background-color: #212121;
+              --nuraly-button-primary-hover-border-color: #212121;
+              --nuraly-button-primary-hover-background-color: #212121;
+              --nuraly-button-hover-background-color: #3b3b3b;
               /* Collapse Styles (Dark Mode) */
-              --hy-collapse-border: 1px solid #a8a8a8;
-              --hy-collapse-header-hover-background-color: #3a3a3a;
-              --hy-collapse-header-collapsed-background-color: #3a3a3a;
-              --hybrid-button-hover-color: #ffffff;
-              --hybrid-select-options-background-color: #0a0a0a;
+              --nr-collapse-border: 1px solid #a8a8a8;
+              --nr-collapse-header-hover-background-color: #3a3a3a;
+              --nr-collapse-header-collapsed-background-color: #3a3a3a;
+              --nuraly-button-hover-color: #ffffff;
+              --nuraly-select-options-background-color: #0a0a0a;
 
           }
          

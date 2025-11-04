@@ -9,47 +9,11 @@ import { css, html, LitElement } from "lit";
 import { state } from "lit/decorators.js";
 import { closeEditorTab } from "@shared/redux/actions/editor/closeEditorTab.ts";
 import { setCurrentEditorTab } from "@shared/redux/actions/editor/setCurrentEditorTab.ts";
-import { styleMap } from "lit/directives/style-map.js";
 
 export class TabsPanel extends LitElement {
   static override styles = [
     css`
-            :host {
-                display: block;
-                font-family: 'Roboto', sans-serif;
-                margin: 10px 0 0 16px;
-            }
-            hy-tabs  {
-            	--hybrid-menu-background-color: #2c2c2c;
-		        --hybrid-tabs-label-font-size: 12px;
-		          --hybrid-button-border-color: transparent;
-    --hybrid-tabs-container-background-local-color: transparent;
-    --hybrid-tabs-label-active-background-color: white;
-    --hybrid-tabs-label-active-border-left-radius: 5px;
-    --hybrid-tabs-label-active-border-right-radius: 5px;
-
-          		}
-              @media (prefers-color-scheme: dark) {
-                hy-tabs {
-                  --hybrid-tabs-container-box-shadow : 2px 0px 5px 0px #454545 ;
-                  --hybrid-tabs-container-background-color : #313131;
-    --hybrid-tabs-label-active-background-color: #272727;
-
-                }
-              }
-
-              hy-tabs{
-       
-      }
-       
-      @media (prefers-color-scheme: dark) {
-        hy-tabs {
-          --hybrid-tabs-content-background-color: #2c2c2c;
-          color: #f3f3f3;
-          font-weight: 400;
-        }
-      
-      }
+           
 
         `
   ];
@@ -147,13 +111,8 @@ export class TabsPanel extends LitElement {
     return html`
       ${this.editableTabs.length === 0 ? html`
 		` : html`
-        <hy-tabs
-        style=${styleMap({
-      "--hybrid-tabs-content-padding": "0px",
-      "--hybrid-tabs-border-radius": "8px"
-
-    })
-        }
+        <nr-tabs
+        size="small"
           .activeTab=${this.activeTab}
           @removeTab=${(e: CustomEvent) => {
             const tabToClose = this.editableTabs[e.detail.index];
@@ -174,7 +133,7 @@ export class TabsPanel extends LitElement {
           canAddTab: false,
           canMove: false
         }}
-        ></hy-tabs>
+        ></nr-tabs>
       `}
 
     `;

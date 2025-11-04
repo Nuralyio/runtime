@@ -23,3 +23,6 @@ export { default as studioBoxShadowBlock } from "./common-blocks/studio-box-shad
 
 // Dashboard Blocks
 export { StudioDashboard } from "./dashboard-blocks/index.ts";
+
+// Data Blocks
+export { default as studioTablePropertiesBlock } from "../params/data/table/table-properties-block.ts";

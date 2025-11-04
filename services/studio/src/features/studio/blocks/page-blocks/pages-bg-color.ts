@@ -53,7 +53,7 @@ export default [
         const newPage = {...currentPage,style:{
             ...currentPage.style || {},
 
-          "--hybrid-page-background-color": newPageName
+          "--nuraly-page-background-color": newPageName
         }};
         UpdatePage(newPage,currentEditingApplication.uuid).then(() => {
         }).catch((e) => {

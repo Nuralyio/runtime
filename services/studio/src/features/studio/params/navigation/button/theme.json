@@ -7,68 +7,68 @@
         "name": "General",
         "open": true,
         "items": [
-          { "label": "Background Color", "cssVar": "--hybrid-button-background-color" },
-          { "label": "Text Color", "cssVar": "--hybrid-button-text-color" }
+          { "label": "Background Color", "cssVar": "--nuraly-button-background-color" },
+          { "label": "Text Color", "cssVar": "--nuraly-button-text-color" }
         ]
       },
       {
         "name": "Hover",
         "open": false,
         "items": [
-          { "label": "Hover Border Color", "cssVar": "--hybrid-button-hover-border-color" },
-          { "label": "Hover Color", "cssVar": "--hybrid-button-hover-color" }
+          { "label": "Hover Border Color", "cssVar": "--nuraly-button-hover-border-color" },
+          { "label": "Hover Color", "cssVar": "--nuraly-button-hover-color" }
         ]
       },
       {
         "name": "Active",
         "open": false,
         "items": [
-          { "label": "Active Border Color", "cssVar": "--hybrid-button-active-border-color" },
-          { "label": "Active Color", "cssVar": "--hybrid-button-active-color" }
+          { "label": "Active Border Color", "cssVar": "--nuraly-button-active-border-color" },
+          { "label": "Active Color", "cssVar": "--nuraly-button-active-color" }
         ]
       },
       {
         "name": "Disabled",
         "open": false,
         "items": [
-          { "label": "Disabled Background Color", "cssVar": "--hybrid-button-disabled-background-color" },
-          { "label": "Disabled Text Color", "cssVar": "--hybrid-button-disabled-text-color" },
-          { "label": "Disabled Border Color", "cssVar": "--hybrid-button-disabled-border-color" }
+          { "label": "Disabled Background Color", "cssVar": "--nuraly-button-disabled-background-color" },
+          { "label": "Disabled Text Color", "cssVar": "--nuraly-button-disabled-text-color" },
+          { "label": "Disabled Border Color", "cssVar": "--nuraly-button-disabled-border-color" }
         ]
       },
       {
         "name": "Danger",
         "open": false,
         "items": [
-          { "label": "Danger Text Color", "cssVar": "--hybrid-button-danger-text-color" },
-          { "label": "Danger Background Color", "cssVar": "--hybrid-button-danger-background-color" },
-          { "label": "Danger Border Color", "cssVar": "--hybrid-button-danger-border-color" },
-          { "label": "Danger Dashed Border Color", "cssVar": "--hybrid-button-danger-dashed-border-color" }
+          { "label": "Danger Text Color", "cssVar": "--nuraly-button-danger-text-color" },
+          { "label": "Danger Background Color", "cssVar": "--nuraly-button-danger-background-color" },
+          { "label": "Danger Border Color", "cssVar": "--nuraly-button-danger-border-color" },
+          { "label": "Danger Dashed Border Color", "cssVar": "--nuraly-button-danger-dashed-border-color" }
         ]
       },
       {
         "name": "Danger Disabled",
         "open": false,
         "items": [
-          { "label": "Danger Disabled Background Color", "cssVar": "--hybrid-button-danger-disabled-background-color" },
-          { "label": "Danger Disabled Text Color", "cssVar": "--hybrid-button-danger-disabled-text-color" },
-          { "label": "Danger Disabled Border Color", "cssVar": "--hybrid-button-danger-disabled-border-color" }
+          { "label": "Danger Disabled Background Color", "cssVar": "--nuraly-button-danger-disabled-background-color" },
+          { "label": "Danger Disabled Text Color", "cssVar": "--nuraly-button-danger-disabled-text-color" },
+          { "label": "Danger Disabled Border Color", "cssVar": "--nuraly-button-danger-disabled-border-color" }
         ]
       },
       {
         "name": "Danger Hover",
         "open": false,
         "items": [
-          { "label": "Danger Hover Background Color", "cssVar": "--hybrid-button-danger-hover-background-color" },
-          { "label": "Danger Hover Border Color", "cssVar": "--hybrid-button-danger-hover-border-color" }
+          { "label": "Danger Hover Background Color", "cssVar": "--nuraly-button-danger-hover-background-color" },
+          { "label": "Danger Hover Border Color", "cssVar": "--nuraly-button-danger-hover-border-color" }
         ]
       },
       {
         "name": "Danger Active",
         "open": false,
         "items": [
-          { "label": "Danger Active Background Color", "cssVar": "--hybrid-button-danger-active-background-color" },
-          { "label": "Danger Active Border Color", "cssVar": "--hybrid-button-danger-active-border-color" }
+          { "label": "Danger Active Background Color", "cssVar": "--nuraly-button-danger-active-background-color" },
+          { "label": "Danger Active Border Color", "cssVar": "--nuraly-button-danger-active-border-color" }
         ]
       }
     ]
@@ -81,68 +81,68 @@
         "name": "General",
         "open": false,
         "items": [
-          { "label": "Background Color", "cssVar": "--hybrid-button-background-color" },
-          { "label": "Text Color", "cssVar": "--hybrid-button-text-color" }
+          { "label": "Background Color", "cssVar": "--nuraly-button-background-color" },
+          { "label": "Text Color", "cssVar": "--nuraly-button-text-color" }
         ]
       },
       {
         "name": "Hover",
         "open": false,
         "items": [
-          { "label": "Hover Border Color", "cssVar": "--hybrid-button-hover-border-color" },
-          { "label": "Hover Color", "cssVar": "--hybrid-button-hover-color" }
+          { "label": "Hover Border Color", "cssVar": "--nuraly-button-hover-border-color" },
+          { "label": "Hover Color", "cssVar": "--nuraly-button-hover-color" }
         ]
       },
       {
         "name": "Active",
         "open": false,
         "items": [
-          { "label": "Active Border Color", "cssVar": "--hybrid-button-active-border-color" },
-          { "label": "Active Color", "cssVar": "--hybrid-button-active-color" }
+          { "label": "Active Border Color", "cssVar": "--nuraly-button-active-border-color" },
+          { "label": "Active Color", "cssVar": "--nuraly-button-active-color" }
         ]
       },
       {
         "name": "Disabled",
         "open": false,
         "items": [
-          { "label": "Disabled Background Color", "cssVar": "--hybrid-button-disabled-background-color" },
-          { "label": "Disabled Text Color", "cssVar": "--hybrid-button-disabled-text-color" },
-          { "label": "Disabled Border Color", "cssVar": "--hybrid-button-disabled-border-color" }
+          { "label": "Disabled Background Color", "cssVar": "--nuraly-button-disabled-background-color" },
+          { "label": "Disabled Text Color", "cssVar": "--nuraly-button-disabled-text-color" },
+          { "label": "Disabled Border Color", "cssVar": "--nuraly-button-disabled-border-color" }
         ]
       },
       {
         "name": "Danger",
         "open": false,
         "items": [
-          { "label": "Danger Text Color", "cssVar": "--hybrid-button-danger-text-color" },
-          { "label": "Danger Background Color", "cssVar": "--hybrid-button-danger-background-color" },
-          { "label": "Danger Border Color", "cssVar": "--hybrid-button-danger-border-color" },
-          { "label": "Danger Dashed Border Color", "cssVar": "--hybrid-button-danger-dashed-border-color" }
+          { "label": "Danger Text Color", "cssVar": "--nuraly-button-danger-text-color" },
+          { "label": "Danger Background Color", "cssVar": "--nuraly-button-danger-background-color" },
+          { "label": "Danger Border Color", "cssVar": "--nuraly-button-danger-border-color" },
+          { "label": "Danger Dashed Border Color", "cssVar": "--nuraly-button-danger-dashed-border-color" }
         ]
       },
       {
         "name": "Danger Disabled",
         "open": false,
         "items": [
-          { "label": "Danger Disabled Background Color", "cssVar": "--hybrid-button-danger-disabled-background-color" },
-          { "label": "Danger Disabled Text Color", "cssVar": "--hybrid-button-danger-disabled-text-color" },
-          { "label": "Danger Disabled Border Color", "cssVar": "--hybrid-button-danger-disabled-border-color" }
+          { "label": "Danger Disabled Background Color", "cssVar": "--nuraly-button-danger-disabled-background-color" },
+          { "label": "Danger Disabled Text Color", "cssVar": "--nuraly-button-danger-disabled-text-color" },
+          { "label": "Danger Disabled Border Color", "cssVar": "--nuraly-button-danger-disabled-border-color" }
         ]
       },
       {
         "name": "Danger Hover",
         "open": false,
         "items": [
-          { "label": "Danger Hover Background Color", "cssVar": "--hybrid-button-danger-hover-background-color" },
-          { "label": "Danger Hover Border Color", "cssVar": "--hybrid-button-danger-hover-border-color" }
+          { "label": "Danger Hover Background Color", "cssVar": "--nuraly-button-danger-hover-background-color" },
+          { "label": "Danger Hover Border Color", "cssVar": "--nuraly-button-danger-hover-border-color" }
         ]
       },
       {
         "name": "Danger Active",
         "open": false,
         "items": [
-          { "label": "Danger Active Background Color", "cssVar": "--hybrid-button-danger-active-background-color" },
-          { "label": "Danger Active Border Color", "cssVar": "--hybrid-button-danger-active-border-color" }
+          { "label": "Danger Active Background Color", "cssVar": "--nuraly-button-danger-active-background-color" },
+          { "label": "Danger Active Border Color", "cssVar": "--nuraly-button-danger-active-border-color" }
         ]
       }
     ]

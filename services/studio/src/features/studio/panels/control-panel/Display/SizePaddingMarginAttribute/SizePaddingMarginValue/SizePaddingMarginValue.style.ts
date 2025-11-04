@@ -1,15 +1,15 @@
 import { css } from "lit";
 
 export default css`
-  hy-input {
-    --hybrid-input-container-border-color: transparent;
-   --hybrid-input-medium-padding-top: 0px;
-   --hybrid-input-medium-padding-bottom: 0px;
-   --hybrid-input-medium-padding-left: 0px;
-   --hybrid-input-medium-padding-right: 0px;
-        padding-top: var(--hybrid-input-medium-padding-top, var(--hybrid-input-local-medium-padding-top));
+  nr-input {
+    --nuraly-input-container-border-color: transparent;
+   --nuraly-input-medium-padding-top: 0px;
+   --nuraly-input-medium-padding-bottom: 0px;
+   --nuraly-input-medium-padding-left: 0px;
+   --nuraly-input-medium-padding-right: 0px;
+        padding-top: var(--nuraly-input-medium-padding-top, var(--nuraly-input-local-medium-padding-top));
 
-    --hybrid-input-text-align: center;
+    --nuraly-input-text-align: center;
   }
 
   .margin-label,

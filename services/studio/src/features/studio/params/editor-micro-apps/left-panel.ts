@@ -1,5 +1,7 @@
 import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { isServer } from "@shared/utils/envirement";
+import leftPanelTabs from "./left-panel-tabs";
+
 export let filesAppUUID = "" ;
 export let filesPageUUID = "" ;
 if(!isServer){
@@ -21,12 +23,10 @@ export default [{
     width: "100%",
     height: "100%",
     display: "grid",
-    margin: "10px 10px 0 10px",
-
-
   },
   childrenIds: ["left_panel_tabs"]
 },
+leftPanelTabs,
 
  {
     application_id: "1",
@@ -64,7 +64,7 @@ export default [{
     style: {
       width: "255px",
       height: "100%",
-       "--hybrid-button-font-size": "12px"
+       "--nuraly-button-font-size": "12px"
     },
     childrenIds: ["menu_header", "menu_1"]
   },
@@ -113,11 +113,11 @@ export default [{
     name: "add page",
     component_type: ComponentType.Button,
     style: {
-      "--hybrid-button-padding-y": "2px",
-      "--hybrid-button-padding-x": "2px",
+      "--nuraly-button-padding-y": "2px",
+      "--nuraly-button-padding-x": "2px",
       "type": "ghost",
-      "--hybrid-button-ghost-border-color": "transparent",
-      "--hybrid-button-ghost-background-color": "transparent"
+      "--nuraly-button-ghost-border-color": "transparent",
+      "--nuraly-button-ghost-background-color": "transparent"
     },
     input: {
       label: {
@@ -171,14 +171,18 @@ export default [{
     application_id: "1",
     component_type: ComponentType.Menu,
     style: {
-      "--hybrid-menu-border": "none",
+      "--nuraly-menu-border": "none",
       width: "100%",
-      "--hybrid-menu-font-size": "12px",
-      "--hybrid-sub-menu-padding-y": "4px",
-      "--hybrid-menu-link-padding-y": "4px",
-      "--hybrid-sub-menu-highlighted-background-color" : "transparent",
+      "--nuraly-menu-font-size": "12px",
+      "--nuraly-sub-menu-padding-y": "4px",
+      "--nuraly-menu-link-padding-y": "4px",
+      "--nuraly-sub-menu-highlighted-background-color" : "transparent",
     },
     input: {
+      size: {
+        type: "string",
+        value: "small"
+      },
       options: {
         type: "handler",
         value: /* js */ `

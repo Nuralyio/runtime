@@ -16,11 +16,11 @@ const pageStyle = css`
     height: calc(100vh - 120px);
     position: relative;
     background: var(--page-background-color, white);
-    --hybrid-tabs-content-padding: 0;
-    --hybrid-tabs-border-radius: 8px;
-    --hybrid-tabs-container-box-shadow : 0px 0px 5px 0px #dbdbdbbf ;
-    --hybrid-tabs-container-background-local-color: transparent;
-    --hybrid-tabs-label-active-background-color: transparent;
+    --nuraly-tabs-content-padding: 0;
+    --nuraly-tabs-border-radius: 8px;
+    --nuraly-tabs-container-box-shadow : 0px 0px 5px 0px #dbdbdbbf ;
+    --nuraly-tabs-container-background-local-color: transparent;
+    --nuraly-tabs-label-active-background-color: transparent;
     margin: auto;
     
   }
@@ -53,7 +53,7 @@ const pageStyle = css`
 
   @media (prefers-color-scheme: dark) {
     .page-container {
-      --hybrid-tabs-content-background-color: #313131;
+      --nuraly-tabs-content-background-color: #313131;
       background: var(--page-background-color, transparent);
       color: #f8fafc;
     }

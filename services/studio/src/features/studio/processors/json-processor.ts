@@ -188,7 +188,7 @@ export class GenericJsonProcessor {
    * 
    * Example usage for a typography block:
    * ```typescript
-   * import typographyConfig from './typography-config.json';
+   * import typographyConfig from './typograpnr-config.json';
    * const typographyComponents = GenericJsonProcessor.generateFromConfig(
    *   typographyConfig.typographyInputs,
    *   'typography'

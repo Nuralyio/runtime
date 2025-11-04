@@ -3,6 +3,7 @@
 export const Insert = /* js */`
         const dataOptions = [
           {
+            id: "table",
             label: "Table",
             value: {
               value: "Table",
@@ -14,6 +15,7 @@ export const Insert = /* js */`
           },
 
           {
+            id: "collections",
             label: "Collections",
             value: {
               value: "Collection",
@@ -26,6 +28,7 @@ export const Insert = /* js */`
         ];
         const mediaOptions = [
           {
+            id: "image",
             label: "Image",
             value: {
               value: "Image",
@@ -40,6 +43,7 @@ export const Insert = /* js */`
             icon: "image",
           },
            {
+            id: "video",
             label: "Video",
             value: {
               value: "video",
@@ -54,6 +58,7 @@ export const Insert = /* js */`
             icon: "video",
           },
            {
+            id: "document",
             label: "Document",
             value: {
               value: "document",
@@ -72,6 +77,7 @@ export const Insert = /* js */`
         const applicationOptions = [
            
           {
+            id: "microapp",
             label: "MicroApp",
             value: {
               value: "MicroApp",
@@ -85,6 +91,7 @@ export const Insert = /* js */`
 
         const layoutOptions = [
           {
+            id: "container",
             label: "Container",
             value: {
               value: "vertical-container-block",
@@ -97,6 +104,7 @@ export const Insert = /* js */`
           },
          
           {
+            id: "ref-component",
             label: "Ref Component",
             value: {
               value: "RefComponent",
@@ -112,6 +120,7 @@ export const Insert = /* js */`
           
          
           {
+            id: "checkbox",
             label: "Checkbox",
             value: {
               value: "checkbox",
@@ -128,6 +137,7 @@ export const Insert = /* js */`
             icon: "square-check",
           },
           {
+            id: "select",
             label: "Select",
             value: {
               value: "select",
@@ -149,6 +159,7 @@ export const Insert = /* js */`
             icon: "th-list",
           },
           {
+            id: "dropdown",
             label: "Dropdown",
             value: {
               value: "vertical-container-block",
@@ -211,12 +222,12 @@ export const Insert = /* js */`
               additionalData: {
                 action: "add",
                 style: {
-                  "--hybrid-menu-border": "none",
+                  "--nuraly-menu-border": "none",
                   width: "100%",
-                  "--hybrid-menu-font-size": "12px",
-                  "--hybrid-sub-menu-padding-y": "4px",
-                  "--hybrid-menu-link-padding-y": "4px",
-                  "--hybrid-sub-menu-highlighted-background-color" : "transparent",
+                  "--nuraly-menu-font-size": "12px",
+                  "--nuraly-sub-menu-padding-y": "4px",
+                  "--nuraly-menu-link-padding-y": "4px",
+                  "--nuraly-sub-menu-highlighted-background-color" : "transparent",
                 },
                input : {
                 options: {
@@ -336,6 +347,50 @@ export const Insert = /* js */`
             icon: "pen-to-square",
           },
           {
+            label: "Textarea",
+            value: {
+              value: "Textarea",
+              additionalData: {
+              action: "add",
+              input: {
+                "label": {
+                  "type": "value",
+                  "value": "Textarea"
+                },
+                "placeholder": {
+                  "type": "value",
+                  "value": "Enter text..."
+                }
+              }
+              },
+            },
+            icon: "align-left",
+          },
+          {
+            label: "Slider",
+            value: {
+              value: "Slider",
+              additionalData: {
+              action: "add",
+              input: {
+                "value": {
+                  "type": "value",
+                  "value": 50
+                },
+                "min": {
+                  "type": "value",
+                  "value": 0
+                },
+                "max": {
+                  "type": "value",
+                  "value": 100
+                }
+              }
+              },
+            },
+            icon: "sliders",
+          },
+          {
             label: "Button",
             value: {
               value: "button_input",
@@ -376,7 +431,58 @@ export const Insert = /* js */`
             },
             icon: "i-cursor",
           },
-       
+          {
+            label: "Badge",
+            value: {
+              value: "Badge",
+              additionalData: {
+              action: "add",
+              input: {
+                "count": {
+                  "type": "value",
+                  "value": 5
+                }
+              }
+              },
+            },
+            icon: "certificate",
+          },
+          {
+            label: "Tag",
+            value: {
+              value: "Tag",
+              additionalData: {
+              action: "add",
+              input: {
+                "label": {
+                  "type": "value",
+                  "value": "Tag"
+                }
+              }
+              },
+            },
+            icon: "tag",
+          },
+          {
+            label: "Card",
+            value: {
+              value: "Card",
+              additionalData: {
+              action: "add",
+              input: {
+                "title": {
+                  "type": "value",
+                  "value": "Card Title"
+                }
+              },
+              style: {
+                width: "300px",
+                height: "200px"
+              }
+              },
+            },
+            icon: "credit-card",
+          },
           {
             label: "Icon",
             value: {
@@ -451,37 +557,43 @@ export const Insert = /* js */`
             },
             icon: "file-code",
           },
-          {
-            label: "Media",
-            children: mediaOptions,
-            icon: "image"
-          },
         ];
             return [
               {
+              id: "input",
               label: "Input",
-              children: inputOptions,
+              options: inputOptions,
               icon: "keyboard"
             },
             {
+              id: "display",
               label: "Display",
-              children: displayOptions,
+              options: displayOptions,
               icon: "chalkboard"
             },
          
           {
+            id: "data",
             label: "Data",
-            children: dataOptions,
+            options: dataOptions,
             icon : "database"
           },
           {
+            id: "application",
             label: "Application",
-            children: applicationOptions,
+            options: applicationOptions,
             icon : "cube"
           },
           {
+            id: "layout",
             label: "Layout",
-            children: layoutOptions,
+            options: layoutOptions,
             icon: "columns"
+          },
+          {
+            id: "media",
+            label: "Media",
+            options: mediaOptions,
+            icon: "image"
           }];
             `;

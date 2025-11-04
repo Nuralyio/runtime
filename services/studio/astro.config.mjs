@@ -18,15 +18,17 @@ export default defineConfig({
   vite: {
    plugins: [yaml()],
    resolve: {
-     alias: {
-       '$store': '/src/shared/redux/store',
-       '@features': '/src/features',
-       '@shared': '/src/shared',
-       '@services': '/src/services',
-       '@runtime': '/src/features/runtime',
-       '@studio': '/src/features/studio',
-       '@utils': '/src/utils',
-     }
+     alias: [
+       { find: '$store', replacement: '/src/shared/redux/store' },
+       { find: '@features', replacement: '/src/features' },
+       { find: '@shared', replacement: '/src/shared' },
+       { find: '@services', replacement: '/src/services' },
+       { find: '@runtime', replacement: '/src/features/runtime' },
+       { find: '@studio', replacement: '/src/features/studio' },
+       { find: '@utils', replacement: '/src/utils' },
+       { find: /^@nuralyui\/common\/(.+)$/, replacement: '/src/shared/ui/nuraly-ui/packages/common/src/$1' },
+       { find: /^@nuralyui\/(.+)$/, replacement: '/src/shared/ui/nuraly-ui/src/components/$1' },
+     ]
    },
    build:{
     assetsInlineLimit:0,

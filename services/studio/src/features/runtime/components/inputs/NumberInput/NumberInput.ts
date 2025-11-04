@@ -39,7 +39,7 @@ export class NumberInputBlock extends BaseElementBlock {
   render() {
     return html`
       <span> 
-        <hy-input
+        <nr-input
           style=${styleMap({ ...this.component.style })}
           .size=${this.component.style.size ?? nothing}
           @valueChange=${this.handleValueChange}
@@ -48,7 +48,7 @@ export class NumberInputBlock extends BaseElementBlock {
           min="0"
           type="number"
           .disabled=${(this.inputHandlersValue.state == "disabled")}
-        ></hy-input>
+        ></nr-input>
       </span>
     `;
   }

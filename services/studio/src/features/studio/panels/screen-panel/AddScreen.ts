@@ -43,6 +43,6 @@ export class AddScreen extends LitElement {
   }
 
   render() {
-    return html` <hy-button @click=${this.addPage}>New Screen</hy-button> `;
+    return html` <nr-button @click=${this.addPage}>New Screen</nr-button> `;
   }
 }

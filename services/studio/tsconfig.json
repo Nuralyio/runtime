@@ -17,13 +17,19 @@
         "shared/*"
       ],
       "@services/*": [
-        "services/*"
+        "services/*" 
       ],
       "@runtime/*": [
         "features/runtime/*"
       ],
       "@studio/*": [
         "features/studio/*"
+      ],
+      "@nuralyui/*": [
+        "shared/ui/nuraly-ui/src/components/*"
+      ],
+      "@nuralyui/common/mixins": [
+        "shared/ui/nuraly-ui/packages/common/src"
       ]
     },
     "target": "esnext",

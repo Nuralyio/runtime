@@ -48,7 +48,7 @@ export class AttributeInputWrapper extends LitElement {
             class="has-smart-attribute"
             style=${styleMap({ ...this.wrapperStyle })}
           >
-            <hy-icon name="code" style="vertical-align: middle;"></hy-icon>
+            <nr-icon name="code" style="vertical-align: middle;"></nr-icon>
           </div>`
       : ""}
       <div ${ref(this.inputRef)} style="display : flex">

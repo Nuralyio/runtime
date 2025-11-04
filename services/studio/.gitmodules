@@ -1,0 +1,7 @@
+[submodule "src/shared/ui/nuraly-ui"]
+	path = src/shared/ui/nuraly-ui
+	url = https://github.com/Nuralyio/NuralyUI
+[submodule "backend"]
+	path = backend
+	url = https://github.com/aleph-rd/backend.git
+	branch = main

@@ -232,7 +232,7 @@ export class AIAssistantBlock extends LitElement {
   private executeAction(response: any) {
     if (response.components || response.pages) {
       return html`
-        <hy-button
+        <nr-button
           @click=${() => {
             if (response.components) {
               traitCompoentFromSchema(JSON.stringify(response))
@@ -245,7 +245,7 @@ export class AIAssistantBlock extends LitElement {
           }}
         >
           Execute
-        </hy-button>
+        </nr-button>
       `;
     }
     return nothing;

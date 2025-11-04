@@ -84,7 +84,7 @@ export class ApplicationAdd extends LitElement {
 
 	       ${Object.keys(this.createProviderForm).map((key) => {
       return html`
-    		<hy-input
+    		<nr-input
     		.placeholder=${this.createProviderForm[key].placeholder}
     		.type=${this.createProviderForm[key].type}
     		.value=${this.createProviderForm[key].value}
@@ -97,7 +97,7 @@ export class ApplicationAdd extends LitElement {
       }
       }
 
-    		></hy-input>
+    		></nr-input>
     		<div class="error-message">
     		${this.errorMessage[key] ? this.errorMessage[key] : nothing}
     		</div>
@@ -107,7 +107,7 @@ export class ApplicationAdd extends LitElement {
         <div slot="footer"
           style="float: right"
         >
-         <hy-button
+         <nr-button
           danger
           .icon=${["cancel"]}
             @click=${() => {
@@ -115,15 +115,15 @@ export class ApplicationAdd extends LitElement {
     }}
           >
             Cancel
-          </hy-button>
-          <hy-button
+          </nr-button>
+          <nr-button
           .icon=${["plus"]}
             @click=${() => {
       this.submitForm();
     }}
           >
             Create
-          </hy-button>
+          </nr-button>
          
         </div>
 	  </modal-component>

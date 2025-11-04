@@ -12,9 +12,13 @@ export default [{
     width: "100%",
     height: "100%",
     display: "grid",
-    "--hybrid-tabs-content-padding": "0px"
+    "--nuraly-tabs-content-padding": "0px"
   },
   input: {
+    size: {
+        type: "string",
+        value: "small"
+      },
     tabs: {
       type: "handler",
       value: /* js */ `
