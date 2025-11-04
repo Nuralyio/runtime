@@ -292,9 +292,16 @@ export const buttonStyles = css`
   /* Size variants */
   :host([size="small"]) button {
     height: var(--nuraly-size-sm);
-    padding: var(--nuraly-spacing-01) var(--nuraly-spacing-03);
+    padding: var(--nuraly-spacing-1-5) var(--nuraly-spacing-3);
     font-size: 0.75rem;
-    min-width: 4rem;
+    min-width: 4.5rem;
+    gap: 0.375rem;
+  }
+
+  :host([size="small"]) button nr-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    font-size: 0.875rem !important;
   }
 
   :host([size="medium"]) button {
@@ -307,6 +314,12 @@ export const buttonStyles = css`
     padding: var(--nuraly-spacing-05) var(--nuraly-spacing-06);
     font-size: 1rem;
     min-width: 6rem;
+  }
+
+  :host([size="large"]) button nr-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem !important;
   }
 
   /* Full width */

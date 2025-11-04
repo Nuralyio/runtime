@@ -130,6 +130,20 @@ export const styles = css`
     --nuraly-label-font-size: var(--nuraly-font-size-radio-label, 14px);
   }
 
+  /* Size-based label font sizes */
+  :host([size="small"]) nr-label.radio-label {
+    --nuraly-label-font-size: var(--nuraly-font-size-small, 12px);
+  }
+
+  :host([size="medium"]) nr-label.radio-label,
+  :host(:not([size])) nr-label.radio-label {
+    --nuraly-label-font-size: var(--nuraly-font-size-body, 14px);
+  }
+
+  :host([size="large"]) nr-label.radio-label {
+    --nuraly-label-font-size: var(--nuraly-font-size-large, 16px);
+  }
+
   :host([disabled]) nr-label.radio-label {
     --nuraly-label-color: var(--nuraly-color-radio-disabled-text, #bfbfbf);
   }

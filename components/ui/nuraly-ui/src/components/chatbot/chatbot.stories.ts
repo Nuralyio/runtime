@@ -2162,3 +2162,388 @@ export const MockAPIWithConversationLoading: Story = {
     `;
   }
 };
+
+/**
+ * Auto-Loading Conversations with Custom Provider
+ * Demonstrates automatic conversation loading when extending CustomAPIProvider.
+ * The controller automatically calls loadConversations() when the provider connects,
+ * eliminating the need for manual initialization code.
+ */
+export const AutoLoadingConversations: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    const originalFetch = window.fetch;
+
+    // Mock conversation data store
+    let conversationStore = [
+      {
+        id: 'auto_conv_1',
+        title: '✈️ Flight Booking',
+        messages: [
+          {
+            id: 'auto_msg_1',
+            text: 'I need to book a flight from New York to London',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            id: 'auto_msg_2',
+            text: 'I found some great flight options for you:\n\n[FLIGHT]{\n  "flightNumber": "BA117",\n  "airline": "British Airways",\n  "origin": "JFK",\n  "destination": "LHR",\n  "departureTime": "6:30 PM",\n  "arrivalTime": "6:45 AM",\n  "departureDate": "Mar 15, 2024",\n  "arrivalDate": "Mar 16, 2024",\n  "duration": "7h 15min",\n  "terminal": "7",\n  "gate": "B32",\n  "arrivalTerminal": "5",\n  "arrivalGate": "A18"\n}[/FLIGHT]\n\nThis is a direct flight with excellent reviews! Would you like to see more options?',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 3590000).toISOString()
+          },
+          {
+            id: 'auto_msg_3',
+            text: 'Perfect! Can you show me a business class option?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 3580000).toISOString()
+          },
+          {
+            id: 'auto_msg_4',
+            text: 'Here\'s a premium business class option:\n\n[FLIGHT]{\n  "flightNumber": "VS4",\n  "airline": "Virgin Atlantic",\n  "origin": "JFK",\n  "destination": "LHR",\n  "departureTime": "8:00 PM",\n  "arrivalTime": "8:15 AM",\n  "departureDate": "Mar 15, 2024",\n  "arrivalDate": "Mar 16, 2024",\n  "duration": "7h 15min",\n  "terminal": "4",\n  "gate": "B24",\n  "arrivalTerminal": "3",\n  "arrivalGate": "A10",\n  "status": "On Time"\n}[/FLIGHT]\n\nThis includes lie-flat seats, premium dining, priority boarding, and access to the Clubhouse lounge!',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 3570000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+        updatedAt: new Date(Date.now() - 3570000).toISOString()
+      },
+      {
+        id: 'auto_conv_2',
+        title: '🚀 Project Setup Guide',
+        messages: [
+          {
+            id: 'auto_msg_5',
+            text: 'How do I set up a new React project?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 7200000).toISOString()
+          },
+          {
+            id: 'auto_msg_6',
+            text: 'Here\'s a quick guide to set up a React project:\n\n1. **Using Create React App:**\n```bash\nnpx create-react-app my-app\ncd my-app\nnpm start\n```\n\n2. **Using Vite (faster):**\n```bash\nnpm create vite@latest my-app -- --template react\ncd my-app\nnpm install\nnpm run dev\n```\n\nVite is recommended for new projects due to faster build times!',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 7190000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 7200000).toISOString(),
+        updatedAt: new Date(Date.now() - 7190000).toISOString()
+      },
+      {
+        id: 'auto_conv_3',
+        title: '💡 TypeScript Best Practices',
+        messages: [
+          {
+            id: 'auto_msg_7',
+            text: 'What are some TypeScript best practices?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 86400000).toISOString()
+          },
+          {
+            id: 'auto_msg_8',
+            text: 'Here are key TypeScript best practices:\n\n✅ **Enable strict mode** in tsconfig.json\n✅ **Use interfaces** for object shapes\n✅ **Avoid "any" type** - use unknown or proper types\n✅ **Leverage utility types** (Partial, Pick, Omit, etc.)\n✅ **Use type guards** for runtime type checking\n✅ **Document with JSDoc** for better IDE support\n\nThese practices will make your code more maintainable and catch bugs early!',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 86390000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        updatedAt: new Date(Date.now() - 86390000).toISOString()
+      },
+      {
+        id: 'auto_conv_4',
+        title: '🎨 CSS Architecture',
+        messages: [
+          {
+            id: 'auto_msg_9',
+            text: 'How should I organize my CSS in a large project?',
+            sender: 'user' as ChatbotSender,
+            timestamp: new Date(Date.now() - 172800000).toISOString()
+          },
+          {
+            id: 'auto_msg_10',
+            text: 'For large projects, consider these CSS organization strategies:\n\n**1. CSS Modules:**\n- Scoped styles per component\n- Prevents naming conflicts\n\n**2. CSS-in-JS:**\n- Styled Components\n- Emotion\n- Dynamic theming\n\n**3. Utility-First:**\n- Tailwind CSS\n- Rapid development\n\n**4. BEM Methodology:**\n- Block__Element--Modifier\n- Clear naming conventions\n\nChoose based on your team\'s preferences and project requirements!',
+            sender: 'bot' as ChatbotSender,
+            timestamp: new Date(Date.now() - 172790000).toISOString()
+          }
+        ],
+        createdAt: new Date(Date.now() - 172800000).toISOString(),
+        updatedAt: new Date(Date.now() - 172790000).toISOString()
+      }
+    ];
+
+    // Mock fetch to intercept API calls
+    const mockFetch = async (url: string | URL | Request, options?: RequestInit) => {
+      const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : url.url;
+      
+      // Mock: Load specific conversation
+      if (urlString.match(/\/api\/conversations\/[^/?]+$/) && (!options?.method || options?.method === 'GET')) {
+        const conversationId = urlString.split('/').pop();
+        const conversation = conversationStore.find(c => c.id === conversationId);
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        if (conversation) {
+          return new Response(JSON.stringify(conversation), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        } else {
+          return new Response(JSON.stringify({ error: 'Conversation not found' }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      }
+      
+      // Mock: Load conversations list
+      if (urlString.includes('/api/conversations') && (!options?.method || options?.method === 'GET')) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return new Response(JSON.stringify({
+          conversations: conversationStore.map(c => ({
+            id: c.id,
+            title: c.title,
+            messageCount: c.messages.length,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAt
+          }))
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Mock: Create new conversation
+      if (urlString.includes('/api/conversations') && options?.method === 'POST') {
+        await new Promise(resolve => setTimeout(resolve, 250));
+        
+        const body = JSON.parse(options?.body as string || '{}');
+        const newConversation = {
+          id: `auto_conv_${Date.now()}`,
+          title: body.title || `New Chat ${conversationStore.length + 1}`,
+          messages: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        conversationStore = [newConversation, ...conversationStore];
+        
+        return new Response(JSON.stringify(newConversation), {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Mock: Delete conversation
+      if (urlString.match(/\/api\/conversations\/[^/]+$/) && options?.method === 'DELETE') {
+        const conversationId = urlString.split('/').pop();
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        conversationStore = conversationStore.filter(c => c.id !== conversationId);
+        
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Mock: Send message (streaming response)
+      if (urlString.includes('/api/chat') && options?.method === 'POST') {
+        await new Promise(resolve => setTimeout(resolve, 150));
+        
+        const body = JSON.parse(options?.body as string || '{}');
+        const userMessage = body.userMessage || body.message || '';
+        
+        let aiResponse = 'Thanks for your question! ';
+        
+        if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
+          aiResponse += 'Hello! How can I help you today with your development questions?';
+        } else if (userMessage.toLowerCase().includes('help')) {
+          aiResponse += 'I can assist you with:\n• Programming concepts\n• Framework recommendations\n• Best practices\n• Code architecture\n\nWhat would you like to know?';
+        } else {
+          aiResponse += 'That\'s an interesting question! Let me help you with that...';
+        }
+        
+        const stream = new ReadableStream({
+          async start(controller) {
+            for (let i = 0; i < aiResponse.length; i++) {
+              await new Promise(resolve => setTimeout(resolve, 15));
+              controller.enqueue(new TextEncoder().encode(aiResponse[i]));
+            }
+            controller.close();
+          }
+        });
+        
+        return new Response(stream, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain' }
+        });
+      }
+
+      return originalFetch(url, options);
+    };
+
+    setTimeout(async () => {
+      const chatbot = document.querySelector('#auto-loading-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        // Override fetch
+        window.fetch = mockFetch as any;
+        
+        const { CustomAPIProvider } = await import('./providers/custom-api-provider.js');
+        const { ChatbotCoreController } = await import('./core/chatbot-core.controller.js');
+        const { FlightCardPlugin } = await import('./plugins/flight-card-plugin.js');
+        
+        // Extended provider with auto-loading support
+        class AutoLoadingProvider extends CustomAPIProvider {
+          async loadConversations(): Promise<Array<{id: string, title: string, createdAt: string, updatedAt: string}>> {
+            console.log('[AutoLoadingProvider] loadConversations() called automatically!');
+            try {
+              const response = await fetch('/api/conversations', { method: 'GET' });
+              const data = await response.json();
+              console.log('[AutoLoadingProvider] Loaded conversation summaries:', data.conversations);
+              return data.conversations || [];
+            } catch (error) {
+              console.error('[AutoLoadingProvider] Failed to load conversations:', error);
+              return [];
+            }
+          }
+
+          async loadConversation(conversationId: string): Promise<any> {
+            console.log(`[AutoLoadingProvider] loadConversation(${conversationId}) called automatically!`);
+            try {
+              const response = await fetch(`/api/conversations/${conversationId}`, { method: 'GET' });
+              const data = await response.json();
+              console.log(`[AutoLoadingProvider] Loaded full conversation ${conversationId}:`, data);
+              return data;
+            } catch (error) {
+              console.error(`[AutoLoadingProvider] Failed to load conversation ${conversationId}:`, error);
+              return null;
+            }
+          }
+
+          buildPayload(text: string, context: any): any {
+            return {
+              userMessage: text,
+              conversationId: context.currentThread?.id,
+              metadata: context.metadata || {}
+            };
+          }
+        }
+
+        const provider = new AutoLoadingProvider();
+        
+        console.log('[Story] Connecting provider...');
+        await provider.connect({
+          apiUrl: '/api/chat',
+          headers: {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log('[Story] Provider connected!');
+
+        // Create controller - conversations will load automatically!
+        console.log('[Story] Creating ChatbotCoreController...');
+        const controller = new ChatbotCoreController({
+          provider,
+          enableThreads: true,
+          debug: true, // Enable debug logging to see auto-load process
+          plugins: [new FlightCardPlugin()], // Add flight card plugin for HTML rendering
+          ui: {
+            onStateChange: (state) => {
+              console.log('[UI] State changed:', {
+                threadsCount: state.threads.length,
+                messagesCount: state.messages.length,
+                currentThreadId: state.currentThreadId
+              });
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; },
+            focusInput: () => { chatbot.focusInput(); }
+          }
+        });
+
+        chatbot.controller = controller;
+
+        // Note: No manual conversation loading code needed!
+        // The controller automatically calls provider.loadConversations() on connect
+
+        chatbot.suggestions = [
+          { id: 'react', text: '⚛️ React tips', enabled: true },
+          { id: 'typescript', text: '📘 TypeScript help', enabled: true },
+          { id: 'css', text: '🎨 CSS advice', enabled: true }
+        ];
+
+        // Cleanup
+        (window as any).__storyCleanup = () => {
+          window.fetch = originalFetch;
+        };
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 16px; padding: 20px; max-width: 1200px;">
+        <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 20px rgba(102,126,234,0.4); color: white;">
+          <h3 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 600;">✨ Auto-Loading Conversations Demo</h3>
+          <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; opacity: 0.95;">
+            This story demonstrates the <strong>automatic conversation loading</strong> feature. 
+            When you extend <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">CustomAPIProvider</code> 
+            and implement <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">loadConversations()</code>, 
+            the controller automatically loads existing conversations when the provider connects!
+          </p>
+          
+          <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+            <p style="margin: 0 0 12px 0; font-weight: 600; font-size: 15px;">🔄 How it works:</p>
+            <ol style="margin: 0; padding-left: 24px; font-size: 14px; line-height: 1.8; opacity: 0.95;">
+              <li>Provider connects via <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">provider.connect()</code></li>
+              <li>Controller detects <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">loadConversations()</code> method</li>
+              <li>Automatically calls it to fetch conversation list</li>
+              <li>Loads full details for each conversation</li>
+              <li><strong>Processes messages through plugins</strong> (e.g., renders flight cards)</li>
+              <li>Updates UI with loaded threads - <strong>no manual code needed!</strong></li>
+            </ol>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+            <p style="margin: 0 0 12px 0; font-weight: 600; font-size: 15px;">📋 Pre-loaded conversations:</p>
+            <ul style="margin: 0; padding-left: 24px; font-size: 14px; line-height: 1.8; opacity: 0.95;">
+              <li>✈️ <strong>Flight Booking</strong> - Demonstrates HTML rendering with flight cards</li>
+              <li>🚀 Project Setup Guide</li>
+              <li>💡 TypeScript Best Practices</li>
+              <li>🎨 CSS Architecture</li>
+            </ul>
+          </div>
+
+          <div style="background: rgba(46,213,115,0.2); padding: 12px; border-radius: 6px; margin-top: 16px; border-left: 4px solid #2ed573;">
+            <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+              <strong>💡 Tip:</strong> Click on the "Flight Booking" conversation to see rich HTML cards automatically rendered from loaded messages!
+            </p>
+          </div>
+          
+          <div style="background: rgba(255,193,7,0.2); padding: 12px; border-radius: 6px; margin-top: 12px; border-left: 4px solid #ffc107;">
+            <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+              <strong>🔍 Debug:</strong> Open the browser console to see the auto-loading process and plugin rendering in action!
+            </p>
+          </div>
+        </div>
+
+        <div style="width: 100%; height: 700px; border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+          <nr-chatbot
+            id="auto-loading-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${true}
+            .autoScroll=${true}
+            .showThreads=${true}
+            .boxed=${true}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};

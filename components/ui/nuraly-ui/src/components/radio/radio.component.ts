@@ -154,7 +154,7 @@ export class NrRadioElement extends NuralyUIBaseMixin(LitElement) {
 
   override render() {
     return html`
-      <div class="radio-wrapper" data-theme="${this.currentTheme}">
+      <div class="radio-wrapper" data-theme="${this.currentTheme}" data-size="${this.size}">
         <input
           type="radio"
           class="radio-input"
