@@ -590,8 +590,13 @@ export class GenericJsonProcessor {
                    `
                    : `
                      return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}";
-                   `)
+                   `),
         },
+        size: property.type === 'radio' ? {
+          type: "string",
+          value: "small"
+        } : undefined,
+
         state: {
           type: "handler",
           value: this.resolveHandler(property.stateHandler, StateHandlers) ||

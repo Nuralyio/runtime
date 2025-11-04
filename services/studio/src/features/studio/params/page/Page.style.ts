@@ -51,13 +51,6 @@ const pageStyle = css`
     transform: translateX(-50%);
   }
 
-  @media (prefers-color-scheme: dark) {
-    .page-container {
-      --nuraly-tabs-content-background-color: #313131;
-      background: var(--page-background-color, transparent);
-      color: #f8fafc;
-    }
-  }
 
   .page-empty-message {
     position: absolute;
@@ -75,9 +68,7 @@ const pageStyle = css`
       border-radius: 30px;
     }
 
-    .page-container.viewer {
-      /* max-height: 90vh; */
-    }
+  
   }
 
 

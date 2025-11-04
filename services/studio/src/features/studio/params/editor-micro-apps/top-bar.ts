@@ -10,14 +10,9 @@ export default [{
 
   style: {
     width: "100vw",
-    "height": "40px",
-    "--nuraly-button-font-size": "12px",
-    "border-bottom": "1px solid #888888",
-    "--text-label-dark-color": "#c2c2c2",
-    "--container-bg-color": "#26327b",
-    "--nuraly-button-ghost-text-color": "white",
-    "--text-label-color": "white",
-
+    display: "flex",
+    "align-items": "center",
+    "justify-content": "center",
   },
   childrenIds: ["info-top-bar", "settings-top-bar"]
 },
@@ -38,28 +33,18 @@ export default [{
   uuid: "app_details_top_bar",
   name: "details top bar",
   application_id: "1",
-
-
   component_type: ComponentType.Container,
   style: {
     "align-items": "center",
     "gap": "5px",
-    "height": "38px",
   },
-  childrenIds: ["app_logo", "app_back_top_bar", "app_name_top_baré", "prototype_ai_top_bar3", "app_insert_top_bar", "app_edit_top_bar"]
+  childrenIds: ["app_logo2", "app_back_top_bar", "app_name_top_baré", "prototype_ai_top_bar3", "app_insert_top_bar", "app_edit_top_bar"]
 },
 {
   uuid: "app_insert_top_bar",
   name: "app insert top bar",
   application_id: "1",
   style: {
-    "--text-label-color": "#515151",
-    "--nuraly-icon-color": "#515151",
-    "title-color": "white",
-    "--nuraly-button-hover-background-color": "white",
-    // "border-left": "1px solid grey",
-    "padding-left": "12px",
-    "padding-right": "12px",
   },
   component_type: ComponentType.InsertDropdown,
   input: {
@@ -86,12 +71,10 @@ export default [{
   },
   event: {
     onClick: /* js */ `
-    // todo: here
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
             const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
             if(currentPage){
-              // EventData.value contains the item's value property (which is an object {value: "...", additionalData: {...}})
               const itemValue = EventData.value || EventData;
               const componentType = itemValue.value;
               const additionalData = itemValue.additionalData || {};
@@ -116,14 +99,11 @@ export default [{
 
 {
   uuid: "app_edit_top_bar",
-  name: "app insert top bar",
+  name: "app edit top bar",
   application_id: "1",
   style: {
     "--text-label-color": "#515151",
-    "--nuraly-icon-color": "#515151",
     "title-color": "white",
-    "--nuraly-button-hover-background-color": "white",
-    // "border-left": "1px solid grey",
     "padding-left": "12px",
     "padding-right": "12px",
   },
@@ -156,7 +136,6 @@ export default [{
     const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
     const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
     if(currentPage){
-      // EventData.value contains the item's value property (object with value and additionalData)
       const itemData = EventData.value || EventData;
       const componentType = itemData.value || itemData;
       const additionalData = itemData.additionalData || {};
@@ -187,7 +166,6 @@ export default [{
     "--text-label-color": "black",
     "--resolved-text-label-color" : "black",
     "title-color": "white", 
-    "--nuraly-button-hover-background-color": "white",
     "border-left": "1px solid grey",
     "padding-left": "14px",
   },
@@ -276,10 +254,6 @@ export default [{
   style: {
     "margin-left": "5px",
     "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-ghost-background-color": "transparent",
-    "--nuraly-button-ghost-border-color": "transparent"
 
   },
   input: {
@@ -303,39 +277,13 @@ export default [{
         `
   }
 },*/
-{
-  uuid: "platform_name_top_bar",
-  name: "app name top bar",
-  application_id: "1",
 
-  component_type: ComponentType.TextLabel,
-  style: {
-    "border-left": "1px solid grey",
-    "padding-left": "8px",
-    "font-family": "Arial",
-    "font-weight": "bold",
-    "--text-label-color": "#d6d6d6",
-
-  },
-  input: {
-    value: {
-      type: "string",
-      value: "Nuraly"
-    }
-  }
-},
 {
   uuid: "app_name_top_bar",
   name: "app name top bar",
   application_id: "1",
 
   component_type: ComponentType.TextLabel,
-  style: {
-    // "border-left": "1px solid grey",
-    // "--text-label-color": "#d6d6d6",
-
-    "padding-left": "px"
-  },
   input: {
     value: {
       type: "handler",
@@ -356,6 +304,7 @@ export default [{
   style: {
     width: "50vw",
     "justify-content": "flex-end",
+        "align-items": "center",
   },
   childrenIds: ["mode_topbar", "platform_top_bar", "zoom_top_bar", "prev_next_top_bar", "app_users_top_bar2", "app_preview_publish_top_bar", "app_logout_top_bar"]
 },
@@ -364,14 +313,7 @@ export default [{
   name: "zoom top bar",
   application_id: "1",
 
-  component_type: ComponentType.Container, "margin-top": "2px",
-  style: {
-
-    "align-items": "center",
-    "justify-content": "center",
-    "border-left": "1px solid grey",
-    "width": "108px"
-  },
+  component_type: ComponentType.Container,
   childrenIds: ["zoom_input"]
 },
 {
@@ -382,9 +324,7 @@ export default [{
   component_type: ComponentType.TextInput,
   style: {
     "size": "small",
-    "--nuraly-input-border-bottom": "none",
-    "--nuraly-input-number-icons-container-width": "48px",
-    "width": "100px"
+    "width": "90px"
   },
   event: {
     valueChange: /* js */`
@@ -393,104 +333,33 @@ export default [{
   },
   input: {
     placeholder: {
-      type: "handler",
-      value: /* js */`
-            const inputPlaceholder = 'zoom'
-            return inputPlaceholder;
-            `
+      type: "string",
+      value: "zoom"
     },
     type: {
-      type: "handler",
-      value: /* js */`
-            const type = 'number'
-            return type;
-
-            `
+      type: "string",
+      value: "number"
     },
     min: {
-      type: "handler",
-      value: /* js */`
-            const min = '25'
-            return min;
-            `
+      type: "number",
+      value: 25
     },
     step: {
-      type: "handler",
-      value: /* js */`
-            const min = '10'
-            return min;
-            `
+      type: "number",
+      value: 10
     },
     max: {
-      type: "handler",
-      value: /* js */`
-            const max = '1600'
-            return max;
-            `
+      type: "number",
+      value: 1600
     },
     value: {
       type: "handler",
       value: /* js */`
-            const zoom = GetVar('editor_panel_zoom') || 100;
-            return zoom;
+            return GetVar('editor_panel_zoom') || 100;
             `
     }
   }
 },
-{
-  uuid: "app_users_top_bar",
-  name: "app users top bar",
-  application_id: "1",
-
-  component_type: ComponentType.Container,
-  style: {
-    "height": "40px",
-    "align-self": "center",
-    "margin-right": "4px",
-  },
-  childrenIds: ["users_dropdown"]
-},
-{
-  uuid: "users_dropdown",
-  name: "users dropdown",
-  application_id: "1",
-
-  component_type: ComponentType.UsersDropdown,
-  input: {
-    userImage: {
-      type: "handler",
-      value: /* js */`
-            const userImage = "https://e7.pngegg.com/pngimages/81/570/png-clipart-profile-logo-computer-icons-user-user-blue-heroes.png";
-            return userImage;
-            `
-
-    },
-    users: {
-      type: "handler",
-      value: /* js */`
-            const usersList = [{label:'Aymen',value:'Aymen'}]
-            return usersList;
-            `
-    },
-    imageWidth: {
-      type: "handler",
-      value: /* js *`
-            const imageWidth = '35px';
-            return imageWidth;
-            `
-      },
-      imageHeight: {
-        type: "handler",
-        value: /* js */`
-            const imageHeight = '25px';
-            return imageHeight;
-            `
-    }
-
-
-  }
-},
-
 {
   uuid: "mode_topbar",
   name: "mode_topbar",
@@ -498,12 +367,7 @@ export default [{
 
   component_type: ComponentType.Container,
   style: {
-    "margin-top": "5px",
-    "margin-right": "24px",
-    "justify-content": "space-between",
-    "align-items": "center",
-    "border-right": "1px solid grey",
-    "padding-right": "14px",
+    "margin-right": "14px",
   },
   childrenIds: ["edit_mode", "preview_mode"]
 
@@ -514,15 +378,6 @@ export default [{
   application_id: "1",
 
   component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-height": "40px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent",
-    "--nuraly-button-ghost-text-color": "white"
-  },
   event: {
     onClick: /* js */`
       Vars.currentEditingMode = "edit";
@@ -543,18 +398,16 @@ export default [{
             `
     },
     iconPosition: {
-      type: "handler",
-      value: /* js */`
-            const iconPosition = 'left'
-            return iconPosition;
-            `
+      type: "string",
+      value: "left"
     },
     icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'edit'
-            return iconName;
-            `
+      type: "string",
+      value: "edit"
+    },
+    size:{
+      type: "string",
+      value: "small"
     }
   }
 },
@@ -564,21 +417,16 @@ export default [{
   application_id: "1",
 
   component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-height": "40px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent",
-    "--resolved-text-label-color": "white"
-  },
   event: {
     onClick: /* js */`
       Vars.currentEditingMode = "preview"
         `
   },
   input: {
+    size:{
+      type: "string",
+      value: "small"
+    },
     display: {
       type: "handler",
       value: /* js */`
@@ -610,276 +458,73 @@ export default [{
 },
 
 {
-  uuid: "prototype_ai_top_bar2",
-  name: "prototype_ai_top_bar2",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-height": "40px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent",
-    "--text-label-color": "white",
-    "border-left": "1px solid grey",
-    "padding-left": "14px",
-  },
-  event: {
-    onClick: /* js */`
-          window.dispatchEvent(new Event('toggle-ai-assistant'));
-        `
-  },
-  input: {
-
-    label: {
-      type: "handler",
-      value: /* js */`
-            const buttonLabel = 'Prototype with AI'
-            return buttonLabel;
-            `
-    },
-    iconPosition: {
-      type: "handler",
-      value: /* js */`
-            const iconPosition = 'left'
-            return iconPosition;
-            `
-    },
-    icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'feather-alt'
-            return iconName;
-            `
-    }
-  }
-},
-
-
-{
   uuid: "platform_top_bar",
-  name: "platform top bar",
+  name: "platform radio button",
   application_id: "1",
-
-  component_type: ComponentType.Container,
-  style: {
-    "justify-content": "space-between",
-  },
-  childrenIds: ["primary_platform_container", "tablet_platform_container", "mobile_platform_container"]
-
-},
-{
-  uuid: "primary_platform_container",
-  name: "primary platform container",
-  application_id: "1",
-
-  component_type: ComponentType.Container,
-  style: {
-    "flex-direction": "column",
-  },
-  childrenIds: ["primary_platform_button"]
-
-},
-{
-  uuid: "primary_platform_button",
-  name: "primary platform button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-width": "30px",
-    "--nuraly-button-height": "40px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-  },
-  event: {
-    onClick: /* js */`
-          Vars.currentPlatform =  {
-            platform: "desktop",
-            width: "1366px",
+  component_type: ComponentType.RadioButton,
+  input: {
+    autoWidth: {
+      type: "boolean",
+      value: true
+    },
+    size :{
+      type: "string",
+      value: "small"
+    },
+    style:{
+      "--nr-button-min-width": "40px"
+    },
+    value: {
+      type: "handler",
+      value: /* js */`
+        const currentPlatform = Vars.currentPlatform?.platform || "desktop";
+        
+        const options = [
+          {
+            icon: "display",
+            value: "desktop"
+          },
+          {
+            icon: "tablet",
+            value: "tablet"
+          },
+          {
+            icon: "mobile",
+            value: "mobile"
           }
-        `
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const buttonLabel = ''
-            return buttonLabel;
-            `
-    },
-    icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'display'
-            return iconName;
-            `
+        ];
+        
+        const radioType = 'button';
+        const result = [options, currentPlatform, radioType];
+        return result;
+      `
     }
-  }
-},
-{
-  uuid: "primary_platform_text",
-  name: "app name top bar",
-  application_id: "1",
-
-  component_type: ComponentType.TextLabel,
-  style: {
-    "font-size": "10px",
-    "--text-label-color": "#d6d6d6",
-  },
-  input: {
-    value: {
-      type: "string",
-      value: 'Primary'
-    }
-  }
-},
-{
-  uuid: "tablet_platform_container",
-  name: "tablet platform container",
-  application_id: "1",
-
-  component_type: ComponentType.Container,
-  style: {
-    "flex-direction": "column",
-  },
-  childrenIds: ["tablet_platform_button",]
-
-},
-{
-  uuid: "tablet_platform_button",
-  name: "tablet platform button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-width": "30px",
-    "--nuraly-button-height": "40px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
   },
   event: {
-    onClick: /* js */`
-      Vars.currentPlatform =  {
-        platform: "tablet",
-        width: "1024px",
-        height: "768px",
-        isMobile: true
+    changed: /* js */`
+      const platform = EventData.value;
+      
+      if (platform === "desktop") {
+        Vars.currentPlatform = {
+          platform: "desktop",
+          width: "1366px"
+        };
+      } else if (platform === "tablet") {
+        Vars.currentPlatform = {
+          platform: "tablet",
+          width: "1024px",
+          height: "768px",
+          isMobile: true
+        };
+      } else if (platform === "mobile") {
+        Vars.currentPlatform = {
+          platform: "mobile",
+          width: "430px",
+          height: "767px",
+          isMobile: true
+        };
       }
-        `
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const buttonLabel = ''
-            return buttonLabel;
-            `
-    },
-    icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'tablet'
-            return iconName;
-            `
-    }
-  }
-},
-{
-  uuid: "tablet_platform_text",
-  name: "app name top bar",
-  application_id: "1",
-
-  component_type: ComponentType.TextLabel,
-  style: {
-    "font-size": "10px",
-    "--text-label-color": "#d6d6d6",
-  },
-  input: {
-    value: {
-      type: "string",
-      value: 'Tablet'
-    }
-  }
-},
-{
-  uuid: "mobile_platform_container",
-  name: "mobile platform container",
-  application_id: "1",
-
-  component_type: ComponentType.Container,
-  style: {
-    "flex-direction": "column",
-  },
-  childrenIds: ["mobile_platform_button"]
-
-},
-{
-  uuid: "mobile_platform_button",
-  name: "mobile platform button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-width": "30px",
-    "--nuraly-button-height": "40px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-  },
-  event: {
-    onClick: /* js */`
-      Vars.currentPlatform =  {
-        platform: "mobile",
-        width: "430px",
-        height: "767px",
-        isMobile: true
-      }
-        `
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const buttonLabel = ''
-            return buttonLabel;
-            `
-    },
-
-    icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'mobile'
-            return iconName;
-            `
-    }
-  }
-},
-
-{
-  uuid: "mobile_platform_text",
-  name: "app name top bar",
-  application_id: "1",
-
-  component_type: ComponentType.TextLabel,
-  style: {
-    "font-size": "10px"
-  },
-  input: {
-    value: {
-      type: "string",
-      value: 'Mobile'
-    }
+    `
   }
 },
 {
@@ -889,143 +534,11 @@ export default [{
 
   component_type: ComponentType.Container,
   style: {
-    "gap": "5px",
-    "margin-right": "4px",
-    "margin-top": "2px",
-    "align-items": "center",
-    "border-left": "1px solid grey",
-    "border-right": "1px solid grey",
-    "height": "35px"
+   
 
   },
   childrenIds: ["next_button", "previous_button"]
 
-},
-{
-  uuid: "previous_button",
-  name: "previous button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "margin-right": "4px",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const buttonLabel = ''
-            return buttonLabel;
-            `
-    },
-    icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'share'
-            return iconName;
-            `
-    }
-  }
-},
-{
-  uuid: "next_button",
-  name: "next button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "margin-left": "4px",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const buttonLabel = ''
-            return buttonLabel;
-            `
-    },
-    icon: {
-      type: "handler",
-      value: /* js */`
-            const iconName = 'reply'
-            return iconName;
-            `
-    }
-  }
-},
-{
-  uuid: "app_preview_publish_top_sbar",
-  name: "app preview publish top bar",
-  application_id: "1",
-
-  component_type: ComponentType.Container,
-  style: {
-    "gap": "5px",
-    "height": "55px",
-    "margin-right": "12px",
-    "align-items": "center",
-    "border-right": "1px solid gray",
-    "padding-right": "4px"
-  },
-  childrenIds: ["preview_button", "publish_button"]
-
-},
-{
-  uuid: "preview_buttona",
-  name: "preview button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const appName = 'Live preview'
-            return appName;
-            `
-    }
-  }
-},
-{
-  uuid: "publish_buttona",
-  name: "preview button",
-  application_id: "1",
-
-  component_type: ComponentType.Button,
-  style: {
-    "type": "ghost",
-    "--nuraly-button-padding-y": "2px",
-    "--nuraly-button-padding-x": "2px",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-  },
-  input: {
-    label: {
-      type: "handler",
-      value: /* js */`
-            const appName = 'Publish'
-            return appName;
-            `
-    }
-  }
 },
 {
   uuid: "app_logout_top_bar",
@@ -1033,15 +546,6 @@ export default [{
 
   name: "logout",
   component_type: ComponentType.Button,
-  style: {
-    "--nuraly-button-padding-y": "9px",
-    "--nuraly-button-padding-x": "2px",
-    "margin-right": "5px",
-
-    "type": "ghost",
-    "--nuraly-button-ghost-border-color": "transparent",
-    "--nuraly-button-ghost-background-color": "transparent"
-  },
   input: {
     label: {
       type: "handler",
@@ -1074,8 +578,6 @@ export default [{
   style: {
     "margin-left": "15px",
     "margin-top": "9px",
-    "height": "20px"
-    // "--text-label-color": "#d6d6d6",
   },
   event:{
     onInput : /* js */`
