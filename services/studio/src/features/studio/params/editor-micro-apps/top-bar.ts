@@ -465,7 +465,7 @@ export default [{
   input: {
     autoWidth: {
       type: "boolean",
-      value: true
+      value: false
     },
     size :{
       type: "string",
