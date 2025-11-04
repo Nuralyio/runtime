@@ -27,7 +27,7 @@ export default css`
     clear: both;
     width: 100%;
     min-width: 100%;
-    margin: var(--nuraly-divider-margin-vertical, 24px) 0;
+    margin: var(--nuraly-divider-margin-vertical, 10px) 0;
     border-block-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.12));
   }
 

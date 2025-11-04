@@ -358,9 +358,9 @@ const inputStyle = css`
    * Default: light border, focus: blue border
    */
   :host([variant='outlined']) #input-container {
-    border: var(--nuraly-input-outlined-border, var(--nuraly-outlined-border));
+    border: var(--nuraly-input-outlined-border, var(--nuraly-outlined-border, 1px solid #d1d5db));
     border-radius: var(--nuraly-input-outlined-border-radius, var(--nuraly-outlined-border-radius, var(--nuraly-border-radius-input, 6px)));
-    background-color: var(--nuraly-input-outlined-background, var(--nuraly-outlined-background));
+    background-color: var(--nuraly-input-outlined-background, var(--nuraly-outlined-background, transparent));
   }
 
   :host([variant='outlined']) .input-wrapper {
@@ -368,7 +368,7 @@ const inputStyle = css`
   }
 
   :host([variant='outlined']:not([state='error'])) #input-container:focus-within {
-    border: var(--nuraly-input-outlined-focus-border, var(--nuraly-outlined-focus-border));
+    border: var(--nuraly-input-outlined-focus-border, var(--nuraly-outlined-focus-border, 2px solid #3b82f6));
   }
 
   /* 
