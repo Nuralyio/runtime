@@ -52,6 +52,44 @@
   --nuraly-color-button-ghost-text-active: #096dd9;
 
   /* ========================================
+   * BUTTON ICON COLOR OVERRIDES
+   * Ensure icons in buttons use proper colors
+   * ======================================== */
+}
+
+/* Button-specific icon color overrides */
+[data-theme^="default"] nr-button[type="primary"] nr-icon,
+[data-theme^="default"] :host([type="primary"]) nr-icon {
+  --nuraly-color-icon: #ffffff !important;
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+[data-theme^="default"] nr-button[type="secondary"] nr-icon,
+[data-theme^="default"] :host([type="secondary"]) nr-icon {
+  --nuraly-color-icon: rgba(0, 0, 0, 0.88) !important;
+  fill: rgba(0, 0, 0, 0.88) !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+[data-theme^="default"] nr-button[type="danger"] nr-icon,
+[data-theme^="default"] :host([type="danger"]) nr-icon {
+  --nuraly-color-icon: #ffffff !important;
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* Disable focus borders for all buttons in default theme */
+[data-theme^="default"] nr-button button:focus,
+[data-theme^="default"] :host button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+:root,
+[data-theme^="default"]{
+
+  /* ========================================
    * BUTTON PADDING & SPACING
    * Button dimensions - consistent across themes
    * ======================================== */

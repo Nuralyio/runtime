@@ -57,8 +57,8 @@ export const buttonStyles = css`
     text-shadow: none;
     
     &:focus {
-      outline: var(--nuraly-focus-outline);
-      outline-offset: var(--nuraly-focus-outline-offset);
+      /* outline: var(--nuraly-focus-outline); */
+      /* outline-offset: var(--nuraly-focus-outline-offset); */
     }
 
     &:disabled {
@@ -123,6 +123,13 @@ export const buttonStyles = css`
     border-color: var(--nuraly-color-button-primary);
     color: var(--nuraly-color-button-primary-text, var(--nuraly-color-text-on-color));
 
+    /* Ensure icons inherit the white text color for primary buttons */
+    nr-icon {
+      fill: var(--nuraly-color-button-primary-text, var(--nuraly-color-text-on-color, #ffffff)) !important;
+      color: var(--nuraly-color-button-primary-text, var(--nuraly-color-text-on-color, #ffffff)) !important;
+      --nuraly-color-icon: var(--nuraly-color-button-primary-text, var(--nuraly-color-text-on-color, #ffffff)) !important;
+    }
+
     &:hover:not(:disabled) {
       background-color: var(--nuraly-color-button-primary-hover);
       border-color: var(--nuraly-color-button-primary-hover);
@@ -136,9 +143,9 @@ export const buttonStyles = css`
     }
 
     &:focus:not(:disabled) {
-      outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color));
-      outline-offset: 2px;
-      box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring));
+      /* outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color)); */
+      /* outline-offset: 2px; */
+      /* box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring)); */
     }
 
     &:disabled {
@@ -169,8 +176,8 @@ export const buttonStyles = css`
     }
 
     &:focus:not(:disabled) {
-      outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color));
-      outline-offset: 2px;
+      /* outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color)); */
+      /* outline-offset: 2px; */
       box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring));
     }
 
@@ -202,8 +209,8 @@ export const buttonStyles = css`
     }
 
     &:focus:not(:disabled) {
-      outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color));
-      outline-offset: 2px;
+      /* outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color)); */
+      /* outline-offset: 2px; */
       box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring));
     }
 
@@ -235,8 +242,8 @@ export const buttonStyles = css`
     }
 
     &:focus:not(:disabled) {
-      outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color));
-      outline-offset: 2px;
+      /* outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color)); */
+      /* outline-offset: 2px; */
       box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring));
     }
 
@@ -268,8 +275,8 @@ export const buttonStyles = css`
     }
 
     &:focus:not(:disabled) {
-      outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color));
-      outline-offset: 2px;
+      /* outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color)); */
+      /* outline-offset: 2px; */
       box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring));
     }
 
