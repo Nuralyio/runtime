@@ -47,6 +47,9 @@ import {
  * 
  * <!-- Vertical orientation -->
  * <nr-tabs .tabs=${tabs} orientation="vertical" align="left"></nr-tabs>
+ * 
+ * <!-- Stretch tabs to fill full width with equal sizes -->
+ * <nr-tabs .tabs=${tabs} align="stretch"></nr-tabs>
  * ```
  * 
  * @fires nr-tab-click - Tab clicked
@@ -74,7 +77,7 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   @property({ type: String })
   orientation: TabOrientation = TabOrientation.Horizontal;
 
-  /** Tab alignment (left, center, right) */
+  /** Tab alignment (left, center, right, stretch) */
   @property({ type: String })
   align: TabsAlign = TabsAlign.Left;
 
@@ -136,6 +139,7 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
           'right-align': this.align === TabsAlign.Right,
           'left-align': this.align === TabsAlign.Left,
           'center-align': this.align === TabsAlign.Center,
+          'stretch-align': this.align === TabsAlign.Stretch,
         })}
         role="tablist"
         aria-label="${this.tabsAriaLabel || nothing}"

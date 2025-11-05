@@ -5,7 +5,6 @@
 [data-theme^="editor"] {
   /* Tab spacing */
   --nuraly-tabs-padding: 8px 16px;
-  --nuraly-tabs-gap: 4px;
   --nuraly-tabs-content-padding: 16px 0;
 
   /* Tab visual */

@@ -265,6 +265,12 @@ export class SelectDropdownController extends BaseSelectController implements Dr
 
       // Check if host has a custom maxHeight set
       const hostMaxHeight = (this.host as any).maxHeight;
+      
+      // Check if CSS max-height is set to auto via CSS custom property
+      const computedStyle = getComputedStyle(this._dropdownElement);
+      const cssMaxHeight = computedStyle.getPropertyValue('--nuraly-select-local-dropdown-max-height')?.trim();
+      const isAutoHeight = cssMaxHeight === 'auto' || (!hostMaxHeight && cssMaxHeight === 'auto');
+      
       const { placement } = this._position;
       
   // Get the exact wrapper width including borders
@@ -281,8 +287,8 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       this._dropdownElement.style.zIndex = '1000';
       this._dropdownElement.style.height = 'auto';
       
-      // Only set maxHeight to 'none' if host doesn't have a custom maxHeight
-      if (!hostMaxHeight) {
+      // Only set maxHeight to 'none' if host doesn't have a custom maxHeight and we're not using auto height
+      if (!hostMaxHeight && !isAutoHeight) {
         this._dropdownElement.style.maxHeight = 'none';
       }
       
@@ -317,6 +323,10 @@ export class SelectDropdownController extends BaseSelectController implements Dr
         // Use the host's custom maxHeight and enable scrolling
         this._dropdownElement.style.maxHeight = hostMaxHeight;
         this._dropdownElement.style.overflowY = 'auto';
+      } else if (isAutoHeight) {
+        // If max-height is set to auto, don't constrain the dropdown
+        this._dropdownElement.style.removeProperty('max-height');
+        this._dropdownElement.style.overflowY = 'visible';
       } else {
         // Apply the calculated constraints based on available space
         if (naturalHeight > availableSpace) {

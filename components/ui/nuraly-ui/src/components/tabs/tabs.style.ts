@@ -45,12 +45,11 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--nuraly-spacing-2);
+    gap: var(--nuraly-tabs-gap, var(--nuraly-spacing-2));
     position: relative;
     cursor: pointer;
     padding: var(--nuraly-spacing-tabs-padding, var(--nuraly-spacing-3) var(--nuraly-spacing-4));
-    border: var(--nuraly-border-tabs-label);
-    border-bottom: var(--nuraly-border-width-medium, 2px) solid transparent;
+    border-bottom: var(--nuraly-border-width-tabs-bottom) var(--nuraly-border-style-tabs) transparent;
     background-color: var(--nuraly-color-tabs-label-background);
     color: var(--nuraly-color-tabs-label-text);
     font-family: var(--nuraly-font-family);
@@ -75,7 +74,7 @@ export const styles = css`
     color: var(--nuraly-color-tabs-label-text-active);
     background-color: var(--nuraly-color-tabs-label-background-active);
     border-color: var(--nuraly-color-tabs-label-border-active);
-    font-weight: var(--nuraly-font-weight-semibold);
+    font-weight: var(--nuraly-font-tabs-weight-active);
   }
 
   /* Positioning-specific border radius for horizontal tabs */
@@ -119,6 +118,7 @@ export const styles = css`
   .tab-text {
     flex: 1;
     color: inherit;
+    text-align: var(--nuraly-tabs-text-align, center);
   }
   
   .tab-text[contenteditable="true"] {
@@ -176,8 +176,10 @@ export const styles = css`
     flex: 1;
     padding: var(--nuraly-spacing-tabs-content-padding, var(--nuraly-spacing-4));
     background-color: var(--nuraly-color-tabs-content-background);
-    border: var(--nuraly-border-tabs-content);
-    border-top: var(--nuraly-border-width-thin, 1px) solid var(--nuraly-color-border);
+    border-top: var(--nuraly-border-width-tabs-content-top) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
+    border-right: var(--nuraly-border-width-tabs-content-right) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
+    border-bottom: var(--nuraly-border-width-tabs-content-bottom) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
+    border-left: var(--nuraly-border-width-tabs-content-left) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 100vh;
@@ -199,7 +201,7 @@ export const styles = css`
     
     .tab-label {
       border-bottom: var(--nuraly-border-tabs-label);
-      border-right: var(--nuraly-border-width-medium, 2px) solid transparent;
+      border-right: var(--nuraly-border-width-tabs-right) var(--nuraly-border-style-tabs) transparent;
     }
   }
 
@@ -219,7 +221,7 @@ export const styles = css`
   
   .vertical-align.right-align .tab-label {
     border-right: var(--nuraly-border-tabs-label);
-    border-left: var(--nuraly-border-width-medium, 2px) solid transparent;
+    border-left: var(--nuraly-border-width-tabs-left) var(--nuraly-border-style-tabs) transparent;
   }
   
   .vertical-align.right-align .tab-label:hover,
@@ -238,6 +240,22 @@ export const styles = css`
     align-self: center;
   }
 
+  /* Stretch alignment - tabs fill full width with equal sizes */
+  .stretch-align > .tab-labels {
+    width: 100%;
+  }
+
+  .stretch-align .tab-label {
+    flex: 1;
+    min-width: 0; /* Allow flex items to shrink below their content size */
+  }
+
+  /* Ensure add-tab button doesn't stretch when using stretch alignment */
+  .stretch-align .add-tab-label {
+    flex: 0 0 auto;
+    width: var(--nuraly-tabs-add-button-size, 2.5rem);
+  }
+
   .horizontal-align {
     flex-direction: column;
   }
@@ -245,13 +263,14 @@ export const styles = css`
   /* Size variations */
   .tabs-container[data-size="small"] {
     .tab-label {
-      padding: var(--nuraly-spacing-2) var(--nuraly-spacing-3);
+      padding: var(--nuraly-spacing-tabs-padding-small);
       font-size: var(--nuraly-font-size-small);
-      gap: var(--nuraly-spacing-1);
+      gap: var(--nuraly-tabs-gap-small, var(--nuraly-spacing-1));
     }
     
     .tab-text {
       font-size: var(--nuraly-font-size-small);
+      text-align: var(--nuraly-tabs-text-align, center);
     }
     
     .tab-icon {
@@ -273,11 +292,12 @@ export const styles = css`
     .tab-label {
       padding: var(--nuraly-spacing-4) var(--nuraly-spacing-6);
       font-size: var(--nuraly-font-size-large);
-      gap: var(--nuraly-spacing-3);
+      gap: var(--nuraly-tabs-gap-large, var(--nuraly-spacing-3));
     }
     
     .tab-text {
       font-size: var(--nuraly-font-size-large);
+      text-align: var(--nuraly-tabs-text-align, center);
     }
     
     .tab-icon {
@@ -299,14 +319,16 @@ export const styles = css`
   
   /* Default variant - uses standard theme variables */
   .tabs-container[data-type="default"] .tab-labels {
-    gap: var(--nuraly-spacing-2);
-    border-bottom: var(--nuraly-border-tabs-header);
+    gap: var(--nuraly-tabs-labels-gap, var(--nuraly-spacing-2));
   }
   
   .tabs-container[data-type="default"] .tab-label {
     /* Use theme variables for proper visibility */
     background-color: var(--nuraly-color-tabs-label-background);
-    border: var(--nuraly-border-tabs-label);
+    border-top: var(--nuraly-border-width-tabs-top) var(--nuraly-border-style-tabs) var(--nuraly-border-color-tabs);
+    border-right: var(--nuraly-border-width-tabs-right) var(--nuraly-border-style-tabs) var(--nuraly-border-color-tabs);
+    border-bottom: var(--nuraly-border-width-tabs-bottom) var(--nuraly-border-style-tabs) var(--nuraly-border-color-tabs);
+    border-left: var(--nuraly-border-width-tabs-left) var(--nuraly-border-style-tabs) var(--nuraly-border-color-tabs);
     color: var(--nuraly-color-tabs-label-text);
     border-radius: var(--nuraly-border-radius-tabs-first);
   }
@@ -314,18 +336,24 @@ export const styles = css`
   .tabs-container[data-type="default"] .tab-label:hover {
     background-color: var(--nuraly-color-tabs-label-background-hover);
     color: var(--nuraly-color-tabs-label-text-hover);
+    border-top-width: var(--nuraly-border-width-tabs-top-hover);
+    border-right-width: var(--nuraly-border-width-tabs-right-hover);
+    border-bottom-width: var(--nuraly-border-width-tabs-bottom-hover);
+    border-left-width: var(--nuraly-border-width-tabs-left-hover);
   }
   
   .tabs-container[data-type="default"] .tab-label.active {
     background-color: var(--nuraly-color-tabs-label-background-active);
     color: var(--nuraly-color-tabs-label-text-active);
+    border-top-width: var(--nuraly-border-width-tabs-top-active);
+    border-right-width: var(--nuraly-border-width-tabs-right-active);
+    border-bottom-width: var(--nuraly-border-width-tabs-bottom-active);
+    border-left-width: var(--nuraly-border-width-tabs-left-active);
     border-color: var(--nuraly-color-tabs-label-border-active);
-    font-weight: var(--nuraly-font-weight-semibold);
+    font-weight: var(--nuraly-font-tabs-weight-active);
   }
   
-  .tabs-container[data-type="default"] .tab-content {
-    border-top: var(--nuraly-border-tabs-content);
-  }
+ 
   
   /* Line variant - underline on active tab */
   .tabs-container[data-type="line"] .tab-labels {

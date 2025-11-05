@@ -11,6 +11,7 @@
 
   /* Common tabs spacing and sizing */
   --nuraly-spacing-tabs-padding: 0.75rem 1rem; /* 12px 16px */
+  --nuraly-spacing-tabs-padding-small: 0.5rem 0.75rem; /* 8px 12px */
   --nuraly-spacing-tabs-content-padding: 1.5rem; /* 24px */
   
   /* Common tabs borders - Default uses rounded corners for both states */
@@ -18,8 +19,53 @@
   --nuraly-border-radius-tabs-active: 0.375rem; /* 6px - Rounded corners for active tabs */
   --nuraly-border-width-tabs: 1px;
   
+  /* Separate border property declarations */
+  --nuraly-border-style-tabs: solid;
+  --nuraly-border-style-tabs-hover: solid;
+  --nuraly-border-style-tabs-active: solid;
+  --nuraly-border-style-tabs-focus: solid;
+  
+  --nuraly-border-width-tabs-hover: 1px;
+  --nuraly-border-width-tabs-active: 2px;
+  --nuraly-border-width-tabs-focus: 2px;
+  
+  /* Individual border side widths */
+  --nuraly-border-width-tabs-top: 1px;
+  --nuraly-border-width-tabs-right: 1px;
+  --nuraly-border-width-tabs-bottom: 1px;
+  --nuraly-border-width-tabs-left: 1px;
+  
+  --nuraly-border-width-tabs-top-hover: 1px;
+  --nuraly-border-width-tabs-right-hover: 1px;
+  --nuraly-border-width-tabs-bottom-hover: 1px;
+  --nuraly-border-width-tabs-left-hover: 1px;
+  
+  --nuraly-border-width-tabs-top-active: 1px;
+  --nuraly-border-width-tabs-right-active: 1px;
+  --nuraly-border-width-tabs-bottom-active: 1px;
+  --nuraly-border-width-tabs-left-active: 1px;
+  
+  --nuraly-border-width-tabs-top-focus: 2px;
+  --nuraly-border-width-tabs-right-focus: 2px;
+  --nuraly-border-width-tabs-bottom-focus: 2px;
+  --nuraly-border-width-tabs-left-focus: 2px;
+  
+  --nuraly-border-color-tabs: #d1d5db;
+  --nuraly-border-color-tabs-hover: #9ca3af;
+  --nuraly-border-color-tabs-active: #3b82f6;
+  --nuraly-border-color-tabs-focus: #3b82f6;
+  
+  /* Tab content border variables */
+  --nuraly-border-width-tabs-content-top: 1px;
+  --nuraly-border-width-tabs-content-right: 1px;
+  --nuraly-border-width-tabs-content-bottom: 1px;
+  --nuraly-border-width-tabs-content-left: 1px;
+  
+  --nuraly-border-style-tabs-content: solid;
+  --nuraly-border-color-tabs-content: var(--nuraly-color-border);
+  
   /* Horizontal tab positioning - rounded outer edges, sharp inner edges */
-  --nuraly-border-radius-tabs-first: 0.375rem 0 0 0.375rem; /* 6px - First tab: rounded left, sharp right */
+  --nuraly-border-radius-tabs-first: 0  ; /* 6px - First tab: rounded left, sharp right */
   --nuraly-border-radius-tabs-middle: 0; /* Middle tabs: sharp on both sides */
   --nuraly-border-radius-tabs-last: 0 0.375rem 0.375rem 0; /* 6px - Last tab: sharp left, rounded right */
   --nuraly-border-radius-tabs-single: 0.375rem; /* 6px - Single tab: fully rounded */
@@ -30,6 +76,7 @@
   
   /* Common tabs font settings */
   --nuraly-font-tabs-weight: 500;
+  --nuraly-font-tabs-weight-active: 400;
   --nuraly-font-tabs-size: 0.875rem; /* 14px */
   --nuraly-font-tabs-line-height: 1.25rem; /* 20px */
   

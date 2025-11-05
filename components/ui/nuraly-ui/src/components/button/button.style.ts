@@ -293,7 +293,7 @@ export const buttonStyles = css`
   :host(:not([size])) button {
     height: var(--nuraly-size-md);
     padding: var(--nuraly-spacing-2) var(--nuraly-spacing-4);
-    min-width: var(--nr-button-min-width, 5rem);
+    min-width: var(--nuraly-button-min-width, 5rem);
   }
 
   /* Size variants */
@@ -301,7 +301,7 @@ export const buttonStyles = css`
     height: var(--nuraly-size-sm);
     padding: var(--nuraly-spacing-1-5) var(--nuraly-spacing-3);
     font-size: 0.75rem;
-    min-width: var(--nr-button-min-width, 4.5rem);
+    min-width: var(--nuraly-button-min-width, 4.5rem);
     gap: 0.375rem;
   }
 
@@ -314,14 +314,14 @@ export const buttonStyles = css`
   :host([size="medium"]) button {
     height: var(--nuraly-size-md);
     padding: var(--nuraly-spacing-2) var(--nuraly-spacing-4);
-    min-width: var(--nr-button-min-width, 5rem);
+    min-width: var(--nuraly-button-min-width, 5rem);
   }
 
   :host([size="large"]) button {
     height: var(--nuraly-size-lg);
     padding: var(--nuraly-spacing-05) var(--nuraly-spacing-06);
     font-size: 1rem;
-    min-width: var(--nr-button-min-width, 6rem);
+    min-width: var(--nuraly-button-min-width, 6rem);
   }
 
   :host([size="large"]) button nr-icon {
