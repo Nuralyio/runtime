@@ -29,11 +29,11 @@ export class InsertDropdownBlock extends BaseElementBlock {
         style=${styleMap({ 
           ...this.getStyles(),
           "--nuraly-icon-color": "#515161",
+          "--nuraly-select-local-dropdown-max-height": this.inputHandlersValue?.maxHeight || "auto",
         })}
         .items=${options}
         .trigger=${this.inputHandlersValue?.trigger || 'click'}
         .placement=${this.inputHandlersValue?.placement || 'bottom-start'}
-        .size=${this.inputHandlersValue?.size || 'medium'}
         .animation=${this.inputHandlersValue?.animation || 'fade'}
         .disabled=${this.inputHandlersValue?.state === 'disabled'}
         .arrow=${this.inputHandlersValue?.arrow || false}
@@ -42,7 +42,6 @@ export class InsertDropdownBlock extends BaseElementBlock {
         .closeOnEscape=${this.inputHandlersValue?.closeOnEscape !== false}
         .offset=${this.inputHandlersValue?.offset || 4}
         .delay=${this.inputHandlersValue?.delay || 50}
-        .maxHeight=${this.inputHandlersValue?.maxHeight || '300px'}
         .minWidth=${this.inputHandlersValue?.minWidth || 'auto'}
         @nr-dropdown-item-click=${(e: CustomEvent) => {
           // e.detail contains { item, dropdown }

@@ -25,25 +25,13 @@ export class RadioButtonBlock extends BaseElementBlock {
     // Get other properties
     const direction = this.inputHandlersValue?.direction || 'vertical';
     const position = this.inputHandlersValue?.position || 'left';
-    const size = this.inputHandlersValue?.size || 'medium';
+    const size = this.inputHandlersValue?.size?.value || this.inputHandlersValue?.size || 'medium';
     const disabled = this.inputHandlersValue?.disabled || false;
     const required = this.inputHandlersValue?.required || false;
     const name = this.inputHandlersValue?.name || 'radioGroup';
-    // Force autoWidth to true when size is "small", otherwise use the configured value
-    const autoWidth = this.inputHandlersValue?.autoWidth || false;
+    // Get autoWidth from the input handler structure
+    const autoWidth = this.inputHandlersValue?.autoWidth?.value || this.inputHandlersValue?.autoWidth || false;
 
-    console.log('[RadioButton] Rendering with:', {
-      options,
-      defaultValue,
-      type,
-      direction,
-      position,
-      size,
-      disabled,
-      required,
-      name,
-      autoWidth
-    });
 
     return html`
       <span style=${styleMap(radioStyles)}>
