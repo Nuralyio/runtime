@@ -13,6 +13,7 @@ export default [{
     display: "flex",
     "align-items": "center",
     "justify-content": "center",
+    "border-bottom": "1px #d6d6d6 solid",
   },
   childrenIds: ["info-top-bar", "settings-top-bar"]
 },
@@ -465,14 +466,14 @@ export default [{
   input: {
     autoWidth: {
       type: "boolean",
-      value: false
+      value: true
     },
     size :{
       type: "string",
       value: "small"
     },
     style:{
-      "--nr-button-min-width": "40px"
+      
     },
     value: {
       type: "handler",
