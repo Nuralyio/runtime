@@ -10,9 +10,14 @@ export default {
     width: "100%",
     height: "100%",
     display: "grid",
+      "--nuraly-tabs-labels-gap" : "0px"
 
   },
   input: {
+    align : {
+        type: "string",
+        value: "stretch"
+    },
     size: {
         type: "string",
         value: "small"

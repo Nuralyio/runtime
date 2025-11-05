@@ -1,5 +1,6 @@
 import { ComponentType } from "@shared/redux/store/component/component.interface";
 
+//@todo check if this still used
 export default {
   uuid: "left_panel_tabs",
   application_id: "1",
@@ -10,7 +11,8 @@ export default {
     width: "100%",
     height: "100%",
     display: "grid",
-    "--nuraly-tabs-content-padding": "0px"
+    "--nuraly-tabs-content-padding": "0px",
+    "--nuraly-border-width-tabs-content-top": "0px",
   },
   input: {
     size: {

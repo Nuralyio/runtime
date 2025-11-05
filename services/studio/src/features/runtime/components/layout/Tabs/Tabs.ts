@@ -1,6 +1,6 @@
 import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { $applicationComponents } from "@shared/redux/store/component/store.ts";
-import { css, html } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from "@shared/utils/render-util.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
@@ -13,6 +13,8 @@ export class TabsBlock extends BaseElementBlock {
       :host {
           display: block;
           height: 100%;
+          /* CSS variables for tab text alignment customization */
+          --nuraly-tabs-text-align: center; /* Default center alignment */
       }
   `;
   @property({ type: Object, reflect: false })
@@ -37,17 +39,20 @@ export class TabsBlock extends BaseElementBlock {
     }
   }
 
-  override render() {
+  override renderComponent() {
+    const tabStyle = this.getStyles();
+    const textAlign = this.inputHandlersValue?.textAlign ?? 'center';
+    
     return html`
       ${this.editableTabs?.length > 0 ? html`
         <nr-tabs
           style=${styleMap({
-
-      ...this.component.style
-    })}
+            ...tabStyle
+          })}
           .activeTab=${this.inputHandlersValue.index ?? 0}
           .tabs=${this.editableTabs}
           size=${this.inputHandlersValue?.size ?? 'medium'}
+          align=${this.inputHandlersValue?.align ?? nothing}
           @tabTilteClick=${(e: CustomEvent) => {
             //@todo pass the object
           this.executeEvent('onTabChanged', e, {

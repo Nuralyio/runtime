@@ -112,6 +112,7 @@ export class TabsPanel extends LitElement {
       ${this.editableTabs.length === 0 ? html`
 		` : html`
         <nr-tabs
+       
         size="small"
           .activeTab=${this.activeTab}
           @removeTab=${(e: CustomEvent) => {
