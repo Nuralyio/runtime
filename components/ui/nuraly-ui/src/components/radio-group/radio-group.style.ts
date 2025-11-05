@@ -168,14 +168,13 @@ export const styles = css`
    * ======================================== */
 
   :host([auto-width]) .type-button nr-button {
-    --nr-button-min-width: auto;
+    --nuraly-button-min-width: 40px;
     min-width: auto;
     width: auto;
   }
 
   /* Icon-only buttons with auto-width should have minimal padding */
   :host([auto-width]) .type-button nr-button.icon-only {
-    --nr-button-min-width: auto;
     padding: 0.375rem; /* Even more minimal padding for icon-only */
     min-width: auto;
     width: auto;

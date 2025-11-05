@@ -18,7 +18,8 @@ export const enum TabOrientation {
 export const enum TabsAlign {
   Right = 'right',
   Left = 'left',
-  Center = 'center'
+  Center = 'center',
+  Stretch = 'stretch'
 }
 
 /**

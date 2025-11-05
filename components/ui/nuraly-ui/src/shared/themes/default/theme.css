@@ -18,6 +18,7 @@
 
   /* Font sizes */
   --nuraly-font-size-xs: 0.75rem;
+  --nuraly-font-size-small: 0.8125rem;
   --nuraly-font-size-sm: 0.875rem;
   --nuraly-font-size-base: 0.875rem;
   --nuraly-font-size-lg: 1rem;
@@ -132,7 +133,7 @@
   --nuraly-shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 
   /* Focus styles */
-  --nuraly-focus-outline: 2px solid #1890ff;
+  --nuraly-focus-outline: none;
   --nuraly-focus-outline-offset: 2px;
   --nuraly-focus-color: #1890ff;
   --nuraly-focus-ring: 0 0 0 2px rgba(24, 144, 255, 0.2);

@@ -58,6 +58,8 @@ A versatile tabs component with support for multiple orientations, editable tabs
 
 ## Features
 - Multiple orientations (horizontal/vertical)
+- Multiple alignment options (left, center, right, stretch)
+- Stretch alignment for equal-width tab distribution
 - Editable tabs with inline editing
 - Drag & drop reordering
 - Icon support
@@ -71,6 +73,12 @@ A versatile tabs component with support for multiple orientations, editable tabs
 \`\`\`html
 <nr-tabs .tabs=\${tabs} activeTab="0"></nr-tabs>
 \`\`\`
+
+## Alignment Options
+- **left**: Tabs aligned to the left (default)
+- **center**: Tabs centered in the container
+- **right**: Tabs aligned to the right
+- **stretch**: Tabs stretch to fill full width with equal distribution
 
 ## Events
 - **nr-tab-click**: Fired when a tab is clicked
@@ -91,7 +99,7 @@ A versatile tabs component with support for multiple orientations, editable tabs
     },
     align: {
       control: { type: 'select' },
-      options: ['left', 'center', 'right'],
+      options: ['left', 'center', 'right', 'stretch'],
       description: 'Tab alignment',
     },
     tabSize: {
@@ -161,7 +169,7 @@ export const HorizontalAlignments: Story = {
     activeTab: 0,
   },
   render: (args) => html`
-    <div style="display: flex; flex-direction: column; gap: 2rem; height: 600px;">
+    <div style="display: flex; flex-direction: column; gap: 2rem; height: 800px;">
       <div>
         <h3>Left Aligned</h3>
         <nr-tabs
@@ -188,6 +196,99 @@ export const HorizontalAlignments: Story = {
           orientation=${TabOrientation.Horizontal}
           align=${TabsAlign.Right}
         ></nr-tabs>
+      </div>
+      <div>
+        <h3>Stretch (Full Width)</h3>
+        <nr-tabs
+          .tabs=${args.tabs}
+          .activeTab=${args.activeTab}
+          orientation=${TabOrientation.Horizontal}
+          align=${TabsAlign.Stretch}
+        ></nr-tabs>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * Stretch tabs that fill the full width with equal distribution
+ */
+export const StretchTabs: Story = {
+  args: {
+    tabs: basicTabs,
+    activeTab: 0,
+  },
+  render: (args) => html`
+    <div style="display: flex; flex-direction: column; gap: 2rem; height: 600px;">
+      <div>
+        <h3>Stretch Tabs - Equal Width Distribution</h3>
+        <p style="margin: 0.5rem 0; color: #666; font-size: 0.875rem;">
+          Each tab takes up equal space to fill the full container width
+        </p>
+        <nr-tabs
+          .tabs=${args.tabs}
+          .activeTab=${args.activeTab}
+          orientation=${TabOrientation.Horizontal}
+          align=${TabsAlign.Stretch}
+        ></nr-tabs>
+      </div>
+      
+      <div>
+        <h3>Stretch vs Normal Alignment Comparison</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <h4 style="margin: 0.5rem 0; font-size: 0.875rem;">Normal Left Aligned</h4>
+            <nr-tabs
+              .tabs=${args.tabs}
+              .activeTab=${args.activeTab}
+              orientation=${TabOrientation.Horizontal}
+              align=${TabsAlign.Left}
+            ></nr-tabs>
+          </div>
+          <div>
+            <h4 style="margin: 0.5rem 0; font-size: 0.875rem;">Stretch (Full Width)</h4>
+            <nr-tabs
+              .tabs=${args.tabs}
+              .activeTab=${args.activeTab}
+              orientation=${TabOrientation.Horizontal}
+              align=${TabsAlign.Stretch}
+            ></nr-tabs>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Stretch with Different Tab Counts</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <h4 style="margin: 0.5rem 0; font-size: 0.875rem;">2 Tabs (50% each)</h4>
+            <nr-tabs
+              .tabs=${[
+                { id: '0', label: 'Tab One', content: 'First tab content...' },
+                { id: '1', label: 'Tab Two', content: 'Second tab content...' }
+              ]}
+              .activeTab=${0}
+              orientation=${TabOrientation.Horizontal}
+              align=${TabsAlign.Stretch}
+            ></nr-tabs>
+          </div>
+          <div>
+            <h4 style="margin: 0.5rem 0; font-size: 0.875rem;">6 Tabs (~16.67% each)</h4>
+            <nr-tabs
+              .tabs=${[
+                { id: '0', label: 'One', content: 'Content 1' },
+                { id: '1', label: 'Two', content: 'Content 2' },
+                { id: '2', label: 'Three', content: 'Content 3' },
+                { id: '3', label: 'Four', content: 'Content 4' },
+                { id: '4', label: 'Five', content: 'Content 5' },
+                { id: '5', label: 'Six', content: 'Content 6' }
+              ]}
+              .activeTab=${0}
+              orientation=${TabOrientation.Horizontal}
+              align=${TabsAlign.Stretch}
+            ></nr-tabs>
+          </div>
+        </div>
       </div>
     </div>
   `,

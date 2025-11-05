@@ -118,7 +118,7 @@ export const SELECT_ARIA = {
 // Default values
 export const SELECT_DEFAULTS = {
   PLACEHOLDER: 'Select an option',
-  MAX_HEIGHT: '200px',
+  MAX_HEIGHT: 'auto',
   DROPDOWN_OFFSET: 4,
   TAG_MAX_WIDTH: '150px',
   TRANSITION_DURATION: 200,

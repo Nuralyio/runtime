@@ -350,7 +350,7 @@ export const styles = css`
     box-shadow: var(--nuraly-dropdown-shadow, 0 2px 6px rgba(0, 0, 0, 0.15));
     min-width: var(--nuraly-dropdown-min-width, 10rem);
     max-width: var(--nuraly-dropdown-max-width, 20rem);
-    max-height: var(--nuraly-dropdown-max-height, 200px);
+    max-height: var(--nuraly-dropdown-max-height, auto);
     overflow: auto;
     box-sizing: border-box;
     animation: fadeInSubmenu 0.15s ease;

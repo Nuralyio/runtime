@@ -11,7 +11,7 @@
 
   /* Tabs header/container colors */
   --nuraly-color-tabs-header-background: #ffffff;
-  --nuraly-border-tabs-header: 1px solid #e5e7eb;
+  --nuraly-border-tabs-header: none;
 
   /* Tab label default state */
   --nuraly-color-tabs-label-background: #f9fafb;
@@ -26,7 +26,7 @@
   /* Tab label active/selected state */
   --nuraly-color-tabs-label-background-active: #ffffff;
   --nuraly-color-tabs-label-text-active: #3b82f6;
-  --nuraly-color-tabs-label-border-active: #3b82f6;
+  --nuraly-color-tabs-label-border-active: #d8e7ff;
 
   /* Tab content area */
   --nuraly-color-tabs-content-background: #ffffff;

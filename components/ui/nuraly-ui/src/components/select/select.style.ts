@@ -14,7 +14,7 @@ export const styles = css`
     
     /* Dropdown settings */
     --nuraly-select-local-dropdown-z-index: 9999;
-    --nuraly-select-local-dropdown-max-height: 200px;
+    --nuraly-select-local-dropdown-max-height: auto;
   --nuraly-select-local-dropdown-width: max-content; /* Default to auto-size to content */
     --nuraly-select-local-placeholder-font-size: 14px;
     --nuraly-select-local-option-font-size: 14px;
@@ -275,7 +275,7 @@ export const styles = css`
     border-radius: var(--nuraly-select-dropdown-border-radius, var(--nuraly-select-border-radius, 6px));
     box-shadow: var(--nuraly-select-dropdown-shadow, 0 6px 16px 0 rgba(0, 0, 0, 0.08));
     z-index: var(--nuraly-select-dropdown-z-index, 9999);
-    max-height: var(--nuraly-select-dropdown-max-height, 200px);
+    max-height: var(--nuraly-select-dropdown-max-height, var(--nuraly-select-local-dropdown-max-height, auto));
     overflow-y: auto;
     overflow-x: hidden;
     display: none;
