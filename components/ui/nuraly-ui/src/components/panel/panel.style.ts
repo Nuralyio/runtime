@@ -18,15 +18,21 @@ export const styles = css`
     --nuraly-panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     --nuraly-panel-header-background: var(--nuraly-color-surface-variant, #f5f5f5);
     --nuraly-panel-header-text-color: var(--nuraly-color-text-primary, #1a1a1a);
+    --nuraly-panel-header-border-color: var(--nuraly-color-border, #e0e0e0);
+    --nuraly-panel-header-border-width: 1px;
+    --nuraly-panel-header-border-style: solid;
     
     /* Spacing */
     --nuraly-panel-padding: var(--nuraly-spacing-04, 1rem);
     --nuraly-panel-header-padding: var(--nuraly-spacing-03, 0.75rem) var(--nuraly-spacing-04, 1rem);
     
+    /* Border Radius */
+    --nuraly-panel-border-radius: var(--nuraly-border-radius-medium, 8px);
+    
     /* Typography */
     --nuraly-panel-font-family: var(--nuraly-font-family, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif);
     --nuraly-panel-header-font-size: var(--nuraly-font-size-lg, 1.125rem);
-    --nuraly-panel-header-font-weight: var(--nuraly-font-weight-semibold, 600);
+    --nuraly-panel-header-font-weight: var(--nuraly-font-weight-semibold, 400);
     
     /* Transitions */
     --nuraly-panel-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -55,7 +61,7 @@ export const styles = css`
     position: relative;
     background: var(--nuraly-panel-background);
     border: 1px solid var(--nuraly-panel-border-color);
-    border-radius: 8px;
+    border-radius: var(--nuraly-panel-border-radius);
     box-shadow: var(--nuraly-panel-shadow);
     display: flex;
     flex-direction: column;
@@ -94,7 +100,7 @@ export const styles = css`
     top: 0;
     bottom: 0;
     height: 100vh;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 var(--nuraly-panel-border-radius) var(--nuraly-panel-border-radius) 0;
   }
 
   .panel--mode-panel.panel--position-right {
@@ -102,7 +108,7 @@ export const styles = css`
     top: 0;
     bottom: 0;
     height: 100vh;
-    border-radius: 8px 0 0 8px;
+    border-radius: var(--nuraly-panel-border-radius) 0 0 var(--nuraly-panel-border-radius);
   }
 
   .panel--mode-panel.panel--position-top {
@@ -110,7 +116,7 @@ export const styles = css`
     right: 0;
     top: 0;
     width: 100%;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--nuraly-panel-border-radius) var(--nuraly-panel-border-radius);
   }
 
   .panel--mode-panel.panel--position-bottom {
@@ -118,7 +124,7 @@ export const styles = css`
     right: 0;
     bottom: 0;
     width: 100%;
-    border-radius: 8px 8px 0 0;
+    border-radius: var(--nuraly-panel-border-radius) var(--nuraly-panel-border-radius) 0 0;
   }
 
   /* Window Mode - Floating, draggable */
@@ -173,16 +179,22 @@ export const styles = css`
   .panel--size-small {
     width: var(--nuraly-panel-small-width);
     height: var(--nuraly-panel-small-height);
+    
+    --nuraly-panel-border-radius: var(--nuraly-border-radius-small, 4px);
   }
 
   .panel--size-medium {
     width: var(--nuraly-panel-medium-width);
     height: var(--nuraly-panel-medium-height);
+    
+    --nuraly-panel-action-button-border-radius: var(--nuraly-border-radius-medium, 4px);
   }
 
   .panel--size-large {
     width: var(--nuraly-panel-large-width);
     height: var(--nuraly-panel-large-height);
+    
+    --nuraly-panel-action-button-border-radius: var(--nuraly-border-radius-large, 6px);
   }
 
   /* ========================================
@@ -192,7 +204,7 @@ export const styles = css`
   .panel-header {
     padding: var(--nuraly-panel-header-padding);
     background: var(--nuraly-panel-header-background);
-    border-bottom: 1px solid var(--nuraly-panel-border-color);
+    border-bottom: var(--nuraly-panel-header-border-width) var(--nuraly-panel-header-border-style) var(--nuraly-panel-header-border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -241,6 +253,10 @@ export const styles = css`
     padding: 0.125rem;
   }
 
+  .panel--size-small {
+    --nuraly-label-font-weight: 400;
+  }
+
   .panel--size-medium .panel-title {
     font-size: 1rem;
   }
@@ -272,7 +288,7 @@ export const styles = css`
     border: none;
     padding: var(--nuraly-spacing-01, 0.25rem);
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: var(--nuraly-panel-action-button-border-radius);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -304,27 +320,27 @@ export const styles = css`
 
   /* Size-specific body and header padding */
   .panel--size-small .panel-header {
-    padding: 0.5rem 0.75rem;
+    padding: var(--nuraly-panel-header-padding-small, 0.5rem 0.75rem);
   }
 
   .panel--size-small .panel-body {
-    padding: 0.75rem;
+    padding: var(--nuraly-panel-body-padding-small, 0.75rem);
   }
 
   .panel--size-medium .panel-header {
-    padding: 0.625rem 1rem;
+    padding: var(--nuraly-panel-header-padding-medium, 0.625rem 1rem);
   }
 
   .panel--size-medium .panel-body {
-    padding: 1rem;
+    padding: var(--nuraly-panel-body-padding-medium, 1rem);
   }
 
   .panel--size-large .panel-header {
-    padding: 0.875rem 1.25rem;
+    padding: var(--nuraly-panel-header-padding-large, 0.875rem 1.25rem);
   }
 
   .panel--size-large .panel-body {
-    padding: 1.5rem;
+    padding: var(--nuraly-panel-body-padding-large, 1.5rem);
   }
 
   /* ========================================
@@ -332,9 +348,9 @@ export const styles = css`
    * ======================================== */
 
   .panel-footer {
-    padding: var(--nuraly-panel-padding);
-    border-top: 1px solid var(--nuraly-panel-border-color);
-    background: var(--nuraly-panel-header-background);
+    padding: var(--nuraly-panel-footer-padding, var(--nuraly-panel-padding));
+    border-top: var(--nuraly-panel-footer-border-width, 1px) var(--nuraly-panel-footer-border-style, solid) var(--nuraly-panel-footer-border-color, var(--nuraly-panel-border-color));
+    background: var(--nuraly-panel-footer-background, var(--nuraly-panel-header-background));
     flex-shrink: 0;
   }
 
@@ -456,6 +472,7 @@ export const styles = css`
     --nuraly-panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     --nuraly-panel-header-background: var(--nuraly-color-surface-variant-dark, #252525);
     --nuraly-panel-header-text-color: var(--nuraly-color-text-primary-dark, #e0e0e0);
+    --nuraly-panel-header-border-color: var(--nuraly-color-border-dark, #333);
   }
 
   /* ========================================

@@ -10,56 +10,56 @@ export default css`
   }
 
   label {
-    font-family: var(--nuraly-label-local-font-family);
-    font-size: var(--nuraly-label-local-font-size);
-    font-weight: var(--nuraly-label-local-font-weight);
-    line-height: var(--nuraly-label-local-line-height);
-    color: var(--nuraly-label-local-text-color);
+    font-family: var(--nuraly-label-font-family);
+    font-size: var(--nuraly-label-font-size);
+    font-weight: var(--nuraly-label-font-weight);
+    line-height: var(--nuraly-label-line-height);
+    color: var(--nuraly-label-text-color);
     margin: 0;
-    margin-bottom: var(--nuraly-label-local-margin-bottom);
+    margin-bottom: var(--nuraly-label-margin-bottom);
     display: block;
     user-select: none;
     cursor: pointer;
-    transition: color var(--nuraly-label-local-transition-duration) var(--nuraly-label-local-transition-timing);
+    transition: color var(--nuraly-label-transition-duration) var(--nuraly-label-transition-timing);
   }
 
   /* Size variants */
   :host([size="small"]) label {
-    font-size: var(--nuraly-label-local-small-font-size);
+    font-size: var(--nuraly-label-small-font-size);
   }
 
   :host([size="large"]) label {
-    font-size: var(--nuraly-label-local-large-font-size);
+    font-size: var(--nuraly-label-large-font-size);
   }
 
   /* Variant colors */
   :host([variant="secondary"]) label {
-    color: var(--nuraly-label-local-secondary-color);
+    color: var(--nuraly-label-secondary-color);
   }
 
   :host([variant="error"]) label {
-    color: var(--nuraly-label-local-error-color);
+    color: var(--nuraly-label-error-color);
   }
 
   :host([variant="warning"]) label {
-    color: var(--nuraly-label-local-warning-color);
+    color: var(--nuraly-label-warning-color);
   }
 
   :host([variant="success"]) label {
-    color: var(--nuraly-label-local-success-color);
+    color: var(--nuraly-label-success-color);
   }
 
   /* Disabled state */
   :host([disabled]) label {
-    color: var(--nuraly-label-local-disabled-color);
+    color: var(--nuraly-label-disabled-color);
     cursor: not-allowed;
     opacity: 0.6;
   }
 
   /* Required asterisk */
   .required-asterisk {
-    color: var(--nuraly-label-local-required-color);
-    margin-left: var(--nuraly-label-local-required-margin);
+    color: var(--nuraly-label-required-color);
+    margin-left: var(--nuraly-label-required-margin);
     font-weight: normal;
   }
 

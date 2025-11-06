@@ -18,8 +18,9 @@ import {
 import { styles } from './panel.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
-// Import icon component
+// Import icon and label components
 import '../icon/index.js';
+import '../label/index.js';
 
 // Import controllers
 import {
@@ -81,7 +82,7 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   implements PanelDragHost, PanelResizeHost {
   static override styles = styles;
 
-  override requiredComponents = ['nr-icon'];
+  override requiredComponents = ['nr-icon', 'nr-label'];
 
   /** Panel mode (panel, window, minimized) */
   @property({ type: String })
@@ -117,7 +118,7 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
 
   /** Whether the panel can be closed */
   @property({ type: Boolean })
-  closable = true;
+  closable = false;
 
   /** Whether to enable smooth animations for position/mode changes */
   @property({ type: Boolean })
@@ -419,6 +420,22 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   }
 
   /**
+   * Get label size based on panel size
+   */
+  private getLabelSize(): 'small' | 'medium' | 'large' {
+    switch (this.size) {
+      case PanelSize.Small:
+        return 'small';
+      case PanelSize.Large:
+        return 'large';
+      case PanelSize.Medium:
+      case PanelSize.Custom:
+      default:
+        return 'medium';
+    }
+  }
+
+  /**
    * Get panel classes
    */
   private getPanelClasses() {
@@ -488,7 +505,11 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
               <nr-icon class="panel-header-icon" name="${this.icon}"></nr-icon>
             ` : nothing}
             ${this.title ? html`
-              <h2 class="panel-title">${this.title}</h2>
+              <nr-label 
+                class="panel-title" 
+                size="${this.getLabelSize()}"
+                style="--nuraly-label-font-weight: ${this.size === 'small' ? '400' : 'var(--nuraly-font-weight-medium, 500)'}"
+              >${this.title}</nr-label>
             ` : nothing}
           </div>
         `}
