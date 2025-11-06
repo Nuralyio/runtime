@@ -70,6 +70,7 @@ export class MenuBlock extends BaseElementBlock {
            })}
           placeholder="Select an option"
           size=${this.inputHandlersValue?.size ?? 'medium'}
+          arrowPosition=${this.inputHandlersValue?.arrowPosition ?? 'right'}
           .items=${this.inputHandlersValue?.options ?? []}
           @action-click=${this.onActionClick}
           @change="${(customEvent: CustomEvent) => {

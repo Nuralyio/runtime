@@ -38,8 +38,8 @@ export class ButtonBlock extends BaseElementBlock {
     return html`
             <nr-button
               ${ref(this.inputRef)}
-              .size=${this.inputHandlersValue?.size || nothing}
-              .type=${this.inputHandlersValue?.type || nothing}
+              size=${this.inputHandlersValue?.size || nothing}
+              type=${this.inputHandlersValue?.type || "default"}
               .shape=${this.inputHandlersValue?.shape || nothing}
               .disabled=${this.inputHandlersValue?.state == "disabled"}
               .loading=${this.inputHandlersValue?.loading || false}
@@ -70,7 +70,9 @@ export class ButtonBlock extends BaseElementBlock {
                 height: buttonStyles?.height,
                })}
             >
-              ${this.inputHandlersValue.label ?? "Button"}
+              ${this.inputHandlersValue.label  ?this.inputHandlersValue.label  :  this.inputHandlersValue.iconOnly ? "" :  "Button" 
+                
+        }
             </nr-button>
     `;
   }

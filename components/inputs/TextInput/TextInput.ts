@@ -97,22 +97,35 @@ export class TextInputBlock extends BaseElementBlock {
           .autocomplete=${this.inputHandlersValue?.autocomplete ?? 'off'}
           @nr-input=${(e) => {
             this._isUserFocused = true;
-            this.executeEvent('onChange', e);
+            this.executeEvent('onChange', e , 
+            {
+              value: e.detail.value,
+              oldValue: e.detail.oldValue
+            }
+            );
             this.resetFocusAfterInactivity();
           }}
           @nr-focus=${(e) => {
             this._isUserFocused = true;
-            this.executeEvent('onFocus', e);
+            this.executeEvent('onFocus', e, {
+              value: e.detail.value
+            });
           }}
           @nr-blur=${(e) => {
             this._isUserFocused = false;
-            this.executeEvent('onBlur', e);
+            this.executeEvent('onBlur', e, {
+              value: e.detail.value
+            });
           }}
           @nr-enter=${(e) => {
-            this.executeEvent('onEnter', e);
+            this.executeEvent('onEnter', e, {
+              value: e.detail.value
+            });
           }}
           @nr-clear=${(e) => {
-            this.executeEvent('onClear', e);
+            this.executeEvent('onClear', e, {
+              value: e.detail.value
+            });
           }}
           @keydown=${(e) => {
             if (e.key === "ArrowUp") {
