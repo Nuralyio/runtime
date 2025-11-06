@@ -13,6 +13,7 @@ export default {
     display: "grid",
     "--nuraly-tabs-content-padding": "0px",
     "--nuraly-border-width-tabs-content-top": "0px",
+    "--nuraly-spacing-tabs-content-padding-small": "0px"
   },
   input: {
     size: {

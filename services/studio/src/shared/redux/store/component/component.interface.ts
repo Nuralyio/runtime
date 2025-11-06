@@ -47,6 +47,7 @@ export const enum ComponentType {
   Alert = "Alert",
   Modal = "Modal",
   Toast = "Toast",
+  Panel = "Panel",
 }
 
 export interface DraggingComponentInfo {
