@@ -9,7 +9,7 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styles } from './menu.style.js';
-import { IMenu, IAction, MenuSize } from './menu.types.js';
+import { IMenu, IAction, MenuSize, IconPosition } from './menu.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { StateController, KeyboardController, AccessibilityController } from './controllers/index.js';
 
@@ -19,6 +19,7 @@ import { StateController, KeyboardController, AccessibilityController } from './
  * @example
  * ```html
  * <nr-menu .items=${menuItems}></nr-menu>
+ * <nr-menu .items=${menuItems} arrowPosition="left"></nr-menu>
  * ```
  * 
  * @fires change - Menu item selected
@@ -39,6 +40,10 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
   /** Menu size variant (small, medium, large) */
   @property({ type: String })
   size: MenuSize | string = MenuSize.Medium;
+
+  /** Default arrow icon position for submenus (left or right) */
+  @property({ type: String })
+  arrowPosition: IconPosition | string = IconPosition.Right;
 
   // Controllers
   private stateController: StateController;
@@ -247,9 +252,13 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
     const isHighlighted = this.stateController.isSubMenuHighlighted(path);
     const isSelected = menu.selected;
     
+    // Determine icon position - use individual menu item setting or fall back to global setting
+    const iconPosition = menu.iconPosition || this.arrowPosition;
+    const isLeftPosition = iconPosition === IconPosition.Left || iconPosition === 'left';
+    
     return html`
       <ul 
-        class="sub-menu ${isHighlighted ? 'highlighted' : ''} ${menu.disabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}"
+        class="sub-menu ${isHighlighted ? 'highlighted' : ''} ${menu.disabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''} ${isLeftPosition ? 'arrow-left' : 'arrow-right'}"
         data-path=${pathKey}
         tabindex="0"
         @mouseenter=${() => this._handleSubMenuMouseEnter(path)}
@@ -269,6 +278,14 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
           class="sub-menu-header"
           @mousedown=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}
           @click=${!menu.disabled ? (e: Event) => this._handleSubMenuClick(path, menu.text, e) : nothing}>
+          ${isLeftPosition && menu.children && menu.children.length ? html`
+            <nr-icon 
+              id="toggle-icon" 
+              name="${isOpen ? 'ChevronDown' : 'ChevronRight'}" 
+              @mousedown=${!menu.disabled ? (e: Event) => this._toggleSubMenu(path, e) : nothing}
+              size="small">
+            </nr-icon>
+          ` : nothing}
           ${menu.icon ? html`<nr-icon class="text-icon" name="${menu.icon}" size="small"></nr-icon>` : nothing}
           <span>${menu.text}</span>
           <div class="icons-container">
@@ -284,10 +301,10 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
                 <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger" size="small"></nr-icon>
               </nr-dropdown>
             ` : nothing}
-            ${menu.children && menu.children.length ? html`
+            ${!isLeftPosition && menu.children && menu.children.length ? html`
               <nr-icon 
                 id="toggle-icon" 
-                name="${isOpen ? 'angle-up' : 'angle-down'}" 
+                name="${isOpen ? 'ChevronDown' : 'ChevronRight'}" 
                 @mousedown=${!menu.disabled ? (e: Event) => this._toggleSubMenu(path, e) : nothing}
                 size="small">
               </nr-icon>

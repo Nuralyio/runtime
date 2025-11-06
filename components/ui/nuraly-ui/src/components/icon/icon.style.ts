@@ -29,27 +29,49 @@ const iconStyle = css`
     vertical-align: baseline;
     position: relative;
     font-family: var(--nuraly-font-family-icon, 'IBM Plex Sans', ui-sans-serif, system-ui);
+    /* Ensure currentColor has a sensible default for Lucide stroke inheritance */
+    color: var(--nuraly-color-icon, var(--nuraly-color-icon-fallback, #161616));
+  }
+
+  /* Icon container that holds the dynamically created SVG */
+  .icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 
   /* 
-   * Base SVG icon styles
-   * Uses theme CSS custom properties for comprehensive theming support
+   * Base SVG icon styles - targets the SVG element created by Lucide's createElement
+   * Uses stroke-based rendering for Lucide icons
    */
   .svg-icon {
-    /* Basic properties with theme support */
-    fill: var(--nuraly-color-icon, var(--nuraly-color-icon-fallback, #161616));
+    stroke: currentColor;
+    fill: none;
     width: var(--nuraly-icon-size, var(--nuraly-icon-size-fallback, 18px));
     height: var(--nuraly-icon-size, var(--nuraly-icon-size-fallback, 18px));
     min-width: var(--nuraly-icon-min-size, var(--nuraly-icon-min-size-fallback, 16px));
     min-height: var(--nuraly-icon-min-size, var(--nuraly-icon-min-size-fallback, 16px));
     
     /* Transition and display properties */
-    transition: var(--nuraly-icon-transition, var(--nuraly-icon-transition-fallback, opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease));
+    transition: var(--nuraly-icon-transition, var(--nuraly-icon-transition-fallback, opacity 0.2s ease, transform 0.2s ease, stroke 0.2s ease));
     display: block;
     flex-shrink: 0;
     
     /* Cursor handling */
     cursor: var(--nuraly-cursor-default, default);
+  }
+
+  /* Ensure all SVG primitives inherit stroke and have no fill */
+  .svg-icon path,
+  .svg-icon line,
+  .svg-icon polyline,
+  .svg-icon polygon,
+  .svg-icon circle,
+  .svg-icon rect,
+  .svg-icon ellipse {
+    stroke: currentColor;
+    fill: none;
   }
 
   /* ========================================
@@ -63,13 +85,15 @@ const iconStyle = css`
   .svg-icon.clickable:hover {
     opacity: var(--nuraly-icon-hover-opacity, var(--nuraly-icon-hover-opacity-fallback, 0.8));
     transform: var(--nuraly-icon-hover-transform, var(--nuraly-icon-hover-transform-fallback, scale(1.05)));
-    fill: var(--nuraly-color-icon-hover, var(--nuraly-color-icon-hover-fallback, #0f62fe));
+    stroke: var(--nuraly-color-icon-hover, var(--nuraly-color-icon-hover-fallback, #0f62fe));
+    color: var(--nuraly-color-icon-hover, var(--nuraly-color-icon-hover-fallback, #0f62fe));
   }
 
   .svg-icon.clickable:active {
     opacity: var(--nuraly-icon-active-opacity, var(--nuraly-icon-active-opacity-fallback, 0.6));
     transform: var(--nuraly-icon-active-transform, var(--nuraly-icon-active-transform-fallback, scale(0.95)));
-    fill: var(--nuraly-color-icon-active, var(--nuraly-color-icon-active-fallback, #054ada));
+    stroke: var(--nuraly-color-icon-active, var(--nuraly-color-icon-active-fallback, #054ada));
+    color: var(--nuraly-color-icon-active, var(--nuraly-color-icon-active-fallback, #054ada));
   }
 
   .svg-icon.clickable:focus {
@@ -86,14 +110,16 @@ const iconStyle = css`
   
   .svg-icon.disabled {
     opacity: var(--nuraly-icon-disabled-opacity, var(--nuraly-icon-disabled-opacity-fallback, 0.25));
-    fill: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
+    stroke: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
+    color: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
     cursor: var(--nuraly-cursor-disabled, not-allowed);
   }
 
   .svg-icon.clickable.disabled:hover,
   .svg-icon.clickable.disabled:active {
     opacity: var(--nuraly-icon-disabled-opacity, var(--nuraly-icon-disabled-opacity-fallback, 0.25));
-    fill: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
+    stroke: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
+    color: var(--nuraly-color-icon-disabled, var(--nuraly-color-icon-disabled-fallback, #c6c6c6));
     transform: none;
   }
 
@@ -123,7 +149,8 @@ const iconStyle = css`
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     .svg-icon {
-      fill: CanvasText;
+      stroke: CanvasText;
+      color: CanvasText;
     }
     
     .svg-icon.disabled {

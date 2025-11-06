@@ -77,10 +77,21 @@ const meta: Meta = {
         defaultValue: { summary: 'medium' },
       },
     },
+    arrowPosition: {
+      control: { type: 'select' },
+      options: ['left', 'right'],
+      description: 'Default position for submenu arrow icons (can be overridden per item)',
+      table: {
+        category: 'Appearance',
+        type: { summary: 'string' },
+        defaultValue: { summary: 'right' },
+      },
+    },
   },
   args: {
     items: [],
     size: 'medium',
+    arrowPosition: 'right',
   },
 };
 
@@ -691,6 +702,104 @@ export const SizeComparison: Story = {
         <h4 style="margin-top: 0; margin-bottom: 16px;">Large</h4>
         <div style="width: 250px;">
           <nr-menu .items=${args.items} size="large"></nr-menu>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
+// Sample menu data for arrow positioning examples
+const menuWithLeftArrows: IMenu[] = [
+  { text: 'Dashboard', icon: 'dashboard', selected: true },
+  {
+    text: 'Products',
+    icon: 'shopping-bag',
+    iconPosition: 'left',
+    children: [
+      { text: 'All Products', link: '/products' },
+      {
+        text: 'Electronics',
+        iconPosition: 'left',
+        children: [
+          { text: 'Phones', link: '/products/electronics/phones' },
+          { text: 'Laptops', link: '/products/electronics/laptops' },
+        ],
+      },
+      { text: 'Clothing', iconPosition: 'left', children: [
+        { text: 'Men', link: '/products/clothing/men' },
+        { text: 'Women', link: '/products/clothing/women' },
+      ]},
+    ],
+  },
+  {
+    text: 'Orders',
+    icon: 'shopping-cart',
+    iconPosition: 'left',
+    children: [
+      { text: 'All Orders', link: '/orders' },
+      { text: 'Pending', link: '/orders/pending' },
+    ],
+  },
+];
+
+const menuWithRightArrows: IMenu[] = [
+  { text: 'Dashboard', icon: 'dashboard', selected: true },
+  {
+    text: 'Products',
+    icon: 'shopping-bag',
+    iconPosition: 'right',
+    children: [
+      { text: 'All Products', link: '/products' },
+      {
+        text: 'Electronics',
+        iconPosition: 'right',
+        children: [
+          { text: 'Phones', link: '/products/electronics/phones' },
+          { text: 'Laptops', link: '/products/electronics/laptops' },
+        ],
+      },
+      { text: 'Clothing', iconPosition: 'right', children: [
+        { text: 'Men', link: '/products/clothing/men' },
+        { text: 'Women', link: '/products/clothing/women' },
+      ]},
+    ],
+  },
+  {
+    text: 'Orders',
+    icon: 'shopping-cart',
+    iconPosition: 'right',
+    children: [
+      { text: 'All Orders', link: '/orders' },
+      { text: 'Pending', link: '/orders/pending' },
+    ],
+  },
+];
+
+/**
+ * Arrow positioning - demonstrates left and right arrow positions for submenus
+ */
+export const ArrowPositioning: Story = {
+  args: {
+    items: menuWithLeftArrows,
+  },
+  render: (args) => html`
+    <div style="display: flex; gap: 24px;">
+      <div>
+        <h4 style="margin-top: 0; margin-bottom: 16px;">Global Left Arrows</h4>
+        <div style="width: 250px;">
+          <nr-menu .items=${menuWithLeftArrows} arrowPosition="left"></nr-menu>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-top: 0; margin-bottom: 16px;">Global Right Arrows (Default)</h4>
+        <div style="width: 250px;">
+          <nr-menu .items=${menuWithRightArrows} arrowPosition="right"></nr-menu>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-top: 0; margin-bottom: 16px;">Individual Item Positioning</h4>
+        <div style="width: 250px;">
+          <nr-menu .items=${menuWithLeftArrows}></nr-menu>
         </div>
       </div>
     </div>
