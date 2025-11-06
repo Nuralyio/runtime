@@ -11,7 +11,20 @@ export class DividerBlock extends BaseElementBlock {
   static styles = [
     css`
     :host { 
+        display: block;
         width: 100%;
+    }
+    
+    :host([data-type="vertical"]) {
+        display: inline-flex;
+        width: auto;
+        align-self: stretch; /* This makes it fill the parent's height in flexbox */
+    }
+    
+    :host([data-type="vertical"]) nr-divider {
+        height: 100%;
+        display: flex;
+        align-items: stretch;
     }
     `
   ];
@@ -25,6 +38,18 @@ export class DividerBlock extends BaseElementBlock {
     await super.connectedCallback();
     this.registerCallback("value", () => {
     });
+    // Set data-type attribute for CSS styling
+    this.updateHostAttribute();
+  }
+
+  override updated(changedProperties: Map<string, any>) {
+    super.updated(changedProperties);
+    this.updateHostAttribute();
+  }
+
+  private updateHostAttribute() {
+    const direction = this.inputHandlersValue?.direction ?? "horizontal";
+    this.setAttribute('data-type', direction);
   }
 
   override disconnectedCallback() {
@@ -36,6 +61,13 @@ export class DividerBlock extends BaseElementBlock {
     const dividerStyles = this.component?.style || {};
     const dividerAutoWidth = this.inputHandlersValue?.width;
     const dividerAutoHeight = this.inputHandlersValue?.height;
+    const isVertical = (this.inputHandlersValue?.direction ?? "horizontal") === "vertical";
+
+    // Filter out height from styles if it's a vertical divider to avoid conflicts
+    const filteredStyles = { ...dividerStyles };
+    if (isVertical && dividerAutoHeight) {
+      delete filteredStyles.height;
+    }
 
     return html`
     ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show" ?
@@ -43,11 +75,11 @@ export class DividerBlock extends BaseElementBlock {
       <nr-divider
         ${ref(this.inputRef)}
         style=${styleMap({
-          ...dividerStyles,
+          ...filteredStyles,
           width: dividerAutoWidth ? "100%" : dividerStyles.width,
-          height: dividerAutoHeight ? "auto" : dividerStyles.height
+          height: !isVertical && dividerAutoHeight ? "auto" : filteredStyles.height
         })}
-        .type=${this.inputHandlersValue?.orientation === "vertical" ? "vertical" : "horizontal"}
+        type=${this.inputHandlersValue?.direction ?? "horizontal"}
         .variant=${this.inputHandlersValue?.variant || 'solid'}
         .orientation=${this.inputHandlersValue?.textOrientation || 'center'}
         .orientationMargin=${this.inputHandlersValue?.orientationMargin ?? nothing}

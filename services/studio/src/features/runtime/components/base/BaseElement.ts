@@ -238,11 +238,6 @@ export class BaseElementBlock extends LitElement {
    * @returns {Promise<void>}
    */
   async traitInputsHandlers() {
-    console.log('[BaseElement] traitInputsHandlers called for:', this.component?.name, {
-      inputs: this.component?.input,
-      inputHandlers: this.component?.inputHandlers
-    });
-    
     this.errors = {};
     const inputs = Editor.getComponentBreakpointInputs(this.component);
     
@@ -298,20 +293,7 @@ export class BaseElementBlock extends LitElement {
       const prev = changedProperties.get("component");
       const curr = this.component;
 
-      console.log('[BaseElement] Component update detected:', {
-        componentName: curr?.name,
-        componentType: curr?.component_type,
-        prevUUID: prev?.uuid,
-        currUUID: curr?.uuid,
-        uuidChanged: prev?.uuid !== curr?.uuid,
-        prevInput: prev?.input,
-        currInput: curr?.input,
-        inputChanged: JSON.stringify(prev?.input) !== JSON.stringify(curr?.input),
-        prevStyle: prev?.style,
-        currStyle: curr?.style,
-        styleChanged: JSON.stringify(prev?.style) !== JSON.stringify(curr?.style)
-      });
-
+     
       if (prev?.event?.onInit !== curr?.event?.onInit) {
         executeCodeWithClosure(curr, getNestedAttribute(curr, "event.onInit"), {}, this.item);
       }
@@ -319,15 +301,11 @@ export class BaseElementBlock extends LitElement {
       this.component.parent = this.parentcomponent;
 
       if (prev?.uuid !== curr?.uuid) {
-        console.log('[BaseElement] UUID changed, re-processing handlers');
         this.traitInputsHandlers();
         this.traitStylesHandlers();
       } else {
         // Re-process handlers even if UUID hasn't changed
         // This ensures property updates in the studio are reflected
-        console.log('[BaseElement] UUID same, but re-processing handlers for property updates');
-        this.traitInputsHandlers();
-        this.traitStylesHandlers();
       }
     });
   }

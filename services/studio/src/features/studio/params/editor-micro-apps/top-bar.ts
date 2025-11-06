@@ -23,12 +23,12 @@ export default [{
   application_id: "1",
   component_type: ComponentType.Container,
   style: {
-    width: "50vw",
+    width: "60vw",
     display: "flex",
     "justify-content": "space-between",
     "margin-top": "-1px",
   },
-  childrenIds: ["app_details_top_bar", "app-page-top-bar"]
+  childrenIds: ["app_details_top_bar", "mode_topbar"]
 },
 {
   uuid: "app_details_top_bar",
@@ -39,13 +39,14 @@ export default [{
     "align-items": "center",
     "gap": "5px",
   },
-  childrenIds: ["app_logo2", "app_back_top_bar", "app_name_top_baré", "prototype_ai_top_bar3", "app_insert_top_bar", "app_edit_top_bar"]
+  childrenIds: ["app_logo2", "app_back_top_bar", "app_name_top_bar_backed", "website-name"]
 },
 {
   uuid: "app_insert_top_bar",
   name: "app insert top bar",
   application_id: "1",
   style: {
+        "height": "24px"
   },
   component_type: ComponentType.InsertDropdown,
   input: {
@@ -58,12 +59,16 @@ export default [{
     buttonIcon: {
       type: "handler",
       value: /* js */`
-            return 'plus';
+            return 'component';
             `
     },
     title: {
       type: "string",
-      value: "Insert"
+      value: ""
+    },
+    icon: {
+      type: "string",
+      value: "package"
     },
     options: {
       type: "handler",
@@ -103,10 +108,8 @@ export default [{
   name: "app edit top bar",
   application_id: "1",
   style: {
-    "--text-label-color": "#515151",
-    "title-color": "white",
-    "padding-left": "12px",
-    "padding-right": "12px",
+      "height": "24px",
+      "margin-left": "5px",
   },
   component_type: ComponentType.InsertDropdown,
   input: {
@@ -116,15 +119,13 @@ export default [{
             return ' Add Component';
             `
     },
-    buttonIcon: {
-      type: "handler",
-      value: /* js */`
-            return 'plus';
-            `
+    icon:{
+      type: "string",
+      value: "pencil"
     },
     title: {
       type: "string",
-      value: "Edit"
+      value: ""
     },
     options: {
       type: "handler",
@@ -303,11 +304,11 @@ export default [{
 
   component_type: ComponentType.Container,
   style: {
-    width: "50vw",
+    width: "40vw",
     "justify-content": "flex-end",
         "align-items": "center",
   },
-  childrenIds: ["mode_topbar", "platform_top_bar", "zoom_top_bar", "prev_next_top_bar", "app_users_top_bar2", "app_preview_publish_top_bar", "app_logout_top_bar"]
+  childrenIds: [ "platform_top_bar",  "vdivider","app_logout_top_bar"]
 },
 {
   uuid: "zoom_top_bar",
@@ -328,7 +329,8 @@ export default [{
     "width": "90px"
   },
   event: {
-    valueChange: /* js */`
+    onChange: /* js */`
+      // alert('Zoom set to ' + EventData.value + '%');
         Vars.EditorZoom = EventData.value;
         `
   },
@@ -369,9 +371,30 @@ export default [{
   component_type: ComponentType.Container,
   style: {
     "margin-right": "14px",
+    "align-items": "center",
   },
-  childrenIds: ["edit_mode", "preview_mode"]
+  childrenIds: ["app_insert_top_bar",  "app_edit_top_bar", "vdivider",  "prev_next_top_bar" , "vdivider",  "zoom_top_bar",  "vdivider",  "edit_mode", "preview_mode"]
 
+},
+
+{
+  uuid: "website-name" ,
+  name: "website-name",
+  application_id: "1",
+  
+  component_type: ComponentType.TextLabel,
+  input: {
+    value: {
+      type: "string",
+      value: "Studio"
+    }
+  },
+  style:{
+    "font-family": '"Titillium Web", sans-serif',
+     "font-weight": "600",
+     "--nuraly-label-local-font-size": "15px",
+     "margin-left": "8px"
+  }
 },
 {
   uuid: "edit_mode",
@@ -482,15 +505,15 @@ export default [{
         
         const options = [
           {
-            icon: "display",
+            icon: "monitor-dot",
             value: "desktop"
           },
           {
-            icon: "tablet",
+            icon: "tablet-smartphone",
             value: "tablet"
           },
           {
-            icon: "mobile",
+            icon: "smartphone",
             value: "mobile"
           }
         ];
@@ -502,7 +525,7 @@ export default [{
     }
   },
   event: {
-    changed: /* js */`
+    onChange: /* js */`
       const platform = EventData.value;
       
       if (platform === "desktop") {
@@ -535,11 +558,119 @@ export default [{
 
   component_type: ComponentType.Container,
   style: {
-   
-
+    "gap": "4px",
   },
-  childrenIds: ["next_button", "previous_button"]
+  childrenIds: ["previous_button", "next_button"]
 
+},
+{
+  uuid: "previous_button",
+  name: "previous button",
+  application_id: "1",
+
+  component_type: ComponentType.Button,
+  input: {
+    iconOnly: {
+      type: "boolean",
+      value: true
+    },
+    size: {
+      type: "string",
+      value: "small"
+    },
+  
+    icon: {
+      type: "string",
+      value: "corner-up-left"
+    },
+    disabled: {
+      type: "handler",
+      value: /* js */`
+            const history = GetVar("editorHistory") || [];
+            const currentIndex = GetVar("editorHistoryIndex") || 0;
+            return currentIndex <= 0;
+            `
+    }
+  },
+  style:{
+    "--nuraly-button-min-width" : "47px",
+  },
+  event: {
+    onClick: /* js */`
+      const history = GetVar("editorHistory") || [];
+      const currentIndex = GetVar("editorHistoryIndex") || 0;
+      
+      if (currentIndex > 0) {
+        const newIndex = currentIndex - 1;
+        SetVar("editorHistoryIndex", newIndex);
+        
+        // Apply the previous state
+        const previousState = history[newIndex];
+        if (previousState) {
+          // Restore the previous component state
+          // This would need to be implemented based on your state management
+          console.log("Going back to:", previousState);
+        }
+      }
+    `
+  }
+},
+{
+  uuid: "next_button",
+  name: "next button",
+  application_id: "1",
+
+  component_type: ComponentType.Button,
+  input: {
+    size: {
+      type: "string",
+      value: "small"
+    },
+    iconOnly : {
+      type: "boolean",
+      value: true
+    },
+    label: {
+      type: "handler",
+      value: /* js */`
+            return '';
+            `
+    },
+    icon: {
+      type: "string",
+      value: "corner-up-right"
+    },
+    disabled: {
+      type: "handler",
+      value: /* js */`
+            const history = GetVar("editorHistory") || [];
+            const currentIndex = GetVar("editorHistoryIndex") || 0;
+            return currentIndex >= history.length - 1;
+            `
+    }
+  },
+  style:{
+    "--nuraly-button-min-width" : "47px",
+  },
+  event: {
+    onClick: /* js */`
+      const history = GetVar("editorHistory") || [];
+      const currentIndex = GetVar("editorHistoryIndex") || 0;
+      
+      if (currentIndex < history.length - 1) {
+        const newIndex = currentIndex + 1;
+        SetVar("editorHistoryIndex", newIndex);
+        
+        // Apply the next state
+        const nextState = history[newIndex];
+        if (nextState) {
+          // Restore the next component state
+          // This would need to be implemented based on your state management
+          console.log("Going forward to:", nextState);
+        }
+      }
+    `
+  }
 },
 {
   uuid: "app_logout_top_bar",
@@ -548,6 +679,10 @@ export default [{
   name: "logout",
   component_type: ComponentType.Button,
   input: {
+    size:{
+      type : "string",
+      value :"small"
+    },
     label: {
       type: "handler",
       value: /* js */`
@@ -558,7 +693,7 @@ export default [{
     icon: {
       type: "handler",
       value: /* js */`
-            const iconName = 'sign-out-alt'
+            const iconName = 'log-out'
             return iconName;
             `
     }

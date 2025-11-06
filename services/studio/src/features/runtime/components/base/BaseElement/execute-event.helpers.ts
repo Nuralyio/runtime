@@ -18,13 +18,6 @@ export function handleComponentEvent({
   data?: any;
   onSelect?: (e: Event) => void;
 }) {
-  console.log('handleComponentEvent called:', { 
-    isViewMode, 
-    eventName, 
-    componentEvents: component.event,
-    hasEvent: !!component.event?.[eventName],
-    data 
-  });
 
   if (isViewMode) {
     const code = component.event?.[eventName];
@@ -37,7 +30,6 @@ export function handleComponentEvent({
         event
       };
       
-      console.log('EventData being passed:', EventData);
       
       executeCodeWithClosure(
         component,
@@ -46,7 +38,6 @@ export function handleComponentEvent({
         item
       );
     } else {
-      console.warn(`Event "${eventName}" not found in component.event`, component.event);
     }
     return;
   }
