@@ -1,0 +1,29 @@
+{
+  "name": "@nuralyui/panel",
+  "version": "1.0.0",
+  "description": "Panel component for NuralyUI - transformable panel/window with drag and resize",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "keywords": [
+    "panel",
+    "window",
+    "draggable",
+    "resizable",
+    "web-components",
+    "lit"
+  ],
+  "author": "Nuraly, Laabidi Aymen",
+  "license": "MIT",
+  "dependencies": {
+    "lit": "^3.0.0",
+    "@nuralyui/common": "workspace:*"
+  },
+  "peerDependencies": {
+    "@nuralyui/icon": "workspace:*"
+  }
+}
