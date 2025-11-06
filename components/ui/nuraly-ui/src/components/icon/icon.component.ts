@@ -7,14 +7,10 @@
 
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { library, dom } from '@fortawesome/fontawesome-svg-core';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-library.add(fas, far);
-dom.watch();
+import { icons, createElement } from 'lucide';
 
 import { styles } from './icon.style.js';
-import { IconTypes, regularIconPack, solidIconPack } from './icon.types.js';
+import { IconTypes } from './icon.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { ClickableMixin } from './mixins/index.js';
 
@@ -23,9 +19,9 @@ import { ClickableMixin } from './mixins/index.js';
  * 
  * @example
  * ```html
- * <nr-icon name="envelope"></nr-icon>
+ * <nr-icon name="mail"></nr-icon>
  * <nr-icon name="check" clickable @icon-click="${this.handleIconClick}"></nr-icon>
- * <nr-icon name="warning" type="regular" disabled></nr-icon>
+ * <nr-icon name="alert-triangle" type="regular" disabled></nr-icon>
  * <nr-icon name="star" color="#ffd700" size="large"></nr-icon>
  * ```
  * 
@@ -38,13 +34,13 @@ const IconBaseMixin = ClickableMixin(NuralyUIBaseMixin(LitElement));
 export class HyIconElement extends IconBaseMixin {
   static override readonly styles = styles;
 
-  /** The FontAwesome icon name */
+  /** The Lucide icon name */
   @property({type: String})
   name!: string;
 
   /** The icon type (solid or regular) */
   @property()
-  type = IconTypes.Solid;
+  type = IconTypes.Regular;
 
   /** Alternative text for accessibility */
   @property({type: String, attribute: 'alt'})
@@ -90,15 +86,10 @@ export class HyIconElement extends IconBaseMixin {
     }
   }
   override render() {
-    const iconPath = this.getIconPath();
-    const role = this.getIconRole();
-    const tabIndex = this.getIconTabIndex();
-    const ariaDisabled = this.getAriaDisabled();
-    
     // Build dynamic styles using CSS custom properties
     let dynamicStyles = '';
     if (this.color) {
-      dynamicStyles += `--nuraly-color-icon: ${this.color};`;
+      dynamicStyles += `color: ${this.color};`;
     }
     if (this.width) {
       dynamicStyles += `width: ${this.width};`;
@@ -107,63 +98,95 @@ export class HyIconElement extends IconBaseMixin {
       dynamicStyles += `height: ${this.height};`;
     }
     
-    // Build CSS classes
-    const cssClasses = [
-      'svg-icon',
-      this.clickable ? 'clickable' : '',
-      this.disabled ? 'disabled' : ''
-    ].filter(Boolean).join(' ');
-    
     return html`
-      <svg 
-        class="${cssClasses}"
+      <div 
+        id="icon-slot" 
+        class="icon-container ${this.clickable ? 'clickable' : ''} ${this.disabled ? 'disabled' : ''}"
         style="${dynamicStyles}"
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 550 550"
-        role="${role}"
-        tabindex="${tabIndex}"
-        aria-label="${this.alt || this.name}"
-        aria-disabled="${ariaDisabled || 'false'}"
         data-theme="${this.currentTheme}"
-        @click="${this.clickable ? this.handleIconClick : undefined}"
-        @keydown="${this.clickable ? this.handleIconKeydown : undefined}"
-      >
-        <path d="${iconPath}" />
-      </svg>
+      ></div>
     `;
   }
-  getIconPath() {
-    if (!this.name) {
-      console.warn('HyIconElement: Icon name is required');
-      return '';
+
+  /**
+   * Create and mount the Lucide SVG icon using createElement
+   */
+  private mountIcon() {
+    const slot = this.renderRoot?.querySelector('#icon-slot') as HTMLElement | null;
+    if (!slot) return;
+    
+    // Clear previous content
+    while (slot.firstChild) {
+      slot.removeChild(slot.firstChild);
     }
 
-    const iconPack = this.type == IconTypes.Solid ? solidIconPack : regularIconPack;
-    
+    if (!this.name) {
+      console.warn('HyIconElement: Icon name is required');
+      return;
+    }
+
     try {
-      const definitions = (library as any).definitions;
-      if (!definitions || !definitions[iconPack]) {
-        console.warn(`HyIconElement: Icon pack "${iconPack}" not found`);
-        return '';
+      // Convert kebab-case to PascalCase for Lucide icon names
+      const pascalCaseName = this.name
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+      
+      // Get the icon data from Lucide
+      const iconData = (icons as any)[pascalCaseName];
+      
+      if (!iconData) {
+        console.warn(`HyIconElement: Icon "${this.name}" (${pascalCaseName}) not found in Lucide icons`);
+        return;
       }
 
-      const iconDefinition = definitions[iconPack][this.name];
-      if (!iconDefinition) {
-        console.warn(`HyIconElement: Icon "${this.name}" not found in ${iconPack} pack`);
-        return '';
+      // Use Lucide's createElement to generate the SVG element
+      const svgClasses = [
+        'svg-icon',
+        this.clickable ? 'clickable' : '',
+        this.disabled ? 'disabled' : ''
+      ].filter(Boolean);
+
+      const svgElement = (createElement as any)(iconData, {
+        class: svgClasses,
+        'stroke-width': 2,
+      });
+
+      // Set accessibility attributes
+      svgElement.setAttribute('role', this.getIconRole());
+      svgElement.setAttribute('tabindex', this.getIconTabIndex());
+      svgElement.setAttribute('aria-label', this.alt || this.name);
+      if (this.disabled) {
+        svgElement.setAttribute('aria-disabled', 'true');
       }
 
-      // Validate that the path data exists
-      const pathData = iconDefinition[4];
-      if (!pathData || typeof pathData !== 'string') {
-        console.warn(`HyIconElement: Invalid path data for icon "${this.name}"`);
-        return '';
+      // Add event listeners for clickable icons
+      if (this.clickable) {
+        svgElement.addEventListener('click', (e: MouseEvent) => this.handleIconClick(e));
+        svgElement.addEventListener('keydown', (e: KeyboardEvent) => this.handleIconKeydown(e));
       }
 
-      return pathData;
+      // Append to slot
+      slot.appendChild(svgElement);
     } catch (error) {
       console.error(`HyIconElement: Error loading icon "${this.name}":`, error);
-      return '';
+    }
+  }
+
+  override firstUpdated(changedProperties: Map<string, any>): void {
+    super.firstUpdated?.(changedProperties);
+    this.mountIcon();
+  }
+
+  override updated(changedProperties: Map<string, any>): void {
+    super.updated?.(changedProperties);
+    
+    // Re-mount icon if any relevant property changed
+    if (changedProperties.has('name') || 
+        changedProperties.has('color') || 
+        changedProperties.has('clickable') || 
+        changedProperties.has('disabled')) {
+      this.mountIcon();
     }
   }
 

@@ -22,7 +22,7 @@ const menuStyle = css`
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 1px;
+    padding: var(--nuraly-menu-link-padding, 1px);
     color: var(--nuraly-menu-link-color);
     background-color: var(--nuraly-menu-link-background-color);
     border-left: 4px solid transparent;
@@ -30,9 +30,6 @@ const menuStyle = css`
     border-right: 2px solid transparent;
     border-bottom: 2px solid transparent;
     border-radius: var(--nuraly-menu-border-radius);
-    transition: background-color var(--nuraly-menu-transition-duration) var(--nuraly-menu-transition-timing),
-                color var(--nuraly-menu-transition-duration) var(--nuraly-menu-transition-timing),
-                border-color var(--nuraly-menu-transition-duration) var(--nuraly-menu-transition-timing);
     margin-bottom: 4px;
     gap: 8px;
   }
@@ -164,15 +161,12 @@ const menuStyle = css`
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding: 1px;
+    padding: var(--nuraly-sub-menu-header-padding, 1px);
     border-left: 4px solid transparent;
     border-top: 2px solid transparent;
     border-right: 2px solid transparent;
     border-bottom: 2px solid transparent;
     border-radius: var(--nuraly-menu-border-radius);
-    transition: background-color var(--nuraly-menu-transition-duration) var(--nuraly-menu-transition-timing),
-                color var(--nuraly-menu-transition-duration) var(--nuraly-menu-transition-timing),
-                border-color var(--nuraly-menu-transition-duration) var(--nuraly-menu-transition-timing);
     gap: 8px;
   }
 
@@ -315,29 +309,49 @@ const menuStyle = css`
     padding-left: var(--nuraly-sub-menu-nested-padding-left);
   }
 
+  /* Arrow positioning for left arrow */
+  .sub-menu.arrow-left .sub-menu-header {
+    padding-left: var(--nuraly-sub-menu-arrow-left-padding, 8px); /* Add space for left arrow */
+  }
+
+  .sub-menu.arrow-left .sub-menu-header #toggle-icon {
+    margin-right: 8px; /* Space between arrow and text */
+    order: -1; /* Place arrow at the beginning */
+  }
+
+  /* Arrow positioning for right arrow (default) */
+  .sub-menu.arrow-right .sub-menu-header #toggle-icon {
+    margin-left: 8px; /* Space between text and arrow */
+  }
+
+  /* Ensure proper spacing in the header */
+  .sub-menu.arrow-left .sub-menu-header span {
+    padding-left: 0; /* Remove left padding when arrow is on the left */
+  }
+
   /* Size Variants */
   .menu--small .menu-link {
-    padding: 1px;
+    padding: var(--nuraly-menu-link-padding-small, 1px);
   }
 
   .menu--small .sub-menu .sub-menu-header {
-    padding: 1px;
+    padding: var(--nuraly-sub-menu-header-padding-small, 1px);
   }
 
   .menu--medium .menu-link {
-    padding: 1px;
+    padding: var(--nuraly-menu-link-padding-medium, 1px);
   }
 
   .menu--medium .sub-menu .sub-menu-header {
-    padding: 1px;
+    padding: var(--nuraly-sub-menu-header-padding-medium, 1px);
   }
 
   .menu--large .menu-link {
-    padding: 1px;
+    padding: var(--nuraly-menu-link-padding-large, 1px);
   }
 
   .menu--large .sub-menu .sub-menu-header {
-    padding: 1px;
+    padding: var(--nuraly-sub-menu-header-padding-large, 1px);
   }
 `;
 

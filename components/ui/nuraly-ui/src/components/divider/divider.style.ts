@@ -7,7 +7,9 @@ export default css`
   }
 
   :host([type="vertical"]) {
-    display: inline-block;
+    display: inline-flex;
+    align-self: stretch; /* Stretch to parent height in flex containers */
+    height: auto;
   }
 
   .divider {
@@ -28,7 +30,7 @@ export default css`
     width: 100%;
     min-width: 100%;
     margin: var(--nuraly-divider-margin-vertical, 10px) 0;
-    border-block-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.12));
+    border-block-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.3));
   }
 
   /* Horizontal with text */
@@ -48,7 +50,7 @@ export default css`
   .divider--horizontal.divider--with-text::after {
     position: relative;
     width: 50%;
-    border-block-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.12));
+    border-block-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.3));
     border-block-end: 0;
     transform: translateY(50%);
     content: '';
@@ -93,7 +95,20 @@ export default css`
     margin: 0 var(--nuraly-divider-margin-horizontal, 8px);
     vertical-align: middle;
     border-top: 0;
-    border-inline-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.12));
+    border-inline-start: 1px var(--nuraly-divider-variant-style, solid) var(--nuraly-divider-color, rgba(5, 5, 5, 0.3));
+  }
+
+  /* Full height vertical divider when in flex container */
+  :host([type="vertical"]) {
+    height: 100%;
+  }
+
+  :host([type="vertical"]) .divider--vertical {
+    height: 100%;
+    align-self: stretch;
+    top: 0;
+    vertical-align: top;
+    border-inline-start-color: var(--nuraly-divider-color, rgba(5, 5, 5, 0.3));
   }
 
   /* Variant styles */

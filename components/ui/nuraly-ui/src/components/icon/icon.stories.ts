@@ -13,7 +13,7 @@ const meta: Meta = {
   argTypes: {
     name: {
       control: { type: 'text' },
-      description: 'The FontAwesome icon name',
+      description: 'The Lucide icon name',
     },
     type: {
       control: { type: 'select' },
@@ -39,7 +39,7 @@ const meta: Meta = {
     },
   },
   args: {
-    name: 'envelope',
+    name: 'mail',
     type: 'solid',
     size: 'medium',
     alt: '',
@@ -53,7 +53,7 @@ type Story = StoryObj;
 
 export const Default: Story = {
   args: {
-    name: 'envelope',
+    name: 'mail',
   },
   render: (args: any) => html`
     <nr-icon
@@ -71,35 +71,35 @@ export const CommonIcons: Story = {
   render: () => html`
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; text-align: center;">
       <div>
-        <nr-icon name="home" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="home" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">home</p>
       </div>
       <div>
-        <nr-icon name="user" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="user" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">user</p>
       </div>
       <div>
-        <nr-icon name="envelope" style="font-size: 2rem;"></nr-icon>
-        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">envelope</p>
+        <nr-icon name="mail" size="xlarge"></nr-icon>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">mail</p>
       </div>
       <div>
-        <nr-icon name="phone" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="phone" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">phone</p>
       </div>
       <div>
-        <nr-icon name="search" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="search" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">search</p>
       </div>
       <div>
-        <nr-icon name="settings" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="settings" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">settings</p>
       </div>
       <div>
-        <nr-icon name="heart" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="heart" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">heart</p>
       </div>
       <div>
-        <nr-icon name="star" style="font-size: 2rem;"></nr-icon>
+        <nr-icon name="star" size="xlarge"></nr-icon>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">star</p>
       </div>
     </div>
@@ -137,11 +137,11 @@ export const IconTypes: Story = {
   render: () => html`
     <div style="display: flex; gap: 2rem; align-items: center;">
       <div style="text-align: center;">
-        <nr-icon name="heart" type="solid" style="font-size: 3rem; color: #e74c3c;"></nr-icon>
+        <nr-icon name="heart" type="solid" size="xxlarge" color="#e74c3c"></nr-icon>
         <p style="margin: 0.5rem 0 0 0;">Solid</p>
       </div>
       <div style="text-align: center;">
-        <nr-icon name="heart" type="regular" style="font-size: 3rem; color: #e74c3c;"></nr-icon>
+        <nr-icon name="heart" type="regular" size="xxlarge" color="#e74c3c"></nr-icon>
         <p style="margin: 0.5rem 0 0 0;">Regular</p>
       </div>
     </div>
@@ -151,10 +151,10 @@ export const IconTypes: Story = {
 export const ClickableIcons: Story = {
   render: () => html`
     <div style="display: flex; gap: 1rem; align-items: center;">
-      <nr-icon name="edit" clickable style="font-size: 1.5rem; cursor: pointer;"></nr-icon>
-      <nr-icon name="trash" clickable style="font-size: 1.5rem; cursor: pointer; color: #e74c3c;"></nr-icon>
-      <nr-icon name="download" clickable style="font-size: 1.5rem; cursor: pointer; color: #27ae60;"></nr-icon>
-      <nr-icon name="settings" clickable disabled style="font-size: 1.5rem; opacity: 0.5;"></nr-icon>
+      <nr-icon name="edit" clickable size="large"></nr-icon>
+      <nr-icon name="trash-2" clickable size="large" color="#e74c3c"></nr-icon>
+      <nr-icon name="download" clickable size="large" color="#27ae60"></nr-icon>
+      <nr-icon name="settings" clickable disabled size="large"></nr-icon>
     </div>
   `,
 };
