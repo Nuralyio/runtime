@@ -61,6 +61,18 @@ export default [
     input: {}
   },
   {
+    uuid: "vdivider",
+    name: "vdivider",
+    component_type: ComponentType.Divider,
+    application_id: "1",
+    input: {
+      direction: {
+        type: "string",
+        value: "vertical"
+      }
+    }
+  },
+  {
     uuid: "1",
     name: "text_label",
     component_type: ComponentType.TextLabel,
@@ -141,6 +153,7 @@ export default [
         "--nuraly-tabs-labels-gap": "0px",
     },
     input: {  
+      
       align : {
         type: "string",
         value: "stretch"

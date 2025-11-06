@@ -66,7 +66,7 @@ leftPanelTabs,
       height: "100%",
        "--nuraly-button-font-size": "12px"
     },
-    childrenIds: ["menu_header", "menu_1"]
+    childrenIds: ["menu_heade2r", "menu_1"]
   },
   {
     uuid: "menu_header",
@@ -165,17 +165,25 @@ leftPanelTabs,
     component_type: ComponentType.Menu,
     style: {
       "--nuraly-menu-border": "none",
-      width: "100%",
-      "--nuraly-menu-font-size": "12px",
-      "--nuraly-sub-menu-padding-y": "4px",
-      "--nuraly-menu-link-padding-y": "4px",
+      "--nuraly-menu-font-size": "13px",
       "--nuraly-sub-menu-highlighted-background-color" : "transparent",
+      "--nuraly-menu-selected-link-border" : "5px solid transparent",
+      "--nuraly-menu-selected-link-background-color" : "tansparent",
+      "--nuraly-menu-selected-color" : "#5393f8",
+      "--nuraly-menu-link-icon-color" : "#222222e3",
+      "--nuraly-color-icon" : "#222222e3",
+      "--nuraly-menu-focus-border": "2px solid transparent",
+      "--nuraly-menu-focus-color": "#5393f8",
+      "margin-left": "13px",
+      "margin-top": "11px",
+      "--nuraly-menu-link-padding-medium" : "4px"
     },
     input: {
-      size: {
+      arrowPosition : {
         type: "string",
-        value: "small"
+        value: "left"
       },
+     
       options: {
         type: "handler",
         value: /* js */ `
@@ -219,18 +227,28 @@ leftPanelTabs,
             let componentIcon = 'smile';
         
             switch (component.component_type) {
-              case 'text_label': componentIcon = "i-cursor"; break;
-              case 'select': componentIcon = 'th-list'; break;
+              case 'text_label': componentIcon = "case-sensitive"; break;
+              case 'rich-text': componentIcon = "whole-word"; break;
+              case 'link': componentIcon = "link"; break;
+              case 'menu': componentIcon = "menu"; break;
+              case 'Tag': componentIcon = "tag"; break;
+              case 'Textarea': componentIcon = "text-cursor-input"; break;
+              case 'Badge': componentIcon = "badge"; break;
               case 'checkbox': componentIcon = 'square-check'; break;
               case 'Table': componentIcon = 'table'; break;
+              case 'select': componentIcon = 'list-video'; break;
               case 'vertical-container-block':
                 componentIcon = component.input?.direction?.value === 'horizontal' ? 'grip-horizontal' : 'grip-vertical'; break;
-              case 'text_input': componentIcon = 'pen-to-square'; break;
+              case 'text_input': componentIcon = 'text-cursor-input'; break;
               case 'Image': componentIcon = 'image'; break;
-              case 'icon': componentIcon = 'icons'; break;
+              case 'icon': componentIcon = 'badge'; break;
               case 'DatePicker': componentIcon = 'calendar'; break;
               case 'Collection': componentIcon = 'layer-group'; break;
               case 'RefComponent': componentIcon = 'crosshairs'; break;
+              case 'file-upload': componentIcon = 'file-up'; break;
+              case 'button_input': componentIcon = 'rectangle-horizontal'; break;
+              case 'Datepicker': componentIcon = 'calendar'; break;
+              case 'Icon': componentIcon = 'cable-car'; break;
             }
         
             const isSelected = component.uuid === selectedComponentId;

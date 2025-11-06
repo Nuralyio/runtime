@@ -10,7 +10,27 @@ export default {
     width: "100%",
     height: "100%",
     display: "grid",
-      "--nuraly-tabs-labels-gap" : "0px"
+      "--nuraly-border-width-tabs-content-top": "0px",
+  "--nuraly-border-width-tabs-top": "0px",
+  "--nuraly-border-width-tabs-right": "0px",
+  "--nuraly-border-width-tabs-bottom": "1px",
+  "--nuraly-border-width-tabs-left": "0px",
+  
+  "--nuraly-border-width-tabs-top-hover": "0px",
+  "--nuraly-border-width-tabs-right-hover": "0px",
+  "--nuraly-border-width-tabs-bottom-hover": "1px",
+  "--nuraly-border-width-tabs-left-hover": "0px",
+  
+  "--nuraly-border-width-tabs-top-active": "0px",
+  "--nuraly-border-width-tabs-right-active": "1px",
+  "--nuraly-border-width-tabs-bottom-active": "0px",
+  "--nuraly-border-width-tabs-left-active": "1px",
+  
+  "--nuraly-border-width-tabs-top-focus": "2px",
+  "--nuraly-border-width-tabs-right-focus": "2px",
+  "--nuraly-border-width-tabs-bottom-focus": "2px",
+  "--nuraly-border-width-tabs-left-focus": "2px",
+        "--nuraly-tabs-labels-gap": "0px",
 
   },
   input: {

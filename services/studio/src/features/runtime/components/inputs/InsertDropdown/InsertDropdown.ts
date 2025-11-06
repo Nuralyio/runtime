@@ -1,4 +1,4 @@
-import { css, html } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "@nuralyui/button";
 import "@nuralyui/dropdown";
@@ -64,10 +64,10 @@ export class InsertDropdownBlock extends BaseElementBlock {
         <nr-label
           slot="trigger"
           style=${styleMap({
-            "--resolved-text-label-color": this.getStyles()["title-color"],
+            "--nuraly-label-local-font-weight": "400",
           })}
         >
-          ${this.inputHandlersValue?.title}
+          ${this.inputHandlersValue?.title} ${this.inputHandlersValue?.icon ? html`<nr-button style="--nuraly-button-min-width: 47px;" type="default" .iconLeft="${this.inputHandlersValue.icon}" size="small"></nr-button>` : nothing}
         </nr-label>
       </nr-dropdown>
     `;

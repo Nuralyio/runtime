@@ -23,7 +23,7 @@ export const Insert = /* js */`
               action: "add",                
               },
             },
-            icon: "layer-group",
+            icon: "database",
           },
         ];
         const mediaOptions = [
@@ -70,7 +70,7 @@ export const Insert = /* js */`
                 }
               },
             },
-            icon: "document",
+            icon: "asterisk",
           },
         ]
 
@@ -85,7 +85,7 @@ export const Insert = /* js */`
               action: "add",               
               },
             },
-            icon: "cube",
+            icon: "microchip",
           },
         ];
 
@@ -112,7 +112,7 @@ export const Insert = /* js */`
               action: "add",                
               },
             },
-            icon: "crosshairs",
+            icon: "asterisk",
           },
        
         ];
@@ -156,7 +156,7 @@ export const Insert = /* js */`
               }
               },
             },
-            icon: "th-list",
+            icon: "list-video",
           },
           {
             id: "dropdown",
@@ -297,7 +297,7 @@ export const Insert = /* js */`
                }
               },
             },
-            icon: "list-ul",
+            icon: "menu",
           },
           {
             label: "File Upload",
@@ -313,7 +313,7 @@ export const Insert = /* js */`
               }
               },
             },
-            icon: "file-upload",
+            icon: "file-up",
           },
           {
             label: "DatePicker",
@@ -333,7 +333,7 @@ export const Insert = /* js */`
               action: "add",                
               },
             },
-            icon: "icons",
+            icon: "badge",
           },
          
           {
@@ -344,7 +344,7 @@ export const Insert = /* js */`
               action: "add",                
               },
             },
-            icon: "pen-to-square",
+            icon: "text-cursor-input",
           },
           {
             label: "Textarea",
@@ -412,7 +412,7 @@ export const Insert = /* js */`
               action: "add",                
               },
             },
-            icon: "i-cursor",
+            icon: "case-sensitive",
           },
 
           {
@@ -429,7 +429,7 @@ export const Insert = /* js */`
               }             
               },
             },
-            icon: "i-cursor",
+            icon: "whole-word",
           },
           {
             label: "Badge",
@@ -445,7 +445,7 @@ export const Insert = /* js */`
               }
               },
             },
-            icon: "certificate",
+            icon: "badge",
           },
           {
             label: "Tag",
@@ -491,7 +491,7 @@ export const Insert = /* js */`
               action: "add",                
               },
             },
-            icon: "icons",
+            icon: "badge",
           },
           {
             label: "Code",
@@ -569,7 +569,7 @@ export const Insert = /* js */`
               id: "display",
               label: "Display",
               options: displayOptions,
-              icon: "chalkboard"
+              icon: "tv-minimal"
             },
          
           {
@@ -582,7 +582,7 @@ export const Insert = /* js */`
             id: "application",
             label: "Application",
             options: applicationOptions,
-            icon : "cube"
+            icon : "app-window-mac"
           },
           {
             id: "layout",
