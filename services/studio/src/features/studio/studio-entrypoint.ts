@@ -111,7 +111,6 @@ export default [
     application_id: "1",
     name: "left_panel_tabs",
     component_type: ComponentType.Tabs,
-
     event: {
       onTabChanged: /* js */ `
         if (EventData.tab.key === "files") {
@@ -135,6 +134,7 @@ export default [
   "--nuraly-border-width-tabs-right": "0px",
   "--nuraly-border-width-tabs-bottom": "1px",
   "--nuraly-border-width-tabs-left": "0px",
+      "--nuraly-spacing-tabs-content-padding-small": "0px",
   
   "--nuraly-border-width-tabs-top-hover": "0px",
   "--nuraly-border-width-tabs-right-hover": "0px",

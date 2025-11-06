@@ -27,7 +27,45 @@ export default [{
   childrenIds: ["left_panel_tabs"]
 },
 leftPanelTabs,
-
+{
+  application_id: "1",
+  uuid: "component_panel",
+  name: "Files panel",
+  component_type: ComponentType.Panel,
+  input: {
+    title:{
+      type: "string",
+      value: "Components"
+    },
+    mode: {
+      type: "string",
+      value: "embedded"
+    },
+    size: {
+      type: "string",
+      value: "small"
+    },
+    closable: {
+      type: "boolean",
+      value: false
+    },
+    resizable : {
+      type: "boolean",
+      value: true
+    }
+  },
+  
+  style: {
+    "--nuraly-panel-small-width": "292px",
+    "--nuraly-border-radius-small": "0px",
+    "--nuraly-label-font-weight": "350",
+    "--nuraly-panel-header-background" : "#fcfcfc",
+    
+    height: "100%",
+    
+  },
+  childrenIds: ["menu_1"]
+},
  {
     application_id: "1",
     uuid: "files_micro_app_block",
@@ -62,11 +100,11 @@ leftPanelTabs,
     },
 
     style: {
-      width: "255px",
+      width: "292px",
       height: "100%",
        "--nuraly-button-font-size": "12px"
     },
-    childrenIds: ["menu_heade2r", "menu_1"]
+    childrenIds: ["menu_heade2r", "menu_1", "component_panel"]
   },
   {
     uuid: "menu_header",
@@ -75,6 +113,7 @@ leftPanelTabs,
 
     component_type: ComponentType.Container,
     style: {
+      
       "gap": "5px",
       "align-items": "center",
       "justify-content": "space-between",
