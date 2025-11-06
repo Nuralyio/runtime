@@ -1,0 +1,240 @@
+version: '3.8'
+
+services:
+  # Nginx Reverse Proxy
+  nginx:
+    build:
+      context: ./docker/production/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/production/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/production/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - studio
+      - gateway
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend - Studio
+  studio:
+    build:
+      context: ./services/studio
+      dockerfile: Dockerfile.prod
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=https://yourdomain.com
+      - REACT_APP_GATEWAY_URL=https://yourdomain.com
+    env_file:
+      - config/prod.env
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Core Backend - Foundation
+  foundation:
+    build:
+      context: ./services/foundation
+      dockerfile: Dockerfile.prod
+    expose:
+      - "8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/foundation_prod
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - config/prod.env
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # Serverless Functions
+  functions:
+    build:
+      context: ./services/functions
+      dockerfile: Dockerfile.prod
+    expose:
+      - "9000"
+    environment:
+      - NODE_ENV=production
+      - PORT=9000
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/functions_prod
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - config/prod.env
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # API Gateway
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile.prod
+    expose:
+      - "4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - FOUNDATION_URL=http://foundation:8000
+      - FUNCTIONS_URL=http://functions:9000
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - config/prod.env
+    depends_on:
+      - foundation
+      - functions
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=nuraly_prod
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./docker/production/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/production/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_prod_data:/data
+      - ./docker/production/redis/redis.conf:/etc/redis/redis.conf
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/production/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/production/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  nginx_logs:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  nuraly-network:
+    driver: bridge

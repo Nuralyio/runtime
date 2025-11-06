@@ -1,0 +1,19 @@
+[submodule "services/studio"]
+	path = services/studio
+	url = https://github.com/Nuralyio/studio.git
+	branch = main
+
+[submodule "services/foundation"]
+	path = services/foundation
+	url = https://github.com/Nuralyio/foundation.git
+	branch = main
+
+[submodule "services/functions"]
+	path = services/functions
+	url = https://github.com/Nuralyio/functions.git
+	branch = main
+
+[submodule "services/gateway"]
+	path = services/gateway
+	url = https://github.com/Nuralyio/gateway.git
+	branch = main

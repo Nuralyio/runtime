@@ -1,0 +1,153 @@
+version: '3.8'
+
+services:
+  # Frontend - Studio
+  studio:
+    build:
+      context: ./services/studio
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./services/studio:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:4000
+      - REACT_APP_GATEWAY_URL=http://localhost:4000
+    env_file:
+      - config/dev.env
+    depends_on:
+      - gateway
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Core Backend - Foundation
+  foundation:
+    build:
+      context: ./services/foundation
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/foundation:/app
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/foundation_dev
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - config/dev.env
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Serverless Functions
+  functions:
+    build:
+      context: ./services/functions
+      dockerfile: Dockerfile.dev
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./services/functions:/app
+    environment:
+      - NODE_ENV=development
+      - PORT=9000
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/functions_dev
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - config/dev.env
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # API Gateway
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./services/gateway:/app
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - FOUNDATION_URL=http://foundation:8000
+      - FUNCTIONS_URL=http://functions:9000
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - config/dev.env
+    depends_on:
+      - foundation
+      - functions
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Database
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=nuraly_dev
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./docker/development/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Development tools
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+
+networks:
+  nuraly-network:
+    driver: bridge
