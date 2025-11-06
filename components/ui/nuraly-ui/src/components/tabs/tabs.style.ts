@@ -284,7 +284,7 @@ export const styles = css`
     }
     
     .tab-content {
-      padding: var(--nuraly-spacing-3);
+      padding: var(--nuraly-spacing-tabs-content-padding-small, var(--nuraly-spacing-3));
     }
   }
 
@@ -311,7 +311,7 @@ export const styles = css`
     }
     
     .tab-content {
-      padding: var(--nuraly-spacing-6);
+      padding: var(--nuraly-spacing-tabs-content-padding-large, var(--nuraly-spacing-6));
     }
   }
 
