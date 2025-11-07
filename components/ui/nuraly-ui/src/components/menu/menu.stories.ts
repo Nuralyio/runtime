@@ -189,7 +189,7 @@ const menuWithActions: IMenu[] = [
     icon: 'folder',
     selected: true,
     menu: {
-      icon: 'ellipsis-v',
+      icon: 'ellipsis-vertical',
       actions: [
         { label: 'Rename', value: 'rename' },
         { label: 'Share', value: 'share' },
@@ -202,7 +202,7 @@ const menuWithActions: IMenu[] = [
     text: 'Project Beta',
     icon: 'folder',
     menu: {
-      icon: 'ellipsis-v',
+      icon: 'ellipsis-vertical',
       actions: [
         { label: 'Open', value: 'open' },
         { label: 'Duplicate', value: 'duplicate' },
@@ -217,7 +217,7 @@ const menuWithActions: IMenu[] = [
       {
         text: 'Getting Started',
         menu: {
-          icon: 'ellipsis-v',
+          icon: 'ellipsis-vertical',
           actions: [
             { label: 'Edit', value: 'edit' },
             { label: 'Download', value: 'download' },
@@ -257,7 +257,7 @@ const complexMenu: IMenu[] = [
     text: 'Workspace',
     icon: 'briefcase',
     menu: {
-      icon: 'ellipsis-v',
+      icon: 'ellipsis-vertical',
       actions: [
         { label: 'Rename Workspace', value: 'rename' },
         { label: 'Workspace Settings', value: 'settings' },
@@ -289,7 +289,7 @@ const complexMenu: IMenu[] = [
         text: 'Files',
         icon: 'file',
         menu: {
-          icon: 'ellipsis-v',
+          icon: 'ellipsis-vertical',
           actions: [
             { label: 'Upload', value: 'upload' },
             { label: 'Create Folder', value: 'create-folder' },
@@ -579,7 +579,7 @@ export const FileBrowser: Story = {
               icon: 'folder',
               opened: true,
               menu: {
-                icon: 'ellipsis-v',
+                icon: 'ellipsis-vertical',
                 actions: [
                   { label: 'New File', value: 'new-file' },
                   { label: 'New Folder', value: 'new-folder' },
@@ -591,7 +591,7 @@ export const FileBrowser: Story = {
                   text: 'Projects',
                   icon: 'folder',
                   menu: {
-                    icon: 'ellipsis-v',
+                    icon: 'ellipsis-vertical',
                     actions: [
                       { label: 'Rename', value: 'rename' },
                       { label: 'Share', value: 'share' },
