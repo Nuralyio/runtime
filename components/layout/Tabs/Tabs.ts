@@ -79,6 +79,7 @@ export class TabsBlock extends BaseElementBlock {
     return (this.inputHandlersValue.tabs)?.map(tab => ({
       label: tab.label.value,
       key: tab.key,
+      icon: tab.icon?.value || null,
       content: html`
         <div>${this.generateComponent(tab.childrends.value)}</div>`
     }));

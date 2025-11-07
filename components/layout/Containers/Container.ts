@@ -10,7 +10,7 @@ import styles from "./Container.style.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { setCurrentComponentIdAction } from "@shared/redux/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "@shared/redux/actions/page/setContextMenuEvent.ts";
-import { Utils } from "@runtime/core/Utils.ts";
+import { Utils } from "@features/runtime/core/Utils.ts";
 
 @customElement("vertical-container-block")
 export class VerticalContainer extends BaseElementBlock {
@@ -56,9 +56,9 @@ export class VerticalContainer extends BaseElementBlock {
         data-component-uuid=${this.component?.uuid}
         data-component-name=${this.component?.name}
         style=${styleMap({
+          "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
           ...this.getStyles(),
           "min-height": this.childrenComponents.length ? "auto" : "300px",
-          "width": Utils.extractUnit(this.componentStyles?.width) === "%" ? "100%" : this.componentStyles?.width ?? "auto",
         })}
         class=${classMap({
           container: true,

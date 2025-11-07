@@ -1,11 +1,8 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@nuralyui/select";
-import "@nuralyui/dropdown";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { ViewMode } from "@shared/redux/store/environment.ts";
 import { executeCodeWithClosure } from "@runtime/core/Kernel.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
@@ -16,7 +13,6 @@ import { ref } from "lit/directives/ref.js";
 export class SelectBlock extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
-  mode: ViewMode;
 
   constructor() {
     super();
@@ -32,17 +28,14 @@ export class SelectBlock extends BaseElementBlock {
 
   handleValueChange = (customEvent: CustomEvent) => {
     if (this.component.event.changed) {
-      const optionValue = customEvent.detail.value ? customEvent.detail.value.value : EMPTY_STRING;
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.changed`), {
+      const optionValue = customEvent.detail.value ?? EMPTY_STRING;
+      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.changed`), {
         value: optionValue
       });
     }
   };
 
 override  renderComponent() {
-    const options = this.inputHandlersValue?.value?.[0] ?? [];
-    const defaultSelected = this.inputHandlersValue?.value?.[1] ?? [];
-    const selectStyles = this.component?.style || {};
 
     return html`
     <span>
@@ -51,15 +44,17 @@ override  renderComponent() {
             style=${styleMap({...this.getStyles(), 
             "--nuraly-select-width" : this.getStyles()['--nuraly-select-width']  ?? this.getStyles().width    
           })}
-                 selectionMode=${this.inputHandlersValue?.selectionMode === "multiple" ? "multiple" : nothing}
-                 .options=${this.inputHandlersValue?.options || options}
-                 .defaultSelected="${[this.inputHandlersValue?.defaultSelected] }"
+                 ?multiple=${this.inputHandlersValue?.selectionMode === "multiple"}
+                 ?searchable=${this.inputHandlersValue?.searchable ?? false}
+                 .options=${this.inputHandlersValue?.options  ?? []}
+                 .value=${this.inputHandlersValue?.value ?? EMPTY_STRING}
                  .placeholder=${this.inputHandlersValue.placeholder || "Select an option"}
-                 .status=${selectStyles?.state ?? nothing}
-                 .size=${selectStyles?.size ?? nothing}
+                 search-placeholder=${this.inputHandlersValue?.searchPlaceholder || "Search options..."}
+                 .status=${this.inputHandlersValue?.state ?? nothing}
+                 .size=${this.inputHandlersValue?.size ?? nothing}
                  .disabled=${(this.inputHandlersValue.state == "disabled")}
                  .type=${this.inputHandlersValue.type == "inline" ? "inline" : nothing}
-                 @changed=${this.handleValueChange}
+                 @nr-change=${this.handleValueChange}
       >
         <span slot="label">${this.inputHandlersValue.label ?? nothing}</span>
         <span slot="helper-text">${this.inputHandlersValue.helper ?? nothing}</span>
