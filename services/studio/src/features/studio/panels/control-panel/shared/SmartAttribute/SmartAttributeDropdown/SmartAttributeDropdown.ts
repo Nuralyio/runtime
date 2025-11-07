@@ -33,7 +33,7 @@ export class SmartAttributeEditorDropDown extends LitElement {
     }}
       .template=${html`lorem text`}
     >
-        <nr-button icon="code" type="text" class="unit"></nr-button
+        <nr-button iconLeft="code" type="text" class="unit"></nr-button
       >
     </nr-dropdown>`;
   }

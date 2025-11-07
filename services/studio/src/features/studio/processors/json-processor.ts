@@ -592,7 +592,7 @@ export class GenericJsonProcessor {
                      return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}";
                    `),
         },
-        size: property.type === 'radio' ? {
+        size: property.type === 'radio' || property.type === 'select' ? {
           type: "string",
           value: "small"
         } : undefined,

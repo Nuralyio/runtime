@@ -68,7 +68,7 @@ export default [{
     },
     icon: {
       type: "string",
-      value: "package"
+      value: "blocks"
     },
     options: {
       type: "handler",

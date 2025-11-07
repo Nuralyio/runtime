@@ -38,7 +38,6 @@ export class TextLabelBlock extends BaseElementBlock {
 
   override renderComponent() {
     const labelStyles = this.component?.style || {};
-    const size = (labelStyles?.size as 'small' | 'medium' | 'large') || 'medium';
     
     return html`
      <nr-label
@@ -49,7 +48,7 @@ export class TextLabelBlock extends BaseElementBlock {
      }}
           ${ref(this.inputRef)}
             id=${this.component.uuid}
-            .size=${size}
+            .size=${this.inputHandlersValue.size ?? "medium"}
             .variant=${this.inputHandlersValue.variant || 'default'}
             .required=${this.inputHandlersValue.required || false}
             .disabled=${this.inputHandlersValue.state === "disabled"}

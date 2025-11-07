@@ -28,6 +28,10 @@ export default {
             type: "text",
             value: "Pages"
           },
+          icon :{
+            type:"string",
+            value:"panel-top"
+          },
           childrends: {
             type: "componentIdArray",
             value: ["pages_panel"]
