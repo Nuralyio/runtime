@@ -315,6 +315,7 @@ export const styles = css`
   .panel-body {
     padding: var(--nuraly-panel-padding);
     flex: 1;
+    height: 100%;
     overflow: auto;
   }
 
