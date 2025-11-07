@@ -15,8 +15,6 @@
 
   /* Select borders - Default dark design */
   --nuraly-select-border-color: #374151;
-  --nuraly-select-border-focus: #8b5cf6;
-  --nuraly-select-border-hover: #8b5cf6;
 
   /* Dropdown styling - Default dark design */
   --nuraly-select-dropdown-background: #374151;
@@ -25,8 +23,8 @@
 
   /* Option styling - Default dark design */
   --nuraly-select-option-hover-background: #374151;
-  --nuraly-select-option-selected-background: #312e81;
-  --nuraly-select-option-selected-color: #c4b5fd;
+  --nuraly-select-option-selected-background: var(--nuraly-color-primary-dark);
+  --nuraly-select-option-selected-color: var(--nuraly-color-primary-light);
   --nuraly-select-option-text-color: #f9fafb;
 
   /* Error states - Default dark design */

@@ -285,7 +285,7 @@ export class HyCollapse extends NuralyUIBaseMixin(LitElement) {
           ` : nothing}
           
           <span class="collapse-header-text">
-            ${section.headerSlot ? html`<slot name="${section.headerSlot}"></slot>` : section.header}
+            ${section.headerSlot ? html`<slot name="${section.headerSlot}"></slot>` : html`<nr-label .size=${this.size}>${section.header}</nr-label>`}
           </span>
 
           ${section.headerRight || section.headerRightSlot ? html`

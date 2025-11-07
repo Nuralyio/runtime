@@ -15,8 +15,6 @@
 
   /* Select borders - Default design */
   --nuraly-select-border-color: #d9d9d9;
-  --nuraly-select-border-focus: #7c3aed;
-  --nuraly-select-border-hover: #7c3aed;
 
   /* Dropdown styling - Default design */
   --nuraly-select-dropdown-background: #ffffff;
@@ -25,8 +23,6 @@
 
   /* Option styling - Default design */
   --nuraly-select-option-hover-background: #f3f4f6;
-  --nuraly-select-option-selected-background: #ede9fe;
-  --nuraly-select-option-selected-color: #7c3aed;
   --nuraly-select-option-text-color: #262626;
 
   /* Error states - Default design */
