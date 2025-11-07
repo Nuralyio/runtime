@@ -2,6 +2,15 @@ import { ComponentType } from "@shared/redux/store/component/component.interface
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 import { v4 as uuidv4 } from "uuid";
 
+
+const COLLAPSE_COMMON_STYLE = {
+  "--nuraly-spacing-collapse-padding": "0px",
+  "--nuraly-spacing-collapse-content-padding": "0px",
+  "margin-left": "5px",
+  "--nuraly-shadow-collapse-hover": "none",
+  "--nuraly-border-radius-collapse": "0",
+  "--nuraly-border-radius-collapse-header": "0",
+};
 // Define interfaces for clarity
 interface Item {
   label: string;
@@ -52,14 +61,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       name: `${category.name} Collapse`,
       component_type: ComponentType.Collapse,
       style: {
-        "--nr-collapse-content-small-size-padding": "5px",
-        "--nr-collapse-font-weight": "normal",
-        "--nr-collapse-border-radius": "0px",
-        "--nr-collapse-width": "292px",
-        "--nr-collapse-border": "none",
-        "--nr-collapse-border-bottom": "none",
-        "--nr-collapse-local-header-background-color": "none",
-        "--nr-collapse-header-collapsed-background-color": "none"
+        ...COLLAPSE_COMMON_STYLE
       },
       input: {
         size: {
@@ -70,7 +72,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
           type: "array",
           value: [{
             blockName: `${categoryCollapseUuid}_vertical_container`,
-            label: category.name.toUpperCase(),
+            label: category.name,
             open: !!category.open
           }]
         }
@@ -167,13 +169,32 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       componentType = ComponentType.Select;
       inputStyle = {
         width: "140px",
-        "--nr-select-background-color": "#2a2a2a",
-        "--nr-select-text-color": "#ffffff",
-        "--nr-select-border": "1px solid #444",
-        "--nr-select-hover-background": "#3a3a3a"
+        "--nuraly-select-background-color": "#2a2a2a",
+        "--nuraly-select-text-color": "#ffffff",
+        "--nuraly-select-border": "1px solid #444",
+        "--nuraly-select-hover-background": "#3a3a3a",
+        "--nuraly-select-dropdown-max-height": "200px",
+         "position": "relative",
       };
-      // No need for options in inputConfig, will be in value handler
-      inputConfig = {};
+      // Set options and value in inputConfig for select
+      inputConfig = {
+        size:{
+          type: "string",
+          value: "small"
+        },
+        searchable: {
+          type: "boolean",
+          value: true
+        },
+        searchPlaceholder: {
+          type: "string",
+          value: "Search options..."
+        },
+        options: {
+          type: "handler",
+          value: /* js */ `return ${JSON.stringify(options)};`
+        }
+      };
     }
 
     // Create value handler based on input type
@@ -193,9 +214,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     } else if (inputType === "select") {
       valueHandler = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        const currentValue = Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
-        const options = ${JSON.stringify(options)};
-        return [options, [currentValue]];
+        return Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
       `;
       eventUpdate = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
@@ -225,6 +244,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
           display: "flex",
           "justify-content": "space-between",
           "align-items": "center",
+          height: "40px",
           width: "290px"
         },
         childrenIds: [inputBlockUuid, handlerBlockUuid]
@@ -238,7 +258,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         style: {
           display: "flex",
           "flex-direction": "column",
-          marginLeft: "21px"
+          marginLeft: "18px"
         },
         childrenIds: [labelUuid]
       },
@@ -263,10 +283,12 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         component_type: ComponentType.TextLabel,
         ...COMMON_ATTRIBUTES,
         style: {
-          "font-size": "14px",
-          "font-weight": "bold"
         },
         input: {
+          size : {
+            type: "string",
+            value: "small"
+          },
           value: {
             type: "handler",
             value: /* js */ `
@@ -339,13 +361,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       name: `${mode.name} Collapse`,
       component_type: ComponentType.Collapse,
       style: {
-        "--nr-collapse-content-small-size-padding": "5px",
-        "--nr-collapse-font-weight": "normal",
-        "--nr-collapse-border-radius": "0px",
-        "--nr-collapse-width": "292px",
-        "--nr-collapse-border": "none",
-        "--nr-collapse-border-bottom": "1px solid #ccc",
-        "--nr-collapse-local-header-background-color": "none"
+       ...COLLAPSE_COMMON_STYLE
       },
       input: {
         size: {
@@ -356,7 +372,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
           type: "array",
           value: [{
             blockName: `${modeCollapseUuid}_vertical_container`,
-            label: mode.name.toUpperCase(),
+            label: mode.name,
             open: !!mode.open
           }]
         }

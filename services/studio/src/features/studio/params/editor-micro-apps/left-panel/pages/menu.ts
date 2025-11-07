@@ -101,7 +101,7 @@ export const pagesMenu = {
               selected: isSelected,
               handlerKey: "onSelect",
               menu: {
-                icon: 'ellipsis-v',
+                icon: 'ellipsis-vertical',
                 actions: [{
                   label: 'Delete',
                   value: 'delete',
@@ -157,7 +157,7 @@ export const pagesMenu = {
             children: children,
             menu: {
               opened: true,
-              icon: 'ellipsis-v',
+              icon: 'ellipsis-vertical',
               actions: [{
                 handlerKey: "onDelete",
                 label: 'Delete',

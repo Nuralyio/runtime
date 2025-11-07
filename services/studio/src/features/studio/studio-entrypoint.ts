@@ -61,6 +61,80 @@ export default [
     input: {}
   },
   {
+    uuid: "select_component_styles_state_container",
+    name: "Select Component Styles Container",
+    application_id: "1",
+    component_type: ComponentType.Container,
+    ...COMMON_ATTRIBUTES,
+    style: {
+          display: "flex",
+          justifyContent: "flex-end",
+          width :"292px",
+          "margin-bottom": "4px",
+    },
+    childrenIds: [ "select_component_styles_state"]
+  },
+ 
+  {
+    uuid: "select_component_styles_state",
+    name: "Select Component Styles",
+    application_id: "1",
+    component_type: ComponentType.Select,
+    input: {
+        size: {
+            type: "string",
+            value: "small"
+        },
+        placeholder: {
+            type: "string",
+            value: 'Select a component state'
+        },
+        options: {
+            type: "handler",
+            value: /* js */ `
+                const options = [
+                    { label: "State", value: "default" },
+                    { label: "Hover", value: ":hover" },
+                    { label: "Active", value: ":active" },
+                    { label: "Focus", value: ":focus" },
+                    { label: "Disabled", value: ":disabled" }
+                ];
+                return options;
+            `
+        },
+        value: {
+            type: "string",
+            value: "default"
+        },
+        searchable: {
+            type: "boolean",
+            value: true
+        },
+        searchPlaceholder: {
+            type: "string",
+            value: "Search states..."
+        }
+    },
+    event: {
+        changed: /* js */ `
+            console.log('Component state changed:', EventData.value);
+            SetContextVar("selected_component_state", EventData.value);
+        `
+    },
+    style: {
+        "--nuraly-select-width": "100px",
+        "--nuraly-select-background-color": "#2a2a2a",
+        "--nuraly-select-text-color": "#ffffff",
+        "--nuraly-select-border": "1px solid #444",
+        "--nuraly-select-hover-background": "#3a3a3a",
+        "--nuraly-select-dropdown-z-index": "9999",
+        "--nuraly-select-z-index": "9999",
+        "position": "relative",
+        
+        "z-index": "9999"
+    }
+  },
+  {
     uuid: "vdivider",
     name: "vdivider",
     component_type: ComponentType.Divider,
@@ -175,6 +249,10 @@ export default [
                 type: "text",
                 value: "Pages",
               },
+              icon :{
+                type:"string",
+                value:"panel-top"
+              },
               key : "pages",
               childrends: {
                 type: "componentIdArray",
@@ -182,33 +260,29 @@ export default [
 
               }
             },
-           /* {
-              label: {
-                type: "text",
-                value: "Elements"
-              },
-              childrends: {
-                type: "componentIdArray",
-                value: ["2"]
-
-              }
-            },*/
             {
               label: {
                 type: "text",
                 value: "Functions",
               },
+              icon :{
+                type:"string",
+                value:"parentheses"
+              },
               key : "functions",
               childrends: {
                 type: "componentIdArray",
                 value: ["function_micro_app_block"]
-
               }
             },
             {
               label: {
                 type: "text",
                 value: "Files",
+              },
+              icon : {
+                type:"string",
+                value:"folders"
               },
               key : "files",
               childrends: {
@@ -266,7 +340,7 @@ export default [
   ...studioTypographyCollapseBlock,
   ...studioSizeCollpaseBlock,
 
-  RightPanelTabs,
+  ...RightPanelTabs,
   {
     uuid: "select_component_text",
     name: "text_label",
