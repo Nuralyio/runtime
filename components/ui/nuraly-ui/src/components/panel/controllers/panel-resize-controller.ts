@@ -135,6 +135,19 @@ export class PanelResizeController implements ReactiveController {
 
     this.isResizing = false;
     this.resizeDirection = '';
+    
+    // Dispatch resize event
+    const panel = this.host.shadowRoot?.querySelector('.panel') as HTMLElement;
+    if (panel) {
+      (this.host as any).dispatchEvent(new CustomEvent('panel-resize', {
+        bubbles: true,
+        detail: { 
+          width: this.host.panelWidth, 
+          height: this.host.panelHeight 
+        }
+      }));
+    }
+    
     this.host.requestUpdate();
   };
 }

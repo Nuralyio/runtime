@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { PanelMode } from '../panel/panel.types.js';
+
 /**
  * Tab orientation options
  */
@@ -89,6 +91,34 @@ export interface TabEditable {
   canAddTab: boolean;
   /** Whether tabs can be reordered via drag & drop */
   canMove: boolean;
+}
+
+/**
+ * Tab panel configuration interface for making tabs pannable
+ */
+export interface TabsPanelConfig {
+  /** Whether panel wrapper is enabled */
+  enabled: boolean;
+  /** Panel mode */
+  mode?: PanelMode;
+  /** Panel size (inherits from tabs if not specified) */
+  size?: string;
+  /** Whether the panel is resizable */
+  resizable?: boolean;
+  /** Whether the panel is draggable */
+  draggable?: boolean;
+  /** Whether the panel can be closed */
+  closable?: boolean;
+  /** Whether the panel can be minimized */
+  minimizable?: boolean;
+  /** Panel title */
+  title?: string;
+  /** Panel icon */
+  icon?: string;
+  /** Custom panel width */
+  width?: string;
+  /** Custom panel height */
+  height?: string;
 }
 
 /**

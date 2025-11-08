@@ -163,9 +163,23 @@ export const styles = css`
   /* Embedded Mode */
   .panel--mode-embedded {
     position: relative;
-    width: 100%;
-    height: auto;
+    width: 100% !important;  /* Override size-specific widths */
+    height: 100% !important; /* Override size-specific heights */
     display: block;
+  }
+
+  /* Special handling for tabs in embedded panels */
+  .panel--mode-embedded nr-tabs {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Override all size classes when in embedded mode */
+  .panel--mode-embedded.panel--size-small,
+  .panel--mode-embedded.panel--size-medium,
+  .panel--mode-embedded.panel--size-large {
+    width: 100% !important;
+    height: auto !important;
   }
 
   .panel--mode-embedded .resize-handle {

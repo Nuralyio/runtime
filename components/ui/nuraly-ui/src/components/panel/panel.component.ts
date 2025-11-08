@@ -184,6 +184,14 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   @state()
   private isFirstUpdate = true;
 
+  /** Original dimensions before maximizing from embedded mode */
+  @state()
+  private originalEmbeddedWidth = 0;
+
+  /** Original dimensions before maximizing from embedded mode */
+  @state()
+  private originalEmbeddedHeight = 0;
+
   // Controllers
   private dragController = new PanelDragController(this);
   // @ts-ignore - Controller handles events through listeners, doesn't need direct reference
@@ -285,6 +293,14 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   maximizeEmbedded() {
     if (this.mode !== PanelMode.Embedded) return;
     
+    // Store original dimensions before maximizing
+    const panel = this.shadowRoot?.querySelector('.panel') as HTMLElement;
+    if (panel) {
+      // Use current tracked dimensions or fall back to DOM dimensions
+      this.originalEmbeddedWidth = this.panelWidth > 0 ? this.panelWidth : panel.offsetWidth;
+      this.originalEmbeddedHeight = this.panelHeight > 0 ? this.panelHeight : panel.offsetHeight;
+    }
+    
     this.isMaximizedFromEmbedded = true;
     this.mode = PanelMode.Window;
     
@@ -362,11 +378,22 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
     this.offsetX = 0;
     this.offsetY = 0;
     
-    // Remove transform
+    // Restore original dimensions
+    this.panelWidth = this.originalEmbeddedWidth;
+    this.panelHeight = this.originalEmbeddedHeight;
+    
+    // Remove transform and apply restored dimensions
     requestAnimationFrame(() => {
       const panel = this.shadowRoot?.querySelector('.panel') as HTMLElement;
       if (panel) {
         panel.style.transform = '';
+        // Apply the original dimensions
+        if (this.originalEmbeddedWidth > 0) {
+          panel.style.width = `${this.originalEmbeddedWidth}px`;
+        }
+        if (this.originalEmbeddedHeight > 0) {
+          panel.style.height = `${this.originalEmbeddedHeight}px`;
+        }
       }
     });
     
@@ -601,7 +628,7 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
    * Render resize handles
    */
   private renderResizeHandles() {
-    if (!this.resizable || this.mode !== PanelMode.Window) return nothing;
+    if (!this.resizable || (this.mode !== PanelMode.Window && this.mode !== PanelMode.Embedded)) return nothing;
 
     return html`
       <div class="resize-handle resize-handle-n"></div>
