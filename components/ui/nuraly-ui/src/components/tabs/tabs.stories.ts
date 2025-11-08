@@ -8,6 +8,7 @@ import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 import './tabs.component.js';
 import { TabOrientation, TabsAlign, TabSize, TabType, type TabItem } from './tabs.types.js';
+import { PanelMode } from '../panel/panel.types.js';
 
 // Sample tabs data
 const basicTabs: TabItem[] = [
@@ -54,7 +55,7 @@ const meta: Meta = {
         component: `
 # Tabs Component
 
-A versatile tabs component with support for multiple orientations, editable tabs, and drag & drop functionality.
+A versatile tabs component with support for multiple orientations, editable tabs, drag & drop functionality, and optional panel wrapper.
 
 ## Features
 - Multiple orientations (horizontal/vertical)
@@ -65,14 +66,28 @@ A versatile tabs component with support for multiple orientations, editable tabs
 - Icon support
 - Closable tabs
 - Keyboard navigation
+- **Pannable tabs** - Optional wrapper with resizable/draggable panel
 - Theme support
 - Accessibility compliant
 
 ## Usage
 
 \`\`\`html
+<!-- Basic tabs -->
 <nr-tabs .tabs=\${tabs} activeTab="0"></nr-tabs>
+
+<!-- Pannable tabs -->
+<nr-tabs .tabs=\${tabs} .panelConfig=\${{enabled: true, resizable: true}}></nr-tabs>
 \`\`\`
+
+## Panel Configuration
+When \`panelConfig.enabled\` is true, tabs are wrapped in a resizable/draggable panel:
+- **enabled**: Enable/disable panel wrapper (default: false)
+- **mode**: Panel mode (embedded, window, panel)
+- **resizable**: Whether panel is resizable
+- **draggable**: Whether panel is draggable
+- **title**: Panel title
+- **width/height**: Custom dimensions
 
 ## Alignment Options
 - **left**: Tabs aligned to the left (default)
@@ -87,6 +102,9 @@ A versatile tabs component with support for multiple orientations, editable tabs
 - **nr-tab-remove**: Fired when a tab is removed
 - **nr-tab-edit**: Fired when a tab label is edited
 - **nr-tab-order-change**: Fired when tabs are reordered via drag & drop
+- **nr-tabs-panel-close**: Fired when panel is closed (pannable tabs only)
+- **nr-tabs-panel-minimize**: Fired when panel is minimized (pannable tabs only)
+- **nr-tabs-panel-resize**: Fired when panel is resized (pannable tabs only)
         `,
       },
     },
@@ -123,6 +141,10 @@ A versatile tabs component with support for multiple orientations, editable tabs
     editable: {
       control: { type: 'object' },
       description: 'Editable configuration',
+    },
+    panelConfig: {
+      control: { type: 'object' },
+      description: 'Panel configuration for pannable tabs',
     },
   },
 };
@@ -758,6 +780,239 @@ export const EditorTheme: Story = {
             ></nr-tabs>
           </div>
         </div>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * Pannable tabs - Basic embedded panel
+ */
+export const PannableEmbedded: Story = {
+  args: {
+    tabs: basicTabs,
+    activeTab: 0,
+    panelConfig: {
+      enabled: true,
+      mode: PanelMode.Embedded,
+      resizable: true,
+      draggable: false,
+      title: 'Embedded Panel Tabs',
+      icon: 'tab',
+    },
+  },
+  render: (args) => html`
+    <div style="height: 500px; padding: 1rem;">
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .panelConfig=${args.panelConfig}
+      ></nr-tabs>
+    </div>
+  `,
+};
+
+/**
+ * Pannable tabs - Floating window mode
+ */
+export const PannableWindow: Story = {
+  args: {
+    tabs: tabsWithIcons,
+    activeTab: 0,
+    panelConfig: {
+      enabled: true,
+      mode: PanelMode.Window,
+      resizable: true,
+      draggable: true,
+      closable: true,
+      minimizable: true,
+      title: 'Dashboard Tabs',
+      icon: 'dashboard',
+      width: '600px',
+      height: '400px',
+    },
+  },
+  render: (args) => html`
+    <div style="height: 600px; padding: 2rem; position: relative;">
+      <p style="margin-bottom: 2rem; color: #666;">
+        This panel can be dragged around, resized, minimized, and closed.
+      </p>
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .panelConfig=${args.panelConfig}
+      ></nr-tabs>
+    </div>
+  `,
+};
+
+/**
+ * Pannable tabs - Panel mode (docked)
+ */
+export const PannablePanel: Story = {
+  args: {
+    tabs: editableTabs,
+    activeTab: 0,
+    panelConfig: {
+      enabled: true,
+      mode: PanelMode.Panel,
+      resizable: true,
+      draggable: false,
+      closable: false,
+      title: 'Side Panel Tabs',
+      icon: 'view_sidebar',
+    },
+    editable: {
+      canAddTab: true,
+      canDeleteTab: true,
+      canEditTabTitle: true,
+      canMove: true,
+    },
+  },
+  render: (args) => html`
+    <div style="height: 500px; padding: 1rem; position: relative;">
+      <p style="margin-bottom: 2rem; color: #666;">
+        This panel is docked to the side and can be resized. Try editing the tabs!
+      </p>
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .panelConfig=${args.panelConfig}
+        .editable=${args.editable}
+      ></nr-tabs>
+    </div>
+  `,
+};
+
+/**
+ * Pannable tabs - Comparison of modes
+ */
+export const PannableComparison: Story = {
+  args: {
+    tabs: basicTabs,
+    activeTab: 0,
+  },
+  render: (args) => html`
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; height: 800px; padding: 1rem;">
+      <div>
+        <h3 style="margin-bottom: 1rem;">Regular Tabs (No Panel)</h3>
+        <nr-tabs
+          .tabs=${args.tabs}
+          .activeTab=${args.activeTab}
+        ></nr-tabs>
+      </div>
+      
+      <div>
+        <h3 style="margin-bottom: 1rem;">Embedded Panel Tabs</h3>
+        <nr-tabs
+          .tabs=${args.tabs}
+          .activeTab=${args.activeTab}
+          .panelConfig=${{
+            enabled: true,
+            mode: PanelMode.Embedded,
+            resizable: true,
+            title: 'Panel Tabs',
+          }}
+        ></nr-tabs>
+      </div>
+    </div>
+  `,
+};
+
+/**
+ * Pannable tabs - Advanced configuration
+ */
+export const PannableAdvanced: Story = {
+  args: {
+    tabs: longTabsList,
+    activeTab: 0,
+    panelConfig: {
+      enabled: true,
+      mode: PanelMode.Window,
+      resizable: true,
+      draggable: true,
+      closable: true,
+      minimizable: true,
+      title: 'Advanced Dashboard',
+      icon: 'dashboard',
+      width: '800px',
+      height: '500px',
+    },
+    editable: {
+      canAddTab: true,
+      canDeleteTab: true,
+      canEditTabTitle: true,
+      canMove: true,
+    },
+    orientation: TabOrientation.Horizontal,
+    align: TabsAlign.Left,
+    tabSize: TabSize.Medium,
+    variant: TabType.Line,
+    animated: true,
+  },
+  render: (args) => html`
+    <div style="height: 700px; padding: 2rem; position: relative;">
+      <div style="margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="margin: 0 0 0.5rem 0;">Advanced Pannable Tabs</h3>
+        <p style="margin: 0; color: #666; font-size: 0.875rem;">
+          Features: Resizable panel, draggable, closable, many tabs, editable, line variant, with icons.
+          Try dragging the panel, resizing it, editing tab names, adding/removing tabs, and reordering them.
+        </p>
+      </div>
+      
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .panelConfig=${args.panelConfig}
+        .editable=${args.editable}
+        .orientation=${args.orientation}
+        .align=${args.align}
+        .tabSize=${args.tabSize}
+        .variant=${args.variant}
+        .animated=${args.animated}
+      ></nr-tabs>
+    </div>
+  `,
+};
+
+/**
+ * Pannable tabs - Custom styling
+ */
+export const PannableCustomStyling: Story = {
+  args: {
+    tabs: tabsWithIcons,
+    activeTab: 0,
+    panelConfig: {
+      enabled: true,
+      mode: PanelMode.Embedded,
+      resizable: true,
+      title: 'Custom Styled Panel',
+      icon: 'palette',
+      width: '100%',
+      height: '400px',
+    },
+  },
+  render: (args) => html`
+    <div style="height: 500px; padding: 1rem;">
+      <style>
+        .custom-panel-tabs {
+          --nuraly-panel-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          --nuraly-panel-header-background: rgba(255, 255, 255, 0.1);
+          --nuraly-panel-header-text-color: white;
+          --nuraly-panel-border-color: rgba(255, 255, 255, 0.2);
+          --nuraly-tabs-background: transparent;
+          --nuraly-tab-color: rgba(255, 255, 255, 0.8);
+          --nuraly-tab-active-color: white;
+          --nuraly-tab-active-background: rgba(255, 255, 255, 0.1);
+        }
+      </style>
+      <div class="custom-panel-tabs">
+        <nr-tabs
+          .tabs=${args.tabs}
+          .activeTab=${args.activeTab}
+          .panelConfig=${args.panelConfig}
+          variant=${TabType.Line}
+        ></nr-tabs>
       </div>
     </div>
   `,

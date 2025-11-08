@@ -20,6 +20,20 @@ export const styles = css`
     
   }
 
+  /* When tabs are inside a panel, adjust sizing */
+  :host-context(nr-panel) {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Ensure tabs container fills available space when in panel */
+  nr-panel .tabs-container,
+  :host-context(nr-panel) .tabs-container {
+    height: 100%;
+    min-height: 0;
+    flex: 1;
+  }
+
   /* Force re-evaluation of theme-dependent properties on theme change */
   :host([data-theme]) {
     color: inherit;

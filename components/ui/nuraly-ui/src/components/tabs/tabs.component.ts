@@ -14,6 +14,7 @@ import {
   TabSize,
   TabType,
   TabEditable,
+  TabsPanelConfig,
   TabEvent,
   TabItem,
   TabClickEventDetail,
@@ -21,6 +22,10 @@ import {
   DEFAULT_ACTIVE_TAB
 } from './tabs.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+
+// Import panel component
+import '../panel/index.js';
+import { PanelMode } from '../panel/panel.types.js';
 
 // Import controllers
 import {
@@ -35,7 +40,7 @@ import {
 } from './controllers/index.js';
 
 /**
- * Versatile tabs component with support for multiple orientations, editable tabs, and drag & drop.
+ * Versatile tabs component with support for multiple orientations, editable tabs, drag & drop, and optional panel wrapper.
  * 
  * @example
  * ```html
@@ -50,6 +55,9 @@ import {
  * 
  * <!-- Stretch tabs to fill full width with equal sizes -->
  * <nr-tabs .tabs=${tabs} align="stretch"></nr-tabs>
+ * 
+ * <!-- Pannable tabs (disabled by default) -->
+ * <nr-tabs .tabs=${tabs} .panelConfig=${{enabled: true, resizable: true, title: "My Tabs"}}></nr-tabs>
  * ```
  * 
  * @fires nr-tab-click - Tab clicked
@@ -58,6 +66,9 @@ import {
  * @fires nr-tab-remove - Tab removal requested
  * @fires nr-tab-edit - Tab edited
  * @fires nr-tab-order-change - Tab order changed via drag & drop
+ * @fires nr-tabs-panel-close - Panel closed (when pannable)
+ * @fires nr-tabs-panel-minimize - Panel minimized (when pannable)
+ * @fires nr-tabs-panel-resize - Panel resized (when pannable)
  * 
  * @slot default - Tab content
  */
@@ -109,7 +120,11 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   @property({ type: String })
   tabsAriaLabel = EMPTY_STRING;
 
-  override requiredComponents = ['nr-icon'];
+  /** Panel configuration for making tabs pannable */
+  @property({ type: Object })
+  panelConfig?: TabsPanelConfig;
+
+  override requiredComponents = ['nr-icon', 'nr-panel'];
 
   // Controllers - automatically connected via Lit's reactive controller system
   private keyboardController = new TabsKeyboardController(this);
@@ -130,6 +145,18 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   }
 
   override render() {
+    const tabsContent = this.renderTabsContent();
+    
+    // Only wrap with panel if explicitly enabled
+    if (this.panelConfig?.enabled) {
+      return this.renderWithPanel(tabsContent);
+    }
+    
+    // Default: return just the tabs content
+    return tabsContent;
+  }
+
+  private renderTabsContent() {
     return html`
       <div
         class=${classMap({
@@ -159,6 +186,61 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
           ${this.renderActiveTab()}
         </div>
       </div>
+    `;
+  }
+
+  private renderWithPanel(tabsContent: any) {
+    if (!this.isComponentAvailable('nr-panel')) {
+      console.warn('[nr-tabs] Panel component not available. Rendering without panel.');
+      return tabsContent;
+    }
+
+    // Only pass width/height if explicitly set, otherwise let panel size naturally
+    const panelProps: any = {
+      mode: this.panelConfig?.mode || PanelMode.Embedded,
+      size: this.panelConfig?.size || this.tabSize, // Use tabs size if panel size not specified
+      resizable: this.panelConfig?.resizable ?? true,
+      draggable: this.panelConfig?.draggable ?? true,
+      closable: this.panelConfig?.closable ?? false,
+      minimizable: this.panelConfig?.minimizable ?? true,
+      title: this.panelConfig?.title || 'Tabs',
+      icon: this.panelConfig?.icon || ''
+    };
+
+    // Only set dimensions if explicitly provided
+    if (this.panelConfig?.width) {
+      panelProps.width = this.panelConfig.width;
+    }
+    if (this.panelConfig?.height) {
+      panelProps.height = this.panelConfig.height;
+    }
+
+    return html`
+      <nr-panel
+        class="tabs-panel-wrapper"
+        .mode=${panelProps.mode}
+        .size=${panelProps.size}
+        .resizable=${panelProps.resizable}
+        .draggable=${panelProps.draggable}
+        .closable=${panelProps.closable}
+        .minimizable=${panelProps.minimizable}
+        .title=${panelProps.title}
+        .icon=${panelProps.icon}
+        .width=${panelProps.width || ''}
+        .height=${panelProps.height || ''}
+        @panel-close=${this.handlePanelClose}
+        @panel-minimize=${this.handlePanelMinimize}
+        @panel-resize=${this.handlePanelResize}
+        style="
+          ${this.panelConfig?.mode === PanelMode.Embedded ? 
+            'width: 100% !important; height: auto !important; min-height: 0;' : 
+            ''}
+          ${!panelProps.width && this.panelConfig?.mode !== PanelMode.Embedded ? 'width: auto;' : ''}
+          ${!panelProps.height && this.panelConfig?.mode !== PanelMode.Embedded ? 'height: auto;' : ''}
+        "
+      >
+        ${tabsContent}
+      </nr-panel>
     `;
   }
 
@@ -326,5 +408,20 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
         previousIndex
       } as TabClickEventDetail);
     }
+  }
+
+  private handlePanelClose() {
+    this.dispatchEvent(new CustomEvent('nr-tabs-panel-close', { bubbles: true }));
+  }
+
+  private handlePanelMinimize() {
+    this.dispatchEvent(new CustomEvent('nr-tabs-panel-minimize', { bubbles: true }));
+  }
+
+  private handlePanelResize(event: CustomEvent) {
+    this.dispatchEvent(new CustomEvent('nr-tabs-panel-resize', { 
+      bubbles: true, 
+      detail: event.detail 
+    }));
   }
 }
