@@ -255,7 +255,26 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
   }
 
   function updateStyle(component: ComponentElement, symbol: string, value: any) {
-    const eventData = { [symbol]: value };
+    // Check if a pseudo-state is selected (e.g., :hover, :focus, :active)
+    const selectedState = ExecuteInstance.Vars.selected_component_style_state;
+    
+    let eventData;
+    if (selectedState && selectedState !== "default") {
+      // Get existing pseudo-state styles to preserve other properties
+      const existingPseudoStateStyles = component.style?.[selectedState] || {};
+      
+      // If a pseudo-state is selected, merge with existing pseudo-state properties
+      eventData = {
+        [selectedState]: {
+          ...existingPseudoStateStyles,
+          [symbol]: value
+        }
+      };
+    } else {
+      // Default behavior: set style directly
+      eventData = { [symbol]: value };
+    }
+    
     updateComponentAttributes(component.application_id, component.uuid, "style", eventData);
   }
 

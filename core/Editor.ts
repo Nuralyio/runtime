@@ -94,6 +94,76 @@ class Editor {
       return component?.style ?? {};
     }
   }
+
+  /**
+   * Get component style value for a specific attribute considering selected state and platform
+   * @param component - The component object
+   * @param attribute - The style attribute name
+   * @returns The style value for the attribute
+   */
+  getComponentStyleForState(component: any, attribute: string) {
+    const selectedState = ExecuteInstance.Vars.selected_component_style_state;
+    let baseStyle = component?.style ?? {};
+    
+    // Apply platform/breakpoint styles
+    if (this.currentPlatform.platform !== "desktop") {
+      const breakpointStyle = component?.breakpoints?.[this.currentPlatform.width]?.style;
+      baseStyle = { ...baseStyle, ...breakpointStyle };
+    }
+    
+    // If a pseudo-state is selected and not default, check if the attribute exists in that state
+    if (selectedState && selectedState !== "default") {
+      const pseudoStateStyle = baseStyle[selectedState];
+      if (pseudoStateStyle && typeof pseudoStateStyle === 'object' && attribute in pseudoStateStyle) {
+        return pseudoStateStyle[attribute];
+      }
+    }
+    
+    // Return base value (excluding pseudo-state objects)
+    const pseudoStates = [':hover', ':focus', ':active', ':disabled'];
+    if (pseudoStates.includes(attribute)) {
+      return baseStyle[attribute];
+    }
+    
+    return baseStyle[attribute];
+  }
+
+  /**
+   * Get all component styles considering selected state and platform
+   * @param component - The component object
+   * @returns Merged style object with pseudo-state styles applied if selected
+   */
+  getComponentStylesForState(component: any) {
+    const selectedState = ExecuteInstance.Vars.selected_component_style_state;
+    let baseStyle = component?.style ?? {};
+    
+    // Apply platform/breakpoint styles
+    if (this.currentPlatform.platform !== "desktop") {
+      const breakpointStyle = component?.breakpoints?.[this.currentPlatform.width]?.style;
+      baseStyle = { ...baseStyle, ...breakpointStyle };
+    }
+    
+    // If a pseudo-state is selected and not default, merge the pseudo-state styles
+    if (selectedState && selectedState !== "default") {
+      const pseudoStateStyle = baseStyle[selectedState];
+      if (pseudoStateStyle && typeof pseudoStateStyle === 'object') {
+        // Filter out pseudo-state keys from base
+        const pseudoStates = [':hover', ':focus', ':active', ':disabled'];
+        const regularStyles = Object.keys(baseStyle)
+          .filter(key => !pseudoStates.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = baseStyle[key];
+            return obj;
+          }, {});
+        
+        // Merge: base styles overridden by pseudo-state styles
+        return { ...regularStyles, ...pseudoStateStyle };
+      }
+    }
+    
+    return baseStyle;
+  }
+
   getCurrentPlatform() {
     return this.currentPlatform;
   }

@@ -304,6 +304,10 @@ export class BaseElementBlock extends LitElement {
         this.traitInputsHandlers();
         this.traitStylesHandlers();
       } else {
+        // component does not change but properties inside may have changed
+        // when psedo states styles are used for example
+        this.traitInputsHandlers();
+        this.traitStylesHandlers();
         // Re-process handlers even if UUID hasn't changed
         // This ensures property updates in the studio are reflected
       }
@@ -340,6 +344,11 @@ export class BaseElementBlock extends LitElement {
    */
   override async connectedCallback() {
     super.connectedCallback();
+    
+    // Add component-specific class for pseudo-state styling
+    if (this.component?.uuid) {
+      this.classList.add(`component-${this.component.uuid}`);
+    }
     
     if(!this.isViewMode) {
       this.subscription.add(
@@ -517,14 +526,81 @@ export class BaseElementBlock extends LitElement {
   }
 
   /**
+   * Generates CSS for pseudo-state styles (e.g., :hover, :focus, :active)
+   * 
+   * @returns {string} CSS string with pseudo-selectors
+   */
+  generatePseudoStateStyles() {
+    const componentStyles = Editor.getComponentStyles(this.component);
+    const pseudoStates = [':hover', ':focus', ':active', ':disabled'];
+    let cssString = '';
+
+    // Generate base class with regular styles (non-pseudo-state)
+    const regularStyles = Object.keys(componentStyles)
+      .filter(key => !pseudoStates.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = componentStyles[key];
+        return obj;
+      }, {});
+
+    const baseStyleRules = Object.entries(regularStyles)
+      .map(([property, value]) => `  ${property}: ${value};`)
+      .join('\n');
+
+    if (baseStyleRules) {
+      cssString += `.drop-${this.component.uuid} {\n${baseStyleRules}\n}\n`;
+    }
+
+    // Generate pseudo-state classes
+    pseudoStates.forEach(pseudoState => {
+      if (componentStyles[pseudoState] && typeof componentStyles[pseudoState] === 'object') {
+        const pseudoStyles = componentStyles[pseudoState];
+        const styleRules = Object.entries(pseudoStyles)
+          .map(([property, value]) => `  ${property}: ${value};`)
+          .join('\n');
+        
+        if (styleRules) {
+          cssString += `.drop-${this.component.uuid}${pseudoState} {\n${styleRules}\n}\n`;
+        }
+      }
+    });
+
+    return cssString;
+  }
+
+  /**
+   * Renders dynamic pseudo-state styles
+   * 
+   * @returns {unknown} Style tag with pseudo-selector CSS
+   */
+  renderPseudoStateStyles() {
+    const cssString = this.generatePseudoStateStyles();
+    
+    if (!cssString) return nothing;
+    
+    return html`<style>${cssString}</style>`;
+  }
+
+  /**
    * Gets computed component styles
    * 
    * @returns {Object} Component styles
    */
   getStyles() {
     const width = Editor.getComponentStyle(this.component, "width");
+    const allStyles = Editor.getComponentStyles(this.component);
+    
+    // Filter out pseudo-state styles (they're handled via CSS classes)
+    const pseudoStates = [':hover', ':focus', ':active', ':disabled'];
+    const regularStyles = Object.keys(allStyles)
+      .filter(key => !pseudoStates.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = allStyles[key];
+        return obj;
+      }, {});
+    
     return {
-      ...Editor.getComponentStyles(this.component),
+      ...regularStyles,
       ...this.stylesHandlersValue,
       width: width === "auto" ? "auto" : 
              Utils.extractUnit(width) === "%" ? "100%" : width ?? "auto",
@@ -602,6 +678,7 @@ export class BaseElementBlock extends LitElement {
 
     this.componentStyles = {...this.componentStyles, ...labelStyleHandlers};
     return html`
+      ${this.renderPseudoStateStyles()}
       ${!this.isViewMode ? html`
         ${this.renderError()}
         ${[0, undefined].includes(this.item?.index) ? html`
