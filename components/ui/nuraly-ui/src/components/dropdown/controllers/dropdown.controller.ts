@@ -256,45 +256,47 @@ export class NrDropdownController extends BaseDropdownController implements Drop
   }
 
   private handleOutsideClick(event: Event): void {
+    if (!this.host.closeOnOutsideClick) {
+      return;
+    }
+
     const target = event.target as Element;
     
+    // Check if click is on trigger
     if (this._triggerElement?.contains(target)) {
       return;
     }
     
-    const dropdownPanel = target.closest('.dropdown__panel');
-    
-    if (dropdownPanel) {
-      return;
-    }
-    
+    // Check if dropdown panel contains the target directly
     if (this._dropdownElement?.contains(target)) {
       return;
     }
     
-    if (target.closest('nr-dropdown')) {
-      return;
-    }
-    
-    const customContent = target.closest('.dropdown__custom-content');
-    if (customContent) {
-      return;
-    }
-    
-    const interactiveElements = ['INPUT', 'BUTTON', 'TEXTAREA', 'SELECT', 'A'];
-    if (interactiveElements.includes(target.tagName)) {
-      const dropdownPanelParent = target.closest('.dropdown__panel');
-      if (dropdownPanelParent) {
+    // Walk up the composed path (includes shadow DOM boundaries)
+    const composedPath = event.composedPath();
+    for (const element of composedPath) {
+      if (element === this._dropdownElement) {
+        return;
+      }
+      // Check if any element in the path is within the dropdown panel
+      if (element instanceof Element && this._dropdownElement?.contains(element)) {
         return;
       }
     }
     
-    if (target.closest('.dropdown') || target.closest('[class*="dropdown"]')) {
-      return;
-    }
-    
-    if (!this.host.closeOnOutsideClick) {
-      return;
+    // Additional check: traverse shadow DOM tree
+    let currentElement: Element | null = target;
+    while (currentElement) {
+      const root = currentElement.getRootNode() as ShadowRoot | Document;
+      if (root instanceof ShadowRoot && root.host) {
+        // Check if the shadow host is within dropdown
+        if (this._dropdownElement?.contains(root.host)) {
+          return;
+        }
+        currentElement = root.host;
+      } else {
+        break;
+      }
     }
     
     this.close();
@@ -307,6 +309,9 @@ export class NrDropdownController extends BaseDropdownController implements Drop
   }
 
   private handleScroll(): void {
+    if (this._isOpen) {
+      this.calculatePosition();
+    }
   }
 
   private handleResize(): void {
@@ -326,15 +331,22 @@ export class NrDropdownController extends BaseDropdownController implements Drop
       }
 
       const triggerRect = this._triggerElement.getBoundingClientRect();
+      const dropdownRect = this._dropdownElement.getBoundingClientRect();
       const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      const viewportWidth = window.visualViewport?.width || window.innerWidth;
 
       const spaceBelow = viewportHeight - triggerRect.bottom;
       const spaceAbove = triggerRect.top;
+      const spaceRight = viewportWidth - triggerRect.right;
+      const spaceLeft = triggerRect.left;
 
       const estimatedDropdownHeight = 200;
-      const placement = this.determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
+      const dropdownWidth = dropdownRect.width || 300;
       
-      this.applyPlacement(placement);
+      const verticalPlacement = this.determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
+      const horizontalPlacement = this.determineHorizontalPlacement(dropdownWidth, spaceLeft, spaceRight);
+      
+      this.applyPlacement(verticalPlacement, horizontalPlacement);
 
     } catch (error) {
       this.handleError(error as Error, 'calculatePosition');
@@ -357,14 +369,57 @@ export class NrDropdownController extends BaseDropdownController implements Drop
     return spaceAbove > spaceBelow ? 'top' : 'bottom';
   }
 
-  private applyPlacement(placement: 'top' | 'bottom'): void {
+  private determineHorizontalPlacement(
+    dropdownWidth: number,
+    spaceLeft: number,
+    spaceRight: number
+  ): 'left' | 'right' | 'center' {
+    // If using host placement prop, check if it's a horizontal placement
+    const hostPlacement = this.host.placement;
+    if (hostPlacement.includes('left') || hostPlacement.includes('right')) {
+      // Use the host's specified placement if there's enough space
+      if (hostPlacement.includes('left') && spaceLeft >= dropdownWidth) {
+        return 'left';
+      }
+      if (hostPlacement.includes('right') && spaceRight >= dropdownWidth) {
+        return 'right';
+      }
+    }
+    
+    // Auto-detect based on available space
+    if (spaceRight >= dropdownWidth) {
+      return 'right';
+    }
+    
+    if (spaceLeft >= dropdownWidth) {
+      return 'left';
+    }
+    
+    return spaceRight > spaceLeft ? 'right' : 'left';
+  }
+
+  private applyPlacement(verticalPlacement: 'top' | 'bottom', horizontalPlacement?: 'left' | 'right' | 'center'): void {
     if (!this._dropdownElement) return;
     
-    this._dropdownElement.classList.remove('dropdown__panel--top', 'dropdown__panel--bottom');
+    // Remove all placement classes
+    this._dropdownElement.classList.remove(
+      'dropdown__panel--top', 
+      'dropdown__panel--bottom',
+      'dropdown__panel--left-aligned',
+      'dropdown__panel--right-aligned'
+    );
     
-    this._dropdownElement.classList.add(`dropdown__panel--${placement}`);
+    // Apply vertical placement
+    this._dropdownElement.classList.add(`dropdown__panel--${verticalPlacement}`);
     
-    this._position.placement = placement;
+    // Apply horizontal alignment if specified
+    if (horizontalPlacement === 'left') {
+      this._dropdownElement.classList.add('dropdown__panel--right-aligned');
+    } else if (horizontalPlacement === 'right') {
+      this._dropdownElement.classList.add('dropdown__panel--left-aligned');
+    }
+    
+    this._position.placement = verticalPlacement;
   }
 
   private isHoveringDropdown(): boolean {

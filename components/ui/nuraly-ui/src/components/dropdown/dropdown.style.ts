@@ -91,6 +91,17 @@ export const styles = css`
     right: auto;
   }
 
+  /* Horizontal alignment for viewport edge handling */
+  .dropdown__panel--right-aligned {
+    left: auto;
+    right: 0;
+  }
+
+  .dropdown__panel--left-aligned {
+    left: 0;
+    right: auto;
+  }
+
   /* Size variants */
   .dropdown__panel--small {
     font-size: var(--nuraly-dropdown-small-font-size, 0.75rem);
