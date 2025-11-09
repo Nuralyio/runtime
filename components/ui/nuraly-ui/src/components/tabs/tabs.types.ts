@@ -52,7 +52,65 @@ export const enum TabEvent {
   TabRemove = 'nr-tab-remove',
   TabEdit = 'nr-tab-edit',
   TabOrderChange = 'nr-tab-order-change',
-  TabChange = 'nr-tab-change'
+  TabChange = 'nr-tab-change',
+  TabPopOut = 'nr-tab-pop-out',
+  TabPopIn = 'nr-tab-pop-in'
+}
+
+/**
+ * Pop-out state enumeration
+ */
+export const enum TabPopOutState {
+  Normal = 'normal',
+  PoppedOut = 'popped-out',
+  Placeholder = 'placeholder'
+}
+
+/**
+ * Pop-out configuration interface
+ */
+export interface TabPopOutConfig {
+  /** Whether pop-out functionality is enabled */
+  enabled: boolean;
+  /** Whether tabs can be popped out */
+  canPopOut?: boolean;
+  /** Whether popped-out tabs can be popped back in */
+  canPopIn?: boolean;
+  /** Panel configuration for popped-out tabs */
+  windowPanel?: {
+    /** Panel title template (can use {tabLabel} placeholder) */
+    title?: string;
+    /** Panel icon */
+    icon?: string;
+    /** Default panel width */
+    width?: string;
+    /** Default panel height */
+    height?: string;
+    /** Whether panel is resizable */
+    resizable?: boolean;
+    /** Whether panel is draggable */
+    draggable?: boolean;
+    /** Whether panel can be closed (will pop tab back in) */
+    closable?: boolean;
+    /** Whether panel can be minimized */
+    minimizable?: boolean;
+  };
+}
+
+/**
+ * Popped-out tab tracking interface
+ */
+export interface PoppedOutTab {
+  /** Tab data */
+  tab: TabItem;
+  /** Original index in tabs array */
+  originalIndex: number;
+  /** Current pop-out state */
+  state: TabPopOutState;
+  /** Panel element reference */
+  panelElement?: HTMLElement;
+  /** Unique identifier for this pop-out instance */
+  popOutId: string;
 }
 
 /**
@@ -75,8 +133,12 @@ export interface TabItem {
   className?: string;
   /** Tab-specific editable options */
   editable?: Partial<TabEditable>;
+  /** Tab-specific pop-out options */
+  popOut?: Partial<TabPopOutConfig>;
   /** Custom data attributes */
   data?: Record<string, any>;
+  /** Current pop-out state */
+  popOutState?: TabPopOutState;
 }
 
 /**
@@ -154,6 +216,18 @@ export interface TabOrderChangeEventDetail {
   targetTab: TabItem;
 }
 
+export interface TabPopOutEventDetail {
+  index: number;
+  tab: TabItem;
+  popOutId: string;
+}
+
+export interface TabPopInEventDetail {
+  tab: TabItem;
+  originalIndex: number;
+  popOutId: string;
+}
+
 /**
  * Tab configuration options
  */
@@ -168,6 +242,8 @@ export interface TabsConfig {
   type?: TabType;
   /** Whether tabs are editable */
   editable?: TabEditable;
+  /** Pop-out configuration */
+  popOut?: TabPopOutConfig;
   /** Whether tabs are animated */
   animated?: boolean;
   /** Whether to hide tab content when tab is not active */

@@ -15,6 +15,8 @@ import {
   TabType,
   TabEditable,
   TabsPanelConfig,
+  TabPopOutConfig,
+  TabPopOutState,
   TabEvent,
   TabItem,
   TabClickEventDetail,
@@ -33,10 +35,12 @@ import {
   TabsDragDropController,
   TabsEditableController,
   TabsEventController,
+  TabsPopOutController,
   type TabsKeyboardHost,
   type TabsDragDropHost,
   type TabsEditableHost,
-  type TabsEventHost
+  type TabsEventHost,
+  type TabsPopOutHost
 } from './controllers/index.js';
 
 /**
@@ -77,7 +81,8 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   TabsKeyboardHost,
   TabsDragDropHost,
   TabsEditableHost,
-  TabsEventHost {
+  TabsEventHost,
+  TabsPopOutHost {
   static override styles = styles;
   
   /** Currently active tab index */
@@ -124,6 +129,10 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   @property({ type: Object })
   panelConfig?: TabsPanelConfig;
 
+  /** Pop-out configuration for making tabs pop-outable */
+  @property({ type: Object })
+  popOut?: TabPopOutConfig;
+
   override requiredComponents = ['nr-icon', 'nr-panel'];
 
   // Controllers - automatically connected via Lit's reactive controller system
@@ -131,6 +140,7 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   private dragDropController = new TabsDragDropController(this);
   private editableController = new TabsEditableController(this);
   private eventController = new TabsEventController(this);
+  private popOutController = new TabsPopOutController(this);
 
   override connectedCallback() {
     super.connectedCallback();
@@ -142,9 +152,15 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
     void this.dragDropController;
     void this.editableController;
     void this.eventController;
+    void this.popOutController;
   }
 
   override render() {
+    // If all tabs are popped out (no visible tabs), hide completely
+    if (this.tabs.length === 0) {
+      return nothing;
+    }
+    
     const tabsContent = this.renderTabsContent();
     
     // Only wrap with panel if explicitly enabled
@@ -157,10 +173,14 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
   }
 
   private renderTabsContent() {
+    // Check if all tabs are popped out (no visible tabs)
+    const hasVisibleTabs = this.tabs.length > 0;
+    
     return html`
       <div
         class=${classMap({
           'tabs-container': true,
+          'no-visible-tabs': !hasVisibleTabs,
           'vertical-align': this.orientation === TabOrientation.Vertical,
           'horizontal-align': this.orientation === TabOrientation.Horizontal,
           'right-align': this.align === TabsAlign.Right,
@@ -273,6 +293,40 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
     `;
   }
 
+  private renderPopOutIcon(tab: TabItem, tabIndex: number) {
+    if (!this.popOutController.canPopOut(tab)) return nothing;
+
+    if (!this.isComponentAvailable('nr-icon')) {
+      console.warn('[nr-tabs] Icon component not available. Pop-out icon will not render.');
+      return nothing;
+    }
+
+    const isPlaceholder = tab.popOutState === TabPopOutState.Placeholder;
+    const iconName = isPlaceholder ? 'window-maximize' : 'maximize';
+    const title = isPlaceholder ? 'Pop back in' : 'Pop out to window';
+
+    return html`
+      <nr-icon
+        name="${iconName}"
+        class="pop-out-icon"
+        title="${title}"
+        @mousedown=${(e: MouseEvent) => {
+          e.stopPropagation();
+          if (isPlaceholder) {
+            // Find the pop-out ID from placeholder content
+            const placeholderContent = tab.content as string;
+            const matches = placeholderContent.match(/data-pop-out-id="([^"]+)"/);
+            if (matches) {
+              this.popOutController.handlePopInRequest(matches[1]);
+            }
+          } else {
+            this.popOutController.handlePopOutRequest(tabIndex);
+          }
+        }}
+      ></nr-icon>
+    `;
+  }
+
   private renderTabs() {
     const tabs = [];
     
@@ -298,6 +352,7 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
             'tab-label': true,
             'active': isActive,
             'disabled': !!tab.disabled,
+            'tab-placeholder-state': tab.popOutState === TabPopOutState.Placeholder,
             'first-tab': isFirstTab && this.orientation === TabOrientation.Horizontal,
             'middle-tab': isMiddleTab && this.orientation === TabOrientation.Horizontal,
             'last-tab': isLastTab && this.orientation === TabOrientation.Horizontal,
@@ -319,7 +374,10 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
                 @keydown=${(event: KeyboardEvent) => this.editableController.handleTabTitleKeyDown(event, tabIndex)}
           >${tab.label}</span>
           
-          ${this.renderDeleteIcon(tab, tabIndex)}
+          <div class="tab-actions">
+            ${this.renderPopOutIcon(tab, tabIndex)}
+            ${this.renderDeleteIcon(tab, tabIndex)}
+          </div>
         </div>
       `;
       tabs.push(tabElement);
@@ -423,5 +481,19 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
       bubbles: true, 
       detail: event.detail 
     }));
+  }
+
+  /**
+   * Public method to pop in a tab from placeholder
+   */
+  async popInTab(popOutId: string): Promise<void> {
+    await this.popOutController.handlePopInRequest(popOutId);
+  }
+
+  /**
+   * Public method to pop out a tab
+   */
+  async popOutTab(tabIndex: number): Promise<void> {
+    await this.popOutController.handlePopOutRequest(tabIndex);
   }
 }

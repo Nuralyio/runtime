@@ -67,6 +67,7 @@ A versatile tabs component with support for multiple orientations, editable tabs
 - Closable tabs
 - Keyboard navigation
 - **Pannable tabs** - Optional wrapper with resizable/draggable panel
+- **Pop-out tabs** - Individual tabs can be popped out to separate windows
 - Theme support
 - Accessibility compliant
 
@@ -78,6 +79,9 @@ A versatile tabs component with support for multiple orientations, editable tabs
 
 <!-- Pannable tabs -->
 <nr-tabs .tabs=\${tabs} .panelConfig=\${{enabled: true, resizable: true}}></nr-tabs>
+
+<!-- Pop-out tabs -->
+<nr-tabs .tabs=\${tabs} .popOut=\${{enabled: true, canPopOut: true}}></nr-tabs>
 \`\`\`
 
 ## Panel Configuration
@@ -89,6 +93,13 @@ When \`panelConfig.enabled\` is true, tabs are wrapped in a resizable/draggable 
 - **title**: Panel title
 - **width/height**: Custom dimensions
 
+## Pop-out Configuration
+When \`popOut.enabled\` is true, tabs can be popped out to separate windows:
+- **enabled**: Enable/disable pop-out functionality (default: false)
+- **canPopOut**: Whether tabs can be popped out (default: true)
+- **canPopIn**: Whether popped-out tabs can be restored (default: true)
+- **windowPanel**: Configuration for popped-out window panels
+
 ## Alignment Options
 - **left**: Tabs aligned to the left (default)
 - **center**: Tabs centered in the container
@@ -98,6 +109,8 @@ When \`panelConfig.enabled\` is true, tabs are wrapped in a resizable/draggable 
 ## Events
 - **nr-tab-click**: Fired when a tab is clicked
 - **nr-tab-change**: Fired when the active tab changes
+- **nr-tab-pop-out**: Fired when a tab is popped out
+- **nr-tab-pop-in**: Fired when a tab is popped back in
 - **nr-tab-add**: Fired when add tab button is clicked
 - **nr-tab-remove**: Fired when a tab is removed
 - **nr-tab-edit**: Fired when a tab label is edited
@@ -1014,6 +1027,308 @@ export const PannableCustomStyling: Story = {
           variant=${TabType.Line}
         ></nr-tabs>
       </div>
+    </div>
+  `,
+};
+
+// ===== POP-OUT FUNCTIONALITY STORIES =====
+
+// Sample tabs for pop-out demos - using function to avoid read-only issues
+const createPopOutTabs = (): TabItem[] => [
+  { 
+    id: '0', 
+    label: 'Editor', 
+    content: '<div style="padding: 1rem;"><h3>Code Editor</h3><p>This tab contains a code editor that can be popped out to a separate window for better focus.</p><textarea style="width: 100%; height: 200px; font-family: monospace;" placeholder="// Write your code here..."></textarea></div>',
+    icon: 'code' 
+  },
+  { 
+    id: '1', 
+    label: 'Preview', 
+    content: '<div style="padding: 1rem;"><h3>Live Preview</h3><p>Preview your application in real-time. Pop out for side-by-side development.</p><div style="border: 2px dashed #ccc; padding: 2rem; text-align: center;"><p>🚀 Your app preview would appear here</p></div></div>',
+    icon: 'visibility' 
+  },
+  { 
+    id: '2', 
+    label: 'Console', 
+    content: '<div style="padding: 1rem;"><h3>Debug Console</h3><p>Monitor logs and debug information. Great for popping out to a secondary monitor.</p><div style="background: #000; color: #0f0; padding: 1rem; font-family: monospace; border-radius: 4px;"><div>> Starting application...</div><div>> Server listening on port 3000</div><div>> Ready for connections</div></div></div>',
+    icon: 'terminal' 
+  },
+  { 
+    id: '3', 
+    label: 'Documentation', 
+    content: '<div style="padding: 1rem;"><h3>API Documentation</h3><p>Reference documentation that you can keep open in a separate window while coding.</p><ul><li>Getting Started</li><li>API Reference</li><li>Examples</li><li>Best Practices</li></ul></div>',
+    icon: 'description' 
+  }
+];
+
+/**
+ * Basic pop-out functionality demonstration
+ */
+export const PopOutBasic: Story = {
+  name: 'Pop-out Basic',
+  parameters: {
+    interactions: { disable: true } // Disable interactions addon for this story
+  },
+  args: {
+    tabs: createPopOutTabs(),
+    activeTab: 0,
+    popOut: {
+      enabled: true,
+      canPopOut: true,
+      canPopIn: true,
+      windowPanel: {
+        title: '{tabLabel} - Popped Out',
+        width: '800px',
+        height: '600px',
+        resizable: true,
+        draggable: true,
+        closable: false,
+        minimizable: true
+      }
+    }
+  },
+  render: (args) => html`
+    <div style="">
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .popOut=${args.popOut}
+      ></nr-tabs>
+    </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 4px;">
+      <p><strong>Try it:</strong> Click the pop-out icon (🔗) next to any tab to open it in a separate window panel.</p>
+      <p>Once popped out, the tab becomes a placeholder and you can click "Pop Back In" to restore it.</p>
+    </div>
+  `,
+};
+
+/**
+ * Pop-out with custom panel configuration
+ */
+export const PopOutCustomPanel: Story = {
+  name: 'Pop-out Custom Panel',
+  parameters: {
+    interactions: { disable: true } // Disable interactions addon for this story
+  },
+  args: {
+    tabs: createPopOutTabs().map(tab => ({
+      ...tab,
+      popOut: {
+        enabled: true,
+        windowPanel: {
+          title: `${tab.label} Workspace`,
+          icon: tab.icon,
+          width: tab.id === '0' ? '1000px' : '600px',
+          height: tab.id === '0' ? '700px' : '500px',
+          resizable: true,
+          draggable: true,
+          closable: true,
+          minimizable: tab.id !== '2' // Console cannot be minimized
+        }
+      }
+    })),
+    activeTab: 0,
+    popOut: {
+      enabled: true,
+      canPopOut: true,
+      canPopIn: true
+    }
+  },
+  render: (args) => html`
+    <div style="height: 400px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .popOut=${args.popOut}
+      ></nr-tabs>
+    </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #f0f8ff; border-radius: 4px;">
+      <p><strong>Custom Panel Configuration:</strong></p>
+      <ul>
+        <li>Editor opens in 1000x700px window</li>
+        <li>Preview and Documentation open in 600x500px windows</li>
+        <li>Console cannot be minimized</li>
+        <li>Each tab has custom icons and titles</li>
+      </ul>
+    </div>
+  `,
+};
+
+/**
+ * Pop-out with restricted permissions
+ */
+export const PopOutRestricted: Story = {
+  name: 'Pop-out Restricted',
+  parameters: {
+    interactions: { disable: true } // Disable interactions addon for this story
+  },
+  args: {
+    tabs: [
+      { 
+        ...createPopOutTabs()[0],
+        popOut: { enabled: true, canPopOut: true, canPopIn: true }
+      },
+      { 
+        ...createPopOutTabs()[1],
+        popOut: { enabled: true, canPopOut: true, canPopIn: false } // Can pop out but not back in
+      },
+      { 
+        ...createPopOutTabs()[2],
+        popOut: { enabled: true, canPopOut: false, canPopIn: true } // Cannot pop out
+      },
+      { 
+        ...createPopOutTabs()[3]
+        // No pop-out config = uses global settings
+      }
+    ],
+    activeTab: 0,
+    popOut: {
+      enabled: true,
+      canPopOut: true,
+      canPopIn: true,
+      windowPanel: {
+        title: 'Restricted - {tabLabel}',
+        width: '700px',
+        height: '500px'
+      }
+    }
+  },
+  render: (args) => html`
+    <div style="height: 400px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .popOut=${args.popOut}
+      ></nr-tabs>
+    </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #fff5f5; border-radius: 4px;">
+      <p><strong>Permission Restrictions:</strong></p>
+      <ul>
+        <li><strong>Editor:</strong> Full pop-out/pop-in permissions</li>
+        <li><strong>Preview:</strong> Can pop out but not pop back in (one-way)</li>
+        <li><strong>Console:</strong> Cannot pop out at all</li>
+        <li><strong>Documentation:</strong> Uses global settings (full permissions)</li>
+      </ul>
+    </div>
+  `,
+};
+
+/**
+ * Combined pannable and pop-out functionality
+ */
+export const PopOutWithPanel: Story = {
+  name: 'Pop-out + Pannable',
+  parameters: {
+    interactions: { disable: true } // Disable interactions addon for this story
+  },
+  args: {
+    tabs: createPopOutTabs(),
+    activeTab: 0,
+    panelConfig: {
+      enabled: true,
+      mode: PanelMode.Window,
+      title: 'Development Workspace',
+      icon: 'code',
+      width: '1200px',
+      height: '800px',
+      resizable: true,
+      draggable: true,
+      closable: false,
+      minimizable: true
+    },
+    popOut: {
+      enabled: true,
+      canPopOut: true,
+      canPopIn: true,
+      windowPanel: {
+        title: '{tabLabel} - Detached',
+        width: '900px',
+        height: '600px',
+        resizable: true,
+        draggable: true,
+        closable: true,
+        minimizable: true
+      }
+    }
+  },
+  render: (args) => html`
+    <div style="height: 500px;">
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .panelConfig=${args.panelConfig}
+        .popOut=${args.popOut}
+      ></nr-tabs>
+    </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #f0f8ff; border-radius: 4px;">
+      <p><strong>Combined Features:</strong></p>
+      <p>The entire tabs component is wrapped in a draggable/resizable panel, and individual tabs can still be popped out to separate windows.</p>
+      <p>This creates a flexible multi-window development environment!</p>
+    </div>
+  `,
+};
+
+/**
+ * Development workflow demonstration
+ */
+export const PopOutWorkflow: Story = {
+  name: 'Pop-out Development Workflow',
+  parameters: {
+    interactions: { disable: true } // Disable interactions addon for this story
+  },
+  args: {
+    tabs: (() => [
+      {
+        id: 'editor',
+        label: 'main.js',
+        icon: 'code',
+        content: '<div style="padding: 1rem; height: 100%; display: flex; flex-direction: column;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;"><h3 style="margin: 0;">Code Editor</h3><span style="background: #e8f5e8; color: #2d5a2d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem;">Saved</span></div><div style="flex: 1; background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; font-family: Monaco, Consolas, monospace; font-size: 14px; line-height: 1.4;"><div style="color: #569cd6;">function</div><div style="margin-left: 1rem;">createApp() {</div><div style="margin-left: 2rem; color: #9cdcfe;">const app = document.createElement(\'div\');</div><div style="margin-left: 2rem; color: #9cdcfe;">app.innerHTML = \'Hello World!\';</div><div style="margin-left: 2rem; color: #9cdcfe;">return app;</div><div style="margin-left: 1rem;">}</div></div></div>'
+      },
+      {
+        id: 'preview',
+        label: 'Live Preview',
+        icon: 'visibility',
+        content: '<div style="padding: 1rem; height: 100%; display: flex; flex-direction: column;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;"><h3 style="margin: 0;">Application Preview</h3><button style="background: #0066cc; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">⟳ Refresh</button></div><div style="flex: 1; border: 2px solid #e0e0e0; border-radius: 8px; background: white; display: flex; align-items: center; justify-content: center; font-size: 2rem;">🚀 Hello World!</div></div>'
+      },
+      {
+        id: 'devtools',
+        label: 'DevTools',
+        icon: 'bug_report',
+        content: '<div style="padding: 1rem; height: 100%; display: flex; flex-direction: column;"><h3 style="margin: 0 0 1rem 0;">Developer Console</h3><div style="flex: 1; background: #000; color: #fff; padding: 1rem; border-radius: 4px; font-family: monospace; font-size: 13px; overflow-y: auto;"><div style="color: #888;">[14:30:15] Starting development server...</div><div style="color: #0f0;">[14:30:16] ✓ Server running on http://localhost:3000</div><div style="color: #0f0;">[14:30:17] ✓ Hot reload enabled</div><div style="color: #ff0;">[14:30:20] ⚠ Warning: Unused variable \'oldApp\'</div><div style="color: #0f0;">[14:30:25] ✓ App updated successfully</div><div style="color: #888;">[14:30:25] Ready for development</div></div></div>'
+      }
+    ])(),
+    activeTab: 0,
+    popOut: {
+      enabled: true,
+      canPopOut: true,
+      canPopIn: true,
+      windowPanel: {
+        title: '{tabLabel} - Development',
+        width: '1000px',
+        height: '700px',
+        resizable: true,
+        draggable: true,
+        closable: true,
+        minimizable: true
+      }
+    }
+  },
+  render: (args) => html`
+    <div style="height: 500px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+      <nr-tabs
+        .tabs=${args.tabs}
+        .activeTab=${args.activeTab}
+        .popOut=${args.popOut}
+      ></nr-tabs>
+    </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+      <h4 style="margin: 0 0 0.5rem 0;">💡 Development Workflow Tips:</h4>
+      <ul style="margin: 0; padding-left: 1.5rem;">
+        <li>Pop out the <strong>Editor</strong> to your primary monitor</li>
+        <li>Pop out the <strong>Preview</strong> to a secondary monitor for live feedback</li>
+        <li>Keep <strong>DevTools</strong> as a tab for quick access to logs</li>
+        <li>Use the pop-in feature to reorganize your workspace as needed</li>
+      </ul>
     </div>
   `,
 };

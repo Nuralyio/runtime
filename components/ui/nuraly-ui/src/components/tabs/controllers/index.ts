@@ -34,3 +34,9 @@ export {
   type EventController,
   type TabsEventHost
 } from './event.controller.js';
+
+// Pop-out controller exports
+export {
+  TabsPopOutController,
+  type TabsPopOutHost
+} from './popout.controller.js';

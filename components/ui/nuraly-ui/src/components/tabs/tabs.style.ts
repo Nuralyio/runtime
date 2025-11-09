@@ -48,6 +48,14 @@ export const styles = css`
     box-shadow: var(--nuraly-shadow-tabs);
   }
 
+  /* Hide tabs container when all tabs are popped out */
+  .tabs-container.no-visible-tabs {
+    display: none;
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .tab-labels {
     display: flex;
     background-color: var(--nuraly-color-tabs-header-background);
@@ -165,6 +173,35 @@ export const styles = css`
   .close-icon:active {
     color: var(--nuraly-color-tabs-close-icon-active);
     background-color: var(--nuraly-color-tabs-close-icon-background-active);
+  }
+
+  /* Pop-out icon styling */
+  .pop-out-icon {
+    flex-shrink: 0;
+    width: var(--nuraly-tabs-pop-out-icon-size, 0.875rem);
+    height: var(--nuraly-tabs-pop-out-icon-size, 0.875rem);
+    color: var(--nuraly-color-tabs-pop-out-icon, var(--nuraly-color-tabs-close-icon));
+    cursor: pointer;
+    padding: var(--nuraly-spacing-1);
+    border-radius: var(--nuraly-border-radius-small);
+    margin-right: var(--nuraly-spacing-1);
+  }
+
+  .pop-out-icon:hover {
+    color: var(--nuraly-color-tabs-pop-out-icon-hover, var(--nuraly-color-tabs-close-icon-hover));
+    background-color: var(--nuraly-color-tabs-pop-out-icon-background-hover, var(--nuraly-color-tabs-close-icon-background-hover));
+  }
+
+  .pop-out-icon:active {
+    color: var(--nuraly-color-tabs-pop-out-icon-active, var(--nuraly-color-tabs-close-icon-active));
+    background-color: var(--nuraly-color-tabs-pop-out-icon-background-active, var(--nuraly-color-tabs-close-icon-background-active));
+  }
+
+  /* Tab actions container */
+  .tab-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-0);
   }
 
   /* Add tab button styling */
@@ -433,7 +470,76 @@ export const styles = css`
   }
 
   /* Minimal animation support for better performance */
-  
+
+  /* Pop-out placeholder styles */
+  .tab-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: var(--nuraly-spacing-4);
+    text-align: center;
+    background-color: var(--nuraly-color-background-subtle);
+    border: 2px dashed var(--nuraly-color-border);
+    border-radius: var(--nuraly-border-radius-medium);
+    color: var(--nuraly-color-text-muted);
+  }
+
+  .placeholder-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--nuraly-spacing-3);
+  }
+
+  .placeholder-icon {
+    font-size: 2rem;
+    opacity: 0.6;
+  }
+
+  .placeholder-text {
+    font-size: var(--nuraly-font-size-body);
+    line-height: var(--nuraly-line-height-body);
+  }
+
+  .placeholder-text strong {
+    color: var(--nuraly-color-text);
+    font-weight: var(--nuraly-font-weight-medium);
+  }
+
+  .pop-in-button {
+    background-color: var(--nuraly-color-primary);
+    color: var(--nuraly-color-primary-foreground);
+    border: none;
+    border-radius: var(--nuraly-border-radius-medium);
+    padding: var(--nuraly-spacing-2) var(--nuraly-spacing-4);
+    font-size: var(--nuraly-font-size-body);
+    font-weight: var(--nuraly-font-weight-medium);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .pop-in-button:hover {
+    background-color: var(--nuraly-color-primary-hover);
+  }
+
+  .pop-in-button:active {
+    background-color: var(--nuraly-color-primary-active);
+  }
+
+  /* Placeholder tab styling */
+  .tab-label.tab-placeholder-state {
+    background-color: var(--nuraly-color-background-subtle);
+    border: 1px dashed var(--nuraly-color-border);
+    opacity: 0.8;
+  }
+
+  .tab-label.tab-placeholder-state .tab-text {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  /* Animations */
   @keyframes fadeIn {
     from {
       opacity: 0;
