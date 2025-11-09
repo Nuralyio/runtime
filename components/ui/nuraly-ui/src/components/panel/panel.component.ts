@@ -9,11 +9,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
-  PanelMode,
-  PanelSize,
-  PanelPosition,
-  MaximizePosition,
-  EMPTY_STRING
+    PanelMode,
+    PanelSize,
+    PanelPosition,
+    MaximizePosition,
+    EMPTY_STRING
 } from './panel.types.js';
 import { styles } from './panel.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
@@ -24,10 +24,10 @@ import '../label/index.js';
 
 // Import controllers
 import {
-  PanelDragController,
-  PanelDragHost,
-  PanelResizeController,
-  PanelResizeHost
+    PanelDragController,
+    PanelDragHost,
+    PanelResizeController,
+    PanelResizeHost
 } from './controllers/index.js';
 
 /**
@@ -180,6 +180,10 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   @state()
   private isMaximizedFromEmbedded = false;
 
+  /** Track if this panel was created from a tab pop-out */
+  @property({ type: Boolean })
+  isTabPopOut = false;
+
   /** Track if this is the first update to capture initial mode */
   @state()
   private isFirstUpdate = true;
@@ -279,10 +283,41 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   }
 
   /**
+   * Restore panel to its original state
+   */
+  restore() {
+    // Special handling for tab pop-out panels
+    if (this.isTabPopOut) {
+      console.log('[Panel] Restore called for tab pop-out panel');
+      // For tab pop-outs, "restore" means pop back in
+      // Dispatch event first to trigger the pop-in logic
+      this.dispatchEvent(new CustomEvent('panel-restore', { bubbles: true }));
+      // Then close the panel (the pop-in logic should handle tab restoration)
+      // Use setTimeout to ensure the event is processed first
+      setTimeout(() => {
+        this.open = false;
+        this.dispatchEvent(new CustomEvent('panel-close', { bubbles: true }));
+      }, 0);
+      return;
+    }
+    
+    // Special handling for panels maximized from embedded mode
+    if (this.isMaximizedFromEmbedded) {
+      // Restore back to embedded mode
+      this.restoreEmbedded();
+      return;
+    }
+    
+    // Default restore behavior (same as maximize for minimized panels)
+    this.maximize();
+  }
+
+  /**
    * Minimize panel
    */
   minimize() {
     if (!this.minimizable) return;
+    
     this.mode = PanelMode.Minimized;
     this.dispatchEvent(new CustomEvent('panel-minimize', { bubbles: true }));
   }
@@ -291,18 +326,49 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
    * Maximize embedded panel to floating window
    */
   maximizeEmbedded() {
-    if (this.mode !== PanelMode.Embedded) return;
+    console.log('[Panel] === MAXIMIZE EMBEDDED START ===');
+    console.log('[Panel] Current mode:', this.mode);
+    console.log('[Panel] this.panelWidth:', this.panelWidth);
+    console.log('[Panel] this.panelHeight:', this.panelHeight);
+    
+    if (this.mode !== PanelMode.Embedded) {
+      console.log('[Panel] ✗ Not in embedded mode, aborting');
+      return;
+    }
     
     // Store original dimensions before maximizing
     const panel = this.shadowRoot?.querySelector('.panel') as HTMLElement;
     if (panel) {
+      console.log('[Panel] Panel DOM element found');
+      console.log('[Panel] panel.offsetWidth:', panel.offsetWidth);
+      console.log('[Panel] panel.offsetHeight:', panel.offsetHeight);
+      
       // Use current tracked dimensions or fall back to DOM dimensions
       this.originalEmbeddedWidth = this.panelWidth > 0 ? this.panelWidth : panel.offsetWidth;
       this.originalEmbeddedHeight = this.panelHeight > 0 ? this.panelHeight : panel.offsetHeight;
+      
+      console.log('[Panel] ✓ Set originalEmbeddedWidth:', this.originalEmbeddedWidth);
+      console.log('[Panel] ✓ Set originalEmbeddedHeight:', this.originalEmbeddedHeight);
+    } else {
+      console.warn('[Panel] ✗ Panel DOM element not found');
+    }
+    
+    // Set the original mode to embedded so we can restore properly
+    if (!this.originalMode || this.originalMode !== PanelMode.Embedded) {
+      this.originalMode = PanelMode.Embedded;
     }
     
     this.isMaximizedFromEmbedded = true;
+    
+    // Keep the original dimensions when maximizing to window mode
+    this.panelWidth = this.originalEmbeddedWidth;
+    this.panelHeight = this.originalEmbeddedHeight;
+    
+    console.log('[Panel] Final panelWidth:', this.panelWidth);
+    console.log('[Panel] Final panelHeight:', this.panelHeight);
+    
     this.mode = PanelMode.Window;
+    console.log('[Panel] Mode changed to Window');
     
     // Wait for the mode change to render, then set position
     this.updateComplete.then(() => {
@@ -316,7 +382,7 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
   }
 
   /**
-   * Set the window position based on maximizePosition
+   * Set the window position based on maximizePosition with slight randomization
    */
   private setMaximizePosition() {
     const panel = this.shadowRoot?.querySelector('.panel') as HTMLElement;
@@ -326,41 +392,49 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
+    // Add random offset for cascading effect (±80px for X, ±60px for Y)
+    const randomX = Math.floor(Math.random() * 160) - 80;
+    const randomY = Math.floor(Math.random() * 120) - 60;
+    
+    console.log('[Panel] setMaximizePosition - randomX:', randomX, 'randomY:', randomY);
+    console.log('[Panel] maximizePosition:', this.maximizePosition);
+    
     switch (this.maximizePosition) {
       case MaximizePosition.Center:
-        // Default center position (CSS handles this)
-        this.offsetX = 0;
-        this.offsetY = 0;
+        // Center with randomization for cascading effect
+        this.offsetX = randomX;
+        this.offsetY = randomY;
+        console.log('[Panel] Set offsetX:', this.offsetX, 'offsetY:', this.offsetY);
         break;
         
       case MaximizePosition.Left:
-        this.offsetX = -(viewportWidth / 2 - rect.width / 2 - 40);
-        this.offsetY = 0;
+        this.offsetX = -(viewportWidth / 2 - rect.width / 2 - 40) + randomX;
+        this.offsetY = randomY;
         break;
         
       case MaximizePosition.Right:
-        this.offsetX = (viewportWidth / 2 - rect.width / 2 - 40);
-        this.offsetY = 0;
+        this.offsetX = (viewportWidth / 2 - rect.width / 2 - 40) + randomX;
+        this.offsetY = randomY;
         break;
         
       case MaximizePosition.TopLeft:
-        this.offsetX = -(viewportWidth / 2 - rect.width / 2 - 40);
-        this.offsetY = -(viewportHeight / 2 - rect.height / 2 - 40);
+        this.offsetX = -(viewportWidth / 2 - rect.width / 2 - 40) + randomX;
+        this.offsetY = -(viewportHeight / 2 - rect.height / 2 - 40) + randomY;
         break;
         
       case MaximizePosition.TopRight:
-        this.offsetX = (viewportWidth / 2 - rect.width / 2 - 40);
-        this.offsetY = -(viewportHeight / 2 - rect.height / 2 - 40);
+        this.offsetX = (viewportWidth / 2 - rect.width / 2 - 40) + randomX;
+        this.offsetY = -(viewportHeight / 2 - rect.height / 2 - 40) + randomY;
         break;
         
       case MaximizePosition.BottomLeft:
-        this.offsetX = -(viewportWidth / 2 - rect.width / 2 - 40);
-        this.offsetY = (viewportHeight / 2 - rect.height / 2 - 40);
+        this.offsetX = -(viewportWidth / 2 - rect.width / 2 - 40) + randomX;
+        this.offsetY = (viewportHeight / 2 - rect.height / 2 - 40) + randomY;
         break;
         
       case MaximizePosition.BottomRight:
-        this.offsetX = (viewportWidth / 2 - rect.width / 2 - 40);
-        this.offsetY = (viewportHeight / 2 - rect.height / 2 - 40);
+        this.offsetX = (viewportWidth / 2 - rect.width / 2 - 40) + randomX;
+        this.offsetY = (viewportHeight / 2 - rect.height / 2 - 40) + randomY;
         break;
     }
     
@@ -408,7 +482,14 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
    */
   maximize() {
     if (this.mode === PanelMode.Minimized) {
-      // When restoring from minimized, go back to the original mode
+      // When restoring from minimized, check if we were maximized from embedded
+      if (this.isMaximizedFromEmbedded) {
+        // Restore back to embedded mode instead of going to original mode
+        this.restoreEmbedded();
+        return;
+      }
+      
+      // Normal restoration: go back to the original mode
       // (the mode before any transformations)
       this.mode = this.originalMode || PanelMode.Panel;
       
@@ -551,12 +632,21 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
             </button>
           ` : nothing}
           
-          ${this.mode === PanelMode.Window && this.minimizable && !this.isMaximizedFromEmbedded ? html`
+          ${this.mode === PanelMode.Window && this.minimizable && !this.isMaximizedFromEmbedded && !this.isTabPopOut ? html`
             <button
               class="panel-action-button"
               @click="${this.minimize}"
               title="Minimize">
               <nr-icon name="minus"></nr-icon>
+            </button>
+          ` : nothing}
+          
+          ${this.isTabPopOut && this.mode === PanelMode.Window ? html`
+            <button
+              class="panel-action-button"
+              @click="${this.restore}"
+              title="Restore to tabs">
+              <nr-icon name="minimize"></nr-icon>
             </button>
           ` : nothing}
           
