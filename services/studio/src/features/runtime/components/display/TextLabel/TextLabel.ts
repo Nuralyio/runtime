@@ -1,7 +1,6 @@
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { ref } from "lit/directives/ref.js";
@@ -55,7 +54,6 @@ export class TextLabelBlock extends BaseElementBlock {
             .for=${this.inputHandlersValue.for || nothing}
             .value=${this.inputHandlersValue.value || ""}
             contentEditable="${this.isEditable}"
-            style=${styleMap({ ...this.getStyles(), "--text-label-font-size": this.getStyles().fontSize })}
             @click=${(e) => {
         this.executeEvent("onClick", e);
       }}

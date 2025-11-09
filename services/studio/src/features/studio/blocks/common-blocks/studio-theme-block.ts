@@ -200,21 +200,22 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     // Create value handler based on input type
     let valueHandler = "";
     let eventUpdate = "";
-    let eventType = "valueChange";
+    let eventType = "onChange";
 
     if (inputType === "color") {
       valueHandler = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        return Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
+        return Editor.getComponentStyleForState(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
       `;
       eventUpdate = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
+        
         updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
       `;
     } else if (inputType === "select") {
       valueHandler = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        return Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
+        return Editor.getComponentStyleForState(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
       `;
       eventUpdate = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
@@ -225,7 +226,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       // For text and number inputs
       valueHandler = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        return Editor.getComponentStyle(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
+        return Editor.getComponentStyleForState(selectedComponent, "${item.cssVar}") ?? "${defaultValue}";
       `;
       eventUpdate = /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
