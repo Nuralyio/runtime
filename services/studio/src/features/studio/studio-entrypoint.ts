@@ -197,8 +197,15 @@ export default [
           
           setCurrentEditorTab(filesTabs);
         }
+      `,
+      onTabPopOut: /* js */ `
+        console.log('Tab popped out:', EventData);
+        // Tab is now in its own window - you can store state or handle custom logic here
+      `,
+      onTabPopIn: /* js */ `
+        console.log('Tab popped back in:', EventData);
+        // Tab is restored to the main tabs - you can restore state or handle custom logic here
       `
-
     },
     ...COMMON_ATTRIBUTES,
     style:{
@@ -225,9 +232,46 @@ export default [
   "--nuraly-border-width-tabs-bottom-focus": "2px",
   "--nuraly-border-width-tabs-left-focus": "2px",
         "--nuraly-tabs-labels-gap": "0px",
+
+
+
+
+    "--nuraly-panel-small-height": "400px",
+    "--nuraly-border-radius-small": "0px",
+    "--nuraly-label-font-weight": "350",
+    "--nuraly-panel-header-background": "#fcfcfc",
+    height: "100%",
+    "overflow-y": "auto",
+    "--nuraly-panel-body-padding-small": "0px"
+        
     },
-    input: {  
-      
+    input: {
+      // popOut: {
+      //   type: "object",
+      //   value: {
+      //     enabled: true,
+      //     canPopOut: true,
+      //     canPopIn: true,
+      //     windowPanel: {
+      //       title: '{tabLabel} - Popped Out',
+      //       width: '800px',
+      //       height: '600px',
+      //       resizable: true,
+      //       draggable: true,
+      //       closable: false,
+      //       minimizable: true
+      //     }
+      //   }
+      // },
+      panelConfig: {
+        type: "object",
+        value: {
+          enabled: true,
+          mode: 'embedded',
+          resizable: false,
+          title: 'Panel Tabs',
+        }
+      },
       align : {
         type: "string",
         value: "stretch"

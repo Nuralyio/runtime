@@ -196,6 +196,16 @@ export class JsonStudioProcessor {
   private static generatePanel(position: string, config: PanelConfig): void {
     const panelId = `${position}_panel`;
     
+    // For panels with tabs, reference existing tab components like right_panel_tabs
+    // Don't generate new tab components
+    let childrenIds: string[];
+    if (config.tabs) {
+      // Use existing tabs component based on position
+      childrenIds = [`${position}_panel_tabs`];
+    } else {
+      childrenIds = [`${panelId}_content`];
+    }
+    
     this.addComponent({
       uuid: panelId,
       application_id: "1",
@@ -209,47 +219,16 @@ export class JsonStudioProcessor {
         borderLeft: position === "right" ? "1px solid #e5e7eb" : undefined,
         overflow: "auto"
       },
-      childrenIds: config.tabs ? [`${panelId}_tabs`] : [`${panelId}_content`]
+      childrenIds
     });
 
-    if (config.tabs) {
-      this.generateTabs(panelId, config.tabs);
-    } else if (config.content) {
+    // Only generate content for non-tab panels
+    if (!config.tabs && config.content) {
       this.generatePanelContent(panelId, config.content);
     }
   }
 
-  /**
-   * Generate tabs for a panel
-   */
-  private static generateTabs(panelId: string, tabs: TabConfig[]): void {
-    // Tab container
-    this.addComponent({
-      uuid: `${panelId}_tabs`,
-      application_id: "1",
-      component_type: ComponentType.Tabs,
-      ...COMMON_ATTRIBUTES,
-      style: {
-        width: "100%",
-        height: "100%"
-      },
-      input: {
-        tabs: {
-          type: "array",
-          value: tabs.map(tab => ({
-            label: { type: "string", value: tab.label },
-            icon: { type: "string", value: tab.icon },
-            content: { type: "componentId", value: `${panelId}_${tab.id}_content` }
-          }))
-        }
-      }
-    });
 
-    // Generate content for each tab
-    tabs.forEach(tab => {
-      this.generatePanelContent(`${panelId}_${tab.id}`, tab.content);
-    });
-  }
 
   /**
    * Generate content for a panel

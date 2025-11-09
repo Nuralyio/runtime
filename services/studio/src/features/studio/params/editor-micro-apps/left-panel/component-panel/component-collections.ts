@@ -7,7 +7,7 @@ export const componentCollection = {
   application_id: "1",
   component_type: ComponentType.Collection,
   style: {
-    "--columns": "2",
+    "--columns": "9",
     "margin-left": "10px",
   },
   input: {
