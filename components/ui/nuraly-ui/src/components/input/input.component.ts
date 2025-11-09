@@ -299,7 +299,6 @@ export class NrInputElement extends NumberMixin(
 
     // Sync input element value when property changes externally
     if (_changedProperties.has('value')) {
-      console.log(this.input)
       const input = this.input;
       if (input && input.value !== this.value) {
         input.value = this.value;
