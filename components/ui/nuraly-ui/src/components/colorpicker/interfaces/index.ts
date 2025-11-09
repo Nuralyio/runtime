@@ -56,6 +56,7 @@ export interface ColorChangeEventDetail {
   value: string;
   previousValue: string;
   isValid: boolean;
+  color: string;
 }
 
 /**
