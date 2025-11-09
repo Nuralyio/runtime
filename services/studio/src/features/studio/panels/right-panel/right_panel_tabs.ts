@@ -32,6 +32,10 @@ export default [
     "overflow": "auto"
   },
   input: {
+    // index: {
+    //     type: "number",
+    //     value: 1
+    // },
     popOut: {
         type: "object",
         value: {
@@ -54,6 +58,7 @@ export default [
     tabs: {
       type: "handler",
       value: /* js */ `
+      Vars.selected_component_style_state
                 const selectedComponent = Utils.first(Vars.selectedComponents);
                 const currentPageId = Vars.currentPage;
                 let parameters = [], handlers = [], themes = ["select_component_text"];

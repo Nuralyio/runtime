@@ -4,8 +4,8 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-import { EMPTY_STRING } from "@shared/utils/constants.ts";
 import "@nuralyui/colorpicker";
+import { EMPTY_STRING } from "@shared/utils/constants.ts";
 
 @customElement("color-picker-block")
 export class ColorPickerBlock extends BaseElementBlock {
@@ -21,7 +21,7 @@ export class ColorPickerBlock extends BaseElementBlock {
     this.registerCallback("value", () => {});
   }
 
-  render() {
+  renderComponent() {
     const colorPickerStyles = this.component?.style || {};
     const size = (colorPickerStyles.size as 'small' | 'default' | 'large') || 'default';
 
@@ -49,8 +49,9 @@ export class ColorPickerBlock extends BaseElementBlock {
         .label=${this.inputHandlersValue?.label || ''}
         .helperText=${this.inputHandlersValue?.helperText || ''}
         .defaultColorSets=${this.inputHandlersValue?.defaultColorSets || []}
-        @hy-color-change=${(e) => {
-          this.executeEvent('onChange', e);
+        @nr-color-change=${(e) => {
+          console.log(e.detail)
+          this.executeEvent('onChange', e, { value: e.detail.color });
         }}
         @nr-colorpicker-open=${(e) => {
           this.executeEvent('onOpen', e);

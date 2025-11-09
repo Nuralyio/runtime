@@ -117,8 +117,7 @@ export default [
     },
     event: {
         changed: /* js */ `
-            console.log('Component state changed:', EventData.value);
-            SetContextVar("selected_component_state", EventData.value);
+            Vars.selected_component_style_state = EventData.value;
         `
     },
     style: {

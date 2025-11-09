@@ -589,7 +589,8 @@ export class GenericJsonProcessor {
                      return [options, currentValue, type];
                    `
                    : `
-                     return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}";
+                     let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"
+                     return e;
                    `),
         },
         size: property.type === 'radio' || property.type === 'select' ? {
