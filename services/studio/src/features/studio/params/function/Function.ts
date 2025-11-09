@@ -11,7 +11,6 @@ import { ButtonTheme } from "@studio/core/utils/common-editor-theme.ts";
 import { buildFunctionHandler } from "@shared/redux/handlers/functions/build-function-handler.ts";
 import { deployFunctionHandler } from "@shared/redux/handlers/functions/deploy-function-handler.ts";
 import { ExecuteInstance } from "@runtime/core/Kernel.ts";
-import "@runtime/components/advanced/CodeEditor/CodeEditor.ts";
 
 // debounce.ts
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
@@ -31,13 +30,34 @@ export class FunctionContent extends LitElement {
   private logPanel!: LogPanel;
 
   @state()
-  payload: string = {};
+  payload: any = {};
+
+  @state()
+  private codeEditorLoaded = false;
 
   // Debounce delay in milliseconds
   private debounceDelay = 1000;
 
   // Create a debounced version of handleCodeChange
   private debouncedHandleCodeChange = debounce(this.handleCodeChange.bind(this), this.debounceDelay);
+
+  override async connectedCallback() {
+    super.connectedCallback();
+    await this.loadCodeEditor();
+  }
+
+  /**
+   * Lazy load the CodeEditor component
+   */
+  private async loadCodeEditor() {
+    try {
+      await import("@runtime/components/advanced/CodeEditor/CodeEditor.ts");
+      this.codeEditorLoaded = true;
+      this.requestUpdate();
+    } catch (error) {
+      console.error("Failed to load CodeEditor component:", error);
+    }
+  }
 
   static styles = css`
       :host {
@@ -146,31 +166,25 @@ export class FunctionContent extends LitElement {
 
           <nr-dropdown
             placeholder="Select an option"
-
             .template=${html`
-              <div style="width: 600px;
-    height: 310px;
-    padding: 8px;
-    background: #2d2d2d;
-    border-radius: 4px;
-padding-bottom: 50px;">
-
-                <code-editor
-                  theme="vs"
-                  @change=${(event: CustomEvent) => {
-                    const {
-                      detail: { value }
-                    } = event;
-                    this.payload = JSON.parse(value);
-                  }}
-                  .code=${`
+              <div style="width: 600px; height: 310px; padding: 8px; background: #2d2d2d; border-radius: 4px; padding-bottom: 50px;">
+                ${this.codeEditorLoaded ? html`
+                  <code-editor
+                    theme="vs"
+                    @change=${(event: CustomEvent) => {
+                      const {
+                        detail: { value }
+                      } = event;
+                      this.payload = JSON.parse(value);
+                    }}
+                    .code=${`
 {
     "data": "Hello World"
 }
           `}
-                language="json"
-                >
-                </code-editor>
+                    language="json">
+                  </code-editor>
+                ` : html`<div>Loading editor...</div>`}
                 <nr-button
                   style=${styleMap({
                     ...ButtonTheme,
@@ -186,6 +200,7 @@ padding-bottom: 50px;">
                       });
                   }}>Submit
                 </nr-button>
+              </div>
             `}>
             <nr-button
               style=${styleMap({
@@ -198,18 +213,19 @@ padding-bottom: 50px;">
             </nr-button>
           </nr-dropdown>
         </div>
-        <code-editor
-          theme="vs"
-          @change=${(event: CustomEvent) => {
-            const {
-              detail: { value }
-            } = event;
-            this.debouncedHandleCodeChange(value);
-          }}
-          .code=${this.detail?.handler}
-          language="javascript"
-        >
-        </code-editor>
+        ${this.codeEditorLoaded ? html`
+          <code-editor
+            theme="vs"
+            @change=${(event: CustomEvent) => {
+              const {
+                detail: { value }
+              } = event;
+              this.debouncedHandleCodeChange(value);
+            }}
+            .code=${this.detail?.handler}
+            language="javascript">
+          </code-editor>
+        ` : html`<div>Loading editor...</div>`}
       </div>
       <log-panel></log-panel>
     `;

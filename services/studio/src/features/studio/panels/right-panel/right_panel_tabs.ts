@@ -32,6 +32,23 @@ export default [
     "overflow": "auto"
   },
   input: {
+    popOut: {
+        type: "object",
+        value: {
+          enabled: true,
+          canPopOut: true,
+          canPopIn: true,
+          windowPanel: {
+            title: '{tabLabel} - Popped Out',
+            width: '800px',
+            height: '600px',
+            resizable: true,
+            draggable: true,
+            closable: false,
+            minimizable: true
+          }
+        }
+      },
     align: { type: "string", value: "stretch" },
     size: { type: "string", value: "small" },
     tabs: {
