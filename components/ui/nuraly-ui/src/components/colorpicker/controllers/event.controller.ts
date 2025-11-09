@@ -103,8 +103,19 @@ export class ColorPickerEventController extends BaseColorPickerController implem
       value: newColor,
       previousValue: previousColor,
       isValid: this.isValidColor(newColor),
+      color: newColor,
     };
 
+    // Dispatch nr-color-change event (primary event)
+    this.dispatchEvent(
+      new CustomEvent('nr-color-change', {
+        bubbles: true,
+        composed: true,
+        detail,
+      })
+    );
+
+    // Also dispatch hy-color-change for backwards compatibility
     this.dispatchEvent(
       new CustomEvent('hy-color-change', {
         bubbles: true,
@@ -118,7 +129,7 @@ export class ColorPickerEventController extends BaseColorPickerController implem
       new CustomEvent('color-changed', {
         bubbles: true,
         composed: true,
-        detail: { value: newColor },
+        detail: { value: newColor, color: newColor },
       })
     );
   }

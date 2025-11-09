@@ -73,7 +73,7 @@ export class NrInputElement extends NumberMixin(
   state = INPUT_STATE.Default;
 
   /** Current input value */
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   value = EMPTY_STRING;
 
   /** Input size (small, medium, large) */
@@ -294,6 +294,15 @@ export class NrInputElement extends NumberMixin(
 
         if (this.maxLength) input.setAttribute('maxlength', this.maxLength.toString());
         else input.removeAttribute('maxlength');
+      }
+    }
+
+    // Sync input element value when property changes externally
+    if (_changedProperties.has('value')) {
+      console.log(this.input)
+      const input = this.input;
+      if (input && input.value !== this.value) {
+        input.value = this.value;
       }
     }
   }
