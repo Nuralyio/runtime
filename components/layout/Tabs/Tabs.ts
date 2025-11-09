@@ -35,13 +35,12 @@ export class TabsBlock extends BaseElementBlock {
     super.update(changedProperties);
     if (changedProperties.has("component")) {
       this.updateComponents();
-      this.editableTabs = this.generateTabs();
+     // this.editableTabs = this.generateTabs();
     }
   }
 
   override renderComponent() {
     const tabStyle = this.getStyles();
-    const textAlign = this.inputHandlersValue?.textAlign ?? 'center';
     
     return html`
       ${this.editableTabs?.length > 0 ? html`
@@ -53,12 +52,37 @@ export class TabsBlock extends BaseElementBlock {
           .tabs=${this.editableTabs}
           size=${this.inputHandlersValue?.size ?? 'medium'}
           align=${this.inputHandlersValue?.align ?? nothing}
-          @tabTilteClick=${(e: CustomEvent) => {
+          .panelConfig=${this.inputHandlersValue?.panelConfig ?? nothing}
+          .popOut=${this.inputHandlersValue?.popOut ?? nothing}
+          @nr-tab-click=${(e: CustomEvent) => {
             //@todo pass the object
           this.executeEvent('onTabChanged', e, {
             tab: this.editableTabs.find((tab, index) => index === e.detail.index),
           });
         }}
+          @nr-tabs-panel-close=${(e: CustomEvent) => {
+            this.executeEvent('onPanelClose', e);
+          }}
+          @nr-tabs-panel-minimize=${(e: CustomEvent) => {
+            this.executeEvent('onPanelMinimize', e);
+          }}
+          @nr-tabs-panel-resize=${(e: CustomEvent) => {
+            this.executeEvent('onPanelResize', e);
+          }}
+          @nr-tab-pop-out=${(e: CustomEvent) => {
+            this.executeEvent('onTabPopOut', e, {
+              tab: e.detail.tab,
+              index: e.detail.index,
+              popOutId: e.detail.popOutId
+            });
+          }}
+          @nr-tab-pop-in=${(e: CustomEvent) => {
+            this.executeEvent('onTabPopIn', e, {
+              tab: e.detail.tab,
+              originalIndex: e.detail.originalIndex,
+              popOutId: e.detail.popOutId
+            });
+          }}
           .editable=${{
           canDeleteTab: false,
           canEditTabTitle: false,
@@ -88,6 +112,6 @@ export class TabsBlock extends BaseElementBlock {
   private updateComponents() {
     const components = $applicationComponents(this.component.application_id).get();
     this.componentsWithChildren = [...components];
-    this.editableTabs = this.generateTabs();
+  //  this.editableTabs = this.generateTabs();
   }
 }
