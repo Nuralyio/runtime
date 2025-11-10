@@ -4,7 +4,7 @@ import "@nuralyui/select";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
 
 @customElement("handler-block")
@@ -31,7 +31,7 @@ constructor() {
 
 
   handleCodeChange = (e: CustomEvent, eventName: string) => {
-    executeCodeWithClosure(this.component,
+    executeHandler(this.component,
       /* js */`
             const selectedComponent = Utils.first(Vars.selectedComponents);
               updateEvent(selectedComponent, "${eventName}", EventData.value )
@@ -43,7 +43,7 @@ constructor() {
 
   createHandleCodeChange = (eventName: string) => {
     
-    executeCodeWithClosure(this.component,
+    executeHandler(this.component,
       /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
               updateEvent(selectedComponent, "${eventName}", "" )
@@ -55,7 +55,7 @@ constructor() {
   };
 
   removeHandler = (eventName: string) => {
-    executeCodeWithClosure(this.component,
+    executeHandler(this.component,
       /* js */ `
         try{
           const selectedComponent = Utils.first(Vars.selectedComponents);

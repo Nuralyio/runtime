@@ -17,11 +17,8 @@
 
 export {
   RuntimeInstance,
-  // Backward compatibility alias
   ExecuteInstance,
-  // Handler execution functions
-  executeHandler,
-  executeCodeWithClosure
+  executeHandler
 } from './RuntimeContext';
 
 export { default as Editor } from './Editor';

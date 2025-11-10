@@ -1,5 +1,5 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext";
+import { executeHandler } from "@features/runtime/core/RuntimeContext";
 import { Utils } from "@runtime/core/Utils.ts";
 import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
@@ -33,7 +33,7 @@ export async function traitInputHandler(
   if (input.type === "handler") {
     try {
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-      const fn = executeCodeWithClosure({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
       const result = Utils.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {
@@ -62,7 +62,7 @@ export async function traitStyleHandler(
   if (isServer || !style) return;
 
   const val = style.startsWith("return ")
-    ? executeCodeWithClosure(ctx.component, style)
+    ? executeHandler(ctx.component, style)
     : style;
 
   if (val && ctx.stylesHandlersValue[styleName] !== val) {

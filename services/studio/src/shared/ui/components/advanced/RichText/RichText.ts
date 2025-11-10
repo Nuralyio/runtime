@@ -5,7 +5,7 @@ import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "./RichTextEditor.ts";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("rich-text-block")
@@ -56,7 +56,7 @@ export class RichTextContainer extends BaseElementBlock {
     private handleCodeEditorChange(value: string) {
         if (!this.isViewMode) {
             const serializedValue = JSON.stringify(value);
-            executeCodeWithClosure(this.component,
+            executeHandler(this.component,
                 /* js */ `
                   try {
                       const selectedComponent = Utils.first(Vars.selectedComponents);

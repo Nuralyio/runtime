@@ -2,7 +2,7 @@ import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -45,7 +45,7 @@ export class TextInputBlock extends BaseElementBlock {
 
   handleCheckboxChange = (e) => {
     if (this.component.event?.checkboxChanged) {
-      executeCodeWithClosure(
+      executeHandler(
         this.component,
         getNestedAttribute(this.component, `event.onCodeChange`),
         { value: e.detail.value }
@@ -56,7 +56,7 @@ export class TextInputBlock extends BaseElementBlock {
   private handleCodeEditorChange(value: string) {
     if (!this.isViewMode) {
       const serializedValue = JSON.stringify(value);
-      executeCodeWithClosure(
+      executeHandler(
         this.component,
         /* js */ `
           try {

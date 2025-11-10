@@ -3,7 +3,7 @@ import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/slider-input";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext";
+import { executeHandler } from "@features/runtime/core/RuntimeContext";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import "@nuralyui/colorpicker";
@@ -233,7 +233,7 @@ export class AttributeBorderValue extends BaseElementBlock {
   // Debounced changed event handler
   debouncedChanged = debounce((attributeName: string) => {
     if (this.component.event.borderRadiusChanged) {
-      const fn = executeCodeWithClosure(
+      const fn = executeHandler(
         this.component,
         getNestedAttribute(this.component, `event.borderRadiusChanged`),
         {
@@ -246,7 +246,7 @@ export class AttributeBorderValue extends BaseElementBlock {
 
   debouncedBorderChanged = (borders) => {
     if (this.component.event.borderChanged) {
-      const fn = executeCodeWithClosure(
+      const fn = executeHandler(
         this.component,
         getNestedAttribute(this.component, `event.borderChanged`),
         {
