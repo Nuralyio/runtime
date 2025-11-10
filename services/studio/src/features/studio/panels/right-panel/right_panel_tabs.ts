@@ -67,9 +67,9 @@ export default [
                 if(selectedComponent) { 
                     const componentConfigs = {
                         "text_label": {
-                            parameters: ["text_label_bocks"],
+                            parameters: ["text_label_properties_collapse"],
                             handlers: ["text_label_handler"],
-                            themes: ["parent_color_container"]
+                            themes: ["text_label_theme_container"]
                         },
                         "text_input": {
                             parameters: ["text_input_blocks"],
