@@ -1,27 +1,24 @@
-import { FileStorage } from '../core/Storage';
-import { Navigation } from '../core/Navigation';
-import { Utils } from '../core/Utils';
-import { ExecuteInstance } from '../core/RuntimeContext';
+import { FileStorage, Navigation, Utils, ExecuteInstance } from '../core';
 import { isServer } from '@shared/utils/envirement';
 import { setVar } from '@shared/redux/store/context';
 import { addPageHandler, updatePageHandler } from '@shared/redux/handlers/pages/handler';
 import { traitCompoentFromSchema } from '@shared/utils/clipboard-utils';
-import { updateComponentAttributes } from '@shared/redux/actions/component/updateComponentAttributes';
-import { addComponentAction } from '@shared/redux/actions/component/addComponentAction';
-import { updateComponentName } from '@shared/redux/actions/component/update-component-name';
-import { deleteComponentAction } from '@shared/redux/actions/component/deleteComponentAction';
+import {
+  updateComponentAttributes,
+  addComponentAction,
+  updateComponentName,
+  deleteComponentAction
+} from '@shared/redux/actions/component';
 import { deletePageAction } from '@shared/redux/actions/page/deletePageAction';
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from '@shared/utils/clipboard-utils';
-import { updateSepecificApplication } from '@shared/redux/actions/application/updateApplication';
-import { openEditorTab } from '@shared/redux/actions/editor/openEditorTab';
-import { setCurrentEditorTab } from '@shared/redux/actions/editor/setCurrentEditorTab';
-import { loadFunctionsHandler } from '@shared/redux/handlers/functions/load-functions-handler';
+import { updateApplication as updateSepecificApplication } from '@shared/redux/actions/application';
+import { openEditorTab, setCurrentEditorTab } from '@shared/redux/actions/editor';
+import { loadFunctionsHandler, invokeFunctionHandler } from '@shared/redux/handlers/functions';
 import { GenerateName } from '@shared/utils/naming-generator';
 import { eventDispatcher } from '@shared/utils/change-detection';
-import type { ComponentElement } from '@shared/redux/store/component/component.interface';
+import type { ComponentElement } from '@shared/redux/store/component';
 import type { PageElement } from '@shared/redux/handlers/pages/page.interface';
 import Editor from '../core/Editor';
-import { invokeFunctionHandler } from '@shared/redux/handlers/functions/invoke-function-handler';
 import Database from '@nuraly/dbclient';
 
 // Helper function needed by executeHandler
