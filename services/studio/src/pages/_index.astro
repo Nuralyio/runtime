@@ -1,7 +1,7 @@
 ---
 import Layout from './_layouts/LandingLayout.astro';
-import "../features/runtime/micro-app";
-import { MicroApp } from '../features/runtime/micro-app';
+import "../shared/ui/components/runtime/MicroApp/MicroApp";
+import { MicroApp } from '../shared/ui/components/runtime/MicroApp/MicroApp';
 import 'dotenv/config'
 import { processHeaders } from '@shared/utils/api-calls-utils';
 import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@services';

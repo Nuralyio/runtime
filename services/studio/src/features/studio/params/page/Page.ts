@@ -26,7 +26,7 @@ import { deleteComponentAction } from "@shared/redux/actions/component/deleteCom
 import { updatePageInfo } from "@shared/redux/actions/page/updatePageInfo";
 import { setEnvirementMode } from "@shared/redux/actions/editor/setEnvirementMode";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@shared/utils/clipboard-utils";
-import { ExecuteInstance } from "@features/runtime/core/runtime-context";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import type { LogPanel } from "@studio/panels/log-panel/LogPanel";
 import { Subscription } from "rxjs";
 import Convert from "ansi-to-html";

@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
-import { executeHandler } from "@features/runtime/core/runtime-context.ts";
+import { executeHandler } from "@features/runtime/state/runtime-context.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { debounce } from "@shared/utils/time.ts";
 

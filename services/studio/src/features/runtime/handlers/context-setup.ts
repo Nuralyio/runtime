@@ -5,7 +5,7 @@
  * including component state, style proxies, and event data.
  */
 
-import { ExecuteInstance } from '../core';
+import { ExecuteInstance } from '../state';
 
 /**
  * Helper function to create observable proxies for style objects

@@ -1,9 +1,9 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeHandler } from "@features/runtime/core/runtime-context";
-import { Utils } from "@runtime/core/Utils.ts";
+import { executeHandler } from "@features/runtime/state/runtime-context";
+import { RuntimeHelpers } from "@shared/utils/runtime-helpers.ts";
 import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
-import EditorInstance from "@runtime/core/editor";
+import EditorInstance from "@features/runtime/state/editor";
 
 export async function traitInputHandler(
   ctx: {
@@ -34,7 +34,7 @@ export async function traitInputHandler(
     try {
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
       const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
-      const result = Utils.isPromise(fn) ? await fn : fn;
+      const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {
       ctx.errors[inputName] = { error: error.message };

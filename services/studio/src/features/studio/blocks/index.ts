@@ -7,6 +7,7 @@
 export { default as studioPageNameBlock } from "./page-blocks/studio-page-name-block.ts";
 export { default as studioPageUrlBlock } from "./page-blocks/studio-page-url-block.ts";
 export { default as studioPageSEOBlock } from "./page-blocks/studio-page-seo-block.ts";
+export { default as studioPageAccessControlBlock } from "./page-blocks/studio-page-access-control-block.ts";
 export { PageThemeStudio } from "./page-blocks/themes.ts";
 
 // Microapp Blocks

@@ -95,7 +95,10 @@ export class TabsBlock extends BaseElementBlock {
   }
 
   private generateComponent(childrensIds: string[]) {
-    const childrens = this.componentsWithChildren.filter(component => childrensIds?.includes(component.uuid));
+    // Map over childrensIds to preserve order, find each component in componentsWithChildren
+    const childrens = childrensIds?.map(id => 
+      this.componentsWithChildren.find(component => component.uuid === id)
+    ).filter(Boolean) || []; // Filter out any undefined results
     return html`${renderComponent(childrens, null, true)}`;
   }
 

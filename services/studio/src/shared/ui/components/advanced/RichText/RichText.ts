@@ -5,7 +5,7 @@ import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "./RichTextEditor.ts";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { executeHandler } from "@features/runtime/core/runtime-context.ts";
+import { executeHandler } from "@features/runtime/state/runtime-context.ts";
 import { styleMap } from "lit/directives/style-map.js";
 
 @customElement("rich-text-block")

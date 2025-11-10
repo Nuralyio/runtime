@@ -1,5 +1,5 @@
-import { Utils } from "@runtime/core/Utils.ts";
-import Editor from "@runtime/core/Editor.ts";
+import { RuntimeHelpers } from "@shared/utils/runtime-helpers.ts";
+import Editor from "@runtime/state/editor.ts";
 
 export function calculateStyles(ctx: {
   component: any;
@@ -25,7 +25,7 @@ export function calculateStyles(ctx: {
   }
 
   const { width, flex, cursor } = ctx.calculatedStyles;
-  if (width && Utils.extractUnit(width) === "%") ctx.style.width = width;
+  if (width && RuntimeHelpers.extractUnit(width) === "%") ctx.style.width = width;
   if (flex) ctx.style.flex = flex;
   if (cursor) ctx.style.cursor = cursor;
 }

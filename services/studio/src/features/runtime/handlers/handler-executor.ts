@@ -6,15 +6,15 @@
  * that need to be evaluated with access to the Nuraly runtime API.
  */
 
-import { FileStorage, Utils } from '../core';
+import { RuntimeHelpers } from '@shared/utils/runtime-helpers';
 import { isServer } from '@shared/utils/envirement';
 import { eventDispatcher } from '@shared/utils/change-detection';
-import Editor from '../core/Editor';
+import Editor from '../state/editor';
 import Database from '@nuraly/dbclient';
 
 import { compileHandlerFunction } from './compiler';
 import { setupRuntimeContext, extractRuntimeContext } from './context-setup';
-import { createGlobalHandlerFunctions, registerGlobalFunctionsToExecuteInstance } from './global-functions';
+import { createGlobalHandlerFunctions, registerGlobalFunctionsToExecuteInstance } from './runtime-api';
 
 /**
  * Executes a component handler with full runtime context.
@@ -72,7 +72,6 @@ export function executeHandler(
 
   // Execute the compiled function with all context and global functions
   return compiledFunction(
-    FileStorage,
     Database,
     eventDispatcher,
     runtimeContext.PropertiesProxy,
@@ -114,7 +113,9 @@ export function executeHandler(
     globalFunctions.openEditorTab,
     globalFunctions.setCurrentEditorTab,
     globalFunctions.InvokeFunction,
-    Utils,
-    customConsole
+    RuntimeHelpers, // Passed as "Utils" parameter for handler code
+    customConsole,
+    globalFunctions.UploadFile,
+    globalFunctions.BrowseFiles
   );
 }
