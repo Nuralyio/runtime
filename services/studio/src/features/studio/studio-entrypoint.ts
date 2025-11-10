@@ -208,7 +208,6 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     style:{
-      "width": "295px",
 "--nuraly-border-width-tabs-content-top": "0px",
   "--nuraly-border-width-tabs-top": "0px",
   "--nuraly-border-width-tabs-right": "0px",
