@@ -12,10 +12,10 @@ import { setVar } from '@shared/redux/store/context';
 import { addPageHandler, updatePageHandler } from '@shared/redux/handlers/pages/handler';
 import { traitCompoentFromSchema } from '@shared/utils/clipboard-utils';
 import {
-    updateComponentAttributes,
-    addComponentAction,
-    updateComponentName,
-    deleteComponentAction
+  updateComponentAttributes,
+  addComponentAction,
+  updateComponentName,
+  deleteComponentAction
 } from '@shared/redux/actions/component';
 import type { ComponentElement } from '@shared/redux/store/component';
 import { deletePageAction } from '@shared/redux/actions/page/deletePageAction';
@@ -192,6 +192,39 @@ export function createGlobalHandlerFunctions(runtimeContext: any) {
         }
       } catch (error) {
         console.error("Error in InvokeFunctionHandler:", error);
+      }
+    },
+
+    // Navigation Functions
+    NavigateToUrl: (url: string): void => {
+      window.location.href = url;
+      ExecuteInstance.Event?.preventDefault?.();
+      ExecuteInstance.Event?.stopPropagation?.();
+    },
+
+    NavigateToHash: (hash: string): void => {
+      window.location.hash = hash;
+      if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+      ExecuteInstance.Event?.preventDefault?.();
+      ExecuteInstance.Event?.stopPropagation?.();
+    },
+
+    NavigateToPage: (pageName: string): void => {
+      ExecuteInstance.Event?.preventDefault?.();
+      ExecuteInstance.Event?.stopPropagation?.();
+      const currentEditingApplication = ExecuteInstance.GetVar("currentEditingApplication");
+      const appPages = ExecuteInstance.GetContextVar(
+        currentEditingApplication?.uuid + ".appPages",
+        currentEditingApplication?.uuid
+      );
+      const targetPage = appPages?.find((pageItem: any) => pageItem.name === pageName);
+      if (targetPage) {
+        ExecuteInstance.VarsProxy.currentPage = targetPage.uuid;
       }
     },
 

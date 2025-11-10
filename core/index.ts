@@ -7,7 +7,7 @@
  * @example
  * ```typescript
  * // Import from core module
- * import { ExecuteInstance, Editor, Navigation } from '@features/runtime/core';
+ * import { ExecuteInstance, Editor } from '@features/runtime/core';
  * 
  * // Access runtime state
  * ExecuteInstance.VarsProxy.username = 'John';
@@ -22,6 +22,5 @@ export {
 } from './runtime-context';
 
 export { default as Editor } from './editor';
-export { Navigation } from './navigation';
 export { FileStorage } from './storage';
 export { Utils } from './utils';
