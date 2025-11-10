@@ -2,13 +2,13 @@ import { customElement, state, query } from "lit/decorators.js";
 import { repeat } from 'lit/directives/repeat.js';
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { LocalStorageService } from "@runtime/core/localStorageService";
+import { LocalStorageService } from "@runtime/core/local-storage-service";
 import EditorInstance from "@runtime/core/editor";
 import { executeHandler, ExecuteInstance } from "@features/runtime/core/runtime-context";
 import { $componentById } from "@shared/redux/store/component/store";
 import Editor from "@runtime/core/editor";
 import { formatCodeWithErrorHighlight } from "@shared/ui/components/base/BaseElement/input-handler.helpers";
-import { Utils } from "@runtime/core/Utils";
+import { Utils } from "@runtime/core/utils";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
