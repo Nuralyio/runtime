@@ -4,7 +4,7 @@ import "@nuralyui/select";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/runtime-context.ts";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
 
 @customElement("handler-block")

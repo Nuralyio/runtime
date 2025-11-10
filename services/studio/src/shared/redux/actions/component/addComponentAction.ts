@@ -6,7 +6,7 @@ import { addComponentHandler } from "@shared/redux/handlers/components/add-compo
 import { addComponentToCurrentPageAction } from "@shared/redux/actions/component/addComponentToCurrentPageAction";
 import { updateComponentHandler } from "@shared/redux/handlers/components/update-component.handler";
 import { eventDispatcher } from "@shared/utils/change-detection"; // Ensure this handler is imported
-import { ExecuteInstance } from "@features/runtime/core/RuntimeContext";
+import { ExecuteInstance } from "@features/runtime/core/runtime-context";
 
 /** Actions*/
 export const addComponentAction = (

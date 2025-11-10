@@ -12,13 +12,13 @@ import type { ComponentElement } from "@shared/redux/store/component/component.i
 import { $context, getVar } from "@shared/redux/store/context";
 import { isServer } from "@shared/utils/envirement";
 import { eventDispatcher } from "@shared/utils/change-detection";
-import Editor from "./Editor";
-import { executeHandler } from "../kernel/ExecuteCode";
+import Editor from "./editor";
+import { executeHandler } from "../kernel/handler-executor";
 
 const DEBUG = false;
 
 /**
- * The Executor class manages the component runtime system.
+ * The RuntimeContext class manages the component runtime system.
  * It provides a centralized state management system for components,
  * applications, and their values.
  * 
@@ -29,9 +29,9 @@ const DEBUG = false;
  * - Runtime value management for components
  * - Event dispatching for component changes
  */
-class Executor {
-  /** Singleton instance of the Executor */
-  static instance: Executor;
+class RuntimeContext {
+  /** Singleton instance of the RuntimeContext */
+  static instance: RuntimeContext;
   
   /** Global context registry */
   context: Record<string, any> = {};
@@ -365,16 +365,16 @@ class Executor {
   }
 
   /**
-   * Gets the singleton instance of the Executor class.
+   * Gets the singleton instance of the RuntimeContext class.
    * Creates it if it doesn't exist yet.
    * 
-   * @returns The singleton Executor instance
+   * @returns The singleton RuntimeContext instance
    */
-  static getInstance(): Executor {
-    if (!Executor.instance) {
-      Executor.instance = new Executor();
+  static getInstance(): RuntimeContext {
+    if (!RuntimeContext.instance) {
+      RuntimeContext.instance = new RuntimeContext();
     }
-    return Executor.instance;
+    return RuntimeContext.instance;
   }
 
   /**
@@ -463,8 +463,12 @@ class Executor {
   }
 }
 
-export const ExecuteInstance = Executor.getInstance();
-ExecuteInstance.setcomponentRuntimeStyleAttribute = setcomponentRuntimeStyleAttribute;
+// Create singleton instance
+export const RuntimeInstance = RuntimeContext.getInstance();
+RuntimeInstance.setcomponentRuntimeStyleAttribute = setcomponentRuntimeStyleAttribute;
 
-// Export the imported function
+// Alias for existing code - this is the main export
+export const ExecuteInstance = RuntimeInstance;
+
+// Export handler execution function
 export { executeHandler };

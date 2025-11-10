@@ -1,5 +1,5 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeHandler } from "@features/runtime/core/RuntimeContext";
+import { executeHandler } from "@features/runtime/core/runtime-context";
 
 export function handleComponentEvent({
   isViewMode,

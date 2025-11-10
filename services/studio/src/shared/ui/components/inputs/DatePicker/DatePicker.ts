@@ -5,7 +5,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "@nuralyui/datepicker";
-import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/runtime-context.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 

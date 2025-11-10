@@ -3,7 +3,7 @@ import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { BaseElementBlock } from "@shared/ui/components/base/BaseElement.ts";
 import { styles } from "./IconPicker.style.ts";
-import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/runtime-context.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
 import * as solidIcons from "@fortawesome/free-solid-svg-icons";
