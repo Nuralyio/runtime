@@ -10,18 +10,14 @@ export {
   RuntimeInstance,
   ExecuteInstance,
   Editor,
-  Navigation,
-  FileStorage,
-  Utils
-} from './core';
+  RuntimeHelpers
+} from './state';
 
 // Handler execution system
 export {
   executeHandler,
-  compileHandlerFunction,
-  executeHandler,
-  prepareClosureFunction
-} from './kernel';
+  compileHandlerFunction
+} from './handlers';
 
-// Micro-application component
-export { MicroApp } from './micro-app';
+// Micro-application component (re-exported for convenience)
+export { MicroApp } from '@shared/ui/components/runtime/MicroApp/MicroApp';
