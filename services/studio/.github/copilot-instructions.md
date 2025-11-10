@@ -105,7 +105,7 @@ npm run start        # Dev server with external access
 ```
 
 ### Handler Development
-JavaScript handlers execute in service worker context with globals:
+JavaScript handlers execute in runtime context via `executeHandler()` from `HandlerExecutor`:
 - `GetVar(scope, key)` / `SetVar(scope, key, value)` - Context management
 - `GetComponent(uuid, appId)` - Component access
 - `AddPage(page, appId)` - Page creation

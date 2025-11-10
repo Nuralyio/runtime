@@ -2,7 +2,7 @@ import { $currentApplication } from "@shared/redux/store/apps";
 import { $pages } from "@shared/redux/store/page";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { updatePageHandler } from "@shared/redux/handlers/pages/handler";
-import { ExecuteInstance } from "@runtime/core/Kernel";
+import { ExecuteInstance } from "@features/runtime/core/RuntimeContext";
 
 export function addComponentToCurrentPageAction(componentId: string) {
   const currentApp = $currentApplication.get();
