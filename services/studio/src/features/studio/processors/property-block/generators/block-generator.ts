@@ -1,0 +1,94 @@
+/**
+ * Block Generator
+ * Main orchestrator for generating property blocks
+ */
+
+import type { BlockConfig, SizeConfig } from '../types.ts';
+import { ContainerGenerator } from './container-generator.ts';
+import { PropertyGenerator } from './property-generator.ts';
+import { getCommonPropertyBlock } from "../../common-properties-registry.ts";
+import sizeConfigYaml from "../../../params/_shared/size.config.yaml";
+import sizeConfigJson from "../../../params/_shared/size.config.json";
+
+export class BlockGenerator {
+  /**
+   * Generate components for any block type from JSON/YAML config
+   * @param blockConfig - The block configuration object
+   * @param blockName - The name of the block (e.g., 'size', 'typography')
+   */
+  static generateBlockComponents(blockConfig: BlockConfig, blockName: string = 'block'): any[] {
+    const components: any[] = [];
+    
+    // Generate main container
+    components.push(ContainerGenerator.generateMainContainer(blockConfig, blockName));
+    
+    // Generate collapse container
+    components.push(ContainerGenerator.generateCollapseContainer(blockConfig, blockName));
+    
+    // Generate collapse header
+    components.push(ContainerGenerator.generateCollapseHeader(blockConfig, blockName));
+    
+    // Generate properties container
+    components.push(ContainerGenerator.generatePropertiesContainer(blockConfig, blockName));
+    
+    // Generate each property
+    blockConfig.properties.forEach(property => {
+      components.push(...PropertyGenerator.generateProperty(property));
+    });
+    
+    return components;
+  }
+  
+  /**
+   * Legacy method for backward compatibility with size block
+   * Now uses YAML config by default, falls back to JSON if YAML is not available
+   */
+  static generateSizeComponents(): any[] {
+    // Prefer YAML config, fallback to JSON
+    const config: SizeConfig = (sizeConfigYaml || sizeConfigJson) as SizeConfig;
+    return this.generateBlockComponents(config.sizeInputs, 'size');
+  }
+  
+  /**
+   * Generate components from a JSON configuration file
+   * 
+   * Example usage for a typography block:
+   * ```typescript
+   * import { generateFromConfig } from './property-block/index.ts';
+   * import typographyConfig from './typograpnr-config.json';
+   * const typographyComponents = generateFromConfig(
+   *   typographyConfig.typographyInputs,
+   *   'typography'
+   * );
+   * ```
+   */
+  static generateFromConfig(blockConfig: BlockConfig, blockName: string): any[] {
+    const components = this.generateBlockComponents(blockConfig, blockName);
+    
+    // Process includeCommonProperties if present
+    if (blockConfig.includeCommonProperties && blockConfig.includeCommonProperties.length > 0) {
+      const commonComponents: any[] = [];
+      
+      console.log(`[Block Generator] Processing includeCommonProperties for ${blockName}:`, blockConfig.includeCommonProperties);
+      
+      for (const commonBlockUuid of blockConfig.includeCommonProperties) {
+        const commonBlock = getCommonPropertyBlock(commonBlockUuid);
+        
+        if (commonBlock && commonBlock.length > 0) {
+          console.log(`[Block Generator] Found common block "${commonBlockUuid}" with ${commonBlock.length} components`);
+          // Add all components from the common block
+          commonComponents.push(...commonBlock);
+        } else {
+          console.warn(`Common property block "${commonBlockUuid}" not found or empty`);
+        }
+      }
+      
+      console.log(`[Block Generator] Total components: ${components.length} + ${commonComponents.length} common = ${components.length + commonComponents.length}`);
+      
+      // Append common components to the generated components
+      return [...components, ...commonComponents];
+    }
+    
+    return components;
+  }
+}
