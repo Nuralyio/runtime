@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 // Static import: rely on CodeEditor to be SSR-safe internally
-import "@runtime/components/advanced/CodeEditor/CodeEditor.ts";
+import "@shared/ui/components/advanced/CodeEditor/CodeEditor";
 
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {

@@ -163,14 +163,14 @@ try {
               </div>
             </TopbarPanelWrapper>
           </div>
-          <div class="flex flex-row text-gray-800" style="height: calc(100vh - 41px); max-height: calc(100vh - 41px); overflow: hidden;">
+          <div class="flex flex-row text-gray-800" style="height: calc(100vh - 41px); max-height: calc(100vh - 41px); overflow: hidden; visibility: hidden;">
             <LeftPanel client:load />
             <main
               class=""
               style="height: 100%; overflow-y: auto;"
             >
-              <TabsPanel client:only="lit" />
-              <EditorSpinner client:load data=`${applications}`/>
+              <TabsPanel client:load />
+              <EditorSpinner client:only="lit" data=`${applications}`/>
             </main>
             <RightPanel client:load />
           </div>

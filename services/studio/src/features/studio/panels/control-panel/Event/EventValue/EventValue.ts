@@ -1,9 +1,9 @@
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { css, html, isServer, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { BaseElementBlock } from "@runtime/components/base/BaseElement.ts";
+import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeCodeWithClosure } from "@features/runtime/kernel/ExecuteCode";
+import { executeHandler } from "@features/runtime/handlers/handler-executor";
 import { getNestedAttribute } from "@shared/utils/object.utils";
 
   if (!isServer) {
@@ -25,7 +25,7 @@ export class ParameterEventLabel extends BaseElementBlock {
 
   handleCodeChange = (e: CustomEvent) => {
     if (this.component?.event?.codeChange) {
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.codeChange`), {
+      const fn = executeHandler(this.component, getNestedAttribute(this.component, `event.codeChange`), {
         value: e.detail.value
       });
 

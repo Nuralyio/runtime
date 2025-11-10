@@ -29,6 +29,7 @@ export default [
     "--nuraly-border-width-tabs-bottom-focus": "2px",
     "--nuraly-border-width-tabs-left-focus": "2px",
     "--nuraly-tabs-labels-gap": "0px",
+      "--nuraly-spacing-tabs-content-padding-small": 0,
     "overflow": "visible"
   },
   input: {
@@ -196,14 +197,16 @@ export default [
                     
                     const config = componentConfigs[selectedComponent?.component_type];
                     if(config) {
-                        config.themes.unshift("select_component_styles_state_container");
-                        parameters = config.parameters || [];
-                        handlers = config.handlers || [];
-                        themes = config.themes || [];
+                        // Create new arrays instead of mutating originals
+                        parameters = [...(config.parameters || []), "access_control_panel_block"];
+                        handlers = [...(config.handlers || [])];
+                        themes = ["select_component_styles_state_container", ...(config.themes || [])];
+                        console.log('[DEBUG] Component parameters order:', parameters);
                     }
                 } else if(currentPageId) {
-                    parameters = ["page_name_block", "page_url_block", "description_block"];
+                    parameters = ["page_name_block", "page_url_block", "description_block", "access_control_panel_block"];
                     themes = ["PageThemeStudio"];
+                    console.log('[DEBUG] Page parameters order:', parameters);
                 }
                 
                 return [

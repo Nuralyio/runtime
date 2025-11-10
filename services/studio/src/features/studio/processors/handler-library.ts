@@ -47,6 +47,19 @@ export const ValueHandlers = {
     return [options, [currentValue]];
   `,
   
+  // Get component input property for select inputs (returns [options, [currentValue]])
+  componentInputSelect: (propertyName: string, defaultValue: string = '') => `
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const currentValue = selectedComponent?.input?.${propertyName}?.value || '${defaultValue}';
+    return currentValue;
+  `,
+  
+  // Style handler - for getting style values with handler support
+  styleHandler: (propertyName: string, defaultValue: string = '') => `
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    return Editor.getComponentStyleForState(selectedComponent, '${propertyName}') || "${defaultValue}";
+  `,
+  
   // Display toggle (show/hide) with icons
   displayToggle: `
     const selectedComponent = Utils.first(Vars.selectedComponents);

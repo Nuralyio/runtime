@@ -6,7 +6,7 @@ import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from "@shared/redux/handlers/components/update-component.handler.ts";
 import type { UpdateType } from "@shared/redux/actions/component.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
-import { ExecuteInstance } from "@runtime/core/Kernel.ts";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
 
 export function updateComponentAttributes(
   application_id: string,

@@ -33,6 +33,7 @@ import {
   studioPageNameBlock,
   studioPageUrlBlock,
   studioPageSEOBlock,
+  studioPageAccessControlBlock,
   microAppSelectionBlocks,
   microAppContainerBlocks,
   StudioDashboard,
@@ -208,7 +209,6 @@ export default [
     },
     ...COMMON_ATTRIBUTES,
     style:{
-      "width": "295px",
 "--nuraly-border-width-tabs-content-top": "0px",
   "--nuraly-border-width-tabs-top": "0px",
   "--nuraly-border-width-tabs-right": "0px",
@@ -405,6 +405,7 @@ export default [
   ...studioPageNameBlock,
   ...studioPageUrlBlock,
   ...studioPageSEOBlock,
+  ...studioPageAccessControlBlock,
   ...studioTablePropertiesBlock,
   ...studioTableValuesBlock,
   ...stduioTable,
