@@ -67,6 +67,7 @@ export function prepareClosureFunction(code: string): Function {
       "context",
       "applications",
       "updateInput",
+      "updateInputHandlers",
       "deletePage",
       "CopyComponentToClipboard",
       "PasteComponentFromClipboard",
@@ -220,6 +221,11 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     updateComponentAttributes(component.application_id, component.uuid, "input", eventData);
   }
 
+  function updateInputHandlers(component: ComponentElement, inputName: string, value: any) {
+    const eventData = { [inputName]: value };
+    updateComponentAttributes(component.application_id, component.uuid, "inputHandlers", eventData);
+  }
+
   function deletePage(page: PageElement) {
     const userInput = confirm("Are you sure you want to delete this page?");
     if (userInput) {
@@ -341,6 +347,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     context,
     applications,
     updateInput,
+    updateInputHandlers,
     deletePage,
     CopyComponentToClipboard,
     PasteComponentFromClipboard,
