@@ -4,10 +4,10 @@ import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { LocalStorageService } from "@runtime/core/localStorageService";
 import EditorInstance from "@runtime/core/Editor";
-import { executeCodeWithClosure, ExecuteInstance } from "@runtime/core/Kernel";
+import { executeCodeWithClosure, ExecuteInstance } from "@features/runtime/core/RuntimeContext";
 import { $componentById } from "@shared/redux/store/component/store";
 import Editor from "@runtime/core/Editor";
-import { formatCodeWithErrorHighlight } from "@runtime/components/base/BaseElement/input-handler.helpers";
+import { formatCodeWithErrorHighlight } from "@shared/ui/components/base/BaseElement/input-handler.helpers";
 import { Utils } from "@runtime/core/Utils";
 
 @customElement("log-panel")
