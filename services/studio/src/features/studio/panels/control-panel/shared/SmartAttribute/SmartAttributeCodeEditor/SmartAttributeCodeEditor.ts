@@ -1,8 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-// Lazy load instead of importing eagerly
-// import "@shared/ui/CodeEditor/CodeEditor";
+// Static import: rely on CodeEditor to be SSR-safe internally
+import "@runtime/components/advanced/CodeEditor/CodeEditor.ts";
 
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {
@@ -21,9 +21,7 @@ export class SmartAttributeCodeeditor extends LitElement {
   containerStyle: any = {
     background: "white",
     width: "700px",
-    marginLeft: "-550px",
     height: "250px",
-    border: "solid 1px gray"
   };
 
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -32,22 +30,14 @@ export class SmartAttributeCodeeditor extends LitElement {
   data: string = "";
 
   @state()
-  private isEditorLoaded: boolean = false;
+  private isEditorLoaded: boolean = true;
 
   constructor() {
     super();
     this.handleCodeEditorChange = this.handleCodeEditorChange.bind(this);
   }
 
-  async connectedCallback() {
-    super.connectedCallback();
-
-    // Lazy-load the code editor module
-    if (!this.isEditorLoaded) {
-      await import("@runtime/components/advanced/CodeEditor/CodeEditor");
-      this.isEditorLoaded = true;
-    }
-  }
+  // No dynamic import needed; CodeEditor is statically registered above
 
   disconnectedCallback() {
     super.disconnectedCallback();

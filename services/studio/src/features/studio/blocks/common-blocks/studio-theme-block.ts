@@ -169,11 +169,11 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       componentType = ComponentType.Select;
       inputStyle = {
         width: "140px",
+        "--nuraly-select-dropdown-max-height": "auto",
         "--nuraly-select-background-color": "#2a2a2a",
         "--nuraly-select-text-color": "#ffffff",
         "--nuraly-select-border": "1px solid #444",
         "--nuraly-select-hover-background": "#3a3a3a",
-        "--nuraly-select-dropdown-max-height": "200px",
          "position": "relative",
       };
       // Set options and value in inputConfig for select

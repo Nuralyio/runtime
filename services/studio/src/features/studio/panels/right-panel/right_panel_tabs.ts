@@ -29,7 +29,7 @@ export default [
     "--nuraly-border-width-tabs-bottom-focus": "2px",
     "--nuraly-border-width-tabs-left-focus": "2px",
     "--nuraly-tabs-labels-gap": "0px",
-    "overflow": "auto"
+    "overflow": "visible"
   },
   input: {
     // index: {

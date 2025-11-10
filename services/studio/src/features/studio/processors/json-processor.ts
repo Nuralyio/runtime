@@ -296,10 +296,18 @@ export class GenericJsonProcessor {
     const handlerUuid = `${property.name}_handler`;
     const autoCheckboxUuid = `auto_${property.name}_checkbox`;
     const inputContainerUuid = `${property.name}_input_container`;
+    const handlerWrapperUuid = `${property.name}_handler_wrapper`;
     
-    // Determine childrenIds based on whether auto checkbox is needed
+    // Check if property supports handlers
+    const hasHandlerSupport = property.hasHandler || property.type === 'number' || property.type === 'text' || property.type === 'radio';
+    
+    // Determine childrenIds based on whether auto checkbox is needed and handler support
     let containerChildrenIds = [labelUuid];
-    if (property.autoCheckbox) {
+    
+    if (hasHandlerSupport) {
+      // If has handler support, use wrapper container
+      containerChildrenIds.push(handlerWrapperUuid);
+    } else if (property.autoCheckbox) {
       containerChildrenIds.push(inputContainerUuid);
     } else {
       containerChildrenIds.push(inputUuid);
@@ -316,7 +324,7 @@ export class GenericJsonProcessor {
         display: "flex",
         "align-items": "center",
         "justify-content": "space-between",
-        width: "276px",
+        width: "319px",
         "margin-bottom": "8px"
       },
       childrenIds: containerChildrenIds
@@ -330,7 +338,7 @@ export class GenericJsonProcessor {
       component_type: ComponentType.TextLabel,
       inputHandlers: {},
       style: {
-        width: "70px"
+        width: "100px"
       },
       styleHandlers: {},
       styleBreakPoints: {
@@ -351,6 +359,34 @@ export class GenericJsonProcessor {
     
     // Property input
     components.push(this.generatePropertyInput(property, inputUuid));
+    
+    // Handler wrapper container (if property has handler support)
+    if (hasHandlerSupport) {
+      const wrapperChildren = property.autoCheckbox ? [inputContainerUuid, handlerUuid] : [inputUuid, handlerUuid];
+      
+      components.push({
+        uuid: handlerWrapperUuid,
+        application_id: "1",
+        name: `${property.label} Handler Wrapper`,
+        component_type: ComponentType.Container,
+        inputHandlers: {},
+        style: {
+          display: "flex",
+          "justify-content": "space-between",
+          "align-items": "center"
+        },
+        styleHandlers: {},
+        styleBreakPoints: {
+          mobile: {},
+          tablet: {},
+          laptop: {}
+        },
+        attributesHandlers: {},
+        errors: {},
+        childrenIds: wrapperChildren,
+        input: {}
+      });
+    }
     
     // Auto checkbox and input container (if needed)
     if (property.autoCheckbox) {
@@ -786,6 +822,7 @@ export class GenericJsonProcessor {
       ...COMMON_ATTRIBUTES,
       style: {
         display: "block",
+        width: "30px"
       },
       input: {
         value: {
