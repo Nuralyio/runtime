@@ -15,10 +15,27 @@
  * ```
  */
 
+// Main handler executor
 export {
-  executeHandler,
-  compileHandlerFunction,
-  // Backward compatibility aliases
-  executeCodeWithClosure,
-  prepareClosureFunction
+  executeHandler
 } from './HandlerExecutor';
+
+// Handler compiler
+export {
+  compileHandlerFunction,
+  clearHandlerCache,
+  getHandlerCacheSize,
+  HANDLER_PARAMETERS
+} from './compiler';
+
+// Context management
+export {
+  setupRuntimeContext,
+  extractRuntimeContext
+} from './context-setup';
+
+// Global functions
+export {
+  createGlobalHandlerFunctions,
+  registerGlobalFunctionsToExecuteInstance
+} from './global-functions';
