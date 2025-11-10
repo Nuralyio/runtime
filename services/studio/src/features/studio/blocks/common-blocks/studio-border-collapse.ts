@@ -1,11 +1,11 @@
 /**
  * BORDER COLLAPSE BLOCK - JSON-DRIVEN APPROACH
  * 
- * Container for border-related properties (border radius, box shadow).
- * The configuration is in border-config.json and processed by json-processor.ts
+ * This file now uses the generic JSON-driven approach instead of the complex factory system.
+ * The configuration is in border-config.json and processed by property-block-processor.ts
  */
 
-import { GenericJsonProcessor, type BlockConfig } from "../../processors/json-processor.ts";
+import { generateFromConfig, type BlockConfig } from "../../processors/property-block/index.ts";
 import borderConfigRaw from "../../params/_shared/border.config.json";
 import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
@@ -14,7 +14,7 @@ import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 const borderConfig = borderConfigRaw as { borderInputs: BlockConfig };
 
 // Generate border components from JSON config
-const generatedBorderComponents = GenericJsonProcessor.generateFromConfig(
+const generatedBorderComponents = generateFromConfig(
   borderConfig.borderInputs,
   'border'
 );

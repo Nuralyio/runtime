@@ -1,23 +1,132 @@
 {
   "textLabelFields": {
     "container": {
-      "uuid": "text_label_fields_collapse_container",
-      "name": "Text Label Fields Container",
+      "uuid": "text_label_properties_collapse_container",
+      "name": "Text Label Properties Container",
       "style": {}
     },
     "collapse": {
-      "uuid": "text_label_fields_collapse",
+      "uuid": "text_label_properties_collapse",
       "title": "Label Properties",
       "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
+         "padding": "10px"
       }
     },
-    "properties": []
+    "properties": [
+      {
+        "name": "value",
+        "label": "Text",
+        "type": "text",
+        "default": "Text label",
+        "width": "180px",
+        "placeholder": "Enter text",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["value"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["value"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["value", "string"]
+          }
+        }
+      },
+      {
+        "name": "size",
+        "label": "Size",
+        "type": "select",
+        "default": "medium",
+        "width": "180px",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" }
+        ],
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["size"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["size"]
+        },
+        "eventHandlers": {
+          "changed": {
+            "ref": "updateInput",
+            "params": ["size", "string"]
+          }
+        }
+      },
+      {
+        "name": "variant",
+        "label": "Variant",
+        "type": "select",
+        "default": "default",
+        "width": "180px",
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Primary", "value": "primary" },
+          { "label": "Secondary", "value": "secondary" }
+        ],
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["variant"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["variant"]
+        },
+        "eventHandlers": {
+          "changed": {
+            "ref": "updateInput",
+            "params": ["variant", "string"]
+          }
+        }
+      },
+      {
+        "name": "required",
+        "label": "Required",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["required"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["required"]
+        },
+        "eventHandlers": {
+          "checkboxChanged": "const selectedComponent = Utils.first(Vars.selectedComponents); const newRequired = EventData.value === 'check'; updateInput(selectedComponent, 'required', 'boolean', newRequired);"
+        }
+      },
+      {
+        "name": "for",
+        "label": "For (Input ID)",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter input ID",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["for"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["for"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["for", "string"]
+          }
+        }
+      }
+    ]
   }
 }
