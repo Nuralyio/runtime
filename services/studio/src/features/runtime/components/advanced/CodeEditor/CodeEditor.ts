@@ -19,21 +19,23 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 // Import custom type definitions
 import { databaseTypeDefinitions } from "@shared/types/database.types";
 
-// Make sure Monaco uses the right workers:
-(self as any).MonacoEnvironment = {
-  getWorker(_: any, label: string) {
-    if (label === "typescript" || label === "javascript") {
-      return new tsWorker();
-    }
-    if (label === "json") {
-      return new jsonWorker();
-    }
-    if (label === "html") {
-      return new htmlWorker();
-    }
-    return new editorWorker();
-  },
-};
+// Make sure Monaco uses the right workers (only on client-side):
+if (typeof self !== "undefined") {
+  (self as any).MonacoEnvironment = {
+    getWorker(_: any, label: string) {
+      if (label === "typescript" || label === "javascript") {
+        return new tsWorker();
+      }
+      if (label === "json") {
+        return new jsonWorker();
+      }
+      if (label === "html") {
+        return new htmlWorker();
+      }
+      return new editorWorker();
+    },
+  };
+}
 
 @customElement("code-editor")
 export class CodeEditor extends LitElement {
