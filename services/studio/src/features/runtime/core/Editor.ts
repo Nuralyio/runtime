@@ -1,6 +1,6 @@
 import { eventDispatcher } from "@shared/utils/change-detection";
 import { isServer } from "@shared/utils/envirement";
-import { ExecuteInstance } from "./RuntimeContext";
+import { ExecuteInstance } from "./runtime-context";
 import { $editorState } from "@shared/redux/store/apps";
 
 class Editor {

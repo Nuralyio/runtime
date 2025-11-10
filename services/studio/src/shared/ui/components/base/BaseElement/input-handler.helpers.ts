@@ -1,9 +1,9 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeHandler } from "@features/runtime/core/RuntimeContext";
+import { executeHandler } from "@features/runtime/core/runtime-context";
 import { Utils } from "@runtime/core/Utils.ts";
 import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
-import EditorInstance from "@runtime/core/Editor";
+import EditorInstance from "@runtime/core/editor";
 
 export async function traitInputHandler(
   ctx: {

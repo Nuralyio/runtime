@@ -19,9 +19,9 @@ export {
   RuntimeInstance,
   ExecuteInstance,
   executeHandler
-} from './RuntimeContext';
+} from './runtime-context';
 
-export { default as Editor } from './Editor';
-export { Navigation } from './Navigation';
-export { FileStorage } from './Storage';
-export { Utils } from './Utils';
+export { default as Editor } from './editor';
+export { Navigation } from './navigation';
+export { FileStorage } from './storage';
+export { Utils } from './utils';

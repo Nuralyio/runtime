@@ -3,7 +3,7 @@ import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/slider-input";
-import { executeHandler } from "@features/runtime/core/RuntimeContext";
+import { executeHandler } from "@features/runtime/core/runtime-context";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import "@nuralyui/colorpicker";

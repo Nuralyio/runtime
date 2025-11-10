@@ -13,7 +13,7 @@ import "../layout/ThemeContainer";
 
 import "./AI-Assistant.ts";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
-import { ExecuteInstance } from "@features/runtime/core/RuntimeContext.ts";
+import { ExecuteInstance } from "@features/runtime/core/runtime-context.ts";
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`

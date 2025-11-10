@@ -7,7 +7,7 @@
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
-import { executeHandler, ExecuteInstance } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler, ExecuteInstance } from "@features/runtime/core/runtime-context.ts";
 import { getNestedAttribute, hasOnlyEmptyObjects } from "@shared/utils/object.utils.ts";
 import Editor from "@runtime/core/Editor.ts";
 import EditorInstance, { getInitPlatform } from "@runtime/core/Editor.ts";
