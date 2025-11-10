@@ -8,10 +8,10 @@ import { $applicationPages, $currentPage, $microAppCurrentPage } from "@shared/r
 import { eventDispatcher } from "@shared/utils/change-detection";
 import { ViewMode } from "@shared/redux/store/environment";
 import { merge, Observable, Subscription } from "rxjs";
-import EditorInstance, { getInitPlatform } from "./core/editor";
+import EditorInstance, { getInitPlatform } from "@features/runtime/state/editor";
 import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
-import { ExecuteInstance } from "./core/runtime-context";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import "@shared/ui/nuraly-ui/src/shared/themes/default.css";
 
 

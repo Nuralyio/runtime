@@ -3,7 +3,7 @@ import { css, html, isServer, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeHandler } from "@features/runtime/kernel/handler-executor";
+import { executeHandler } from "@features/runtime/handlers/handler-executor";
 import { getNestedAttribute } from "@shared/utils/object.utils";
 
   if (!isServer) {

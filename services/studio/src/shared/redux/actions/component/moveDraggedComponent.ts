@@ -9,7 +9,7 @@ import { updatePageAction } from "../page/updatePageAction";
 import { updatePageHandler } from "@shared/redux/handlers/pages/handler";
 import { updateComponentHandler } from "@shared/redux/handlers/components/update-component.handler";
 import { eventDispatcher } from "@shared/utils/change-detection";
-import { ExecuteInstance } from "@features/runtime/core/runtime-context";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 
 export function moveDraggedComponent(
   dropInComponentId: string,

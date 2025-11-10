@@ -10,7 +10,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ViewMode } from "@shared/redux/store/environment.ts";
 import { setCurrentComponentIdAction } from "@shared/redux/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "@shared/redux/actions/page/setContextMenuEvent.ts";
-import { executeHandler } from "@features/runtime/core/runtime-context.ts";
+import { executeHandler } from "@features/runtime/state/runtime-context.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";

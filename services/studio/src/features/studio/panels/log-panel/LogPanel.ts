@@ -2,13 +2,13 @@ import { customElement, state, query } from "lit/decorators.js";
 import { repeat } from 'lit/directives/repeat.js';
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { LocalStorageService } from "@runtime/core/local-storage-service";
-import EditorInstance from "@runtime/core/editor";
-import { executeHandler, ExecuteInstance } from "@features/runtime/core/runtime-context";
+import { LocalStorage } from "@shared/utils/local-storage";
+import EditorInstance from "@features/runtime/state/editor";
+import { executeHandler, ExecuteInstance } from "@features/runtime/state/runtime-context";
 import { $componentById } from "@shared/redux/store/component/store";
-import Editor from "@runtime/core/editor";
+import Editor from "@features/runtime/state/editor";
 import { formatCodeWithErrorHighlight } from "@shared/ui/components/base/BaseElement/input-handler.helpers";
-import { Utils } from "@runtime/core/utils";
+import { RuntimeHelpers } from "@shared/utils/runtime-helpers";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
@@ -16,7 +16,7 @@ export class LogPanel extends LitElement {
   private logContent: any[] = [html`Log output will appear here...`];
 
   @state()
-  private showLog: boolean = LocalStorageService.get<boolean>('logPanelVisible', false);
+  private showLog: boolean = LocalStorage.get<boolean>('logPanelVisible', false);
 
   // Use @query to get a reference to the log-content div
   @query('.log-content')
@@ -267,7 +267,7 @@ export class LogPanel extends LitElement {
    */
   private toggleLog() {
     this.showLog = !this.showLog;
-    LocalStorageService.set('logPanelVisible', this.showLog);
+    LocalStorage.set('logPanelVisible', this.showLog);
     if (this.showLog) {
       this.updateComplete.then(() => this.scrollToBottom());
     }
@@ -400,7 +400,7 @@ export class LogPanel extends LitElement {
                     
                     console.log(processedCode);
                     const fn = executeHandler({}, processedCode, {});
-                    const result = Utils.isPromise(fn) ? await fn : fn;
+                    const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
                     console.log('result', result);
                     Editor.Console.log(result);
                             

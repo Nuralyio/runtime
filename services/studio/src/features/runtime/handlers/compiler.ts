@@ -16,7 +16,6 @@ const handlerFunctionCache: Record<string, Function> = {};
  * These must match the order in executeHandler when calling the function.
  */
 export const HANDLER_PARAMETERS = [
-  "FileStorage",
   "Database",
   "eventHandler",
   "Components",
@@ -60,6 +59,8 @@ export const HANDLER_PARAMETERS = [
   "InvokeFunction",
   "Utils",
   "console",
+  "UploadFile",
+  "BrowseFiles",
 ] as const;
 
 /**

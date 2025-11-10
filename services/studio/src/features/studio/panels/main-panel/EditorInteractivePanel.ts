@@ -9,11 +9,10 @@ import { type ComponentElement } from "@shared/redux/store/component/component.i
 import { $selectedComponent } from "@shared/redux/store/component/store.ts";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { $currentApplication } from "@shared/redux/store/apps.ts";
-import "../layout/ThemeContainer";
 
 import "./AI-Assistant.ts";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
-import { ExecuteInstance } from "@features/runtime/core/runtime-context.ts";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`

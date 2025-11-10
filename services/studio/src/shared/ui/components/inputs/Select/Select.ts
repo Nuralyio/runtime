@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeHandler } from "@features/runtime/core/runtime-context.ts";
+import { executeHandler } from "@features/runtime/state/runtime-context.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
 import { ref } from "lit/directives/ref.js";
