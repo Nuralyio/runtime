@@ -1,8 +1,126 @@
+/**
+ * @fileoverview Editor State Management
+ * @module Runtime/State/Editor
+ * 
+ * @description
+ * Manages editor-specific state and platform detection for the Nuraly Studio.
+ * 
+ * The Editor class provides:
+ * - Platform detection (mobile, tablet, desktop)
+ * - Breakpoint-aware style retrieval
+ * - Component selection tracking
+ * - Editor mode management (edit vs preview)
+ * - Custom console for handler logging
+ * - Tab management for editor UI
+ * 
+ * **Platform Detection:**
+ * Automatically detects and updates platform based on window width:
+ * - Mobile: ≤500px
+ * - Tablet: 501-1024px
+ * - Desktop: >1024px
+ * 
+ * **Responsive Styles:**
+ * Components can have breakpoint-specific styles that override base styles
+ * based on the current platform. The Editor provides methods to retrieve
+ * the correct styles considering breakpoints.
+ * 
+ * **Editor vs Preview Mode:**
+ * - Edit Mode: Platform locked, no auto-resize
+ * - Preview Mode: Platform responsive, auto-resize on window resize
+ * 
+ * @example Basic Usage
+ * ```typescript
+ * import Editor from '@features/runtime/state/editor';
+ * 
+ * // Check editor mode
+ * if (Editor.getEditorMode()) {
+ *   console.log('In editor');
+ * }
+ * 
+ * // Get platform
+ * const platform = Editor.getCurrentPlatform();
+ * console.log(platform.platform); // "desktop", "tablet", or "mobile"
+ * 
+ * // Get component styles (with breakpoint consideration)
+ * const styles = Editor.getComponentStyles(component);
+ * ```
+ * 
+ * @example Platform-Aware Styles
+ * ```typescript
+ * // Component has base styles and breakpoint styles
+ * const component = {
+ *   style: { backgroundColor: 'blue', fontSize: '16px' },
+ *   breakpoints: {
+ *     '430px': { // Mobile
+ *       style: { fontSize: '14px' }
+ *     }
+ *   }
+ * };
+ * 
+ * // On mobile (width ≤500px):
+ * Editor.updatePlatform(); // Sets platform to "mobile"
+ * const fontSize = Editor.getComponentStyle(component, 'fontSize');
+ * console.log(fontSize); // "14px" (breakpoint override)
+ * 
+ * // On desktop:
+ * Editor.updatePlatform(); // Sets platform to "desktop"
+ * const fontSize = Editor.getComponentStyle(component, 'fontSize');
+ * console.log(fontSize); // "16px" (base style)
+ * ```
+ * 
+ * @example Custom Console
+ * ```typescript
+ * // In handler code, console.log goes to Editor console:
+ * Editor.Console.log({ message: 'Debug info', data: {...} });
+ * Editor.Console.error({ message: 'Error occurred', error: err });
+ * 
+ * // These emit "kernel:log" events for the editor UI to display
+ * ```
+ * 
+ * @see {@link ExecuteInstance} for runtime context
+ * @see {@link RuntimeContext} for state management
+ */
+
 import { eventDispatcher } from "@shared/utils/change-detection";
 import { isServer } from "@shared/utils/envirement";
 import { ExecuteInstance } from "./runtime-context";
 import { $editorState } from "@shared/redux/store/apps";
 
+/**
+ * @class Editor
+ * @description Manages editor state, platform detection, and component selection
+ * 
+ * **Key Features:**
+ * - Responsive platform detection with automatic updates
+ * - Breakpoint-aware style retrieval for components
+ * - Editor mode vs preview mode management
+ * - Component selection state tracking
+ * - Custom console for handler logging
+ * - Dark mode detection
+ * 
+ * **Platform System:**
+ * The platform is determined by window width and includes:
+ * - `platform`: "mobile" | "tablet" | "desktop"
+ * - `width`: Viewport width for the platform
+ * - `height`: Viewport height (optional)
+ * - `isMobile`: Boolean flag for mobile/tablet
+ * 
+ * **Breakpoint Resolution:**
+ * When retrieving component styles:
+ * 1. Get base styles from `component.style`
+ * 2. Get breakpoint styles from `component.breakpoints[width]`
+ * 3. Merge breakpoint styles over base styles
+ * 4. Return merged result
+ * 
+ * @example Platform Detection
+ * ```typescript
+ * // Automatically updates on window resize (preview mode)
+ * window.addEventListener('resize', () => {
+ *   const platform = Editor.updatePlatform();
+ *   console.log('Platform:', platform.platform);
+ * });
+ * ```
+ */
 class Editor {
   components: any[] = [];
   functions: any[] = [];
