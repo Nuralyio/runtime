@@ -2,10 +2,10 @@
  * TYPOGRAPHY COLLAPSE BLOCK - JSON-DRIVEN APPROACH
  * 
  * This file now uses the generic JSON-driven approach instead of the complex factory system.
- * The configuration is in typograpnr-config.json and processed by json-processor.ts
+ * The configuration is in typograpnr-config.json and processed by property-block-processor.ts
  */
 
-import { GenericJsonProcessor, type BlockConfig } from "../../processors/json-processor.ts";
+import { generateFromConfig, type BlockConfig } from "../../processors/property-block/index.ts";
 import typographyConfigRaw from "../../params/_shared/typography.config.json";
 import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 
@@ -13,7 +13,7 @@ import { ComponentType } from "@shared/redux/store/component/component.interface
 const typographyConfig = typographyConfigRaw as { typographyInputs: BlockConfig };
 
 // Generate typography components from JSON config
-const generatedTypographyComponents = GenericJsonProcessor.generateFromConfig(
+const generatedTypographyComponents = generateFromConfig(
   typographyConfig.typographyInputs,
   'typography'
 );

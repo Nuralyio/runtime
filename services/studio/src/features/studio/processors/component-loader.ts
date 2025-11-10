@@ -16,7 +16,7 @@
 
 import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../core/helpers/common_attributes.ts";
-import { GenericJsonProcessor, type BlockConfig } from "./json-processor.ts";
+import { generateFromConfig, type BlockConfig } from "./property-block/index.ts";
 import { createHandlersFromEvents } from "../core/utils/handler-generator.ts";
 import { generateComponents } from "../blocks/common-blocks/studio-theme-block.ts";
 
@@ -118,7 +118,7 @@ export function loadComponentProperties(
   const themeConfigTyped = themeConfig as any;  // Allow both old and new structure
 
   // Generate field components from JSON config
-  const fieldComponents = GenericJsonProcessor.generateFromConfig(
+  const fieldComponents = generateFromConfig(
     fieldsConfigTyped[metadata.configKey],
     metadata.configKey
   );
