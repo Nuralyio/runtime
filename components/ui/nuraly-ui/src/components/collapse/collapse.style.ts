@@ -33,7 +33,7 @@ export const styles = css`
     border: var(--nuraly-color-collapse-border);
     border-radius: var(--nuraly-border-radius-collapse);
     background-color: var(--nuraly-color-collapse-bordered-background);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .collapse-section {

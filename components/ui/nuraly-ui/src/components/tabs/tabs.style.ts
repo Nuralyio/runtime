@@ -231,8 +231,7 @@ export const styles = css`
     border-right: var(--nuraly-border-width-tabs-content-right) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
     border-bottom: var(--nuraly-border-width-tabs-content-bottom) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
     border-left: var(--nuraly-border-width-tabs-content-left) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible;
     max-height: 100vh;
   }
 
