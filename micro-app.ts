@@ -8,7 +8,7 @@ import { $applicationPages, $currentPage, $microAppCurrentPage } from "@shared/r
 import { eventDispatcher } from "@shared/utils/change-detection";
 import { ViewMode } from "@shared/redux/store/environment";
 import { merge, Observable, Subscription } from "rxjs";
-import EditorInstance, { getInitPlatform } from "./core/Editor";
+import EditorInstance, { getInitPlatform } from "./core/editor";
 import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { ExecuteInstance } from "./core/RuntimeContext";

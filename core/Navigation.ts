@@ -1,4 +1,4 @@
-import { ExecuteInstance } from "./RuntimeContext";
+import { ExecuteInstance } from "./runtime-context";
 
 declare const Editor: any;
 

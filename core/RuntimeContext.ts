@@ -13,7 +13,7 @@ import { $context, getVar } from "@shared/redux/store/context";
 import { isServer } from "@shared/utils/envirement";
 import { eventDispatcher } from "@shared/utils/change-detection";
 import Editor from "./Editor";
-import { executeHandler } from "../kernel/HandlerExecutor";
+import { executeHandler } from "../kernel/handler-executor";
 
 const DEBUG = false;
 

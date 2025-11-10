@@ -18,7 +18,7 @@
 // Main handler executor
 export {
   executeHandler
-} from './HandlerExecutor';
+} from './handler-executor';
 
 // Handler compiler
 export {
