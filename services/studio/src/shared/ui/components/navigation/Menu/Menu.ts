@@ -3,7 +3,7 @@ import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "@nuralyui/menu";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
@@ -50,7 +50,7 @@ export class MenuBlock extends BaseElementBlock {
   onActionClick(e) {
     console.log(e)
     if (this.component?.event?.actionClick) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.actionClick`), {
+      executeHandler(this.component, getNestedAttribute(this.component, `event.actionClick`), {
         value : e.detail.additionalData,
         action : e.detail.value
       })
@@ -79,7 +79,7 @@ export class MenuBlock extends BaseElementBlock {
       const option = selectedOptionPath.reduce((acc: {
         children: { [x: string]: any; };
       }, curr: string | number) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.onSelect`), {
+      executeHandler(this.component, getNestedAttribute(this.component, `event.onSelect`), {
         id: option.id,
         text: option.text,
         type: option.type,

@@ -7,7 +7,7 @@
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
-import { executeCodeWithClosure, ExecuteInstance } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler, ExecuteInstance } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute, hasOnlyEmptyObjects } from "@shared/utils/object.utils.ts";
 import Editor from "@runtime/core/Editor.ts";
 import EditorInstance, { getInitPlatform } from "@runtime/core/Editor.ts";
@@ -227,7 +227,7 @@ export class BaseElementBlock extends LitElement {
   
     eventDispatcher.on("Vars:currentEditingMode", () => {
       const code = getNestedAttribute(this.component, `event.onInit`);
-      if (code) executeCodeWithClosure(this.component, code, {}, { ...this.item });
+      if (code) executeHandler(this.component, code, {}, { ...this.item });
     }))
 
   }
@@ -295,7 +295,7 @@ export class BaseElementBlock extends LitElement {
 
      
       if (prev?.event?.onInit !== curr?.event?.onInit) {
-        executeCodeWithClosure(curr, getNestedAttribute(curr, "event.onInit"), {}, this.item);
+        executeHandler(curr, getNestedAttribute(curr, "event.onInit"), {}, this.item);
       }
       this.component.uniqueUUID = this.uniqueUUID;
       this.component.parent = this.parentcomponent;

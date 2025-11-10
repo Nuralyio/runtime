@@ -4,7 +4,7 @@ import { property, state } from "lit/decorators.js";
 import "@nuralyui/checkbox";
 import "@nuralyui/slider-input";
 import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext";
+import { executeHandler } from "@features/runtime/core/RuntimeContext";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 
 function debounce(func, wait = 100) {
@@ -83,7 +83,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
     const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
     if (this.component.event.boxShadowChanged) {
 
-      const fn = executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.boxShadowChanged`), {
+      const fn = executeHandler(this.component, getNestedAttribute(this.component, `event.boxShadowChanged`), {
         value: shadowBox
       });
     }

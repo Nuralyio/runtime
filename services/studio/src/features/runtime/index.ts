@@ -19,7 +19,7 @@ export {
 export {
   executeHandler,
   compileHandlerFunction,
-  executeCodeWithClosure,
+  executeHandler,
   prepareClosureFunction
 } from './kernel';
 

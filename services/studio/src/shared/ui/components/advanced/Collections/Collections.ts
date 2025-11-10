@@ -10,7 +10,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ViewMode } from "@shared/redux/store/environment.ts";
 import { setCurrentComponentIdAction } from "@shared/redux/actions/component/setCurrentComponentIdAction.ts";
 import { setContextMenuEvent } from "@shared/redux/actions/page/setContextMenuEvent.ts";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -44,7 +44,7 @@ export class CollectionViewer extends BaseElementBlock {
     await super.connectedCallback();
     this.updateChildrenComponents();
     if (this.component?.event?.onInit) {
-      executeCodeWithClosure(
+      executeHandler(
         this.component,
         getNestedAttribute(this.component, "event.onInit")
       );

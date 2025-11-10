@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { debounce } from "@shared/utils/time.ts";
 
@@ -52,7 +52,7 @@ export class EmbedUrlBlock extends BaseElementBlock {
 
   handleUrlChange = debounce((url: string) => {
     if (this.component?.event?.valueChange) {
-      executeCodeWithClosure(
+      executeHandler(
         this.component,
         getNestedAttribute(this.component, `event.valueChange`),
         { value: url }
@@ -64,14 +64,14 @@ export class EmbedUrlBlock extends BaseElementBlock {
   onFocus = () => {
     this._isUserFocused = true;
     if (this.component?.event?.focus) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.focus`));
+      executeHandler(this.component, getNestedAttribute(this.component, `event.focus`));
     }
   };
 
   onBlur = () => {
     this._isUserFocused = false;
     if (this.component?.event?.blur) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.blur`));
+      executeHandler(this.component, getNestedAttribute(this.component, `event.blur`));
     }
   };
 

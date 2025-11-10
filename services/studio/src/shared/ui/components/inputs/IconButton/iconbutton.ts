@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 import "@nuralyui/button";
@@ -18,7 +18,7 @@ export class IconButtonBlock extends BaseElementBlock {
   handleClick = () => {
     setTimeout(() => {
       if (this.component?.event?.click) {
-        executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.click`));
+        executeHandler(this.component, getNestedAttribute(this.component, `event.click`));
       }
     }, 0);
   };

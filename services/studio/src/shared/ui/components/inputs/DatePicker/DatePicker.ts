@@ -5,7 +5,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "@nuralyui/datepicker";
-import { executeCodeWithClosure } from "@features/runtime/core/RuntimeContext.ts";
+import { executeHandler } from "@features/runtime/core/RuntimeContext.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import { ref } from "lit/directives/ref.js";
 
@@ -17,7 +17,7 @@ export class DatepickertBlock extends BaseElementBlock {
 
   handleDateChange = (customEvent: CustomEvent) => {
     if (this.component.event?.dateChange) {
-      executeCodeWithClosure(this.component, getNestedAttribute(this.component, `event.dateChange`), {
+      executeHandler(this.component, getNestedAttribute(this.component, `event.dateChange`), {
         EventData: {
           value: customEvent.detail?.date || customEvent.detail
         }

@@ -4,7 +4,7 @@ import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { LocalStorageService } from "@runtime/core/localStorageService";
 import EditorInstance from "@runtime/core/Editor";
-import { executeCodeWithClosure, ExecuteInstance } from "@features/runtime/core/RuntimeContext";
+import { executeHandler, ExecuteInstance } from "@features/runtime/core/RuntimeContext";
 import { $componentById } from "@shared/redux/store/component/store";
 import Editor from "@runtime/core/Editor";
 import { formatCodeWithErrorHighlight } from "@shared/ui/components/base/BaseElement/input-handler.helpers";
@@ -399,7 +399,7 @@ export class LogPanel extends LitElement {
                     processedCode = `return (async () => { ${processedCode} })()`;
                     
                     console.log(processedCode);
-                    const fn = executeCodeWithClosure({}, processedCode, {});
+                    const fn = executeHandler({}, processedCode, {});
                     const result = Utils.isPromise(fn) ? await fn : fn;
                     console.log('result', result);
                     Editor.Console.log(result);
