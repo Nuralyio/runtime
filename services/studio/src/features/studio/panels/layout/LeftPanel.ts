@@ -1,4 +1,4 @@
-import "../screen-panel/ScreenStructure";
+import "@shared/ui/components/runtime/MicroApp/MicroApp";
 import { $environment, type Environment, ViewMode } from "@shared/redux/store/environment";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
@@ -33,7 +33,7 @@ export class LeftPanel extends LitElement {
         <div class="w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"> </span>
         </div>
-        <screen-structure-editor style="height: 100%;" class="flex-grow"></screen-structure-editor>
+        <micro-app uuid="1" componentToRenderUUID="331" style="height: 100%;" class="flex-grow"></micro-app>
       </aside>
     `;
   }

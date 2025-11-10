@@ -34,9 +34,9 @@ export const componentPanel = {
     "--nuraly-border-radius-small": "0px",
     "--nuraly-label-font-weight": "350",
     "--nuraly-panel-header-background": "#fcfcfc",
+    "--nuraly-panel-body-padding-small": "0px",
     height: "100%",
     "overflow-y": "auto",
-    "--nuraly-panel-body-padding-small": "0px"
     
 },
   childrenIds: ["component_collection"]

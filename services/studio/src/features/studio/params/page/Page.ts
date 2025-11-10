@@ -1,8 +1,8 @@
-import "@runtime/components/advanced/Collections/Collections";
-import "@runtime/components/inputs/Button/Button";
-import "@runtime/components/layout/Containers/Container";
-import "@runtime/components/inputs/TextInput/TextInput";
-import "@runtime/components/display/TextLabel/TextLabel";
+import "@shared/ui/components/advanced/Collections/Collections";
+import "@shared/ui/components/inputs/Button/Button";
+import "@shared/ui/components/layout/Containers/Container";
+import "@shared/ui/components/inputs/TextInput/TextInput";
+import "@shared/ui/components/display/TextLabel/TextLabel";
 import "@features/studio/panels/main-panel/wrappers/GenerikWrapper/GenerikWrapper";
 import "@features/studio/panels/main-panel/wrappers/RectangleSelection/RectangleSelection";
 import styles from "./Page.style";
@@ -20,13 +20,13 @@ import { log } from "@shared/utils/logger";
 import { eventDispatcher } from "@shared/utils/change-detection";
 import { ViewMode } from "@shared/redux/store/environment";
 import {
-    moveDraggedComponentIntoCurrentPageRoot
+  moveDraggedComponentIntoCurrentPageRoot
 } from "@shared/redux/actions/component/moveDraggedComponentIntoCurrentPageRoot";
 import { deleteComponentAction } from "@shared/redux/actions/component/deleteComponentAction";
 import { updatePageInfo } from "@shared/redux/actions/page/updatePageInfo";
 import { setEnvirementMode } from "@shared/redux/actions/editor/setEnvirementMode";
 import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@shared/utils/clipboard-utils";
-import { ExecuteInstance } from "@runtime/core/Kernel";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import type { LogPanel } from "@studio/panels/log-panel/LogPanel";
 import { Subscription } from "rxjs";
 import Convert from "ansi-to-html";

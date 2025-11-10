@@ -7,7 +7,7 @@ import { updateComponentHandler } from "@shared/redux/handlers/components/update
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { $pages, refreshPageStoreVar } from "@shared/redux/store/page.ts";
 import { setVar } from "@shared/redux/store/context.ts";
-import { ExecuteInstance } from "@runtime/core/Kernel.ts";
+import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
 
 export function updateComponentName(
   application_id: string,

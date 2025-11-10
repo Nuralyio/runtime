@@ -26,9 +26,9 @@ if (!isServer) {
       eventDispatcher.emit('component:refresh')
     });
     
-    import("@features/landing/landing-main-components").then(landingModule => {
-      $components.setKey("landing", landingModule.default as any);
-    });
+    // import("@features/landing/landing-main-components").then(landingModule => {
+    //   $components.setKey("landing", landingModule.default as any);
+    // });
   }
 }
 

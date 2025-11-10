@@ -26,6 +26,8 @@ export class TabsPanel extends LitElement {
 
   ];
 
+  private unsubscribe?: () => void;
+
   constructor() {
     super();
 
@@ -33,12 +35,16 @@ export class TabsPanel extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    $editorState.subscribe((editorState) => {
-      editorState.tabs.forEach((tab) => {
-        // Check if the tab already exists
-        const tabExists = this.editableTabs.some(existingTab => existingTab.id === tab.id);
-        if (!tabExists) {
-          switch (tab.type) {
+    
+    // Defer subscription to avoid hydration mismatch
+    // This allows SSR to render empty state, then populate on client
+    setTimeout(() => {
+      this.unsubscribe = $editorState.subscribe((editorState) => {
+        editorState.tabs.forEach((tab) => {
+          // Check if the tab already exists
+          const tabExists = this.editableTabs.some(existingTab => existingTab.id === tab.id);
+          if (!tabExists) {
+            switch (tab.type) {
             case "page":
               this.editableTabs.push({
                 id: tab.id,
@@ -105,8 +111,15 @@ export class TabsPanel extends LitElement {
 
       // Trigger a re-render with the updated tabs
       this.editableTabs = [...this.editableTabs];
-    });
+      });
+    }, 0);
   }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.unsubscribe?.();
+  }
+
   override render() {
     return html`
       ${this.editableTabs.length === 0 ? html`
