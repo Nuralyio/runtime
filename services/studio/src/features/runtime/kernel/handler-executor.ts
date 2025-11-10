@@ -6,7 +6,7 @@
  * that need to be evaluated with access to the Nuraly runtime API.
  */
 
-import { FileStorage, Navigation, Utils } from '../core';
+import { FileStorage, Utils } from '../core';
 import { isServer } from '@shared/utils/envirement';
 import { eventDispatcher } from '@shared/utils/change-detection';
 import Editor from '../core/Editor';
@@ -94,7 +94,9 @@ export function executeHandler(
     globalFunctions.SetContextVar,
     globalFunctions.AddPage,
     globalFunctions.TraitCompoentFromSchema,
-    Navigation,
+    globalFunctions.NavigateToUrl,
+    globalFunctions.NavigateToHash,
+    globalFunctions.NavigateToPage,
     globalFunctions.UpdatePage,
     runtimeContext.context,
     runtimeContext.applications,

@@ -238,7 +238,7 @@ export default [{
   },
   event: {
     onClick: /* js */`
-        Navigation.toUrl('/dashboard');
+        NavigateToUrl('/dashboard');
       `
   },
   style: {
