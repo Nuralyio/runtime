@@ -185,7 +185,7 @@ export class InputGenerator {
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
                  `
                    const selectedComponent = Utils.first(Vars.selectedComponents);
-                   return selectedComponent?.styleHandlers?.['${property.name}'] ? 'disabled' : 'enabled';
+                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.name}'] ? 'disabled' : 'enabled';
                  `
         }
       },
