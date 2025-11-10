@@ -14,11 +14,10 @@ tableFields:
     # Data Configuration
     - name: data
       label: Data Source
-      type: text
+      type: event
       default: ''
       width: 180px
       placeholder: Configure data
-      hasHandler: true
       handlerType: input
       handlerProperty: data
       handlerValueGetter: |

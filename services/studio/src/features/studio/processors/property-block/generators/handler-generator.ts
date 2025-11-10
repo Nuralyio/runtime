@@ -1,0 +1,70 @@
+/**
+ * Handler Generator
+ * Generates handler (code icon) components for properties
+ */
+
+import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
+import { COMMON_ATTRIBUTES } from "../../../core/helpers/common_attributes.ts";
+import type { PropertyConfig } from '../types.ts';
+import { HandlerResolver } from '../handler-resolver.ts';
+import { ValueHandlers, StateHandlers, EventHandlers } from "../../handler-library.ts";
+
+export class HandlerGenerator {
+  static generatePropertyHandler(property: PropertyConfig, handlerUuid: string): any {
+    // Determine handler type (default to 'style' for backward compatibility)
+    const handlerType = property.handlerType || 'style';
+    const handlerProperty = property.handlerProperty || property.name;
+    
+    // Resolve custom value getter or use default
+    const valueGetter = property.handlerValueGetter 
+      ? HandlerResolver.resolveHandler(property.handlerValueGetter, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
+      : `
+        const parameter = '${handlerProperty}';
+        let handlerValue = '';
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        
+        if (selectedComponent) {
+          ${handlerType === 'style' 
+            ? `handlerValue = selectedComponent?.styleHandlers?.['${handlerProperty}'] || '';`
+            : `handlerValue = selectedComponent?.inputHandlers?.['${handlerProperty}'] || '';`
+          }
+        }
+        
+        return [parameter, handlerValue];
+      `;
+    
+    // Resolve custom event update or use default
+    const eventUpdate = property.handlerEventUpdate
+      ? HandlerResolver.resolveHandler(property.handlerEventUpdate, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
+      : `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (selectedComponent) {
+          ${handlerType === 'style'
+            ? `updateStyleHandlers(selectedComponent, '${handlerProperty}', EventData.value);`
+            : `updateInputHandlers(selectedComponent, '${handlerProperty}', EventData.value);`
+          }
+        }
+      `;
+    
+    return {
+      uuid: handlerUuid,
+      application_id: "1",
+      name: `${property.label} Handler`,
+      component_type: ComponentType.Event,
+      ...COMMON_ATTRIBUTES,
+      style: {
+        display: "block",
+        width: "30px"
+      },
+      input: {
+        value: {
+          type: "handler",
+          value: valueGetter
+        }
+      },
+      event: {
+        codeChange: eventUpdate
+      }
+    };
+  }
+}

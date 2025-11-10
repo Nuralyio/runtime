@@ -26,7 +26,7 @@ export class RadioButtonBlock extends BaseElementBlock {
     const direction = this.inputHandlersValue?.direction || 'vertical';
     const position = this.inputHandlersValue?.position || 'left';
     const size = this.inputHandlersValue?.size?.value || this.inputHandlersValue?.size || 'medium';
-    const disabled = this.inputHandlersValue?.disabled || false;
+    const disabled = this.inputHandlersValue?.state === 'disabled';
     const required = this.inputHandlersValue?.required || false;
     const name = this.inputHandlersValue?.name || 'radioGroup';
     // Get autoWidth from the input handler structure

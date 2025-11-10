@@ -1,10 +1,11 @@
 {
-  "uuid": "text_label_bocks",
-  "name": "Parent Color Container",
-  "themeContainerId": "parent_color_container",
+  "uuid": "text_label_blocks",
+  "name": "Parent Text Label Container",
+  "themeContainerId": "text_label_theme_container",
   "configKey": "textLabelFields",
   "childrenIds": [
     "text_label_collapse_container",
+    "text_label_properties_collapse_container",
     "typography_collapse_container",
     "size_collapse_container",
     "border_collapse_container"
