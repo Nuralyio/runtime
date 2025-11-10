@@ -1,7 +1,7 @@
 import { FileStorage } from '../core/Storage';
 import { Navigation } from '../core/Navigation';
 import { Utils } from '../core/Utils';
-import { ExecuteInstance } from '../core/Kernel';
+import { ExecuteInstance } from '../core/RuntimeContext';
 import { isServer } from '@shared/utils/envirement';
 import { setVar } from '@shared/redux/store/context';
 import { addPageHandler, updatePageHandler } from '@shared/redux/handlers/pages/handler';
@@ -24,22 +24,24 @@ import Editor from '../core/Editor';
 import { invokeFunctionHandler } from '@shared/redux/handlers/functions/invoke-function-handler';
 import Database from '@nuraly/dbclient';
 
-// Helper function needed by executeCodeWithClosure
+// Helper function needed by executeHandler
 const observe = (o, f) => new Proxy(o, { set: (a, b, c) => f(a, b, c) });
 
 /**
- * Store for caching compiled functions to avoid re-compilation when the same code is executed
+ * Store for caching compiled handler functions to avoid re-compilation when the same code is executed
  */
-const functionCache: Record<string, Function> = {};
+const handlerFunctionCache: Record<string, Function> = {};
 
 /**
- * Prepares a closure function from a code string.
- * @param {string} code - The code string to prepare as a closure function.
- * @returns {Function} The prepared closure function.
+ * Compiles a handler code string into an executable function with caching.
+ * Handlers are JavaScript code strings from component properties (input, style, event).
+ * 
+ * @param {string} code - The handler code string to compile
+ * @returns {Function} The compiled handler function
  */
-export function prepareClosureFunction(code: string): Function {
-  if (!functionCache[code]) {
-    functionCache[code] = new Function(
+export function compileHandlerFunction(code: string): Function {
+  if (!handlerFunctionCache[code]) {
+    handlerFunctionCache[code] = new Function(
       "FileStorage",
       "Database",
       "eventHandler",
@@ -85,18 +87,20 @@ export function prepareClosureFunction(code: string): Function {
       `return (function() { ${code} }).apply(this);`
     );
   }
-  return functionCache[code];
+  return handlerFunctionCache[code];
 }
 
 /**
- * Executes the given code within a closure, providing access to various context and application data.
- * @param {any} component - The component to execute the code for.
- * @param {string} code - The code string to execute.
- * @param {any} [EventData={}] - Optional. Event data to pass to the closure function.
- * @param {any} [item={}] - Optional. Item data to pass to the closure function.
- * @returns {any} The result of executing the closure function.
+ * Executes a component handler with full runtime context.
+ * Handlers are JavaScript code strings from component properties (input, style, event).
+ * 
+ * @param {ComponentElement} component - The component context for execution
+ * @param {string} code - The handler code string to execute
+ * @param {any} [EventData={}] - Event data passed to the handler
+ * @param {any} [item={}] - Collection item data for handlers in collections
+ * @returns {any} The result of executing the handler
  */
-export function executeCodeWithClosure(component: any, code: string, EventData: any = {}, item: any = {}): any {
+export function executeHandler(component: any, code: string, EventData: any = {}, item: any = {}): any {
   ExecuteInstance.Current = component;
   
   if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
@@ -307,8 +311,8 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     }
   }
   
-  // Use the extracted prepareClosureFunction
-  const closureFunction = prepareClosureFunction(code);
+  // Compile and cache the handler function
+  const closureFunction = compileHandlerFunction(code);
   const customConsole = {
     log: Editor.Console.log,
     warn: Editor.Console.warn,
@@ -364,3 +368,7 @@ export function executeCodeWithClosure(component: any, code: string, EventData: 
     customConsole
   );
 }
+
+// Backward compatibility aliases - can be removed after migration
+export const executeCodeWithClosure = executeHandler;
+export const prepareClosureFunction = compileHandlerFunction;

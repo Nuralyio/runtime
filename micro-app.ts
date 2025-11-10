@@ -2,8 +2,8 @@ import { $applicationComponents, $components } from "@shared/redux/store/compone
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from "@shared/utils/render-util";
-import "@runtime/components/display/TextLabel/TextLabel";
-import "@runtime/components/layout/Containers/Container";
+import "@shared/ui/components/display/TextLabel/TextLabel";
+import "@shared/ui/components/layout/Containers/Container";
 import { $applicationPages, $currentPage, $microAppCurrentPage } from "@shared/redux/store/page";
 import { eventDispatcher } from "@shared/utils/change-detection";
 import { ViewMode } from "@shared/redux/store/environment";
@@ -11,7 +11,7 @@ import { merge, Observable, Subscription } from "rxjs";
 import EditorInstance, { getInitPlatform } from "./core/Editor";
 import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
-import { ExecuteInstance } from "./core/Kernel";
+import { ExecuteInstance } from "./core/RuntimeContext";
 import "@shared/ui/nuraly-ui/src/shared/themes/default.css";
 
 
