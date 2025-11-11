@@ -179,9 +179,12 @@ export const ValueHandlers = {
     return selectedComponent?.name || '';
   `,
   
-  // Get component input property
+  // Get component input property (prioritizes inputHandlers over input)
   componentInput: (propertyName: string) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
+    if (selectedComponent?.inputHandlers?.${propertyName}) {
+      return selectedComponent.inputHandlers.${propertyName};
+    }
     return selectedComponent?.input?.${propertyName}?.value || '';
   `,
   

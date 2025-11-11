@@ -129,12 +129,12 @@ export class TextInputBlock extends BaseElementBlock {
         : undefined;
     
     // Get other properties from input or inputHandlers
-    const filter = this.component?.input?.filter?.value || this.inputHandlersValue?.filter;
-    const fixedHeader = this.component?.input?.fixedHeader?.value ?? this.inputHandlersValue?.fixedHeader ?? false;
-    const loading = this.component?.input?.loading?.value ?? this.inputHandlersValue?.loading ?? false;
-    const expandable = this.component?.input?.expandable?.value || this.inputHandlersValue?.expandable;
-    const emptyText = this.component?.input?.emptyText?.value || this.inputHandlersValue?.emptyText || 'No data available';
-    const emptyIcon = this.component?.input?.emptyIcon?.value || this.inputHandlersValue?.emptyIcon;
+    const filter = this.inputHandlersValue?.filter ;
+    const fixedHeader = this.inputHandlersValue?.fixedHeader ?? false;
+    const loading = this.inputHandlersValue?.loading ?? false;
+    const expandable = this.inputHandlersValue?.expandable ?? false;
+    const emptyText = this.inputHandlersValue?.emptyText ?? 'No data available';
+    const emptyIcon = this.inputHandlersValue?.emptyIcon;
     const expansionRenderer = this.inputHandlersValue?.expansionRenderer;
     const scrollConfig = this.inputHandlersValue?.scrollConfig;
     

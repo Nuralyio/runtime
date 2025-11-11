@@ -30,6 +30,28 @@ export async function traitInputHandler(
     }
   };
 
+  // Check inputHandlers first (prioritize dynamic handlers over static input)
+  const inputHandler = ctx.component?.inputHandlers?.[inputName];
+  if (inputHandler) {
+    try {
+      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
+      const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
+      setResult(result);
+      return; // Exit early - inputHandler takes precedence
+    } catch (error: any) {
+      ctx.errors[inputName] = { error: error.message };
+      try {
+        EditorInstance.Console.log(
+          `<i style="cursor:pointer" data-uuid="${ctx.component.uuid}" data-application_uuid="${ctx.component.application_id}"><b>${ctx.component.name}</b><i> > inputHandlers > ${inputName} | component uuid > ${ctx.component.uuid}`)
+        EditorInstance.Console.log(formatCodeWithErrorHighlight(inputHandler, error,))
+      } catch (logError) {
+        console.error('Error logging handler error:', logError);
+      }
+      return; // Exit early even on error to prevent fallback
+    }
+  }
+
+  // Fall back to input property if no inputHandler exists
   if (input.type === "handler") {
     try {
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
@@ -38,11 +60,15 @@ export async function traitInputHandler(
       setResult(result);
     } catch (error: any) {
       ctx.errors[inputName] = { error: error.message };
-      const code = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-      EditorInstance.Console.log(
-        `<i style="cursor:pointer" data-uuid="${ctx.component.uuid}" data-application_uuid="${ctx.component.application_id}"><b>${ctx.component.name}</b><i> > inputName > ${inputName} | component uuid > ${ctx.component.uuid}`)
-      EditorInstance.Console.log(formatCodeWithErrorHighlight(code, error,))
-      //throw error;
+      try {
+        const code = getNestedAttribute(ctx.component, `input.${inputName}`).value;
+        EditorInstance.Console.log(
+          `<i style="cursor:pointer" data-uuid="${ctx.component.uuid}" data-application_uuid="${ctx.component.application_id}"><b>${ctx.component.name}</b><i> > input > ${inputName} | component uuid > ${ctx.component.uuid}`)
+        EditorInstance.Console.log(formatCodeWithErrorHighlight(code, error,))
+      } catch (logError) {
+        console.error('Error logging handler error:', logError);
+      }
+      return; // Exit early on error
     }
   } else {
     const { value } = input;
