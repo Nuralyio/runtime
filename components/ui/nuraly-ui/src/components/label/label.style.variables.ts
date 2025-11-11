@@ -4,7 +4,7 @@ export const styleVariables = css`
   :host {
     /* Typography */
     --nuraly-label-font-family: var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
-    --nuraly-label-font-weight: var(--nuraly-font-weight-medium, 400);
+    --nuraly-label-font-weight: var(--nuraly-font-weight-medium, 300);
     --nuraly-label-line-height: var(--nuraly-line-height-base, auto);
 
     /* Size variants */
