@@ -9,11 +9,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
-    PanelMode,
-    PanelSize,
-    PanelPosition,
-    MaximizePosition,
-    EMPTY_STRING
+  PanelMode,
+  PanelSize,
+  PanelPosition,
+  MaximizePosition,
+  EMPTY_STRING
 } from './panel.types.js';
 import { styles } from './panel.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
@@ -24,10 +24,10 @@ import '../label/index.js';
 
 // Import controllers
 import {
-    PanelDragController,
-    PanelDragHost,
-    PanelResizeController,
-    PanelResizeHost
+  PanelDragController,
+  PanelDragHost,
+  PanelResizeController,
+  PanelResizeHost
 } from './controllers/index.js';
 
 /**
@@ -616,7 +616,6 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
               <nr-label 
                 class="panel-title" 
                 size="${this.getLabelSize()}"
-                style="--nuraly-label-font-weight: ${this.size === 'small' ? '400' : 'var(--nuraly-font-weight-medium, 500)'}"
               >${this.title}</nr-label>
             ` : nothing}
           </div>

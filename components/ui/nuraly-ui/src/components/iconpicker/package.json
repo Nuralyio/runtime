@@ -1,0 +1,37 @@
+{
+  "name": "@nuralyui/iconpicker",
+  "version": "0.0.1",
+  "description": "Icon picker component for Nuraly UI - Select icons from Lucide icon library",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "author": "Nuraly, Laabidi Aymen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/iconpicker"
+  },
+  "keywords": [
+    "icon-picker",
+    "icon-selector",
+    "lucide",
+    "lucide-icons",
+    "web-components",
+    "lit",
+    "nuraly-ui"
+  ],
+  "dependencies": {
+    "@nuralyui/common": "workspace:*",
+    "@nuralyui/icon": "workspace:*",
+    "@nuralyui/input": "workspace:*",
+    "@nuralyui/dropdown": "workspace:*",
+    "@nuralyui/button": "workspace:*",
+    "@lit-labs/virtualizer": "^2.0.0",
+    "lit": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

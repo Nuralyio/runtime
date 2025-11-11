@@ -11,7 +11,7 @@
 
   /* Label typography - Default Design System */
   --nuraly-typography-label-font-family: var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
-  --nuraly-typography-label-font-weight: var(--nuraly-font-weight-medium, 500);
+  --nuraly-typography-label-font-weight: var(--nuraly-font-weight-medium, 300);
   --nuraly-typography-label-line-height: var(--nuraly-line-height-base, 1.5);
 
   /* Size variants */
