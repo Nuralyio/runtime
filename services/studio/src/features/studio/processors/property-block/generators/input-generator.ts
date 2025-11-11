@@ -223,11 +223,10 @@ export class InputGenerator {
     }
     
     // Add default change event for radio buttons
-    if (property.type === 'radio' && !baseInput.event.changed && !property.eventHandlers) {
-      baseInput.event.changed = `
+    if (property.type === 'radio' && !baseInput.event.onChange) {
+      baseInput.event.onChange = `
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        
         updateStyle(selectedComponent, "${property.name}", EventData.value);
       `;
     }
