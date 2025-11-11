@@ -96,7 +96,7 @@ export class NrIconPickerElement extends NuralyUIBaseMixin(LitElement) implement
 
   // Public properties
   @property({ type: String, reflect: true }) value = EMPTY_STRING;
-  @property({ type: String, reflect: true }) size = IconPickerSize.Medium;
+  @property({ type: String, reflect: true }) size = IconPickerSize.Small;
   @property({ type: String }) placement: string = IconPickerPlacement.Auto;
   @property({ type: String }) trigger: string = IconPickerTrigger.Manual;
   @property({ type: Boolean, reflect: true }) disabled = false;
