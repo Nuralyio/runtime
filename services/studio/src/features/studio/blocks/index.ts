@@ -4,9 +4,11 @@
  */
 
 // Page Blocks
+export { default as studioPageInfoContainerBlock } from "./page-blocks/studio-page-info-container-block.ts";
 export { default as studioPageNameBlock } from "./page-blocks/studio-page-name-block.ts";
 export { default as studioPageUrlBlock } from "./page-blocks/studio-page-url-block.ts";
 export { default as studioPageSEOBlock } from "./page-blocks/studio-page-seo-block.ts";
+export { default as studioPageDefaultCheckboxBlock } from "./page-blocks/studio-page-default-checkbox-block.ts";
 export { default as studioPageAccessControlBlock } from "./page-blocks/studio-page-access-control-block.ts";
 export { PageThemeStudio } from "./page-blocks/themes.ts";
 
