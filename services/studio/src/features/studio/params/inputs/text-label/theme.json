@@ -28,9 +28,16 @@
             { "label": "Bold (700)", "value": "700" }
           ]},
           { "label": "Line Height", "cssVar": "--nuraly-label-line-height", "type": "text", "placeholder": "auto, 1.2, 20px" },
-          { "label": "Font Size (Default)", "cssVar": "--nuraly-label-font-size", "type": "text", "placeholder": "14px, 1rem" },
-          { "label": "Small Font Size", "cssVar": "--nuraly-label-small-font-size", "type": "text", "placeholder": "12px, 0.75rem" },
-          { "label": "Large Font Size", "cssVar": "--nuraly-label-large-font-size", "type": "text", "placeholder": "16px, 1rem" }
+          { "label": "Font Size (Default)", "cssVar": "--nuraly-label-font-size", "type": "text", "placeholder": "14px, 1rem" }
+        ]
+      },
+      {
+        "name": "Size Variants",
+        "open": false,
+        "items": [
+          { "label": "Small Font Size", "cssVar": "--nuraly-label-small-font-size", "type": "text", "placeholder": "12px, 0.75rem", "defaultValue": "12px" },
+          { "label": "Medium Font Size", "cssVar": "--nuraly-label-medium-font-size", "type": "text", "placeholder": "14px, 0.875rem", "defaultValue": "14px" },
+          { "label": "Large Font Size", "cssVar": "--nuraly-label-large-font-size", "type": "text", "placeholder": "16px, 1rem", "defaultValue": "16px" }
         ]
       },
       {
