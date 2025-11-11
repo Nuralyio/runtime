@@ -356,7 +356,12 @@ export class CodeEditor extends LitElement {
       const cursorPosition = this.editor?.getPosition();
       // Only set the editor value if there's a real change
       if (this.code !== this.getValue() && this.editor) {
-        this.editor.setValue(this.code ?? "");
+        try{
+
+          this.editor.setValue(this.code ?? "");
+        }catch(e){
+          console.log("Error setting editor value:", e);
+        }
         if (cursorPosition) {
           this.editor.setPosition(cursorPosition);
         }
