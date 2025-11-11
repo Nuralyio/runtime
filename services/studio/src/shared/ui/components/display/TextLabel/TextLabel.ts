@@ -36,7 +36,6 @@ export class TextLabelBlock extends BaseElementBlock {
 
 
   override renderComponent() {
-    const labelStyles = this.component?.style || {};
     
     return html`
      <nr-label

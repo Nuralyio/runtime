@@ -48,19 +48,12 @@ tableFields:
         ];
         const radioType = 'button';
         return [options, currentSize, radioType];
-      eventHandlers:
-        changed: |
-          const selectedComponent = Utils.first(Vars.selectedComponents);
-          if (selectedComponent) {
-            updateStyle(selectedComponent, 'size', EventData.value);
-          }
       hasHandler: true
       handlerType: style
       handlerProperty: size
       handlerValueGetter: |
         const selectedComponent = Utils.first(Vars.selectedComponents);
         return selectedComponent?.styleHandlers?.size || '';
-      handlerEventUpdate: |
         updateStyleHandlers(Utils.first(Vars.selectedComponents), 'size', EventData.value);
 
     # Selection Mode
@@ -86,7 +79,7 @@ tableFields:
         const radioType = 'button';
         return [options, currentMode, radioType];
       eventHandlers:
-        changed: |
+        onChange: |
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateInput(selectedComponent, 'selectionMode', 'string', EventData.value);
@@ -122,7 +115,7 @@ tableFields:
         const radioType = 'button';
         return [options, currentFilter, radioType];
       eventHandlers:
-        changed: |
+        onChange: |
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateInput(selectedComponent, 'filter', 'string', EventData.value);
@@ -158,7 +151,7 @@ tableFields:
         const radioType = 'button';
         return [options, currentValue, radioType];
       eventHandlers:
-        changed: |
+        onChange: |
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
             updateInput(selectedComponent, 'fixedHeader', 'boolean', EventData.value);
@@ -201,30 +194,15 @@ tableFields:
     # Loading State
     - name: loading
       label: Loading
-      type: radio
+      type: boolean
       default: false
       width: 180px
-      valueHandler: |
-        const selectedComponent = Utils.first(Vars.selectedComponents);
-        let currentValue = false;
-        let isDisabled = false;
-        if (selectedComponent?.input?.loading?.type == 'handler' && selectedComponent?.input?.loading?.value) {
-          isDisabled = true;
-        } else {
-          currentValue = selectedComponent?.input?.loading?.value || false;
-        }
-        const options = [
-          { value: false, icon: 'toggle-off', disabled: isDisabled },
-          { value: true, icon: 'toggle-on', disabled: isDisabled }
-        ];
-        const radioType = 'button';
-        return [options, currentValue, radioType];
-      eventHandlers:
-        changed: |
-          const selectedComponent = Utils.first(Vars.selectedComponents);
-          if (selectedComponent) {
-            updateInput(selectedComponent, 'loading', 'boolean', EventData.value);
-          }
+      valueHandler:
+        ref: componentInput
+        params: [loading]
+      stateHandler:
+        ref: inputHandler
+        params: [loading]
       hasHandler: true
       handlerType: input
       handlerProperty: loading
@@ -263,10 +241,10 @@ tableFields:
     # Empty Icon
     - name: emptyIcon
       label: Empty Icon
-      type: text
+      type: icon
       default: ''
       width: 180px
-      placeholder: Icon name
+      placeholder: Select icon
       valueHandler:
         ref: componentInput
         params: [emptyIcon]

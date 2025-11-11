@@ -204,7 +204,7 @@ export default [
                         console.log('[DEBUG] Component parameters order:', parameters);
                     }
                 } else if(currentPageId) {
-                    parameters = ["page_name_block", "page_url_block", "description_block", "access_control_panel_block"];
+                    parameters = ["page_info_container_block", "access_control_panel_block"];
                     themes = ["PageThemeStudio"];
                     console.log('[DEBUG] Page parameters order:', parameters);
                 }
