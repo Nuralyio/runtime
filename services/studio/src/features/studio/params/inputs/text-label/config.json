@@ -100,9 +100,6 @@
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["required"]
-        },
-        "eventHandlers": {
-          "checkboxChanged": "const selectedComponent = Utils.first(Vars.selectedComponents); const newRequired = EventData.value === 'check'; updateInput(selectedComponent, 'required', 'boolean', newRequired);"
         }
       },
       {

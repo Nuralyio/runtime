@@ -9,4 +9,6 @@ export type PageElement = {
   style?: any;
   components?: ComponentElement[];
   component_ids?: string[];
+  description?: string;
+  is_default?: boolean;
 };

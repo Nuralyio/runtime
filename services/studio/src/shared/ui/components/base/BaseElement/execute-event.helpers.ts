@@ -22,9 +22,6 @@ export function handleComponentEvent({
   if (isViewMode) {
     const code = component.event?.[eventName];
     if (code) {
-      console.log('Executing event code:', eventName, code);
-      
-      // Create EventData object that matches the expected structure
       const EventData = {
         ...data,
         event

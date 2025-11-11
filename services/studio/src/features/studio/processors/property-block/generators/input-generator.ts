@@ -170,6 +170,11 @@ export class InputGenerator {
                      const type = "button";
                      return [options, currentValue, type];
                    `
+                   : property.type === 'boolean'
+                   ? `
+                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     return Editor.getComponentInput(selectedComponent, '${property.name}');
+                   `
                    : `
                      let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"
                      return e;
@@ -218,11 +223,10 @@ export class InputGenerator {
     }
     
     // Add default change event for radio buttons
-    if (property.type === 'radio' && !baseInput.event.changed && !property.eventHandlers) {
-      baseInput.event.changed = `
+    if (property.type === 'radio' && !baseInput.event.onChange) {
+      baseInput.event.onChange = `
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        
         updateStyle(selectedComponent, "${property.name}", EventData.value);
       `;
     }
@@ -234,6 +238,15 @@ export class InputGenerator {
         if (!selectedComponent) return;
         
         updateStyle(selectedComponent, "${property.name}", EventData.value);
+      `;
+    }
+    
+    // Add default change event for boolean/checkbox inputs
+    if (property.type === 'boolean' && !baseInput.event.onChange && !property.eventHandlers) {
+      baseInput.event.onChange = `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (!selectedComponent) return;
+        updateInput(selectedComponent, "${property.name}", "boolean", Boolean(EventData.checked));
       `;
     }
     
