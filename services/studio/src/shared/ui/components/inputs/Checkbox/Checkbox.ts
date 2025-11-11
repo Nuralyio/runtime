@@ -37,7 +37,7 @@ export class CheckboxBlock extends BaseElementBlock {
         style=${styleMap({
           ...this.getStyles(),
         })}
-        .checked=${this.inputHandlersValue?.checked == "check"}
+        .checked=${this.inputHandlersValue?.value}
         .indeterminate=${this.inputHandlersValue?.checked == "indeterminate"}
         .disabled=${this.inputHandlersValue?.state == "disabled"}
         .size=${size || 'medium'}
@@ -49,7 +49,9 @@ export class CheckboxBlock extends BaseElementBlock {
         .title=${this.inputHandlersValue?.title || ''}
         .tabIndex=${this.inputHandlersValue?.tabIndex || 0}
         @nr-change=${(e) => {
-          this.executeEvent('onChange', e);
+          this.executeEvent('onChange', e , {
+            checked: e.detail.checked
+          });
         }}
         @nr-focus=${(e) => {
           this.executeEvent('onFocus', e);

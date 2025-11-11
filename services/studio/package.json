@@ -28,8 +28,6 @@
     "@lit-labs/virtualizer": "^2.0.14",
     "@lit/localize": "^0.12.2",
     "@lit/reactive-element": "^2.0.4",
-    "@material/mwc-icon-button": "^0.27.0",
-    "@material/web": "^2.3.0",
     "@nanostores/lit": "^0.2.1",
     "@nanostores/logger": "^0.3.0",
     "@nanostores/persistent": "^0.10.2",
