@@ -2,7 +2,6 @@
 import Layout from './_layouts/LandingLayout.astro';
 import "../shared/ui/components/runtime/MicroApp/MicroApp";
 import { MicroApp } from '../shared/ui/components/runtime/MicroApp/MicroApp';
-import 'dotenv/config'
 import { processHeaders } from '@shared/utils/api-calls-utils';
 import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@services';
 const { page_url } = Astro.props;
@@ -40,8 +39,8 @@ const processedHeaders = processHeaders(Astro.request.headers);
   client:load
   .prod={true}
   mode="preview"
-  uuid={homeAppUUID}
-  page_uuid={homeAppPageUUID}
+  .uuid={homeAppUUID}
+  .page_uuid={homeAppPageUUID}
  ></MicroApp>
  <style is:inline is:global>
     html {
