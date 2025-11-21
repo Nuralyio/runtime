@@ -52,9 +52,20 @@ export class MicroAppStoreContext {
   private _isLoaded: boolean = false
   private _loadPromise: Promise<void> | null = null
 
-  constructor(microAppId: string, appUUID: string) {
+  // Pre-loaded data
+  private preloadedComponents?: ComponentElement[]
+  private preloadedPages?: PageElement[]
+
+  constructor(
+    microAppId: string,
+    appUUID: string,
+    preloadedComponents?: ComponentElement[],
+    preloadedPages?: PageElement[]
+  ) {
     this.microAppId = microAppId
     this.appUUID = appUUID
+    this.preloadedComponents = preloadedComponents
+    this.preloadedPages = preloadedPages
 
     // Initialize isolated stores
     this._$components = deepMap<ComponentStore>({})
@@ -92,42 +103,57 @@ export class MicroAppStoreContext {
 
   private async _doLoadApplication(): Promise<void> {
     try {
-      // Check if components are already loaded in global store (non-AJAX case)
-      // This handles pre-loaded apps like studio (uuid="1") from studio-entrypoint.ts
-      // or SSR-hydrated apps from window.__INITIAL_COMPONENT_STATE__
-      const globalComponents = typeof window !== 'undefined'
-        ? (await import('@shared/redux/store/component/store')).then(m => m.$components)
-        : null
-
-      const globalPages = typeof window !== 'undefined'
-        ? (await import('@shared/redux/store/page')).then(m => m.$pages)
-        : null
-
       let componentsLoaded = false
       let pagesLoaded = false
 
-      // Try to get from global store first (non-AJAX)
-      if (globalComponents) {
-        const existingComponents = globalComponents.get()[this.appUUID]
-        if (existingComponents && existingComponents.length > 0) {
-          // Components already loaded - copy to isolated store
-          this._$components.setKey(this.appUUID, existingComponents)
-          componentsLoaded = true
-          console.log(`[MicroApp ${this.microAppId}] Using pre-loaded components (non-AJAX)`)
+      // 1. Check for pre-loaded data passed directly (highest priority)
+      if (this.preloadedComponents && this.preloadedComponents.length > 0) {
+        this._$components.setKey(this.appUUID, this.preloadedComponents)
+        componentsLoaded = true
+        console.log(`[MicroApp ${this.microAppId}] Using directly provided components (${this.preloadedComponents.length} components)`)
+      }
+
+      if (this.preloadedPages && this.preloadedPages.length > 0) {
+        this._$pages.setKey(this.appUUID, this.preloadedPages)
+        pagesLoaded = true
+        console.log(`[MicroApp ${this.microAppId}] Using directly provided pages (${this.preloadedPages.length} pages)`)
+      }
+
+      // 2. Check if components are already loaded in global store (non-AJAX case)
+      // This handles pre-loaded apps like studio (uuid="1") from studio-entrypoint.ts
+      // or SSR-hydrated apps from window.__INITIAL_COMPONENT_STATE__
+      if (!componentsLoaded || !pagesLoaded) {
+        const globalComponents = typeof window !== 'undefined'
+          ? (await import('@shared/redux/store/component/store')).then(m => m.$components)
+          : null
+
+        const globalPages = typeof window !== 'undefined'
+          ? (await import('@shared/redux/store/page')).then(m => m.$pages)
+          : null
+
+        // Try to get from global store (non-AJAX)
+        if (!componentsLoaded && globalComponents) {
+          const existingComponents = globalComponents.get()[this.appUUID]
+          if (existingComponents && existingComponents.length > 0) {
+            // Components already loaded - copy to isolated store
+            this._$components.setKey(this.appUUID, existingComponents)
+            componentsLoaded = true
+            console.log(`[MicroApp ${this.microAppId}] Using pre-loaded components from global store (non-AJAX)`)
+          }
+        }
+
+        if (!pagesLoaded && globalPages) {
+          const existingPages = globalPages.get()[this.appUUID]
+          if (existingPages && existingPages.length > 0) {
+            // Pages already loaded - copy to isolated store
+            this._$pages.setKey(this.appUUID, existingPages)
+            pagesLoaded = true
+            console.log(`[MicroApp ${this.microAppId}] Using pre-loaded pages from global store (non-AJAX)`)
+          }
         }
       }
 
-      if (globalPages) {
-        const existingPages = globalPages.get()[this.appUUID]
-        if (existingPages && existingPages.length > 0) {
-          // Pages already loaded - copy to isolated store
-          this._$pages.setKey(this.appUUID, existingPages)
-          pagesLoaded = true
-          console.log(`[MicroApp ${this.microAppId}] Using pre-loaded pages (non-AJAX)`)
-        }
-      }
-
-      // If not in global store and not studio app "1", fetch from API
+      // 3. If still not loaded, fetch from API (AJAX)
       if (!componentsLoaded && this.appUUID !== "1") {
         console.log(`[MicroApp ${this.microAppId}] Fetching components from API`)
         const componentsResponse = await fetch(`/api/components/application/${this.appUUID}`)
@@ -157,17 +183,26 @@ export class MicroAppStoreContext {
 
       this._isLoaded = true
 
+      // Determine loading source
+      const loadingSource = this.preloadedComponents
+        ? 'direct'
+        : componentsLoaded && pagesLoaded
+        ? 'cache'
+        : 'api'
+
       // Notify other micro-apps
       this.messageBus.send({
         from: this.microAppId,
         type: 'MICRO_APP_MOUNTED',
         payload: {
           appUUID: this.appUUID,
-          loadedFromCache: componentsLoaded && pagesLoaded
+          loadingSource,
+          componentsCount: this._$components.get()[this.appUUID]?.length || 0,
+          pagesCount: this._$pages.get()[this.appUUID]?.length || 0
         }
       })
 
-      console.log(`[MicroApp ${this.microAppId}] Load complete - Components: ${componentsLoaded ? 'loaded' : 'none'}, Pages: ${pagesLoaded ? 'loaded' : 'none'}`)
+      console.log(`[MicroApp ${this.microAppId}] Load complete - Source: ${loadingSource}, Components: ${componentsLoaded ? 'loaded' : 'none'}, Pages: ${pagesLoaded ? 'loaded' : 'none'}`)
     } catch (error) {
       console.error(`Failed to load micro-app ${this.microAppId}:`, error)
       throw error

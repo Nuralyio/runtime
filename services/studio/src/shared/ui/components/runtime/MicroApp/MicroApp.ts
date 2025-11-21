@@ -37,6 +37,10 @@ export class MicroApp extends LitElement {
   @property({ type: Boolean, reflect: false }) prod = true;
   @property({ type: Boolean, reflect: false }) useIsolatedContext: boolean = true; // Feature flag
 
+  // Pre-loaded app data (optional - avoids loading step)
+  @property({ type: Array, reflect: false }) appComponents?: any[];
+  @property({ type: Array, reflect: false }) appPages?: any[];
+
   @state() components: any[] = [];
   @state() componentsToRender: any[] = [];
   @state() page: any = {};
@@ -257,8 +261,13 @@ private initializeAppComponents(): void {
 
       console.log(`[MicroApp] Initializing isolated context for ${this.microAppId}`);
 
-      // 1. Create store context
-      this.storeContext = new MicroAppStoreContext(this.microAppId, this.uuid);
+      // 1. Create store context with optional pre-loaded data
+      this.storeContext = new MicroAppStoreContext(
+        this.microAppId,
+        this.uuid,
+        this.appComponents,
+        this.appPages
+      );
 
       // 2. Create runtime context
       this.runtimeContext = new MicroAppRuntimeContext(this.storeContext);
