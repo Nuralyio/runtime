@@ -64,6 +64,67 @@
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "checked"
+      },
+      {
+        "name": "size",
+        "label": "Size",
+        "type": "select",
+        "default": "medium",
+        "width": "180px",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" }
+        ],
+        "valueHandler": { "ref": "componentInput", "params": ["size"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["size"] },
+        "eventHandlers": {
+          "changed": { "ref": "updateInput", "params": ["size", "string"] }
+        }
+      },
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Field name",
+        "valueHandler": { "ref": "componentInput", "params": ["name"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["name"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["name", "value"] }
+        }
+      },
+      {
+        "name": "value",
+        "label": "Value",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Field value",
+        "valueHandler": { "ref": "componentInput", "params": ["value"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["value"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["value", "value"] }
+        }
+      },
+      {
+        "name": "disabled",
+        "label": "Disabled",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "valueHandler": { "ref": "componentInput", "params": ["disabled"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] }
+      },
+      {
+        "name": "required",
+        "label": "Required",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "valueHandler": { "ref": "componentInput", "params": ["required"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["required"] }
       }
     ]
   }
