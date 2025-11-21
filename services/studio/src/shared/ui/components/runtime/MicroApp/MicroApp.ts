@@ -14,11 +14,18 @@ import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import "@shared/ui/nuraly-ui/src/shared/themes/default.css";
 
+// Import isolated micro-app infrastructure
+import { MicroAppStoreContext } from "@features/micro-app/state/MicroAppStoreContext";
+import { MicroAppRuntimeContext } from "@features/micro-app/state/MicroAppRuntimeContext";
+import { MicroAppPageManager } from "@features/micro-app/state/MicroAppPageManager";
+import { MicroAppHandlerExecutor } from "@features/micro-app/execution/MicroAppHandlerExecutor";
+import { MicroAppMessageBus, MessageTypes } from "@features/micro-app/messaging/MicroAppMessageBus";
+
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
   static override styles = [css`
-    
+
   `];
 
   private subscription = new Subscription();
@@ -28,10 +35,20 @@ export class MicroApp extends LitElement {
   @property({ type: String, reflect: true }) componentToRenderUUID?: string;
   @property({ type: String, reflect: false }) mode: ViewMode = ViewMode.Preview;
   @property({ type: Boolean, reflect: false }) prod = true;
+  @property({ type: Boolean, reflect: false }) useIsolatedContext: boolean = true; // Feature flag
 
   @state() components: any[] = [];
   @state() componentsToRender: any[] = [];
   @state() page: any = {};
+
+  // Isolated micro-app contexts
+  private microAppId: string = '';
+  private storeContext: MicroAppStoreContext | null = null;
+  private runtimeContext: MicroAppRuntimeContext | null = null;
+  private pageManager: MicroAppPageManager | null = null;
+  private handlerExecutor: MicroAppHandlerExecutor | null = null;
+  private messageBus: MicroAppMessageBus | null = null;
+  private messageUnsubscribe: (() => void) | null = null;
 
   constructor() {
     super();
@@ -74,19 +91,33 @@ export class MicroApp extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.setupSubscriptions();
-    if(!ExecuteInstance.Vars.currentPlatform){
-      ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform()
+
+    // Initialize isolated context if feature is enabled
+    if (this.useIsolatedContext) {
+      this.initializeIsolatedContext();
+    } else {
+      // Legacy mode
+      this.setupSubscriptions();
+      if(!ExecuteInstance.Vars.currentPlatform){
+        ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform()
+      }
+      EditorInstance.setEditorMode(this.prod);
+      this.initializeAppComponents();
     }
-    EditorInstance.setEditorMode(this.prod);
-    this.initializeAppComponents();
   }
-  
+
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    
+
   }
+
   override disconnectedCallback(): void {
     this.subscription.unsubscribe();
+
+    // Cleanup isolated context
+    if (this.useIsolatedContext) {
+      this.cleanupIsolatedContext();
+    }
+
     super.disconnectedCallback();
   }
   
@@ -214,6 +245,175 @@ private initializeAppComponents(): void {
    */
   private isPreviewMode(): boolean {
     return this.mode === ViewMode.Preview;
+  }
+
+  /**
+   * Initialize isolated micro-app context
+   */
+  private async initializeIsolatedContext(): Promise<void> {
+    try {
+      // Generate unique micro-app instance ID
+      this.microAppId = `${this.uuid}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      console.log(`[MicroApp] Initializing isolated context for ${this.microAppId}`);
+
+      // 1. Create store context
+      this.storeContext = new MicroAppStoreContext(this.microAppId, this.uuid);
+
+      // 2. Create runtime context
+      this.runtimeContext = new MicroAppRuntimeContext(this.storeContext);
+
+      // 3. Create page manager
+      this.pageManager = new MicroAppPageManager(this.storeContext);
+      // Store page manager reference in store context for handler access
+      (this.storeContext as any).pageManager = this.pageManager;
+
+      // 4. Create handler executor
+      this.handlerExecutor = new MicroAppHandlerExecutor(this.runtimeContext);
+
+      // 5. Get message bus
+      this.messageBus = MicroAppMessageBus.getInstance();
+
+      // 6. Subscribe to messages
+      this.messageUnsubscribe = this.messageBus.subscribe(this.microAppId, (message) => {
+        this.handleMessage(message);
+      });
+
+      // 7. Load application data
+      await this.storeContext.loadApplication();
+
+      // 8. Load pages
+      await this.pageManager.loadPages();
+
+      // 9. Register components in runtime
+      this.runtimeContext.registerComponents();
+
+      // 10. Setup subscriptions to isolated stores
+      this.setupIsolatedSubscriptions();
+
+      // 11. Update component list
+      this.refreshIsolatedComponents();
+
+      // 12. Set platform if not already set
+      if (!this.runtimeContext.getVar('currentPlatform')) {
+        this.runtimeContext.setVar('currentPlatform', getInitPlatform());
+      }
+
+      EditorInstance.setEditorMode(this.prod);
+
+      console.log(`[MicroApp] Initialization complete for ${this.microAppId}`);
+      console.log('[MicroApp] Debug info:', this.storeContext.getDebugInfo());
+
+    } catch (error) {
+      console.error(`[MicroApp] Failed to initialize isolated context:`, error);
+    }
+  }
+
+  /**
+   * Handle incoming messages from message bus
+   */
+  private handleMessage(message: any): void {
+    console.log(`[MicroApp ${this.microAppId}] Received message:`, message);
+
+    switch (message.type) {
+      case MessageTypes.FILE_SELECTED:
+        // Handle file selection from Files micro-app
+        break;
+      case MessageTypes.DATA_UPDATED:
+        // Handle data updates
+        this.requestUpdate();
+        break;
+      default:
+        // Handle custom messages
+        break;
+    }
+  }
+
+  /**
+   * Setup subscriptions to isolated stores
+   */
+  private setupIsolatedSubscriptions(): void {
+    if (!this.storeContext) return;
+
+    // Subscribe to component changes
+    const componentsUnsub = this.storeContext.$components.subscribe(() => {
+      this.refreshIsolatedComponents();
+      this.requestUpdate();
+    });
+    this.subscription.add(componentsUnsub);
+
+    // Subscribe to page changes
+    const pagesUnsub = this.storeContext.$pages.subscribe(() => {
+      this.pageManager?.reloadPages();
+      this.requestUpdate();
+    });
+    this.subscription.add(pagesUnsub);
+  }
+
+  /**
+   * Refresh components from isolated store
+   */
+  private refreshIsolatedComponents(): void {
+    if (!this.storeContext || !this.pageManager) return;
+
+    const allComponents = this.storeContext.getComponents();
+    const currentPage = this.pageManager.getCurrentPage();
+
+    // Filter components by page if page_uuid is specified
+    this.components = this.page_uuid
+      ? allComponents.filter((component) => component.pageId === this.page_uuid && component.root === true)
+      : currentPage
+      ? allComponents.filter((component) => component.pageId === currentPage.uuid && component.root === true)
+      : allComponents.filter((component) => component.root === true);
+
+    this.updateComponentsToRender();
+  }
+
+  /**
+   * Cleanup isolated context
+   */
+  private cleanupIsolatedContext(): void {
+    console.log(`[MicroApp] Cleaning up isolated context for ${this.microAppId}`);
+
+    // Unsubscribe from messages
+    if (this.messageUnsubscribe) {
+      this.messageUnsubscribe();
+      this.messageUnsubscribe = null;
+    }
+
+    // Cleanup contexts in reverse order
+    if (this.handlerExecutor) {
+      this.handlerExecutor = null;
+    }
+
+    if (this.pageManager) {
+      this.pageManager.cleanup();
+      this.pageManager = null;
+    }
+
+    if (this.runtimeContext) {
+      this.runtimeContext.cleanup();
+      this.runtimeContext = null;
+    }
+
+    if (this.storeContext) {
+      this.storeContext.cleanup();
+      this.storeContext = null;
+    }
+
+    this.messageBus = null;
+
+    console.log(`[MicroApp] Cleanup complete for ${this.microAppId}`);
+  }
+
+  /**
+   * Get the execution context (isolated or global)
+   */
+  private getExecutionContext(): any {
+    if (this.useIsolatedContext && this.runtimeContext) {
+      return this.runtimeContext;
+    }
+    return ExecuteInstance;
   }
 
   override render() {
