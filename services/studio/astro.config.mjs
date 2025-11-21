@@ -15,6 +15,10 @@ export default defineConfig({
   adapter: node({
     mode: "standalone"
   }),
+  server: {
+    port: 3000,
+    host: true
+  },
   vite: {
    plugins: [yaml()],
    resolve: {
@@ -32,7 +36,7 @@ export default defineConfig({
    },
    build:{
     assetsInlineLimit:0,
-    
+
    },
    ssr:{
     noExternal:['monaco-editor']

@@ -6,7 +6,7 @@ import { styles } from "./IconPicker.style.ts";
 import { EMPTY_STRING } from "@shared/utils/constants.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/iconpicker";
+// import "@nuralyui/iconpicker"; // TODO: Package doesn't exist, needs to be created or removed
 
 @customElement("icon-picker-block")
 export class IconPicker extends BaseElementBlock {

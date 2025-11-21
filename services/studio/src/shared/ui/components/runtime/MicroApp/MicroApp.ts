@@ -51,10 +51,15 @@ export class MicroApp extends LitElement {
    * Hook `updated()` de LitElement : déclenché lorsque les propriétés changent.
    */
   override updated(changedProperties: Map<string, any>): void {
+    // Re-initialize if uuid property changes and becomes defined
+    if (changedProperties.has("uuid") && this.uuid) {
+      this.initializeAppComponents();
+    }
+
     if (changedProperties.has("components") || changedProperties.has("componentToRenderUUID")|| changedProperties.has("page_uuid")) {
       this.updateComponentsToRender();
     }
-   
+
   }
 
   /**
@@ -89,6 +94,10 @@ export class MicroApp extends LitElement {
  * Récupère les composants de l'application s'ils ne sont pas déjà chargés.
  */
 private initializeAppComponents(): void {
+  // Guard: Don't proceed if uuid is undefined or null
+  if (!this.uuid) {
+    return;
+  }
 
   const appLoaded = $components.get()[this.uuid];
 
@@ -97,7 +106,6 @@ private initializeAppComponents(): void {
   }
 
   if (appLoaded === undefined && this.uuid!="1") {
-
     // Fetch components
     fetch(`/api/components/application/${this.uuid}`)
       .then((response) => {
