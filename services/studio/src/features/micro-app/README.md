@@ -262,6 +262,38 @@ The `<micro-app>` component has been updated to support isolated context mode.
 | `mode` | ViewMode | Preview | Edit or Preview mode |
 | `prod` | boolean | true | Production mode flag |
 | `useIsolatedContext` | boolean | true | Use isolated context (new architecture) |
+| `appComponents` | ComponentElement[] | optional | Pre-loaded components (avoids loading step) |
+| `appPages` | PageElement[] | optional | Pre-loaded pages (avoids loading step) |
+
+### Loading Priority
+
+The micro-app supports three loading strategies (in priority order):
+
+1. **Direct (Highest Priority)** - Use `appComponents` and `appPages` properties
+2. **Cache** - Check global store for pre-loaded components (e.g., studio-entrypoint.ts)
+3. **API (Fallback)** - Fetch from `/api/components/application/{uuid}` and `/api/pages/application/{uuid}`
+
+### Usage with Pre-loaded Data
+
+```typescript
+// Load data first
+const components = await fetchComponents(appUUID)
+const pages = await fetchPages(appUUID)
+
+// Pass directly to micro-app - no additional loading needed!
+<micro-app
+  uuid={appUUID}
+  .appComponents={components}
+  .appPages={pages}
+  useIsolatedContext="true">
+</micro-app>
+```
+
+**Benefits:**
+- ✅ Zero loading time - data is immediately available
+- ✅ Custom data - pass modified/filtered components
+- ✅ Full control - manage loading state in parent component
+- ✅ Efficient - no redundant API calls
 
 ### Accessing Micro-App Context
 
