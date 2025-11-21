@@ -52,13 +52,16 @@
         "default": "default",
         "width": "180px",
         "options": [
+          { "label": "Default", "value": "default" },
           { "label": "Primary", "value": "primary" },
           { "label": "Secondary", "value": "secondary" },
+          { "label": "Tertiary", "value": "tertiary" },
           { "label": "Danger", "value": "danger" },
           { "label": "Ghost", "value": "ghost" },
-          { "label": "Default", "value": "default" }
+          { "label": "Text", "value": "text" },
+          { "label": "Link", "value": "link" }
         ],
-        "valueHandler": { "ref": "componentStyleSelect", "params": ["type", [{"label": "Primary", "value": "primary"}, {"label": "Secondary", "value": "secondary"}, {"label": "Danger", "value": "danger"}, {"label": "Ghost", "value": "ghost"}, {"label": "Default", "value": "default"}], "default"] },
+        "valueHandler": { "ref": "componentStyleSelect", "params": ["type", [{"label": "Default", "value": "default"}, {"label": "Primary", "value": "primary"}, {"label": "Secondary", "value": "secondary"}, {"label": "Tertiary", "value": "tertiary"}, {"label": "Danger", "value": "danger"}, {"label": "Ghost", "value": "ghost"}, {"label": "Text", "value": "text"}, {"label": "Link", "value": "link"}], "default"] },
         "stateHandler": { "ref": "styleHandler", "params": ["type"] },
         "eventHandlers": {
           "changed": { "ref": "updateStyle", "params": ["type", "value"] }
