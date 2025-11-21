@@ -27,8 +27,15 @@ local function toToken(res)
   
 
   local roles = {}
-  if jwt_obj and jwt_obj.payload.resource_access.account.roles then
-      roles = map(roleOf, jwt_obj.payload.resource_access.account.roles)
+  -- Safely extract roles from the JWT token
+  if jwt_obj and jwt_obj.payload and jwt_obj.payload.resource_access then
+      -- Try to get roles from the client-specific resource_access
+      if jwt_obj.payload.resource_access["nuraly-web"] and jwt_obj.payload.resource_access["nuraly-web"].roles then
+          roles = map(roleOf, jwt_obj.payload.resource_access["nuraly-web"].roles)
+      -- Fallback to realm_access roles if available
+      elseif jwt_obj.payload.realm_access and jwt_obj.payload.realm_access.roles then
+          roles = map(roleOf, jwt_obj.payload.realm_access.roles)
+      end
   end
  
   local token = {
@@ -50,7 +57,7 @@ local client_id = os.getenv("KEYCLOAK_CLIENT_ID")
 local client_secret = os.getenv("KEYCLOAK_CLIENT_SECRET")
 local scheme = os.getenv("KEYCLOAK_SCHEME")
 local keycloak_fullurl = os.getenv("KEYCLOAK_FULLURL")
-local redirect_uri = ngx.var.request_uri
+
 local opts = {
     ssl_verify = "no",
     redirect_uri = "/cb",
@@ -59,17 +66,12 @@ local opts = {
     client_secret = client_secret,
     scope = "openid email profile roles",
     session_contents = {id_token=true, access_token=true, refresh_token=true, enc_id_token=true, realm_access=true},
-
-
 }
-
-ngx.log(ngx.INFO, "host: " .. host )
-ngx.log(ngx.INFO, "scheme: " .. scheme )
 
 
 local function authenticateWithKeycloakPass(customRedirectUri)
-    ngx.log(ngx.INFO, "host: " .. host )
-ngx.log(ngx.INFO, "scheme: " .. scheme )
+    ngx.log(ngx.INFO, "host: " .. tostring(host) )
+    ngx.log(ngx.INFO, "scheme: " .. tostring(scheme) )
     ngx.log(ngx.INFO, "request_uri: " .. ngx.var.request_uri)
     local redirectUriToUse = ""
     if customRedirectUri then 
@@ -117,7 +119,7 @@ local function authenticateWithKeycloak()
     
     if err then
         if string.find(err, "no session state found") then
-            ngx.redirect(redirect_uri)
+            ngx.redirect(ngx.var.request_uri)
         elseif string.find(err, "state from argument does not") then
             ngx.redirect("/")
         else
@@ -132,7 +134,7 @@ end
 local function logout()
     local optsWithCustomRedirect = {
         ssl_verify = "no",
-        redirect_uri = redirectUriToUse,
+        redirect_uri = "/cb",
         discovery = scheme .. "://"..host.."/auth/realms/" .. realm .. "/.well-known/openid-configuration",
         client_id = client_id,
         logout_path = "/logout",

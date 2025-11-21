@@ -22,4 +22,5 @@ RUN chmod 777 /opt/keycloak/cache
 # Copy realm import files for development
 COPY ./Import/ /opt/keycloak/data/import/
 
+# Start with import-realm for dev environment
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh" , "start --import-realm --proxy=edge" ,  "--hostname-strict=false","--auto-build", " --cache=ispn --cache-config-file=cache-ispn.xml", "--db=postgres"]
