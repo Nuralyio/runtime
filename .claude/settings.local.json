@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-compose:*)",
+      "Bash(make dev:*)",
+      "Bash(tee:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker logs:*)",
+      "Bash(curl -v http://localhost/auth)",
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "Bash(docker cp:*)",
+      "Bash(git submodule:*)",
+      "Bash(npm run build:*)",
+      "Bash(make clean:*)",
+      "Bash(docker restart:*)",
+      "Bash(/dev/null)",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

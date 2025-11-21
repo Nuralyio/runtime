@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Frontend - Studio
   studio:
@@ -34,7 +32,7 @@ services:
       - ./services/foundation:/app
     environment:
       - NODE_ENV=development
-      - PORT=8000
+      - BACKEND_PORT=8000
       - DATABASE_URL=postgresql://postgres:password@postgres:5432/foundation_dev
       - REDIS_URL=redis://redis:6379
     env_file:
@@ -75,7 +73,7 @@ services:
       context: ./services/gateway
       dockerfile: Dockerfile.dev
     ports:
-      - "4000:4000"
+      - "80:80"
     volumes:
       - ./services/gateway:/app
     environment:
@@ -84,11 +82,18 @@ services:
       - FOUNDATION_URL=http://foundation:8000
       - FUNCTIONS_URL=http://functions:9000
       - REDIS_URL=redis://redis:6379
+      - KC_HOSTNAME=localhost
+      - KEYCLOAK_REALM=nuraly
+      - KEYCLOAK_CLIENT_ID=nuraly-web
+      - KEYCLOAK_CLIENT_SECRET=dev-client-secret
+      - KEYCLOAK_SCHEME=http
+      - KEYCLOAK_FULLURL=http://localhost
     env_file:
       - config/dev.env
     depends_on:
       - foundation
       - functions
+      - keycloak
       - redis
     networks:
       - nuraly-network
@@ -105,10 +110,16 @@ services:
       - POSTGRES_DB=nuraly_dev
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
-      - ./docker/development/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/development/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./docker/development/postgres/db-backup.sql:/docker-entrypoint-initdb.d/db-backup.sql
     networks:
       - nuraly-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis
   redis:
@@ -121,21 +132,61 @@ services:
       - nuraly-network
     restart: unless-stopped
 
-  # Development tools
-  adminer:
-    image: adminer:latest
+  # pgAdmin - PostgreSQL Management
+  pgadmin:
+    image: dpage/pgadmin4:latest
     ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=dev@nuraly.io
+      - PGADMIN_DEFAULT_PASSWORD=dev123
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
     networks:
       - nuraly-network
     restart: unless-stopped
+    depends_on:
+      - postgres
 
+  # Keycloak - Authentication & Authorization
+  keycloak:
+    build:
+      context: ./services/gateway/Keycloack
+      dockerfile: Dockerfile.dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: 'jdbc:postgresql://postgres/keycloak'
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: password
+      KC_DB_SCHEMA: public
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+      KC_HOSTNAME_ADMIN_URL: http://localhost:8090/auth
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_RELATIVE_PATH: "/auth"
+      KC_HOSTNAME: localhost
+    ports:
+      - "8090:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /auth/health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  # Development tools
   redis-commander:
     image: rediscommander/redis-commander:latest
     ports:
-      - "8081:8081"
+      - "8082:8081"
     environment:
       - REDIS_HOSTS=local:redis:6379
     depends_on:
@@ -147,6 +198,7 @@ services:
 volumes:
   postgres_dev_data:
   redis_dev_data:
+  pgadmin_dev_data:
 
 networks:
   nuraly-network:

@@ -1,12 +1,13 @@
 # Nuraly Stack Makefile
 
-.PHONY: help init dev prod stop clean logs shell test build deploy update status
+.PHONY: help init init-dev dev prod stop clean logs shell test build deploy update status
 
 # Default target
 help:
 	@echo "Nuraly Stack - Available commands:"
 	@echo ""
 	@echo "  make init       - Initialize git submodules"
+	@echo "  make init-dev   - Initialize development environment (Keycloak + Database)"
 	@echo "  make dev        - Start development environment"
 	@echo "  make prod       - Start production environment"
 	@echo "  make stop       - Stop all services"
@@ -35,6 +36,12 @@ init:
 	@if [ ! -f config/dev.env ]; then cp config/dev.env.example config/dev.env; fi
 	@if [ ! -f config/prod.env ]; then cp config/prod.env.example config/prod.env; fi
 	@echo "✅ Project initialized! Please update config/dev.env and config/prod.env with your settings."
+
+# Initialize development environment
+init-dev:
+	@echo "Initializing development environment..."
+	@chmod +x scripts/init-dev.sh
+	@./scripts/init-dev.sh
 
 # Development environment
 dev:
@@ -128,10 +135,6 @@ status:
 db-migrate:
 	@echo "Running database migrations..."
 	docker-compose -f docker-compose.dev.yml exec foundation npm run migrate
-
-db-seed:
-	@echo "Seeding database..."
-	docker-compose -f docker-compose.dev.yml exec foundation npm run seed
 
 db-reset:
 	@echo "Resetting database..."

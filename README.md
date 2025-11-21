@@ -8,14 +8,21 @@ A multi-service application stack consisting of:
 
 ## Quick Start
 
-### Development
+### Development (Recommended)
 ```bash
-# Clone all submodules
-git submodule update --init --recursive
+# 1. Initialize git submodules
+make init
 
-# Start development environment
-docker-compose -f docker-compose.dev.yml up --build
+# 2. Start all services
+make dev-detached
+
+# 3. Initialize development data (Keycloak + Database)
+make init-dev
 ```
+
+**Login**: dev@nuraly.io / dev123
+
+See [Quick Start Guide](./docs/QUICK_START.md) for more details.
 
 ### Production
 ```bash
@@ -61,9 +68,19 @@ Serverless functions and microservices.
 - **Repository**: https://github.com/Nuralyio/functions
 
 ### Gateway
-API Gateway, load balancer, and routing.
+API Gateway, load balancer, and routing (includes Keycloak).
 - **Port**: 4000 (dev), 443 (prod)
 - **Repository**: https://github.com/Nuralyio/gateway
+
+### Keycloak
+Authentication and authorization server.
+- **Port**: 8080 (dev)
+- **Admin**: http://localhost:8080/auth/admin (admin/admin)
+
+## Documentation
+
+- [Quick Start Guide](./docs/QUICK_START.md) - Get started in 3 commands
+- [Development Setup](./docs/DEVELOPMENT_SETUP.md) - Detailed development environment guide
 
 ## Environment Variables
 
@@ -73,6 +90,8 @@ Copy the example environment files and modify as needed:
 cp config/dev.env.example config/dev.env
 cp config/prod.env.example config/prod.env
 ```
+
+The development environment includes pre-configured Keycloak settings and a default dev user.
 
 ## Development
 
@@ -134,14 +153,17 @@ make dev
 **With Make (Linux/Mac/WSL):**
 ```bash
 make init       # Initialize submodules
+make init-dev   # Initialize dev data (Keycloak + Database)
 make dev        # Start development environment
 make prod       # Start production environment
 make stop       # Stop all services
 make clean      # Clean up containers and volumes
 make logs       # View logs
-make shell      # Access service shell
+make shell      # Access service shell (e.g., make shell SERVICE=foundation)
 make status     # Check submodule status
 make update     # Update submodules
+make db-seed    # Re-seed database
+make db-migrate # Run database migrations
 ```
 
 **Manual Commands (Windows without Make):**
