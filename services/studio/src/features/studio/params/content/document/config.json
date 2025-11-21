@@ -50,6 +50,27 @@
         "autoCheckbox": false,
         "checkboxHandler": "const parameter ='src';\nlet srcHandler=''\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.src?.type =='handler' && selectedComponent.input?.src?.value){\n  srcHandler = selectedComponent.input?.src?.value\n}\nreturn [parameter,srcHandler];",
         "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(EventData.value != selectedComponent.input?.src?.value != EventData.value )\n  updateInput(selectedComponent,'src','handler',EventData.value);"
+      },
+      {
+        "name": "type",
+        "label": "Type",
+        "type": "dropdown",
+        "default": "pdf",
+        "width": "180px",
+        "placeholder": "Select document type",
+        "options": [
+          { "label": "PDF", "value": "pdf" },
+          { "label": "Image", "value": "image" },
+          { "label": "Other", "value": "other" }
+        ],
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.type?.type == 'value'){\n  const currentType=selectedComponent.input?.type?.value??'pdf';\n  return currentType;\n}\nreturn 'pdf';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif(selectedComponent.input?.type?.type =='handler'&&selectedComponent.input?.type?.value){\n  state = 'disabled'\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newType = EventData.value;\nupdateInput(selectedComponent,'type','string',newType);"
+        },
+        "autoCheckbox": false,
+        "checkboxHandler": "const parameter ='type';\nlet typeHandler=''\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.type?.type =='handler' && selectedComponent.input?.type?.value){\n  typeHandler = selectedComponent.input?.type?.value\n}\nreturn [parameter,typeHandler];",
+        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(EventData.value != selectedComponent.input?.type?.value != EventData.value )\n  updateInput(selectedComponent,'type','handler',EventData.value);"
       }
     ],
     "includeCommonProperties": [],
