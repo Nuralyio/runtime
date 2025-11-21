@@ -1,0 +1,14 @@
+FROM maven:3.9-eclipse-temurin-21
+
+WORKDIR /app
+
+# Copy entire project
+COPY . .
+
+# Expose Quarkus dev mode port and debug port
+EXPOSE 9000
+EXPOSE 5005
+
+# Run Quarkus in development mode with hot reload
+# Skip the offline dependency download as it may fail with custom libraries
+CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=9000", "-DskipTests"]
