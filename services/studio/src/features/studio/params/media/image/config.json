@@ -69,6 +69,26 @@
         "eventHandlers": {
           "checkboxChanged": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newPreviewable = EventData.value === 'check';\nupdateInput(selectedComponent, 'previewable', 'string', newPreviewable);"
         }
+      },
+      {
+        "name": "fit",
+        "label": "Fit",
+        "type": "dropdown",
+        "default": "",
+        "width": "100%",
+        "placeholder": "Select fit mode",
+        "options": [
+          { "label": "None", "value": "none" },
+          { "label": "Fill", "value": "fill" },
+          { "label": "Contain", "value": "contain" },
+          { "label": "Cover", "value": "cover" },
+          { "label": "Scale Down", "value": "scale-down" }
+        ],
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.fit?.type == 'value') {\n  return selectedComponent.input?.fit?.value ?? '';\n}\nreturn '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.fit?.type == 'handler' && selectedComponent?.input?.fit?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newFit = EventData.value;\nupdateInput(selectedComponent, 'fit', 'string', newFit);"
+        }
       }
     ],
     "includeCommonProperties": [
