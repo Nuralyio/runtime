@@ -32,6 +32,7 @@ export class ApplicationController extends Controller {
 
   @Get()
   public async findAll(@Request() request: NRequest): Promise<Application[]> {
+    console.log(`[APP CONTROLLER] User: ${JSON.stringify(request.user)}`);
 
     const resourcePermissionRequest: ResourcePermissionRequest = {
       user: request.user,
@@ -39,6 +40,7 @@ export class ApplicationController extends Controller {
       permissionType: ApplicationPermission.read
     }
     const applicationsIds = await this.ownershipService.getResourceIDWithPermissionOrOwner(resourcePermissionRequest)
+    console.log(`[APP CONTROLLER] Application IDs found: ${JSON.stringify(applicationsIds)}`);
     return await this.applicationService.findAll(applicationsIds);
   }
 
