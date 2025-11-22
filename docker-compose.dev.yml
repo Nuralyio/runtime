@@ -33,7 +33,7 @@ services:
     environment:
       - NODE_ENV=development
       - BACKEND_PORT=8000
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/api_dev
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/nuraly_dev
       - REDIS_URL=redis://redis:6379
     env_file:
       - config/dev.env
