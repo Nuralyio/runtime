@@ -24,10 +24,10 @@ export class ContainerGenerator {
   static generateCollapseContainer(blockConfig: BlockConfig, blockName: string): any {
     const childrenIds = [
       "divider",
-      `${blockName}_text_label_collapse`, 
+      `${blockName}_text_label_collapse`,
       `${blockName}_collapse_container_childrens`
     ];
-    
+
     return {
       uuid: blockConfig.collapse.uuid,
       application_id: "1",

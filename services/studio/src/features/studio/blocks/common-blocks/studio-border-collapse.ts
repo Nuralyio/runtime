@@ -19,6 +19,12 @@ const generatedBorderComponents = generateFromConfig(
   'border'
 );
 
+// Filter out the auto-generated empty properties container
+// We'll replace it with our custom one that includes the child blocks
+const filteredComponents = generatedBorderComponents.filter(
+  component => component.uuid !== "border_collapse_container_childrens"
+);
+
 // Add the child container that references other blocks
 const borderChildrenContainer = {
   uuid: "border_collapse_container_childrens",
@@ -27,7 +33,7 @@ const borderChildrenContainer = {
   component_type: ComponentType.Container,
   ...COMMON_ATTRIBUTES,
   style: {},
-  childrenIds: ["border_radius_vertical_container", "box_shadow_block"]
+  childrenIds: ["border_radius_vertical_container", "box_model_vertical_container", "box_shadow_block"]
 };
 
 // Add divider
@@ -39,4 +45,4 @@ const divider = {
   input: {}
 };
 
-export default [divider, ...generatedBorderComponents, borderChildrenContainer];
+export default [divider, ...filteredComponents, borderChildrenContainer];
