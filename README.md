@@ -2,7 +2,7 @@
 
 A multi-service application stack consisting of:
 - **Studio**: Frontend application
-- **Foundation**: Core backend services
+- **API**: Core backend services
 - **Functions**: Serverless functions
 - **Gateway**: API Gateway and routing
 
@@ -36,7 +36,7 @@ docker-compose -f docker-compose.prod.yml up -d --build
 stack/
 ├── services/
 │   ├── studio/          # Frontend submodule
-│   ├── foundation/      # Backend core submodule
+│   ├── api/             # Backend core submodule
 │   ├── functions/       # Functions submodule
 │   └── gateway/         # Gateway submodule
 ├── docker/
@@ -57,10 +57,10 @@ Frontend application built with modern web technologies.
 - **Port**: 3000 (dev), 80 (prod)
 - **Repository**: https://github.com/Nuralyio/studio
 
-### Foundation
+### API
 Core backend services and APIs.
 - **Port**: 8000 (dev), 8080 (prod)
-- **Repository**: https://github.com/Nuralyio/foundation
+- **Repository**: https://github.com/Nuralyio/api
 
 ### Functions
 Serverless functions and microservices.
@@ -159,7 +159,7 @@ make prod       # Start production environment
 make stop       # Stop all services
 make clean      # Clean up containers and volumes
 make logs       # View logs
-make shell      # Access service shell (e.g., make shell SERVICE=foundation)
+make shell      # Access service shell (e.g., make shell SERVICE=api)
 make status     # Check submodule status
 make update     # Update submodules
 make db-seed    # Re-seed database

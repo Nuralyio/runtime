@@ -54,17 +54,17 @@ services:
         reservations:
           memory: 256M
 
-  # Core Backend - Foundation
-  foundation:
+  # Core Backend - API
+  api:
     build:
-      context: ./services/foundation
+      context: ./services/api
       dockerfile: Dockerfile.prod
     expose:
       - "8000"
     environment:
       - NODE_ENV=production
       - PORT=8000
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/foundation_prod
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/api_prod
       - REDIS_URL=redis://redis:6379
     env_file:
       - config/prod.env
@@ -130,13 +130,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=4000
-      - FOUNDATION_URL=http://foundation:8000
+      - API_URL=http://api:8000
       - FUNCTIONS_URL=http://functions:9000
       - REDIS_URL=redis://redis:6379
     env_file:
       - config/prod.env
     depends_on:
-      - foundation
+      - api
       - functions
       - redis
     networks:
