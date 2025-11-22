@@ -20,7 +20,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         background-color: var(--box-model-margin-bg, #f6f6d8);
         border: 2px dashed #9acd32;
         border-radius: 4px;
-        padding: 30px;
+        padding: 45px;
         position: relative;
         width: fit-content;
         margin: 20px auto;
@@ -28,10 +28,10 @@ export class BoxModelDisplay extends BaseElementBlock {
 
       .margin-label {
         position: absolute;
-        top: 12px;
-        left: 12px;
+        top: 10px;
+        left: 10px;
         color: #333;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 600;
       }
 
@@ -39,15 +39,15 @@ export class BoxModelDisplay extends BaseElementBlock {
         position: absolute;
         background: #666;
         color: white;
-        border-radius: 12px;
-        padding: 4px 10px;
-        min-width: 35px;
-        height: 24px;
+        border-radius: 8px;
+        padding: 2px 6px;
+        min-width: 28px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        font-size: 10px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
       }
 
       .value-pill input {
@@ -56,11 +56,11 @@ export class BoxModelDisplay extends BaseElementBlock {
         border: none;
         color: white;
         text-align: center;
-        font-size: 11px;
+        font-size: 10px;
         outline: none;
         cursor: text;
         padding: 0;
-        min-width: 25px;
+        min-width: 20px;
       }
 
       .value-pill:hover {
@@ -73,25 +73,25 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .margin-top {
-        top: -32px;
+        top: -22px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .margin-right {
-        right: -45px;
+        right: -34px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .margin-bottom {
-        bottom: -32px;
+        bottom: -22px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .margin-left {
-        left: -45px;
+        left: -34px;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -99,39 +99,39 @@ export class BoxModelDisplay extends BaseElementBlock {
       .border-container {
         background-color: var(--box-model-border-bg, #656565);
         border-radius: 3px;
-        padding: 25px;
+        padding: 35px;
         position: relative;
       }
 
       .border-label {
         position: absolute;
-        top: 8px;
-        left: 12px;
+        top: 6px;
+        left: 10px;
         color: white;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 600;
       }
 
       .border-top {
-        top: -30px;
+        top: -22px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .border-right {
-        right: -45px;
+        right: -34px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .border-bottom {
-        bottom: -30px;
+        bottom: -22px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .border-left {
-        left: -45px;
+        left: -34px;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -139,39 +139,39 @@ export class BoxModelDisplay extends BaseElementBlock {
       .padding-container {
         background-color: var(--box-model-padding-bg, #b8b8d1);
         border-radius: 3px;
-        padding: 25px;
+        padding: 35px;
         position: relative;
       }
 
       .padding-label {
         position: absolute;
-        top: 8px;
-        left: 12px;
+        top: 6px;
+        left: 10px;
         color: #333;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 600;
       }
 
       .padding-top {
-        top: -30px;
+        top: -22px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .padding-right {
-        right: -45px;
+        right: -34px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .padding-bottom {
-        bottom: -30px;
+        bottom: -22px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .padding-left {
-        left: -45px;
+        left: -34px;
         top: 50%;
         transform: translateY(-50%);
       }
