@@ -35,7 +35,10 @@ export default defineConfig({
       '@shared': resolve(__dirname, './src/shared'),
       '@features': resolve(__dirname, './src/features'),
       '@services': resolve(__dirname, './src/services'),
+      '@runtime': resolve(__dirname, './src/features/runtime'),
+      '@studio': resolve(__dirname, './src/features/studio'),
       '@tests': resolve(__dirname, './tests'),
+      '$store': resolve(__dirname, './src/shared/redux/store'),
     },
   },
 });
