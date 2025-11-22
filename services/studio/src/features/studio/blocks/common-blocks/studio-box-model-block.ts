@@ -141,7 +141,31 @@ const boxModelComponent = createBaseComponent(
   }
 );
 
+const collapseComponent = createBaseComponent(
+  "box_model_collapse",
+  "Box Model Collapse",
+  ComponentType.Collapse,
+  {
+    style: {
+      marginTop: "16px",
+      marginBottom: "16px"
+    },
+    input: {
+      label: {
+        type: "string",
+        value: "Box Model"
+      },
+      expanded: {
+        type: "boolean",
+        value: true
+      }
+    },
+    childrenIds: ["box_model_vertical_container"]
+  }
+);
+
 export default [
+  collapseComponent,
   containerComponent,
   labelComponent,
   boxModelComponent
