@@ -240,13 +240,13 @@ export class BaseElementBlock extends LitElement {
   async traitInputsHandlers() {
     this.errors = {};
     const inputs = Editor.getComponentBreakpointInputs(this.component);
-    
-    
+
+
     await Promise.all(Object.keys(inputs).map(name =>
       traitInputHandler(this, inputs[name], name)
     ));
-    
-    
+
+
     addlogDebug({
       errors: { component: { ...this.component, errors: { ...this.errors } } },
     });

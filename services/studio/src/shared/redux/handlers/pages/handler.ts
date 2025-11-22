@@ -29,6 +29,10 @@ export const addPageHandler = (page: PageElement, resolve?, reject ?) => {
 };
 
 
+// Track the last update time to prevent rapid-fire updates
+let lastPageUpdateTime = 0;
+const PAGE_UPDATE_DEBOUNCE_MS = 100;
+
 export const updatePageHandler = (page: PageElement, callback?: (page: any) => void) => {
   fetch("/api/pages/" + page.uuid, {
     method: "PUT",
@@ -39,7 +43,17 @@ export const updatePageHandler = (page: PageElement, callback?: (page: any) => v
   }).then(res => res.json())
     .then((res) => {
       updatePageAction(res, $currentApplication.get().uuid);
-      eventDispatcher.emit("Vars:currentPage")
-      // todo: call the callback when updated
+
+      // Debounce the event emission to prevent rapid-fire updates
+      const now = Date.now();
+      if (now - lastPageUpdateTime > PAGE_UPDATE_DEBOUNCE_MS) {
+        lastPageUpdateTime = now;
+        eventDispatcher.emit("Vars:currentPage");
+      }
+
+      // Call the callback when updated
+      if (callback) {
+        callback(res);
+      }
     });
 };

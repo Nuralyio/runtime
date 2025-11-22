@@ -30,14 +30,16 @@ import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import type { LogPanel } from "@studio/panels/log-panel/LogPanel";
 import { Subscription } from "rxjs";
 import Convert from "ansi-to-html";
-var convert = new Convert();
+import { debounce } from "@shared/utils/performance-utils";
+
+const convert = new Convert();
 
 @customElement("content-page")
 export class PageContent extends LitElement {
   static styles = styles;
 
-  @state() draggingComponentInfo: DraggingComponentInfo;
-  @state() currentPage: PageElement;
+  @state() draggingComponentInfo: DraggingComponentInfo | null = null;
+  @state() currentPage!: PageElement;
   @state() components: ComponentElement[] = [];
 
   @property({ type: Boolean }) isViewMode = false;
@@ -45,38 +47,38 @@ export class PageContent extends LitElement {
   @state() zoomLevel = 100;
   @state() currentPlatform: any;
 
-
-  /** @type {Subscription} RxJS subscription for cleanup */
+  /** RxJS subscription for cleanup */
   private subscription = new Subscription();
-
 
   @query("log-panel")
   private logPanel!: LogPanel;
 
+  /** Event listener cleanup functions */
+  private cleanupFunctions: Array<() => void> = [];
+
   constructor() {
     super();
-
-    eventDispatcher.onAny((eventName, data) => {
-      this.refreshComponent();
-    });
-
-    // EditorInstance.updatePlatform ()
 
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
       this.draggingComponentInfo = draggingComponentInfo || null;
     });
   }
 
-  refreshComponent() {
+  /**
+   * Refresh the page component and re-render all child components
+   */
+  refreshComponent(): void {
     const currentPlatform = ExecuteInstance.Vars.currentPlatform;
     if(currentPlatform?.platform !== this.currentPlatform?.platform) {
       this.currentPlatform = currentPlatform;
     }
+
     log.prefix("PageContent").info("refreshComponent");
     const currentPage = ExecuteInstance.Vars.currentPage;
     if(!currentPage){
       return;
     }
+
     const currentEditingApplication = getVar("global", "currentEditingApplication");
 
     if (currentEditingApplication && currentPage) {
@@ -111,98 +113,128 @@ export class PageContent extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
-    $applicationPages($currentApplication.get()?.uuid).subscribe((pages: PageElement[]) => {
+    // Subscribe to application pages with debounced refresh
+    const pagesSubscription = $applicationPages($currentApplication.get()?.uuid).subscribe(() => {
       this.refreshComponent();
-    })
-    const currentPage = ExecuteInstance.Vars.currentPage;
-    if (!currentPage && $currentApplication.get()) {
-      if(window.__URL__){
-        const page = $applicationPages($currentApplication.get()?.uuid).get().find((page: PageElement) => {
-          return page.url === window.__URL__;
-        }
-        )?.uuid;
-        if(page){
-          ExecuteInstance.VarsProxy.currentPage = page;
-        }else{
-          ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
+    });
+    this.subscription.add(pagesSubscription);
 
-        }
-      }else{
-      ExecuteInstance.VarsProxy.currentPage = $applicationPages($currentApplication.get()?.uuid).get()[0]?.uuid;
-        
-      }
-
-    }
-    eventDispatcher.on('Vars:currentEditingMode', (data)=>{
-      if(! ExecuteInstance.Vars.currentEditingMode ){
-        ExecuteInstance.Vars.currentEditingMode =  ViewMode.Edit;
-        this.mode =  ViewMode.Edit;
-        setEnvirementMode( this.mode )
-
+    // Set up event listeners with proper cleanup tracking
+    const editModeHandler = () => {
+      if(!ExecuteInstance.Vars.currentEditingMode){
+        ExecuteInstance.Vars.currentEditingMode = ViewMode.Edit;
+        this.mode = ViewMode.Edit;
+        setEnvirementMode(this.mode);
       }
       if(ExecuteInstance.Vars.currentEditingMode !== this.mode){
         this.mode = ExecuteInstance.Vars.currentEditingMode;
-        setEnvirementMode( this.mode )
+        setEnvirementMode(this.mode);
       }
-     
-    })
+    };
+    eventDispatcher.on('Vars:currentEditingMode', editModeHandler);
+    this.cleanupFunctions.push(() => eventDispatcher.off('Vars:currentEditingMode', editModeHandler));
 
-    eventDispatcher.on('Copy', (data)=>{
+    const copyHandler = () => {
       this.handleCopy();
-    })
-    eventDispatcher.on('Vars:EditorZoom', (data)=>{
+    };
+    eventDispatcher.on('Copy', copyHandler);
+    this.cleanupFunctions.push(() => eventDispatcher.off('Copy', copyHandler));
 
+    const zoomHandler = () => {
       this.zoomLevel = ExecuteInstance.Vars.EditorZoom;
-      // this.style.setProperty('--zoom-level', `${this.zoomLevel}%`);
-    })
+    };
+    eventDispatcher.on('Vars:EditorZoom', zoomHandler);
+    this.cleanupFunctions.push(() => eventDispatcher.off('Vars:EditorZoom', zoomHandler));
 
-    eventDispatcher.on('Vars:currentPage', (data)=>{
-     this.refreshComponent();
-    this.style.setProperty('--nuraly-page-background-color',  this.currentPage?.style?.["--nuraly-page-background-color"]);
-    this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
-
-     
-    })
-
-    eventDispatcher.on('component:deleted', (data)=>{
+    const pageHandler = () => {
       this.refreshComponent();
-      
-     })
+      this.style.setProperty('--nuraly-page-background-color', this.currentPage?.style?.["--nuraly-page-background-color"]);
+      this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
+    };
+    eventDispatcher.on('Vars:currentPage', pageHandler);
+    this.cleanupFunctions.push(() => eventDispatcher.off('Vars:currentPage', pageHandler));
 
-     eventDispatcher.on('component:updated', (data)=>{
+    const deletedHandler = () => {
       this.refreshComponent();
-      
-     })
+    };
+    eventDispatcher.on('component:deleted', deletedHandler);
+    this.cleanupFunctions.push(() => eventDispatcher.off('component:deleted', deletedHandler));
+
+    const updatedHandler = () => {
+      this.refreshComponent();
+    };
+    eventDispatcher.on('component:updated', updatedHandler);
+    this.cleanupFunctions.push(() => eventDispatcher.off('component:updated', updatedHandler));
+
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {
+        // Placeholder for viewport updates
       });
     });
 
-
-    const pageContainer = this.shadowRoot!.querySelector(".page-container");
+    const pageContainer = this.shadowRoot!.querySelector(".page-container") as HTMLElement | null;
     this.updatePageInfo(pageContainer?.clientWidth);
 
-    window.onresize = () => {
-      this.updatePageInfo(pageContainer?.clientWidth);
-    };
-   
-    window.addEventListener("keydown", this.handleEscapeKey.bind(this));
-    this.style.setProperty('--nuraly-page-background-color',  this.currentPage?.style?.["--nuraly-page-background-color"]);
+    // Use debounced resize handler
+    const resizeHandler = debounce(() => {
+      const container = this.shadowRoot!.querySelector(".page-container") as HTMLElement | null;
+      this.updatePageInfo(container?.clientWidth);
+    }, 200);
+    window.addEventListener("resize", resizeHandler);
+    this.cleanupFunctions.push(() => {
+      window.removeEventListener("resize", resizeHandler);
+      resizeHandler.cancel();
+    });
+
+    // Bind keydown handler once
+    const boundKeyHandler = this.handleEscapeKey.bind(this);
+    window.addEventListener("keydown", boundKeyHandler);
+    this.cleanupFunctions.push(() => window.removeEventListener("keydown", boundKeyHandler));
+
+    this.style.setProperty('--nuraly-page-background-color', this.currentPage?.style?.["--nuraly-page-background-color"]);
     this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("keydown", this.handleEscapeKey.bind(this));
+
+    // Clean up all event listeners
+    this.cleanupFunctions.forEach(cleanup => cleanup());
+    this.cleanupFunctions = [];
+
+    // Clean up RxJS subscriptions
+    this.subscription.unsubscribe();
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this.subscription.add(eventDispatcher.on("kernel:log", (logsMessage) => {
-      this.logPanel?.addLogEntry(typeof logsMessage =="string" ?convert.toHtml(logsMessage) : logsMessage );
-    }))
+      this.logPanel?.addLogEntry(typeof logsMessage === "string" ? convert.toHtml(logsMessage) : logsMessage);
+    }));
+
+    // Initialize currentPage if not set
+    const currentPage = ExecuteInstance.Vars.currentPage;
+    const currentApp = $currentApplication.get() as { uuid: string } | null;
+
+    if (!currentPage && currentApp?.uuid) {
+      const pages = $applicationPages(currentApp.uuid).get();
+
+      if (pages && pages.length > 0) {
+        // Try to find page by URL if available
+        if ((window as any).__URL__) {
+          const pageByUrl = pages.find((page: PageElement) => page.url === (window as any).__URL__);
+          if (pageByUrl) {
+            ExecuteInstance.VarsProxy.currentPage = pageByUrl.uuid;
+            return;
+          }
+        }
+
+        // Otherwise, select the first page
+        ExecuteInstance.VarsProxy.currentPage = pages[0].uuid;
+      }
+    }
   }
 
-  handleEscapeKey(e) {
+  handleEscapeKey(e: KeyboardEvent): void {
     switch (e.key) {
       case "Escape":
         this.clearSelectedComponents();
@@ -254,9 +286,10 @@ export class PageContent extends LitElement {
     }
   }
 
-  handleEnterKey(e) {
+  handleEnterKey(_e: KeyboardEvent): void {
+    // Placeholder for future implementation
     // try {
-    //   const selectedComponents =  ExecuteInstance.VarsProxy.selectedComponents ?? []
+    //   const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents ?? []
     //   eventDispatcher.emit("keydown", {
     //     key: e.key,
     //     selectedComponents: selectedComponents
@@ -286,23 +319,24 @@ export class PageContent extends LitElement {
     });
   }
 
-  updatePageInfo(containerWidth: number) {
-    const pageContainer = this.shadowRoot!.querySelector(".page-container");
+  updatePageInfo(containerWidth?: number): void {
+    const pageContainer = this.shadowRoot!.querySelector(".page-container") as HTMLElement | null;
+    const width = containerWidth || pageContainer?.clientWidth || 0;
     updatePageInfo({
-      windowWidth: containerWidth || pageContainer?.clientWidth,
+      windowWidth: width,
       windowHeight: window.innerHeight,
-      viewPort: this.determineViewportType(containerWidth || pageContainer?.clientWidth)
+      viewPort: this.determineViewportType(width)
     });
   }
 
-  determineViewportType(width: number) {
+  determineViewportType(width: number): string {
     if (width >= 1024) return "desktop";
     if (width >= 768) return "tablet";
     if (width >= 375) return "mobile";
     return "unknown";
   }
 
-  isPreviewMode() {
+  isPreviewMode(): boolean {
     return this.mode === ViewMode.Preview || !this.mode || this.isViewMode;
   }
 
@@ -368,20 +402,23 @@ export class PageContent extends LitElement {
     `;
   }
 
-  handlePageClick(e) {
+  handlePageClick(_e: MouseEvent): void {
     if (!$resizing.get()) {
       if (!this.isViewMode) {
-      //  setVar("global", "selectedComponents", []);
+        // Placeholder for selection clearing
+        // setVar("global", "selectedComponents", []);
       }
     }
   }
 
-  handleDrop(e) {
+  handleDrop(e: DragEvent): void {
     e.preventDefault();
-    moveDraggedComponentIntoCurrentPageRoot(this.draggingComponentInfo.componentId);
+    if (this.draggingComponentInfo) {
+      moveDraggedComponentIntoCurrentPageRoot(this.draggingComponentInfo.componentId);
+    }
   }
 
-  preventDefault(e: { preventDefault: () => void; }) {
+  preventDefault(e: Event): void {
     e.preventDefault();
   }
 }
