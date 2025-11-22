@@ -1,4 +1,4 @@
-import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
+import { afterEach, vi, beforeAll, afterAll } from 'vitest';
 
 // Global test setup
 
