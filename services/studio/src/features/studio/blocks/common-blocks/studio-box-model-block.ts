@@ -41,8 +41,8 @@ const containerComponent = createBaseComponent(
 
 const labelComponent = createTextLabel(
   "box_model_label",
-  "Box Model",
-  { width: "90px", fontWeight: "500" }
+  " ",
+  { width: "90px" }
 );
 
 const boxModelComponent = createBaseComponent(
