@@ -240,6 +240,12 @@ export class CodeEditor extends LitElement {
    * Create the Monaco editor once the element has rendered
    */
   firstUpdated() {
+    // Guard: Ensure container is available before creating editor
+    if (!this.container.value) {
+      console.error('CodeEditor: Container element not available in firstUpdated');
+      return;
+    }
+
     // For demonstration, registering a custom language
     monaco.languages.register({ id: "mylang" });
     monaco.languages.setMonarchTokensProvider("mylang", {
@@ -254,14 +260,19 @@ export class CodeEditor extends LitElement {
     });
 
     // Create the editor:
-    this.editor = monaco.editor.create(this.container.value!, {
-      value: this.getCode(),
-      language: this.getLang(),
-      theme: this.getTheme(),
-      fontSize: 13,
-      automaticLayout: true,
-      readOnly: this.readonly ?? false,
-    });
+    try {
+      this.editor = monaco.editor.create(this.container.value, {
+        value: this.getCode(),
+        language: this.getLang(),
+        theme: this.getTheme(),
+        fontSize: 13,
+        automaticLayout: true,
+        readOnly: this.readonly ?? false,
+      });
+    } catch (error) {
+      console.error('CodeEditor: Failed to create editor instance', error);
+      return;
+    }
 
     // Set up custom IntelliSense
     this.setupCustomIntelliSense();
@@ -353,17 +364,22 @@ export class CodeEditor extends LitElement {
       changedProperties.has("code") &&
       this.code !== changedProperties.get("code")
     ) {
-      const cursorPosition = this.editor?.getPosition();
-      // Only set the editor value if there's a real change
-      if (this.code !== this.getValue() && this.editor) {
-        try{
+      // Guard: Only update if editor instance exists
+      if (!this.editor) {
+        console.warn('CodeEditor: Editor instance not available, skipping update');
+        return;
+      }
 
+      const cursorPosition = this.editor.getPosition();
+      // Only set the editor value if there's a real change
+      if (this.code !== this.getValue()) {
+        try {
           this.editor.setValue(this.code ?? "");
-        }catch(e){
-          console.log("Error setting editor value:", e);
-        }
-        if (cursorPosition) {
-          this.editor.setPosition(cursorPosition);
+          if (cursorPosition) {
+            this.editor.setPosition(cursorPosition);
+          }
+        } catch (e) {
+          console.error("CodeEditor: Error setting editor value:", e);
         }
       }
     }
