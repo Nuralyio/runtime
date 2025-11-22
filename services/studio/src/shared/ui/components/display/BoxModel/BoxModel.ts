@@ -40,12 +40,38 @@ export class BoxModelDisplay extends BaseElementBlock {
         background: #666;
         color: white;
         border-radius: 10px;
-        width: 20px;
+        width: 30px;
         height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 9px;
+      }
+
+      .margin-values input,
+      .border-values input,
+      .padding-values input {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: none;
+        color: white;
+        text-align: center;
+        font-size: 9px;
+        outline: none;
+        cursor: text;
+      }
+
+      .margin-values input:hover,
+      .border-values input:hover,
+      .padding-values input:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .margin-values input:focus,
+      .border-values input:focus,
+      .padding-values input:focus {
+        background: rgba(255, 255, 255, 0.2);
       }
 
       .margin-top {
@@ -93,7 +119,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         background: #444;
         color: white;
         border-radius: 10px;
-        width: 20px;
+        width: 30px;
         height: 20px;
         display: flex;
         align-items: center;
@@ -146,7 +172,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         background: #666;
         color: white;
         border-radius: 10px;
-        width: 20px;
+        width: 30px;
         height: 20px;
         display: flex;
         align-items: center;
@@ -238,6 +264,35 @@ export class BoxModelDisplay extends BaseElementBlock {
     return isNaN(numeric) ? 0 : Math.round(numeric);
   }
 
+  private handleValueChange(property: string, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+
+    // Dispatch custom event with the changed value
+    this.dispatchEvent(
+      new CustomEvent("valueChange", {
+        detail: { property, value },
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    // Also execute the onChange handler if it exists
+    executeHandler(this.component, "onChange", {
+      property,
+      value: value ? `${value}px` : "0px",
+    });
+  }
+
+  private createEditableValue(value: number, property: string) {
+    return html`<input
+      type="number"
+      .value=${value.toString()}
+      @change=${(e: Event) => this.handleValueChange(property, e)}
+      @blur=${(e: Event) => this.handleValueChange(property, e)}
+    />`;
+  }
+
   override renderComponent() {
     const handlers = this.inputHandlersValue?.value;
 
@@ -283,24 +338,24 @@ export class BoxModelDisplay extends BaseElementBlock {
     return html`
       <div class="box-model-container">
         <div class="margin-label">margin</div>
-        <div class="margin-values margin-top">${margin.top}</div>
-        <div class="margin-values margin-right">${margin.right}</div>
-        <div class="margin-values margin-bottom">${margin.bottom}</div>
-        <div class="margin-values margin-left">${margin.left}</div>
+        <div class="margin-values margin-top">${this.createEditableValue(margin.top, "margin-top")}</div>
+        <div class="margin-values margin-right">${this.createEditableValue(margin.right, "margin-right")}</div>
+        <div class="margin-values margin-bottom">${this.createEditableValue(margin.bottom, "margin-bottom")}</div>
+        <div class="margin-values margin-left">${this.createEditableValue(margin.left, "margin-left")}</div>
 
         <div class="border-container">
           <div class="border-label">border</div>
-          <div class="border-values border-top">${border.top}</div>
-          <div class="border-values border-right">${border.right}</div>
-          <div class="border-values border-bottom">${border.bottom}</div>
-          <div class="border-values border-left">${border.left}</div>
+          <div class="border-values border-top">${this.createEditableValue(border.top, "border")}</div>
+          <div class="border-values border-right">${this.createEditableValue(border.right, "border")}</div>
+          <div class="border-values border-bottom">${this.createEditableValue(border.bottom, "border")}</div>
+          <div class="border-values border-left">${this.createEditableValue(border.left, "border")}</div>
 
           <div class="padding-container">
             <div class="padding-label">padding</div>
-            <div class="padding-values padding-top">${padding.top}</div>
-            <div class="padding-values padding-right">${padding.right}</div>
-            <div class="padding-values padding-bottom">${padding.bottom}</div>
-            <div class="padding-values padding-left">${padding.left}</div>
+            <div class="padding-values padding-top">${this.createEditableValue(padding.top, "padding-top")}</div>
+            <div class="padding-values padding-right">${this.createEditableValue(padding.right, "padding-right")}</div>
+            <div class="padding-values padding-bottom">${this.createEditableValue(padding.bottom, "padding-bottom")}</div>
+            <div class="padding-values padding-left">${this.createEditableValue(padding.left, "padding-left")}</div>
 
             <div class="content-box">
               <div class="dimensions">

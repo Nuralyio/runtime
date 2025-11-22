@@ -50,7 +50,7 @@ const boxModelComponent = createBaseComponent(
   "box model display block",
   ComponentType.BoxModel,
   {
-    style: { width: "100%" },
+    style: { width: "100%", display: "block" },
     input: {
       value: {
         type: "handler",
@@ -125,6 +125,18 @@ const boxModelComponent = createBaseComponent(
           }
         `
       }
+    },
+    event: {
+      onChange: /* js */`
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (!selectedComponent) return;
+
+        const property = EventData.property;
+        const value = EventData.value;
+
+        // Update the component style with the new value
+        updateStyle(selectedComponent, property, value);
+      `
     }
   }
 );
