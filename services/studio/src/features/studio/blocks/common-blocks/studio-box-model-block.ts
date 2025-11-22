@@ -148,16 +148,25 @@ const collapseComponent = createBaseComponent(
   {
     style: {
       marginTop: "16px",
-      marginBottom: "16px"
+      marginBottom: "16px",
+      "--nuraly-spacing-collapse-padding": "0px",
+      "--nuraly-spacing-collapse-content-padding": "0px",
+      "--nuraly-shadow-collapse-hover": "none",
+      "--nuraly-border-radius-collapse": "0",
+      "--nuraly-border-radius-collapse-header": "0"
     },
     input: {
-      label: {
+      size: {
         type: "string",
-        value: "Box Model"
+        value: "small"
       },
-      expanded: {
-        type: "boolean",
-        value: true
+      components: {
+        type: "array",
+        value: [{
+          blockName: "box_model_vertical_container",
+          label: "Box Model",
+          open: true
+        }]
       }
     },
     childrenIds: ["box_model_vertical_container"]
