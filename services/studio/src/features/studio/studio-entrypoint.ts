@@ -26,6 +26,7 @@ import {
 import {
   studioBoxShadowBlock,
   studioBorderRadiusBlock,
+  studioBoxModelBlock,
   studioTypographyCollapseBlock,
   studioSizeCollpaseBlock,
   commonInputsCollapseBlock,
@@ -418,6 +419,7 @@ export default [
   // Removed: ...studioWidthBlock, ...studioHeightBlock (now in studioSizeCollpaseBlock)
   ...studioBoxShadowBlock,
   ...studioBorderRadiusBlock,
+  ...studioBoxModelBlock,
   ...studioDisplayBlock,
   ...studioPlaceholderBlock,
   ...studioHelperTextBlock,

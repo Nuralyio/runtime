@@ -12,6 +12,7 @@ export const enum ComponentType {
   Select = "select",
   ShadowBox = "shadow_box",
   BorderRadius = "border_radius",
+  BoxModel = "box_model",
   Event = "event", //TODO: this is an event not a component type
   Table = "Table",
   Checkbox = "checkbox",

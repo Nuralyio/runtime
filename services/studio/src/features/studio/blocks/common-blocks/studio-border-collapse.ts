@@ -27,7 +27,7 @@ const borderChildrenContainer = {
   component_type: ComponentType.Container,
   ...COMMON_ATTRIBUTES,
   style: {},
-  childrenIds: ["border_radius_vertical_container", "box_shadow_block"]
+  childrenIds: ["border_radius_vertical_container", "box_model_vertical_container", "box_shadow_block"]
 };
 
 // Add divider
