@@ -12,6 +12,7 @@ import "@shared/ui/components/inputs/Select/Select";
 import "@features/studio/panels/control-panel/Event/EventValue/EventValue";
 import "@shared/ui/components/utility/Border/Border";
 import "@shared/ui/components/utility/BoxShadow/BoxShadow";
+import "@shared/ui/components/display/BoxModel/BoxModel";
 import "@shared/ui/components/display/Table/Table";
 import "@shared/ui/components/inputs/Checkbox/Checkbox";
 import "@shared/ui/components/inputs/Dropdown/Dropdown";
@@ -54,6 +55,7 @@ const colorPickerTemplate = (props: any, isViewMode: boolean)  => html`<color-pi
 const numberInputTemplate = (props: any, isViewMode: boolean)  => html`<number-input-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></number-input-block>`;
 const shadowBoxTemplate = (props: any, isViewMode: boolean)  => html`<attribute-box-shadow-value .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></attribute-box-shadow-value>`;
 const borderRadiusTemplate = (props: any, isViewMode: boolean)  => html`<attribute-border-value .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></attribute-border-value>`;
+const boxModelTemplate = (props: any, isViewMode: boolean)  => html`<box-model-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></box-model-display>`;
 const eventTemplate = (props: any, isViewMode: boolean)  => html`<parameter-event-handler .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></parameter-event-handler>`;
 const tableTemplate = (props: any, isViewMode: boolean)  => html`<table-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></table-block>`;
 const textInputTemplate = (props: any, isViewMode: boolean)  => html`<text-input-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></text-input-block>`;
@@ -111,6 +113,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return eventTemplate(commonProps, isViewMode);
     case ComponentType.BorderRadius:
       return borderRadiusTemplate(commonProps, isViewMode);
+    case ComponentType.BoxModel:
+      return boxModelTemplate(commonProps, isViewMode);
     case ComponentType.ShadowBox:
       return shadowBoxTemplate(commonProps, isViewMode);
     case ComponentType.Select:
