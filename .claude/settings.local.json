@@ -18,7 +18,11 @@
       "Bash(docker stop:*)",
       "Bash(docker rm:*)",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 120 npm run build)",
+      "Bash(python3:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
