@@ -48,9 +48,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         font-size: 9px;
       }
 
-      .margin-values input,
-      .border-values input,
-      .padding-values input {
+      .editable-value {
         width: 100%;
         height: 100%;
         background: transparent;
@@ -60,18 +58,26 @@ export class BoxModelDisplay extends BaseElementBlock {
         font-size: 9px;
         outline: none;
         cursor: text;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: text;
+        -webkit-user-select: text;
+        transition: background 0.15s ease;
       }
 
-      .margin-values input:hover,
-      .border-values input:hover,
-      .padding-values input:hover {
+      .editable-value:hover {
         background: rgba(255, 255, 255, 0.1);
       }
 
-      .margin-values input:focus,
-      .border-values input:focus,
-      .padding-values input:focus {
+      .editable-value:focus {
         background: rgba(255, 255, 255, 0.2);
+        cursor: text;
+      }
+
+      .editable-value:empty::before {
+        content: '0';
+        color: rgba(255, 255, 255, 0.6);
       }
 
       .margin-top {
@@ -265,8 +271,17 @@ export class BoxModelDisplay extends BaseElementBlock {
   }
 
   private handleValueChange(property: string, event: Event) {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
+    const div = event.target as HTMLDivElement;
+    const value = div.textContent?.trim() || "0";
+
+    // Only allow numbers
+    const numericValue = value.replace(/[^0-9]/g, '');
+
+    if (value !== numericValue) {
+      div.textContent = numericValue;
+      // Move cursor to end
+      this.moveCursorToEnd(div);
+    }
 
     // Trigger the onChange event handler
     handleComponentEvent({
@@ -277,21 +292,23 @@ export class BoxModelDisplay extends BaseElementBlock {
       event: event,
       data: {
         property,
-        value: value ? `${value}px` : "0px",
+        value: numericValue ? `${numericValue}px` : "0px",
       },
     });
   }
 
   private handleKeyDown(property: string, event: KeyboardEvent) {
-    const input = event.target as HTMLInputElement;
+    const div = event.target as HTMLDivElement;
 
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
       event.preventDefault();
-      const currentValue = parseFloat(input.value) || 0;
+      const currentValue = parseFloat(div.textContent || "0") || 0;
       const step = event.shiftKey ? 10 : 1;
       const newValue = event.key === "ArrowUp" ? currentValue + step : currentValue - step;
+      const finalValue = Math.max(0, newValue);
 
-      input.value = Math.max(0, newValue).toString();
+      div.textContent = finalValue.toString();
+      this.moveCursorToEnd(div);
 
       // Trigger update
       handleComponentEvent({
@@ -302,21 +319,59 @@ export class BoxModelDisplay extends BaseElementBlock {
         event: event,
         data: {
           property,
-          value: `${newValue}px`,
+          value: `${finalValue}px`,
         },
       });
     } else if (event.key === "Enter") {
-      input.blur();
+      event.preventDefault();
+      div.blur();
+    }
+  }
+
+  private handlePaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const text = event.clipboardData?.getData('text/plain') || '';
+    const numericValue = text.replace(/[^0-9]/g, '');
+
+    if (numericValue) {
+      document.execCommand('insertText', false, numericValue);
+    }
+  }
+
+  private moveCursorToEnd(element: HTMLElement) {
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    if (element.childNodes.length > 0) {
+      range.setStart(element.childNodes[0], element.textContent?.length || 0);
+      range.collapse(true);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+  }
+
+  private handleBlur(property: string, event: FocusEvent) {
+    const div = event.target as HTMLDivElement;
+    const value = div.textContent?.trim() || "0";
+
+    // Ensure we have a valid number
+    const numericValue = value.replace(/[^0-9]/g, '') || "0";
+
+    if (div.textContent !== numericValue) {
+      div.textContent = numericValue;
     }
   }
 
   private createEditableValue(value: number, property: string) {
-    return html`<input
-      type="number"
-      .value=${value.toString()}
+    return html`<div
+      class="editable-value"
+      contenteditable="true"
+      spellcheck="false"
       @input=${(e: Event) => this.handleValueChange(property, e)}
       @keydown=${(e: KeyboardEvent) => this.handleKeyDown(property, e)}
-    />`;
+      @paste=${(e: ClipboardEvent) => this.handlePaste(e)}
+      @blur=${(e: FocusEvent) => this.handleBlur(property, e)}
+    >${value}</div>`;
   }
 
   override renderComponent() {
