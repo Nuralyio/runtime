@@ -77,7 +77,7 @@ const boxModelComponent = createBaseComponent(
               propertiesToExtract.forEach((prop) => {
                 const propValue = selectedComponent.style[prop];
                 if (propValue) {
-                  const match = propValue.match(/^(\d*\.?\d+)(.*)$/);
+                  const match = propValue.match(/^(\d+(?:\.\d+)?)(.*)$/);
                   const value = match && match[1] ? match[1] : '';
                   const unit = match && match[2] ? match[2] : '';
 
