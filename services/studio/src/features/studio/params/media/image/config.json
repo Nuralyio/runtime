@@ -26,10 +26,19 @@
         "default": "",
         "width": "100%",
         "placeholder": "Image URL",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.src?.type == 'value') {\n  return selectedComponent.input?.src?.value ?? '';\n}\nreturn '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.src?.type == 'handler' && selectedComponent?.input?.src?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["src"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["src"]
+        },
         "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newSrcText = EventData.value;\nupdateInput(selectedComponent, 'src', 'string', newSrcText);"
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["src", "string"]
+          }
         }
       },
       {
@@ -39,10 +48,19 @@
         "default": "",
         "width": "100%",
         "placeholder": "Alt text",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.alt?.type == 'value') {\n  return selectedComponent.input?.alt?.value ?? '';\n}\nreturn '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.alt?.type == 'handler' && selectedComponent?.input?.alt?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["alt"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["alt"]
+        },
         "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newAltText = EventData.value;\nupdateInput(selectedComponent, 'alt', 'string', newAltText);"
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["alt", "string"]
+          }
         }
       },
       {
@@ -52,10 +70,19 @@
         "default": "",
         "width": "100%",
         "placeholder": "Fallback URL",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.fallback?.type == 'string') {\n  return selectedComponent.input?.fallback?.value ?? '';\n}\nreturn '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.fallback?.type == 'handler' && selectedComponent?.input?.fallback?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["fallback"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["fallback"]
+        },
         "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newFallBack = EventData.value;\nupdateInput(selectedComponent, 'fallback', 'string', newFallBack);"
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["fallback", "string"]
+          }
         }
       },
       {
@@ -64,10 +91,13 @@
         "type": "boolean",
         "default": false,
         "width": "100%",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.previewable?.type == 'value') {\n  return selectedComponent.input?.previewable?.value ?? false;\n}\nreturn false;",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.previewable?.type == 'handler' && selectedComponent?.input?.previewable?.value) {\n  state = 'disabled';\n}\nreturn state;",
-        "eventHandlers": {
-          "checkboxChanged": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newPreviewable = EventData.value === 'check';\nupdateInput(selectedComponent, 'previewable', 'string', newPreviewable);"
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["previewable"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["previewable"]
         }
       },
       {
@@ -84,10 +114,19 @@
           { "label": "Cover", "value": "cover" },
           { "label": "Scale Down", "value": "scale-down" }
         ],
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.fit?.type == 'value') {\n  return selectedComponent.input?.fit?.value ?? '';\n}\nreturn '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.fit?.type == 'handler' && selectedComponent?.input?.fit?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["fit"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["fit"]
+        },
         "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newFit = EventData.value;\nupdateInput(selectedComponent, 'fit', 'string', newFit);"
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["fit", "string"]
+          }
         }
       }
     ],
