@@ -57,9 +57,6 @@ const boxModelComponent = createBaseComponent(
         value: /* js */`
           const selectedComponent = Utils.first(Vars.selectedComponents);
           if (selectedComponent) {
-            const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
-            const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
-
             if (selectedComponent.style) {
               const propertiesToExtract = [
                 "margin-left",
@@ -80,16 +77,9 @@ const boxModelComponent = createBaseComponent(
               propertiesToExtract.forEach((prop) => {
                 const propValue = selectedComponent.style[prop];
                 if (propValue) {
-                  let value = '';
-                  let unit = '';
-
-                  propValue.split('').forEach((char) => {
-                    if ((char >= '0' && char <= '9') || char === '.') {
-                      value += char;
-                    } else {
-                      unit += char;
-                    }
-                  });
+                  const match = propValue.match(/^([\d.]+)(.*)$/);
+                  const value = match && match[1] ? match[1] : '';
+                  const unit = match && match[2] ? match[2] : '';
 
                   const numericValue = parseFloat(value) || 0;
                   const unitType = unit || 'px'; // Default to 'px' if unit is missing
