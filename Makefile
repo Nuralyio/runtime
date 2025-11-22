@@ -13,7 +13,7 @@ help:
 	@echo "  make stop       - Stop all services"
 	@echo "  make clean      - Clean up containers and volumes"
 	@echo "  make logs       - View logs for all services"
-	@echo "  make shell      - Open shell in a service (usage: make shell SERVICE=foundation)"
+	@echo "  make shell      - Open shell in a service (usage: make shell SERVICE=api)"
 	@echo "  make test       - Run tests for all services"
 	@echo "  make build      - Build all services"
 	@echo "  make deploy     - Deploy to production"
@@ -27,7 +27,7 @@ init:
 	@if [ ! -d "services/studio" ]; then \
 		echo "Adding submodules for the first time..."; \
 		git submodule add https://github.com/Nuralyio/studio.git services/studio || true; \
-		git submodule add https://github.com/Nuralyio/foundation.git services/foundation || true; \
+		git submodule add https://github.com/Nuralyio/api.git services/api || true; \
 		git submodule add https://github.com/Nuralyio/functions.git services/functions || true; \
 		git submodule add https://github.com/Nuralyio/gateway.git services/gateway || true; \
 	fi
@@ -81,7 +81,7 @@ logs-prod:
 shell:
 	@if [ -z "$(SERVICE)" ]; then \
 		echo "Usage: make shell SERVICE=<service-name>"; \
-		echo "Available services: studio, foundation, functions, gateway"; \
+		echo "Available services: studio, api, functions, gateway"; \
 	else \
 		docker-compose -f docker-compose.dev.yml exec $(SERVICE) /bin/sh; \
 	fi
@@ -90,7 +90,7 @@ shell:
 test:
 	@echo "Running tests for all services..."
 	docker-compose -f docker-compose.dev.yml exec studio npm test
-	docker-compose -f docker-compose.dev.yml exec foundation npm test
+	docker-compose -f docker-compose.dev.yml exec api npm test
 	docker-compose -f docker-compose.dev.yml exec functions npm test
 	docker-compose -f docker-compose.dev.yml exec gateway npm test
 
@@ -123,7 +123,7 @@ status:
 	@git submodule status
 	@echo ""
 	@echo "Submodule directories:"
-	@for dir in services/studio services/foundation services/functions services/gateway; do \
+	@for dir in services/studio services/api services/functions services/gateway; do \
 		if [ -d "$$dir" ]; then \
 			echo "✅ $$dir: exists"; \
 		else \
@@ -134,11 +134,11 @@ status:
 # Database operations
 db-migrate:
 	@echo "Running database migrations..."
-	docker-compose -f docker-compose.dev.yml exec foundation npm run migrate
+	docker-compose -f docker-compose.dev.yml exec api npm run migrate
 
 db-reset:
 	@echo "Resetting database..."
-	docker-compose -f docker-compose.dev.yml exec foundation npm run db:reset
+	docker-compose -f docker-compose.dev.yml exec api npm run db:reset
 
 # Backup operations
 backup:

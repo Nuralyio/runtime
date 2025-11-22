@@ -21,19 +21,19 @@ services:
       - nuraly-network
     restart: unless-stopped
 
-  # Core Backend - Foundation
-  foundation:
+  # Core Backend - API
+  api:
     build:
-      context: ./services/foundation
+      context: ./services/api
       dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
     volumes:
-      - ./services/foundation:/app
+      - ./services/api:/app
     environment:
       - NODE_ENV=development
       - BACKEND_PORT=8000
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/foundation_dev
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/api_dev
       - REDIS_URL=redis://redis:6379
     env_file:
       - config/dev.env
@@ -79,7 +79,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4000
-      - FOUNDATION_URL=http://foundation:8000
+      - API_URL=http://api:8000
       - FUNCTIONS_URL=http://functions:9000
       - REDIS_URL=redis://redis:6379
       - KC_HOSTNAME=localhost
@@ -91,7 +91,7 @@ services:
     env_file:
       - config/dev.env
     depends_on:
-      - foundation
+      - api
       - functions
       - keycloak
       - redis

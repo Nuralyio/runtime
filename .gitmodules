@@ -3,9 +3,9 @@
 	url = https://github.com/Nuralyio/studio.git
 	branch = main
 
-[submodule "services/foundation"]
-	path = services/foundation
-	url = https://github.com/Nuralyio/foundation.git
+[submodule "services/api"]
+	path = services/api
+	url = https://github.com/Nuralyio/api.git
 	branch = main
 
 [submodule "services/functions"]
