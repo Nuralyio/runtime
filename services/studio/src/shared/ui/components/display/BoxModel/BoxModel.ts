@@ -34,6 +34,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         font-weight: 500;
       }
 
+      /* Shared styles for all box model value badges */
       .margin-values,
       .border-values,
       .padding-values {
@@ -49,6 +50,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         font-size: 9px;
       }
 
+      /* Override background for border values */
       .border-values {
         background: #444;
       }
