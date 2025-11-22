@@ -2,7 +2,7 @@ import type { ComponentElement } from "@shared/redux/store/component/component.i
 import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { executeHandler } from "@features/runtime/state/runtime-context";
+import { handleComponentEvent } from "@shared/ui/components/base/BaseElement/execute-event.helpers.ts";
 import { getNestedAttribute } from "@shared/utils/object.utils.ts";
 import "@nuralyui/label";
 
@@ -268,19 +268,17 @@ export class BoxModelDisplay extends BaseElementBlock {
     const input = event.target as HTMLInputElement;
     const value = input.value;
 
-    // Dispatch custom event with the changed value
-    this.dispatchEvent(
-      new CustomEvent("valueChange", {
-        detail: { property, value },
-        bubbles: true,
-        composed: true,
-      })
-    );
-
-    // Also execute the onChange handler if it exists
-    executeHandler(this.component, "onChange", {
-      property,
-      value: value ? `${value}px` : "0px",
+    // Trigger the onChange event handler
+    handleComponentEvent({
+      isViewMode: true,
+      component: this.component,
+      item: this.item,
+      eventName: "onChange",
+      event: event,
+      data: {
+        property,
+        value: value ? `${value}px` : "0px",
+      },
     });
   }
 
