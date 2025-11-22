@@ -109,7 +109,7 @@ describe('myFunction', () => {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { fixture, html } from '@testing-library/lit';
+import { fixture, html } from '@open-wc/testing';
 import '../src/shared/ui/components/MyComponent';
 
 describe('MyComponent', () => {
