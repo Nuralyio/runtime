@@ -19,10 +19,11 @@ export class BoxModelDisplay extends BaseElementBlock {
         background-color: var(--box-model-margin-bg, #f6f6d8);
         border: 2px dashed #9acd32;
         border-radius: 4px;
-        padding: 30px;
+        padding: 20px;
         position: relative;
         width: fit-content;
-        margin: 20px auto;
+        margin: 10px auto;
+        max-width: 500px;
       }
 
       .margin-label {
@@ -100,7 +101,7 @@ export class BoxModelDisplay extends BaseElementBlock {
       .border-container {
         background-color: var(--box-model-border-bg, #656565);
         border-radius: 3px;
-        padding: 25px;
+        padding: 18px;
         position: relative;
       }
 
@@ -153,7 +154,7 @@ export class BoxModelDisplay extends BaseElementBlock {
       .padding-container {
         background-color: var(--box-model-padding-bg, #b8b8d1);
         border-radius: 3px;
-        padding: 25px;
+        padding: 18px;
         position: relative;
       }
 
@@ -207,12 +208,12 @@ export class BoxModelDisplay extends BaseElementBlock {
         background-color: var(--box-model-content-bg, #8ac4d0);
         border: 2px dashed #4a9db0;
         border-radius: 3px;
-        padding: 20px 40px;
+        padding: 15px 30px;
         text-align: center;
         color: #333;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
-        min-width: 150px;
+        min-width: 120px;
       }
 
       .dimensions {
