@@ -28,72 +28,70 @@ export class BoxModelDisplay extends BaseElementBlock {
 
       .margin-label {
         position: absolute;
-        top: 8px;
-        left: 8px;
-        color: #666;
-        font-size: 11px;
-        font-weight: 500;
+        top: 12px;
+        left: 12px;
+        color: #333;
+        font-size: 13px;
+        font-weight: 600;
       }
 
-      .margin-values {
+      .value-pill {
         position: absolute;
         background: #666;
         color: white;
-        border-radius: 10px;
-        width: 30px;
-        height: 20px;
+        border-radius: 12px;
+        padding: 4px 10px;
+        min-width: 35px;
+        height: 24px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 9px;
+        font-size: 11px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       }
 
-      .margin-values input,
-      .border-values input,
-      .padding-values input {
+      .value-pill input {
         width: 100%;
-        height: 100%;
         background: transparent;
         border: none;
         color: white;
         text-align: center;
-        font-size: 9px;
+        font-size: 11px;
         outline: none;
         cursor: text;
+        padding: 0;
+        min-width: 25px;
       }
 
-      .margin-values input:hover,
-      .border-values input:hover,
-      .padding-values input:hover {
-        background: rgba(255, 255, 255, 0.1);
+      .value-pill:hover {
+        background: #555;
       }
 
-      .margin-values input:focus,
-      .border-values input:focus,
-      .padding-values input:focus {
-        background: rgba(255, 255, 255, 0.2);
+      .value-pill:focus-within {
+        background: #444;
+        box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.5);
       }
 
       .margin-top {
-        top: -10px;
+        top: -32px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .margin-right {
-        right: -10px;
+        right: -45px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .margin-bottom {
-        bottom: -10px;
+        bottom: -32px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .margin-left {
-        left: -10px;
+        left: -45px;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -107,46 +105,33 @@ export class BoxModelDisplay extends BaseElementBlock {
 
       .border-label {
         position: absolute;
-        top: 5px;
-        left: 8px;
+        top: 8px;
+        left: 12px;
         color: white;
-        font-size: 11px;
-        font-weight: 500;
-      }
-
-      .border-values {
-        position: absolute;
-        background: #444;
-        color: white;
-        border-radius: 10px;
-        width: 30px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
+        font-size: 13px;
+        font-weight: 600;
       }
 
       .border-top {
-        top: -10px;
+        top: -30px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .border-right {
-        right: -10px;
+        right: -45px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .border-bottom {
-        bottom: -10px;
+        bottom: -30px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .border-left {
-        left: -10px;
+        left: -45px;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -160,46 +145,33 @@ export class BoxModelDisplay extends BaseElementBlock {
 
       .padding-label {
         position: absolute;
-        top: 5px;
-        left: 8px;
+        top: 8px;
+        left: 12px;
         color: #333;
-        font-size: 11px;
-        font-weight: 500;
-      }
-
-      .padding-values {
-        position: absolute;
-        background: #666;
-        color: white;
-        border-radius: 10px;
-        width: 30px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
+        font-size: 13px;
+        font-weight: 600;
       }
 
       .padding-top {
-        top: -10px;
+        top: -30px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .padding-right {
-        right: -10px;
+        right: -45px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .padding-bottom {
-        bottom: -10px;
+        bottom: -30px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .padding-left {
-        left: -10px;
+        left: -45px;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -311,12 +283,14 @@ export class BoxModelDisplay extends BaseElementBlock {
   }
 
   private createEditableValue(value: number, property: string) {
-    return html`<input
-      type="number"
-      .value=${value.toString()}
-      @input=${(e: Event) => this.handleValueChange(property, e)}
-      @keydown=${(e: KeyboardEvent) => this.handleKeyDown(property, e)}
-    />`;
+    return html`<div class="value-pill">
+      <input
+        type="number"
+        .value=${value.toString()}
+        @input=${(e: Event) => this.handleValueChange(property, e)}
+        @keydown=${(e: KeyboardEvent) => this.handleKeyDown(property, e)}
+      />
+    </div>`;
   }
 
   override renderComponent() {
@@ -364,24 +338,24 @@ export class BoxModelDisplay extends BaseElementBlock {
     return html`
       <div class="box-model-container">
         <div class="margin-label">margin</div>
-        <div class="margin-values margin-top">${this.createEditableValue(margin.top, "margin-top")}</div>
-        <div class="margin-values margin-right">${this.createEditableValue(margin.right, "margin-right")}</div>
-        <div class="margin-values margin-bottom">${this.createEditableValue(margin.bottom, "margin-bottom")}</div>
-        <div class="margin-values margin-left">${this.createEditableValue(margin.left, "margin-left")}</div>
+        <div class="margin-top">${this.createEditableValue(margin.top, "margin-top")}</div>
+        <div class="margin-right">${this.createEditableValue(margin.right, "margin-right")}</div>
+        <div class="margin-bottom">${this.createEditableValue(margin.bottom, "margin-bottom")}</div>
+        <div class="margin-left">${this.createEditableValue(margin.left, "margin-left")}</div>
 
         <div class="border-container">
           <div class="border-label">border</div>
-          <div class="border-values border-top">${this.createEditableValue(border.top, "border")}</div>
-          <div class="border-values border-right">${this.createEditableValue(border.right, "border")}</div>
-          <div class="border-values border-bottom">${this.createEditableValue(border.bottom, "border")}</div>
-          <div class="border-values border-left">${this.createEditableValue(border.left, "border")}</div>
+          <div class="border-top">${this.createEditableValue(border.top, "border")}</div>
+          <div class="border-right">${this.createEditableValue(border.right, "border")}</div>
+          <div class="border-bottom">${this.createEditableValue(border.bottom, "border")}</div>
+          <div class="border-left">${this.createEditableValue(border.left, "border")}</div>
 
           <div class="padding-container">
             <div class="padding-label">padding</div>
-            <div class="padding-values padding-top">${this.createEditableValue(padding.top, "padding-top")}</div>
-            <div class="padding-values padding-right">${this.createEditableValue(padding.right, "padding-right")}</div>
-            <div class="padding-values padding-bottom">${this.createEditableValue(padding.bottom, "padding-bottom")}</div>
-            <div class="padding-values padding-left">${this.createEditableValue(padding.left, "padding-left")}</div>
+            <div class="padding-top">${this.createEditableValue(padding.top, "padding-top")}</div>
+            <div class="padding-right">${this.createEditableValue(padding.right, "padding-right")}</div>
+            <div class="padding-bottom">${this.createEditableValue(padding.bottom, "padding-bottom")}</div>
+            <div class="padding-left">${this.createEditableValue(padding.left, "padding-left")}</div>
 
             <div class="content-box">
               <div class="dimensions">
