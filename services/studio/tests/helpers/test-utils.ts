@@ -104,7 +104,7 @@ export function spyOnConsole() {
  * Flush all pending promises
  */
 export async function flushPromises() {
-  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => queueMicrotask(resolve));
 }
 
 /**
