@@ -12,42 +12,40 @@ export class BoxModelDisplay extends BaseElementBlock {
       :host {
         display: block;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 12px;
+        font-size: 11px;
       }
 
       .box-model-container {
-        background-color: var(--box-model-margin-bg, #fffef0);
-        border: 2px dashed #b4d455;
-        border-radius: 0;
-        padding: 30px;
+        background-color: var(--box-model-margin-bg, #f6f6d8);
+        border: 2px dashed #9acd32;
+        border-radius: 4px;
+        padding: 20px;
         position: relative;
         width: fit-content;
         margin: 10px auto;
-        max-width: 600px;
+        max-width: 500px;
       }
 
       .margin-label {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        color: #000;
-        font-size: 13px;
-        font-weight: 700;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        top: 8px;
+        left: 8px;
+        color: #666;
+        font-size: 11px;
+        font-weight: 500;
       }
 
       .margin-values {
         position: absolute;
-        background: #5a5a5a;
+        background: #666;
         color: white;
-        border-radius: 12px;
-        width: 32px;
-        height: 22px;
+        border-radius: 10px;
+        width: 30px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 9px;
       }
 
       .editable-value {
@@ -57,7 +55,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         border: none;
         color: white;
         text-align: center;
-        font-size: 11px;
+        font-size: 9px;
         outline: none;
         cursor: text;
         display: flex;
@@ -66,21 +64,20 @@ export class BoxModelDisplay extends BaseElementBlock {
         user-select: text;
         -webkit-user-select: text;
         transition: background 0.15s ease;
-        font-weight: 500;
       }
 
       .editable-value:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .editable-value:focus {
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.2);
         cursor: text;
       }
 
       .editable-value:empty::before {
         content: '0';
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.6);
       }
 
       .margin-top {
@@ -108,34 +105,32 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .border-container {
-        background-color: var(--box-model-border-bg, #5a5a5a);
-        border-radius: 0;
-        padding: 28px;
+        background-color: var(--box-model-border-bg, #656565);
+        border-radius: 3px;
+        padding: 18px;
         position: relative;
       }
 
       .border-label {
         position: absolute;
-        top: 8px;
-        left: 10px;
+        top: 5px;
+        left: 8px;
         color: white;
-        font-size: 13px;
-        font-weight: 700;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
       }
 
       .border-values {
         position: absolute;
         background: #444;
         color: white;
-        border-radius: 12px;
-        width: 32px;
-        height: 22px;
+        border-radius: 10px;
+        width: 30px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 9px;
       }
 
       .border-top {
@@ -163,34 +158,32 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .padding-container {
-        background-color: var(--box-model-padding-bg, #c8b7f6);
-        border-radius: 0;
-        padding: 28px;
+        background-color: var(--box-model-padding-bg, #b8b8d1);
+        border-radius: 3px;
+        padding: 18px;
         position: relative;
       }
 
       .padding-label {
         position: absolute;
-        top: 8px;
-        left: 10px;
-        color: #000;
-        font-size: 13px;
-        font-weight: 700;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        top: 5px;
+        left: 8px;
+        color: #333;
+        font-size: 11px;
+        font-weight: 500;
       }
 
       .padding-values {
         position: absolute;
-        background: #5a5a5a;
+        background: #666;
         color: white;
-        border-radius: 12px;
-        width: 32px;
-        height: 22px;
+        border-radius: 10px;
+        width: 30px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 9px;
       }
 
       .padding-top {
@@ -218,27 +211,27 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .content-box {
-        background-color: var(--box-model-content-bg, #93d7e8);
-        border: 2px dashed #5eb8cf;
-        border-radius: 0;
-        padding: 25px 50px;
+        background-color: var(--box-model-content-bg, #8ac4d0);
+        border: 2px dashed #4a9db0;
+        border-radius: 3px;
+        padding: 15px 30px;
         text-align: center;
-        color: #000;
-        font-size: 16px;
-        font-weight: 700;
-        min-width: 150px;
+        color: #333;
+        font-size: 14px;
+        font-weight: 600;
+        min-width: 120px;
       }
 
       .dimensions {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 5px;
       }
 
       .dimension-separator {
-        font-weight: 700;
-        color: #000;
+        font-weight: normal;
+        color: #666;
       }
     `,
   ];
