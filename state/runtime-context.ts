@@ -456,39 +456,39 @@ class RuntimeContext {
    */
   createProxy(target: any, scope?): any {
     const self = this;
-  
+
     if (typeof target !== "object" || target === null) {
       return target;
     }
-  
+
     return new Proxy(target, {
       get(target, prop, receiver) {
         if (DEBUG) {
           console.log(`[DEBUG] Accessing property '${String(prop)}'`);
         }
-  
+
         const value = Reflect.get(target, prop, receiver);
-  
+
         if (!self.listeners[String(prop)]) {
           self.listeners[String(prop)] = new Set<string>();
         }
-  
+
         if (self.Current.name) {
           self.listeners[String(prop)].add(self.Current.name);
         }
-  
+
         if (typeof value === "object" && value !== null) {
           const nestedProxy = new Proxy(value, {
             set(targetNested, propNested, valueNested, receiverNested) {
               const oldValue = targetNested[propNested as string];
               const result = Reflect.set(targetNested, propNested, valueNested, receiverNested);
-  
+
               if (DEBUG) {
                 console.log(
                   `[DEBUG] Updated nested property '${String(propNested)}' from '${oldValue}' to '${valueNested}'`
                 );
               }
-  
+
               if (!deepEqual(oldValue, valueNested)) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
                   eventDispatcher.emit(`component-property-changed:${componentName}`, {
@@ -498,14 +498,14 @@ class RuntimeContext {
                   });
                 });
               }
-  
+
               return result;
             },
             deleteProperty(targetNested, propNested) {
               if (DEBUG) {
                 console.log(`[DEBUG] Deleting nested property '${String(propNested)}'`);
               }
-  
+
               const result = Reflect.deleteProperty(targetNested, propNested);
               if (result) {
                 self.listeners[String(prop)]?.forEach((componentName: string) => {
@@ -518,42 +518,46 @@ class RuntimeContext {
               return result;
             },
           });
-  
+
           return nestedProxy;
         }
-  
+
         return value;
       },
-  
+
       set(target, prop, value, receiver) {
         const oldValue = target[prop as string];
+
+        // Guard: Don't emit events if the value hasn't actually changed
+        if (deepEqual(oldValue, value)) {
+          return true;
+        }
+
         const result = Reflect.set(target, prop, value, receiver);
-  
+
         if (scope) {
           eventDispatcher.emit(`${scope}:${String(prop)}`, { value, ctx: self.Current });
         }
-  
+
         if (DEBUG) {
           console.log(`[DEBUG] Set property '${String(prop)}' from '${oldValue}' to '${value}'`);
         }
-  
-        if (!deepEqual(oldValue, value)) {
-          self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, {
-              prop,
-              ctx: self.Current
-            });
+
+        self.listeners[String(prop)]?.forEach((componentName: string) => {
+          eventDispatcher.emit(`component-property-changed:${componentName}`, {
+            prop,
+            ctx: self.Current
           });
-        }
-  
+        });
+
         return result;
       },
-  
+
       deleteProperty(target, prop) {
         if (DEBUG) {
           console.log(`[DEBUG] Deleting property '${String(prop)}'`);
         }
-  
+
         const result = Reflect.deleteProperty(target, prop);
         if (result) {
           self.listeners[String(prop)]?.forEach((componentName: string) => {
