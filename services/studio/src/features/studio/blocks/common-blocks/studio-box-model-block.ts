@@ -56,63 +56,45 @@ const boxModelComponent = createBaseComponent(
         type: "handler",
         value: /* js */`
           const selectedComponent = Utils.first(Vars.selectedComponents);
-          if (selectedComponent) {
-            if (selectedComponent.style) {
-              const propertiesToExtract = [
-                "margin-left",
-                "margin-top",
-                "margin-bottom",
-                "margin-right",
-                "padding-left",
-                "padding-right",
-                "padding-top",
-                "padding-bottom",
-                "border",
-                "width",
-                "height"
-              ];
+          if (!selectedComponent) return {};
 
-              const extractedStyles = {};
+          const propertiesToExtract = [
+            "margin-left",
+            "margin-top",
+            "margin-bottom",
+            "margin-right",
+            "padding-left",
+            "padding-right",
+            "padding-top",
+            "padding-bottom",
+            "border",
+            "width",
+            "height"
+          ];
 
-              propertiesToExtract.forEach((prop) => {
-                const propValue = selectedComponent.style[prop];
-                if (propValue) {
-                  const match = propValue.match(/^(\d+(?:\.\d+)?)(.*)$/);
-                  const value = match && match[1] ? match[1] : '';
-                  const unit = match && match[2] ? match[2] : '';
+          const extractedStyles = {};
+          const componentStyle = selectedComponent.style || {};
 
-                  const numericValue = parseFloat(value) || 0;
-                  const unitType = unit || 'px'; // Default to 'px' if unit is missing
+          propertiesToExtract.forEach((prop) => {
+            const propValue = componentStyle[prop];
+            if (propValue) {
+              const match = propValue.match(/^(\d+(?:\.\d+)?)(.*)$/);
+              const value = match && match[1] ? match[1] : '';
+              const unit = match && match[2] ? match[2] : '';
 
-                  extractedStyles[prop] = {
-                    value: numericValue,
-                    unit: unitType
-                  };
-                } else {
-                  extractedStyles[prop] = {
-                    value: 0,
-                    unit: 'px'
-                  };
-                }
-              });
-
-              return extractedStyles;
+              extractedStyles[prop] = {
+                value: parseFloat(value) || 0,
+                unit: unit || 'px'
+              };
             } else {
-              return {
-                "margin-left": { value: 0, unit: 'px' },
-                "margin-right": { value: 0, unit: 'px' },
-                "padding-left": { value: 0, unit: 'px' },
-                "padding-right": { value: 0, unit: 'px' },
-                "margin-top": { value: 0, unit: 'px' },
-                "margin-bottom": { value: 0, unit: 'px' },
-                "padding-top": { value: 0, unit: 'px' },
-                "padding-bottom": { value: 0, unit: 'px' },
-                "border": { value: 0, unit: 'px' },
-                "width": { value: 0, unit: 'px' },
-                "height": { value: 0, unit: 'px' }
+              extractedStyles[prop] = {
+                value: 0,
+                unit: 'px'
               };
             }
-          }
+          });
+
+          return extractedStyles;
         `
       }
     },
