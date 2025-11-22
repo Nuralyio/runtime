@@ -306,9 +306,10 @@ export class BoxModelDisplay extends BaseElementBlock {
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         range.deleteContents();
-        range.insertNode(document.createTextNode(numericValue));
+        const textNode = document.createTextNode(numericValue);
+        range.insertNode(textNode);
         // Move cursor to end of inserted text
-        range.setStartAfter(range.endContainer);
+        range.setStartAfter(textNode);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
