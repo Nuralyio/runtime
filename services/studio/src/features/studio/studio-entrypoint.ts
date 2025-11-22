@@ -267,7 +267,7 @@ export default [
       panelConfig: {
         type: "object",
         value: {
-          enabled: true,
+          enabled: false,
           mode: 'embedded',
           resizable: false,
           title: 'Panel Tabs',

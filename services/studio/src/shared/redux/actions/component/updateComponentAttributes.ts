@@ -120,20 +120,20 @@ export function updateComponentAttributes(
           updateComponentHandler(componentToUpdate, application_id);
         }, 0);
       }
-     
+
+      // Update selected components if needed
+      const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents;
+      const index = selectedComponents.findIndex(c => c.uuid === componentToUpdate.uuid);
+      if (index !== -1) {
+          ExecuteInstance.VarsProxy.selectedComponents[index] = componentToUpdate;
+      }
+
+      // Trigger a refresh event for any listeners - ONLY when actual update occurred
+      eventDispatcher.emit("component:updated");
+      eventDispatcher.emit(`component-updated:${String(componentId)}`);
     } else {
       // No update needed
       // console.log('Attributes are the same, no update needed:', updatedAttributes);
     }
-    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents;
-
-    const index = selectedComponents.findIndex(c => c.uuid === componentToUpdate.uuid);
-    if (index !== -1) {
-        ExecuteInstance.VarsProxy.selectedComponents[index] = componentToUpdate;
-    }
   }
- 
-//   // Trigger a refresh event for any listeners
- eventDispatcher.emit("component:updated");
-  eventDispatcher.emit(`component-updated:${String(componentId)}`);
 }

@@ -5,6 +5,9 @@ import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
 import EditorInstance from "@features/runtime/state/editor";
 
+// Track executing handlers to prevent re-execution loops
+const executingHandlers = new Set<string>();
+
 export async function traitInputHandler(
   ctx: {
     component: any;
@@ -21,6 +24,14 @@ export async function traitInputHandler(
 ): Promise<void> {
   if (isServer || !input) return;
 
+  // Create a unique key for this handler execution
+  const handlerKey = `${ctx.component.uuid || ctx.component.name}:${inputName}`;
+
+  // Guard: Prevent re-execution if this handler is already executing
+  if (executingHandlers.has(handlerKey)) {
+    return;
+  }
+
   const proxy = (ctx.ExecuteInstance.PropertiesProxy[ctx.component.name] ??= {});
   const setResult = (val: any) => {
     if (ctx.inputHandlersValue[inputName] !== val) {
@@ -34,6 +45,9 @@ export async function traitInputHandler(
   const inputHandler = ctx.component?.inputHandlers?.[inputName];
   if (inputHandler) {
     try {
+      // Mark this handler as executing
+      executingHandlers.add(handlerKey);
+
       const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
@@ -48,12 +62,18 @@ export async function traitInputHandler(
         console.error('Error logging handler error:', logError);
       }
       return; // Exit early even on error to prevent fallback
+    } finally {
+      // Always remove the execution guard
+      executingHandlers.delete(handlerKey);
     }
   }
 
   // Fall back to input property if no inputHandler exists
   if (input.type === "handler") {
     try {
+      // Mark this handler as executing
+      executingHandlers.add(handlerKey);
+
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
       const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
@@ -69,6 +89,9 @@ export async function traitInputHandler(
         console.error('Error logging handler error:', logError);
       }
       return; // Exit early on error
+    } finally {
+      // Always remove the execution guard
+      executingHandlers.delete(handlerKey);
     }
   } else {
     const { value } = input;

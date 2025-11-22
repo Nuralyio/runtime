@@ -44,20 +44,20 @@ export function updateComponentName(
           updateComponentHandler(componentToUpdate, application_id);
         }, 0);
       }
+
+      // Update pages store
+      const pagesStore = $pages.get()
+      Object.keys(pagesStore).forEach((key) => {
+        setVar(key, `${key}.appPages`, pagesStore[key]);
+        ExecuteInstance.VarsProxy[`${key}.appPages`] = [...pagesStore[key]];
+      });
+
+      // Trigger a refresh event for any listeners - ONLY when actual update occurred
+      eventDispatcher.emit("component:updated");
+      refreshPageStoreVar()
     } else {
       // No update needed, log a message or handle accordingly
       // console.log('Name is the same, no update needed:', updatedName);
     }
   }
-
-  const pagesStore = $pages.get()
-    Object.keys(pagesStore).forEach((key) => {
-    setVar(key, `${key}.appPages`, pagesStore[key]);
-        ExecuteInstance.VarsProxy[`${key}.appPages`] = [...pagesStore[key]];
-
-    });
-
-  // Trigger a refresh event for any listeners
- eventDispatcher.emit("component:updated");
- refreshPageStoreVar()
 }
