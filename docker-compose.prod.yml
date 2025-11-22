@@ -64,7 +64,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8000
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/api_prod
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/nuraly_prod
       - REDIS_URL=redis://redis:6379
     env_file:
       - config/prod.env
