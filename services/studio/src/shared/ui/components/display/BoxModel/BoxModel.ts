@@ -282,12 +282,40 @@ export class BoxModelDisplay extends BaseElementBlock {
     });
   }
 
+  private handleKeyDown(property: string, event: KeyboardEvent) {
+    const input = event.target as HTMLInputElement;
+
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      event.preventDefault();
+      const currentValue = parseFloat(input.value) || 0;
+      const step = event.shiftKey ? 10 : 1;
+      const newValue = event.key === "ArrowUp" ? currentValue + step : currentValue - step;
+
+      input.value = Math.max(0, newValue).toString();
+
+      // Trigger update
+      handleComponentEvent({
+        isViewMode: true,
+        component: this.component,
+        item: this.item,
+        eventName: "onChange",
+        event: event,
+        data: {
+          property,
+          value: `${newValue}px`,
+        },
+      });
+    } else if (event.key === "Enter") {
+      input.blur();
+    }
+  }
+
   private createEditableValue(value: number, property: string) {
     return html`<input
       type="number"
       .value=${value.toString()}
-      @change=${(e: Event) => this.handleValueChange(property, e)}
-      @blur=${(e: Event) => this.handleValueChange(property, e)}
+      @input=${(e: Event) => this.handleValueChange(property, e)}
+      @keydown=${(e: KeyboardEvent) => this.handleKeyDown(property, e)}
     />`;
   }
 
