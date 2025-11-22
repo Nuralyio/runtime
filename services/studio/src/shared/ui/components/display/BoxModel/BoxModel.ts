@@ -34,7 +34,9 @@ export class BoxModelDisplay extends BaseElementBlock {
         font-weight: 500;
       }
 
-      .margin-values {
+      .margin-values,
+      .border-values,
+      .padding-values {
         position: absolute;
         background: #666;
         color: white;
@@ -45,6 +47,10 @@ export class BoxModelDisplay extends BaseElementBlock {
         align-items: center;
         justify-content: center;
         font-size: 9px;
+      }
+
+      .border-values {
+        background: #444;
       }
 
       .editable-value {
@@ -79,25 +85,33 @@ export class BoxModelDisplay extends BaseElementBlock {
         color: rgba(255, 255, 255, 0.6);
       }
 
-      .margin-top {
+      .margin-top,
+      .border-top,
+      .padding-top {
         top: -10px;
         left: 50%;
         transform: translateX(-50%);
       }
 
-      .margin-right {
+      .margin-right,
+      .border-right,
+      .padding-right {
         right: -10px;
         top: 50%;
         transform: translateY(-50%);
       }
 
-      .margin-bottom {
+      .margin-bottom,
+      .border-bottom,
+      .padding-bottom {
         bottom: -10px;
         left: 50%;
         transform: translateX(-50%);
       }
 
-      .margin-left {
+      .margin-left,
+      .border-left,
+      .padding-left {
         left: -10px;
         top: 50%;
         transform: translateY(-50%);
@@ -119,43 +133,6 @@ export class BoxModelDisplay extends BaseElementBlock {
         font-weight: 500;
       }
 
-      .border-values {
-        position: absolute;
-        background: #444;
-        color: white;
-        border-radius: 10px;
-        width: 30px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-      }
-
-      .border-top {
-        top: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .border-right {
-        right: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
-      .border-bottom {
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .border-left {
-        left: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
       .padding-container {
         background-color: var(--box-model-padding-bg, #b8b8d1);
         border-radius: 3px;
@@ -170,43 +147,6 @@ export class BoxModelDisplay extends BaseElementBlock {
         color: #333;
         font-size: 11px;
         font-weight: 500;
-      }
-
-      .padding-values {
-        position: absolute;
-        background: #666;
-        color: white;
-        border-radius: 10px;
-        width: 30px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-      }
-
-      .padding-top {
-        top: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .padding-right {
-        right: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
-      .padding-bottom {
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .padding-left {
-        left: -10px;
-        top: 50%;
-        transform: translateY(-50%);
       }
 
       .content-box {
