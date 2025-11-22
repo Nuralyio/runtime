@@ -18,7 +18,9 @@ export const pagesMenu = {
     "--nuraly-menu-focus-color": "#5393f8",
     "margin-left": "13px",
     "margin-top": "11px",
-    "--nuraly-menu-link-padding-medium": "4px"
+    "--nuraly-menu-link-padding-medium": "4px",
+    "height": "39vh",
+    "overflow-y": "auto"
   },
   input: {
     arrowPosition: {
