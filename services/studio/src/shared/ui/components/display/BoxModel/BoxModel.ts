@@ -1,9 +1,8 @@
 import type { ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import { BaseElementBlock } from "@shared/ui/components/base/BaseElement";
 import { css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { handleComponentEvent } from "@shared/ui/components/base/BaseElement/execute-event.helpers.ts";
-import "@nuralyui/label";
 
 @customElement("box-model-display")
 export class BoxModelDisplay extends BaseElementBlock {
@@ -236,39 +235,8 @@ export class BoxModelDisplay extends BaseElementBlock {
     `,
   ];
 
-  @property()
+  @property({ type: Object })
   component: ComponentElement;
-
-  @state()
-  boxModel = {
-    margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    border: { top: 0, right: 0, bottom: 0, left: 0 },
-    padding: { top: 0, right: 0, bottom: 0, left: 0 },
-    width: 0,
-    height: 0,
-  };
-
-  constructor() {
-    super();
-    this.registerCallback("value", (value) => {
-      if (value) {
-        this.boxModel = {
-          margin: value.margin || { top: 0, right: 0, bottom: 0, left: 0 },
-          border: value.border || { top: 0, right: 0, bottom: 0, left: 0 },
-          padding: value.padding || { top: 0, right: 0, bottom: 0, left: 0 },
-          width: value.width || 0,
-          height: value.height || 0,
-        };
-        this.requestUpdate();
-      }
-    });
-  }
-
-  private parseValue(value: string | undefined): number {
-    if (!value) return 0;
-    const numeric = parseFloat(value);
-    return isNaN(numeric) ? 0 : Math.round(numeric);
-  }
 
   private handleValueChange(property: string, event: Event) {
     const div = event.target as HTMLDivElement;
@@ -334,7 +302,18 @@ export class BoxModelDisplay extends BaseElementBlock {
     const numericValue = text.replace(/[^0-9]/g, '');
 
     if (numericValue) {
-      document.execCommand('insertText', false, numericValue);
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        const textNode = document.createTextNode(numericValue);
+        range.insertNode(textNode);
+        // Move cursor to end of inserted text
+        range.setStartAfter(textNode);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }
   }
 
@@ -385,25 +364,23 @@ export class BoxModelDisplay extends BaseElementBlock {
       `;
     }
 
+    // Handler returns objects with {value: number, unit: string} structure
     const margin = {
-      top: this.parseValue(handlers?.["margin-top"]?.value) || 0,
-      right: this.parseValue(handlers?.["margin-right"]?.value) || 0,
-      bottom: this.parseValue(handlers?.["margin-bottom"]?.value) || 0,
-      left: this.parseValue(handlers?.["margin-left"]?.value) || 0,
+      top: handlers?.["margin-top"]?.value || 0,
+      right: handlers?.["margin-right"]?.value || 0,
+      bottom: handlers?.["margin-bottom"]?.value || 0,
+      left: handlers?.["margin-left"]?.value || 0,
     };
 
     const padding = {
-      top: this.parseValue(handlers?.["padding-top"]?.value) || 0,
-      right: this.parseValue(handlers?.["padding-right"]?.value) || 0,
-      bottom: this.parseValue(handlers?.["padding-bottom"]?.value) || 0,
-      left: this.parseValue(handlers?.["padding-left"]?.value) || 0,
+      top: handlers?.["padding-top"]?.value || 0,
+      right: handlers?.["padding-right"]?.value || 0,
+      bottom: handlers?.["padding-bottom"]?.value || 0,
+      left: handlers?.["padding-left"]?.value || 0,
     };
 
-    // Parse border from border style (e.g., "1px solid #000")
-    const borderValue = handlers?.["border"]?.value || "0";
-    const borderWidth = this.parseValue(
-      typeof borderValue === "string" ? borderValue.split(" ")[0] : "0"
-    );
+    // Border handler also returns {value: number, unit: string}
+    const borderWidth = handlers?.["border"]?.value || 0;
 
     const border = {
       top: borderWidth,
@@ -412,9 +389,9 @@ export class BoxModelDisplay extends BaseElementBlock {
       left: borderWidth,
     };
 
-    // Get width and height from component
-    const width = this.parseValue(handlers?.["width"]?.value) || 0;
-    const height = this.parseValue(handlers?.["height"]?.value) || 0;
+    // Get width and height from handler (already numeric values)
+    const width = handlers?.["width"]?.value || 0;
+    const height = handlers?.["height"]?.value || 0;
 
     return html`
       <div class="box-model-container">
@@ -426,10 +403,10 @@ export class BoxModelDisplay extends BaseElementBlock {
 
         <div class="border-container">
           <div class="border-label">border</div>
-          <div class="border-values border-top">${this.createEditableValue(border.top, "border")}</div>
-          <div class="border-values border-right">${this.createEditableValue(border.right, "border")}</div>
-          <div class="border-values border-bottom">${this.createEditableValue(border.bottom, "border")}</div>
-          <div class="border-values border-left">${this.createEditableValue(border.left, "border")}</div>
+          <div class="border-values border-top">${this.createEditableValue(border.top, "border-top")}</div>
+          <div class="border-values border-right">${this.createEditableValue(border.right, "border-right")}</div>
+          <div class="border-values border-bottom">${this.createEditableValue(border.bottom, "border-bottom")}</div>
+          <div class="border-values border-left">${this.createEditableValue(border.left, "border-left")}</div>
 
           <div class="padding-container">
             <div class="padding-label">padding</div>
