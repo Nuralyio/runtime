@@ -67,129 +67,129 @@ export default [
                 if(selectedComponent) { 
                     const componentConfigs = {
                         "text_label": {
-                            parameters: ["text_label_properties_collapse"],
+                            parameters: ["text_label_properties_collapse", "box_model_vertical_container"],
                             handlers: ["text_label_handler"],
                             themes: ["text_label_theme_container"]
                         },
                         "text_input": {
-                            parameters: ["text_input_blocks"],
+                            parameters: ["text_input_blocks", "box_model_vertical_container"],
                             handlers: ["studio_text_input_handler"],
                             themes: ["text_input_icon_theme_container"]
                         },
                         "Textarea": {
-                            parameters: ["textarea_blocks"],
+                            parameters: ["textarea_blocks", "box_model_vertical_container"],
                             handlers: ["studio_textarea_handler"],
                             themes: ["textarea_theme_container"]
                         },
                         "Slider": {
-                            parameters: ["slider_blocks"],
+                            parameters: ["slider_blocks", "box_model_vertical_container"],
                             handlers: ["studio_slider_handler"],
                             themes: ["slider_theme_container"]
                         },
                         "button_input": {
-                            parameters: ["button_blocks"],
+                            parameters: ["button_blocks", "box_model_vertical_container"],
                             handlers: ["studio_button_handler"],
                             themes: ["studio_button_theme_container"]
                         },
                         "checkbox": {
-                            parameters: ["checkbox_blocks"],
+                            parameters: ["checkbox_blocks", "box_model_vertical_container"],
                             handlers: ["studio_checkbox_handler"],
                             themes: ["checkbox_button_theme_container"]
                         },
                         "Image": {
-                            parameters: ["image_blocks"],
+                            parameters: ["image_blocks", "box_model_vertical_container"],
                             handlers: ["studio_image_handler"]
                         },
                         "Datepicker": {
-                            parameters: ["datepicker_block"],
+                            parameters: ["datepicker_block", "box_model_vertical_container"],
                             handlers: ["studio_datepicker_handler"],
                             themes: ["studio_datepicker_theme_container"]
                         },
                         "select": {
-                            parameters: ["select_blocks"],
+                            parameters: ["select_blocks", "box_model_vertical_container"],
                             handlers: ["studio_select_handler"],
                             themes: ["studio_select_theme_container"]
                         },
                         "Table": {
-                            parameters: ["table_fields_collapse_container", "table_blocks"],
+                            parameters: ["table_fields_collapse_container", "table_blocks", "box_model_vertical_container"],
                             handlers: ["studio_table_handler"],
                             themes: ["select_component_text"]
                         },
                         "Icon": {
-                            parameters: ["icon_blocks"],
+                            parameters: ["icon_blocks", "box_model_vertical_container"],
                             handlers: ["studio_icon_handler"],
                             themes: ["studio_icon_theme_container"]
                         },
                         "Badge": {
-                            parameters: ["badge_blocks"],
+                            parameters: ["badge_blocks", "box_model_vertical_container"],
                             handlers: ["studio_badge_handler"],
                             themes: ["badge_theme_container"]
                         },
                         "Tag": {
-                            parameters: ["tag_blocks"],
+                            parameters: ["tag_blocks", "box_model_vertical_container"],
                             handlers: ["studio_tag_handler"],
                             themes: ["tag_theme_container"]
                         },
                         "vertical-container-block": {
-                            parameters: ["container_blocks"],
+                            parameters: ["container_blocks", "box_model_vertical_container"],
                             handlers: ["studio_container_handler"],
                             themes: ["studio_container_theme_container"]
                         },
                         "Card": {
-                            parameters: ["card_blocks"],
+                            parameters: ["card_blocks", "box_model_vertical_container"],
                             handlers: ["studio_card_handler"],
                             themes: ["card_theme_container"]
                         },
                         "Collection": {
-                            parameters: ["collection_blocks"],
+                            parameters: ["collection_blocks", "box_model_vertical_container"],
                             handlers: ["studio_collection_handler"]
                         },
                         "RefComponent": {
-                            parameters: ["ref_component_blocks"],
+                            parameters: ["ref_component_blocks", "box_model_vertical_container"],
                             handlers: ["studio_ref_component_handler"],
                             themes: ["studio_ref_component_theme_container"]
                         },
                         "code-block": {
-                            parameters: ["code_blocks"]
+                            parameters: ["code_blocks", "box_model_vertical_container"]
                         },
                         "rich-text": {
-                            parameters: ["rich_text_blocks"],
+                            parameters: ["rich_text_blocks", "box_model_vertical_container"],
                             handlers: ["studio_rich_text_handler"],
                             themes: ["studio_rich_text_theme_container"]
                         },
                         "rich-text-editor": {
-                            parameters: ["rich_text_editor_blocks"],
+                            parameters: ["rich_text_editor_blocks", "box_model_vertical_container"],
                             handlers: ["studio_rich_text_editor_handler"],
                             themes: ["studio_rich_text_editor_theme_container"]
                         },
                         "menu": {
-                            parameters: ["menu_blocks"],
+                            parameters: ["menu_blocks", "box_model_vertical_container"],
                             handlers: ["studio_menu_handler"],
                             themes: ["studio_menu_theme_container"]
                         },
                         "dropdown": {
-                            parameters: ["dropdown_blocks"],
+                            parameters: ["dropdown_blocks", "box_model_vertical_container"],
                             handlers: ["studio_dropdown_handler"],
                             themes: ["studio_dropdown_theme_container"]
                         },
                         "embed-url": {
-                            parameters: ["embed_collapse_container"]
+                            parameters: ["embed_collapse_container", "box_model_vertical_container"]
                         },
                         "link": {
-                            parameters: ["link_collapse_container"],
+                            parameters: ["link_collapse_container", "box_model_vertical_container"],
                             handlers: ["studio_link_handler"],
                             themes: ["studio_link_theme_container"]
                         },
                         "file-upload": {
-                            parameters: ["FileUpload_input_collapse_container"],
+                            parameters: ["FileUpload_input_collapse_container", "box_model_vertical_container"],
                             handlers: ["studio_FileUpload_handler"]
                         },
                         "video": {
-                            parameters: ["video_collapse_container"],
+                            parameters: ["video_collapse_container", "box_model_vertical_container"],
                             handlers: ["studio_video_handler"]
                         },
                         "document": {
-                            parameters: ["document_collapse_container"],
+                            parameters: ["document_collapse_container", "box_model_vertical_container"],
                             handlers: ["studio_document_handler"]
                         }
                     };
