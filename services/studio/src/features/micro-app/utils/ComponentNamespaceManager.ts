@@ -81,7 +81,7 @@ export class ComponentNamespaceManager {
   /**
    * Check if name belongs to this micro-app
    */
-  belongsToThis MicroApp(name: string): boolean {
+  belongsToThisMicroApp(name: string): boolean {
     const microAppId = ComponentNamespaceManager.extractMicroAppId(name)
     return microAppId === this.microAppId
   }
