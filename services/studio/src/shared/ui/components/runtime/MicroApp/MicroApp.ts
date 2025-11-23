@@ -73,8 +73,24 @@ export class MicroApp extends LitElement {
    * Hook `updated()` de LitElement : déclenché lorsque les propriétés changent.
    */
   override updated(changedProperties: Map<string, any>): void {
-    // Re-initialize if uuid property changes and becomes defined
-    if (changedProperties.has("uuid") && this.uuid) {
+    // Handle isolated context initialization when pre-loaded data is provided
+    if (this.useIsolatedContext) {
+      // Check if appComponents or appPages were just set
+      const dataJustProvided = (
+        (changedProperties.has("appComponents") && this.appComponents) ||
+        (changedProperties.has("appPages") && this.appPages)
+      );
+
+      // Initialize isolated context if data was just provided and not initialized yet
+      if (dataJustProvided && !this.storeContext) {
+        console.log('[MicroApp] Pre-loaded data detected, initializing isolated context...');
+        this.initializeIsolatedContext();
+        return;
+      }
+    }
+
+    // Legacy mode: Re-initialize if uuid property changes and becomes defined
+    if (!this.useIsolatedContext && changedProperties.has("uuid") && this.uuid) {
       this.initializeAppComponents();
     }
 
@@ -99,7 +115,14 @@ export class MicroApp extends LitElement {
 
     // Initialize isolated context if feature is enabled
     if (this.useIsolatedContext) {
-      this.initializeIsolatedContext();
+      // Only initialize now if we have pre-loaded data
+      // Otherwise, wait for properties to be set (handled in updated())
+      if (this.appComponents || this.appPages) {
+        console.log('[MicroApp] Initializing with pre-loaded data in connectedCallback');
+        this.initializeIsolatedContext();
+      } else {
+        console.log('[MicroApp] Waiting for pre-loaded data to be set...');
+      }
     } else {
       // Legacy mode
       this.setupSubscriptions();
@@ -298,6 +321,12 @@ private initializeAppComponents(): void {
       // 9. Register components in runtime
       this.runtimeContext.registerComponents();
 
+      // 9.5. Sync components to global store so Container can find children
+      // This is needed because Container.ts looks up children in the global $components store
+      const componentsWithChildren = this.storeContext.getComponents();
+      $components.setKey(this.uuid, componentsWithChildren);
+      console.log(`[MicroApp] Synced ${componentsWithChildren.length} components to global store for child lookup`);
+
       // 10. Setup subscriptions to isolated stores
       this.setupIsolatedSubscriptions();
 
@@ -313,6 +342,10 @@ private initializeAppComponents(): void {
 
       console.log(`[MicroApp] Initialization complete for ${this.microAppId}`);
       console.log('[MicroApp] Debug info:', this.storeContext.getDebugInfo());
+      console.log('[MicroApp] Components to render:', this.componentsToRender);
+
+      // Trigger re-render now that initialization is complete
+      this.requestUpdate();
 
     } catch (error) {
       console.error(`[MicroApp] Failed to initialize isolated context:`, error);

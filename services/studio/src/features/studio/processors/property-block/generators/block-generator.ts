@@ -66,21 +66,17 @@ export class BlockGenerator {
     if (blockConfig.includeCommonProperties && blockConfig.includeCommonProperties.length > 0) {
       const commonComponents: any[] = [];
       
-      console.log(`[Block Generator] Processing includeCommonProperties for ${blockName}:`, blockConfig.includeCommonProperties);
       
       for (const commonBlockUuid of blockConfig.includeCommonProperties) {
         const commonBlock = getCommonPropertyBlock(commonBlockUuid);
         
         if (commonBlock && commonBlock.length > 0) {
-          console.log(`[Block Generator] Found common block "${commonBlockUuid}" with ${commonBlock.length} components`);
-          // Add all components from the common block
           commonComponents.push(...commonBlock);
         } else {
           console.warn(`Common property block "${commonBlockUuid}" not found or empty`);
         }
       }
       
-      console.log(`[Block Generator] Total components: ${components.length} + ${commonComponents.length} common = ${components.length + commonComponents.length}`);
       
       // Append common components to the generated components
       return [...components, ...commonComponents];
