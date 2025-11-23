@@ -6,7 +6,8 @@ import { v4 as uuidv4 } from "uuid"; // Import UUID package
 export function generateDynamicContainer(
   mainUuid: string,
   childrenIds: string[],
-  collapseUuid: string = uuidv4()
+  collapseUuid: string = uuidv4(),
+  collapseLabel: string = "Properties"
 ) {
   return [
     {
@@ -24,15 +25,33 @@ export function generateDynamicContainer(
       uuid: collapseUuid,
       application_id: "1",
       name: collapseUuid,
-      component_type: ComponentType.Container,
+      component_type: ComponentType.Collapse,
       style: {
+        marginTop: "16px",
+        marginBottom: "16px",
+        "--nuraly-spacing-collapse-padding": "0px",
+        "--nuraly-spacing-collapse-content-padding": "0px",
+        "--nuraly-shadow-collapse-hover": "none",
+        "--nuraly-border-radius-collapse": "0",
+        "--nuraly-border-radius-collapse-header": "0"
       },
-      childrenIds: [
-        "input_text_label_collapse",
-        `${collapseUuid}_children`
-      ]
+      input: {
+        size: {
+          type: "string",
+          value: "small"
+        },
+        components: {
+          type: "array",
+          value: [{
+            blockName: `${collapseUuid}_children`,
+            label: collapseLabel,
+            open: true
+          }]
+        }
+      },
+      childrenIds: [`${collapseUuid}_children`]
     },
-  
+
     {
       uuid: `${collapseUuid}_children`,
       application_id: "1",
