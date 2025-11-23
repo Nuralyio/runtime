@@ -160,7 +160,7 @@ export class VariableScopeManager {
     const { scope, name } = this.parseVarName(varName)
 
     // Determine target scope: use explicit scope if provided, otherwise resolve from current state
-    const targetScope = scope !== null ? scope : this.resolveScope(name)
+    const targetScope = scope ?? this.resolveScope(name)
     const descriptor = this.getDescriptorFromScope(name, targetScope)
 
     if (descriptor) {
