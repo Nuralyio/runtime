@@ -14,6 +14,9 @@ import { MicroAppMessageBus } from '../messaging/MicroAppMessageBus'
 import { $components } from '@shared/redux/store/component/store'
 import { $pages } from '@shared/redux/store/page'
 
+// Forward declaration to avoid circular dependency
+type MicroAppPageManager = import('./MicroAppPageManager').MicroAppPageManager
+
 export interface ComponentStore {
   [key: string]: ComponentElement[]
 }
@@ -51,7 +54,7 @@ export class MicroAppStoreContext {
   private messageBus: MicroAppMessageBus
 
   // Page manager (set after initialization for handler access)
-  private _pageManager?: any
+  private _pageManager?: MicroAppPageManager
 
   // Subscriptions for cleanup
   private subscriptions: Set<() => void> = new Set()
@@ -264,14 +267,14 @@ export class MicroAppStoreContext {
   /**
    * Set page manager reference (for handler access)
    */
-  setPageManager(pageManager: any): void {
+  setPageManager(pageManager: MicroAppPageManager): void {
     this._pageManager = pageManager
   }
 
   /**
    * Get page manager reference
    */
-  getPageManager(): any {
+  getPageManager(): MicroAppPageManager | undefined {
     return this._pageManager
   }
 
