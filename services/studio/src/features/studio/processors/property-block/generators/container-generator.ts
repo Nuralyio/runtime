@@ -33,7 +33,7 @@ export class ContainerGenerator {
         marginTop: "16px",
         marginBottom: "16px",
         "--nuraly-spacing-collapse-padding": "0px",
-        "--nuraly-spacing-collapse-content-padding": "0px",
+        "--nuraly-spacing-collapse-content-padding": "6px",
         "--nuraly-shadow-collapse-hover": "none",
         "--nuraly-border-radius-collapse": "0",
         "--nuraly-border-radius-collapse-header": "0",
