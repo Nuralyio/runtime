@@ -22,18 +22,37 @@ export class ContainerGenerator {
   }
   
   static generateCollapseContainer(blockConfig: BlockConfig, blockName: string): any {
-    const childrenIds = [
-      "divider",
-      `${blockName}_text_label_collapse`,
-      `${blockName}_collapse_container_childrens`
-    ];
+    const childrenIds = [`${blockName}_collapse_container_childrens`];
 
     return {
       uuid: blockConfig.collapse.uuid,
       application_id: "1",
       name: `${blockName} collapse`,
-      component_type: ComponentType.Container,
-      style: blockConfig.collapse.style,
+      component_type: ComponentType.Collapse,
+      style: {
+        marginTop: "16px",
+        marginBottom: "16px",
+        "--nuraly-spacing-collapse-padding": "0px",
+        "--nuraly-spacing-collapse-content-padding": "0px",
+        "--nuraly-shadow-collapse-hover": "none",
+        "--nuraly-border-radius-collapse": "0",
+        "--nuraly-border-radius-collapse-header": "0",
+        ...blockConfig.collapse.style
+      },
+      input: {
+        size: {
+          type: "string",
+          value: "small"
+        },
+        components: {
+          type: "array",
+          value: [{
+            blockName: `${blockName}_collapse_container_childrens`,
+            label: blockConfig.collapse.title,
+            open: true
+          }]
+        }
+      },
       childrenIds
     };
   }
