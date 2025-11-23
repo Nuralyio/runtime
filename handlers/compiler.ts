@@ -161,6 +161,7 @@ export const HANDLER_PARAMETERS = [
   "console",
   "UploadFile",
   "BrowseFiles",
+  "Instance",
 ] as const;
 
 /**
