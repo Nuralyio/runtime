@@ -70,9 +70,11 @@ export class MicroApp extends LitElement {
   }
 
   /**
-   * Hook `updated()` de LitElement : déclenché lorsque les propriétés changent.
+   * Hook `willUpdate()` de LitElement : déclenché avant le rendu.
    */
-  override updated(changedProperties: Map<string, any>): void {
+  override willUpdate(changedProperties: Map<string, any>): void {
+    super.willUpdate(changedProperties);
+
     // Handle isolated context initialization when pre-loaded data is provided
     if (this.useIsolatedContext) {
       // Check if appComponents or appPages were just set
@@ -96,7 +98,6 @@ export class MicroApp extends LitElement {
     if (changedProperties.has("components") || changedProperties.has("componentToRenderUUID")|| changedProperties.has("page_uuid")) {
       this.updateComponentsToRender();
     }
-
   }
 
   /**
@@ -174,7 +175,6 @@ private initializeAppComponents(): void {
         $components.setKey(this.uuid, components);
         this.refreshComponent();
         this.updateComponentsToRender();
-        this.requestUpdate();
       })
       .catch((error) => {
         console.error('Error fetching components:', error);
@@ -188,7 +188,6 @@ private initializeAppComponents(): void {
       .then((data) => {
         this.page = data[0];
         this.setPageStyle();
-        this.requestUpdate();
       })
       .catch((error) => {
         console.error('Error fetching pages:', error);
@@ -196,7 +195,7 @@ private initializeAppComponents(): void {
 
   } else {
 
-    if (window.__URL__) {
+    if (typeof window !== 'undefined' && window.__URL__) {
       const page = $applicationPages(this.uuid)
         .get()
         .find((page: PageElement) => page.url === window.__URL__)?.uuid;
@@ -333,9 +332,6 @@ private initializeAppComponents(): void {
 
       EditorInstance.setEditorMode(this.prod);
 
-      // Trigger re-render now that initialization is complete
-      this.requestUpdate();
-
     } catch (error) {
       console.error(`[MicroApp] Failed to initialize isolated context:`, error);
     }
@@ -368,14 +364,12 @@ private initializeAppComponents(): void {
     // Subscribe to component changes
     const componentsUnsub = this.storeContext.$components.subscribe(() => {
       this.refreshIsolatedComponents();
-      this.requestUpdate();
     });
     this.subscription.add(componentsUnsub);
 
     // Subscribe to page changes
     const pagesUnsub = this.storeContext.$pages.subscribe(() => {
       this.pageManager?.reloadPages();
-      this.requestUpdate();
     });
     this.subscription.add(pagesUnsub);
   }
