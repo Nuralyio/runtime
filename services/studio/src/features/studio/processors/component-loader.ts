@@ -151,7 +151,7 @@ export function loadComponentProperties(
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: [metadata.childrenIds]
+    childrenIds: metadata.childrenIds
   };
 
   // Combine all components
