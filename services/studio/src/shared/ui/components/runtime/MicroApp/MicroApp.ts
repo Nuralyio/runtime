@@ -1,3 +1,4 @@
+
 import { $applicationComponents, $components } from "@shared/redux/store/component/store";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
@@ -35,7 +36,7 @@ export class MicroApp extends LitElement {
   @property({ type: String, reflect: true }) componentToRenderUUID?: string;
   @property({ type: String, reflect: false }) mode: ViewMode = ViewMode.Preview;
   @property({ type: Boolean, reflect: false }) prod = true;
-  @property({ type: Boolean, reflect: false }) useIsolatedContext: boolean = true; // Feature flag
+  @property({ type: Boolean, reflect: false }) useIsolatedContext: boolean = false; // Feature flag
 
   // Pre-loaded app data (optional - avoids loading step)
   @property({ type: Array, reflect: false }) appComponents?: any[];
