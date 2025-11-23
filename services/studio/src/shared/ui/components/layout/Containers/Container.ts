@@ -35,8 +35,8 @@ export class VerticalContainer extends BaseElementBlock {
     this.updateChildrenComponents();
   }
 
-  override updated(changedProperties: Map<string, any>) {
-    super.updated(changedProperties);
+  override willUpdate(changedProperties: Map<string, any>) {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("component")) {
       this.updateChildrenComponents();
     }

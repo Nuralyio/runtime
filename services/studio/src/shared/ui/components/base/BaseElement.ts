@@ -279,21 +279,18 @@ export class BaseElementBlock extends LitElement {
   }
 
   /**
-   * Handles component updates
-   * 
+   * Handles component updates before rendering
+   *
    * @param {PropertyValueMap<any>} changedProperties - Map of changed properties
    * @override
    */
-  override async update(changedProperties) {
-    super.update(changedProperties);
+  override willUpdate(changedProperties) {
+    super.willUpdate(changedProperties);
 
-    changedProperties.forEach((_old, prop) => {
-      if (prop !== "component") return;
-
+    if (changedProperties.has("component")) {
       const prev = changedProperties.get("component");
       const curr = this.component;
 
-     
       if (prev?.event?.onInit !== curr?.event?.onInit) {
         executeHandler(curr, getNestedAttribute(curr, "event.onInit"), {}, this.item);
       }
@@ -311,7 +308,7 @@ export class BaseElementBlock extends LitElement {
         // Re-process handlers even if UUID hasn't changed
         // This ensures property updates in the studio are reflected
       }
-    });
+    }
   }
 
   /**
@@ -369,7 +366,6 @@ export class BaseElementBlock extends LitElement {
     this.subscription.add(
       $runtimeStylescomponentStyleByID(this.uniqueUUID).subscribe((styles) => {
         this.runtimeStyles = styles;
-        this.requestUpdate();
       })
     );
     this.subscription.add(
@@ -406,7 +402,6 @@ export class BaseElementBlock extends LitElement {
         setTimeout(() => {
           this.traitInputsHandlers();
           this.traitStylesHandlers();
-          this.requestUpdate();
         }, 0);
       })
     );
