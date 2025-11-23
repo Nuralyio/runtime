@@ -21,16 +21,18 @@
     "properties": [
       {
         "name": "direction",
-        "label": "Type",
+        "label": "Direction",
         "type": "select",
-        "default": "default",
+        "default": "row",
         "width": "180px",
         "placeholder": "Direction",
         "options": [
-          { "label": "vertical", "value": "vertical" },
-          { "label": "horizontal", "value": "horizontal" }
+          { "label": "Row", "value": "row" },
+          { "label": "Row Reverse", "value": "row-reverse" },
+          { "label": "Column", "value": "column" },
+          { "label": "Column Reverse", "value": "column-reverse" }
         ],
-        "valueHandler": { "ref": "componentInputSelect", "params": ["direction", "default"] },
+        "valueHandler": { "ref": "componentInputSelect", "params": ["direction", "row"] },
         "stateHandler": { "ref": "inputHandler", "params": ["direction"] },
         "eventHandlers": {
           "changed": { "ref": "updateInput", "params": ["direction", "value"] }

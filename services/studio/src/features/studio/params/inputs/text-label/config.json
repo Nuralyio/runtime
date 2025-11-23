@@ -68,8 +68,10 @@
         "width": "180px",
         "options": [
           { "label": "Default", "value": "default" },
-          { "label": "Primary", "value": "primary" },
-          { "label": "Secondary", "value": "secondary" }
+          { "label": "Secondary", "value": "secondary" },
+          { "label": "Success", "value": "success" },
+          { "label": "Warning", "value": "warning" },
+          { "label": "Error", "value": "error" }
         ],
         "valueHandler": {
           "ref": "componentInput",

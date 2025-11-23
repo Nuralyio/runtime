@@ -20,41 +20,135 @@
     },
     "properties": [
       {
-        "name": "icon",
-        "label": "Icon",
+        "name": "name",
+        "label": "Icon Name",
         "type": "icon",
         "default": "",
         "width": "100%",
         "placeholder": "Choose an icon",
         "valueHandler": {
           "ref": "componentInput",
-          "params": ["icon"]
+          "params": ["name"]
         },
         "eventHandlers": {
           "iconChanged": {
             "ref": "updateInput",
-            "params": ["icon", "string"]
+            "params": ["name", "string"]
           }
         }
       },
       {
-        "name": "iconColor",
+        "name": "size",
+        "label": "Size",
+        "type": "select",
+        "default": "medium",
+        "width": "100%",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" },
+          { "label": "X-Large", "value": "xlarge" },
+          { "label": "XX-Large", "value": "xxlarge" }
+        ],
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["size"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["size"]
+        },
+        "eventHandlers": {
+          "changed": {
+            "ref": "updateInput",
+            "params": ["size", "string"]
+          }
+        }
+      },
+      {
+        "name": "color",
         "label": "Icon Color",
         "type": "color",
         "default": "",
         "width": "100%",
         "valueHandler": {
-          "ref": "componentStyleSelect",
-          "params": ["--nuraly-icon-color"]
+          "ref": "componentInput",
+          "params": ["color"]
         },
         "stateHandler": {
-          "ref": "componentStyleSelect",
-          "params": ["--nuraly-icon-color"]
+          "ref": "inputHandler",
+          "params": ["color"]
         },
         "eventHandlers": {
-          "colorChange": {
-            "ref": "componentStyleSelect",
-            "params": ["--nuraly-icon-color", "EventData.value"]
+          "changed": {
+            "ref": "updateInput",
+            "params": ["color", "string"]
+          }
+        }
+      },
+      {
+        "name": "width",
+        "label": "Width",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "e.g., 24px, 2rem",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["width"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["width"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["width", "value"]
+          }
+        }
+      },
+      {
+        "name": "height",
+        "label": "Height",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "e.g., 24px, 2rem",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["height"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["height"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["height", "value"]
+          }
+        }
+      },
+      {
+        "name": "alt",
+        "label": "Alt Text",
+        "type": "text",
+        "default": "",
+        "width": "100%",
+        "placeholder": "Accessibility text",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["alt"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["alt"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["alt", "value"]
           }
         }
       }

@@ -1,178 +1,187 @@
-[
-  {
-    "name": "Dark Mode",
-    "open": true,
-    "items": [
+{
+  "theme": {
+    "modes": [
       {
-        "name": "General",
+        "name": "Colors",
+        "open": true,
         "items": [
-          { 
-            "label": "Background Color", 
-            "cssVar": "--nuraly-datepicker-background-color",
-            "type": "color"
+          {
+            "name": "Base Colors",
+            "open": true,
+            "items": [
+              { "label": "Background Color", "cssVar": "--nuraly-datepicker-local-background-color", "type": "color", "defaultValue": "#ffffff" },
+              { "label": "Text Color", "cssVar": "--nuraly-datepicker-local-text-color", "type": "color", "defaultValue": "#000000" },
+              { "label": "Border Color", "cssVar": "--nuraly-datepicker-local-border-color", "type": "color", "defaultValue": "#d9d9d9" },
+              { "label": "Primary Color", "cssVar": "--nuraly-datepicker-local-primary-color", "type": "color", "defaultValue": "#1677ff" }
+            ]
           },
-          { 
-            "label": "Text Color", 
-            "cssVar": "--nuraly-datepicker-button-text-color",
-            "type": "color"
-          }
-        ],
-        "open": true
-      },
-      {
-        "name": "Hover",
-        "items": [
-          { 
-            "label": "Day Container Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-day-container-hover-background-color",
-            "type": "color"
+          {
+            "name": "Selection Colors",
+            "open": false,
+            "items": [
+              { "label": "Selected Color", "cssVar": "--nuraly-datepicker-local-selected-color", "type": "color", "defaultValue": "#1677ff" },
+              { "label": "Selected Text Color", "cssVar": "--nuraly-datepicker-local-selected-text-color", "type": "color", "defaultValue": "#ffffff" },
+              { "label": "Hover Color", "cssVar": "--nuraly-datepicker-local-hover-color", "type": "color", "defaultValue": "#f5f5f5" },
+              { "label": "Today Color", "cssVar": "--nuraly-datepicker-local-today-color", "type": "color", "defaultValue": "#1677ff" },
+              { "label": "Range Color", "cssVar": "--nuraly-datepicker-local-range-color", "type": "color", "defaultValue": "rgba(22, 119, 255, 0.1)" }
+            ]
           },
-          { 
-            "label": "Month Container Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-month-container-hover-background-color",
-            "type": "color"
+          {
+            "name": "State Colors",
+            "open": false,
+            "items": [
+              { "label": "Disabled Color", "cssVar": "--nuraly-datepicker-local-disabled-color", "type": "color", "defaultValue": "#f5f5f5" },
+              { "label": "Disabled Text Color", "cssVar": "--nuraly-datepicker-local-disabled-text-color", "type": "color", "defaultValue": "#bfbfbf" },
+              { "label": "Error Color", "cssVar": "--nuraly-datepicker-local-error-color", "type": "color", "defaultValue": "#da1e28" },
+              { "label": "Warning Color", "cssVar": "--nuraly-datepicker-local-warning-color", "type": "color", "defaultValue": "#f0c300" },
+              { "label": "Success Color", "cssVar": "--nuraly-datepicker-local-success-color", "type": "color", "defaultValue": "#24a148" }
+            ]
           },
-          { 
-            "label": "Year Container Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-year-container-hover-background-color",
-            "type": "color"
-          }
-        ],
-        "open": false
-      },
-      {
-        "name": "Active",
-        "items": [
-          { 
-            "label": "Current Day/Month/Year Background Color", 
-            "cssVar": "--nuraly-datepicker-current-day-month-year-background-color",
-            "type": "color"
+          {
+            "name": "Input Colors",
+            "open": false,
+            "items": [
+              { "label": "Input Background", "cssVar": "--nuraly-datepicker-local-input-background", "type": "color", "defaultValue": "#ffffff" },
+              { "label": "Input Border Color", "cssVar": "--nuraly-datepicker-local-input-border-color", "type": "color", "defaultValue": "#d9d9d9" },
+              { "label": "Input Focus Border Color", "cssVar": "--nuraly-datepicker-local-input-focus-border-color", "type": "color", "defaultValue": "#1677ff" },
+              { "label": "Input Text Color", "cssVar": "--nuraly-datepicker-local-input-text-color", "type": "color", "defaultValue": "#000000" },
+              { "label": "Input Placeholder Color", "cssVar": "--nuraly-datepicker-local-input-placeholder-color", "type": "color", "defaultValue": "#bfbfbf" }
+            ]
           },
-          { 
-            "label": "Current Day/Month/Year Text Color", 
-            "cssVar": "--nuraly-datepicker-current-day-month-year-color",
-            "type": "color"
-          }
-        ],
-        "open": false
-      },
-      {
-        "name": "Invalid",
-        "items": [
-          { 
-            "label": "Day Invalid Color", 
-            "cssVar": "--nuraly-datepicker-day-invalid-color",
-            "type": "color"
-          },
-          { 
-            "label": "Day Invalid Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-day-invalid-hover-background-color",
-            "type": "color"
-          }
-        ],
-        "open": false
-      },
-      {
-        "name": "Today",
-        "items": [
-          { 
-            "label": "Today Text Color", 
-            "cssVar": "--nuraly-datepicker-today-color",
-            "type": "color"
-          },
-          { 
-            "label": "Today Underline Color", 
-            "cssVar": "--nuraly-datepicker-today-underline-color",
-            "type": "color"
-          }
-        ],
-        "open": false
-      }
-    ]
-  },
-  {
-    "name": "Light Mode",
-    "items": [
-      {
-        "name": "General",
-        "items": [
-          { 
-            "label": "Background Color", 
-            "cssVar": "--nuraly-datepicker-background-color",
-            "type": "color"
-          },
-          { 
-            "label": "Text Color", 
-            "cssVar": "--nuraly-datepicker-button-text-color",
-            "type": "color"
+          {
+            "name": "Calendar Colors",
+            "open": false,
+            "items": [
+              { "label": "Weekend Color", "cssVar": "--nuraly-datepicker-local-weekend-color", "type": "color", "defaultValue": "#ff4d4f" },
+              { "label": "Weekday Color", "cssVar": "--nuraly-datepicker-local-weekday-color", "type": "color", "defaultValue": "#8c8c8c" },
+              { "label": "Header Background", "cssVar": "--nuraly-datepicker-local-header-background", "type": "color", "defaultValue": "#ffffff" },
+              { "label": "Hover Background", "cssVar": "--nuraly-datepicker-local-hover-background", "type": "color", "defaultValue": "rgba(0, 0, 0, 0.04)" },
+              { "label": "Active Background", "cssVar": "--nuraly-datepicker-local-active-background", "type": "color", "defaultValue": "rgba(0, 0, 0, 0.06)" },
+              { "label": "Shadow Color", "cssVar": "--nuraly-datepicker-local-shadow-color", "type": "color", "defaultValue": "rgba(0, 0, 0, 0.1)" }
+            ]
           }
         ]
       },
       {
-        "name": "Hover",
+        "name": "Typography",
+        "open": false,
         "items": [
-          { 
-            "label": "Day Container Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-day-container-hover-background-color",
-            "type": "color"
-          },
-          { 
-            "label": "Month Container Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-month-container-hover-background-color",
-            "type": "color"
-          },
-          { 
-            "label": "Year Container Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-year-container-hover-background-color",
-            "type": "color"
-          }
+          { "label": "Font Family", "cssVar": "--nuraly-datepicker-local-font-family", "type": "text", "placeholder": "Inter, sans-serif", "defaultValue": "Inter, ui-sans-serif, system-ui" },
+          { "label": "Font Size", "cssVar": "--nuraly-datepicker-local-font-size", "type": "text", "placeholder": "14px", "defaultValue": "14px" },
+          { "label": "Font Weight", "cssVar": "--nuraly-datepicker-local-font-weight", "type": "text", "placeholder": "400", "defaultValue": "400" },
+          { "label": "Header Font Size", "cssVar": "--nuraly-datepicker-local-header-font-size", "type": "text", "placeholder": "16px", "defaultValue": "16px" },
+          { "label": "Header Font Weight", "cssVar": "--nuraly-datepicker-local-header-font-weight", "type": "text", "placeholder": "600", "defaultValue": "600" },
+          { "label": "Day Font Size", "cssVar": "--nuraly-datepicker-local-day-font-size", "type": "text", "placeholder": "14px", "defaultValue": "14px" },
+          { "label": "Input Font Size", "cssVar": "--nuraly-datepicker-local-input-font-size", "type": "text", "placeholder": "14px", "defaultValue": "14px" },
+          { "label": "Label Font Size", "cssVar": "--nuraly-datepicker-local-label-font-size", "type": "text", "placeholder": "14px", "defaultValue": "14px" },
+          { "label": "Helper Font Size", "cssVar": "--nuraly-datepicker-local-helper-font-size", "type": "text", "placeholder": "12px", "defaultValue": "12px" },
+          { "label": "Message Font Size", "cssVar": "--nuraly-datepicker-local-message-font-size", "type": "text", "placeholder": "12px", "defaultValue": "12px" }
         ]
       },
       {
-        "name": "Active",
+        "name": "Layout & Sizing",
+        "open": false,
         "items": [
-          { 
-            "label": "Current Day/Month/Year Background Color", 
-            "cssVar": "--nuraly-datepicker-current-day-month-year-background-color",
-            "type": "color"
-          },
-          { 
-            "label": "Current Day/Month/Year Text Color", 
-            "cssVar": "--nuraly-datepicker-current-day-month-year-color",
-            "type": "color"
-          }
+          { "label": "Width", "cssVar": "--nuraly-datepicker-local-width", "type": "text", "placeholder": "280px", "defaultValue": "280px" },
+          { "label": "Height", "cssVar": "--nuraly-datepicker-local-height", "type": "text", "placeholder": "auto", "defaultValue": "auto" },
+          { "label": "Calendar Width", "cssVar": "--nuraly-datepicker-local-calendar-width", "type": "text", "placeholder": "320px", "defaultValue": "320px" },
+          { "label": "Calendar Height", "cssVar": "--nuraly-datepicker-local-calendar-height", "type": "text", "placeholder": "auto", "defaultValue": "auto" },
+          { "label": "Day Size", "cssVar": "--nuraly-datepicker-local-day-size", "type": "text", "placeholder": "36px", "defaultValue": "36px" },
+          { "label": "Header Height", "cssVar": "--nuraly-datepicker-local-header-height", "type": "text", "placeholder": "56px", "defaultValue": "56px" },
+          { "label": "Icon Size", "cssVar": "--nuraly-datepicker-local-icon-size", "type": "text", "placeholder": "16px", "defaultValue": "16px" },
+          { "label": "Arrow Icon Size", "cssVar": "--nuraly-datepicker-local-arrow-icon-size", "type": "text", "placeholder": "12px", "defaultValue": "12px" }
         ]
       },
       {
-        "name": "Invalid",
+        "name": "Spacing",
+        "open": false,
         "items": [
-          { 
-            "label": "Day Invalid Color", 
-            "cssVar": "--nuraly-datepicker-day-invalid-color",
-            "type": "color"
-          },
-          { 
-            "label": "Day Invalid Hover Background Color", 
-            "cssVar": "--nuraly-datepicker-day-invalid-hover-background-color",
-            "type": "color"
-          }
+          { "label": "Gap", "cssVar": "--nuraly-datepicker-local-gap", "type": "text", "placeholder": "6px", "defaultValue": "6px" },
+          { "label": "Calendar Padding", "cssVar": "--nuraly-datepicker-local-calendar-padding", "type": "text", "placeholder": "12px", "defaultValue": "12px" },
+          { "label": "Day Padding", "cssVar": "--nuraly-datepicker-local-day-padding", "type": "text", "placeholder": "6px", "defaultValue": "6px" },
+          { "label": "Input Padding", "cssVar": "--nuraly-datepicker-local-input-padding", "type": "text", "placeholder": "8px 12px", "defaultValue": "8px 12px" },
+          { "label": "Padding", "cssVar": "--nuraly-datepicker-local-padding", "type": "text", "placeholder": "16px", "defaultValue": "16px" },
+          { "label": "Margin", "cssVar": "--nuraly-datepicker-local-margin", "type": "text", "placeholder": "0", "defaultValue": "0" }
         ]
       },
       {
-        "name": "Today",
+        "name": "Borders",
+        "open": false,
         "items": [
-          { 
-            "label": "Today Text Color", 
-            "cssVar": "--nuraly-datepicker-today-color",
-            "type": "color"
-          },
-          { 
-            "label": "Today Underline Color", 
-            "cssVar": "--nuraly-datepicker-today-underline-color",
-            "type": "color"
-          }
+          { "label": "Border Width", "cssVar": "--nuraly-datepicker-local-border-width", "type": "text", "placeholder": "1px", "defaultValue": "1px" },
+          { "label": "Border Radius", "cssVar": "--nuraly-datepicker-local-border-radius", "type": "text", "placeholder": "8px", "defaultValue": "8px" },
+          { "label": "Input Border Width", "cssVar": "--nuraly-datepicker-local-input-border-width", "type": "text", "placeholder": "1px", "defaultValue": "1px" },
+          { "label": "Focus Border Width", "cssVar": "--nuraly-datepicker-local-focus-border-width", "type": "text", "placeholder": "2px", "defaultValue": "2px" }
+        ]
+      },
+      {
+        "name": "Shadows",
+        "open": false,
+        "items": [
+          { "label": "Box Shadow", "cssVar": "--nuraly-datepicker-local-box-shadow", "type": "text", "placeholder": "0 6px 16px rgba(0,0,0,0.1)", "defaultValue": "0 6px 16px 0 var(--nuraly-datepicker-local-shadow-color)" },
+          { "label": "Input Focus Shadow", "cssVar": "--nuraly-datepicker-local-input-focus-shadow", "type": "text", "placeholder": "0 0 0 2px rgba(22,119,255,0.2)", "defaultValue": "0 0 0 2px rgba(22, 119, 255, 0.2)" }
+        ]
+      },
+      {
+        "name": "States & Opacity",
+        "open": false,
+        "items": [
+          { "label": "Disabled Opacity", "cssVar": "--nuraly-datepicker-local-disabled-opacity", "type": "text", "placeholder": "0.5", "defaultValue": "0.5" },
+          { "label": "Hover Opacity", "cssVar": "--nuraly-datepicker-local-hover-opacity", "type": "text", "placeholder": "0.8", "defaultValue": "0.8" }
+        ]
+      },
+      {
+        "name": "Animation",
+        "open": false,
+        "items": [
+          { "label": "Transition Duration", "cssVar": "--nuraly-datepicker-local-transition-duration", "type": "text", "placeholder": "0.2s", "defaultValue": "0.2s" },
+          { "label": "Transition Timing", "cssVar": "--nuraly-datepicker-local-transition-timing", "type": "select", "options": [
+            { "label": "Ease", "value": "ease" },
+            { "label": "Ease In", "value": "ease-in" },
+            { "label": "Ease Out", "value": "ease-out" },
+            { "label": "Ease In Out", "value": "ease-in-out" },
+            { "label": "Linear", "value": "linear" }
+          ], "defaultValue": "ease-in-out" },
+          { "label": "Calendar Animation Duration", "cssVar": "--nuraly-datepicker-local-calendar-animation-duration", "type": "text", "placeholder": "0.15s", "defaultValue": "0.15s" }
+        ]
+      },
+      {
+        "name": "Z-Index",
+        "open": false,
+        "items": [
+          { "label": "Calendar Z-Index", "cssVar": "--nuraly-datepicker-local-calendar-z-index", "type": "text", "placeholder": "1000", "defaultValue": "1000" }
+        ]
+      },
+      {
+        "name": "Size Variants - Small",
+        "open": false,
+        "items": [
+          { "label": "Small Font Size", "cssVar": "--nuraly-datepicker-local-small-font-size", "type": "text", "placeholder": "12px", "defaultValue": "12px" },
+          { "label": "Small Padding", "cssVar": "--nuraly-datepicker-local-small-padding", "type": "text", "placeholder": "6px 8px", "defaultValue": "6px 8px" },
+          { "label": "Small Height", "cssVar": "--nuraly-datepicker-local-small-height", "type": "text", "placeholder": "32px", "defaultValue": "32px" },
+          { "label": "Small Day Size", "cssVar": "--nuraly-datepicker-local-small-day-size", "type": "text", "placeholder": "28px", "defaultValue": "28px" }
+        ]
+      },
+      {
+        "name": "Size Variants - Medium",
+        "open": false,
+        "items": [
+          { "label": "Medium Font Size", "cssVar": "--nuraly-datepicker-local-medium-font-size", "type": "text", "placeholder": "14px", "defaultValue": "14px" },
+          { "label": "Medium Padding", "cssVar": "--nuraly-datepicker-local-medium-padding", "type": "text", "placeholder": "8px 12px", "defaultValue": "8px 12px" },
+          { "label": "Medium Height", "cssVar": "--nuraly-datepicker-local-medium-height", "type": "text", "placeholder": "36px", "defaultValue": "36px" },
+          { "label": "Medium Day Size", "cssVar": "--nuraly-datepicker-local-medium-day-size", "type": "text", "placeholder": "36px", "defaultValue": "36px" }
+        ]
+      },
+      {
+        "name": "Size Variants - Large",
+        "open": false,
+        "items": [
+          { "label": "Large Font Size", "cssVar": "--nuraly-datepicker-local-large-font-size", "type": "text", "placeholder": "16px", "defaultValue": "16px" },
+          { "label": "Large Padding", "cssVar": "--nuraly-datepicker-local-large-padding", "type": "text", "placeholder": "12px 16px", "defaultValue": "12px 16px" },
+          { "label": "Large Height", "cssVar": "--nuraly-datepicker-local-large-height", "type": "text", "placeholder": "44px", "defaultValue": "44px" },
+          { "label": "Large Day Size", "cssVar": "--nuraly-datepicker-local-large-day-size", "type": "text", "placeholder": "44px", "defaultValue": "44px" }
         ]
       }
     ]
   }
-]
+}
