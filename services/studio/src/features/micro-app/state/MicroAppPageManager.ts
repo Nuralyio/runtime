@@ -7,6 +7,7 @@
 
 import type { PageElement } from '@shared/redux/handlers/pages/page.interface'
 import { MicroAppStoreContext } from './MicroAppStoreContext'
+import { eventDispatcher } from '@shared/utils/change-detection'
 
 export class MicroAppPageManager {
   private storeContext: MicroAppStoreContext
@@ -189,7 +190,6 @@ export class MicroAppPageManager {
     if (this.currentPage) {
       // Emit through store context's event system
       const eventNamespace = `microapp:${this.storeContext.microAppId}`
-      const eventDispatcher = require('@shared/utils/change-detection').eventDispatcher
 
       eventDispatcher.emit(`${eventNamespace}:page:change`, {
         page: this.currentPage,
