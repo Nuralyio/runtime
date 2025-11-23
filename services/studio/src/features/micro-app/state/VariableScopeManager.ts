@@ -159,8 +159,8 @@ export class VariableScopeManager {
   subscribe(varName: string, callback: (value: any) => void): () => void {
     const { scope, name } = this.parseVarName(varName)
 
-    // Add subscriber to appropriate scope
-    const targetScope = scope || this.resolveScope(name)
+    // Determine target scope: use explicit scope if provided, otherwise resolve from current state
+    const targetScope = scope !== null ? scope : this.resolveScope(name)
     const descriptor = this.getDescriptorFromScope(name, targetScope)
 
     if (descriptor) {

@@ -6,7 +6,7 @@
  * between micro-apps while maintaining proper isolation.
  */
 
-import { VariableScopeManager, type VariableDescriptor } from './VariableScopeManager'
+import { VariableScope, type VariableDescriptor } from './VariableScopeManager'
 
 export class SharedVariableRegistry {
   private static instance: SharedVariableRegistry
@@ -39,13 +39,13 @@ export class SharedVariableRegistry {
     // Set up default global variables
     this.globalVars.set('isAuthenticated', {
       value: false,
-      scope: 'global' as any,
+      scope: VariableScope.GLOBAL,
       subscribers: new Set()
     })
 
     this.globalVars.set('theme', {
       value: 'light',
-      scope: 'global' as any,
+      scope: VariableScope.GLOBAL,
       subscribers: new Set()
     })
   }
@@ -121,7 +121,7 @@ export class SharedVariableRegistry {
 
     this.globalVars.set(name, {
       value,
-      scope: 'global' as any,
+      scope: VariableScope.GLOBAL,
       readonly,
       subscribers: existing?.subscribers || new Set()
     })
@@ -155,7 +155,7 @@ export class SharedVariableRegistry {
       // Create placeholder
       descriptor = {
         value: undefined,
-        scope: 'global' as any,
+        scope: VariableScope.GLOBAL,
         subscribers: new Set()
       }
       this.globalVars.set(name, descriptor)
