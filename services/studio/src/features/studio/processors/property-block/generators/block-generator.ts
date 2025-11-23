@@ -18,24 +18,21 @@ export class BlockGenerator {
    */
   static generateBlockComponents(blockConfig: BlockConfig, blockName: string = 'block'): any[] {
     const components: any[] = [];
-    
+
     // Generate main container
     components.push(ContainerGenerator.generateMainContainer(blockConfig, blockName));
-    
-    // Generate collapse container
+
+    // Generate collapse container (now a proper Collapse component with built-in header)
     components.push(ContainerGenerator.generateCollapseContainer(blockConfig, blockName));
-    
-    // Generate collapse header
-    components.push(ContainerGenerator.generateCollapseHeader(blockConfig, blockName));
-    
+
     // Generate properties container
     components.push(ContainerGenerator.generatePropertiesContainer(blockConfig, blockName));
-    
+
     // Generate each property
     blockConfig.properties.forEach(property => {
       components.push(...PropertyGenerator.generateProperty(property));
     });
-    
+
     return components;
   }
   
