@@ -110,13 +110,11 @@ export class MicroAppStoreContext {
       if (this.preloadedComponents && this.preloadedComponents.length > 0) {
         this._$components.setKey(this.appUUID, this.preloadedComponents)
         componentsLoaded = true
-        console.log(`[MicroApp ${this.microAppId}] Using directly provided components (${this.preloadedComponents.length} components)`)
       }
 
       if (this.preloadedPages && this.preloadedPages.length > 0) {
         this._$pages.setKey(this.appUUID, this.preloadedPages)
         pagesLoaded = true
-        console.log(`[MicroApp ${this.microAppId}] Using directly provided pages (${this.preloadedPages.length} pages)`)
       }
 
       // 2. Check if components are already loaded in global store (non-AJAX case)
@@ -138,7 +136,6 @@ export class MicroAppStoreContext {
             // Components already loaded - copy to isolated store
             this._$components.setKey(this.appUUID, existingComponents)
             componentsLoaded = true
-            console.log(`[MicroApp ${this.microAppId}] Using pre-loaded components from global store (non-AJAX)`)
           }
         }
 
@@ -148,14 +145,12 @@ export class MicroAppStoreContext {
             // Pages already loaded - copy to isolated store
             this._$pages.setKey(this.appUUID, existingPages)
             pagesLoaded = true
-            console.log(`[MicroApp ${this.microAppId}] Using pre-loaded pages from global store (non-AJAX)`)
           }
         }
       }
 
       // 3. If still not loaded, fetch from API (AJAX)
       if (!componentsLoaded && this.appUUID !== "1") {
-        console.log(`[MicroApp ${this.microAppId}] Fetching components from API`)
         const componentsResponse = await fetch(`/api/components/application/${this.appUUID}`)
         if (componentsResponse.ok) {
           const data = await componentsResponse.json()
@@ -169,7 +164,6 @@ export class MicroAppStoreContext {
       }
 
       if (!pagesLoaded && this.appUUID !== "1") {
-        console.log(`[MicroApp ${this.microAppId}] Fetching pages from API`)
         const pagesResponse = await fetch(`/api/pages/application/${this.appUUID}`)
         if (pagesResponse.ok) {
           const pages = await pagesResponse.json()
@@ -202,7 +196,6 @@ export class MicroAppStoreContext {
         }
       })
 
-      console.log(`[MicroApp ${this.microAppId}] Load complete - Source: ${loadingSource}, Components: ${componentsLoaded ? 'loaded' : 'none'}, Pages: ${pagesLoaded ? 'loaded' : 'none'}`)
     } catch (error) {
       console.error(`Failed to load micro-app ${this.microAppId}:`, error)
       throw error
