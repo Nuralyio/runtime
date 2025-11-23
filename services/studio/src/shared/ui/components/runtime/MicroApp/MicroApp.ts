@@ -83,7 +83,6 @@ export class MicroApp extends LitElement {
 
       // Initialize isolated context if data was just provided and not initialized yet
       if (dataJustProvided && !this.storeContext) {
-        console.log('[MicroApp] Pre-loaded data detected, initializing isolated context...');
         this.initializeIsolatedContext();
         return;
       }
@@ -118,10 +117,7 @@ export class MicroApp extends LitElement {
       // Only initialize now if we have pre-loaded data
       // Otherwise, wait for properties to be set (handled in updated())
       if (this.appComponents || this.appPages) {
-        console.log('[MicroApp] Initializing with pre-loaded data in connectedCallback');
         this.initializeIsolatedContext();
-      } else {
-        console.log('[MicroApp] Waiting for pre-loaded data to be set...');
       }
     } else {
       // Legacy mode
@@ -283,8 +279,6 @@ private initializeAppComponents(): void {
       // Generate unique micro-app instance ID
       this.microAppId = `${this.uuid}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      console.log(`[MicroApp] Initializing isolated context for ${this.microAppId}`);
-
       // 1. Create store context with optional pre-loaded data
       this.storeContext = new MicroAppStoreContext(
         this.microAppId,
@@ -325,7 +319,6 @@ private initializeAppComponents(): void {
       // This is needed because Container.ts looks up children in the global $components store
       const componentsWithChildren = this.storeContext.getComponents();
       $components.setKey(this.uuid, componentsWithChildren);
-      console.log(`[MicroApp] Synced ${componentsWithChildren.length} components to global store for child lookup`);
 
       // 10. Setup subscriptions to isolated stores
       this.setupIsolatedSubscriptions();
@@ -340,10 +333,6 @@ private initializeAppComponents(): void {
 
       EditorInstance.setEditorMode(this.prod);
 
-      console.log(`[MicroApp] Initialization complete for ${this.microAppId}`);
-      console.log('[MicroApp] Debug info:', this.storeContext.getDebugInfo());
-      console.log('[MicroApp] Components to render:', this.componentsToRender);
-
       // Trigger re-render now that initialization is complete
       this.requestUpdate();
 
@@ -356,8 +345,6 @@ private initializeAppComponents(): void {
    * Handle incoming messages from message bus
    */
   private handleMessage(message: any): void {
-    console.log(`[MicroApp ${this.microAppId}] Received message:`, message);
-
     switch (message.type) {
       case MessageTypes.FILE_SELECTED:
         // Handle file selection from Files micro-app
@@ -416,8 +403,6 @@ private initializeAppComponents(): void {
    * Cleanup isolated context
    */
   private cleanupIsolatedContext(): void {
-    console.log(`[MicroApp] Cleaning up isolated context for ${this.microAppId}`);
-
     // Unsubscribe from messages
     if (this.messageUnsubscribe) {
       this.messageUnsubscribe();
@@ -445,8 +430,6 @@ private initializeAppComponents(): void {
     }
 
     this.messageBus = null;
-
-    console.log(`[MicroApp] Cleanup complete for ${this.microAppId}`);
   }
 
   /**
