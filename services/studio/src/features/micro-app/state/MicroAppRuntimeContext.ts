@@ -77,6 +77,22 @@ export class MicroAppRuntimeContext {
 
         const oldValue = scopeManager.get(String(prop))
 
+        // Parse to determine target scope (check if prop starts with 'global.', 'app.', or 'local.')
+        const propStr = String(prop)
+        let targetScope = VariableScope.LOCAL
+        let varName = propStr
+
+        if (propStr.startsWith('global.')) {
+          targetScope = VariableScope.GLOBAL
+          varName = propStr.substring(7) // Remove 'global.' prefix
+        } else if (propStr.startsWith('app.')) {
+          targetScope = VariableScope.APP
+          varName = propStr.substring(4) // Remove 'app.' prefix
+        } else if (propStr.startsWith('local.')) {
+          targetScope = VariableScope.LOCAL
+          varName = propStr.substring(6) // Remove 'local.' prefix
+        }
+
         // Set via scope manager (defaults to local scope)
         scopeManager.set(String(prop), value, VariableScope.LOCAL)
 
@@ -85,10 +101,31 @@ export class MicroAppRuntimeContext {
 
         // Emit scoped event if value changed
         if (!deepEqual(oldValue, value)) {
+          // Emit micro-app scoped event
           eventDispatcher.emit(`${self.eventNamespace}:Vars:${String(prop)}`, {
             prop,
             value,
             oldValue
+          })
+
+          // For GLOBAL variables, emit a global event that all micro-apps can listen to
+          if (targetScope === VariableScope.GLOBAL) {
+            console.log(`[MicroApp ${self.eventNamespace}] Emitting global variable change: ${propStr}`)
+            eventDispatcher.emit('global:variable:changed', {
+              varName: propStr, // Use full prop name with 'global.' prefix
+              name: varName, // Just the variable name without prefix
+              value,
+              oldValue
+            })
+          }
+
+          // Trigger component input refresh for all components in this micro-app
+          // This makes components with input handlers that reference this variable re-render
+          self.storeContext.getComponents().forEach((component: any) => {
+            eventDispatcher.emit(`component-input-refresh-request:${component.uuid}`, {
+              varName: String(prop),
+              value
+            })
           })
         }
 
@@ -206,6 +243,25 @@ export class MicroAppRuntimeContext {
     })
     this.subscriptions.add(componentsUnsub)
 
+    // Subscribe to generic GLOBAL variable change events (emitted by any micro-app)
+    // This ensures that when one micro-app changes a global variable, all micro-apps update
+    this.subscriptions.add(
+      eventDispatcher.on('global:variable:changed', (data: any) => {
+        console.log(`[MicroApp ${this.eventNamespace}] Received global variable change: ${data.varName} = ${data.value}`)
+
+        // Trigger component input refresh for all components in this micro-app
+        const components = this.storeContext.getComponents()
+        console.log(`[MicroApp ${this.eventNamespace}] Refreshing ${components.length} components`)
+
+        components.forEach((component: any) => {
+          eventDispatcher.emit(`component-input-refresh-request:${component.uuid}`, {
+            varName: data.varName,
+            value: data.value
+          })
+        })
+      })
+    )
+
     // Initial registration
     if (this.storeContext.isLoaded()) {
       this.registerComponents()
@@ -248,6 +304,12 @@ export class MicroAppRuntimeContext {
         }
 
         this.attachValuesProperty(component)
+      }
+
+      // Attach micro-app runtime context reference for isolated execution
+      (component as any).__microAppContext = {
+        Vars: this.VarsProxy,
+        runtimeContext: this
       }
     })
 
