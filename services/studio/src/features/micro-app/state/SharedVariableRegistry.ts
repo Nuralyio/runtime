@@ -6,7 +6,7 @@
  * between micro-apps while maintaining proper isolation.
  */
 
-import { VariableDescriptor, VariableScopeManager } from './VariableScopeManager'
+import { VariableScopeManager, type VariableDescriptor } from './VariableScopeManager'
 
 export class SharedVariableRegistry {
   private static instance: SharedVariableRegistry
