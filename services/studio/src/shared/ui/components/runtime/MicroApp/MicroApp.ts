@@ -297,6 +297,8 @@ private initializeAppComponents(): void {
 
       // 4. Create handler executor
       this.handlerExecutor = new MicroAppHandlerExecutor(this.runtimeContext);
+      // Store reference in store context for component event handlers
+      this.storeContext.handlerExecutor = this.handlerExecutor;
 
       // 5. Get message bus
       this.messageBus = MicroAppMessageBus.getInstance();

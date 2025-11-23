@@ -48,7 +48,22 @@ export async function traitInputHandler(
       // Mark this handler as executing
       executingHandlers.add(handlerKey);
 
-      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
+      let fn;
+      // Check if component belongs to a micro-app with isolated context
+      if (ctx.component.__microAppContext) {
+        const { runtimeContext } = ctx.component.__microAppContext;
+        const handlerExecutor = (runtimeContext as any).storeContext?.handlerExecutor;
+
+        if (handlerExecutor) {
+          // Use executeHandler (not executeExpression) to support multi-line code
+          fn = handlerExecutor.executeHandler(inputHandler, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, undefined);
+        } else {
+          fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
+        }
+      } else {
+        fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
+      }
+
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
       return; // Exit early - inputHandler takes precedence
@@ -75,7 +90,23 @@ export async function traitInputHandler(
       executingHandlers.add(handlerKey);
 
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+
+      let fn;
+      // Check if component belongs to a micro-app with isolated context
+      if (ctx.component.__microAppContext) {
+        const { runtimeContext } = ctx.component.__microAppContext;
+        const handlerExecutor = (runtimeContext as any).storeContext?.handlerExecutor;
+
+        if (handlerExecutor) {
+          // Use executeHandler (not executeExpression) to support multi-line code
+          fn = handlerExecutor.executeHandler(raw, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, undefined);
+        } else {
+          fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+        }
+      } else {
+        fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+      }
+
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {
