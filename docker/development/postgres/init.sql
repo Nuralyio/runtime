@@ -20,4 +20,4 @@ GRANT ALL PRIVILEGES ON DATABASE keycloak TO postgres;
 \c nuraly_dev;
 
 -- Import the database backup with all user IDs already set to the Keycloak dev user
-\i /docker-entrypoint-initdb.d/db-backup.sql
+\i /tmp/db-backup.sql

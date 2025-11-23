@@ -111,7 +111,7 @@ services:
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./docker/development/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - ./docker/development/postgres/db-backup.sql:/docker-entrypoint-initdb.d/db-backup.sql
+      - ./docker/development/postgres/db-backup.sql:/tmp/db-backup.sql
     networks:
       - nuraly-network
     restart: unless-stopped
