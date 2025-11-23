@@ -107,22 +107,32 @@ const appComponents = [
     pageId: "page-001",
     root: false,
 
-    parameters: {
-      text: "Click Me!",
-    },
     event: {
       onClick: /* js */ `
-        // Demonstrate variable scoping
+        // Use Vars for reactive state that triggers UI updates
+        // Variables support scope: local (default), app, or global
+
+        // Local scope (isolated to this micro-app instance)
         Vars.clickCount = (Vars.clickCount || 0) + 1;
 
-        // Local variable
-        const message = 'Button clicked ' + Vars.clickCount + ' times!';
+        // Or explicitly: Vars['local.clickCount'] = ...
+        // App scope: Vars['app.sharedData'] = ...
+        // Global scope: Vars['global.theme'] = ...
 
+        const message = 'Button clicked ' + Vars.clickCount + ' times!';
         console.log('[MicroApp Demo] ' + message);
-        console.log('[MicroApp Demo] Local vars:', Vars);
+
+        // Example: Instance is for component-scoped non-reactive state
+        Instance.lastClickTime = Date.now();
+        console.log('[MicroApp Demo] Last click at:', new Date(Instance.lastClickTime).toLocaleTimeString());
       `,
     },
-    input: {},
+    input: {
+      label: {
+        type: "string",
+        value: "Click Me",
+      }
+    },
   },
   // Counter Display
   {

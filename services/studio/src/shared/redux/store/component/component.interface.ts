@@ -79,6 +79,8 @@ export interface ComponentElement {
   pageId?: string;
   application_id?: string;
   uniqueUUID?: string;
+  Instance?: any; // Component instance state (reactive proxy)
+  children?: ComponentElement[]; // Resolved children components
 }
 
 export default {};

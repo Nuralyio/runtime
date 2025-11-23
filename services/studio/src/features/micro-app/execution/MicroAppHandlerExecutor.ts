@@ -125,10 +125,10 @@ export class MicroAppHandlerExecutor {
       // Set current component context
       this.runtimeContext.Current = component
 
-      // Add event to sandbox if provided
+      // Add event and Instance to sandbox if provided
       const sandboxWithEvent = event
-        ? { ...this.sandboxGlobals, Event: event, event: event }
-        : this.sandboxGlobals
+        ? { ...this.sandboxGlobals, Event: event, event: event, Instance: component.Instance }
+        : { ...this.sandboxGlobals, Instance: component.Instance }
 
       // Create function with sandboxed globals
       const paramNames = Object.keys(sandboxWithEvent)
@@ -170,10 +170,10 @@ export class MicroAppHandlerExecutor {
       // Set current component context
       this.runtimeContext.Current = component
 
-      // Add event to sandbox if provided
+      // Add event and Instance to sandbox if provided
       const sandboxWithEvent = event
-        ? { ...this.sandboxGlobals, Event: event, event: event }
-        : this.sandboxGlobals
+        ? { ...this.sandboxGlobals, Event: event, event: event, Instance: component.Instance }
+        : { ...this.sandboxGlobals, Instance: component.Instance }
 
       // Create function with sandboxed globals
       const paramNames = Object.keys(sandboxWithEvent)

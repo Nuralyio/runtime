@@ -309,6 +309,7 @@ export function executeHandler(
     RuntimeHelpers, // Passed as "Utils" parameter for handler code
     customConsole,
     globalFunctions.UploadFile,
-    globalFunctions.BrowseFiles
+    globalFunctions.BrowseFiles,
+    component.Instance || {} // Component instance state (used by micro-apps)
   );
 }
