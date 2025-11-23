@@ -245,22 +245,21 @@ export class MicroAppRuntimeContext {
 
     // Subscribe to generic GLOBAL variable change events (emitted by any micro-app)
     // This ensures that when one micro-app changes a global variable, all micro-apps update
-    this.subscriptions.add(
-      eventDispatcher.on('global:variable:changed', (data: any) => {
-        console.log(`[MicroApp ${this.eventNamespace}] Received global variable change: ${data.varName} = ${data.value}`)
+    const globalVarUnsub = eventDispatcher.on('global:variable:changed', (data: any) => {
+      console.log(`[MicroApp ${this.eventNamespace}] Received global variable change: ${data.varName} = ${data.value}`)
 
-        // Trigger component input refresh for all components in this micro-app
-        const components = this.storeContext.getComponents()
-        console.log(`[MicroApp ${this.eventNamespace}] Refreshing ${components.length} components`)
+      // Trigger component input refresh for all components in this micro-app
+      const components = this.storeContext.getComponents()
+      console.log(`[MicroApp ${this.eventNamespace}] Refreshing ${components.length} components`)
 
-        components.forEach((component: any) => {
-          eventDispatcher.emit(`component-input-refresh-request:${component.uuid}`, {
-            varName: data.varName,
-            value: data.value
-          })
+      components.forEach((component: any) => {
+        eventDispatcher.emit(`component-input-refresh-request:${component.uuid}`, {
+          varName: data.varName,
+          value: data.value
         })
       })
-    )
+    })
+    this.subscriptions.add(globalVarUnsub)
 
     // Initial registration
     if (this.storeContext.isLoaded()) {
