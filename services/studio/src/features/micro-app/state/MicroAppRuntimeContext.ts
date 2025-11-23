@@ -255,7 +255,15 @@ export class MicroAppRuntimeContext {
     components.forEach((component: ComponentElement) => {
       if (component.childrenIds && component.childrenIds.length > 0) {
         component.children = component.childrenIds
-          .map(childId => this.getComponentByUUID(childId))
+          .map(childId => {
+            const child = this.getComponentByUUID(childId)
+            if (!child && DEBUG) {
+              console.warn(
+                `[MicroApp ${this.eventNamespace}] Warning: Child component with UUID "${childId}" not found for parent "${component.name}" (UUID: ${component.uuid})`
+              )
+            }
+            return child
+          })
           .filter(Boolean) as ComponentElement[]
 
         // Set parent references

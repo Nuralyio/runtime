@@ -14,6 +14,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import "@shared/ui/nuraly-ui/src/shared/themes/default.css";
+import { v4 as uuidv4 } from "uuid";
 
 // Import isolated micro-app infrastructure
 import { MicroAppStoreContext } from "@features/micro-app/state/MicroAppStoreContext";
@@ -275,8 +276,8 @@ private initializeAppComponents(): void {
    */
   private async initializeIsolatedContext(): Promise<void> {
     try {
-      // Generate unique micro-app instance ID
-      this.microAppId = `${this.uuid}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Generate unique micro-app instance ID using proper UUID
+      this.microAppId = `${this.uuid}_${uuidv4()}`;
 
       // 1. Create store context with optional pre-loaded data
       this.storeContext = new MicroAppStoreContext(
@@ -292,7 +293,7 @@ private initializeAppComponents(): void {
       // 3. Create page manager
       this.pageManager = new MicroAppPageManager(this.storeContext);
       // Store page manager reference in store context for handler access
-      (this.storeContext as any).pageManager = this.pageManager;
+      this.storeContext.setPageManager(this.pageManager);
 
       // 4. Create handler executor
       this.handlerExecutor = new MicroAppHandlerExecutor(this.runtimeContext);

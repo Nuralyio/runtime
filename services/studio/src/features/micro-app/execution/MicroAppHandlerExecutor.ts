@@ -19,6 +19,15 @@ export class MicroAppHandlerExecutor {
 
   /**
    * Initialize sandboxed globals for handler execution
+   * 
+   * NOTE: Setting globals to `undefined` provides only surface-level protection.
+   * JavaScript code can still access these through indirect means:
+   * - `this.constructor.constructor('return window')()`
+   * - Accessing through prototype chain
+   * - Using `globalThis`, `self`, or other global references
+   * 
+   * This is not a secure sandbox for untrusted code. For production use with
+   * untrusted code, use Web Workers, sandboxed iframes, or proper sandboxing libraries.
    */
   private initializeSandbox(): void {
     const storeContext = (this.runtimeContext as any).storeContext
@@ -53,11 +62,11 @@ export class MicroAppHandlerExecutor {
 
       // Page navigation
       navigateTo: (pageId: string) => {
-        const pageManager = storeContext.pageManager
+        const pageManager = storeContext.getPageManager()
         return pageManager?.navigateTo(pageId) || false
       },
       navigateToPage: (pageName: string) => {
-        const pageManager = storeContext.pageManager
+        const pageManager = storeContext.getPageManager()
         return pageManager?.navigateToByName(pageName) || false
       },
 
@@ -187,13 +196,26 @@ export class MicroAppHandlerExecutor {
 
   /**
    * Validate handler code for security
+   * 
+   * NOTE: This validation provides basic pattern matching only and is NOT comprehensive security.
+   * It only catches direct property access (e.g., `window.document`). Handlers could still access
+   * restricted objects through:
+   * - Bracket notation: `window['document']`
+   * - Indirect access: `globalThis`, `self`, `this.constructor.constructor('return window')()`
+   * - Prototype chain manipulation
+   * 
+   * For production use, consider implementing proper sandboxing using:
+   * - Web Workers with restricted importScripts
+   * - iframes with sandbox attributes
+   * - Proper sandboxing libraries (vm2, isolated-vm)
+   * 
    * @param handlerCode - The code to validate
-   * @returns True if code is safe, false otherwise
+   * @returns Validation result with any detected issues
    */
   validateHandlerCode(handlerCode: string): { valid: boolean; errors: string[] } {
     const errors: string[] = []
 
-    // Check for dangerous patterns
+    // Check for dangerous patterns (basic string matching only)
     const dangerousPatterns = [
       { pattern: /window\./g, message: 'Direct window access not allowed' },
       { pattern: /document\./g, message: 'Direct document access not allowed' },

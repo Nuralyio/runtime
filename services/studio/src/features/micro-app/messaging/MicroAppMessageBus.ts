@@ -107,7 +107,9 @@ export class MicroAppMessageBus {
   private emit(channel: string, message: Message): void {
     const handlers = this.channels.get(channel)
     if (handlers) {
-      handlers.forEach(handler => {
+      // Create a copy of handlers to avoid issues if handlers are removed during iteration
+      const handlersCopy = Array.from(handlers)
+      handlersCopy.forEach(handler => {
         try {
           handler(message)
         } catch (error) {

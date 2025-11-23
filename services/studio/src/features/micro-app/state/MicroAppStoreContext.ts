@@ -11,6 +11,8 @@ import type { PageElement } from '@shared/redux/handlers/pages/page.interface'
 import { SharedVariableRegistry } from './SharedVariableRegistry'
 import { VariableScopeManager } from './VariableScopeManager'
 import { MicroAppMessageBus } from '../messaging/MicroAppMessageBus'
+import { $components } from '@shared/redux/store/component/store'
+import { $pages } from '@shared/redux/store/page'
 
 export interface ComponentStore {
   [key: string]: ComponentElement[]
@@ -25,6 +27,9 @@ export interface ContextVarStore {
 }
 
 export type EnvironmentMode = 'Edit' | 'Preview'
+
+// Studio app UUID - special case for editor that doesn't load from API
+const STUDIO_APP_UUID = "1"
 
 export class MicroAppStoreContext {
   // Identity
@@ -44,6 +49,9 @@ export class MicroAppStoreContext {
 
   // Message bus
   private messageBus: MicroAppMessageBus
+
+  // Page manager (set after initialization for handler access)
+  private _pageManager?: any
 
   // Subscriptions for cleanup
   private subscriptions: Set<() => void> = new Set()
@@ -121,17 +129,9 @@ export class MicroAppStoreContext {
       // This handles pre-loaded apps like studio (uuid="1") from studio-entrypoint.ts
       // or SSR-hydrated apps from window.__INITIAL_COMPONENT_STATE__
       if (!componentsLoaded || !pagesLoaded) {
-        const globalComponents = typeof window !== 'undefined'
-          ? (await import('@shared/redux/store/component/store')).then(m => m.$components)
-          : null
-
-        const globalPages = typeof window !== 'undefined'
-          ? (await import('@shared/redux/store/page')).then(m => m.$pages)
-          : null
-
         // Try to get from global store (non-AJAX)
-        if (!componentsLoaded && globalComponents) {
-          const existingComponents = globalComponents.get()[this.appUUID]
+        if (!componentsLoaded && typeof window !== 'undefined') {
+          const existingComponents = $components.get()[this.appUUID]
           if (existingComponents && existingComponents.length > 0) {
             // Components already loaded - copy to isolated store
             this._$components.setKey(this.appUUID, existingComponents)
@@ -139,8 +139,8 @@ export class MicroAppStoreContext {
           }
         }
 
-        if (!pagesLoaded && globalPages) {
-          const existingPages = globalPages.get()[this.appUUID]
+        if (!pagesLoaded && typeof window !== 'undefined') {
+          const existingPages = $pages.get()[this.appUUID]
           if (existingPages && existingPages.length > 0) {
             // Pages already loaded - copy to isolated store
             this._$pages.setKey(this.appUUID, existingPages)
@@ -150,7 +150,8 @@ export class MicroAppStoreContext {
       }
 
       // 3. If still not loaded, fetch from API (AJAX)
-      if (!componentsLoaded && this.appUUID !== "1") {
+      // Studio app (UUID "1") doesn't load from API as it's the editor itself
+      if (!componentsLoaded && this.appUUID !== STUDIO_APP_UUID) {
         const componentsResponse = await fetch(`/api/components/application/${this.appUUID}`)
         if (componentsResponse.ok) {
           const data = await componentsResponse.json()
@@ -163,7 +164,7 @@ export class MicroAppStoreContext {
         }
       }
 
-      if (!pagesLoaded && this.appUUID !== "1") {
+      if (!pagesLoaded && this.appUUID !== STUDIO_APP_UUID) {
         const pagesResponse = await fetch(`/api/pages/application/${this.appUUID}`)
         if (pagesResponse.ok) {
           const pages = await pagesResponse.json()
@@ -258,6 +259,20 @@ export class MicroAppStoreContext {
    */
   getMessageBus(): MicroAppMessageBus {
     return this.messageBus
+  }
+
+  /**
+   * Set page manager reference (for handler access)
+   */
+  setPageManager(pageManager: any): void {
+    this._pageManager = pageManager
+  }
+
+  /**
+   * Get page manager reference
+   */
+  getPageManager(): any {
+    return this._pageManager
   }
 
   /**
