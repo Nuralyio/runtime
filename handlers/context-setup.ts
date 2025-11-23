@@ -87,7 +87,17 @@ import { ExecuteInstance } from '../state';
  * 
  * @private
  */
-const observe = (o: any, f: Function) => new Proxy(o, { set: (a, b, c) => f(a, b, c) });
+const observe = (o: any, f: (target: any, prop: string, value: any) => void) => new Proxy(o, {
+  set: (target: any, prop: string | symbol, value: any) => {
+    // Only process string properties (not Symbols)
+    if (typeof prop === 'string') {
+      f(target, prop, value);
+    }
+    // Set the property on the target
+    target[prop] = value;
+    return true;
+  }
+});
 
 /**
  * Initializes the runtime context for a component handler execution.
