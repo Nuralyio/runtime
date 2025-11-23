@@ -3,7 +3,8 @@ name: Push Docker Image to ECR
 on:
   workflow_dispatch:
   push:
-    branches: [ "*" ]
+    tags:
+      - '*'
 jobs:
 
   build:
@@ -29,10 +30,10 @@ jobs:
     - name: Get timestamp
       id: get-timestamp
       run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
-    - name: Set up branch name
+    - name: Set up tag name
       run: |
-        BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
-        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+        TAG_NAME=$(echo "${GITHUB_REF#refs/tags/}")
+        echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
@@ -40,5 +41,5 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_NAME
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG_NAME .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG_NAME
