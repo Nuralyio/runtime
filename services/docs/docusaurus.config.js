@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Nuralyio Documentation',
-  tagline: 'Comprehensive documentation for Nuralyio projects',
+  title: 'Nuraly Documentation',
+  tagline: 'Build better applications with Nuraly',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -46,6 +46,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/', // Serve docs at the site's root
           sidebarPath: './sidebars.js',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
@@ -83,17 +84,18 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'Nuralyio Docs',
+        title: '',
         logo: {
-          alt: 'Nuralyio Logo',
-          src: 'img/logo.svg',
+          alt: 'Nuraly Logo',
+          src: 'img/nuraly-logo.png',
+          srcDark: 'img/nuraly-logo.png', // Will use CSS filter for now
         },
         items: [
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Docs',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
@@ -110,8 +112,8 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Getting Started',
+                to: '/intro',
               },
             ],
           },
@@ -119,16 +121,12 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                label: 'GitHub',
+                href: 'https://github.com/Nuralyio',
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'X',
-                href: 'https://x.com/docusaurus',
+                label: 'Stack',
+                href: 'https://github.com/Nuralyio/stack',
               },
             ],
           },
@@ -146,7 +144,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Nuralyio. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Nuraly. All rights reserved.`,
       },
       prism: {
         theme: prismThemes.github,

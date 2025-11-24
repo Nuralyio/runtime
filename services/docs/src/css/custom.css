@@ -4,27 +4,96 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+/* Nuraly Brand Colors */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* Primary color - Nuraly Purple */
+  --ifm-color-primary: #9333ea;
+  --ifm-color-primary-dark: #8b26e0;
+  --ifm-color-primary-darker: #8319d6;
+  --ifm-color-primary-darkest: #6d14b1;
+  --ifm-color-primary-light: #a64deb;
+  --ifm-color-primary-lighter: #b05aed;
+  --ifm-color-primary-lightest: #c584f0;
+
+  /* Secondary color - Nuraly Orange */
+  --ifm-color-secondary: #ff7e33;
+  --ifm-color-secondary-dark: #ff6a0f;
+  --ifm-color-secondary-darker: #ff5f00;
+  --ifm-color-secondary-darkest: #cc4c00;
+  --ifm-color-secondary-light: #ff9257;
+  --ifm-color-secondary-lighter: #ff9d6b;
+  --ifm-color-secondary-lightest: #ffb793;
+
+  /* Info color - Nuraly Blue */
+  --ifm-color-info: #0c63e7;
+
+  /* Accent colors */
+  --ifm-color-success: #52c41a;
+  --ifm-color-warning: #faad14;
+  --ifm-color-danger: #ff4d4f;
+
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(147, 51, 234, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark mode - lighter palette for readability */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* Primary color - Lighter Purple for dark mode */
+  --ifm-color-primary: #a855f7;
+  --ifm-color-primary-dark: #9333ea;
+  --ifm-color-primary-darker: #8b26e0;
+  --ifm-color-primary-darkest: #7c1fd1;
+  --ifm-color-primary-light: #b96ef9;
+  --ifm-color-primary-lighter: #c284f9;
+  --ifm-color-primary-lightest: #d8aafb;
+
+  /* Secondary color - Lighter Orange for dark mode */
+  --ifm-color-secondary: #ff9257;
+  --ifm-color-secondary-dark: #ff7e33;
+  --ifm-color-secondary-darker: #ff6a0f;
+  --ifm-color-secondary-darkest: #ff5f00;
+  --ifm-color-secondary-light: #ffa67b;
+  --ifm-color-secondary-lighter: #ffb18f;
+  --ifm-color-secondary-lightest: #ffcbb7;
+
+  /* Info color - Lighter Blue for dark mode */
+  --ifm-color-info: #60a5fa;
+
+  /* Accent colors for dark mode */
+  --ifm-color-success: #34d399;
+  --ifm-color-warning: #fbbf24;
+  --ifm-color-danger: #f87171;
+
+  --docusaurus-highlighted-code-line-bg: rgba(168, 85, 247, 0.2);
+
+  /* Background adjustments */
+  --ifm-background-color: #111827;
+  --ifm-navbar-background-color: #1f2937;
+  --ifm-footer-background-color: #1f2937;
+}
+
+/* Logo styling */
+.navbar__logo img {
+  height: 32px;
+  width: auto;
+}
+
+/* Dark mode logo fix - brightens and inverts dark logo for dark backgrounds */
+[data-theme='dark'] .navbar__logo img {
+  filter: brightness(0) invert(1);
+}
+
+/* Custom styling for Nuraly brand */
+.hero__title {
+  color: var(--ifm-color-primary);
+}
+
+/* Link hover effects */
+a:hover {
+  text-decoration: none;
+}
+
+/* Footer branding */
+.footer--dark {
+  background-color: var(--ifm-navbar-background-color);
 }
