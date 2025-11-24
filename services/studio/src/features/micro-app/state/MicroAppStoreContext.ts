@@ -102,7 +102,7 @@ export class MicroAppStoreContext {
    */
   async loadApplication(): Promise<void> {
     // Return existing load promise if already loading
-    if (this._loadPromise) {
+    if (this._loadPromise !== null) {
       return this._loadPromise
     }
 
