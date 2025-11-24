@@ -91,7 +91,7 @@ export class MicroAppStoreContext {
 
     // Initialize variable scope manager
     const registry = SharedVariableRegistry.getInstance()
-    this.variableScopeManager = registry.createScopeManager(microAppId, appUUID)
+    this.variableScopeManager = registry.createScopeManager(microAppId)
 
     // Get message bus instance
     this.messageBus = MicroAppMessageBus.getInstance()

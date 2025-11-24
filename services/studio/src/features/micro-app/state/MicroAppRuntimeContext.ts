@@ -77,7 +77,7 @@ export class MicroAppRuntimeContext {
 
         const oldValue = scopeManager.get(String(prop))
 
-        // Parse to determine target scope (check if prop starts with 'global.', 'app.', or 'local.')
+        // Parse to determine target scope (check if prop starts with 'global.' or 'local.')
         const propStr = String(prop)
         let targetScope = VariableScope.LOCAL
         let varName = propStr
@@ -85,9 +85,6 @@ export class MicroAppRuntimeContext {
         if (propStr.startsWith('global.')) {
           targetScope = VariableScope.GLOBAL
           varName = propStr.substring(7) // Remove 'global.' prefix
-        } else if (propStr.startsWith('app.')) {
-          targetScope = VariableScope.APP
-          varName = propStr.substring(4) // Remove 'app.' prefix
         } else if (propStr.startsWith('local.')) {
           targetScope = VariableScope.LOCAL
           varName = propStr.substring(6) // Remove 'local.' prefix
@@ -427,13 +424,6 @@ export class MicroAppRuntimeContext {
    */
   public subscribeToVar(name: string, callback: (value: any) => void): () => void {
     return this.storeContext.getVariableScopeManager().subscribe(name, callback)
-  }
-
-  /**
-   * Publish variable to app scope
-   */
-  public publishToApp(varName: string): void {
-    this.storeContext.getVariableScopeManager().publishToApp(varName)
   }
 
   /**
