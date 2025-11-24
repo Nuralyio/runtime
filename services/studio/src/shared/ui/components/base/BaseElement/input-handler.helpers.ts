@@ -1,5 +1,5 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeHandler } from "@features/runtime/state/runtime-context";
+import { executeHandler, getContextFromComponent } from "@features/runtime";
 import { RuntimeHelpers } from "@shared/utils/runtime-helpers.ts";
 import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
@@ -48,22 +48,9 @@ export async function traitInputHandler(
       // Mark this handler as executing
       executingHandlers.add(handlerKey);
 
-      let fn;
-      // Check if component belongs to a micro-app with isolated context
-      if (ctx.component.__microAppContext) {
-        const { runtimeContext } = ctx.component.__microAppContext;
-        const handlerExecutor = (runtimeContext as any).storeContext?.handlerExecutor;
-
-        if (handlerExecutor) {
-          // Use executeHandler (not executeExpression) to support multi-line code
-          fn = handlerExecutor.executeHandler(inputHandler, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, undefined);
-        } else {
-          fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
-        }
-      } else {
-        fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
-      }
-
+      // Get the appropriate runtime context (global or micro-app)
+      const context = getContextFromComponent(ctx.component);
+      const fn = executeHandler(context, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
       return; // Exit early - inputHandler takes precedence
@@ -91,22 +78,9 @@ export async function traitInputHandler(
 
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
 
-      let fn;
-      // Check if component belongs to a micro-app with isolated context
-      if (ctx.component.__microAppContext) {
-        const { runtimeContext } = ctx.component.__microAppContext;
-        const handlerExecutor = (runtimeContext as any).storeContext?.handlerExecutor;
-
-        if (handlerExecutor) {
-          // Use executeHandler (not executeExpression) to support multi-line code
-          fn = handlerExecutor.executeHandler(raw, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, undefined);
-        } else {
-          fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
-        }
-      } else {
-        fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
-      }
-
+      // Get the appropriate runtime context (global or micro-app)
+      const context = getContextFromComponent(ctx.component);
+      const fn = executeHandler(context, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {
@@ -142,7 +116,7 @@ export async function traitStyleHandler(
   if (isServer || !style) return;
 
   const val = style.startsWith("return ")
-    ? executeHandler(ctx.component, style)
+    ? executeHandler(getContextFromComponent(ctx.component), ctx.component, style)
     : style;
 
   if (val && ctx.stylesHandlersValue[styleName] !== val) {
