@@ -22,6 +22,8 @@ import { MicroAppRuntimeContext } from "@features/micro-app/state/MicroAppRuntim
 import { MicroAppPageManager } from "@features/micro-app/state/MicroAppPageManager";
 import { MicroAppMessageBus, MessageTypes } from "@features/micro-app/messaging/MicroAppMessageBus";
 
+// Studio app UUID - special case for editor that doesn't load from API
+const STUDIO_APP_UUID = "1";
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
@@ -59,7 +61,7 @@ export class MicroApp extends LitElement {
   }
 
   /**
-   * Rafraîchit la liste des composants en fonction de l'UUID actuel et de l'UUID de la page.
+   * Refreshes the component list based on the current UUID and page UUID.
    */
   refreshComponent(): void {
     const components = $applicationComponents(this.uuid).get();
@@ -69,7 +71,7 @@ export class MicroApp extends LitElement {
   }
 
   /**
-   * Hook `willUpdate()` de LitElement : déclenché avant le rendu.
+   * LitElement's willUpdate() hook: triggered before rendering.
    */
   override willUpdate(changedProperties: Map<string, any>): void {
     super.willUpdate(changedProperties);
@@ -100,7 +102,7 @@ export class MicroApp extends LitElement {
   }
 
   /**
-   * Met à jour `componentsToRender` en fonction de la sélection actuelle.
+   * Updates componentsToRender based on the current selection.
    */
   private updateComponentsToRender(): void {
 
@@ -146,9 +148,9 @@ export class MicroApp extends LitElement {
   }
   
   /**
- * Récupère les composants de l'application s'ils ne sont pas déjà chargés.
- */
-private initializeAppComponents(): void {
+   * Retrieves application components if they are not already loaded.
+   */
+  private initializeAppComponents(): void {
   // Guard: Don't proceed if uuid is undefined or null
   if (!this.uuid) {
     return;
@@ -160,13 +162,19 @@ private initializeAppComponents(): void {
     $microAppCurrentPage.setKey(this.uuid, this.page_uuid);
   }
 
-  if (appLoaded === undefined && this.uuid!="1") {
+  if (appLoaded === undefined && this.uuid !== STUDIO_APP_UUID) {
     // Fetch components
     fetch(`/api/components/application/${this.uuid}`)
       .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch components: HTTP ${response.status}`);
+        }
         return response.json();
       })
       .then((data) => {
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid components data format: expected array');
+        }
         const components = data.map((component) => component.component);
         return components;
       })
@@ -182,11 +190,17 @@ private initializeAppComponents(): void {
     // Fetch pages
     fetch(`/api/pages/application/${this.uuid}`)
       .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch pages: HTTP ${response.status}`);
+        }
         return response.json();
       })
       .then((data) => {
+        if (!Array.isArray(data) || data.length === 0) {
+          console.warn('No pages found for application');
+          return;
+        }
         this.page = data[0];
-        this.setPageStyle();
       })
       .catch((error) => {
         console.error('Error fetching pages:', error);
@@ -211,22 +225,12 @@ private initializeAppComponents(): void {
       }
     }
 
-    if (this.page) {
-      //this.page_uuid = this.page;
-    }
-
     this.refreshComponent();
-    this.setPageStyle();
   }
 }
 
   /**
-   * Définit le style de la page.
-   */
-  setPageStyle() {}
-
-  /**
-   * Configure les abonnements aux observables pertinents pour gérer la logique de rafraîchissement.
+   * Configures subscriptions to relevant observables to manage refresh logic.
    */
   private setupSubscriptions(): void {
     const observables = [
@@ -240,8 +244,8 @@ private initializeAppComponents(): void {
   }
 
   /**
-   * Crée un observable pour un store donné.
-   * @param store - Le store à observer.
+   * Creates an observable for a given store.
+   * @param store - The store to observe.
    */
   private createStoreObservable(store: any): Observable<void> {
     return new Observable((subscriber) => {
@@ -251,8 +255,8 @@ private initializeAppComponents(): void {
   }
 
   /**
-   * Crée un observable pour un événement spécifique.
-   * @param eventName - Le nom de l'événement à observer.
+   * Creates an observable for a specific event.
+   * @param eventName - The name of the event to observe.
    */
   private createEventObservable(eventName: string): Observable<void> {
     return new Observable((subscriber) => {
@@ -263,7 +267,7 @@ private initializeAppComponents(): void {
   }
 
   /**
-   * Vérifie si l'application est en mode prévisualisation.
+   * Checks if the application is in preview mode.
    */
   private isPreviewMode(): boolean {
     return this.mode === ViewMode.Preview;

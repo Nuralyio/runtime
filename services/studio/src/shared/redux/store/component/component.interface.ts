@@ -81,6 +81,10 @@ export interface ComponentElement {
   uniqueUUID?: string;
   Instance?: any; // Component instance state (reactive proxy)
   children?: ComponentElement[]; // Resolved children components
+  __microAppContext?: {
+    Vars: any;
+    runtimeContext: any;
+  }; // Micro-app isolated runtime context (set by MicroAppRuntimeContext)
 }
 
 export default {};
