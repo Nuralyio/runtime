@@ -22,7 +22,10 @@
       "Bash(npx tsc:*)",
       "Bash(timeout 120 npm run build)",
       "Bash(python3:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(npm install:*)",
+      "Bash(docker inspect:*)"
     ],
     "deny": [],
     "ask": []
