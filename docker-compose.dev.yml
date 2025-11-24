@@ -99,6 +99,24 @@ services:
       - nuraly-network
     restart: unless-stopped
 
+  # Documentation Site
+  docs:
+    build:
+      context: ./services/docs
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./services/docs:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - config/dev.env
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # Database
   postgres:
     image: postgres:15-alpine

@@ -30,6 +30,7 @@ init:
 		git submodule add https://github.com/Nuralyio/api.git services/api || true; \
 		git submodule add https://github.com/Nuralyio/functions.git services/functions || true; \
 		git submodule add https://github.com/Nuralyio/gateway.git services/gateway || true; \
+		git submodule add https://github.com/Nuralyio/docs.git services/docs || true; \
 	fi
 	git submodule update --init --recursive
 	@echo "Copying environment files..."
@@ -81,7 +82,7 @@ logs-prod:
 shell:
 	@if [ -z "$(SERVICE)" ]; then \
 		echo "Usage: make shell SERVICE=<service-name>"; \
-		echo "Available services: studio, api, functions, gateway"; \
+		echo "Available services: studio, api, functions, gateway, docs"; \
 	else \
 		docker-compose -f docker-compose.dev.yml exec $(SERVICE) /bin/sh; \
 	fi
@@ -123,7 +124,7 @@ status:
 	@git submodule status
 	@echo ""
 	@echo "Submodule directories:"
-	@for dir in services/studio services/api services/functions services/gateway; do \
+	@for dir in services/studio services/api services/functions services/gateway services/docs; do \
 		if [ -d "$$dir" ]; then \
 			echo "✅ $$dir: exists"; \
 		else \

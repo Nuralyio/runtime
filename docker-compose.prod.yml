@@ -16,6 +16,7 @@ services:
     depends_on:
       - studio
       - gateway
+      - docs
     networks:
       - nuraly-network
     restart: unless-stopped
@@ -154,6 +155,32 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+
+  # Documentation Site
+  docs:
+    build:
+      context: ./services/docs
+    ports:
+      - "6009:80"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - config/prod.env
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
 
   # Database
   postgres:
