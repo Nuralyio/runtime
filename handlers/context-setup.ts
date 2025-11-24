@@ -55,7 +55,7 @@
  * @see {@link executeHandler} for the full execution flow
  */
 
-import { ExecuteInstance } from '../state';
+import type { IRuntimeContext } from '../types/IRuntimeContext';
 
 /**
  * Helper function to create observable proxies for style objects.
@@ -202,47 +202,47 @@ const observe = (o: any, f: (target: any, prop: string, value: any) => void) => 
  * @see {@link ExecuteInstance.attachValuesProperty} for values proxy creation
  * @see {@link ExecuteInstance.styleProxyCache} for style proxy caching
  */
-export function setupRuntimeContext(component: any, EventData: any = {}): void {
-  ExecuteInstance.Current = component;
-  
+export function setupRuntimeContext(context: IRuntimeContext, component: any, EventData: any = {}): void {
+  context.Current = component;
+
   // Initialize children array if needed
   if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
     component.children = [];
     // Children will be populated in registerApplications
   }
-  
+
   // Ensure the values property is attached to the component
   if (component.uniqueUUID) {
-    ExecuteInstance.attachValuesProperty(component);
-    
+    context.attachValuesProperty(component);
+
     // Also attach values to parent components recursively
     let parentComponent = component.parent;
     while (parentComponent) {
       if (parentComponent.uniqueUUID) {
-        ExecuteInstance.attachValuesProperty(parentComponent);
+        context.attachValuesProperty(parentComponent);
       }
       parentComponent = parentComponent.parent;
     }
   }
-  
+
   // Set event data
-  ExecuteInstance.Event = EventData.event;
-  ExecuteInstance.Current.style = ExecuteInstance.Current.style ?? {};
+  context.Event = EventData.event;
+  context.Current.style = context.Current.style ?? {};
 
   // Create or retrieve style proxy for reactive style updates
-  if (!ExecuteInstance.styleProxyCache.has(ExecuteInstance.Current.style)) {
-    const newProxy = observe(ExecuteInstance.Current.style, (target, prop, value) => {
-      ExecuteInstance.setcomponentRuntimeStyleAttribute(
-        ExecuteInstance.Current.uniqueUUID,
+  if (!context.styleProxyCache.has(context.Current.style)) {
+    const newProxy = observe(context.Current.style, (target, prop, value) => {
+      context.setComponentRuntimeStyleAttribute(
+        context.Current.uniqueUUID,
         prop,
         value
       );
     });
 
-    ExecuteInstance.Current.style = newProxy;
-    ExecuteInstance.styleProxyCache.set(ExecuteInstance.Current.style, newProxy);
+    context.Current.style = newProxy;
+    context.styleProxyCache.set(context.Current.style, newProxy);
   } else {
-    ExecuteInstance.Current.style = ExecuteInstance.styleProxyCache.get(ExecuteInstance.Current.style);
+    context.Current.style = context.styleProxyCache.get(context.Current.style);
   }
 }
 
@@ -335,16 +335,16 @@ export function setupRuntimeContext(component: any, EventData: any = {}): void {
  * @see {@link ExecuteInstance} for the source of these values
  * @see {@link createGlobalHandlerFunctions} for how this context is used
  */
-export function extractRuntimeContext() {
+export function extractRuntimeContext(context: IRuntimeContext) {
   return {
-    context: ExecuteInstance.context,
-    applications: ExecuteInstance.applications,
-    Apps: ExecuteInstance.Apps,
-    Values: ExecuteInstance.Values,
-    PropertiesProxy: ExecuteInstance.PropertiesProxy,
-    VarsProxy: ExecuteInstance.VarsProxy,
-    Current: ExecuteInstance.Current,
-    currentPlatform: ExecuteInstance.currentPlatform,
-    Event: ExecuteInstance.Event,
+    context: context.context,
+    applications: context.applications,
+    Apps: context.Apps,
+    Values: context.Values,
+    PropertiesProxy: context.PropertiesProxy,
+    VarsProxy: context.VarsProxy,
+    Current: context.Current,
+    currentPlatform: context.currentPlatform,
+    Event: context.Event,
   };
 }

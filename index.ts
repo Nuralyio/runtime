@@ -69,9 +69,11 @@ export {
  * Handler execution utilities for compiling and running component handlers
  * @see {@link executeHandler} in ./handlers/handler-executor.ts
  * @see {@link compileHandlerFunction} in ./handlers/compiler.ts
+ * @see {@link getContextFromComponent} in ./handlers/handler-executor.ts
  */
 export {
   executeHandler,
+  getContextFromComponent,
   compileHandlerFunction
 } from './handlers';
 

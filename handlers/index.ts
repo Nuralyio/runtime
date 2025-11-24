@@ -129,11 +129,12 @@
 /**
  * Main function for executing handlers with full runtime context.
  * This is the primary entry point for all handler execution.
- * 
+ *
  * @see {@link handler-executor.ts} for implementation details
  */
 export {
-  executeHandler
+  executeHandler,
+  getContextFromComponent
 } from './handler-executor';
 
 // ============================================================================
@@ -175,10 +176,9 @@ export {
 /**
  * Global function creation for handler code.
  * Creates all GetVar, SetVar, NavigateToPage, etc. functions.
- * 
+ *
  * @see {@link runtime-api/index.ts} for implementation details
  */
 export {
-  createGlobalHandlerFunctions,
-  registerGlobalFunctionsToExecuteInstance
+  createGlobalHandlerFunctions
 } from './runtime-api';

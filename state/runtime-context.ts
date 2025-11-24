@@ -189,6 +189,7 @@ import { isServer } from "@shared/utils/envirement";
 import { eventDispatcher } from "@shared/utils/change-detection";
 import Editor from "./editor";
 import { executeHandler } from "../handlers/handler-executor";
+import type { IRuntimeContext } from "../types/IRuntimeContext";
 
 /**
  * Debug flag for verbose logging.
@@ -359,7 +360,7 @@ const DEBUG = false;
  * @see {@link RuntimeInstance} - Alternative export name
  * @see {@link executeHandler} - Handler execution function
  */
-class RuntimeContext {
+class RuntimeContext implements IRuntimeContext {
   /** Singleton instance of the RuntimeContext */
   static instance: RuntimeContext;
   
@@ -699,9 +700,96 @@ class RuntimeContext {
   }
 
   /**
+   * Get component by UUID.
+   * Searches through all applications to find a component by its UUID.
+   *
+   * @param uuid - Component UUID to find
+   * @returns Component element or undefined if not found
+   */
+  getComponentByUUID(uuid: string): ComponentElement | undefined {
+    // Search through all applications
+    for (const appId in this.applications) {
+      const appComponents = this.applications[appId];
+      for (const componentName in appComponents) {
+        const component = appComponents[componentName];
+        if (component.uuid === uuid) {
+          return component;
+        }
+        // Also search in children recursively
+        const found = this.findComponentInChildren(component, uuid);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Recursively search for component in children.
+   *
+   * @param parent - Parent component to search in
+   * @param uuid - UUID to find
+   * @returns Component or undefined
+   */
+  private findComponentInChildren(parent: ComponentElement, uuid: string): ComponentElement | undefined {
+    if (!parent.children || parent.children.length === 0) {
+      return undefined;
+    }
+    for (const child of parent.children) {
+      if (child.uuid === uuid) {
+        return child;
+      }
+      const found = this.findComponentInChildren(child, uuid);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  /**
+   * Get component by name.
+   *
+   * @param name - Component name
+   * @param appId - Optional application ID (uses first available app if not provided)
+   * @returns Component element or undefined if not found
+   */
+  getComponent(name: string, appId?: string): ComponentElement | undefined {
+    if (appId) {
+      return this.applications[appId]?.[name];
+    }
+    // If no appId provided, search in all applications
+    for (const applicationId in this.applications) {
+      const component = this.applications[applicationId][name];
+      if (component) return component;
+    }
+    return undefined;
+  }
+
+  /**
+   * Set variable value.
+   * Updates the variable in the reactive proxy, triggering change events.
+   *
+   * @param name - Variable name
+   * @param value - Value to set
+   */
+  setVar(name: string, value: any): void {
+    this.VarsProxy[name] = value;
+  }
+
+  /**
+   * Set component runtime style attribute.
+   * Updates the component's runtime styles and triggers re-render.
+   *
+   * @param componentId - Component unique UUID
+   * @param attribute - Style attribute name (e.g., 'backgroundColor')
+   * @param value - Style value
+   */
+  setComponentRuntimeStyleAttribute(componentId: string, attribute: string, value: any): void {
+    setcomponentRuntimeStyleAttribute(componentId, attribute, value);
+  }
+
+  /**
    * Gets the singleton instance of the RuntimeContext class.
    * Creates it if it doesn't exist yet.
-   * 
+   *
    * @returns The singleton RuntimeContext instance
    */
   static getInstance(): RuntimeContext {
