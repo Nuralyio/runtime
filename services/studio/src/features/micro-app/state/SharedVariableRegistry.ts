@@ -1,9 +1,7 @@
 /**
  * Shared Variable Registry (Singleton)
  *
- * Manages shared variable storage across all micro-app instances.
- * Provides app-level and global-level variable storage that is shared
- * between micro-apps while maintaining proper isolation.
+ * Manages shared global variable storage across all micro-app instances.
  */
 
 import { VariableScope, VariableScopeManager, type VariableDescriptor } from './VariableScopeManager'
@@ -13,7 +11,6 @@ export class SharedVariableRegistry {
 
   // Shared storage
   private globalVars: Map<string, VariableDescriptor> = new Map()
-  private appVars: Map<string, Map<string, VariableDescriptor>> = new Map()
 
   // Track active micro-apps for cleanup
   private activeMicroApps: Set<string> = new Set()
@@ -51,16 +48,6 @@ export class SharedVariableRegistry {
   }
 
   /**
-   * Get or create app-level variable storage
-   */
-  getAppVars(appId: string): Map<string, VariableDescriptor> {
-    if (!this.appVars.has(appId)) {
-      this.appVars.set(appId, new Map())
-    }
-    return this.appVars.get(appId)!
-  }
-
-  /**
    * Get global variable storage
    */
   getGlobalVars(): Map<string, VariableDescriptor> {
@@ -70,13 +57,11 @@ export class SharedVariableRegistry {
   /**
    * Create scope manager for a micro-app instance
    */
-  createScopeManager(microAppId: string, appId: string): VariableScopeManager {
+  createScopeManager(microAppId: string): VariableScopeManager {
     this.activeMicroApps.add(microAppId)
 
     return new VariableScopeManager(
       microAppId,
-      appId,
-      this.getAppVars(appId),
       this.getGlobalVars()
     )
   }
@@ -86,31 +71,6 @@ export class SharedVariableRegistry {
    */
   unregisterMicroApp(microAppId: string): void {
     this.activeMicroApps.delete(microAppId)
-  }
-
-  /**
-   * Clear app-level vars (when app unmounts)
-   */
-  clearAppVars(appId: string): void {
-    const appVars = this.appVars.get(appId)
-    if (appVars) {
-      // Notify all subscribers
-      appVars.forEach((descriptor) => {
-        if (descriptor.subscribers) {
-          descriptor.subscribers.forEach(callback => {
-            try {
-              callback(undefined)
-            } catch (error) {
-              console.error('Error in app var cleanup subscriber:', error)
-            }
-          })
-          descriptor.subscribers.clear()
-        }
-      })
-
-      appVars.clear()
-      this.appVars.delete(appId)
-    }
   }
 
   /**
@@ -181,18 +141,10 @@ export class SharedVariableRegistry {
    */
   clearAll(): void {
     // Notify all subscribers
-    this.appVars.forEach((appVarMap) => {
-      appVarMap.forEach((descriptor) => {
-        descriptor.subscribers?.clear()
-      })
-      appVarMap.clear()
-    })
-
     this.globalVars.forEach((descriptor) => {
       descriptor.subscribers?.clear()
     })
 
-    this.appVars.clear()
     this.globalVars.clear()
     this.activeMicroApps.clear()
 
@@ -206,13 +158,7 @@ export class SharedVariableRegistry {
   getDebugInfo(): any {
     return {
       activeMicroApps: Array.from(this.activeMicroApps),
-      appCount: this.appVars.size,
       globalVarCount: this.globalVars.size,
-      apps: Array.from(this.appVars.entries()).map(([appId, vars]) => ({
-        appId,
-        varCount: vars.size,
-        vars: Array.from(vars.keys())
-      })),
       globalVars: Array.from(this.globalVars.keys())
     }
   }

@@ -2,10 +2,9 @@
 /**
  * Micro App Variable Scope Demo
  *
- * This page demonstrates the three-level variable scope system:
+ * This page demonstrates the two-level variable scope system:
  * - LOCAL: Isolated to each micro-app instance
- * - APP: Shared between micro-apps with the same application_id
- * - GLOBAL: Shared across all micro-apps regardless of application_id
+ * - GLOBAL: Shared across all micro-apps
  */
 
 // Disable server-side rendering
@@ -15,10 +14,6 @@ export const prerender = false;
 const instance1AppId = "scope-demo-instance-1";
 const instance2AppId = "scope-demo-instance-2";
 const instance3AppId = "scope-demo-instance-3";
-
-// Parent app IDs for scope testing (instances 1 & 2 share app1, instance 3 uses app2)
-const app1Id = "scope-demo-app-1";
-const app2Id = "scope-demo-app-2";
 
 // Pages for Instance 1
 const instance1Pages = [
@@ -56,7 +51,7 @@ const instance3Pages = [
   },
 ];
 
-// Components for Micro-App Instance 1 (shares App 1 scope)
+// Components for Micro-App Instance 1
 const instance1Components = [
   {
     uuid: "inst1-container",
@@ -65,7 +60,7 @@ const instance1Components = [
     application_id: instance1AppId,
     pageId: "page-inst1",
     root: true,
-    childrenIds: ["inst1-title", "inst1-local-btn", "inst1-app-btn", "inst1-global-btn", "inst1-display"],
+    childrenIds: ["inst1-title", "inst1-local-btn", "inst1-global-btn", "inst1-display"],
     style: {
       display: "flex",
       flexDirection: "column",
@@ -84,7 +79,7 @@ const instance1Components = [
     pageId: "page-inst1",
     root: false,
     style: { fontSize: "18px", fontWeight: "bold", color: "#0c4a6e" },
-    input: { value: { type: "string", value: "Instance 1 (App 1)" } },
+    input: { value: { type: "string", value: "Instance 1" } },
   },
   {
     uuid: "inst1-local-btn",
@@ -100,22 +95,6 @@ const instance1Components = [
       `,
     },
     input: { label: { type: "string", value: "Set LOCAL Variable" } },
-  },
-  {
-    uuid: "inst1-app-btn",
-    name: "Set APP Button",
-    component_type: "button_input",
-    application_id: instance1AppId,
-    pageId: "page-inst1",
-    root: false,
-    event: {
-      onClick: `
-        Vars['app.sharedCounter'] = (Vars['app.sharedCounter'] || 0) + 1;
-        console.log('[Instance 1] APP counter:', Vars['app.sharedCounter']);
-      `,
-    },
-    input: { label: { type: "string", value: "Set APP Variable" } },
-    style: { backgroundColor: "#f59e0b", borderColor: "#f59e0b" },
   },
   {
     uuid: "inst1-global-btn",
@@ -146,16 +125,15 @@ const instance1Components = [
         type: "handler",
         value: `
           const local = Vars.localCounter || 0;
-          const app = Vars['app.sharedCounter'] || 0;
           const global = Vars['global.universalCounter'] || 0;
-          return 'LOCAL: ' + local + '\\nAPP: ' + app + '\\nGLOBAL: ' + global;
+          return 'LOCAL: ' + local + '\\nGLOBAL: ' + global;
         `,
       },
     },
   },
 ];
 
-// Components for Micro-App Instance 2 (shares App 1 scope with Instance 1)
+// Components for Micro-App Instance 2
 const instance2Components = [
   {
     uuid: "inst2-container",
@@ -164,7 +142,7 @@ const instance2Components = [
     application_id: instance2AppId,
     pageId: "page-inst2",
     root: true,
-    childrenIds: ["inst2-title", "inst2-local-btn", "inst2-app-btn", "inst2-global-btn", "inst2-display"],
+    childrenIds: ["inst2-title", "inst2-local-btn", "inst2-global-btn", "inst2-display"],
     style: {
       display: "flex",
       flexDirection: "column",
@@ -183,7 +161,7 @@ const instance2Components = [
     pageId: "page-inst2",
     root: false,
     style: { fontSize: "18px", fontWeight: "bold", color: "#1e3a8a" },
-    input: { value: { type: "string", value: "Instance 2 (App 1)" } },
+    input: { value: { type: "string", value: "Instance 2" } },
   },
   {
     uuid: "inst2-local-btn",
@@ -199,22 +177,6 @@ const instance2Components = [
       `,
     },
     input: { label: { type: "string", value: "Set LOCAL Variable" } },
-  },
-  {
-    uuid: "inst2-app-btn",
-    name: "Set APP Button",
-    component_type: "button_input",
-    application_id: instance2AppId,
-    pageId: "page-inst2",
-    root: false,
-    event: {
-      onClick: `
-        Vars['app.sharedCounter'] = (Vars['app.sharedCounter'] || 0) + 1;
-        console.log('[Instance 2] APP counter:', Vars['app.sharedCounter']);
-      `,
-    },
-    input: { label: { type: "string", value: "Set APP Variable" } },
-    style: { backgroundColor: "#f59e0b", borderColor: "#f59e0b" },
   },
   {
     uuid: "inst2-global-btn",
@@ -245,16 +207,15 @@ const instance2Components = [
         type: "handler",
         value: `
           const local = Vars.localCounter || 0;
-          const app = Vars['app.sharedCounter'] || 0;
           const global = Vars['global.universalCounter'] || 0;
-          return 'LOCAL: ' + local + '\\nAPP: ' + app + '\\nGLOBAL: ' + global;
+          return 'LOCAL: ' + local + '\\nGLOBAL: ' + global;
         `,
       },
     },
   },
 ];
 
-// Components for Micro-App Instance 3 (App 2 - different app, only shares GLOBAL)
+// Components for Micro-App Instance 3
 const instance3Components = [
   {
     uuid: "inst3-container",
@@ -263,7 +224,7 @@ const instance3Components = [
     application_id: instance3AppId,
     pageId: "page-inst3",
     root: true,
-    childrenIds: ["inst3-title", "inst3-local-btn", "inst3-app-btn", "inst3-global-btn", "inst3-display"],
+    childrenIds: ["inst3-title", "inst3-local-btn", "inst3-global-btn", "inst3-display"],
     style: {
       display: "flex",
       flexDirection: "column",
@@ -282,7 +243,7 @@ const instance3Components = [
     pageId: "page-inst3",
     root: false,
     style: { fontSize: "18px", fontWeight: "bold", color: "#78350f" },
-    input: { value: { type: "string", value: "Instance 3 (App 2)" } },
+    input: { value: { type: "string", value: "Instance 3" } },
   },
   {
     uuid: "inst3-local-btn",
@@ -298,22 +259,6 @@ const instance3Components = [
       `,
     },
     input: { label: { type: "string", value: "Set LOCAL Variable" } },
-  },
-  {
-    uuid: "inst3-app-btn",
-    name: "Set APP Button",
-    component_type: "button_input",
-    application_id: instance3AppId,
-    pageId: "page-inst3",
-    root: false,
-    event: {
-      onClick: `
-        Vars['app.sharedCounter'] = (Vars['app.sharedCounter'] || 0) + 1;
-        console.log('[Instance 3] APP counter (App 2):', Vars['app.sharedCounter']);
-      `,
-    },
-    input: { label: { type: "string", value: "Set APP Variable" } },
-    style: { backgroundColor: "#f59e0b", borderColor: "#f59e0b" },
   },
   {
     uuid: "inst3-global-btn",
@@ -344,9 +289,8 @@ const instance3Components = [
         type: "handler",
         value: `
           const local = Vars.localCounter || 0;
-          const app = Vars['app.sharedCounter'] || 0;
           const global = Vars['global.universalCounter'] || 0;
-          return 'LOCAL: ' + local + '\\nAPP: ' + app + '\\nGLOBAL: ' + global;
+          return 'LOCAL: ' + local + '\\nGLOBAL: ' + global;
         `,
       },
     },
@@ -422,7 +366,6 @@ const instance3Components = [
       }
 
       .scope-local { background: #e0f2fe; color: #0c4a6e; }
-      .scope-app { background: #fef3c7; color: #78350f; }
       .scope-global { background: #ede9fe; color: #5b21b6; }
 
       .instances-grid {
@@ -446,8 +389,8 @@ const instance3Components = [
       }
 
       .instructions {
-        background: #fef3c7;
-        border: 1px solid #fbbf24;
+        background: #dbeafe;
+        border: 1px solid #3b82f6;
         border-radius: 8px;
         padding: 16px;
         margin-bottom: 20px;
@@ -455,7 +398,7 @@ const instance3Components = [
 
       .instructions h3 {
         font-size: 16px;
-        color: #78350f;
+        color: #1e3a8a;
         margin-bottom: 8px;
       }
 
@@ -466,7 +409,7 @@ const instance3Components = [
 
       .instructions li {
         font-size: 13px;
-        color: #92400e;
+        color: #1e40af;
         margin-bottom: 4px;
         padding-left: 20px;
         position: relative;
@@ -483,7 +426,7 @@ const instance3Components = [
     <div class="demo-container">
       <div class="demo-header">
         <h1>Variable Scope Demo</h1>
-        <p>Three micro-app instances demonstrating LOCAL, APP, and GLOBAL variable scopes</p>
+        <p>Three micro-app instances demonstrating LOCAL and GLOBAL variable scopes</p>
 
         <div class="scope-legend">
           <div class="scope-legend-item">
@@ -491,12 +434,8 @@ const instance3Components = [
             <span>Isolated per instance</span>
           </div>
           <div class="scope-legend-item">
-            <span class="scope-badge scope-app">APP</span>
-            <span>Shared within same app</span>
-          </div>
-          <div class="scope-legend-item">
             <span class="scope-badge scope-global">GLOBAL</span>
-            <span>Shared across all apps</span>
+            <span>Shared across all instances</span>
           </div>
         </div>
       </div>
@@ -505,10 +444,8 @@ const instance3Components = [
         <h3>Try it out:</h3>
         <ul>
           <li><strong>LOCAL (Blue):</strong> Each instance has its own isolated counter - clicking in one doesn't affect others</li>
-          <li><strong>APP (Orange):</strong> Each instance has its own app-level counter (since each has a unique app ID)</li>
           <li><strong>GLOBAL (Purple):</strong> All instances share the same counter - clicking in any instance updates all displays</li>
         </ul>
-        <p style="margin-top: 8px; font-size: 12px; color: #78350f;">💡 To see APP scope sharing, instances would need the same parent application ID while keeping component isolation.</p>
       </div>
 
       <div class="instances-grid">
@@ -556,7 +493,7 @@ const instance3Components = [
       document.addEventListener("DOMContentLoaded", () => {
         const data = window.scopeDemoData;
 
-        // Instance 1 (unique app ID)
+        // Instance 1
         const instance1 = document.getElementById("instance-1");
         if (instance1) {
           instance1.uuid = data.instance1AppId;
@@ -567,7 +504,8 @@ const instance3Components = [
           instance1.mode = "preview";
           instance1.prod = true;
         }
-        // Instance 2 (unique app ID)
+
+        // Instance 2
         const instance2 = document.getElementById("instance-2");
         if (instance2) {
           instance2.uuid = data.instance2AppId;
@@ -579,7 +517,7 @@ const instance3Components = [
           instance2.prod = true;
         }
 
-        // Instance 3 (unique app ID)
+        // Instance 3
         const instance3 = document.getElementById("instance-3");
         if (instance3) {
           instance3.uuid = data.instance3AppId;

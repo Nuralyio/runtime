@@ -1,15 +1,13 @@
 /**
  * Variable Scope System for Micro-Apps
  *
- * Provides a layered variable scope system with three levels:
+ * Provides a two-tier variable scope system:
  * - LOCAL: Isolated to single micro-app instance
- * - APP: Shared between micro-apps in same parent app
  * - GLOBAL: Shared across all apps and micro-apps
  */
 
 export enum VariableScope {
   LOCAL = 'local',
-  APP = 'app',
   GLOBAL = 'global'
 }
 
@@ -23,12 +21,10 @@ export interface VariableDescriptor {
 export class VariableScopeManager {
   // Scope storage
   private localVars: Map<string, VariableDescriptor>
-  private appVars: Map<string, VariableDescriptor>  // Shared reference
   private globalVars: Map<string, VariableDescriptor>  // Shared reference
 
   // Identity
   private microAppId: string
-  private appId: string
 
   // Protected variables that cannot be modified
   private protectedGlobalVars = new Set([
@@ -39,21 +35,17 @@ export class VariableScopeManager {
 
   constructor(
     microAppId: string,
-    appId: string,
-    appVars: Map<string, VariableDescriptor>,
     globalVars: Map<string, VariableDescriptor>
   ) {
     this.microAppId = microAppId
-    this.appId = appId
     this.localVars = new Map()
-    this.appVars = appVars  // Reference to shared app-level vars
     this.globalVars = globalVars  // Reference to shared global vars
   }
 
   /**
-   * Get variable with scope resolution (local → app → global)
-   * Supports explicit scope: "global.userName", "app.selectedFile", "local.tempData"
-   * Or auto-resolution: "userName" (searches local → app → global)
+   * Get variable with scope resolution (local → global)
+   * Supports explicit scope: "global.userName", "local.tempData"
+   * Or auto-resolution: "userName" (searches local → global)
    */
   get(varName: string): any {
     // Parse scope prefix if exists
@@ -64,12 +56,9 @@ export class VariableScopeManager {
       return this.getFromScope(name, scope)
     }
 
-    // Auto-resolution: local → app → global
+    // Auto-resolution: local → global
     if (this.localVars.has(name)) {
       return this.localVars.get(name)!.value
-    }
-    if (this.appVars.has(name)) {
-      return this.appVars.get(name)!.value
     }
     if (this.globalVars.has(name)) {
       return this.globalVars.get(name)!.value
@@ -110,9 +99,6 @@ export class VariableScopeManager {
       case VariableScope.LOCAL:
         this.localVars.set(name, descriptor)
         break
-      case VariableScope.APP:
-        this.appVars.set(name, descriptor)
-        break
       case VariableScope.GLOBAL:
         this.globalVars.set(name, descriptor)
         break
@@ -124,7 +110,7 @@ export class VariableScopeManager {
 
   /**
    * Parse variable name with scope prefix
-   * Examples: "global.userName", "app.selectedFile", "local.tempData", "myVar"
+   * Examples: "global.userName", "local.tempData", "myVar"
    */
   private parseVarName(varName: string): { scope: VariableScope | null, name: string } {
     const parts = varName.split('.')
@@ -146,8 +132,6 @@ export class VariableScopeManager {
     switch (scope) {
       case VariableScope.LOCAL:
         return this.localVars.get(name)?.value
-      case VariableScope.APP:
-        return this.appVars.get(name)?.value
       case VariableScope.GLOBAL:
         return this.globalVars.get(name)?.value
     }
@@ -177,9 +161,6 @@ export class VariableScopeManager {
         case VariableScope.LOCAL:
           this.localVars.set(name, newDescriptor)
           break
-        case VariableScope.APP:
-          this.appVars.set(name, newDescriptor)
-          break
         case VariableScope.GLOBAL:
           this.globalVars.set(name, newDescriptor)
           break
@@ -195,7 +176,6 @@ export class VariableScopeManager {
 
   private resolveScope(name: string): VariableScope {
     if (this.localVars.has(name)) return VariableScope.LOCAL
-    if (this.appVars.has(name)) return VariableScope.APP
     if (this.globalVars.has(name)) return VariableScope.GLOBAL
     return VariableScope.LOCAL  // Default to local
   }
@@ -204,8 +184,6 @@ export class VariableScopeManager {
     switch (scope) {
       case VariableScope.LOCAL:
         return this.localVars.get(name)
-      case VariableScope.APP:
-        return this.appVars.get(name)
       case VariableScope.GLOBAL:
         return this.globalVars.get(name)
     }
@@ -221,18 +199,6 @@ export class VariableScopeManager {
           console.error('Error in variable subscriber:', error)
         }
       })
-    }
-  }
-
-  /**
-   * Publish local variable to app scope
-   */
-  publishToApp(localVarName: string): void {
-    const localVar = this.localVars.get(localVarName)
-    if (localVar) {
-      this.set(`app.${localVarName}`, localVar.value, VariableScope.APP)
-    } else {
-      console.warn(`Local variable "${localVarName}" not found`)
     }
   }
 
@@ -260,7 +226,6 @@ export class VariableScopeManager {
     }
 
     return this.localVars.has(name) ||
-           this.appVars.has(name) ||
            this.globalVars.has(name)
   }
 
@@ -274,16 +239,13 @@ export class VariableScopeManager {
       switch (scope) {
         case VariableScope.LOCAL:
           return this.localVars.delete(name)
-        case VariableScope.APP:
-          return this.appVars.delete(name)
         case VariableScope.GLOBAL:
           return this.globalVars.delete(name)
       }
     }
 
-    // Try to delete from local first, then app, then global
+    // Try to delete from local first, then global
     return this.localVars.delete(name) ||
-           this.appVars.delete(name) ||
            this.globalVars.delete(name)
   }
 
@@ -293,12 +255,6 @@ export class VariableScopeManager {
   getAllLocal(): Record<string, any> {
     return Object.fromEntries(
       Array.from(this.localVars.entries()).map(([k, v]) => [k, v.value])
-    )
-  }
-
-  getAllApp(): Record<string, any> {
-    return Object.fromEntries(
-      Array.from(this.appVars.entries()).map(([k, v]) => [k, v.value])
     )
   }
 
@@ -314,7 +270,6 @@ export class VariableScopeManager {
   getAll(): Record<string, any> {
     return {
       ...this.getAllGlobal(),
-      ...this.getAllApp(),
       ...this.getAllLocal()
     }
   }
@@ -346,12 +301,9 @@ export class VariableScopeManager {
   getDebugInfo(): any {
     return {
       microAppId: this.microAppId,
-      appId: this.appId,
       localVarCount: this.localVars.size,
-      appVarCount: this.appVars.size,
       globalVarCount: this.globalVars.size,
       localVars: Array.from(this.localVars.keys()),
-      appVars: Array.from(this.appVars.keys()),
       globalVars: Array.from(this.globalVars.keys())
     }
   }
