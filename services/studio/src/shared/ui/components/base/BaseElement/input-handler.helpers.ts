@@ -78,9 +78,8 @@ export async function traitInputHandler(
 
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
 
-      let fn;
       // Use unified executeHandler - it automatically detects context (micro-app vs global)
-      fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+      const fn: any = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
 
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);

@@ -14,27 +14,25 @@ export class LeftPanel extends LitElement {
 
   constructor() {
     super();
-
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    $environment.subscribe((environment: Environment) => {
+ $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
     });
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+   
+  }
+
   render() {
     return html`
-      <aside
+      <div
         class="flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
-        style="height: 100%;width : 100%;"
+        style="height: 100%;width : 300px;"
       >
-        <div class="w-full text-center">
-          <span class="font-mono text-xl font-bold tracking-widest"> </span>
-        </div>
+      
         <micro-app uuid="1" componentToRenderUUID="331" style="height: 100%;" class="flex-grow"></micro-app>
-      </aside>
+      </div>
     `;
   }
 }
