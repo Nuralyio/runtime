@@ -30,7 +30,7 @@ const config = {
   organizationName: 'Nuralyio', // Usually your GitHub org/user name.
   projectName: 'docs', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -38,6 +38,12 @@ const config = {
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
+  },
+
+  themes: ['@docusaurus/theme-mermaid'],
+
+  markdown: {
+    mermaid: true,
   },
 
   presets: [
@@ -113,7 +119,7 @@ const config = {
             items: [
               {
                 label: 'Getting Started',
-                to: '/intro',
+                to: '/',
               },
             ],
           },
