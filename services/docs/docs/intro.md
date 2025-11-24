@@ -1,47 +1,62 @@
 ---
 sidebar_position: 1
+slug: /
 ---
 
-# Tutorial Intro
+# Welcome to Nuraly Documentation
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Welcome to the **Nuraly** documentation. Here you'll find comprehensive guides and documentation to help you start working with Nuraly as quickly as possible.
 
 ## Getting Started
 
-Get started by **creating a new site**.
+Get started with Nuraly by exploring our comprehensive documentation, tutorials, and guides.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+### What is Nuraly?
 
-### What you'll need
+Nuraly is a full-stack application platform with microservices architecture, built for modern web applications. It provides:
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- **Microservices Architecture** - Modular services with clear separation of concerns
+- **Docker Compose Orchestration** - Simplified local development and deployment
+- **Authentication & Authorization** - Integrated Keycloak identity management
+- **Database Management** - PostgreSQL with automatic migrations and backups
+- **Hot Reload** - Development environment with live code updates
 
-## Generate a new site
+### Prerequisites
 
-Generate a new Docusaurus site using the **classic template**.
+To get started with Nuraly, you'll need:
 
-The classic template will automatically be added to your project after you run the command:
+- [Docker](https://docs.docker.com/get-docker/) & Docker Compose
+- [Git](https://git-scm.com/downloads)
+- [Node.js](https://nodejs.org/) version 20.0 or above
+- Make (or use manual commands)
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+## Quick Start
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
+Clone and initialize the Nuraly stack:
 
 ```bash
-cd my-website
-npm run start
+git clone https://github.com/Nuralyio/stack.git
+cd stack
+make init
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+Start the development environment:
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+```bash
+make dev-detached
+make init-dev
+```
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+Access the application at `http://localhost` with default credentials:
+- **Email**: dev@nuraly.io
+- **Password**: dev123
+
+## Next Steps
+
+Explore the documentation sections to learn more about:
+
+- Architecture and services
+- Development setup
+- Configuration options
+- Deployment strategies
+- API documentation
