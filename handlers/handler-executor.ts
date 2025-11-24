@@ -241,12 +241,16 @@ export function getContextFromComponent(component: any): IRuntimeContext {
  * @see {@link createGlobalHandlerFunctions} for available global functions
  */
 export function executeHandler(
-  context: IRuntimeContext,
   component: any,
   code: string,
   EventData: any = {},
   item: any = {}
 ): any {
+  // Automatically detect the appropriate runtime context
+  // Components in micro-apps have __microAppContext.runtimeContext
+  // Components in global runtime use ExecuteInstance
+  const context = getContextFromComponent(component);
+
   // Setup runtime context for this component
   // This sets Current, attaches values proxy, creates style proxy, etc.
   setupRuntimeContext(context, component, EventData);
