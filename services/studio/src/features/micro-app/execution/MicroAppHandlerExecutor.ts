@@ -43,7 +43,13 @@ export class MicroAppHandlerExecutor {
         GetVar: (name: string) => this.runtimeContext.getVar(name),
         SetVar: (name: string, value: any) => this.runtimeContext.setVar(name, value),
         // Variable scope methods
-        publishToApp: (varName: string) => this.runtimeContext.publishToApp(varName),
+        publishToApp: (varName: string) => {
+          if (typeof this.runtimeContext.publishToApp === 'function') {
+            return this.runtimeContext.publishToApp(varName)
+          } else {
+            throw new Error('publishToApp is not implemented in MicroAppRuntimeContext')
+          }
+        },
         publishToGlobal: (varName: string) => this.runtimeContext.publishToGlobal(varName)
       },
 
