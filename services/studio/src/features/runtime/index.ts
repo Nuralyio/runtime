@@ -82,7 +82,6 @@ export {
 // ============================================================================
 
 /**
- * MicroApp component - Renders isolated micro-applications
- * @see {@link MicroApp} in @shared/ui/components/runtime/MicroApp/MicroApp.ts
+ * Note: MicroApp component was removed from runtime exports to prevent circular dependencies.
+ * Import MicroApp directly from '@shared/ui/components/runtime/MicroApp/MicroApp' if needed.
  */
-export { MicroApp } from '@shared/ui/components/runtime/MicroApp/MicroApp';
