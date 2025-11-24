@@ -1,5 +1,5 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeHandler, getContextFromComponent } from "@features/runtime";
+import { executeHandler } from "@features/runtime";
 import { RuntimeHelpers } from "@shared/utils/runtime-helpers.ts";
 import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
@@ -48,9 +48,7 @@ export async function traitInputHandler(
       // Mark this handler as executing
       executingHandlers.add(handlerKey);
 
-      // Get the appropriate runtime context (global or micro-app)
-      const context = getContextFromComponent(ctx.component);
-      const fn = executeHandler(context, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
+      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
       return; // Exit early - inputHandler takes precedence
@@ -77,10 +75,7 @@ export async function traitInputHandler(
       executingHandlers.add(handlerKey);
 
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-
-      // Get the appropriate runtime context (global or micro-app)
-      const context = getContextFromComponent(ctx.component);
-      const fn = executeHandler(context, {...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {
@@ -116,7 +111,7 @@ export async function traitStyleHandler(
   if (isServer || !style) return;
 
   const val = style.startsWith("return ")
-    ? executeHandler(getContextFromComponent(ctx.component), ctx.component, style)
+    ? executeHandler(ctx.component, style)
     : style;
 
   if (val && ctx.stylesHandlersValue[styleName] !== val) {
