@@ -17,3 +17,6 @@
 	path = services/gateway
 	url = https://github.com/Nuralyio/gateway.git
 	branch = main
+[submodule "services/docs"]
+	path = services/docs
+	url = https://github.com/Nuralyio/docs.git

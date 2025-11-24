@@ -39,6 +39,7 @@ Access the application at `http://localhost` with credentials: **dev@nuraly.io**
 | **API** | Core backend REST API | 8000 | [Nuralyio/api](https://github.com/Nuralyio/api) |
 | **Functions** | Serverless functions runtime | 9000 | [Nuralyio/functions](https://github.com/Nuralyio/functions) |
 | **Gateway** | API gateway with routing | 80 | [Nuralyio/gateway](https://github.com/Nuralyio/gateway) |
+| **Docs** | Documentation site (Docusaurus) | 3001 | [Nuralyio/docs](https://github.com/Nuralyio/docs) |
 | **Keycloak** | Authentication server | 8090 | - |
 | **PostgreSQL** | Primary database | 5432 | - |
 | **Redis** | Cache & session store | 6379 | - |
@@ -97,6 +98,7 @@ Production setup includes:
 - Multi-replica services with health checks
 - Prometheus & Grafana monitoring
 - Automated restarts and logging
+- Documentation site available at http://localhost:6009
 
 ## Project Structure
 
@@ -106,7 +108,8 @@ stack/
 │   ├── studio/       # Frontend application
 │   ├── api/          # Backend API
 │   ├── functions/    # Serverless functions
-│   └── gateway/      # API gateway
+│   ├── gateway/      # API gateway
+│   └── docs/         # Documentation site
 ├── docker/           # Docker configurations
 ├── config/           # Environment configurations
 ├── scripts/          # Utility scripts
