@@ -25,8 +25,5 @@ export {
   type MessageType
 } from './messaging/MicroAppMessageBus'
 
-// Execution
-export { MicroAppHandlerExecutor } from './execution/MicroAppHandlerExecutor'
-
 // Utilities
 export { ComponentNamespaceManager } from './utils/ComponentNamespaceManager'

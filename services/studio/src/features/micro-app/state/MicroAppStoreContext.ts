@@ -56,9 +56,6 @@ export class MicroAppStoreContext {
   // Page manager (set after initialization for handler access)
   private _pageManager?: MicroAppPageManager
 
-  // Handler executor (set after initialization for isolated event handling)
-  public handlerExecutor?: any
-
   // Subscriptions for cleanup
   private subscriptions: Set<() => void> = new Set()
 

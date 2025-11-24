@@ -20,7 +20,6 @@ import { v4 as uuidv4 } from "uuid";
 import { MicroAppStoreContext } from "@features/micro-app/state/MicroAppStoreContext";
 import { MicroAppRuntimeContext } from "@features/micro-app/state/MicroAppRuntimeContext";
 import { MicroAppPageManager } from "@features/micro-app/state/MicroAppPageManager";
-import { MicroAppHandlerExecutor } from "@features/micro-app/execution/MicroAppHandlerExecutor";
 import { MicroAppMessageBus, MessageTypes } from "@features/micro-app/messaging/MicroAppMessageBus";
 
 
@@ -52,7 +51,6 @@ export class MicroApp extends LitElement {
   private storeContext: MicroAppStoreContext | null = null;
   private runtimeContext: MicroAppRuntimeContext | null = null;
   private pageManager: MicroAppPageManager | null = null;
-  private handlerExecutor: MicroAppHandlerExecutor | null = null;
   private messageBus: MicroAppMessageBus | null = null;
   private messageUnsubscribe: (() => void) | null = null;
 
@@ -295,12 +293,7 @@ private initializeAppComponents(): void {
       // Store page manager reference in store context for handler access
       this.storeContext.setPageManager(this.pageManager);
 
-      // 4. Create handler executor
-      this.handlerExecutor = new MicroAppHandlerExecutor(this.runtimeContext);
-      // Store reference in store context for component event handlers
-      this.storeContext.handlerExecutor = this.handlerExecutor;
-
-      // 5. Get message bus
+      // 4. Get message bus
       this.messageBus = MicroAppMessageBus.getInstance();
 
       // 6. Subscribe to messages
@@ -407,10 +400,6 @@ private initializeAppComponents(): void {
     }
 
     // Cleanup contexts in reverse order
-    if (this.handlerExecutor) {
-      this.handlerExecutor = null;
-    }
-
     if (this.pageManager) {
       this.pageManager.cleanup();
       this.pageManager = null;
