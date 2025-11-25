@@ -1,3 +1,4 @@
+
 import { $applicationComponents, $components } from "@shared/redux/store/component/store";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
@@ -13,12 +14,24 @@ import { styleMap } from "lit/directives/style-map.js";
 import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
 import { ExecuteInstance } from "@features/runtime/state/runtime-context";
 import "@shared/ui/nuraly-ui/src/shared/themes/default.css";
+import { v4 as uuidv4 } from "uuid";
 
+// Import isolated micro-app infrastructure
+import { MicroAppStoreContext } from "@features/micro-app/state/MicroAppStoreContext";
+import { MicroAppRuntimeContext } from "@features/micro-app/state/MicroAppRuntimeContext";
+import { MicroAppPageManager } from "@features/micro-app/state/MicroAppPageManager";
+import { MicroAppMessageBus, MessageTypes } from "@features/micro-app/messaging/MicroAppMessageBus";
+
+// Import data loader
+import { defaultMicroAppDataLoader, type MicroAppDataLoader } from "./MicroAppDataLoader";
+
+// Studio app UUID - special case for editor that doesn't load from API
+const STUDIO_APP_UUID = "1";
 
 @customElement("micro-app")
 export class MicroApp extends LitElement {
   static override styles = [css`
-    
+
   `];
 
   private subscription = new Subscription();
@@ -28,17 +41,34 @@ export class MicroApp extends LitElement {
   @property({ type: String, reflect: true }) componentToRenderUUID?: string;
   @property({ type: String, reflect: false }) mode: ViewMode = ViewMode.Preview;
   @property({ type: Boolean, reflect: false }) prod = true;
+  @property({ type: Boolean, reflect: false }) useIsolatedContext: boolean = false; // Feature flag
+
+  // Data loader for components and pages (optional - defaults to API loader)
+  @property({ attribute: false }) dataLoader: MicroAppDataLoader = defaultMicroAppDataLoader;
+
+  // Pre-loaded app data (optional - avoids loading step)
+  @property({ type: Array, reflect: false }) appComponents?: any[];
+  @property({ type: Array, reflect: false }) appPages?: any[];
 
   @state() components: any[] = [];
   @state() componentsToRender: any[] = [];
   @state() page: any = {};
+
+  // Isolated micro-app contexts
+  private microAppId: string = '';
+  private storeContext: MicroAppStoreContext | null = null;
+  private runtimeContext: MicroAppRuntimeContext | null = null;
+  private pageManager: MicroAppPageManager | null = null;
+  private messageBus: MicroAppMessageBus | null = null;
+  private messageUnsubscribe: (() => void) | null = null;
+  private globalVarUnsubscribe: (() => void) | null = null;
 
   constructor() {
     super();
   }
 
   /**
-   * Rafraîchit la liste des composants en fonction de l'UUID actuel et de l'UUID de la page.
+   * Refreshes the component list based on the current UUID and page UUID.
    */
   refreshComponent(): void {
     const components = $applicationComponents(this.uuid).get();
@@ -48,22 +78,38 @@ export class MicroApp extends LitElement {
   }
 
   /**
-   * Hook `updated()` de LitElement : déclenché lorsque les propriétés changent.
+   * LitElement's willUpdate() hook: triggered before rendering.
    */
-  override updated(changedProperties: Map<string, any>): void {
-    // Re-initialize if uuid property changes and becomes defined
-    if (changedProperties.has("uuid") && this.uuid) {
+  override willUpdate(changedProperties: Map<string, any>): void {
+    super.willUpdate(changedProperties);
+
+    // Handle isolated context initialization when pre-loaded data is provided
+    if (this.useIsolatedContext) {
+      // Check if appComponents or appPages were just set
+      const dataJustProvided = (
+        (changedProperties.has("appComponents") && this.appComponents) ||
+        (changedProperties.has("appPages") && this.appPages)
+      );
+
+      // Initialize isolated context if data was just provided and not initialized yet
+      if (dataJustProvided && !this.storeContext) {
+        this.initializeIsolatedContext();
+        return;
+      }
+    }
+
+    // Legacy mode: Re-initialize if uuid property changes and becomes defined
+    if (!this.useIsolatedContext && changedProperties.has("uuid") && this.uuid) {
       this.initializeAppComponents();
     }
 
     if (changedProperties.has("components") || changedProperties.has("componentToRenderUUID")|| changedProperties.has("page_uuid")) {
       this.updateComponentsToRender();
     }
-
   }
 
   /**
-   * Met à jour `componentsToRender` en fonction de la sélection actuelle.
+   * Updates componentsToRender based on the current selection.
    */
   private updateComponentsToRender(): void {
 
@@ -74,26 +120,50 @@ export class MicroApp extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.setupSubscriptions();
-    if(!ExecuteInstance.Vars.currentPlatform){
-      ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform()
+
+    // Initialize isolated context if feature is enabled
+    if (this.useIsolatedContext) {
+      // Only initialize now if we have pre-loaded data
+      // Otherwise, wait for properties to be set (handled in updated())
+      if (this.appComponents || this.appPages) {
+        this.initializeIsolatedContext();
+      }
+    } else {
+      // Legacy mode
+      this.setupSubscriptions();
+      if(!ExecuteInstance.Vars.currentPlatform){
+        ExecuteInstance.VarsProxy.currentPlatform = getInitPlatform()
+      }
+      EditorInstance.setEditorMode(this.prod);
+      this.initializeAppComponents();
     }
-    EditorInstance.setEditorMode(this.prod);
-    this.initializeAppComponents();
   }
-  
+
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    
+
   }
+
   override disconnectedCallback(): void {
     this.subscription.unsubscribe();
+
+    // Cleanup global variable subscription (both legacy and isolated modes)
+    if (this.globalVarUnsubscribe) {
+      this.globalVarUnsubscribe();
+      this.globalVarUnsubscribe = null;
+    }
+
+    // Cleanup isolated context
+    if (this.useIsolatedContext) {
+      this.cleanupIsolatedContext();
+    }
+
     super.disconnectedCallback();
   }
   
   /**
- * Récupère les composants de l'application s'ils ne sont pas déjà chargés.
- */
-private initializeAppComponents(): void {
+   * Retrieves application components if they are not already loaded.
+   */
+  private initializeAppComponents(): void {
   // Guard: Don't proceed if uuid is undefined or null
   if (!this.uuid) {
     return;
@@ -105,43 +175,36 @@ private initializeAppComponents(): void {
     $microAppCurrentPage.setKey(this.uuid, this.page_uuid);
   }
 
-  if (appLoaded === undefined && this.uuid!="1") {
-    // Fetch components
-    fetch(`/api/components/application/${this.uuid}`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        const components = data.map((component) => component.component);
-        return components;
-      })
-      .then((components) => {
-        $components.setKey(this.uuid, components);
+  if (appLoaded === undefined && this.uuid !== STUDIO_APP_UUID) {
+    // Load components using the configured data loader
+    this.dataLoader.loadComponents(this.uuid)
+      .then((result) => {
+        if (result.error) {
+          console.error('Error loading components:', result.error);
+          return;
+        }
+
+        $components.setKey(this.uuid, result.components);
         this.refreshComponent();
         this.updateComponentsToRender();
-        this.requestUpdate();
-      })
-      .catch((error) => {
-        console.error('Error fetching components:', error);
       });
 
-    // Fetch pages
-    fetch(`/api/pages/application/${this.uuid}`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.page = data[0];
-        this.setPageStyle();
-        this.requestUpdate();
-      })
-      .catch((error) => {
-        console.error('Error fetching pages:', error);
+    // Load pages using the configured data loader
+    this.dataLoader.loadPages(this.uuid)
+      .then((result) => {
+        if (result.error) {
+          console.error('Error loading pages:', result.error);
+          return;
+        }
+
+        if (result.pages.length > 0) {
+          this.page = result.pages[0];
+        }
       });
 
   } else {
 
-    if (window.__URL__) {
+    if (typeof window !== 'undefined' && window.__URL__) {
       const page = $applicationPages(this.uuid)
         .get()
         .find((page: PageElement) => page.url === window.__URL__)?.uuid;
@@ -158,22 +221,12 @@ private initializeAppComponents(): void {
       }
     }
 
-    if (this.page) {
-      //this.page_uuid = this.page;
-    }
-
     this.refreshComponent();
-    this.setPageStyle();
   }
 }
 
   /**
-   * Définit le style de la page.
-   */
-  setPageStyle() {}
-
-  /**
-   * Configure les abonnements aux observables pertinents pour gérer la logique de rafraîchissement.
+   * Configures subscriptions to relevant observables to manage refresh logic.
    */
   private setupSubscriptions(): void {
     const observables = [
@@ -184,11 +237,25 @@ private initializeAppComponents(): void {
       .subscribe(() => this.refreshComponent());
 
     this.subscription.add(mergedSubscription);
+
+    // Subscribe to global variable changes to trigger micro-app re-render (LEGACY MODE)
+    // This ensures that when global variables change, the micro-app components re-render
+    const globalVarHandler = (data: any) => {
+      console.log(`[MicroApp ${this.uuid}] [LEGACY] Global variable changed: ${data.varName} = ${data.value}`);
+      // Trigger refresh of the micro-app
+      this.refreshComponent();
+    };
+    eventDispatcher.on('global:variable:changed', globalVarHandler);
+
+    // Store unsubscribe function for cleanup
+    this.globalVarUnsubscribe = () => {
+      eventDispatcher.off('global:variable:changed', globalVarHandler);
+    };
   }
 
   /**
-   * Crée un observable pour un store donné.
-   * @param store - Le store à observer.
+   * Creates an observable for a given store.
+   * @param store - The store to observe.
    */
   private createStoreObservable(store: any): Observable<void> {
     return new Observable((subscriber) => {
@@ -198,8 +265,8 @@ private initializeAppComponents(): void {
   }
 
   /**
-   * Crée un observable pour un événement spécifique.
-   * @param eventName - Le nom de l'événement à observer.
+   * Creates an observable for a specific event.
+   * @param eventName - The name of the event to observe.
    */
   private createEventObservable(eventName: string): Observable<void> {
     return new Observable((subscriber) => {
@@ -210,10 +277,185 @@ private initializeAppComponents(): void {
   }
 
   /**
-   * Vérifie si l'application est en mode prévisualisation.
+   * Checks if the application is in preview mode.
    */
   private isPreviewMode(): boolean {
     return this.mode === ViewMode.Preview;
+  }
+
+  /**
+   * Initialize isolated micro-app context
+   */
+  private async initializeIsolatedContext(): Promise<void> {
+    try {
+      // Generate unique micro-app instance ID using proper UUID
+      this.microAppId = `${this.uuid}_${uuidv4()}`;
+
+      // 1. Create store context with optional pre-loaded data
+      this.storeContext = new MicroAppStoreContext(
+        this.microAppId,
+        this.uuid,
+        this.appComponents,
+        this.appPages
+      );
+
+      // 2. Create runtime context
+      this.runtimeContext = new MicroAppRuntimeContext(this.storeContext);
+
+      // 3. Create page manager
+      this.pageManager = new MicroAppPageManager(this.storeContext);
+      // Store page manager reference in store context for handler access
+      this.storeContext.setPageManager(this.pageManager);
+
+      // 4. Get message bus
+      this.messageBus = MicroAppMessageBus.getInstance();
+
+      // 6. Subscribe to messages
+      this.messageUnsubscribe = this.messageBus.subscribe(this.microAppId, (message) => {
+        this.handleMessage(message);
+      });
+
+      // 7. Load application data
+      await this.storeContext.loadApplication();
+
+      // 8. Load pages
+      await this.pageManager.loadPages();
+
+      // 9. Register components in runtime
+      this.runtimeContext.registerComponents();
+
+      // 9.5. Sync components to global store so Container can find children
+      // This is needed because Container.ts looks up children in the global $components store
+      const componentsWithChildren = this.storeContext.getComponents();
+      $components.setKey(this.uuid, componentsWithChildren);
+
+      // 10. Setup subscriptions to isolated stores
+      this.setupIsolatedSubscriptions();
+
+      // 11. Update component list
+      this.refreshIsolatedComponents();
+
+      // 12. Set platform if not already set
+      if (!this.runtimeContext.getVar('currentPlatform')) {
+        this.runtimeContext.setVar('currentPlatform', getInitPlatform());
+      }
+
+      EditorInstance.setEditorMode(this.prod);
+
+    } catch (error) {
+      console.error(`[MicroApp] Failed to initialize isolated context:`, error);
+    }
+  }
+
+  /**
+   * Handle incoming messages from message bus
+   */
+  private handleMessage(message: any): void {
+    switch (message.type) {
+      case MessageTypes.FILE_SELECTED:
+        // Handle file selection from Files micro-app
+        break;
+      case MessageTypes.DATA_UPDATED:
+        // Handle data updates
+        this.requestUpdate();
+        break;
+      default:
+        // Handle custom messages
+        break;
+    }
+  }
+
+  /**
+   * Setup subscriptions to isolated stores
+   */
+  private setupIsolatedSubscriptions(): void {
+    if (!this.storeContext) return;
+
+    // Subscribe to component changes
+    const componentsUnsub = this.storeContext.$components.subscribe(() => {
+      this.refreshIsolatedComponents();
+    });
+    this.subscription.add(componentsUnsub);
+
+    // Subscribe to page changes
+    const pagesUnsub = this.storeContext.$pages.subscribe(() => {
+      this.pageManager?.reloadPages();
+    });
+    this.subscription.add(pagesUnsub);
+
+    // Subscribe to global variable changes to trigger micro-app re-render
+    // This ensures that when global variables change, the micro-app components re-render
+    const globalVarHandler = (data: any) => {
+      console.log(`[MicroApp ${this.uuid}] Global variable changed: ${data.varName} = ${data.value}`);
+      // Trigger re-render of the entire micro-app
+      this.requestUpdate();
+    };
+    eventDispatcher.on('global:variable:changed', globalVarHandler);
+
+    // Store unsubscribe function for cleanup
+    this.globalVarUnsubscribe = () => {
+      eventDispatcher.off('global:variable:changed', globalVarHandler);
+    };
+  }
+
+  /**
+   * Refresh components from isolated store
+   */
+  private refreshIsolatedComponents(): void {
+    if (!this.storeContext || !this.pageManager) return;
+
+    const allComponents = this.storeContext.getComponents();
+    const currentPage = this.pageManager.getCurrentPage();
+
+    // Filter components by page if page_uuid is specified
+    this.components = this.page_uuid
+      ? allComponents.filter((component) => component.pageId === this.page_uuid && component.root === true)
+      : currentPage
+      ? allComponents.filter((component) => component.pageId === currentPage.uuid && component.root === true)
+      : allComponents.filter((component) => component.root === true);
+
+    this.updateComponentsToRender();
+  }
+
+  /**
+   * Cleanup isolated context
+   */
+  private cleanupIsolatedContext(): void {
+    // Unsubscribe from messages
+    if (this.messageUnsubscribe) {
+      this.messageUnsubscribe();
+      this.messageUnsubscribe = null;
+    }
+
+    // Note: Global variable subscription cleanup is handled in disconnectedCallback()
+
+    // Cleanup contexts in reverse order
+    if (this.pageManager) {
+      this.pageManager.cleanup();
+      this.pageManager = null;
+    }
+
+    if (this.runtimeContext) {
+      this.runtimeContext.cleanup();
+      this.runtimeContext = null;
+    }
+
+    if (this.storeContext) {
+      this.storeContext.cleanup();
+      this.storeContext = null;
+    }
+
+    this.messageBus = null;
+  }
+
+  /**
+   * Get the execution context (isolated or global)
+   */
+  private getExecutionContext(): any {
+    if (this.useIsolatedContext && this.runtimeContext) {
+      return this.runtimeContext;
+    }
+    return ExecuteInstance;
   }
 
   override render() {

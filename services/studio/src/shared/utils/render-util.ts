@@ -2,6 +2,7 @@ import { type ComponentElement, ComponentType } from "@shared/redux/store/compon
 import { html, type TemplateResult } from "lit";
 import "@nuralyui/tooltips";
 import "@shared/ui/components/layout/Tabs/Tabs";
+import "@shared/ui/components/layout/Containers/Container";
 import "@shared/ui/components/navigation/Menu/Menu";
 import "@shared/ui/components/inputs/ColorPicker/colorpicker";
 import "@shared/ui/components/inputs/NumberInput/NumberInput";

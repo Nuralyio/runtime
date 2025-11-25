@@ -75,6 +75,11 @@ export const $applicationPages = ($application_id: string) =>
  */
 export const $currentPage = ($application_id: string, currentPageId: string) =>
   computed([$applicationPages($application_id)], (pages) => {
+    // SSR guard: ensure pages is an array
+    if (!Array.isArray(pages)) {
+      return undefined;
+    }
+
     const currentPage = pages.find((page) => {
       return page.uuid === currentPageId;
     });

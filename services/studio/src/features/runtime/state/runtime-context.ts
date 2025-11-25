@@ -189,6 +189,8 @@ import { isServer } from "@shared/utils/envirement";
 import { eventDispatcher } from "@shared/utils/change-detection";
 import Editor from "./editor";
 import { executeHandler } from "../handlers/handler-executor";
+import type { IRuntimeContext } from "../types/IRuntimeContext";
+import { RuntimeContextHelpers } from "../utils/RuntimeContextHelpers";
 
 /**
  * Debug flag for verbose logging.
@@ -359,7 +361,7 @@ const DEBUG = false;
  * @see {@link RuntimeInstance} - Alternative export name
  * @see {@link executeHandler} - Handler execution function
  */
-class RuntimeContext {
+class RuntimeContext implements IRuntimeContext {
   /** Singleton instance of the RuntimeContext */
   static instance: RuntimeContext;
   
@@ -449,217 +451,100 @@ class RuntimeContext {
   /**
    * Creates a reactive proxy for the target object.
    * Tracks property access and changes, triggers events on property updates.
-   * 
+   *
+   * Uses RuntimeContextHelpers to eliminate code duplication with MicroAppRuntimeContext.
+   *
    * @param target - Object to be proxied
    * @param scope - Optional scope name for event namespacing
    * @returns Reactive proxy for the target object
    */
-  createProxy(target: any, scope?): any {
-    const self = this;
-
-    if (typeof target !== "object" || target === null) {
-      return target;
-    }
-
-    return new Proxy(target, {
-      get(target, prop, receiver) {
-        if (DEBUG) {
-          console.log(`[DEBUG] Accessing property '${String(prop)}'`);
-        }
-
-        const value = Reflect.get(target, prop, receiver);
-
-        if (!self.listeners[String(prop)]) {
-          self.listeners[String(prop)] = new Set<string>();
-        }
-
-        if (self.Current.name) {
-          self.listeners[String(prop)].add(self.Current.name);
-        }
-
-        if (typeof value === "object" && value !== null) {
-          const nestedProxy = new Proxy(value, {
-            set(targetNested, propNested, valueNested, receiverNested) {
-              const oldValue = targetNested[propNested as string];
-              const result = Reflect.set(targetNested, propNested, valueNested, receiverNested);
-
-              if (DEBUG) {
-                console.log(
-                  `[DEBUG] Updated nested property '${String(propNested)}' from '${oldValue}' to '${valueNested}'`
-                );
-              }
-
-              if (!deepEqual(oldValue, valueNested)) {
-                self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, {
-                    prop,
-                    value: valueNested,
-                    ctx: self.Current
-                  });
-                });
-              }
-
-              return result;
-            },
-            deleteProperty(targetNested, propNested) {
-              if (DEBUG) {
-                console.log(`[DEBUG] Deleting nested property '${String(propNested)}'`);
-              }
-
-              const result = Reflect.deleteProperty(targetNested, propNested);
-              if (result) {
-                self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`component-property-changed:${componentName}`, {
-                    prop,
-                    ctx: self.Current
-                  });
-                });
-              }
-              return result;
-            },
-          });
-
-          return nestedProxy;
-        }
-
-        return value;
-      },
-
-      set(target, prop, value, receiver) {
-        const oldValue = target[prop as string];
-
-        // Guard: Don't emit events if the value hasn't actually changed
-        if (deepEqual(oldValue, value)) {
-          return true;
-        }
-
-        const result = Reflect.set(target, prop, value, receiver);
-
-        if (scope) {
-          eventDispatcher.emit(`${scope}:${String(prop)}`, { value, ctx: self.Current });
-        }
-
-        if (DEBUG) {
-          console.log(`[DEBUG] Set property '${String(prop)}' from '${oldValue}' to '${value}'`);
-        }
-
-        self.listeners[String(prop)]?.forEach((componentName: string) => {
+  createProxy(target: any, scope?: string): any {
+    return RuntimeContextHelpers.createReactiveProxy(target, {
+      eventPrefix: '', // Empty prefix for global context (no scoping)
+      scope,
+      listeners: this.listeners,
+      current: this.Current,
+      onPropertyChange: (prop: string, value: any, listeners: Set<string>) => {
+        // Emit events to all listeners for this property
+        listeners.forEach((componentName: string) => {
           eventDispatcher.emit(`component-property-changed:${componentName}`, {
             prop,
-            ctx: self.Current
+            value, // IMPORTANT: Include value in event data
+            ctx: this.Current
           });
         });
 
-        return result;
-      },
-
-      deleteProperty(target, prop) {
-        if (DEBUG) {
-          console.log(`[DEBUG] Deleting property '${String(prop)}'`);
-        }
-
-        const result = Reflect.deleteProperty(target, prop);
-        if (result) {
-          self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`component-property-changed:${componentName}`, {
-              prop,
-              ctx: self.Current
-            });
+        // IMPORTANT: Emit global variable change events for micro-apps to listen to
+        // This ensures that when global RuntimeContext changes a variable, all micro-apps are notified
+        if (scope === 'Vars') {
+          if (DEBUG) {
+            console.log(`[RuntimeContext] Emitting global variable change: ${prop} = ${value}`);
+          }
+          eventDispatcher.emit('global:variable:changed', {
+            varName: prop,
+            name: prop,
+            value,
+            oldValue: undefined // Global context doesn't track oldValue
           });
         }
-        return result;
       },
+      debug: DEBUG
     });
   }
 
   /**
    * Attaches a values property to the component that is backed by $runtimeValues.
    * Creates a reactive proxy that interacts with the global runtime values store.
-   * 
+   *
+   * Uses RuntimeContextHelpers to eliminate code duplication with MicroAppRuntimeContext.
+   *
    * @param component - The component to attach the values property to
    */
   attachValuesProperty(component: any) {
     const componentId = component.uniqueUUID;
-    
+
     if (!componentId) {
       console.error('Cannot attach values property: component uniqueUUID is undefined');
       return;
     }
-    
-    // If we already created a proxy for this component, return it
-    if (this.valuesProxyCache.has(component)) {
-      component.Instance = this.valuesProxyCache.get(component);
-      return;
-    }
-    
-    // Create a proxy object that reads/writes to the runtime values store
-    const valuesProxy = new Proxy({}, {
-      get: (target, prop) => {
-        // Get the current values from the store
-        const runtimeValues = $runtimeValues.get();
-        const componentValues :any= runtimeValues[componentId] || {};
-        return componentValues[prop];
-      },
-      
-      set: (target, prop, value) => {
-        // Set the value in the store
-        setComponentRuntimeValue(componentId, prop.toString(), value);
-        eventDispatcher.emit(`component:value:set:${componentId}`)
-        return true;
-      },
-      
-      deleteProperty: (target, prop) => {
-        // Clear the specific value from the store
-        const runtimeValues = $runtimeValues.get();
-        const componentValues : any = { ...(runtimeValues[componentId] || {}) };
-        
-        if (prop in componentValues) {
-          delete componentValues[prop];
-          setComponentRuntimeValues(componentId, componentValues);
-          
-          // Emit an event
-          eventDispatcher.emit('component:value:remove', {
-            componentId,
-            key: prop
-          });
+
+    // Use RuntimeContextHelpers to create the values proxy
+    const valuesProxy = RuntimeContextHelpers.createValuesProxy(
+      component,
+      {
+        // Backend: Global runtime values store
+        get: (id: string, prop: string) => {
+          const runtimeValues = $runtimeValues.get();
+          return runtimeValues[id]?.[prop];
+        },
+        set: (id: string, prop: string, value: any) => {
+          setComponentRuntimeValue(id, prop, value);
+        },
+        has: (id: string, prop: string) => {
+          const runtimeValues = $runtimeValues.get();
+          return prop in (runtimeValues[id] || {});
+        },
+        delete: (id: string, prop: string) => {
+          const runtimeValues = $runtimeValues.get();
+          const componentValues = { ...(runtimeValues[id] || {}) };
+          if (prop in componentValues) {
+            delete componentValues[prop];
+            setComponentRuntimeValues(id, componentValues);
+            eventDispatcher.emit('component:value:remove', { componentId: id, key: prop });
+          }
+        },
+        keys: (id: string) => {
+          const runtimeValues = $runtimeValues.get();
+          return Object.keys(runtimeValues[id] || {});
         }
-        
-        return true;
       },
-      
-      // Support iterating over values with Object.keys, for...in, etc.
-      ownKeys: (target) => {
-        const runtimeValues = $runtimeValues.get();
-        const componentValues = runtimeValues[componentId] || {};
-        return Reflect.ownKeys(componentValues);
+      (id: string, prop: string, value: any) => {
+        // Emit event when value changes
+        eventDispatcher.emit(`component:value:set:${id}`, { prop, value });
       },
-      
-      getOwnPropertyDescriptor: (target, prop) => {
-        const runtimeValues = $runtimeValues.get();
-        const componentValues :any= runtimeValues[componentId] || {};
-        
-        if (prop in componentValues) {
-          return {
-            value: componentValues[prop],
-            writable: true,
-            enumerable: true,
-            configurable: true
-          };
-        }
-        
-        return undefined;
-      },
-      
-      has: (target, prop) => {
-        const runtimeValues = $runtimeValues.get();
-        const componentValues = runtimeValues[componentId] || {};
-        return prop in componentValues;
-      }
-    });
-    
-    // Cache the proxy
-    this.valuesProxyCache.set(component, valuesProxy);
-    
+      this.valuesProxyCache
+    );
+
     // Attach the proxy to the component
     component.Instance = valuesProxy;
   }
@@ -699,9 +584,96 @@ class RuntimeContext {
   }
 
   /**
+   * Get component by UUID.
+   * Searches through all applications to find a component by its UUID.
+   *
+   * @param uuid - Component UUID to find
+   * @returns Component element or undefined if not found
+   */
+  getComponentByUUID(uuid: string): ComponentElement | undefined {
+    // Search through all applications
+    for (const appId in this.applications) {
+      const appComponents = this.applications[appId];
+      for (const componentName in appComponents) {
+        const component = appComponents[componentName];
+        if (component.uuid === uuid) {
+          return component;
+        }
+        // Also search in children recursively
+        const found = this.findComponentInChildren(component, uuid);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Recursively search for component in children.
+   *
+   * @param parent - Parent component to search in
+   * @param uuid - UUID to find
+   * @returns Component or undefined
+   */
+  private findComponentInChildren(parent: ComponentElement, uuid: string): ComponentElement | undefined {
+    if (!parent.children || parent.children.length === 0) {
+      return undefined;
+    }
+    for (const child of parent.children) {
+      if (child.uuid === uuid) {
+        return child;
+      }
+      const found = this.findComponentInChildren(child, uuid);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  /**
+   * Get component by name.
+   *
+   * @param name - Component name
+   * @param appId - Optional application ID (uses first available app if not provided)
+   * @returns Component element or undefined if not found
+   */
+  getComponent(name: string, appId?: string): ComponentElement | undefined {
+    if (appId) {
+      return this.applications[appId]?.[name];
+    }
+    // If no appId provided, search in all applications
+    for (const applicationId in this.applications) {
+      const component = this.applications[applicationId][name];
+      if (component) return component;
+    }
+    return undefined;
+  }
+
+  /**
+   * Set variable value.
+   * Updates the variable in the reactive proxy, triggering change events.
+   *
+   * @param name - Variable name
+   * @param value - Value to set
+   */
+  setVar(name: string, value: any): void {
+    this.VarsProxy[name] = value;
+  }
+
+  /**
+   * Set component runtime style attribute.
+   * Updates the component's runtime styles and triggers re-render.
+   *
+   * @param componentId - Component unique UUID
+   * @param attribute - Style attribute name (e.g., 'backgroundColor')
+   * @param value - Style value
+   */
+  setComponentRuntimeStyleAttribute(componentId: string, attribute: string, value: any): void {
+    setcomponentRuntimeStyleAttribute(componentId, attribute, value);
+  }
+
+  /**
    * Gets the singleton instance of the RuntimeContext class.
    * Creates it if it doesn't exist yet.
-   * 
+   *
    * @returns The singleton RuntimeContext instance
    */
   static getInstance(): RuntimeContext {

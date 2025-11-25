@@ -26,8 +26,8 @@ export function handleComponentEvent({
         ...data,
         event
       };
-      
-      
+
+      // Use unified executeHandler - it automatically detects context (micro-app vs global)
       executeHandler(
         component,
         getNestedAttribute(component, `event.${eventName}`),

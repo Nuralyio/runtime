@@ -1,0 +1,264 @@
+---
+/**
+ * Micro App Demo Page
+ *
+ * This page demonstrates how to use the MicroApp component with pre-loaded JSON data.
+ * The micro app uses the new isolated architecture with variable scoping.
+ */
+
+// Sample application data
+const appId = "demo-app-001";
+
+// Disable server-side rendering for this page since it uses client-side web components
+export const prerender = false;
+
+// Sample page data
+const appPages = [
+  {
+    uuid: "page-001",
+    application_id: appId,
+    name: "Home",
+    url: "/home",
+    description: "Demo home page",
+    is_default: true,
+    style: {
+      backgroundColor: "#f5f5f5",
+      padding: "20px",
+    },
+  },
+];
+
+// Sample component data
+const appComponents = [
+  // Root Container
+  {
+    uuid: "comp-001",
+    name: "Main Container",
+    component_type: "vertical-container-block",
+    application_id: appId,
+    pageId: "page-001",
+    root: true,
+    childrenIds: ["comp-002", "comp-003", "comp-004"],
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "20px",
+      padding: "40px",
+      maxWidth: "800px",
+      margin: "0 auto",
+      backgroundColor: "white",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    },
+    parameters: {},
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {},
+  },
+  // Title Text Label
+  {
+    uuid: "comp-002",
+    name: "Title",
+    component_type: "text_label",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+    style: {
+      fontSize: "32px",
+      fontWeight: "bold",
+      color: "#1a1a1a",
+      marginBottom: "10px",
+    },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {
+       value: {
+        type: "string",
+        value:
+         "Welcome to Micro App Demo"
+      },
+    },
+  },
+  // Description Text Label
+  {
+    uuid: "comp-003",
+    name: "Description",
+    component_type: "text_label",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+    parameters: {},
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {
+      value: {
+        type: "string",
+        value:
+          "This micro app is loaded from JSON data with the new isolated architecture. It demonstrates variable scoping (LOCAL, APP, GLOBAL) and isolated runtime context.",
+      },
+    },
+  },
+  // Button
+  {
+    uuid: "comp-004",
+    name: "Demo Button",
+    component_type: "button_input",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+
+    event: {
+      onClick: /* js */ `
+        // Use Vars for reactive state that triggers UI updates
+        // Variables support scope: local (default), app, or global
+
+        // Local scope (isolated to this micro-app instance)
+        Vars.clickCount = (Vars.clickCount || 0) + 1;
+
+        // Or explicitly: Vars['local.clickCount'] = ...
+        // App scope: Vars['app.sharedData'] = ...
+        // Global scope: Vars['global.theme'] = ...
+
+        const message = 'Button clicked ' + Vars.clickCount + ' times!';
+        console.log('[MicroApp Demo] ' + message);
+
+        // Example: Instance is for component-scoped non-reactive state
+        Instance.lastClickTime = Date.now();
+        console.log('[MicroApp Demo] Last click at:', new Date(Instance.lastClickTime).toLocaleTimeString());
+      `,
+    },
+    input: {
+      label: {
+        type: "string",
+        value: "Click Me",
+      }
+    },
+  },
+  // Counter Display
+  {
+    uuid: "comp-005",
+    name: "Counter Display",
+    component_type: "text_label",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+    style: {
+      fontSize: "14px",
+      color: "#888",
+      marginTop: "10px",
+      fontStyle: "italic",
+    },
+    parameters: {},
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {
+      value: {
+        type: "handler",
+        value: `
+          return "Click the button to see the counter in action" + (Vars.clickCount ? ": " + Vars.clickCount : "");
+        `,
+      },
+    },
+  },
+];
+
+// Add the counter display to the container's children
+appComponents[0].childrenIds.push("comp-005");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micro App Demo - Nuraly Studio</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f9fafb;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .demo-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .demo-header {
+        margin-bottom: 24px;
+      }
+
+      .demo-header h1 {
+        font-size: 24px;
+        color: #111827;
+        margin-bottom: 4px;
+      }
+
+      .demo-header p {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .micro-app-wrapper {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      micro-app {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-container">
+      <div class="demo-header">
+        <h1>Micro App Demo</h1>
+        <p>Isolated runtime with variable scoping</p>
+      </div>
+
+      <div class="micro-app-wrapper">
+        <micro-app id="demo-micro-app"></micro-app>
+      </div>
+    </div>
+
+    <script is:inline define:vars={{ appId, appComponents, appPages }}>
+      // This script has access to the server-side variables via define:vars
+      window.appData = {
+        appId,
+        appComponents,
+        appPages,
+      };
+    </script>
+
+    <script>
+      // Import the MicroApp component
+      import "@shared/ui/components/runtime/MicroApp/MicroApp";
+
+      // Wait for DOM and component to be ready
+      document.addEventListener("DOMContentLoaded", () => {
+        const microApp = document.getElementById("demo-micro-app");
+
+        if (microApp && window.appData) {
+          // Set properties on the web component
+          microApp.uuid = window.appData.appId;
+          microApp.page_uuid = "page-001";
+          microApp.useIsolatedContext = true;
+          microApp.appComponents = window.appData.appComponents;
+          microApp.appPages = window.appData.appPages;
+          microApp.mode = "preview";
+          microApp.prod = true;
+        }
+      });
+    </script>
+  </body>
+</html>

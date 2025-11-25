@@ -1,5 +1,5 @@
 import { getNestedAttribute } from "@shared/utils/object.utils";
-import { executeHandler } from "@features/runtime/state/runtime-context";
+import { executeHandler } from "@features/runtime";
 import { RuntimeHelpers } from "@shared/utils/runtime-helpers.ts";
 import { isServer } from "@shared/utils/envirement";
 import type { Ref } from "lit/directives/ref.js";
@@ -48,7 +48,9 @@ export async function traitInputHandler(
       // Mark this handler as executing
       executingHandlers.add(handlerKey);
 
+      // Use unified executeHandler - it automatically detects context (micro-app vs global)
       const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, inputHandler, undefined, { ...ctx.item });
+
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
       return; // Exit early - inputHandler takes precedence
@@ -75,7 +77,10 @@ export async function traitInputHandler(
       executingHandlers.add(handlerKey);
 
       const raw = getNestedAttribute(ctx.component, `input.${inputName}`).value;
-      const fn = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+
+      // Use unified executeHandler - it automatically detects context (micro-app vs global)
+      const fn: any = executeHandler({...ctx.component, uniqueUUID : ctx.uniqueUUID}, raw, undefined, { ...ctx.item });
+
       const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
       setResult(result);
     } catch (error: any) {
