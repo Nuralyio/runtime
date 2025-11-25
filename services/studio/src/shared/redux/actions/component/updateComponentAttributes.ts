@@ -7,7 +7,8 @@ import { updateComponentHandler } from "@shared/redux/handlers/components/update
 import type { UpdateType } from "@shared/redux/actions/component.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
-
+import { validateComponentHandlers } from "@shared/utils/handler-validator.ts";
+import { formatValidationErrors } from "@shared/utils/validation-error-formatter";
 export function updateComponentAttributes(
   application_id: string,
   componentId: string,
@@ -29,6 +30,7 @@ export function updateComponentAttributes(
   );
 
   if (componentIndex !== -1) {
+    // Get the component to update
     const componentToUpdate = applicationComponents[componentIndex];
 
     // Decide how to read currentAttributes (e.g., from breakpoints for non-desktop style updates)
@@ -69,6 +71,18 @@ export function updateComponentAttributes(
   }
 
     if (needsUpdate) {
+      // FIRST: Save original state for potential rollback
+      // Using 'in' operator to check if property exists regardless of value (including null/undefined)
+      const hasOriginalUpdateType = updateType in componentToUpdate;
+      const hasOriginalBreakpoints = 'breakpoints' in componentToUpdate;
+      const originalState = {
+        [updateType]: hasOriginalUpdateType ? structuredClone(componentToUpdate[updateType]) : undefined,
+        breakpoints: hasOriginalBreakpoints ? structuredClone(componentToUpdate.breakpoints) : undefined,
+        hasUpdateType: hasOriginalUpdateType,
+        hasBreakpoints: hasOriginalBreakpoints,
+      };
+
+      // SECOND: Apply the updates directly to the component
       if ((updateType === "style" || (updateType === "input" && updatedAttributes.type !=="handler")) && currentPlatform.platform !== "desktop") {
         // Initialize breakpoints if not already
         componentToUpdate.breakpoints = componentToUpdate.breakpoints || {};
@@ -88,8 +102,6 @@ export function updateComponentAttributes(
               componentToUpdate.breakpoints[currentPlatform.width][updateType] || {};
             componentToUpdate.breakpoints[currentPlatform.width][updateType][key] = value;
             }
-            // Otherwise, set/update the attribute in the breakpoint
-           
           }
         }
       
@@ -111,7 +123,48 @@ export function updateComponentAttributes(
         };
       }
 
-      // Directly update the component in the store
+      // THIRD: Validate the modified component
+      const validationResult = validateComponentHandlers(componentToUpdate);
+
+      if (!validationResult.valid) {
+        // Validation failed - revert to original state
+        if (originalState.hasUpdateType) {
+          componentToUpdate[updateType] = originalState[updateType];
+        } else {
+          delete componentToUpdate[updateType];
+        }
+        
+        if (originalState.hasBreakpoints) {
+          componentToUpdate.breakpoints = originalState.breakpoints;
+        } else {
+          delete componentToUpdate.breakpoints;
+        }
+
+        // Format errors and show to user
+        const errorMessage = formatValidationErrors(validationResult.errors);
+
+        // Emit validation error event for UI notifications
+        eventDispatcher.emit("component:validation-error", {
+          componentId: componentToUpdate.uuid,
+          errors: validationResult.errors,
+          message: errorMessage
+        });
+
+        // Log to console for debugging
+        eventDispatcher.emit("kernel:log", {
+          type: "error",
+          message: "Handler Validation Failed",
+          details: errorMessage,
+          errors: validationResult.errors
+        });
+
+        console.error("Handler validation failed:", validationResult.errors);
+
+        // DO NOT save to store - validation failed
+        return;
+      }
+
+      // FOURTH: Save the validated component to the store
       $components.setKey(`${application_id}[${componentIndex}]`, componentToUpdate);
 
       // Optionally save the update to persistent store / DB
@@ -123,7 +176,7 @@ export function updateComponentAttributes(
 
       // Update selected components if needed
       const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents;
-      const index = selectedComponents.findIndex(c => c.uuid === componentToUpdate.uuid);
+      const index = selectedComponents.findIndex((c: ComponentElement) => c.uuid === componentToUpdate.uuid);
       if (index !== -1) {
           ExecuteInstance.VarsProxy.selectedComponents[index] = componentToUpdate;
       }

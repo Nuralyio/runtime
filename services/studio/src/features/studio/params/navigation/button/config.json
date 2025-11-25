@@ -29,8 +29,9 @@
         "valueHandler": { "ref": "componentInput", "params": ["label"] },
         "stateHandler": { "ref": "inputHandler", "params": ["label"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["label", "value"] }
-        }
+          "onChange": { "ref": "updateInput", "params": ["label", "value"] }
+        },
+        "handlerType": "input"
       },
       {
         "name": "id",

@@ -16,20 +16,28 @@ export class HandlerGenerator {
     const handlerProperty = property.handlerProperty || property.name;
     
     // Resolve custom value getter or use default
-    const valueGetter = property.handlerValueGetter 
+    const valueGetter = property.handlerValueGetter
       ? HandlerResolver.resolveHandler(property.handlerValueGetter, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
       : `
         const parameter = '${handlerProperty}';
         let handlerValue = '';
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        
+
         if (selectedComponent) {
-          ${handlerType === 'style' 
-            ? `handlerValue = selectedComponent?.styleHandlers?.['${handlerProperty}'] || '';`
-            : `handlerValue = selectedComponent?.inputHandlers?.['${handlerProperty}'] || '';`
+          ${handlerType === 'style'
+            ? `// Check styleHandlers first, then static handler definition
+               handlerValue = selectedComponent?.styleHandlers?.['${handlerProperty}'] || '';
+               if (!handlerValue && selectedComponent?.style?.['${handlerProperty}']?.type === 'handler') {
+                 handlerValue = selectedComponent.style['${handlerProperty}'].value || '';
+               }`
+            : `// Check inputHandlers first, then static handler definition
+               handlerValue = selectedComponent?.inputHandlers?.['${handlerProperty}'] || '';
+               if (!handlerValue && selectedComponent?.input?.['${handlerProperty}']?.type === 'handler') {
+                 handlerValue = selectedComponent.input['${handlerProperty}'].value || '';
+               }`
           }
         }
-        
+
         return [parameter, handlerValue];
       `;
     
