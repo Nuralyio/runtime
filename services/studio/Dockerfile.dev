@@ -1,5 +1,8 @@
 FROM node:latest
 
+# Create a non-root user for security
+RUN useradd -m -u 1000 nodeuser
+
 WORKDIR /app
 
 # Copy package files
@@ -10,6 +13,12 @@ RUN npm install --force || npm install
 
 # Copy source code
 COPY . .
+
+# Change ownership of app directory to non-root user
+RUN chown -R nodeuser:nodeuser /app
+
+# Switch to non-root user
+USER nodeuser
 
 # Expose the dev server port
 EXPOSE 3000
