@@ -1,8 +1,8 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import '@nuralyui/toast';
-import { $toasts, type Toast } from '../../../../shared/redux/store/toast';
-import { hideToast } from '../../../../services/toast';
+import { $toasts, type Toast } from '@shared/redux/store/toast';
+import { hideToast } from '@services/toast';
 
 // Singleton instance tracker
 let toastContainerInstance: ToastContainer | null = null;
