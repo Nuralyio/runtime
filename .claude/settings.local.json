@@ -25,7 +25,9 @@
       "Bash(find:*)",
       "Bash(tree:*)",
       "Bash(npm install:*)",
-      "Bash(docker inspect:*)"
+      "Bash(docker inspect:*)",
+      "Bash(cat:*)",
+      "Bash(make dev-detached:*)"
     ],
     "deny": [],
     "ask": []
