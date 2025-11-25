@@ -162,6 +162,13 @@ export const HANDLER_PARAMETERS = [
   "UploadFile",
   "BrowseFiles",
   "Instance",
+  "ShowToast",
+  "ShowSuccessToast",
+  "ShowErrorToast",
+  "ShowWarningToast",
+  "ShowInfoToast",
+  "HideToast",
+  "ClearAllToasts",
 ] as const;
 
 /**
