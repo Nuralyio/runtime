@@ -19,15 +19,15 @@ export function handleComponentEvent({
   onSelect?: (e: Event) => void;
 }) {
 
-  if (isViewMode) {
+  if (true)  {//use isViewMode when integrating preview mode
     const code = component.event?.[eventName];
     if (code) {
       const EventData = {
         ...data,
         event
       };
-
-      // Use unified executeHandler - it automatically detects context (micro-app vs global)
+      
+      
       executeHandler(
         component,
         getNestedAttribute(component, `event.${eventName}`),
