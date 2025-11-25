@@ -409,6 +409,23 @@ export function validateComponentHandlers(component: any): ValidationResult {
     });
   }
 
+  // Validate style handlers (nested in style property)
+  if (component.style) {
+    Object.entries(component.style).forEach(([styleName, value]: [string, any]) => {
+      if (value && typeof value === 'object' && value.type === 'handler' && typeof value.value === 'string') {
+        const result = validateHandlerCode(value.value);
+        if (!result.valid) {
+          result.errors.forEach(error => {
+            allErrors.push({
+              ...error,
+              code: `style.${styleName}: ${error.code || value.value.split('\n')[0]}`,
+            });
+          });
+        }
+      }
+    });
+  }
+
   // Validate inputHandlers
   if (component.inputHandlers) {
     Object.entries(component.inputHandlers).forEach(([inputName, code]) => {
