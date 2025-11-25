@@ -69,9 +69,11 @@ export {
  * Handler execution utilities for compiling and running component handlers
  * @see {@link executeHandler} in ./handlers/handler-executor.ts
  * @see {@link compileHandlerFunction} in ./handlers/compiler.ts
+ * @see {@link getContextFromComponent} in ./handlers/handler-executor.ts
  */
 export {
   executeHandler,
+  getContextFromComponent,
   compileHandlerFunction
 } from './handlers';
 
@@ -80,7 +82,6 @@ export {
 // ============================================================================
 
 /**
- * MicroApp component - Renders isolated micro-applications
- * @see {@link MicroApp} in @shared/ui/components/runtime/MicroApp/MicroApp.ts
+ * Note: MicroApp component was removed from runtime exports to prevent circular dependencies.
+ * Import MicroApp directly from '@shared/ui/components/runtime/MicroApp/MicroApp' if needed.
  */
-export { MicroApp } from '@shared/ui/components/runtime/MicroApp/MicroApp';

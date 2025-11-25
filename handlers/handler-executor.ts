@@ -93,7 +93,21 @@ import Database from '@nuraly/dbclient';
 
 import { compileHandlerFunction } from './compiler';
 import { setupRuntimeContext, extractRuntimeContext } from './context-setup';
-import { createGlobalHandlerFunctions, registerGlobalFunctionsToExecuteInstance } from './runtime-api';
+import { createGlobalHandlerFunctions } from './runtime-api';
+import type { IRuntimeContext } from '../types/IRuntimeContext';
+import { ExecuteInstance } from '../state';
+
+/**
+ * Get runtime context from component.
+ * Components in micro-apps have __microAppContext.runtimeContext attached.
+ * Components in global runtime use ExecuteInstance.
+ *
+ * @param component - Component to get context from
+ * @returns Runtime context (micro-app or global)
+ */
+export function getContextFromComponent(component: any): IRuntimeContext {
+  return component?.__microAppContext?.runtimeContext || ExecuteInstance;
+}
 
 /**
  * Executes a component handler with full runtime context.
@@ -232,9 +246,14 @@ export function executeHandler(
   EventData: any = {},
   item: any = {}
 ): any {
+  // Automatically detect the appropriate runtime context
+  // Components in micro-apps have __microAppContext.runtimeContext
+  // Components in global runtime use ExecuteInstance
+  const context = getContextFromComponent(component);
+
   // Setup runtime context for this component
   // This sets Current, attaches values proxy, creates style proxy, etc.
-  setupRuntimeContext(component, EventData);
+  setupRuntimeContext(context, component, EventData);
 
   // Skip execution on server (SSR)
   // Handlers are client-side only to prevent side effects during SSR
@@ -243,13 +262,10 @@ export function executeHandler(
   }
 
   // Extract all runtime context values
-  const runtimeContext = extractRuntimeContext();
+  const runtimeContext = extractRuntimeContext(context);
 
   // Create global functions available to the handler
   const globalFunctions = createGlobalHandlerFunctions(runtimeContext);
-  
-  // Register key functions to ExecuteInstance
-  registerGlobalFunctionsToExecuteInstance(globalFunctions);
 
   // Compile the handler code
   const compiledFunction = compileHandlerFunction(code);
@@ -309,6 +325,7 @@ export function executeHandler(
     RuntimeHelpers, // Passed as "Utils" parameter for handler code
     customConsole,
     globalFunctions.UploadFile,
-    globalFunctions.BrowseFiles
+    globalFunctions.BrowseFiles,
+    component.Instance || {} // Component instance state (used by micro-apps)
   );
 }
