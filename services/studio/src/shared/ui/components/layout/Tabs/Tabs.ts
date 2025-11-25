@@ -31,7 +31,7 @@ export class TabsBlock extends BaseElementBlock {
       this.editableTabs = this.generateTabs();
     })
   }
-  override async update(changedProperties: Map<string | number | symbol, unknown>) {
+  override update(changedProperties: Map<string | number | symbol, unknown>) {
     super.update(changedProperties);
     if (changedProperties.has("component")) {
       this.updateComponents();
