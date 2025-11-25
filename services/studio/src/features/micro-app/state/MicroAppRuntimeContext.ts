@@ -245,11 +245,6 @@ export class MicroAppRuntimeContext {
         component.children = component.childrenIds
           .map(childId => {
             const child = this.getComponentByUUID(childId)
-            if (!child && DEBUG) {
-              console.warn(
-                `[MicroApp ${this.eventNamespace}] Warning: Child component with UUID "${childId}" not found for parent "${component.name}" (UUID: ${component.uuid})`
-              )
-            }
             return child
           })
           .filter(Boolean) as ComponentElement[]
