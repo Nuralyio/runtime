@@ -7,7 +7,7 @@
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 import { eventDispatcher } from "@shared/utils/change-detection.ts";
-import { executeHandler, ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
+import { executeHandler, ExecuteInstance } from "@features/runtime";
 import { getNestedAttribute, hasOnlyEmptyObjects } from "@shared/utils/object.utils.ts";
 import Editor from "@runtime/state/editor.ts";
 import EditorInstance, { getInitPlatform } from "@runtime/state/editor.ts";
@@ -224,7 +224,7 @@ export class BaseElementBlock extends LitElement {
     })
   )
   this.subscription.add(
-  
+
     eventDispatcher.on("Vars:currentEditingMode", () => {
       const code = getNestedAttribute(this.component, `event.onInit`);
       if (code) executeHandler(this.component, code, {}, { ...this.item });
@@ -284,16 +284,13 @@ export class BaseElementBlock extends LitElement {
    * @param {PropertyValueMap<any>} changedProperties - Map of changed properties
    * @override
    */
-  override async update(changedProperties) {
+  override update(changedProperties) {
     super.update(changedProperties);
 
-    changedProperties.forEach((_old, prop) => {
-      if (prop !== "component") return;
-
+    if (changedProperties.has("component")) {
       const prev = changedProperties.get("component");
       const curr = this.component;
 
-     
       if (prev?.event?.onInit !== curr?.event?.onInit) {
         executeHandler(curr, getNestedAttribute(curr, "event.onInit"), {}, this.item);
       }
@@ -311,7 +308,7 @@ export class BaseElementBlock extends LitElement {
         // Re-process handlers even if UUID hasn't changed
         // This ensures property updates in the studio are reflected
       }
-    });
+    }
   }
 
   /**
@@ -369,7 +366,6 @@ export class BaseElementBlock extends LitElement {
     this.subscription.add(
       $runtimeStylescomponentStyleByID(this.uniqueUUID).subscribe((styles) => {
         this.runtimeStyles = styles;
-        this.requestUpdate();
       })
     );
     this.subscription.add(
@@ -406,7 +402,6 @@ export class BaseElementBlock extends LitElement {
         setTimeout(() => {
           this.traitInputsHandlers();
           this.traitStylesHandlers();
-          this.requestUpdate();
         }, 0);
       })
     );
