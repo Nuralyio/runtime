@@ -279,13 +279,13 @@ export class BaseElementBlock extends LitElement {
   }
 
   /**
-   * Handles component updates before rendering
-   *
+   * Handles component updates
+   * 
    * @param {PropertyValueMap<any>} changedProperties - Map of changed properties
    * @override
    */
-  override willUpdate(changedProperties) {
-    super.willUpdate(changedProperties);
+  override update(changedProperties) {
+    super.update(changedProperties);
 
     if (changedProperties.has("component")) {
       const prev = changedProperties.get("component");
