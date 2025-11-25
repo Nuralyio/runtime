@@ -80,17 +80,12 @@ constructor() {
 
   renderEvent(eventName, eventValue) {
     return html`
-
       <nr-dropdown
-        placeholder="Select an option"
-        @closed=${() => {
-    }}
-        .template=${this.renderCodeEditorTemplate(eventName, eventValue)}
-      >
+        placement="bottom-start"
+        trigger="click">
         <nr-button
-
-          style=${styleMap(
-      {
+          slot="trigger"
+          style=${styleMap({
         "--nuraly-button-text-color": "#b8b8b8",
         "--nuraly-button-height": "39px",
         "--nuraly-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
@@ -99,18 +94,16 @@ constructor() {
         "--nuraly-button-border-right": "none",
         "--nuraly-button-border-top": "none",
         "--nuraly-button-border-bottom": "none"
-
       })}
           .icon=${["code"]}
           class="unit"
           iconPosition=${!this.inputHandlersValue?.triggerText ? "left" : "right"}
         >${this.inputHandlersValue?.triggerText ?? ""}
         </nr-button>
-        <nr-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
-          Set the value programmatically using Javascript script
-        </nr-tooltip>
+        <div slot="content" style="padding: 12px; min-width: 400px;">
+          ${this.renderCodeEditorTemplate(eventName, eventValue)}
+        </div>
       </nr-dropdown>
-      
     `;
   }
 
@@ -130,21 +123,13 @@ constructor() {
           </nr-label>
           
           <nr-dropdown
-            style=${styleMap({
-        "--nuraly-dropdown-padding": "5px",
-        "--nuraly-dropdown-border-radius": "5px"
-      })}
-            @click-item=${(e: CustomEvent) => {
-        this.createHandleCodeChange(e.detail.value);
-      }}
-            .options=${
-        allowedEvents.filter(
-          event => !this.inputHandlersValue?.events[event.name]
-        ).map((event) => {
-          return { label: event.label, value: event.name };
-        })
-      }>
+            placement="bottom-start"
+            trigger="click"
+            @nr-dropdown-item-click=${(e: CustomEvent) => {
+        this.createHandleCodeChange(e.detail.item.value);
+      }}>
             <nr-button
+              slot="trigger"
               style=${styleMap({
         "--nuraly-button-text-color": "#b8b8b8",
         "--nuraly-button-height": "39px",
@@ -159,9 +144,24 @@ constructor() {
               class="unit"
             >${this.inputHandlersValue?.triggerText ?? ""}
             </nr-button>
-            <nr-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
-              add trigger
-            </nr-tooltip>
+            <div slot="content">
+              ${allowedEvents.filter(
+          event => !this.inputHandlersValue?.events[event.name]
+        ).map((event) => {
+          return html`
+            <button 
+              style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px;"
+              @click=${(e: Event) => {
+          e.preventDefault();
+          this.createHandleCodeChange(event.name);
+          const dropdown = this.renderRoot.querySelector('nr-dropdown');
+          if(dropdown) (dropdown as any).open = false;
+        }}>
+              <span>${event.label}</span>
+            </button>
+          `;
+        })}
+            </div>
           </nr-dropdown>
           <div>
             ${Object.keys(this.inputHandlersValue?.events).map((eventName) => {
@@ -170,26 +170,26 @@ constructor() {
         return html`
                 <div class="container">
                   <nr-label>${eventName}</nr-label>
-                  <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
                     <nr-button
                       style=${styleMap({
           "--nuraly-button-text-color": "#b8b8b8",
           "--nuraly-button-height": "39px",
-          "--nuraly-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+          "--nuraly-button-width": "30px",
           "--nuraly-button-background-color": "transparent",
           "--nuraly-button-border-left": "none",
           "--nuraly-button-border-right": "none",
           "--nuraly-button-border-top": "none",
           "--nuraly-button-border-bottom": "none"
         })}
-                      .icon=${["remove"]}
+                      .icon=${["trash"]}
                       class="unit"
-                      @click=${() => this.removeHandler(eventName)}
-                    >${this.inputHandlersValue?.triggerText ?? ""}
-                    </nr-button>
-                    <nr-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
-                      Remove trigger
-                    </nr-tooltip>
+                      @click=${() => {
+          this.removeHandler(eventName);
+          this.requestUpdate();
+        }}
+                      title="Delete this trigger"
+                    ></nr-button>
                     ${this.renderEvent(eventName, eventsHandlers[eventName])}
                   </div>
                 </div>
