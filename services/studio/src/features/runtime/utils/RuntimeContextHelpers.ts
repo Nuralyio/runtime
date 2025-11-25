@@ -208,7 +208,7 @@ export class RuntimeContextHelpers {
     target: T,
     config: NestedProxyConfig
   ): T {
-    const { eventPrefix, scope, listeners, current, onPropertyChange, parentProp, debug = false } = config;
+    const { eventPrefix, scope, listeners, current, parentProp, debug = false } = config;
 
     return new Proxy(target, {
       set(proxyTarget, prop, value, receiver) {
