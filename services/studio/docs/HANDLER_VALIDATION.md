@@ -343,7 +343,7 @@ The validation system implements multiple layers of security:
    - Improves user experience
 
 2. **Defensive validation** (compiler)
-   - Regex-based pattern matching
+   - AST-based validation (same as client-side, enforced at compile time)
    - Catches bypassed validation
    - Last line of defense before execution
 
