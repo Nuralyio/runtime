@@ -43,6 +43,50 @@
         "handlerProperty": "options",
         "handlerValueGetter": "const parameter = 'options';\nlet labelHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.options?.type === 'handler' && selectedComponent?.input?.options?.value) {\n    labelHandler = selectedComponent?.input?.options.value;\n}else if (selectedComponent?.input?.options?.type ===  \"array\" && selectedComponent?.input?.options?.value) {\n    labelHandler = JSON.stringify(selectedComponent?.input?.options.value, null, 2);\n}\nreturn [parameter, labelHandler];",
         "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (EventData.value !== selectedComponent?.input?.options?.value) {\n    const isNotHandler = !EventData.value.includes('return');\n\n    if (isNotHandler) {\n        updateInput(\n            selectedComponent,\n            'options',\n            selectedComponent?.input?.options?.type,\n            JSON.parse(EventData.value)\n        );\n    } else {\n        updateInput(\n            selectedComponent,\n            'options',\n            'handler',\n            EventData.value\n        );\n    }\n}"
+      },
+      {
+        "name": "items",
+        "label": "Items",
+        "type": "event",
+        "handlerType": "input",
+        "handlerProperty": "items",
+        "handlerValueGetter": "const parameter = 'items';\nlet labelHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.items?.type === 'handler' && selectedComponent?.input?.items?.value) {\n    labelHandler = selectedComponent?.input?.items.value;\n}else if (selectedComponent?.input?.items?.type ===  \"array\" && selectedComponent?.input?.items?.value) {\n    labelHandler = JSON.stringify(selectedComponent?.input?.items.value, null, 2);\n}\nreturn [parameter, labelHandler];",
+        "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (EventData.value !== selectedComponent?.input?.items?.value) {\n    const isNotHandler = !EventData.value.includes('return');\n\n    if (isNotHandler) {\n        updateInput(\n            selectedComponent,\n            'items',\n            selectedComponent?.input?.items?.type,\n            JSON.parse(EventData.value)\n        );\n    } else {\n        updateInput(\n            selectedComponent,\n            'items',\n            'handler',\n            EventData.value\n        );\n    }\n}"
+      },
+      {
+        "name": "size",
+        "label": "Size",
+        "type": "dropdown",
+        "default": "medium",
+        "width": "100%",
+        "placeholder": "Select size",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" }
+        ],
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.size?.type == 'value') {\n  return selectedComponent.input?.size?.value ?? 'medium';\n}\nreturn 'medium';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newSize = EventData.value;\nupdateInput(selectedComponent, 'size', 'string', newSize);"
+        }
+      },
+      {
+        "name": "arrowPosition",
+        "label": "Arrow Position",
+        "type": "dropdown",
+        "default": "right",
+        "width": "100%",
+        "placeholder": "Select arrow position",
+        "options": [
+          { "label": "Left", "value": "left" },
+          { "label": "Right", "value": "right" }
+        ],
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.arrowPosition?.type == 'value') {\n  return selectedComponent.input?.arrowPosition?.value ?? 'right';\n}\nreturn 'right';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.input?.arrowPosition?.type == 'handler' && selectedComponent?.input?.arrowPosition?.value) {\n  state = 'disabled';\n}\nreturn state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newArrowPosition = EventData.value;\nupdateInput(selectedComponent, 'arrowPosition', 'string', newArrowPosition);"
+        }
       }
     ]
   }

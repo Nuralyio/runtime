@@ -50,6 +50,43 @@
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "previewable"
+      },
+      {
+        "name": "poster",
+        "label": "Poster",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Poster image URL",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.poster?.type=='value'){ return selectedComponent.input?.poster?.value??''; } return '';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let state = 'enabled'; if(selectedComponent.input?.poster?.type =='handler'&&selectedComponent.input?.poster?.value){ state = 'disabled' } return state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents); const newPoster = EventData.value; updateInput(selectedComponent,'poster','string',newPoster);"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "poster"
+      },
+      {
+        "name": "preload",
+        "label": "Preload",
+        "type": "dropdown",
+        "default": "metadata",
+        "width": "180px",
+        "placeholder": "Select preload mode",
+        "options": [
+          { "label": "None", "value": "none" },
+          { "label": "Metadata", "value": "metadata" },
+          { "label": "Auto", "value": "auto" }
+        ],
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.preload?.type=='value'){ return selectedComponent.input?.preload?.value??'metadata'; } return 'metadata';",
+        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let state = 'enabled'; if(selectedComponent.input?.preload?.type =='handler'&&selectedComponent.input?.preload?.value){ state = 'disabled' } return state;",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents); const newPreload = EventData.value; updateInput(selectedComponent,'preload','string',newPreload);"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "preload"
       }
     ]
   }
