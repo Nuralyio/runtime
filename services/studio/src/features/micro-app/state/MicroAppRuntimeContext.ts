@@ -92,7 +92,7 @@ export class MicroAppRuntimeContext {
         }
 
         // Set via scope manager (defaults to local scope)
-        scopeManager.set(String(prop), value, VariableScope.LOCAL)
+        scopeManager.set(varName, value, targetScope)
 
         // Update internal Vars object for compatibility
         target[prop as string] = value
