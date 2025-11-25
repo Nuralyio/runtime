@@ -1,5 +1,6 @@
 import { $toasts, type Toast } from '../../shared/redux/store/toast';
 import { eventDispatcher } from '../../shared/utils/change-detection';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Shows a toast notification
@@ -12,7 +13,7 @@ export function showToast(options: {
   duration?: number;
   closable?: boolean;
 }): string {
-  const id = `toast-${Date.now()}-${Math.random()}`;
+  const id = `toast-${uuidv4()}`;
   const toast: Toast = {
     id,
     type: 'info',
