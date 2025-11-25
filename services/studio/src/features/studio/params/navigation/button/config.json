@@ -30,7 +30,8 @@
         "stateHandler": { "ref": "inputHandler", "params": ["label"] },
         "eventHandlers": {
           "onChange": { "ref": "updateInput", "params": ["label", "value"] }
-        }
+        },
+        "handlerType": "input"
       },
       {
         "name": "id",
