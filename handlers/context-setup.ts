@@ -90,12 +90,11 @@ import type { IRuntimeContext } from '../types/IRuntimeContext';
 const observe = (o: any, f: (target: any, prop: string, value: any) => void) => new Proxy(o, {
   set: (target: any, prop: string | symbol, value: any) => {
     // Only process string properties (not Symbols)
+    let result = Reflect.set(target, prop, value);
     if (typeof prop === 'string') {
       f(target, prop, value);
     }
-    // Set the property on the target
-    target[prop] = value;
-    return true;
+    return result;
   }
 });
 
