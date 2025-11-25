@@ -4,7 +4,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(git checkout:*)",
       "Bash(timeout 60 npm run build:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
