@@ -22,6 +22,9 @@ import { MicroAppRuntimeContext } from "@features/micro-app/state/MicroAppRuntim
 import { MicroAppPageManager } from "@features/micro-app/state/MicroAppPageManager";
 import { MicroAppMessageBus, MessageTypes } from "@features/micro-app/messaging/MicroAppMessageBus";
 
+// Import data loader
+import { defaultMicroAppDataLoader, type MicroAppDataLoader } from "./MicroAppDataLoader";
+
 // Studio app UUID - special case for editor that doesn't load from API
 const STUDIO_APP_UUID = "1";
 
@@ -39,6 +42,9 @@ export class MicroApp extends LitElement {
   @property({ type: String, reflect: false }) mode: ViewMode = ViewMode.Preview;
   @property({ type: Boolean, reflect: false }) prod = true;
   @property({ type: Boolean, reflect: false }) useIsolatedContext: boolean = false; // Feature flag
+
+  // Data loader for components and pages (optional - defaults to API loader)
+  @property({ attribute: false }) dataLoader: MicroAppDataLoader = defaultMicroAppDataLoader;
 
   // Pre-loaded app data (optional - avoids loading step)
   @property({ type: Array, reflect: false }) appComponents?: any[];
@@ -170,47 +176,30 @@ export class MicroApp extends LitElement {
   }
 
   if (appLoaded === undefined && this.uuid !== STUDIO_APP_UUID) {
-    // Fetch components
-    fetch(`/api/components/application/${this.uuid}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Failed to fetch components: HTTP ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid components data format: expected array');
-        }
-        const components = data.map((component) => component.component);
-        return components;
-      })
-      .then((components) => {
-        $components.setKey(this.uuid, components);
-        this.refreshComponent();
-        this.updateComponentsToRender();
-      })
-      .catch((error) => {
-        console.error('Error fetching components:', error);
-      });
-
-    // Fetch pages
-    fetch(`/api/pages/application/${this.uuid}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Failed to fetch pages: HTTP ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!Array.isArray(data) || data.length === 0) {
-          console.warn('No pages found for application');
+    // Load components using the configured data loader
+    this.dataLoader.loadComponents(this.uuid)
+      .then((result) => {
+        if (result.error) {
+          console.error('Error loading components:', result.error);
           return;
         }
-        this.page = data[0];
-      })
-      .catch((error) => {
-        console.error('Error fetching pages:', error);
+
+        $components.setKey(this.uuid, result.components);
+        this.refreshComponent();
+        this.updateComponentsToRender();
+      });
+
+    // Load pages using the configured data loader
+    this.dataLoader.loadPages(this.uuid)
+      .then((result) => {
+        if (result.error) {
+          console.error('Error loading pages:', result.error);
+          return;
+        }
+
+        if (result.pages.length > 0) {
+          this.page = result.pages[0];
+        }
       });
 
   } else {
