@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import '@nuralyui/toast';
 import { $toasts, type Toast } from '@shared/redux/store/toast';
 import { hideToast } from '@services/toast';
@@ -9,15 +9,16 @@ let toastContainerInstance: ToastContainer | null = null;
 
 /**
  * Global toast container component (Singleton)
- * Automatically manages all toast notifications
+ * Automatically manages all toast notifications using the nr-toast component
  *
  * This component is self-initializing and should not be manually added to pages.
  * The MicroApp component will automatically create an instance when needed.
  */
 @customElement('toast-container')
 export class ToastContainer extends LitElement {
-  @state() private toasts: Toast[] = [];
+  private toastElement: any = null;
   private unsubscribe?: () => void;
+  private shownToastIds = new Set<string>();
 
   /**
    * Gets or creates the singleton instance
@@ -52,7 +53,7 @@ export class ToastContainer extends LitElement {
 
     // Subscribe to global toast store
     this.unsubscribe = $toasts.subscribe((state) => {
-      this.toasts = state.toasts;
+      this.processToastUpdates(state.toasts);
     });
   }
 
@@ -67,52 +68,53 @@ export class ToastContainer extends LitElement {
     this.unsubscribe?.();
   }
 
-  private handleClose(id: string) {
-    hideToast(id);
+  private processToastUpdates(toasts: Toast[]): void {
+    // Get the nr-toast element
+    if (!this.toastElement && this.shadowRoot) {
+      this.toastElement = this.shadowRoot.querySelector('nr-toast');
+    }
+
+    if (!this.toastElement) {
+      return;
+    }
+
+    // Show only new toasts that haven't been shown yet
+    toasts.forEach((toast) => {
+      if (!this.shownToastIds.has(toast.id)) {
+        this.shownToastIds.add(toast.id);
+        this.toastElement.show({
+          text: toast.message,
+          type: toast.type || 'info',
+          duration: toast.duration,
+          autoDismiss: toast.duration ? toast.duration > 0 : true,
+          closable: toast.closable !== false,
+          onClose: () => {
+            hideToast(toast.id);
+            this.shownToastIds.delete(toast.id);
+          }
+        });
+      }
+    });
+  }
+
+  override firstUpdated(): void {
+    // Get reference to the nr-toast element after first render
+    this.toastElement = this.shadowRoot?.querySelector('nr-toast');
   }
 
   render() {
-    if (this.toasts.length === 0) {
-      return html``;
-    }
-
     return html`
-      <div class="toast-wrapper">
-        ${this.toasts.map(toast => html`
-          <nr-toast
-            key=${toast.id}
-            .message=${toast.message}
-            .type=${toast.type || 'info'}
-            .closable=${toast.closable !== false}
-            @close=${() => this.handleClose(toast.id)}
-          ></nr-toast>
-        `)}
-      </div>
+      <nr-toast 
+        position="top-right"
+        stack
+        max-toasts="5"
+      ></nr-toast>
     `;
   }
 
   static styles = css`
     :host {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      pointer-events: none;
-      max-width: 400px;
-    }
-
-    .toast-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    nr-toast {
-      pointer-events: auto;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --nuraly-z-index-toast: 10000;
     }
   `;
 }
