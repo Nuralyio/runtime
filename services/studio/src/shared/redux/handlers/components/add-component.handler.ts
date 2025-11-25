@@ -6,7 +6,7 @@ import { validateAndEmitErrors } from "./validation-handler";
 export const addComponentHandler = ({ component }: AddComponentRequest, currentApplicatinId) => {
   // Validate handlers before saving
   const validationError = validateAndEmitErrors(component);
-  if (validationError) return validationError;
+  if (validationError instanceof Promise) return validationError;
 
   delete component.parent;
   delete component.children ;
