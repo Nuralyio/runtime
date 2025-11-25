@@ -51,6 +51,7 @@ export class CodeEditor extends LitElement {
   `;
 
   editor?: monaco.editor.IStandaloneCodeEditor;
+  private isEditorReady = false;
 
   @property({ type: Boolean, attribute: "readonly" }) readonly?: boolean;
   @property() theme?: string = "";
@@ -269,6 +270,8 @@ export class CodeEditor extends LitElement {
         automaticLayout: true,
         readOnly: this.readonly ?? false,
       });
+      // Mark editor as ready for updates
+      this.isEditorReady = true;
     } catch (error) {
       console.error('CodeEditor: Failed to create editor instance', error);
       return;
@@ -352,6 +355,7 @@ export class CodeEditor extends LitElement {
       model?.dispose();
       this.editor = undefined;
     }
+    this.isEditorReady = false;
   }
 
   /**
@@ -360,13 +364,23 @@ export class CodeEditor extends LitElement {
   protected update(changedProperties: PropertyValues) {
     super.update(changedProperties);
 
+    // Don't process updates until editor is initialized
+    if (!this.isEditorReady) {
+      return;
+    }
+
     if (
       changedProperties.has("code") &&
       this.code !== changedProperties.get("code")
     ) {
       // Guard: Only update if editor instance exists
       if (!this.editor) {
-        console.warn('CodeEditor: Editor instance not available, skipping update');
+        return;
+      }
+
+      // Guard: Make sure the editor has a model before trying to edit it
+      const model = this.editor.getModel();
+      if (!model) {
         return;
       }
 
@@ -379,7 +393,8 @@ export class CodeEditor extends LitElement {
             this.editor.setPosition(cursorPosition);
           }
         } catch (e) {
-          console.error("CodeEditor: Error setting editor value:", e);
+          // Silently ignore errors - Monaco services might be temporarily unavailable
+          // The editor will still be functional
         }
       }
     }
@@ -387,23 +402,28 @@ export class CodeEditor extends LitElement {
       changedProperties.has("readonly") &&
       this.readonly !== changedProperties.get("readonly")
     ) {
-
-      this.editor?.updateOptions({
-        readOnly: this.readonly ?? false,
-      });
-
+      try {
+        this.editor?.updateOptions({
+          readOnly: this.readonly ?? false,
+        });
+      } catch (e) {
+        // Silently ignore
+      }
     }
 
     if (
       changedProperties.has("language") &&
       this.language !== changedProperties.get("language")
     ) {
-
-      if (this.editor && this.editor.getModel()) {
-        monaco.editor.setModelLanguage(
-          this.editor.getModel()!,
-          this.language || "plaintext"
-        );
+      try {
+        if (this.editor && this.editor.getModel()) {
+          monaco.editor.setModelLanguage(
+            this.editor.getModel()!,
+            this.language || "plaintext"
+          );
+        }
+      } catch (e) {
+        // Silently ignore
       }
     }
 
@@ -411,11 +431,13 @@ export class CodeEditor extends LitElement {
       changedProperties.has("theme") &&
       this.theme !== changedProperties.get("theme")
     ) {
-
-      this.editor?.updateOptions({
-        theme: this.theme 
-      });
-
+      try {
+        this.editor?.updateOptions({
+          theme: this.theme 
+        });
+      } catch (e) {
+        // Silently ignore
+      }
     }
   }
 
