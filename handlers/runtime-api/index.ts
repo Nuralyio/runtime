@@ -42,7 +42,12 @@
  * 9. **Editor** (`editor.ts`)
  *    - `openEditorTab`, `setCurrentEditorTab` - Editor UI
  *    - `TraitCompoentFromSchema` - Schema imports
- * 
+ *
+ * 10. **Toast Notifications** (`toast.ts`)
+ *    - `ShowToast`, `ShowSuccessToast`, `ShowErrorToast` - Toast notifications
+ *    - `ShowWarningToast`, `ShowInfoToast` - Toast variants
+ *    - `HideToast`, `ClearAllToasts` - Toast control
+ *
  * **Usage in Handler Code:**
  * All these functions are available directly in handler code without imports:
  * 
@@ -118,6 +123,7 @@ import { createNavigationFunctions } from './navigation';
 import { createStorageFunctions } from './storage';
 import { createFunctionInvocationFunctions } from './functions';
 import { createEditorFunctions } from './editor';
+import { createToastFunctions } from './toast';
 
 /**
  * Creates all global functions available to handler code.
@@ -137,7 +143,8 @@ import { createEditorFunctions } from './editor';
  * - Storage functions (UploadFile, BrowseFiles)
  * - Function invocation (InvokeFunction)
  * - Editor functions (openEditorTab, setCurrentEditorTab, TraitCompoentFromSchema)
- * 
+ * - Toast notification functions (ShowToast, ShowSuccessToast, ShowErrorToast, etc.)
+ *
  * **Why Create Functions This Way:**
  * 1. **Closure over runtime context**: Functions have access to current context
  * 2. **Modularity**: Each category in separate file for maintainability
@@ -208,6 +215,7 @@ export function createGlobalHandlerFunctions(runtimeContext: any) {
     ...createStorageFunctions(),
     ...createFunctionInvocationFunctions(),
     ...createEditorFunctions(),
+    ...createToastFunctions(),
   };
 }
 
