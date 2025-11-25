@@ -326,6 +326,13 @@ export function executeHandler(
     customConsole,
     globalFunctions.UploadFile,
     globalFunctions.BrowseFiles,
-    component.Instance || {} // Component instance state (used by micro-apps)
+    component.Instance || {}, // Component instance state (used by micro-apps)
+    globalFunctions.ShowToast,
+    globalFunctions.ShowSuccessToast,
+    globalFunctions.ShowErrorToast,
+    globalFunctions.ShowWarningToast,
+    globalFunctions.ShowInfoToast,
+    globalFunctions.HideToast,
+    globalFunctions.ClearAllToasts
   );
 }

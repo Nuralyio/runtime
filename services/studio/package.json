@@ -60,6 +60,7 @@
     "@nuralyui/slider-input": "^0.0.1",
     "@nuralyui/table": "^0.0.1",
     "@nuralyui/tabs": "^0.0.12",
+    "@nuralyui/toast": "^0.0.14",
     "@nuralyui/tooltips": "^0.0.1",
     "@nuralyui/video": "^0.0.1",
     "@rollup/pluginutils": "^5.1.0",
