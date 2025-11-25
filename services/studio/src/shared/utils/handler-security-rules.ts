@@ -79,7 +79,7 @@ function getAllowedGlobals(): Set<string> {
       "AddComponent",
       "SetContextVar",
       "AddPage",
-      "TraitCompoentFromSchema",
+      "TraitComponentFromSchema",
       "NavigateToUrl",
       "NavigateToHash",
       "NavigateToPage",
