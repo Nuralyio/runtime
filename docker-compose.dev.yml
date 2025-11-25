@@ -1,6 +1,7 @@
 services:
   # Frontend - Studio
   studio:
+    platform: linux/amd64
     build:
       context: ./services/studio
       dockerfile: Dockerfile.dev
@@ -101,6 +102,7 @@ services:
 
   # Documentation Site
   docs:
+    platform: linux/amd64
     build:
       context: ./services/docs
       dockerfile: Dockerfile.dev
