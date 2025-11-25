@@ -7,8 +7,8 @@ import { updateComponentHandler } from "@shared/redux/handlers/components/update
 import type { UpdateType } from "@shared/redux/actions/component.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
-import { validateComponentHandlers, type ValidationError } from "@shared/utils/handler-validator.ts";
-import { formatValidationErrors } from "@shared/utils/validation-error-formatter.ts";
+import { validateComponentHandlers } from "@shared/utils/handler-validator.ts";
+import { formatValidationErrors } from "@shared/utils/validation-error-formatter";
 export function updateComponentAttributes(
   application_id: string,
   componentId: string,

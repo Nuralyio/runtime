@@ -7,6 +7,8 @@
  * malicious code execution, prototype pollution, and unauthorized access.
  */
 
+import { HANDLER_PARAMETERS } from "@features/runtime/handlers/compiler";
+
 /**
  * Forbidden identifiers that should never be accessible in handler code
  */
@@ -57,63 +59,8 @@ let ALLOWED_GLOBALS_CACHE: Set<string> | null = null;
 
 function getAllowedGlobals(): Set<string> {
   if (!ALLOWED_GLOBALS_CACHE) {
-    // Manually list handler parameters to avoid circular import at module load time
-    const HANDLER_PARAMS = [
-      "Database",
-      "eventHandler",
-      "Components",
-      "Editor",
-      "Event",
-      "Item",
-      "Current",
-      "currentPlatform",
-      "Values",
-      "Apps",
-      "Vars",
-      "SetVar",
-      "GetContextVar",
-      "UpdateApplication",
-      "GetVar",
-      "GetComponent",
-      "GetComponents",
-      "AddComponent",
-      "SetContextVar",
-      "AddPage",
-      "TraitComponentFromSchema",
-      "NavigateToUrl",
-      "NavigateToHash",
-      "NavigateToPage",
-      "UpdatePage",
-      "context",
-      "applications",
-      "updateInput",
-      "updateInputHandlers",
-      "deletePage",
-      "CopyComponentToClipboard",
-      "PasteComponentFromClipboard",
-      "DeleteComponentAction",
-      "updateName",
-      "updateEvent",
-      "updateStyleHandlers",
-      "EventData",
-      "updateStyle",
-      "openEditorTab",
-      "setCurrentEditorTab",
-      "InvokeFunction",
-      "Utils",
-      "console",
-      "UploadFile",
-      "BrowseFiles",
-      "Instance",
-      "ShowToast",
-      "ShowSuccessToast",
-      "ShowErrorToast",
-      "ShowWarningToast",
-      "ShowInfoToast",
-      "HideToast",
-      "ClearAllToasts",
-    ];
-    ALLOWED_GLOBALS_CACHE = new Set(HANDLER_PARAMS);
+    // Use the same parameters as the compiler to ensure consistency
+    ALLOWED_GLOBALS_CACHE = new Set(HANDLER_PARAMETERS);
   }
   return ALLOWED_GLOBALS_CACHE;
 }
