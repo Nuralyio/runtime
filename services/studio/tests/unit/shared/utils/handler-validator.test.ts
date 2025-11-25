@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { validateHandlerCode, validateComponentHandlers } from './handler-validator';
+import { validateHandlerCode, validateComponentHandlers } from '@shared/utils/handler-validator';
 
 describe('Handler Validator - Malicious Code Detection', () => {
   test('blocks eval() calls', () => {
