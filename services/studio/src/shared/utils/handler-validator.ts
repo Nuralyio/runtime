@@ -15,9 +15,7 @@ import * as walk from 'acorn-walk';
 import {
   isForbiddenGlobal,
   isForbiddenProperty,
-  isAllowedGlobal,
-  isForbiddenFunction,
-  getErrorMessage,
+  isAllowedGlobal, getErrorMessage
 } from './handler-security-rules';
 
 /**
@@ -76,8 +74,12 @@ export function validateHandlerCode(code: string): ValidationResult {
   };
 
   try {
+    // Wrap the code in a function context to match how it's actually executed
+    // Handler code is executed as: (function() { <code> }).apply(this);
+    const wrappedCode = `(function() { ${code} })`;
+
     // Parse the code into an AST
-    const ast = acorn.parse(code, {
+    const ast = acorn.parse(wrappedCode, {
       ecmaVersion: 'latest',
       sourceType: 'script',
       locations: true,
@@ -385,7 +387,24 @@ export function validateComponentHandlers(component: any): ValidationResult {
     });
   }
 
-  // Validate input handlers
+  // Validate input handlers (nested in input property)
+  if (component.input) {
+    Object.entries(component.input).forEach(([inputName, value]: [string, any]) => {
+      if (value && typeof value === 'object' && value.type === 'handler' && typeof value.value === 'string') {
+        const result = validateHandlerCode(value.value);
+        if (!result.valid) {
+          result.errors.forEach(error => {
+            allErrors.push({
+              ...error,
+              code: `input.${inputName}: ${error.code || value.value.split('\n')[0]}`,
+            });
+          });
+        }
+      }
+    });
+  }
+
+  // Validate inputHandlers
   if (component.inputHandlers) {
     Object.entries(component.inputHandlers).forEach(([inputName, code]) => {
       if (typeof code === 'string') {

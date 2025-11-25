@@ -37,7 +37,7 @@ export class ParameterEventLabel extends BaseElementBlock {
     <smart-attribute-handler
       .component=${{ ...this.component }}
       .attributeName=${this.inputHandlersValue.value ? this.inputHandlersValue.value[0] : nothing}
-      .attributeValue=${this.inputHandlersValue.value ??nothing}
+      .attributeValue=${this.inputHandlersValue.value ? this.inputHandlersValue.value[1] : nothing}
       .attributeScope=${"event"}
       .handlerScope=${"event"}
       @code-change=${this.handleCodeChange}

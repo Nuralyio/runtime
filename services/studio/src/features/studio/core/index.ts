@@ -21,7 +21,6 @@ export { default as studioDisplayBlock } from "./inputs/display.ts";
 export { default as studioHelperTextBlock } from "./inputs/helper-text.ts";
 export { default as studioPlaceholderBlock } from "./inputs/placeholder.ts";
 export { default as studioIconPickerBlock } from "./inputs/icon.ts";
-export { default as studioLabelBlock } from "./inputs/label.ts";
 
 // Individual Input Blocks (named exports)
 export { StudioComponentNameInput as studioNameBlock } from "./inputs/name.ts";

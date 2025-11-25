@@ -7,8 +7,6 @@
  * malicious code execution, prototype pollution, and unauthorized access.
  */
 
-import { HANDLER_PARAMETERS } from '../../features/runtime/handlers/compiler';
-
 /**
  * Forbidden identifiers that should never be accessible in handler code
  */
@@ -53,8 +51,76 @@ export const FORBIDDEN_PROPERTIES = new Set([
 /**
  * Allowed global identifiers (runtime API parameters)
  * These are the only globals that handlers can access
+ * Lazily initialized to avoid circular dependency
  */
-export const ALLOWED_GLOBALS = new Set(HANDLER_PARAMETERS);
+let ALLOWED_GLOBALS_CACHE: Set<string> | null = null;
+
+function getAllowedGlobals(): Set<string> {
+  if (!ALLOWED_GLOBALS_CACHE) {
+    // Manually list handler parameters to avoid circular import at module load time
+    const HANDLER_PARAMS = [
+      "Database",
+      "eventHandler",
+      "Components",
+      "Editor",
+      "Event",
+      "Item",
+      "Current",
+      "currentPlatform",
+      "Values",
+      "Apps",
+      "Vars",
+      "SetVar",
+      "GetContextVar",
+      "UpdateApplication",
+      "GetVar",
+      "GetComponent",
+      "GetComponents",
+      "AddComponent",
+      "SetContextVar",
+      "AddPage",
+      "TraitCompoentFromSchema",
+      "NavigateToUrl",
+      "NavigateToHash",
+      "NavigateToPage",
+      "UpdatePage",
+      "context",
+      "applications",
+      "updateInput",
+      "updateInputHandlers",
+      "deletePage",
+      "CopyComponentToClipboard",
+      "PasteComponentFromClipboard",
+      "DeleteComponentAction",
+      "updateName",
+      "updateEvent",
+      "updateStyleHandlers",
+      "EventData",
+      "updateStyle",
+      "openEditorTab",
+      "setCurrentEditorTab",
+      "InvokeFunction",
+      "Utils",
+      "console",
+      "UploadFile",
+      "BrowseFiles",
+      "Instance",
+      "ShowToast",
+      "ShowSuccessToast",
+      "ShowErrorToast",
+      "ShowWarningToast",
+      "ShowInfoToast",
+      "HideToast",
+      "ClearAllToasts",
+    ];
+    ALLOWED_GLOBALS_CACHE = new Set(HANDLER_PARAMS);
+  }
+  return ALLOWED_GLOBALS_CACHE;
+}
+
+export function getAllowedGlobalsSet(): Set<string> {
+  return getAllowedGlobals();
+}
 
 /**
  * Forbidden function calls that enable code execution
@@ -87,8 +153,10 @@ export const VALIDATION_ERROR_MESSAGES = {
   localStorage: "Direct localStorage access is forbidden. Use GetVar()/SetVar() for state management.",
   sessionStorage: "Direct sessionStorage access is forbidden. Use GetVar()/SetVar() for state management.",
   indexedDB: "Direct indexedDB access is forbidden. Use Database API provided in runtime context.",
-  unknownGlobal: (name: string) =>
-    `'${name}' is not available in handler context. Available globals: ${Array.from(ALLOWED_GLOBALS).slice(0, 10).join(', ')}... (${ALLOWED_GLOBALS.size} total)`,
+  unknownGlobal: (name: string) => {
+    const allowedGlobals = getAllowedGlobals();
+    return `'${name}' is not available in handler context. Available globals: ${Array.from(allowedGlobals).slice(0, 10).join(', ')}... (${allowedGlobals.size} total)`;
+  },
   syntaxError: (message: string) =>
     `Syntax error in handler code: ${message}`,
 };
@@ -129,7 +197,7 @@ export function isForbiddenProperty(name: string): boolean {
  * Checks if an identifier is an allowed global
  */
 export function isAllowedGlobal(name: string): boolean {
-  return ALLOWED_GLOBALS.has(name);
+  return getAllowedGlobals().has(name);
 }
 
 /**

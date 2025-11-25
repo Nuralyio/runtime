@@ -51,7 +51,6 @@ import {
   studioHelperTextBlock,
   studioPlaceholderBlock,
   studioIconPickerBlock,
-  studioLabelBlock
 } from "./core/index.ts";
 
 
@@ -424,7 +423,6 @@ export default [
   ...studioPlaceholderBlock,
   ...studioHelperTextBlock,
   //...studioSelectHelperColor,
-  ...studioLabelBlock,
   ...studioBorderCollapse,
   ...studioIconPickerBlock,
   ...studioTypographyCollapseBlock,
