@@ -1,6 +1,12 @@
 import { FRONT_API_URLS } from "@shared/redux/handlers/api-urls";
+import { validateAndEmitErrors } from "./validation-handler";
+import { eventDispatcher } from "@shared/utils/change-detection";
 
 export const updateComponentHandler = (component: any, application_id) => {
+  // Validate handlers before saving
+  const validationError = validateAndEmitErrors(component);
+  if (validationError instanceof Promise) return validationError;
+
   const ucomponent = { ...component };
   delete ucomponent.parent
   delete ucomponent.children
@@ -15,7 +21,11 @@ export const updateComponentHandler = (component: any, application_id) => {
     })
   }).then(res => res.json())
     .catch((err) => {
-      // TODO: dispatch error
+      // Dispatch error
+      eventDispatcher.emit("component:save-error", {
+        componentId: component.uuid,
+        error: err.message || "Failed to save component"
+      });
 
       console.error(err);
     });

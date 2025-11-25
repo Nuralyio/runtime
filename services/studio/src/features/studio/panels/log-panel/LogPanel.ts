@@ -53,17 +53,6 @@ export class LogPanel extends LitElement {
       --button-hover: #555;
     }
 
-    /* Dark mode overrides using prefers-color-scheme */
-    @media (prefers-color-scheme: dark) {
-      :host {
-        --background-color: #2e2e2e;
-        --header-background: #444;
-        --text-color: #f1f1f1;
-        --border-color: #666;
-        --button-color: #f1f1f1;
-        --button-hover: #bbb;
-      }
-    }
 
     .log-container {
       position: fixed; /* Fixed position relative to viewport */

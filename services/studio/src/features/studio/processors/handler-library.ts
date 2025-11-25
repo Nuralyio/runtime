@@ -185,7 +185,9 @@ export const ValueHandlers = {
     if (selectedComponent?.inputHandlers?.${propertyName}) {
       return selectedComponent.inputHandlers.${propertyName};
     }
-    return selectedComponent?.input?.${propertyName}?.value || '';
+    const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
+    // Only return the value if type is "value", otherwise return empty string (e.g., for handlers)
+    return input?.type === 'value' ? (input.value || '') : '';
   `,
   
   // Get component inputHandlers property (for icon, etc.)
@@ -198,7 +200,9 @@ export const ValueHandlers = {
   componentInputRadio: (propertyName: string, options: Array<{label: string, value: string}>, defaultValue: string = '') => `
     const options = ${JSON.stringify(options)};
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    const currentValue = selectedComponent?.input?.${propertyName}?.value || '${defaultValue}';
+    const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
+    // Only use the value if type is "value", otherwise use default (e.g., for handlers)
+    const currentValue = input?.type === 'value' ? (input.value || '${defaultValue}') : '${defaultValue}';
     const type = 'button';
     return [options, currentValue, type];
   `,
@@ -220,7 +224,9 @@ export const ValueHandlers = {
   // Get component input property for select inputs (returns [options, [currentValue]])
   componentInputSelect: (propertyName: string, defaultValue: string = '') => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    const currentValue = selectedComponent?.input?.${propertyName}?.value || '${defaultValue}';
+    const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
+    // Only use the value if type is "value", otherwise use default (e.g., for handlers)
+    const currentValue = input?.type === 'value' ? (input.value || '${defaultValue}') : '${defaultValue}';
     return currentValue;
   `,
   
@@ -398,9 +404,49 @@ export const StateHandlers = {
    */
   inputHandler: (propertyName: string) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    return selectedComponent?.inputHandlers?.['${propertyName}'] ? 'disabled' : 'enabled';
+    const hasInputHandler = selectedComponent?.inputHandlers?.['${propertyName}'];
+    const hasHandlerType = selectedComponent?.input?.${propertyName}?.type === 'handler' &&
+                           selectedComponent?.input?.${propertyName}?.value;
+    return (hasInputHandler || hasHandlerType) ? 'disabled' : 'enabled';
   `,
-  
+
+  /**
+   * Input helper text handler - Shows message when handler is active.
+   *
+   * @description
+   * Returns helper text message when an input property has a handler applied.
+   * Used to inform users why an input is disabled.
+   *
+   * **Use For:**
+   * - Text inputs with handler support
+   * - Number inputs with handler support
+   * - Any input that can have handlers
+   *
+   * **Behavior:**
+   * - Returns "Value driven by handler" when handler is active
+   * - Returns empty string when no handler (input is editable)
+   *
+   * @param {string} propertyName - The input property name
+   * @returns {string} Handler code that returns helper text
+   *
+   * @example Usage in Config
+   * ```yaml
+   * properties:
+   *   - name: label
+   *     type: text
+   *     helperHandler:
+   *       ref: inputHelperText
+   *       params: [label]
+   * ```
+   */
+  inputHelperText: (propertyName: string) => `
+    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const hasInputHandler = selectedComponent?.inputHandlers?.['${propertyName}'];
+    const hasHandlerType = selectedComponent?.input?.${propertyName}?.type === 'handler' &&
+                           selectedComponent?.input?.${propertyName}?.value;
+    return (hasInputHandler || hasHandlerType) ? 'Value driven by handler' : '';
+  `,
+
   /**
    * Icon picker disable state handler.
    * 
