@@ -5,7 +5,7 @@ import { eventDispatcher } from "@shared/utils/change-detection";
 export const updateComponentHandler = (component: any, application_id) => {
   // Validate handlers before saving
   const validationError = validateAndEmitErrors(component);
-  if (validationError) return validationError;
+  if (validationError instanceof Promise) return validationError;
 
   const ucomponent = { ...component };
   delete ucomponent.parent
