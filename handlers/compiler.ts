@@ -259,7 +259,10 @@ export function compileHandlerFunction(code: string): Function {
   if (!handlerFunctionCache[code]) {
     // Validate handler code before compilation
     // This is a safety layer in case validation was bypassed at save time
-    validateHandlerCode(code);
+    const validationResult = validateHandlerCode(code);
+    if (!validationResult.valid) {
+      throw new Error(`Handler validation failed: ${validationResult.errors[0]?.message || 'Unknown error'}`);
+    }
 
     // Create new Function with all runtime parameters
     // The code is wrapped in an IIFE to provide proper scoping
