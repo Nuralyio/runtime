@@ -55,6 +55,7 @@ export class MicroApp extends LitElement {
   private pageManager: MicroAppPageManager | null = null;
   private messageBus: MicroAppMessageBus | null = null;
   private messageUnsubscribe: (() => void) | null = null;
+  private globalVarUnsubscribe: (() => void) | null = null;
 
   constructor() {
     super();
@@ -138,6 +139,12 @@ export class MicroApp extends LitElement {
 
   override disconnectedCallback(): void {
     this.subscription.unsubscribe();
+
+    // Cleanup global variable subscription (both legacy and isolated modes)
+    if (this.globalVarUnsubscribe) {
+      this.globalVarUnsubscribe();
+      this.globalVarUnsubscribe = null;
+    }
 
     // Cleanup isolated context
     if (this.useIsolatedContext) {
@@ -241,6 +248,20 @@ export class MicroApp extends LitElement {
       .subscribe(() => this.refreshComponent());
 
     this.subscription.add(mergedSubscription);
+
+    // Subscribe to global variable changes to trigger micro-app re-render (LEGACY MODE)
+    // This ensures that when global variables change, the micro-app components re-render
+    const globalVarHandler = (data: any) => {
+      console.log(`[MicroApp ${this.uuid}] [LEGACY] Global variable changed: ${data.varName} = ${data.value}`);
+      // Trigger refresh of the micro-app
+      this.refreshComponent();
+    };
+    eventDispatcher.on('global:variable:changed', globalVarHandler);
+
+    // Store unsubscribe function for cleanup
+    this.globalVarUnsubscribe = () => {
+      eventDispatcher.off('global:variable:changed', globalVarHandler);
+    };
   }
 
   /**
@@ -372,6 +393,20 @@ export class MicroApp extends LitElement {
       this.pageManager?.reloadPages();
     });
     this.subscription.add(pagesUnsub);
+
+    // Subscribe to global variable changes to trigger micro-app re-render
+    // This ensures that when global variables change, the micro-app components re-render
+    const globalVarHandler = (data: any) => {
+      console.log(`[MicroApp ${this.uuid}] Global variable changed: ${data.varName} = ${data.value}`);
+      // Trigger re-render of the entire micro-app
+      this.requestUpdate();
+    };
+    eventDispatcher.on('global:variable:changed', globalVarHandler);
+
+    // Store unsubscribe function for cleanup
+    this.globalVarUnsubscribe = () => {
+      eventDispatcher.off('global:variable:changed', globalVarHandler);
+    };
   }
 
   /**
@@ -402,6 +437,8 @@ export class MicroApp extends LitElement {
       this.messageUnsubscribe();
       this.messageUnsubscribe = null;
     }
+
+    // Note: Global variable subscription cleanup is handled in disconnectedCallback()
 
     // Cleanup contexts in reverse order
     if (this.pageManager) {

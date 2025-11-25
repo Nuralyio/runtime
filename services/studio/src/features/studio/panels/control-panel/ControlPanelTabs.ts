@@ -62,7 +62,8 @@ export class ParametersPanel extends LitElement {
       /* ===============================
          Dark Mode Styles
          =============================== */
-      @media (prefers-color-scheme: dark) {
+      
+         @media (prefers-color-scheme: dark) {
           micro-app {
               /* Input Styles (Dark Mode) */
 

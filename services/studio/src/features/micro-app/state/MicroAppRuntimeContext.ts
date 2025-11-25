@@ -10,6 +10,7 @@ import type { ComponentElement } from '@shared/redux/store/component/component.i
 import { MicroAppStoreContext } from './MicroAppStoreContext'
 import { VariableScope } from './VariableScopeManager'
 import { eventDispatcher } from '@shared/utils/change-detection'
+import { RuntimeContextHelpers } from '@features/runtime/utils/RuntimeContextHelpers'
 
 const DEBUG = false
 
@@ -135,98 +136,27 @@ export class MicroAppRuntimeContext {
   }
 
   /**
-   * Create reactive proxy for properties
+   * Create reactive proxy for properties.
+   *
+   * Uses RuntimeContextHelpers to eliminate code duplication with RuntimeContext.
    */
   private createProxy(target: any, scope?: string): any {
-    const self = this
-
-    if (typeof target !== 'object' || target === null) {
-      return target
-    }
-
-    return new Proxy(target, {
-      get(target, prop, receiver) {
-        if (DEBUG) {
-          console.log(`[MicroApp ${self.eventNamespace}] Accessing property '${String(prop)}'`)
-        }
-
-        const value = Reflect.get(target, prop, receiver)
-
-        if (!self.listeners[String(prop)]) {
-          self.listeners[String(prop)] = new Set<string>()
-        }
-
-        if (self.Current.name) {
-          self.listeners[String(prop)].add(self.Current.name)
-        }
-
-        if (typeof value === 'object' && value !== null) {
-          const nestedProxy = new Proxy(value, {
-            set(targetNested, propNested, valueNested, receiverNested) {
-              const oldValue = targetNested[propNested as string]
-              const result = Reflect.set(targetNested, propNested, valueNested, receiverNested)
-
-              if (DEBUG) {
-                console.log(
-                  `[MicroApp ${self.eventNamespace}] Updated nested property '${String(propNested)}' from '${oldValue}' to '${valueNested}'`
-                )
-              }
-
-              if (!deepEqual(oldValue, valueNested)) {
-                self.listeners[String(prop)]?.forEach((componentName: string) => {
-                  eventDispatcher.emit(`${self.eventNamespace}:component-property-changed:${componentName}`, {
-                    prop,
-                    value: valueNested,
-                    ctx: self.Current
-                  })
-                })
-
-                if (scope) {
-                  eventDispatcher.emit(`${self.eventNamespace}:${scope}:${String(prop)}.${String(propNested)}`, {
-                    prop: propNested,
-                    value: valueNested,
-                    oldValue,
-                    parent: prop
-                  })
-                }
-              }
-
-              return result
-            }
+    return RuntimeContextHelpers.createReactiveProxy(target, {
+      eventPrefix: this.eventNamespace, // Scoped prefix for micro-app isolation
+      scope,
+      listeners: this.listeners,
+      current: this.Current,
+      onPropertyChange: (prop: string, value: any, listeners: Set<string>) => {
+        // Emit scoped events to all listeners for this property
+        listeners.forEach((componentName: string) => {
+          eventDispatcher.emit(`${this.eventNamespace}:component-property-changed:${componentName}`, {
+            prop,
+            value, // IMPORTANT: Include value in event data
+            ctx: this.Current
           })
-          return nestedProxy
-        }
-
-        return value
+        })
       },
-      set(target, prop, value, receiver) {
-        const oldValue = target[prop as string]
-        const result = Reflect.set(target, prop, value, receiver)
-
-        if (DEBUG) {
-          console.log(`[MicroApp ${self.eventNamespace}] Setting property '${String(prop)}' to '${value}'`)
-        }
-
-        if (!deepEqual(oldValue, value)) {
-          self.listeners[String(prop)]?.forEach((componentName: string) => {
-            eventDispatcher.emit(`${self.eventNamespace}:component-property-changed:${componentName}`, {
-              prop,
-              value,
-              ctx: self.Current
-            })
-          })
-
-          if (scope) {
-            eventDispatcher.emit(`${self.eventNamespace}:${scope}:${String(prop)}`, {
-              prop,
-              value,
-              oldValue
-            })
-          }
-        }
-
-        return result
-      }
+      debug: DEBUG
     })
   }
 
@@ -303,7 +233,7 @@ export class MicroAppRuntimeContext {
       }
 
       // Attach micro-app runtime context reference for isolated execution
-      (component as any).__microAppContext = {
+      component.__microAppContext = {
         Vars: this.VarsProxy,
         runtimeContext: this
       }
@@ -337,50 +267,39 @@ export class MicroAppRuntimeContext {
   }
 
   /**
-   * Attach reactive Instance property to component
+   * Attach reactive Instance property to component.
+   *
+   * Uses RuntimeContextHelpers to eliminate code duplication with RuntimeContext.
    */
   private attachValuesProperty(component: ComponentElement): void {
-    const self = this
-    const componentUUID = component.uuid
-
-    // Check cache first
-    if (this.valuesProxyCache.has(component)) {
-      component.Instance = this.valuesProxyCache.get(component)
-      return
-    }
-
-    // Create proxy for Instance
-    const instanceProxy = new Proxy(
-      {},
+    // Use RuntimeContextHelpers to create the values proxy
+    const instanceProxy = RuntimeContextHelpers.createValuesProxy(
+      component,
       {
-        get(target, prop: string) {
-          return self.storeContext.getRuntimeValue(componentUUID, prop)
+        // Backend: Isolated store context
+        get: (id: string, prop: string) => {
+          return this.storeContext.getRuntimeValue(id, prop)
         },
-        set(target, prop: string, value) {
-          const oldValue = self.storeContext.getRuntimeValue(componentUUID, prop)
-
-          self.storeContext.setRuntimeValue(componentUUID, prop, value)
-
-          // Emit change event
-          if (!deepEqual(oldValue, value)) {
-            eventDispatcher.emit(`${self.eventNamespace}:component-instance-changed:${componentUUID}`, {
-              prop,
-              value,
-              oldValue,
-              component
-            })
-          }
-
-          return true
+        set: (id: string, prop: string, value: any) => {
+          this.storeContext.setRuntimeValue(id, prop, value)
         },
-        has(target, prop: string) {
-          return self.storeContext.getRuntimeValue(componentUUID, prop) !== undefined
+        has: (id: string, prop: string) => {
+          return this.storeContext.getRuntimeValue(id, prop) !== undefined
         }
-      }
+      },
+      (id: string, prop: string, value: any, oldValue?: any) => {
+        // Emit scoped event when value changes
+        eventDispatcher.emit(`${this.eventNamespace}:component-instance-changed:${id}`, {
+          prop,
+          value,
+          oldValue,
+          component
+        })
+      },
+      this.valuesProxyCache
     )
 
-    // Cache the proxy
-    this.valuesProxyCache.set(component, instanceProxy)
+    // Attach the proxy to the component
     component.Instance = instanceProxy
   }
 
