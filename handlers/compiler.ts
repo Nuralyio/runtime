@@ -255,6 +255,29 @@ export const HANDLER_PARAMETERS = [
 export function compileHandlerFunction(code: string): Function {
   // Check cache first for performance
   if (!handlerFunctionCache[code]) {
+    // Defensive validation before compilation
+    // This is a second layer of protection in case validation was bypassed
+    if (typeof code === 'string') {
+      const dangerousPatterns = [
+        /\beval\s*\(/,
+        /\bFunction\s*\(/,
+        /new\s+Function\s*\(/,
+        /\.__proto__/,
+        /\['__proto__'\]/,
+        /\["__proto__"\]/,
+        /\bwindow\./,
+        /\bglobal\./,
+        /\bglobalThis\./,
+        /\bprocess\./,
+      ];
+
+      for (const pattern of dangerousPatterns) {
+        if (pattern.test(code)) {
+          throw new Error(`Handler code contains potentially dangerous pattern: ${pattern.source}`);
+        }
+      }
+    }
+
     // Create new Function with all runtime parameters
     // The code is wrapped in an IIFE to provide proper scoping
     handlerFunctionCache[code] = new Function(
