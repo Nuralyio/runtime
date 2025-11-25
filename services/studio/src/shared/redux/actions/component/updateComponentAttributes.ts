@@ -8,22 +8,7 @@ import type { UpdateType } from "@shared/redux/actions/component.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
 import { validateComponentHandlers, type ValidationError } from "@shared/utils/handler-validator.ts";
-
-/**
- * Formats validation errors into a user-friendly message
- */
-function formatValidationErrors(errors: ValidationError[]): string {
-  if (errors.length === 0) return "";
-
-  if (errors.length === 1) {
-    return `Security violation: ${errors[0].message}`;
-  }
-
-  return `Found ${errors.length} security violations:\n${errors.map((e, i) =>
-    `${i + 1}. ${e.code || 'Handler'}: ${e.message}`
-  ).join('\n')}`;
-}
-
+import { formatValidationErrors } from "@shared/utils/validation-error-formatter.ts";
 export function updateComponentAttributes(
   application_id: string,
   componentId: string,
