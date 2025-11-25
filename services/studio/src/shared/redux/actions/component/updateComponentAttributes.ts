@@ -7,6 +7,22 @@ import { updateComponentHandler } from "@shared/redux/handlers/components/update
 import type { UpdateType } from "@shared/redux/actions/component.ts";
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { ExecuteInstance } from "@features/runtime/state/runtime-context.ts";
+import { validateComponentHandlers, type ValidationError } from "@shared/utils/handler-validator.ts";
+
+/**
+ * Formats validation errors into a user-friendly message
+ */
+function formatValidationErrors(errors: ValidationError[]): string {
+  if (errors.length === 0) return "";
+
+  if (errors.length === 1) {
+    return `Security violation: ${errors[0].message}`;
+  }
+
+  return `Found ${errors.length} security violations:\n${errors.map((e, i) =>
+    `${i + 1}. ${e.code || 'Handler'}: ${e.message}`
+  ).join('\n')}`;
+}
 
 export function updateComponentAttributes(
   application_id: string,
@@ -29,6 +45,7 @@ export function updateComponentAttributes(
   );
 
   if (componentIndex !== -1) {
+    // Get the component to update
     const componentToUpdate = applicationComponents[componentIndex];
 
     // Decide how to read currentAttributes (e.g., from breakpoints for non-desktop style updates)
@@ -69,6 +86,82 @@ export function updateComponentAttributes(
   }
 
     if (needsUpdate) {
+      // FIRST: Apply the updates to a temporary copy for validation
+      const tempComponent = { ...componentToUpdate };
+      // Deep copy the specific property being updated to avoid mutating the original
+      if (updateType === "input" || updateType === "style" || updateType === "event" || updateType === "inputHandlers" || updateType === "styleHandlers") {
+        tempComponent[updateType] = JSON.parse(JSON.stringify(componentToUpdate[updateType] || {}));
+      }
+      
+      if ((updateType === "style" || (updateType === "input" && updatedAttributes.type !=="handler")) && currentPlatform.platform !== "desktop") {
+        // Initialize breakpoints if not already
+        tempComponent.breakpoints = tempComponent.breakpoints || {};
+        tempComponent.breakpoints[currentPlatform.width] =
+          tempComponent.breakpoints[currentPlatform.width] || {};
+      
+        // Process each updated attribute
+        for (const [key, value] of Object.entries(updatedAttributes)) {
+          if (deepEqual(value, desktopAttributes[key])) {
+            // If the updated attribute matches the desktop attribute, remove it from the breakpoint
+            delete tempComponent.breakpoints[currentPlatform.width][updateType][key];
+          } else {
+            if(value.type === "handler"){
+              tempComponent[updateType][key] = value;
+            }else{
+              tempComponent.breakpoints[currentPlatform.width][updateType] =
+              tempComponent.breakpoints[currentPlatform.width][updateType] || {};
+            tempComponent.breakpoints[currentPlatform.width][updateType][key] = value;
+            }
+          }
+        }
+      
+        // After processing, check if the breakpoint has any attributes left
+        const breakpointAttributes = tempComponent.breakpoints[currentPlatform.width];
+        if (Object.keys(breakpointAttributes).every(type => Object.keys(breakpointAttributes[type]).length === 0)) {
+          delete tempComponent.breakpoints[currentPlatform.width];
+        }
+      
+        // If no breakpoints remain, optionally remove the breakpoints object
+        if (Object.keys(tempComponent.breakpoints).length === 0) {
+          delete tempComponent.breakpoints;
+        }
+      } else {
+        // For desktop or non-style/input updates, update the regular property
+        tempComponent[updateType] = {
+          ...currentAttributes,
+          ...updatedAttributes,
+        };
+      }
+
+      // SECOND: Validate the component BEFORE saving to store
+      const validationResult = validateComponentHandlers(tempComponent);
+
+      if (!validationResult.valid) {
+        // Validation failed - format errors and show to user
+        const errorMessage = formatValidationErrors(validationResult.errors);
+
+        // Emit validation error event for UI notifications
+        eventDispatcher.emit("component:validation-error", {
+          componentId: tempComponent.uuid,
+          errors: validationResult.errors,
+          message: errorMessage
+        });
+
+        // Log to console for debugging
+        eventDispatcher.emit("kernel:log", {
+          type: "error",
+          message: "Handler Validation Failed",
+          details: errorMessage,
+          errors: validationResult.errors
+        });
+
+        console.error("Handler validation failed:", validationResult.errors);
+
+        // DO NOT save to store - validation failed
+        return;
+      }
+
+      // THIRD: Validation passed - now apply the changes to the actual component
       if ((updateType === "style" || (updateType === "input" && updatedAttributes.type !=="handler")) && currentPlatform.platform !== "desktop") {
         // Initialize breakpoints if not already
         componentToUpdate.breakpoints = componentToUpdate.breakpoints || {};
@@ -88,8 +181,6 @@ export function updateComponentAttributes(
               componentToUpdate.breakpoints[currentPlatform.width][updateType] || {};
             componentToUpdate.breakpoints[currentPlatform.width][updateType][key] = value;
             }
-            // Otherwise, set/update the attribute in the breakpoint
-           
           }
         }
       
@@ -111,7 +202,7 @@ export function updateComponentAttributes(
         };
       }
 
-      // Directly update the component in the store
+      // FOURTH: Save the validated component to the store
       $components.setKey(`${application_id}[${componentIndex}]`, componentToUpdate);
 
       // Optionally save the update to persistent store / DB
@@ -123,7 +214,7 @@ export function updateComponentAttributes(
 
       // Update selected components if needed
       const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents;
-      const index = selectedComponents.findIndex(c => c.uuid === componentToUpdate.uuid);
+      const index = selectedComponents.findIndex((c: ComponentElement) => c.uuid === componentToUpdate.uuid);
       if (index !== -1) {
           ExecuteInstance.VarsProxy.selectedComponents[index] = componentToUpdate;
       }

@@ -124,10 +124,7 @@ constructor() {
           
           <nr-dropdown
             placement="bottom-start"
-            trigger="click"
-            @nr-dropdown-item-click=${(e: CustomEvent) => {
-        this.createHandleCodeChange(e.detail.item.value);
-      }}>
+            trigger="click">
             <nr-button
               slot="trigger"
               style=${styleMap({
@@ -153,6 +150,7 @@ constructor() {
               style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px;"
               @click=${(e: Event) => {
           e.preventDefault();
+          e.stopPropagation();
           this.createHandleCodeChange(event.name);
           const dropdown = this.renderRoot.querySelector('nr-dropdown');
           if(dropdown) (dropdown as any).open = false;

@@ -93,7 +93,9 @@ export class InputGenerator {
       childrenIds: [],
       style: {
         display: "block",
-        width: property.width || "180px"
+        width: property.width || "180px",
+        "--nuraly-input-helper-text-font-size": "11px",
+        "--nuraly-input-helper-text-color": "#8c8c8c"
       },
       input: {
         value: {
@@ -115,7 +117,7 @@ export class InputGenerator {
                  `
                    const selectedComponent = Utils.first(Vars.selectedComponents);
                    return !!(
-                     selectedComponent?.input?.${property.name}?.type === "handler" && 
+                     selectedComponent?.input?.${property.name}?.type === "handler" &&
                      selectedComponent?.input?.${property.name}?.value
                    );
                  `
@@ -156,7 +158,9 @@ export class InputGenerator {
       style: {
         display: "block",
         width: property.width || "180px",
-        size: "small"
+        size: "small",
+        "--nuraly-input-helper-text-font-size": "11px",
+        "--nuraly-input-helper-text-color": "#8c8c8c"
       },
       input: {
         value: {
@@ -204,7 +208,18 @@ export class InputGenerator {
         value: property.placeholder
       };
     }
-    
+
+    // Add helper text for inputs with handler support (text, number, radio)
+    // Shows "Value driven by handler" when handler is active
+    if (property.hasHandler || property.type === 'text' || property.type === 'number' || property.type === 'radio') {
+      baseInput.input.helper = {
+        type: "handler",
+        value: property.helperHandler
+          ? HandlerResolver.resolveHandler(property.helperHandler, StateHandlers)
+          : StateHandlers.inputHelperText(property.handlerProperty || property.name)
+      };
+    }
+
     // Resolve event handlers from references or use custom events
     if (property.eventHandlers) {
       Object.entries(property.eventHandlers).forEach(([eventName, handler]) => {
