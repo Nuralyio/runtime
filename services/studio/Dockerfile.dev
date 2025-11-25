@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies with platform-specific optionalDependencies
-RUN npm install --force || npm install
+RUN npm install --force --ignore-scripts || npm install --ignore-scripts
 
 # Copy source code
 COPY . .
