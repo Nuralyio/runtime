@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { validateHandlerCode, validateComponentHandlers } from './handler-validator';
+import { validateHandlerCode, validateComponentHandlers } from '@shared/utils/handler-validator';
 
 /**
  * Helper function to test invalid code patterns
@@ -230,6 +230,30 @@ describe('Handler Validator - Component Handlers', () => {
     const result = validateComponentHandlers(component);
     expect(result.valid).toBe(false);
     expect(result.errors[0].code).toContain('styleHandlers.color');
+  });
+
+  test('validates style handler-type properties', () => {
+    const component = {
+      style: {
+        color: { type: 'handler', value: "globalThis.theme" },
+        fontSize: '16px', // static value, should be ignored
+      }
+    };
+    const result = validateComponentHandlers(component);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].code).toContain('style.color');
+  });
+
+  test('validates valid style handler-type properties', () => {
+    const component = {
+      style: {
+        color: { type: 'handler', value: "return GetVar('theme') === 'dark' ? '#fff' : '#000'" },
+        fontSize: { type: 'handler', value: "return GetVar('fontSize') || '16px'" },
+      }
+    };
+    const result = validateComponentHandlers(component);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
   });
 
   test('validates multiple handler types', () => {

@@ -367,6 +367,56 @@ function extractErrorContext(code: string, line?: number): string | undefined {
 }
 
 /**
+ * Helper function to validate string handlers
+ */
+function validateStringHandlers(
+  handlers: Record<string, any> | null | undefined,
+  prefix: string,
+  allErrors: ValidationError[]
+): void {
+  if (!handlers) return;
+  
+  Object.entries(handlers).forEach(([name, code]) => {
+    if (typeof code === 'string') {
+      const result = validateHandlerCode(code);
+      if (!result.valid) {
+        result.errors.forEach(error => {
+          allErrors.push({
+            ...error,
+            code: `${prefix}.${name}: ${error.code || code.split('\n')[0]}`,
+          });
+        });
+      }
+    }
+  });
+}
+
+/**
+ * Helper function to validate handler-type properties (objects with type: 'handler')
+ */
+function validateHandlerTypeProperties(
+  properties: Record<string, any> | null | undefined,
+  prefix: string,
+  allErrors: ValidationError[]
+): void {
+  if (!properties) return;
+  
+  Object.entries(properties).forEach(([name, value]: [string, any]) => {
+    if (value && typeof value === 'object' && value.type === 'handler' && typeof value.value === 'string') {
+      const result = validateHandlerCode(value.value);
+      if (!result.valid) {
+        result.errors.forEach(error => {
+          allErrors.push({
+            ...error,
+            code: `${prefix}.${name}: ${error.code || value.value.split('\n')[0]}`,
+          });
+        });
+      }
+    }
+  });
+}
+
+/**
  * Validates all handlers in a component
  *
  * @param component - Component with handlers to validate
@@ -375,73 +425,20 @@ function extractErrorContext(code: string, line?: number): string | undefined {
 export function validateComponentHandlers(component: any): ValidationResult {
   const allErrors: ValidationError[] = [];
 
-  // Validate event handlers
-  if (component.event) {
-    Object.entries(component.event).forEach(([eventName, code]) => {
-      if (typeof code === 'string') {
-        const result = validateHandlerCode(code);
-        if (!result.valid) {
-          result.errors.forEach(error => {
-            allErrors.push({
-              ...error,
-              code: `event.${eventName}: ${error.code || code.split('\n')[0]}`,
-            });
-          });
-        }
-      }
-    });
-  }
+  // Validate event handlers (direct string handlers)
+  validateStringHandlers(component.event, 'event', allErrors);
 
-  // Validate input handlers (nested in input property)
-  if (component.input) {
-    Object.entries(component.input).forEach(([inputName, value]: [string, any]) => {
-      if (value && typeof value === 'object' && value.type === 'handler' && typeof value.value === 'string') {
-        const result = validateHandlerCode(value.value);
-        if (!result.valid) {
-          result.errors.forEach(error => {
-            allErrors.push({
-              ...error,
-              code: `input.${inputName}: ${error.code || value.value.split('\n')[0]}`,
-            });
-          });
-        }
-      }
-    });
-  }
+  // Validate input handler-type properties
+  validateHandlerTypeProperties(component.input, 'input', allErrors);
 
-  // Validate inputHandlers
-  if (component.inputHandlers) {
-    Object.entries(component.inputHandlers).forEach(([inputName, code]) => {
-      if (typeof code === 'string') {
-        const result = validateHandlerCode(code);
-        if (!result.valid) {
-          result.errors.forEach(error => {
-            allErrors.push({
-              ...error,
-              code: `inputHandlers.${inputName}: ${error.code || code.split('\n')[0]}`,
-            });
-          });
-        }
-      }
-    });
-  }
+  // Validate style handler-type properties
+  validateHandlerTypeProperties(component.style, 'style', allErrors);
 
-  // Validate style handlers
-  if (component.styleHandlers) {
-    Object.entries(component.styleHandlers).forEach(([styleName, code]) => {
-      if (typeof code === 'string') {
-        const result = validateHandlerCode(code);
-        if (!result.valid) {
-          result.errors.forEach(error => {
-            allErrors.push({
-              ...error,
-              code: `styleHandlers.${styleName}: ${error.code || code.split('\n')[0]}`,
-            });
-          });
-        }
-      }
-    });
-  }
+  // Validate inputHandlers (direct string handlers)
+  validateStringHandlers(component.inputHandlers, 'inputHandlers', allErrors);
+
+  // Validate styleHandlers (direct string handlers)
+  validateStringHandlers(component.styleHandlers, 'styleHandlers', allErrors);
 
   return {
     valid: allErrors.length === 0,
