@@ -76,8 +76,8 @@ export function updateComponentAttributes(
       const hasOriginalUpdateType = updateType in componentToUpdate;
       const hasOriginalBreakpoints = 'breakpoints' in componentToUpdate;
       const originalState = {
-        [updateType]: hasOriginalUpdateType ? JSON.parse(JSON.stringify(componentToUpdate[updateType])) : undefined,
-        breakpoints: hasOriginalBreakpoints ? JSON.parse(JSON.stringify(componentToUpdate.breakpoints)) : undefined,
+        [updateType]: hasOriginalUpdateType ? structuredClone(componentToUpdate[updateType]) : undefined,
+        breakpoints: hasOriginalBreakpoints ? structuredClone(componentToUpdate.breakpoints) : undefined,
         hasUpdateType: hasOriginalUpdateType,
         hasBreakpoints: hasOriginalBreakpoints,
       };
