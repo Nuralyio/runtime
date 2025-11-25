@@ -1,5 +1,5 @@
 import { $toasts, type Toast } from '../../shared/redux/store/toast';
-import { eventDispatcher } from '../../shared/utils/change-detection';
+import { eventDispatcher } from '@shared/utils/change-detection';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
