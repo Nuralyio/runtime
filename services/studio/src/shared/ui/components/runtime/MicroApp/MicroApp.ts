@@ -25,6 +25,9 @@ import { MicroAppMessageBus, MessageTypes } from "@features/micro-app/messaging/
 // Import data loader
 import { defaultMicroAppDataLoader, type MicroAppDataLoader } from "./MicroAppDataLoader";
 
+// Import toast container
+import { ToastContainer } from "@features/studio/components/ToastContainer/ToastContainer";
+
 // Studio app UUID - special case for editor that doesn't load from API
 const STUDIO_APP_UUID = "1";
 
@@ -120,6 +123,9 @@ export class MicroApp extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+
+    // Initialize toast container singleton (ensures it exists globally)
+    ToastContainer.getInstance();
 
     // Initialize isolated context if feature is enabled
     if (this.useIsolatedContext) {
