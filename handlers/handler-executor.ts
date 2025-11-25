@@ -267,8 +267,18 @@ export function executeHandler(
   // Create global functions available to the handler
   const globalFunctions = createGlobalHandlerFunctions(runtimeContext);
 
-  // Compile the handler code
-  const compiledFunction = compileHandlerFunction(code);
+  // Compile the handler code with error handling
+  let compiledFunction;
+  try {
+    compiledFunction = compileHandlerFunction(code);
+  } catch (error) {
+    // Show error toast for validation failures
+    const errorMessage = error instanceof Error ? error.message : 'Unknown compilation error';
+    if (globalFunctions.ShowErrorToast) {
+      globalFunctions.ShowErrorToast(errorMessage, 5000);
+    }
+    throw error;
+  }
 
   // Create custom console that logs to Editor
   const customConsole = {
