@@ -62,6 +62,12 @@ export class PageContent extends LitElement {
     $draggingComponentInfo.subscribe(draggingComponentInfo => {
       this.draggingComponentInfo = draggingComponentInfo || null;
     });
+      const globalVarHandler = (data: any) => {
+      // Trigger refresh of the micro-app
+      this.refreshComponent();
+    };
+    eventDispatcher.on('global:variable:changed', globalVarHandler);
+
   }
 
   /**
