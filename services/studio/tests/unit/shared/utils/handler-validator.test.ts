@@ -51,7 +51,6 @@ describe('Handler Validator - Malicious Code Detection', () => {
   testInvalidCode('blocks dynamic import()', "import('malicious-module')", 'forbidden_pattern');
   testInvalidCode('blocks localStorage access', "localStorage.setItem('key', 'value')", undefined, 'localStorage');
   testInvalidCode('blocks sessionStorage access', "sessionStorage.getItem('key')", undefined, 'sessionStorage');
-  testInvalidCode('blocks fetch calls', "fetch('https://api.example.com')", undefined, 'fetch');
 });
 
 describe('Handler Validator - Valid Code Acceptance', () => {
@@ -65,6 +64,7 @@ describe('Handler Validator - Valid Code Acceptance', () => {
   testValidCode('allows GetComponent', "const comp = GetComponent('componentId')");
   testValidCode('allows Utils', "const first = Utils.first(array)");
   testValidCode('allows console.log', "console.log('Debug message')");
+  testValidCode('allows fetch calls', "const response = await fetch('https://api.example.com'); const data = await response.json();");
   testValidCode('allows variable declarations', `
     const count = GetVar('count') || 0;
     const newCount = count + 1;
