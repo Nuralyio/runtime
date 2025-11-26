@@ -1,9 +1,9 @@
 ---
 import Layout from './_layouts/LandingLayout.astro';
-import "../shared/ui/components/runtime/MicroApp/MicroApp";
-import { MicroApp } from '../shared/ui/components/runtime/MicroApp/MicroApp';
 import { processHeaders } from '@shared/utils/api-calls-utils';
 import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@services';
+
+export const prerender = false;
 
 const dashboardAPPUUID = process.env.DASHBOARD_APP_UUID;
 const dashboardAPPPageUUID = process.env.DASHBOARD_PAGE_UUID;
@@ -28,26 +28,71 @@ const processedHeaders = processHeaders(Astro.request.headers);
 
 ---
 
-<script is:inline define:vars={{ pageData, componentData , application}}>
-  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
-  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
-  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
-  document.documentElement.style.setProperty('--nuraly-page-background-color', pageData[0]?.style?.['--nuraly-page-background-color'] || '#ffffff');
-  document.documentElement.style.setProperty('--nuraly-page-background-color-dark', pageData[0]?.style?.['--nuraly-page-background-color-dark'] || '#000000');
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-</script>
-<Layout title="Welcome to Astrolus.">
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f9fafb;
+        min-height: 100vh;
+      }
 
-  <MicroApp
-  .prod={true}
-  client:load
-  mode="preview"
-  uuid={dashboardAPPUUID}
-  page_uuid={dashboardAPPPageUUID}
- ></MicroApp>
-</Layout>
-<style>
-  html {
-    background-color : var(--nuraly-page-background-color, #ffffff);
-  }
-</style>
+      .dashboard-container {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      micro-app {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <micro-app id="dashboard-micro-app"></micro-app>
+    </div>
+
+    <script is:inline define:vars={{ dashboardAPPUUID, dashboardAPPPageUUID, componentData, pageData }}>
+      window.__DASHBOARD_DATA__ = {
+        uuid: dashboardAPPUUID,
+        page_uuid: dashboardAPPPageUUID,
+        components: componentData,
+        pages: pageData,
+      };
+    </script>
+
+    <script>
+      import "@shared/ui/components/runtime/MicroApp/MicroApp";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const data = window.__DASHBOARD_DATA__;
+        const microApp = document.getElementById("dashboard-micro-app");
+
+        if (microApp && data) {
+          console.log('[Dashboard] Setting up micro-app with data:', data);
+          microApp.uuid = data.uuid;
+          microApp.page_uuid = data.page_uuid;
+          microApp.useIsolatedContext = true;
+          microApp.appComponents = data.components;
+          microApp.appPages = data.pages;
+          microApp.mode = "preview";
+          microApp.prod = true;
+        } else {
+          console.error('[Dashboard] Missing micro-app element or data');
+        }
+      });
+    </script>
+  </body>
+</html>
