@@ -31,7 +31,6 @@ export const FORBIDDEN_GLOBALS = new Set([
   'localStorage',
   'sessionStorage',
   'indexedDB',
-  'fetch', // Only allowed through InvokeFunction
   'XMLHttpRequest',
   'WebSocket',
   'Worker',
@@ -96,7 +95,6 @@ export const VALIDATION_ERROR_MESSAGES = {
   __proto__: "Prototype manipulation via '__proto__' is forbidden for security reasons.",
   prototype: "Direct prototype access is forbidden to prevent prototype pollution.",
   constructor: "Access to 'constructor' property is forbidden to prevent prototype pollution.",
-  fetch: "Direct 'fetch()' calls are not allowed. Use InvokeFunction() to make API calls instead.",
   localStorage: "Direct localStorage access is forbidden. Use GetVar()/SetVar() for state management.",
   sessionStorage: "Direct sessionStorage access is forbidden. Use GetVar()/SetVar() for state management.",
   indexedDB: "Direct indexedDB access is forbidden. Use Database API provided in runtime context.",
