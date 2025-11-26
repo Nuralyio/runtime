@@ -442,11 +442,11 @@ unsubscribe()
 
 :::tip Guidelines
 
-1. ✅ **Use LOCAL by default** - Keep variables private unless needed elsewhere
-2. ✅ **Use GLOBAL sparingly** - Only for truly global state (auth, theme, etc.)
-3. ✅ **Explicit prefixes** - Use `global.` prefix for clarity when setting globals
-4. ✅ **Subscribe carefully** - Always unsubscribe to prevent memory leaks
-5. ✅ **Avoid large objects** - GLOBAL variable changes trigger updates in ALL instances
+1. **Use LOCAL by default** - Keep variables private unless needed elsewhere
+2. **Use GLOBAL sparingly** - Only for truly global state (auth, theme, etc.)
+3. **Explicit prefixes** - Use `global.` prefix for clarity when setting globals
+4. **Subscribe carefully** - Always unsubscribe to prevent memory leaks
+5. **Avoid large objects** - GLOBAL variable changes trigger updates in ALL instances
 6. ⚠️ **Not a security boundary** - All micro-apps run in same JavaScript context
 
 :::
