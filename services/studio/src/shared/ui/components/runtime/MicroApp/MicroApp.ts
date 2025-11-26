@@ -193,6 +193,9 @@ export class MicroApp extends LitElement {
         $components.setKey(this.uuid, result.components);
         this.refreshComponent();
         this.updateComponentsToRender();
+      })
+      .catch((err) => {
+        console.error('[MicroApp] Failed to load components:', err);
       });
 
     // Load pages using the configured data loader
@@ -206,6 +209,9 @@ export class MicroApp extends LitElement {
         if (result.pages.length > 0) {
           this.page = result.pages[0];
         }
+      })
+      .catch((err) => {
+        console.error('[MicroApp] Failed to load pages:', err);
       });
 
   } else {
