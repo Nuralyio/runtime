@@ -69,17 +69,17 @@ Components are the building blocks of Nuraly applications, featuring:
   <div className="col col--6">
     <div className="card">
       <div className="card__header">
-        <h3>🔧 Components</h3>
+        <h3>Components</h3>
       </div>
       <div className="card__body">
         <p>
           Explore the component system, custom components, and how to build
-          interactive UI elements.
+          interactive UI elements with input handlers and events.
         </p>
       </div>
       <div className="card__footer">
-        <a href="#" className="button button--secondary button--block">
-          Coming Soon
+        <a href="../components" className="button button--primary button--block">
+          Component Reference
         </a>
       </div>
     </div>

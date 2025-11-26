@@ -3,7 +3,7 @@ sidebar_position: 1
 slug: /
 ---
 
-# Welcome to Nuraly Documentation
+# Welcome
 
 Welcome to the **Nuraly** documentation. Here you'll find comprehensive guides and documentation to help you start working with Nuraly as quickly as possible.
 
@@ -51,12 +51,26 @@ Access the application at `http://localhost` with default credentials:
 - **Email**: dev@nuraly.io
 - **Password**: dev123
 
+## Documentation Sections
+
+### [Components](/components/)
+Complete reference for all Nuraly components, including input handlers and events:
+- **[TextInput](/components/text-input)** - Text input component
+- **[Button](/components/button)** - Button component
+- Component-specific input handlers and event documentation
+
+### [Architecture](/architecture/)
+Deep dive into Nuraly's architectural patterns:
+- **[Micro-Apps](/architecture/micro-apps/)** - Self-contained isolated applications
+- **[Variable Scopes](/architecture/micro-apps/variable-scopes)** - Two-tier state management
+- **[RuntimeContext](/architecture/)** - Core runtime execution engine
+
 ## Next Steps
 
 Explore the documentation sections to learn more about:
 
-- Architecture and services
+- [Components Reference](/components/) - Building UI with components
+- [Architecture](/architecture/) - System design and patterns
 - Development setup
 - Configuration options
 - Deployment strategies
-- API documentation

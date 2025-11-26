@@ -12,11 +12,11 @@ Nuraly's micro-app architecture provides a powerful, isolated runtime environmen
 
 Micro-apps are **self-contained, isolated applications** that can be embedded and run independently within a parent application. Each micro-app has:
 
-- ✅ **Its own component tree** - Independent hierarchy of UI components
-- ✅ **Isolated runtime context** - Sandboxed execution environment
-- ✅ **Independent state management** - Local and global variable scopes
-- ✅ **Event system** - Scoped event dispatching and handling
-- ✅ **Page management** - Internal navigation and routing
+- **Its own component tree** - Independent hierarchy of UI components
+- **Isolated runtime context** - Sandboxed execution environment
+- **Independent state management** - Local and global variable scopes
+- **Event system** - Scoped event dispatching and handling
+- **Page management** - Internal navigation and routing
 
 ## Key Features
 
@@ -208,10 +208,10 @@ const file = Vars['global.selectedFile']  // Auto-updates when changed
 
 :::tip Guidelines
 
-1. ✅ **Use LOCAL for instance-specific state** - Keep temporary data isolated
-2. ✅ **Use GLOBAL for truly shared state** - Auth, theme, user preferences
-3. ✅ **Explicit scope prefixes** - `global.` makes sharing intentions clear
-4. ✅ **Clean up subscriptions** - Prevent memory leaks
+1. **Use LOCAL for instance-specific state** - Keep temporary data isolated
+2. **Use GLOBAL for truly shared state** - Auth, theme, user preferences
+3. **Explicit scope prefixes** - `global.` makes sharing intentions clear
+4. **Clean up subscriptions** - Prevent memory leaks
 5. ⚠️ **Avoid large global objects** - Changes trigger updates in all instances
 
 :::
