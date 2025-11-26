@@ -173,7 +173,6 @@
  * @see {@link executeHandler} - Handler execution
  */
 
-import deepEqual from "fast-deep-equal";
 
 import { $applications } from "@shared/redux/store/apps";
 import {
