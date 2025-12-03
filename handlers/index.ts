@@ -49,7 +49,7 @@
  * 
  * @example Basic Handler Execution
  * ```typescript
- * import { executeHandler } from '@features/runtime/handlers';
+ * import { executeHandler } from './';
  * 
  * // Simple handler
  * const result = executeHandler(
@@ -62,7 +62,7 @@
  * 
  * @example Complex Handler with Multiple Operations
  * ```typescript
- * import { executeHandler } from '@features/runtime/handlers';
+ * import { executeHandler } from './';
  * 
  * const complexHandler = `
  *   // Get current count
@@ -102,7 +102,7 @@
  * 
  * @example Compilation and Caching
  * ```typescript
- * import { compileHandlerFunction, getHandlerCacheSize } from '@features/runtime/handlers';
+ * import { compileHandlerFunction, getHandlerCacheSize } from './';
  * 
  * const code = "return GetVar('username')";
  * 

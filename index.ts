@@ -11,7 +11,7 @@
  * 
  * @example Basic Usage
  * ```typescript
- * import { executeHandler, ExecuteInstance, Editor } from '@features/runtime';
+ * import { executeHandler, ExecuteInstance, Editor } from './';
  * 
  * // Execute a handler
  * const result = executeHandler(component, "GetVar('username')", { event: clickEvent });
@@ -28,7 +28,7 @@
  * 
  * @example Advanced Usage - Creating Dynamic Applications
  * ```typescript
- * import { executeHandler, ExecuteInstance } from '@features/runtime';
+ * import { executeHandler, ExecuteInstance } from './';
  * 
  * // Handler code for dynamic component behavior
  * const handlerCode = `
@@ -83,5 +83,5 @@ export {
 
 /**
  * Note: MicroApp component was removed from runtime exports to prevent circular dependencies.
- * Import MicroApp directly from '@shared/ui/components/runtime/MicroApp/MicroApp' if needed.
+ * Import MicroApp directly from '../../shared/ui/components/runtime/MicroApp/MicroApp' if needed.
  */

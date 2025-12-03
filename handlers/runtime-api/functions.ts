@@ -5,7 +5,7 @@
  */
 
 import { ExecuteInstance } from '../../state';
-import { loadFunctionsHandler, invokeFunctionHandler } from '@shared/redux/handlers/functions';
+import { loadFunctionsHandler, invokeFunctionHandler } from '../../redux/handlers/functions';
 
 export function createFunctionInvocationFunctions() {
   return {
