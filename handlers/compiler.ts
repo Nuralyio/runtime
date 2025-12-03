@@ -42,7 +42,7 @@
  * ```
  */
 
-import { validateHandlerCode } from '../../../shared/utils/handler-validator';
+import { validateHandlerCode } from '../utils/handler-validator';
 
 /**
  * Cache storage for compiled handler functions.

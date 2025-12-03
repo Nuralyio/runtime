@@ -109,7 +109,7 @@
  * 
  * @example Basic Usage
  * ```typescript
- * import { ExecuteInstance } from '@features/runtime/state';
+ * import { ExecuteInstance } from './';
  * 
  * // Access component by name
  * const button = ExecuteInstance.applications['app-id']['MyButton'];
@@ -174,18 +174,18 @@
  */
 
 
-import { $applications } from "@shared/redux/store/apps";
+import { $applications } from '../redux/store/apps';
 import {
   $components,
   setcomponentRuntimeStyleAttribute,
   $runtimeValues,
   setComponentRuntimeValue,
   setComponentRuntimeValues
-} from "@shared/redux/store/component/store";
-import type { ComponentElement } from "@shared/redux/store/component/component.interface";
-import { $context, getVar } from "@shared/redux/store/context";
-import { isServer } from "@shared/utils/envirement";
-import { eventDispatcher } from "@shared/utils/change-detection";
+} from '../redux/store/component/store';
+import type { ComponentElement } from '../redux/store/component/component.interface';
+import { $context, getVar } from '../redux/store/context';
+import { isServer } from '../utils/envirement';
+import { eventDispatcher } from '../utils/change-detection';
 import Editor from "./editor";
 import { executeHandler } from "../handlers/handler-executor";
 import type { IRuntimeContext } from "../types/IRuntimeContext";
@@ -290,7 +290,7 @@ const DEBUG = false;
  * 
  * ```typescript
  * // Access the singleton
- * import { ExecuteInstance } from '@features/runtime';
+ * import { ExecuteInstance } from '..';
  * 
  * // Access component registry
  * const myApp = ExecuteInstance.Apps['MyApp'];

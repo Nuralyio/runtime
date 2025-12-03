@@ -21,7 +21,7 @@
  * 4. No leaky abstractions: Interface doesn't expose implementation details
  */
 
-import type { ComponentElement } from '@shared/redux/store/component/component.interface';
+import type { ComponentElement } from '../redux/store/component/component.interface';
 
 /**
  * Runtime execution context interface.

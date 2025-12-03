@@ -30,7 +30,7 @@
  * 
  * @example Basic Usage
  * ```typescript
- * import Editor from '@features/runtime/state/editor';
+ * import Editor from './editor';
  * 
  * // Check editor mode
  * if (Editor.getEditorMode()) {
@@ -81,10 +81,10 @@
  * @see {@link RuntimeContext} for state management
  */
 
-import { eventDispatcher } from "@shared/utils/change-detection";
-import { isServer } from "@shared/utils/envirement";
+import { eventDispatcher } from '../utils/change-detection';
+import { isServer } from '../utils/envirement';
 import { ExecuteInstance } from "./runtime-context";
-import { $editorState } from "@shared/redux/store/apps";
+import { $editorState } from '../redux/store/apps';
 
 /**
  * @class Editor

@@ -1,4 +1,4 @@
-import { showToast, hideToast, clearAllToasts } from '@services/toast';
+import { showToast, hideToast, clearAllToasts } from '../../../../services/toast';
 
 /**
  * Creates toast notification functions for the runtime API

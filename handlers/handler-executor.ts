@@ -85,9 +85,9 @@
  * ```
  */
 
-import { RuntimeHelpers } from '@shared/utils/runtime-helpers';
-import { isServer } from '@shared/utils/envirement';
-import { eventDispatcher } from '@shared/utils/change-detection';
+import { RuntimeHelpers } from '../utils/runtime-helpers';
+import { isServer } from '../utils/envirement';
+import { eventDispatcher } from '../utils/change-detection';
 import Editor from '../state/editor';
 import Database from '@nuraly/dbclient';
 
