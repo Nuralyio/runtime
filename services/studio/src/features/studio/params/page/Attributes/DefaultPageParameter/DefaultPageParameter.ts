@@ -1,8 +1,8 @@
-import { $currentApplication } from "@shared/redux/store/apps";
-import type { PageElement } from "@shared/redux/handlers/pages/page.interface";
+import { $currentApplication } from '../../../../redux/store/apps';
+import type { PageElement } from '../../../../redux/handlers/pages/page.interface';
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { updateApplication } from "@shared/redux/actions/application/updateApplication";
+import { updateApplication } from '../../../../redux/actions/application/updateApplication';
 
 @customElement("attribute-page-default")
 export class AttributePageDefault extends LitElement {

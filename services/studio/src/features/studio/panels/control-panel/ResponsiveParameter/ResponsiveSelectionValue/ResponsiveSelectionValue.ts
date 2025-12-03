@@ -1,7 +1,7 @@
-import { $currentPageViewPort } from "@shared/redux/store/page";
+import { $currentPageViewPort } from '../../../../redux/store/page';
 import { css, html, LitElement } from "lit";
 import { state } from "lit/decorators.js";
-import { setCurrentPageViewPort } from "@shared/redux/actions/page/setCurrentPageViewPort";
+import { setCurrentPageViewPort } from '../../../../redux/actions/page/setCurrentPageViewPort';
 
 export class ResponsiveSelection extends LitElement {
   static override styles = [

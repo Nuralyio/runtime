@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 export default [
@@ -7,7 +6,7 @@ export default [
     uuid: "box_shadow_block",
     name: "name",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
@@ -18,7 +17,7 @@ export default [
   {
     uuid: "box_shadow_label",
     name: "box shadow label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -37,7 +36,7 @@ export default [
     uuid: "box_shadow_valuess",
     name: "name",
     application_id: "1",
-    component_type: ComponentType.ShadowBox,
+    component_type: "shadow_box",
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     event: {
@@ -111,7 +110,7 @@ export default [
     uuid: "box_shadow_handler_block",
     application_id: "1",
     name: "box shadow handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "220px",
@@ -123,7 +122,7 @@ export default [
   {
     uuid: "box_shadow_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "box shadow handler",

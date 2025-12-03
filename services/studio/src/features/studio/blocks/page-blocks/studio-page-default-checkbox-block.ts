@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 export default [
@@ -6,7 +5,7 @@ export default [
     uuid: "page_default_checkbox_block",
     application_id: "1",
     name: "page default checkbox block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -20,7 +19,7 @@ export default [
   {
     uuid: "page_default_checkbox_label",
     name: "page default checkbox label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -38,7 +37,7 @@ export default [
     uuid: "page_default_checkbox_input",
     name: "page default checkbox input",
     application_id: "1",
-    component_type: ComponentType.Checkbox,
+    component_type: "checkbox",
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small"

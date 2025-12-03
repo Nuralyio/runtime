@@ -3,7 +3,6 @@
  * Generates input components for properties
  */
 
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import type { PropertyConfig } from '../types.ts';
 import { HandlerResolver } from '../handler-resolver.ts';
 import { ValueHandlers, StateHandlers, EventHandlers } from "../../handler-library.ts";
@@ -48,7 +47,7 @@ export class InputGenerator {
       uuid: inputUuid,
       application_id: "1",
       name: `${property.label} Event`,
-      component_type: ComponentType.Event,
+      component_type: "event",
       inputHandlers: {},
       styleHandlers: {},
       styleBreakPoints: {
@@ -80,7 +79,7 @@ export class InputGenerator {
       uuid: inputUuid,
       application_id: "1",
       name: `${property.label} Input`,
-      component_type: ComponentType.IconPicker,
+      component_type: "IconPicker",
       inputHandlers: {},
       styleHandlers: {},
       styleBreakPoints: {

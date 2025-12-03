@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme } from "./common-editor-theme.ts";
 
@@ -8,7 +7,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}`,
       application_id: "1",
       name: "select helper color block",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         ...InputBlockContainerTheme
@@ -22,7 +21,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_input_block`,
       application_id: "1",
       name: "select helper color input block",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -34,7 +33,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     {
       uuid: `${containerUuid}_label`,
       name: "select helper color label",
-      component_type: ComponentType.TextLabel,
+      component_type: "text_label",
       application_id: "1",
       ...COMMON_ATTRIBUTES,
       input: {
@@ -54,7 +53,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_input`,
       name: "helper color input",
       application_id: "1",
-      component_type: ComponentType.ColorPicker,
+      component_type: "color_picker",
       event: {
         valueChange: /* js */ `
                     
@@ -106,7 +105,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_handler_block`,
       application_id: "1",
       name: "select helper color handler block",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -117,7 +116,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
     {
       uuid: `${containerUuid}_handler`,
       application_id: "1",
-      component_type: ComponentType.Event,
+      component_type: "event",
       ...COMMON_ATTRIBUTES,
       styleHandlers: {},
       name: "helper color handler",

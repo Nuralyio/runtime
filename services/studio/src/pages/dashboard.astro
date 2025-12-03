@@ -1,7 +1,7 @@
 ---
 import Layout from './_layouts/LandingLayout.astro';
-import { processHeaders } from '@shared/utils/api-calls-utils';
-import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@services';
+import { processHeaders } from '../features/runtime/utils/api-calls-utils';
+import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '../services';
 
 export const prerender = false;
 
@@ -74,7 +74,7 @@ const processedHeaders = processHeaders(Astro.request.headers);
     </script>
 
     <script>
-      import "@shared/ui/components/runtime/MicroApp/MicroApp";
+      import "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
 
       document.addEventListener("DOMContentLoaded", () => {
         const data = window.__DASHBOARD_DATA__;

@@ -1,10 +1,8 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 export const leftPanelContainer = {
   uuid: "331",
   application_id: "1",
   name: "Left panel",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   input: {
     direction: {
       type: "string",

@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 import { v4 as uuidv4 } from "uuid";
 
@@ -42,7 +41,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     uuid: mainContainerName,
     application_id: "1",
     name: mainContainerName,
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -59,7 +58,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       uuid: categoryCollapseUuid,
       application_id: "1",
       name: `${category.name} Collapse`,
-      component_type: ComponentType.Collapse,
+      component_type: "Collapse",
       style: {
         ...COLLAPSE_COMMON_STYLE
       },
@@ -91,7 +90,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       uuid: `${categoryCollapseUuid}_vertical_container`,
       application_id: "1",
       name: `${category.name} Vertical Container`,
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -129,12 +128,12 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
     const options = item.options || [];
 
     // Set component type based on input type
-    let componentType = ComponentType.ColorPicker;
+    let componentType = "color_picker";
     let inputStyle: any = {};
     let inputConfig: any = {};
 
     if (inputType === "text") {
-      componentType = ComponentType.TextInput;
+      componentType = "text_input";
       inputStyle = {
         width: "120px",
         "--nuraly-input-background-color": "#2a2a2a",
@@ -148,7 +147,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         }
       };
     } else if (inputType === "number") {
-      componentType = ComponentType.TextInput;
+      componentType = "text_input";
       inputStyle = {
         width: "80px",
         "--nuraly-input-background-color": "#2a2a2a",
@@ -166,7 +165,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         }
       };
     } else if (inputType === "select") {
-      componentType = ComponentType.Select;
+      componentType = "select";
       inputStyle = {
         width: "140px",
         "--nuraly-select-dropdown-max-height": "auto",
@@ -239,7 +238,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         uuid: blockUuid,
         application_id: "1",
         name: `${item.label} block`,
-        component_type: ComponentType.Container,
+        component_type: "vertical-container-block",
         ...COMMON_ATTRIBUTES,
         style: {
           display: "flex",
@@ -254,7 +253,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         uuid: inputBlockUuid,
         application_id: "1",
         name: `${item.label} input block`,
-        component_type: ComponentType.Container,
+        component_type: "vertical-container-block",
         ...COMMON_ATTRIBUTES,
         style: {
           display: "flex",
@@ -267,7 +266,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         uuid: handlerBlockUuid,
         application_id: "1",
         name: `${item.label} handler block`,
-        component_type: ComponentType.Container,
+        component_type: "vertical-container-block",
         ...COMMON_ATTRIBUTES,
         style: {
           display: "flex",
@@ -281,7 +280,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         uuid: labelUuid,
         application_id: "1",
         name: `${item.label} label`,
-        component_type: ComponentType.TextLabel,
+        component_type: "text_label",
         ...COMMON_ATTRIBUTES,
         style: {
         },
@@ -320,7 +319,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         uuid: handlerUuid,
         application_id: "1",
         name: `${item.label} handler`,
-        component_type: ComponentType.Event,
+        component_type: "event",
         ...COMMON_ATTRIBUTES,
         input: {
           value: {
@@ -360,7 +359,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       uuid: modeCollapseUuid,
       application_id: "1",
       name: `${mode.name} Collapse`,
-      component_type: ComponentType.Collapse,
+      component_type: "Collapse",
       style: {
        ...COLLAPSE_COMMON_STYLE
       },
@@ -389,7 +388,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
       uuid: modeVerticalContainerUuid,
       application_id: "1",
       name: `${mode.name} Vertical Container`,
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",

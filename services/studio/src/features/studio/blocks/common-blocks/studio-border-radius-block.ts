@@ -1,8 +1,7 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 // Helper functions (inlined from factories)
-const createBaseComponent = (uuid: string, name: string, componentType: ComponentType, additionalProps = {}) => ({
+const createBaseComponent = (uuid: string, name: string, componentType: string, additionalProps = {}) => ({
   uuid,
   name,
   application_id: "1",
@@ -12,7 +11,7 @@ const createBaseComponent = (uuid: string, name: string, componentType: Componen
 });
 
 const createTextLabel = (uuid: string, text: string, style = {}) => 
-  createBaseComponent(uuid, "text_label", ComponentType.TextLabel, {
+  createBaseComponent(uuid, "text_label", "text_label", {
     parameters: { value: text },
     input: {
       value: {
@@ -27,7 +26,7 @@ const createTextLabel = (uuid: string, text: string, style = {}) =>
 const containerComponent = createBaseComponent(
   "border_radius_vertical_container",
   "Left panel",
-  ComponentType.Container,
+  "vertical-container-block",
   {
     style: {
       display: "flex",
@@ -48,7 +47,7 @@ const labelComponent = createTextLabel(
 const borderRadiusComponent = createBaseComponent(
   "border_radius_block",
   "border radius block",
-  ComponentType.BorderRadius,
+  "border_radius",
   {
     style: { width: "50px" },
     event: {
@@ -206,7 +205,7 @@ const borderRadiusComponent = createBaseComponent(
 const handlerComponent = createBaseComponent(
   "label_border_radius_handler",
   "border-radius handler",
-  ComponentType.Event,
+  "event",
   {
     style: { 
       display: "block", 

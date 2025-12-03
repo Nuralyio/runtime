@@ -1,11 +1,9 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 // Collection component that displays the list of available components
 export const componentCollection = {
   uuid: "component_collection",
   name: "Component Collection",
   application_id: "1",
-  component_type: ComponentType.Collection,
+  component_type: "Collection",
   style: {
     "--columns": "9",
     "margin-left": "10px",
@@ -78,7 +76,7 @@ export const componentItemContainer = {
   uuid: "component_item_container",
   name: "Component Item Container",
   application_id: "1",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   input: {
     direction: {
       type: "string",
@@ -118,7 +116,7 @@ export const componentItemIcon = {
   uuid: "component_item_icon",
   name: "Component Item Icon",
   application_id: "1",
-  component_type: ComponentType.Icon,
+  component_type: "Icon",
   input: {
     icon: {
       type: "handler",
@@ -141,7 +139,7 @@ export const componentItemLabel = {
   uuid: "component_item_label",
   name: "Component Item Label",
   application_id: "1",
-  component_type: ComponentType.TextLabel,
+  component_type: "text_label",
   input: {
     value: {
       type: "handler",

@@ -1,12 +1,11 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
-import { filesAppUUID, filesPageUUID } from "@features/studio/params/editor-micro-apps/left-panel.ts";
+import { filesAppUUID, filesPageUUID } from '../../params/editor-micro-apps/left-panel.ts';
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 import FunctionBlocks from './function/index.ts';
 export default [{
   uuid: "right_panel_function_tabs",
   application_id: "1",
   name: "right_panel_function_tabs",
-  component_type: ComponentType.Tabs,
+  component_type: "tabs",
   event: {},
   style: {
     width: "100%",
@@ -43,7 +42,7 @@ export default [{
     uuid: "right_panel_function_tabs_block",
     application_id: "1",
     name: "Parent Color Container",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -55,7 +54,7 @@ export default [{
     application_id: "1",
     uuid: "files_micro__right_app_block",
     name: "function_micro_app",
-    component_type: ComponentType.MicroApp,
+    component_type: "MicroApp",
     input: {
       appUUID: {
         type: "string",
