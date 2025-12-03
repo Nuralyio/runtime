@@ -1,10 +1,10 @@
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import styles from "./AI-Assistant.style.ts";
-import { $context, getVar } from "@shared/redux/store/context.ts";
-import { addPageAction } from "@shared/redux/actions/page/addPageAction.ts";
-import { $applicationComponents } from "@shared/redux/store/component/store.ts";
-import { traitCompoentFromSchema } from "@shared/utils/clipboard-utils.ts";
+import { $context, getVar } from '../../../../features/runtime/redux/store/context.ts';
+import { addPageAction } from '../../../../features/runtime/redux/actions/page/addPageAction.ts';
+import { $applicationComponents } from '../../../../features/runtime/redux/store/component/store.ts';
+import { traitCompoentFromSchema } from '../../../runtime/utils/clipboard-utils.ts';
 
 @customElement("ai-assistant-block")
 export class AIAssistantBlock extends LitElement {

@@ -1,5 +1,5 @@
-import "@shared/ui/components/runtime/MicroApp/MicroApp";
-import { $environment, type Environment, ViewMode } from "@shared/redux/store/environment";
+import "../../../../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+import { $environment, type Environment, ViewMode } from '../../../../features/runtime/redux/store/environment';
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 

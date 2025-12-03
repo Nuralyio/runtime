@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 export default [
@@ -6,7 +5,7 @@ export default [
     uuid: "access_control_panel_block",
     application_id: "1",
     name: "access control panel block",
-    component_type: ComponentType.Panel,
+    component_type: "Panel",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "100%",
@@ -58,7 +57,7 @@ export default [
     uuid: "access_control_content_container",
     application_id: "1",
     name: "access control content container",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -78,7 +77,7 @@ export default [
   {
     uuid: "access_control_label",
     name: "access control label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {

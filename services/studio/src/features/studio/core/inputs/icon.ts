@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme } from "../utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export default [
     uuid: "icon_picker_block",
     application_id: "1",
     name: "icon picker block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -18,7 +17,7 @@ export default [
     uuid: "icon_picker_input_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -30,7 +29,7 @@ export default [
   {
     uuid: "icon_picker_label",
     name: "icon picker label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -46,7 +45,7 @@ export default [
   {
     uuid: "icon_picker_content",
     application_id: "1",
-    component_type: ComponentType.IconPicker,
+    component_type: "IconPicker",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "icon picker content",
@@ -88,7 +87,7 @@ export default [
     uuid: "icon_picker_handler_block",
     application_id: "1",
     name: "icon picker handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -99,7 +98,7 @@ export default [
   {
     uuid: "icon_picker_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "icon picker handler",

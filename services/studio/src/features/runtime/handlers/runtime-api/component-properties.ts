@@ -5,8 +5,8 @@
  */
 
 import { ExecuteInstance } from '../../state';
-import { updateComponentAttributes, updateComponentName } from '@shared/redux/actions/component';
-import type { ComponentElement } from '@shared/redux/store/component';
+import { updateComponentAttributes, updateComponentName } from '../../redux/actions/component';
+import type { ComponentElement } from '../../redux/store/component';
 
 export function createComponentPropertyFunctions() {
   return {

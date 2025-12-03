@@ -1,4 +1,4 @@
-import { type PageElement } from "@shared/redux/handlers/pages/page.interface.ts";
+import { type PageElement } from '../../../redux/handlers/pages/page.interface.ts';
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "../Attributes/BackgroundColorAttribute/BackgroundColorAttribute.ts";

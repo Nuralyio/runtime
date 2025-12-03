@@ -7,8 +7,6 @@
 
 import { generateFromConfig, type BlockConfig } from "../../processors/property-block/index.ts";
 import typographyConfigRaw from "../../params/_shared/typography.config.json";
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
-
 // Type assertion for the JSON config
 const typographyConfig = typographyConfigRaw as { typographyInputs: BlockConfig };
 
@@ -22,7 +20,7 @@ const generatedTypographyComponents = generateFromConfig(
 const divider = {
   uuid: "divider",
   name: "divider",
-  component_type: ComponentType.Divider,
+  component_type: "Divider",
   application_id: "1",
   input: {}
 };

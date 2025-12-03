@@ -3,7 +3,6 @@
  * Orchestrates generation of complete property components
  */
 
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../core/helpers/common_attributes.ts";
 import type { PropertyConfig } from '../types.ts';
 import { InputGenerator } from './input-generator.ts';
@@ -42,7 +41,7 @@ export class PropertyGenerator {
       uuid: containerUuid,
       application_id: "1",
       name: `${property.label} Container`,
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -59,7 +58,7 @@ export class PropertyGenerator {
       uuid: labelUuid,
       application_id: "1",
       name: `${property.label} Label`,
-      component_type: ComponentType.TextLabel,
+      component_type: "text_label",
       inputHandlers: {},
       style: {
         width: "100px"
@@ -92,7 +91,7 @@ export class PropertyGenerator {
         uuid: handlerWrapperUuid,
         application_id: "1",
         name: `${property.label} Handler Wrapper`,
-        component_type: ComponentType.Container,
+        component_type: "vertical-container-block",
         inputHandlers: {},
         style: {
           display: "flex",
@@ -138,7 +137,7 @@ export class PropertyGenerator {
       uuid: inputContainerUuid,
       application_id: "1",
       name: `${property.label} Input Container`,
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       inputHandlers: {},
       style: {
         display: "flex",
@@ -161,7 +160,7 @@ export class PropertyGenerator {
       uuid: autoCheckboxUuid,
       application_id: "1",
       name: `auto ${property.label} checkbox`,
-      component_type: ComponentType.Checkbox,
+      component_type: "checkbox",
       inputHandlers: {},
       style: {
         size: "small"

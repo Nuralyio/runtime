@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from "uuid"; // Import UUID package
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 
 export const createHandlersFromEvents = (
@@ -14,7 +13,7 @@ export const createHandlersFromEvents = (
       uuid: collapseContainerUUID,
       application_id: "1",
       name: "position collapse container",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         marginTop: "13px"
@@ -25,7 +24,7 @@ export const createHandlersFromEvents = (
       uuid: collapseUUID,
       application_id: "1",
       name: "collapse",
-      component_type: ComponentType.Collapse,
+      component_type: "Collapse",
       style: {
         "--nr-collapse-content-small-size-padding": "5px",
         "--nr-collapse-font-weight": "normal",
@@ -50,7 +49,7 @@ export const createHandlersFromEvents = (
       uuid: handlerUUID,
       application_id: "1",
       name: "Dynamic Event Handler Container",
-      component_type: ComponentType.Handlers,
+      component_type: "Handlers",
       input: {
         allowedEvents: {
           type: "array",
@@ -69,7 +68,7 @@ export const createHandlersFromEvents = (
       uuid: containerUUID,
       application_id: "1",
       name: "Dynamic Event Handler Container",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",

@@ -7,7 +7,6 @@
 
 import { generateFromConfig, type BlockConfig } from "../../processors/property-block/index.ts";
 import borderConfigRaw from "../../params/_shared/border.config.json";
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 // Type assertion for the JSON config
@@ -30,7 +29,7 @@ const borderChildrenContainer = {
   uuid: "border_collapse_container_childrens",
   application_id: "1",
   name: "Border Children Container",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   ...COMMON_ATTRIBUTES,
   style: {},
   childrenIds: ["border_radius_vertical_container", "box_model_vertical_container", "box_shadow_block"]
@@ -40,7 +39,7 @@ const borderChildrenContainer = {
 const divider = {
   uuid: "divider",
   name: "divider",
-  component_type: ComponentType.Divider,
+  component_type: "Divider",
   application_id: "1",
   input: {}
 };

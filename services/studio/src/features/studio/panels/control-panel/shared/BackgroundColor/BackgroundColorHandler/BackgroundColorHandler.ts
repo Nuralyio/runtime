@@ -1,4 +1,4 @@
-import { type ComponentElement } from "@shared/redux/store/component/component.interface";
+import { type ComponentElement } from '../runtime/redux/store/component/component.interface';
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 

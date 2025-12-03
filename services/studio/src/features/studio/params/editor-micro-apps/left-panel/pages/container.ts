@@ -1,10 +1,8 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 export const pagesPanelContainer = {
   uuid: "pages_panel",
   application_id: "1",
   name: "Pages panel",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   input: {
     direction: {
       type: "string",

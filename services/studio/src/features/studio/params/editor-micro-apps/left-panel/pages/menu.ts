@@ -1,10 +1,8 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 export const pagesMenu = {
   uuid: "menu_1",
   name: "menu",
   application_id: "1",
-  component_type: ComponentType.Menu,
+  component_type: "menu",
   style: {
     "--nuraly-menu-border": "none",
     "--nuraly-menu-font-size": "13px",

@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme, TextInputTheme } from "../utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export default [
     uuid: "placeholder_text_block",
     application_id: "1",
     name: "placeholder text block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -18,7 +17,7 @@ export default [
     uuid: "placeholder_input_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {},
     childrenIds: ["placeholder_text_label"]
@@ -26,7 +25,7 @@ export default [
   {
     uuid: "placeholder_text_label",
     name: "placeholder text label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -43,7 +42,7 @@ export default [
     uuid: "placeholder_text_input",
     name: "placeholder text input",
     application_id: "1",
-    component_type: ComponentType.TextInput,
+    component_type: "text_input",
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
@@ -85,7 +84,7 @@ export default [
     uuid: "placeholder_handler_block",
     application_id: "1",
     name: "placeholder handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -96,7 +95,7 @@ export default [
   {
     uuid: "placeholder_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "placeholder handler",

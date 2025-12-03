@@ -4,7 +4,6 @@
  * Direct exports from the refactored property block generation system.
  */
 
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { BlockGenerator } from './generators/block-generator.ts';
 import { ConfigLoader } from './config-loader.ts';
 import { HandlerResolver } from './handler-resolver.ts';
@@ -28,7 +27,7 @@ const generatedSizeComponents = generateSizeComponents();
 const divider = {
   uuid: "divider",
   name: "divider",
-  component_type: ComponentType.Divider,
+  component_type: "Divider",
   application_id: "1",
   input: {}
 };

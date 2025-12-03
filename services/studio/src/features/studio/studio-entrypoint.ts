@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import QuickActions from "./params/editor-micro-apps/quick-action.ts";
 import QuickActionsButton from "./params/editor-micro-apps/quick-action-bottom.ts";
 import TopBar from "./params/editor-micro-apps/top-bar.ts";
@@ -59,7 +58,7 @@ export default [
   {
     uuid: "divider",
     name: "divider",
-    component_type: ComponentType.Divider,
+    component_type: "Divider",
     application_id: "1",
     input: {}
   },
@@ -67,7 +66,7 @@ export default [
     uuid: "select_component_styles_state_container",
     name: "Select Component Styles Container",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
           display: "flex",
@@ -82,7 +81,7 @@ export default [
     uuid: "select_component_styles_state",
     name: "Select Component Styles",
     application_id: "1",
-    component_type: ComponentType.Select,
+    component_type: "select",
     input: {
         size: {
             type: "string",
@@ -139,7 +138,7 @@ export default [
   {
     uuid: "vdivider",
     name: "vdivider",
-    component_type: ComponentType.Divider,
+    component_type: "Divider",
     application_id: "1",
     input: {
       direction: {
@@ -151,7 +150,7 @@ export default [
   {
     uuid: "1",
     name: "text_label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     parameters: {
       value: "Font Size"
     },
@@ -168,7 +167,7 @@ export default [
     uuid: "2",
     name: "name",
     application_id: "1",
-    component_type: ComponentType.TextInput,
+    component_type: "text_input",
     parameters: {
       value: "22px"
     },
@@ -186,7 +185,7 @@ export default [
     uuid: "left_panel_tabs",
     application_id: "1",
     name: "left_panel_tabs",
-    component_type: ComponentType.Tabs,
+    component_type: "tabs",
     event: {
       onTabChanged: /* js */ `
         if (EventData.tab.key === "files") {
@@ -345,7 +344,7 @@ export default [
     uuid: "text_label_handlers_collapse_container",
     application_id: "1",
     name: "position collapse container",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       marginTop: "13px"
@@ -356,7 +355,7 @@ export default [
     uuid: "text_label_handlers_collpase",
     application_id: "1",
     name: " collapse",
-    component_type: ComponentType.Collapse,
+    component_type: "Collapse",
     style: {
       "--nr-collapse-content-small-size-padding": "5px",
       "--nr-collapse-font-weight": "normal",
@@ -389,7 +388,7 @@ export default [
   {
     uuid: "select_component_text",
     name: "text_label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     ...COMMON_ATTRIBUTES,
     application_id: "1",
     input: {

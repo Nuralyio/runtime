@@ -2,8 +2,8 @@
 import Layout from './_layouts/LandingLayout.astro';
 import "../shared/ui/components/runtime/MicroApp/MicroApp";
 import { MicroApp } from '../shared/ui/components/runtime/MicroApp/MicroApp';
-import { processHeaders } from '@shared/utils/api-calls-utils';
-import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '@services';
+import { processHeaders } from '../features/runtime/utils/api-calls-utils';
+import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '../services';
 
 const docsAPPUUID = process.env.DOCS_APP_UUID;
 const docsAPPPageUUID = process.env.DOCS_PAGE_UUID;

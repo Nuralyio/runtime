@@ -1,6 +1,6 @@
 import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
-import { isServer } from "@shared/utils/envirement";
+import { isServer } from '../../../runtime/utils/envirement';
 
  let filesAppUUID = "" ;
  let filesPageUUID = "" ;
