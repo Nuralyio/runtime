@@ -772,6 +772,11 @@ class RuntimeContext implements IRuntimeContext {
 export const RuntimeInstance = RuntimeContext.getInstance();
 RuntimeInstance.setcomponentRuntimeStyleAttribute = setcomponentRuntimeStyleAttribute;
 
+// Store in global for editor.ts to access (avoids circular dependency)
+if (!isServer) {
+  (globalThis as any).__NURALY_EXECUTE_INSTANCE__ = RuntimeInstance;
+}
+
 // Alias for existing code - this is the main export
 export const ExecuteInstance = RuntimeInstance;
 

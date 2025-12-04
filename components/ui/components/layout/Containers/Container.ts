@@ -4,7 +4,7 @@ import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import styles from "./Container.style.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";

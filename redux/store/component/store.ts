@@ -15,23 +15,6 @@ const initialStates = isServer ? [] : JSON.parse(window["__INITIAL_COMPONENT_STA
 // Initialize with empty object
 const initialState: ComponentStore = isServer ? {} : {};
 
-// Conditionally import components only when on studio path
-if (!isServer) {
-  const isStudioPath = document.location.pathname.startsWith("/app/studio/");
-  
-  if (isStudioPath) {
-    // Dynamically import only when needed
-    import("../../../../../features/studio/studio-entrypoint").then(studioModule => {
-      $components.setKey("1", studioModule.default as any);
-      eventDispatcher.emit('component:refresh')
-    });
-    
-    // import("@features/landing/landing-main-components").then(landingModule => {
-    //   $components.setKey("landing", landingModule.default as any);
-    // });
-  }
-}
-
 if (currentLoadedApplication) {
   initialState[currentLoadedApplication.uuid] = initialStates;
 }

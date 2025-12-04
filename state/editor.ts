@@ -83,7 +83,6 @@
 
 import { eventDispatcher } from '../utils/change-detection';
 import { isServer } from '../utils/envirement';
-import { ExecuteInstance } from "./runtime-context";
 import { $editorState } from '../redux/store/apps';
 
 /**
@@ -134,12 +133,20 @@ class Editor {
   currentSelection: any[] = []
   Tabs: any[] = [];
 
+  /**
+   * Lazy getter for ExecuteInstance to avoid circular dependency.
+   * Uses dynamic import to load after module initialization.
+   */
+  private get ExecuteInstance() {
+    return (globalThis as any).__NURALY_EXECUTE_INSTANCE__;
+  }
+
   constructor() {
     if (!isServer) {
       window.addEventListener("resize", this.handleResize);
     }
     eventDispatcher.on('Vars:currentPlatform', (data) => {
-      this.currentPlatform = {...ExecuteInstance.Vars.currentPlatform};
+      this.currentPlatform = {...this.ExecuteInstance.Vars.currentPlatform};
     })
     $editorState.subscribe(() =>{
       this.Tabs = $editorState.get().tabs;
@@ -174,7 +181,7 @@ class Editor {
     // If platform has changed, update the state and trigger events
     if (currentPlatform.platform !== this.currentPlatform.platform) {
       this.currentPlatform = { ...currentPlatform };
-      ExecuteInstance.VarsProxy.currentPlatform = { ...this.currentPlatform };
+      this.ExecuteInstance.VarsProxy.currentPlatform = { ...this.currentPlatform };
       eventDispatcher.emit("component:refresh");
     }
     return currentPlatform
@@ -220,7 +227,7 @@ class Editor {
    * @returns The style value for the attribute
    */
   getComponentStyleForState(component: any, attribute: string) {
-    const selectedState = ExecuteInstance.Vars.selected_component_style_state;
+    const selectedState = this.ExecuteInstance.Vars.selected_component_style_state;
     let baseStyle = component?.style ?? {};
     
     // Apply platform/breakpoint styles
@@ -252,7 +259,7 @@ class Editor {
    * @returns Merged style object with pseudo-state styles applied if selected
    */
   getComponentStylesForState(component: any) {
-    const selectedState = ExecuteInstance.Vars.selected_component_style_state;
+    const selectedState = this.ExecuteInstance.Vars.selected_component_style_state;
     let baseStyle = component?.style ?? {};
     
     // Apply platform/breakpoint styles

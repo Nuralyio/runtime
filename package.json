@@ -1,0 +1,40 @@
+{
+  "name": "@nuraly/runtime",
+  "version": "0.1.0",
+  "description": "Nuraly Visual App Builder Runtime - State management, handler execution, and component system",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./redux": "./redux/index.ts",
+    "./redux/store": "./redux/store/index.ts",
+    "./redux/actions": "./redux/actions/index.ts",
+    "./redux/handlers": "./redux/handlers/index.ts",
+    "./handlers": "./handlers/index.ts",
+    "./state": "./state/index.ts",
+    "./utils": "./utils/index.ts",
+    "./types": "./types/index.ts",
+    "./components": "./components/index.ts"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0",
+    "nanostores": "^0.10.0",
+    "rxjs": "^7.0.0",
+    "immer": "^10.0.0"
+  },
+  "keywords": [
+    "visual-app-builder",
+    "runtime",
+    "state-management",
+    "handlers",
+    "components"
+  ],
+  "author": "Nuraly",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/stack.git",
+    "directory": "services/studio/src/features/runtime"
+  }
+}

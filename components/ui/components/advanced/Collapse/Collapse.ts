@@ -4,7 +4,7 @@ import { html, nothing, type PropertyValues } from "lit";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import "@nuralyui/collapse";
 import { customElement, state } from "lit/decorators.js";
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { $applicationComponents } from '../../../../../redux/store/component/store.ts';
 import { styleMap } from "lit/directives/style-map.js";

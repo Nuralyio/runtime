@@ -21,5 +21,7 @@ export {
   executeHandler
 } from './runtime-context';
 
-export { default as Editor } from './editor';
+import Editor from './editor';
+export { Editor };
+export { default } from './editor';
 export { RuntimeHelpers } from '../utils/runtime-helpers';

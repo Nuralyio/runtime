@@ -27,7 +27,12 @@ export {
   setComponentRuntimeValues,
   $componentRuntimeValuesById,
   $componentRuntimeValueByKey,
-  clearComponentRuntimeValues
+  clearComponentRuntimeValues,
+  clearComponentRuntimeValue,
+  clearAllRuntimeValues,
+  getAllChildrenRecursive,
+  getDirectChildren,
+  $componentById
 } from './store';
 
 // Re-export all from component.interface

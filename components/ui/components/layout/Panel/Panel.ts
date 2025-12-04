@@ -7,7 +7,7 @@ import "@nuralyui/panel";
 import { ref } from "lit/directives/ref.js";
 import { PanelMode, PanelSize, PanelPosition, MaximizePosition } from "@nuralyui/panel";
 import { $components } from '../../../../../redux/store/component/store.ts';
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 
 @customElement("panel-block")
 export class PanelBlock extends BaseElementBlock {

@@ -2,7 +2,7 @@ import { type ComponentElement, type DraggingComponentInfo } from '../../../../.
 import { $applicationComponents } from '../../../../../redux/store/component/store.ts';
 import { html, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 import { createRef, type Ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';

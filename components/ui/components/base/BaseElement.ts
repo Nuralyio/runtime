@@ -7,7 +7,8 @@
 import { html, LitElement, nothing, type PropertyValueMap, type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 import { eventDispatcher } from '../../../../utils/change-detection.ts';
-import { executeHandler, ExecuteInstance } from '../../../..';
+import { executeHandler } from '../../../../handlers/handler-executor';
+import { ExecuteInstance } from '../../../../state/runtime-context';
 import { getNestedAttribute, hasOnlyEmptyObjects } from '../../../../utils/object.utils.ts';
 import Editor from '../../../../state/editor.ts';
 import EditorInstance, { getInitPlatform } from '../../../../state/editor.ts';
