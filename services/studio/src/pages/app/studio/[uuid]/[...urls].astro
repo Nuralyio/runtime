@@ -85,6 +85,13 @@ try {
 
   window.__URL__ = urls;
 </script>
+
+<script>
+  // Initialize studio components (client-side only)
+  import('../../../../features/studio/studio-bootstrap');
+</script>
+
+
 <MakeLayout title="Make Apps">
   {(() => {
     switch (occurredError) {

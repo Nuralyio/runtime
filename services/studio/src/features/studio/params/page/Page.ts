@@ -1,39 +1,24 @@
-import "../../../runtime/components/ui/components/advanced/Collections/Collections";
-import "../../../runtime/components/ui/components/advanced/Collections/Collections";
-import "../../../runtime/components/ui/components/inputs/Button/Button";
-import "../../../runtime/components/ui/components/layout/Containers/Container";
-import "../../../runtime/components/ui/components/inputs/TextInput/TextInput";
-import "../../../runtime/components/ui/components/display/TextLabel/TextLabel";
-import "../../../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapper";
-import "../../../runtime/components/ui/components/wrappers/RectangleSelection/RectangleSelection";
+import "@nuraly/runtime/components";
 import styles from "./Page.style";
-import { $currentApplication, $resizing } from '../../../runtime/redux/store/apps';
-import { type ComponentElement, type DraggingComponentInfo } from '../../../runtime/redux/store/component/component.interface';
-import { $applicationComponents, $draggingComponentInfo } from '../../../runtime/redux/store/component/store';
-import { type PageElement } from '../../../runtime/redux/handlers/pages/page.interface';
-import { $applicationPages, $currentPage, $currentPageViewPort } from '../../../runtime/redux/store/page';
+import { $currentApplication, $resizing } from '@nuraly/runtime/redux/store';
+import { type ComponentElement, type DraggingComponentInfo } from '@nuraly/runtime/redux/store';
+import { $applicationComponents, $draggingComponentInfo } from '@nuraly/runtime/redux/store';
+import { type PageElement } from '@nuraly/runtime/redux/handlers';
+import { $applicationPages, $currentPage, $currentPageViewPort } from '@nuraly/runtime/redux/store';
 import { html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { renderComponent } from '../../../runtime/utils/render-util';
-import { getVar } from '../../../runtime/redux/store/context';
-import { log } from '../../../runtime/utils/logger';
-import { eventDispatcher } from '../../../runtime/utils/change-detection';
-import { ViewMode } from '../../../runtime/redux/store/environment';
-import {
-  moveDraggedComponentIntoCurrentPageRoot
-} from '../../../runtime/redux/actions/component/moveDraggedComponentIntoCurrentPageRoot';
-import { deleteComponentAction } from '../../../runtime/redux/actions/component/deleteComponentAction';
-import { updatePageInfo } from '../../../runtime/redux/actions/page/updatePageInfo';
-import { setEnvirementMode } from '../../../runtime/redux/actions/editor/setEnvirementMode';
-import { copyCpmponentToClipboard, pasteComponentFromClipboard } from '../../../runtime/utils/clipboard-utils';
-import { ExecuteInstance } from '../../../runtime/state/runtime-context';
+import { renderComponent, Logger, eventDispatcher, copyCpmponentToClipboard, pasteComponentFromClipboard, debounce } from '@nuraly/runtime/utils';
+import { getVar } from '@nuraly/runtime/redux/store/context';
+import { ViewMode } from '@nuraly/runtime/redux/store';
+import { moveDraggedComponentIntoCurrentPageRoot, deleteComponentAction, updatePageInfo, setEnvirementMode } from '@nuraly/runtime/redux/actions';
+import { ExecuteInstance } from '@nuraly/runtime';
 import type { LogPanel } from '../../panels/log-panel/LogPanel';
 import { Subscription } from "rxjs";
 import Convert from "ansi-to-html";
-import { debounce } from '../../../runtime/utils/performance-utils';
 
 const convert = new Convert();
+const log = Logger;
 
 @customElement("content-page")
 export class PageContent extends LitElement {

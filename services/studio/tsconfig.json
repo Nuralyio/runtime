@@ -7,6 +7,10 @@
     "useDefineForClassFields": false,
     "baseUrl": "./src",
     "target": "esnext",
+    "paths": {
+      "@nuraly/runtime": ["./features/runtime"],
+      "@nuraly/runtime/*": ["./features/runtime/*"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

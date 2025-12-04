@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import styles from "./Collections.style.ts";
 import type { ComponentElement, DraggingComponentInfo } from '../../../../../redux/store/component/component.interface.ts';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 import { $components } from '../../../../../redux/store/component/store.ts';
 import { $resizing } from '../../../../../redux/store/apps.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";

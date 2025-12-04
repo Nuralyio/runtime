@@ -16,5 +16,8 @@
 // Main studio entrypoint
 export { default as StudioEntrypoint } from './studio-entrypoint';
 
+// Studio bootstrap initialization
+export { initializeStudio } from './studio-bootstrap';
+
 // Re-export commonly used utilities and types as needed
 // Add more exports here as the feature API grows

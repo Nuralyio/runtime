@@ -4,14 +4,14 @@ import styles from "./AI-Assistant.style.ts";
 import { $context, getVar } from '../../../../features/runtime/redux/store/context.ts';
 import { addPageAction } from '../../../../features/runtime/redux/actions/page/addPageAction.ts';
 import { $applicationComponents } from '../../../../features/runtime/redux/store/component/store.ts';
-import { traitCompoentFromSchema } from '../../../runtime/utils/clipboard-utils.ts';
+import { traitCompoentFromSchema } from '@nuraly/runtime/utils';
 
 @customElement("ai-assistant-block")
 export class AIAssistantBlock extends LitElement {
   // WebSocket instance
   private _socket: WebSocket | null = null;
 
-  // Draggable state
+  // Draggable state^
   private _isDragging = false;
   private _offsetX = 0;
   private _offsetY = 0;

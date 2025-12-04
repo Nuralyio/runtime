@@ -2,6 +2,9 @@
   "name": "civil-chroma",
   "type": "module",
   "version": "0.0.1",
+  "workspaces": [
+    "src/features/runtime"
+  ],
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev  --host ",

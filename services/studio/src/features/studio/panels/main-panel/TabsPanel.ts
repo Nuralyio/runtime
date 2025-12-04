@@ -1,3 +1,6 @@
+// CRITICAL: Register all runtime components first
+import "../../../runtime/utils/register-components";
+
 import "../../params/page/Page.ts";
 import "../../params/flow/Flow.ts";
 import "../../params/function/Function.ts";
