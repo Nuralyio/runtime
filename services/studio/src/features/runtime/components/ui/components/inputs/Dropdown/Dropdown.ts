@@ -6,7 +6,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 import { $components } from '../../../../../redux/store/component/store.ts';
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 
 @customElement("dropdown-block")
 export class DropdownBlock extends BaseElementBlock {

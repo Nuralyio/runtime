@@ -1,3 +1,6 @@
+// CRITICAL: Register all runtime components first
+import "../../../../features/runtime/utils/register-components";
+
 import "../../../../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
 import { $environment, type Environment, ViewMode } from '../../../../features/runtime/redux/store/environment';
 import { css, html, LitElement } from "lit";

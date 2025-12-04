@@ -11,7 +11,7 @@ import node from "@astrojs/node";
 import compressor from "astro-compressor";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const nuralyUIPath = path.resolve(__dirname, 'src/features/runtime/components/ui/nuraly-ui/dist/src/components');
+const nuralyUIPath = path.resolve(__dirname, 'src/features/runtime/components/ui/nuraly-ui/src/components');
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,6 +27,7 @@ export default defineConfig({
   vite: {
    plugins: [yaml()],
    resolve: {
+     dedupe: ['dayjs', 'lit', 'lucide', 'vanilla-colorful', '@lit/reactive-element', '@lit/localize'],
      alias: {
        '@nuralyui/alert': path.join(nuralyUIPath, 'alert'),
        '@nuralyui/badge': path.join(nuralyUIPath, 'badge'),

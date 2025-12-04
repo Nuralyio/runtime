@@ -2,11 +2,11 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { $applicationComponents } from '../../../../../redux/store/component/store.ts';
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { renderComponent } from '../../../../../utils/render-util.ts';
+import { renderComponent } from '../../../../../utils/render-util';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
-
+import "@nuralyui/tabs";  
 @customElement("tabs-block")
 export class TabsBlock extends BaseElementBlock {
   static override styles = css`
