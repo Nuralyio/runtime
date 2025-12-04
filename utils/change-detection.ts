@@ -1,6 +1,6 @@
 import { Subject, Observable, Subscription } from 'rxjs';
 import { share } from 'rxjs/operators';
-import { setupChangeDetection } from '../components/ui/components/base/BaseElement/base-change-detection';
+
 class EventDispatcher {
   private static instance: EventDispatcher;
   private subjects: { [key: string]: Subject<any> } = {};
@@ -56,4 +56,3 @@ class EventDispatcher {
 }
 
 export const eventDispatcher = EventDispatcher.getInstance();
-setupChangeDetection();

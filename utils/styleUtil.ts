@@ -1,6 +1,4 @@
-import { TextLabelAttributes } from '../redux/store/component/component.interface';
-
-export function getStyleFronmAttribute(attributes: TextLabelAttributes) {
+export function getStyleFronmAttribute(attributes: Record<string, any>) {
 
   Object.keys(attributes).map(attribute => {
     return;
