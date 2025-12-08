@@ -109,7 +109,9 @@ export class ParametersPanel extends LitElement {
    */
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];
-  @state() currentTab = {  };
+  @state() currentTab = { 
+    type: "page" // set it to default value to prevent the hydration issue
+   };
 
   /**
    * Constructor
