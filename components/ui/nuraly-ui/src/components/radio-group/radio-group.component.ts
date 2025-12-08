@@ -420,7 +420,7 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
       [RadioButtonType.Default, () => this.renderOptionDefault()],
       [RadioButtonType.Button, () => this.renderOptionsWithButtons()],
       [RadioButtonType.Slot, () => this.renderOptionsWithSlots()],
-      ['button-slot', () => this.renderButtonsWithSlots()], // Special case for button with slots
+      [RadioButtonType.ButtonSlot, () => this.renderButtonsWithSlots()], // Special case for button with slots
     ])} `;
   }
 }
