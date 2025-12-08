@@ -4,7 +4,13 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/button";
+
+// Safely import @nuralyui/button
+try {
+  await import("@nuralyui/button");
+} catch (error) {
+  console.warn('[@nuralyui/button] Package not found or failed to load. Button functionality may be limited.');
+}
 
 
 

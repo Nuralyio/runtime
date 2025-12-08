@@ -1,7 +1,14 @@
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/menu";
+
+// Safely import @nuralyui/menu
+try {
+  await import("@nuralyui/menu");
+} catch (error) {
+  console.warn('[@nuralyui/menu] Package not found or failed to load. Menu functionality may be limited.');
+}
+
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { executeHandler } from '../../../../../state/runtime-context.ts';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';

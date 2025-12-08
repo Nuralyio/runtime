@@ -3,8 +3,15 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/textarea";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/textarea
+try {
+  await import("@nuralyui/textarea");
+} catch (error) {
+  console.warn('[@nuralyui/textarea] Package not found or failed to load.');
+}
+
 
 @customElement("textarea-block")
 export class TextareaBlock extends BaseElementBlock {

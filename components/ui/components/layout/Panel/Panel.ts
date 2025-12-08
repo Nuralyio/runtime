@@ -3,7 +3,14 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/panel";
+
+// Safely import @nuralyui/panel
+try {
+  await import("@nuralyui/panel");
+} catch (error) {
+  console.warn('[@nuralyui/panel] Package not found or failed to load. Panel functionality may be limited.');
+}
+
 import { ref } from "lit/directives/ref.js";
 import { PanelMode, PanelSize, PanelPosition, MaximizePosition } from "@nuralyui/panel";
 import { $components } from '../../../../../redux/store/component/store.ts';

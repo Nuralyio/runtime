@@ -6,7 +6,14 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { executeHandler } from '../../../../../state/runtime-context.ts';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/button";
+
+// Safely import @nuralyui/button
+try {
+  await import("@nuralyui/button");
+} catch (error) {
+  console.warn('[@nuralyui/button] Package not found or failed to load.');
+}
+
 
 @customElement("icon-button-block")
 export class IconButtonBlock extends BaseElementBlock {

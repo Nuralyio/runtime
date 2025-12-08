@@ -3,8 +3,15 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/card";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/card
+try {
+  await import("@nuralyui/card");
+} catch (error) {
+  console.warn('[@nuralyui/card] Package not found or failed to load.');
+}
+
 
 @customElement("card-block")
 export class CardBlock extends BaseElementBlock {

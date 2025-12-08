@@ -4,7 +4,14 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/divider";
+
+// Safely import @nuralyui/divider
+try {
+  await import("@nuralyui/divider");
+} catch (error) {
+  console.warn('[@nuralyui/divider] Package not found or failed to load.');
+}
+
 
 @customElement("divider-block")
 export class DividerBlock extends BaseElementBlock {

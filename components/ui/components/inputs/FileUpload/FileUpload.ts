@@ -1,9 +1,16 @@
 import { customElement } from "lit/decorators.js";
 import { css, html } from "lit";
 import { BaseElementBlock } from '../../base/BaseElement';
-import "@nuralyui/file-upload";
 import { ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
+
+// Safely import @nuralyui/file-upload
+try {
+  await import("@nuralyui/file-upload");
+} catch (error) {
+  console.warn('[@nuralyui/file-upload] Package not found or failed to load.');
+}
+
 
 @customElement("file-upload-block")
 export class FileUploadBlock extends BaseElementBlock {

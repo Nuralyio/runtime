@@ -3,8 +3,15 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/tag";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/tag
+try {
+  await import("@nuralyui/tag");
+} catch (error) {
+  console.warn('[@nuralyui/tag] Package not found or failed to load.');
+}
+
 
 @customElement("tag-block")
 export class TagBlock extends BaseElementBlock {
