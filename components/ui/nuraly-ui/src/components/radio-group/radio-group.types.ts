@@ -29,6 +29,7 @@ export enum RadioButtonType {
   Default = 'default',
   Button = 'button',
   Slot = 'slot',
+  ButtonSlot = 'button-slot',
 }
 
 export enum RadioButtonSize {

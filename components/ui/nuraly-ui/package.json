@@ -73,11 +73,11 @@
     "@lit-labs/motion": "^1.0.3",
     "@lit-labs/react": "^1.1.1",
     "@lit-labs/virtualizer": "^2.0.9",
-    "@lit/localize": "^0.11.4",
-    "@lit/reactive-element": "^1.6.1",
+    "@lit/localize": "^0.12.2",
+    "@lit/reactive-element": "^2.1.1",
     "@types/react": "^18.0.28",
     "dayjs": "^2.0.0-alpha.4",
-    "lit": "^2.2.4",
+    "lit": "^3.0.0",
     "lucide": "^0.552.0",
     "react": "^18.2.0",
     "vanilla-colorful": "^0.7.2"
@@ -86,7 +86,7 @@
     "@11ty/eleventy": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
     "@custom-elements-manifest/analyzer": "^0.6.3",
-    "@lit/localize-tools": "^0.6.10",
+    "@lit/localize-tools": "^0.8.0",
     "@open-wc/testing": "^3.1.5",
     "@rollup/plugin-dynamic-import-vars": "^2.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
@@ -120,5 +120,10 @@
     "typescript": "~4.7.4",
     "vite": "^5.4.20"
   },
-  "customElements": "custom-elements.json"
+  "customElements": "custom-elements.json",
+  "overrides": {
+    "lit": "^3.0.0",
+    "lit-html": "^3.0.0",
+    "lit-element": "^4.0.0"
+  }
 }
