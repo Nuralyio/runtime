@@ -2,11 +2,9 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from '../../base/BaseElement';
 import { css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/slider-input";
 import { executeHandler } from '../../../../../state/runtime-context';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { styleMap } from "lit/directives/style-map.js";
-import "@nuralyui/color-picker";
 import {
   SelectTheme,
   SingleButtonTheme,

@@ -3,7 +3,6 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/input";
 import { $environment, type Environment, ViewMode } from '../../../../../redux/store/environment.ts';
 import { $components } from '../../../../../redux/store/component/store.ts';
 import { $microAppCurrentPage } from '../../../../../redux/store/page.ts';

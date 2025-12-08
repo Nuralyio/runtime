@@ -1,6 +1,13 @@
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/dropdown";
+
+// Safely import @nuralyui/dropdown
+try {
+  await import("@nuralyui/dropdown");
+} catch (error) {
+  console.warn('[@nuralyui/dropdown] Package not found or failed to load. Dropdown functionality may be limited.');
+}
+
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
