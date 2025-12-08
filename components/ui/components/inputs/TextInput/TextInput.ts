@@ -81,7 +81,7 @@ export class TextInputBlock extends BaseElementBlock {
               "--nuraly-input-local-border-bottom-right-radius": inputStyles?.["border-bottom-right-radius"] ?? "",
           })}
           .value=${this.inputHandlersValue?.value ?? nothing}
-          .size=${size}
+          .size=${this.inputHandlersValue?.size ?? "medium"}
           .state=${this.inputHandlersValue.status ?? nothing}
           .type=${this.inputHandlersValue.type ?? nothing}
           .variant=${this.inputHandlersValue.variant ?? nothing}
