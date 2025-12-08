@@ -4,7 +4,14 @@ import { customElement, property, state } from "lit/decorators.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/label";
+
+// Safely import @nuralyui/label
+try {
+  await import("@nuralyui/label");
+} catch (error) {
+  console.warn('[@nuralyui/label] Package not found or failed to load.');
+}
+
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {

@@ -3,8 +3,15 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/input";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/input
+try {
+  await import("@nuralyui/input");
+} catch (error) {
+  console.warn('[@nuralyui/input] Package not found or failed to load.');
+}
+
 
 @customElement("text-input-block")
 export class TextInputBlock extends BaseElementBlock {

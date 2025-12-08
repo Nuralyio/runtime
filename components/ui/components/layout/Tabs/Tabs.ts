@@ -6,7 +6,12 @@ import { renderComponent } from '../../../../../utils/render-util';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
-import "@nuralyui/tabs";  
+
+try {
+  await import("@nuralyui/tabs");
+} catch (error) {
+  console.warn('[@nuralyui/tabs] Package not found or failed to load. Tab functionality may be limited.');
+}  
 @customElement("tabs-block")
 export class TabsBlock extends BaseElementBlock {
   static override styles = css`

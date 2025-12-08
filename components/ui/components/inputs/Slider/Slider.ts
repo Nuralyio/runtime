@@ -3,8 +3,15 @@ import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/slider-input";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/slider-input
+try {
+  await import("@nuralyui/slider-input");
+} catch (error) {
+  console.warn('[@nuralyui/slider-input] Package not found or failed to load.');
+}
+
 
 @customElement("slider-block")
 export class SliderBlock extends BaseElementBlock {
