@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-// import "@nuralyui/color-picker";
+import "@nuralyui/color-picker";
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
 
 @customElement("color-picker-block")
