@@ -1,13 +1,18 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@nuralyui/select";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/datepicker";
 import { executeHandler } from '../../../../../state/runtime-context.ts';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { ref } from "lit/directives/ref.js";
+// Safely import @nuralyui/datepicker
+try {
+  await import("@nuralyui/datepicker");
+} catch (error) {
+  console.warn('[@nuralyui/datepicker] Package not found or failed to load.');
+}
+
 
 @customElement("date-picker-block")
 export class DatepickertBlock extends BaseElementBlock {

@@ -1,10 +1,17 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "@nuralyui/image";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/image
+try {
+  await import("@nuralyui/image");
+} catch (error) {
+  console.warn('[@nuralyui/image] Package not found or failed to load.');
+}
+
 
 
 @customElement("image-block")

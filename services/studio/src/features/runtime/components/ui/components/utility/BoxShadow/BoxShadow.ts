@@ -1,8 +1,6 @@
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { css, html } from "lit";
 import { property, state } from "lit/decorators.js";
-import "@nuralyui/checkbox";
-import "@nuralyui/slider-input";
 import { BaseElementBlock } from '../../base/BaseElement';
 import { executeHandler } from '../../../../../state/runtime-context';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';

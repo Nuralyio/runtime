@@ -3,14 +3,31 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "@nuralyui/slider-input";
-import "@nuralyui/button";
-import "@nuralyui/input";
 import styles from "./AIChat.style.ts";
 import { createChat } from '../../../../../redux/handlers/aichat/create-chat.handler.ts';
 import { replaceUUIDs } from "./AIChat.helper.ts";
 import { addGeneratedComponents } from '../../../../../redux/actions/aitchat.ts';
 import { addTempApplication } from '../../../../../redux/actions/application/addTempApplication.ts';
+
+// Safely import @nuralyui/slider-input
+try {
+  await import("@nuralyui/slider-input");
+} catch (error) {
+  console.warn('[@nuralyui/slider-input] Package not found or failed to load.');
+}
+// Safely import @nuralyui/button
+try {
+  await import("@nuralyui/button");
+} catch (error) {
+  console.warn('[@nuralyui/button] Package not found or failed to load.');
+}
+// Safely import @nuralyui/input
+try {
+  await import("@nuralyui/input");
+} catch (error) {
+  console.warn('[@nuralyui/input] Package not found or failed to load.');
+}
+
 
 @customElement("ai-chat-block")
 export class AiChat extends BaseElementBlock {

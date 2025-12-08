@@ -4,7 +4,14 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/checkbox";
+
+// Safely import @nuralyui/checkbox
+try {
+  await import("@nuralyui/checkbox");
+} catch (error) {
+  console.warn('[@nuralyui/checkbox] Package not found or failed to load.');
+}
+
 
 @customElement("checkbox-block")
 export class CheckboxBlock extends BaseElementBlock {

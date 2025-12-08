@@ -3,8 +3,15 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import "@nuralyui/table";
 import { ref } from "lit/directives/ref.js";
+
+// Safely import @nuralyui/table
+try {
+  await import("@nuralyui/table");
+} catch (error) {
+  console.warn('[@nuralyui/table] Package not found or failed to load.');
+}
+
 
 
 
