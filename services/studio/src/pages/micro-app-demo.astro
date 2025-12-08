@@ -167,11 +167,70 @@ appComponents[0].childrenIds.push("comp-005");
 ---
 
 <!doctype html>
-<html lang="en">
-  <head>
+<html lang="en"  data-theme="default-light">
+  <head >
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Micro App Demo - Nuraly Studio</title>
+
+    <!-- Import Map for npm dependencies -->
+    <script type="importmap">
+    {
+      "imports": {
+        "lit": "https://cdn.jsdelivr.net/npm/lit@3/+esm",
+            "lit/": "https://cdn.jsdelivr.net/npm/lit@3/",
+            "lit-element": "https://cdn.jsdelivr.net/npm/lit-element@4/+esm",
+            "lit-element/": "https://cdn.jsdelivr.net/npm/lit-element@4/",
+            "lit-html": "https://cdn.jsdelivr.net/npm/lit-html@3/+esm",
+            "lit-html/": "https://cdn.jsdelivr.net/npm/lit-html@3/",
+            "@lit/reactive-element": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2/+esm",
+            "@lit/reactive-element/": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2/",
+            "@fortawesome/fontawesome-svg-core": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-svg-core@6/+esm",
+            "@fortawesome/fontawesome-svg-core/": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-svg-core@6/",
+            "@fortawesome/free-solid-svg-icons": "https://cdn.jsdelivr.net/npm/@fortawesome/free-solid-svg-icons@6/+esm",
+            "@fortawesome/free-regular-svg-icons": "https://cdn.jsdelivr.net/npm/@fortawesome/free-regular-svg-icons@6/+esm",
+            "@fortawesome/free-brands-svg-icons": "https://cdn.jsdelivr.net/npm/@fortawesome/free-brands-svg-icons@6/+esm",
+            "@lit/localize": "https://cdn.jsdelivr.net/npm/@lit/localize/+esm",
+            "@lit/localize/": "https://cdn.jsdelivr.net/npm/@lit/localize/",
+            "@nuralyui/common/mixins": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/mixins.js",
+            "@nuralyui/common/controllers": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/controllers.js",
+            "@nuralyui/common/utils": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/utils.js",
+            "@nuralyui/common/themes": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/themes.js",
+            "@nuralyui/common/constants": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/constants.js",
+            "@nuralyui/common": "https://cdn.jsdelivr.net/npm/@nuralyui/common@0.1.3/dist/index.js",
+        "@nuralyui/tabs": "https://cdn.jsdelivr.net/npm/@nuralyui/tabs@latest/bundle.js",
+        "@nuralyui/menu": "https://cdn.jsdelivr.net/npm/@nuralyui/menu@latest/bundle.js",
+        "@nuralyui/input": "https://cdn.jsdelivr.net/npm/@nuralyui/input@latest/bundle.js",
+        "@nuralyui/button": "https://cdn.jsdelivr.net/npm/@nuralyui/button@latest/bundle.js",
+        "@nuralyui/slider-input": "https://cdn.jsdelivr.net/npm/@nuralyui/slider-input@latest/bundle.js",
+        "@nuralyui/color-picker": "https://cdn.jsdelivr.net/npm/@nuralyui/colorpicker@latest/bundle.js",
+        "@nuralyui/checkbox": "https://cdn.jsdelivr.net/npm/@nuralyui/checkbox@latest/bundle.js",
+        "@nuralyui/table": "https://cdn.jsdelivr.net/npm/@nuralyui/table@latest/bundle.js",
+        "@nuralyui/dropdown": "https://cdn.jsdelivr.net/npm/@nuralyui/dropdown@latest/bundle.js",
+        "@nuralyui/select": "https://cdn.jsdelivr.net/npm/@nuralyui/select@latest/bundle.js",
+        "@nuralyui/datepicker": "https://cdn.jsdelivr.net/npm/@nuralyui/datepicker@latest/bundle.js",
+        "@nuralyui/icon": "https://cdn.jsdelivr.net/npm/@nuralyui/icon@latest/bundle.js",
+        "@nuralyui/image": "https://cdn.jsdelivr.net/npm/@nuralyui/image@latest/bundle.js",
+        "@nuralyui/label": "https://cdn.jsdelivr.net/npm/@nuralyui/label@latest/bundle.js",
+        "@nuralyui/collapse": "https://cdn.jsdelivr.net/npm/@nuralyui/collapse@latest/bundle.js",
+        "@nuralyui/divider": "https://cdn.jsdelivr.net/npm/@nuralyui/divider@latest/bundle.js",
+        "@nuralyui/file-upload": "https://cdn.jsdelivr.net/npm/@nuralyui/file-upload@latest/bundle.js",
+        "@nuralyui/document": "https://cdn.jsdelivr.net/npm/@nuralyui/document@latest/bundle.js",
+        "@nuralyui/video": "https://cdn.jsdelivr.net/npm/@nuralyui/video@latest/bundle.js",
+        "@nuralyui/textarea": "https://cdn.jsdelivr.net/npm/@nuralyui/textarea@latest/bundle.js",
+        "@nuralyui/badge": "https://cdn.jsdelivr.net/npm/@nuralyui/badge@latest/bundle.js",
+        "@nuralyui/card": "https://cdn.jsdelivr.net/npm/@nuralyui/card@latest/bundle.js",
+        "@nuralyui/tag": "https://cdn.jsdelivr.net/npm/@nuralyui/tag@latest/bundle.js",
+        "@nuralyui/panel": "https://cdn.jsdelivr.net/npm/@nuralyui/tag@latest/bundle.js",
+        "@nuralyui/toast": "https://cdn.jsdelivr.net/npm/@nuralyui/toast@latest/bundle.js",
+        "@nuralyui/common": "https://cdn.jsdelivr.net/npm/@nuralyui/common@latest/bundle.js",
+        "@nuralyui/radio-group": "https://cdn.jsdelivr.net/npm/@nuralyui/radio-group@latest/bundle.js",
+        "@nuralyui/tooltips": "https://cdn.jsdelivr.net/npm/@nuralyui/tooltips@latest/bundle.js",
+        "@nuraly/runtime": "https://cdn.jsdelivr.net/npm/@nuraly/runtime@0.1.7/dist/micro-app.bundle.js"
+      }
+    }
+    </script>
+    
     <style>
       * {
         margin: 0;
@@ -226,8 +285,8 @@ appComponents[0].childrenIds.push("comp-005");
         <p>Isolated runtime with variable scoping</p>
       </div>
 
-      <div class="micro-app-wrapper">
-        <micro-app id="demo-micro-app"></micro-app>
+      <div class="micro-app-wrapper" id="micro-app-container">
+        <!-- MicroApp will be created dynamically after properties are ready -->
       </div>
     </div>
 
@@ -238,28 +297,72 @@ appComponents[0].childrenIds.push("comp-005");
         appComponents,
         appPages,
       };
+      console.log('[Micro App Demo] appData prepared:', window.appData);
     </script>
+  <link rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/@nuraly/runtime@0.1.0/dist/style.css">
+    <!-- Load the bundled MicroApp runtime with all dependencies included -->
+     <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
 
-    <script>
-
-      // Import the MicroApp component
-      import "@shared/ui/components/runtime/MicroApp/MicroApp";
+    <script type="module">
+      import "@nuraly/runtime";
 
       // Wait for DOM and component to be ready
-      document.addEventListener("DOMContentLoaded", () => {
-        const microApp = document.getElementById("demo-micro-app");
+      async function initializeMicroApp() {
+        console.log('[Micro App Demo] Starting initialization...');
 
-        if (microApp && window.appData) {
-          // Set properties on the web component
-          microApp.uuid = window.appData.appId;
-          microApp.page_uuid = "page-001";
-          microApp.useIsolatedContext = true;
-          microApp.appComponents = window.appData.appComponents;
-          microApp.appPages = window.appData.appPages;
-          microApp.mode = "preview";
-          microApp.prod = true;
+        // Wait for the custom element to be defined
+        await customElements.whenDefined('micro-app');
+        console.log('[Micro App Demo] micro-app custom element is defined');
+
+        console.log('[Micro App Demo] window.appData:', window.appData);
+
+        if (!window.appData) {
+          console.error('[Micro App Demo] window.appData not found!');
+          return;
         }
-      });
+
+        // Create the micro-app element
+        const microApp = document.createElement('micro-app');
+        microApp.id = 'demo-micro-app';
+
+        // Set properties BEFORE adding to DOM
+        microApp.uuid = window.appData.appId;
+        microApp.page_uuid = "page-001";
+        microApp.useIsolatedContext = true;
+        microApp.appComponents = window.appData.appComponents;
+        microApp.appPages = window.appData.appPages;
+        microApp.mode = "preview";
+        microApp.prod = true;
+
+        console.log('[Micro App Demo] MicroApp properties set (before connection):', {
+          uuid: microApp.uuid,
+          page_uuid: microApp.page_uuid,
+          useIsolatedContext: microApp.useIsolatedContext,
+          componentsCount: microApp.appComponents?.length,
+          pagesCount: microApp.appPages?.length,
+          mode: microApp.mode,
+          prod: microApp.prod
+        });
+
+        // Add to DOM - this triggers connectedCallback
+        const container = document.getElementById('micro-app-container');
+        if (container) {
+          container.appendChild(microApp);
+          console.log('[Micro App Demo] MicroApp element added to DOM');
+        } else {
+          console.error('[Micro App Demo] Container not found!');
+        }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", initializeMicroApp);
+      } else {
+        // DOM already loaded
+        initializeMicroApp();
+      }
     </script>
   </body>
 </html>

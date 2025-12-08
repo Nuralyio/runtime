@@ -1,21 +1,95 @@
 {
   "name": "@nuraly/runtime",
-  "version": "0.1.0",
-  "description": "Nuraly Visual App Builder Runtime - State management, handler execution, and component system",
+  "version": "0.1.7",
+  "description": "Nuraly Visual App Builder Runtime - State management, handler execution, and component system with bundled micro-app support",
   "type": "module",
   "main": "./index.ts",
   "types": "./index.ts",
   "exports": {
-    ".": "./index.ts",
-    "./redux": "./redux/index.ts",
-    "./redux/store": "./redux/store/index.ts",
-    "./redux/actions": "./redux/actions/index.ts",
-    "./redux/handlers": "./redux/handlers/index.ts",
-    "./handlers": "./handlers/index.ts",
-    "./state": "./state/index.ts",
-    "./utils": "./utils/index.ts",
-    "./types": "./types/index.ts",
-    "./components": "./components/index.ts"
+    ".": {
+      "import": "./index.ts",
+      "types": "./index.ts"
+    },
+    "./redux": {
+      "import": "./redux/index.ts",
+      "types": "./redux/index.ts"
+    },
+    "./redux/store": {
+      "import": "./redux/store/index.ts",
+      "types": "./redux/store/index.ts"
+    },
+    "./redux/actions": {
+      "import": "./redux/actions/index.ts",
+      "types": "./redux/actions/index.ts"
+    },
+    "./redux/handlers": {
+      "import": "./redux/handlers/index.ts",
+      "types": "./redux/handlers/index.ts"
+    },
+    "./handlers": {
+      "import": "./handlers/index.ts",
+      "types": "./handlers/index.ts"
+    },
+    "./state": {
+      "import": "./state/index.ts",
+      "types": "./state/index.ts"
+    },
+    "./utils": {
+      "import": "./utils/index.ts",
+      "types": "./utils/index.ts"
+    },
+    "./types": {
+      "import": "./types/index.ts",
+      "types": "./types/index.ts"
+    },
+    "./components": {
+      "import": "./components/index.ts",
+      "types": "./components/index.ts"
+    },
+    "./micro-app/bundle": {
+      "import": "./dist/micro-app.bundle.js",
+      "types": "./dist/micro-app-entry.d.ts"
+    },
+    "./micro-app/bundle.umd": {
+      "require": "./dist/micro-app.bundle.umd.cjs",
+      "default": "./dist/micro-app.bundle.umd.cjs"
+    },
+    "./micro-app/bundle.css": "./dist/style.css"
+  },
+  "files": [
+    "dist/**/*",
+    "*.ts",
+    "*.js",
+    "*.d.ts",
+    "redux/**/*.ts",
+    "redux/**/*.js",
+    "redux/**/*.d.ts",
+    "handlers/**/*.ts",
+    "handlers/**/*.js",
+    "handlers/**/*.d.ts",
+    "state/**/*.ts",
+    "state/**/*.js",
+    "state/**/*.d.ts",
+    "utils/**/*.ts",
+    "utils/**/*.js",
+    "utils/**/*.d.ts",
+    "types/**/*.ts",
+    "types/**/*.js",
+    "types/**/*.d.ts",
+    "components/**/*.ts",
+    "components/**/*.js",
+    "components/**/*.d.ts",
+    "micro-app/**/*.ts",
+    "micro-app/**/*.js",
+    "micro-app/**/*.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "build:bundle": "BUILD_BUNDLE=true vite build",
+    "build:all": "npm run build && npm run build:bundle",
+    "prepublishOnly": "npm run build:all"
   },
   "peerDependencies": {
     "lit": "^3.0.0",
@@ -28,7 +102,12 @@
     "runtime",
     "state-management",
     "handlers",
-    "components"
+    "components",
+    "micro-apps",
+    "web-components",
+    "lit-element",
+    "cdn",
+    "bundled"
   ],
   "author": "Nuraly",
   "license": "ISC",
@@ -36,5 +115,9 @@
     "type": "git",
     "url": "https://github.com/Nuralyio/stack.git",
     "directory": "services/studio/src/features/runtime"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/Nuralyio/stack/issues"
+  },
+  "homepage": "https://github.com/Nuralyio/stack#readme"
 }
