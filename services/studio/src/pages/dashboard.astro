@@ -29,11 +29,15 @@ const processedHeaders = processHeaders(Astro.request.headers);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="default-light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
+
+    <!-- Nuraly UI Theme CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
+
     <style>
       * {
         margin: 0;
@@ -60,8 +64,8 @@ const processedHeaders = processHeaders(Astro.request.headers);
     </style>
   </head>
   <body>
-    <div class="dashboard-container">
-      <micro-app id="dashboard-micro-app"></micro-app>
+    <div class="dashboard-container" id="dashboard-micro-app-container">
+      <!-- MicroApp will be created dynamically after properties are ready -->
     </div>
 
     <script is:inline define:vars={{ dashboardAPPUUID, dashboardAPPPageUUID, componentData, pageData }}>
@@ -74,25 +78,66 @@ const processedHeaders = processHeaders(Astro.request.headers);
     </script>
 
     <script>
+      // CRITICAL: Import components first to register all component types
+      import "../features/runtime/components";
       import "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const data = window.__DASHBOARD_DATA__;
-        const microApp = document.getElementById("dashboard-micro-app");
+      async function initializeDashboardMicroApp() {
+        console.log('[Dashboard] Starting initialization...');
 
-        if (microApp && data) {
-          console.log('[Dashboard] Setting up micro-app with data:', data);
-          microApp.uuid = data.uuid;
-          microApp.page_uuid = data.page_uuid;
-          microApp.useIsolatedContext = true;
-          microApp.appComponents = data.components;
-          microApp.appPages = data.pages;
-          microApp.mode = "preview";
-          microApp.prod = true;
-        } else {
-          console.error('[Dashboard] Missing micro-app element or data');
+        // Wait for the custom element to be defined
+        await customElements.whenDefined('micro-app');
+        console.log('[Dashboard] micro-app custom element is defined');
+
+        const data = (window as any).__DASHBOARD_DATA__;
+
+        if (!data || !data.uuid) {
+          console.error('[Dashboard] Missing required data:', data);
+          return;
         }
-      });
+
+        console.log('[Dashboard] Setting up micro-app with data:', data);
+
+        // Create the micro-app element
+        const microApp = document.createElement('micro-app') as any;
+        microApp.id = 'dashboard-micro-app';
+
+        // Set properties BEFORE adding to DOM
+        microApp.uuid = data.uuid;
+        microApp.page_uuid = data.page_uuid;
+        microApp.useIsolatedContext = true;
+        microApp.appComponents = data.components;
+        microApp.appPages = data.pages;
+        microApp.mode = "preview";
+        microApp.prod = true;
+
+        console.log('[Dashboard] MicroApp properties set (before connection):', {
+          uuid: microApp.uuid,
+          page_uuid: microApp.page_uuid,
+          useIsolatedContext: microApp.useIsolatedContext,
+          componentsCount: microApp.appComponents?.length,
+          pagesCount: microApp.appPages?.length,
+          mode: microApp.mode,
+          prod: microApp.prod
+        });
+
+        // Add to DOM - this triggers connectedCallback
+        const container = document.getElementById('dashboard-micro-app-container');
+        if (container) {
+          container.appendChild(microApp);
+          console.log('[Dashboard] MicroApp element added to DOM');
+        } else {
+          console.error('[Dashboard] Container not found!');
+        }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", initializeDashboardMicroApp);
+      } else {
+        // DOM already loaded
+        initializeDashboardMicroApp();
+      }
     </script>
   </body>
 </html>
