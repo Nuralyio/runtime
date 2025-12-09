@@ -71,13 +71,21 @@ export function generateNuralyClipboardStructure(component, childrenComponents) 
 function transformSchemaWithNewUUIDs(schema) {
     const uuidMap = new Map();
 
-    // Function to generate a UUID v4
+
+    // Function to generate a cryptographically secure UUID v4
     function generateUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            const r = Math.random() * 16 | 0,
-                v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
+        // Use native crypto.randomUUID if available (modern browsers)
+        if (crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+
+        // Fallback using crypto.getRandomValues (wider browser support)
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+        bytes[6] = (bytes[6] & 0x0f) | 0x40; // Version 4
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // Variant 10
+
+        const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
     }
 
     // Generate a new UUID for each component and store the old -> new UUID mapping
@@ -91,8 +99,10 @@ function transformSchemaWithNewUUIDs(schema) {
     schema.components.forEach(component => {
         component.childrenIds = component.childrenIds.map(oldUUID => uuidMap.get(oldUUID) || oldUUID);
 
-        // Add a random suffix to the name
-        component.name += `_${Math.random().toString(36).substring(2, 6)}`;
+        // Generate a cryptographically secure random suffix
+        const randomBytes = crypto.getRandomValues(new Uint8Array(2));
+        const suffix = Array.from(randomBytes, byte => byte.toString(36)).join('').substring(0, 4);
+        component.name += `_${suffix}`;
     });
 
     return schema;
