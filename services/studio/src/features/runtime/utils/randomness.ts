@@ -1,3 +1,5 @@
 export const generateRandomId = () => {
-  return Math.random().toString(36).substr(2, 9);
+  // Generate cryptographically secure random ID
+  const randomBytes = crypto.getRandomValues(new Uint8Array(9));
+  return Array.from(randomBytes, byte => byte.toString(36)).join('').substring(0, 9);
 };
