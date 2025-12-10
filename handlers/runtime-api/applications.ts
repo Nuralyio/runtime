@@ -4,7 +4,7 @@
  * Operations for updating applications.
  */
 
-import { updateApplication as updateSepecificApplication } from '@shared/redux/actions/application';
+import { updateApplication as updateSepecificApplication } from '../../redux/actions/application';
 
 export function createApplicationFunctions() {
   return {

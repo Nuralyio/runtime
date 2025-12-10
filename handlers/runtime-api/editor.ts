@@ -4,8 +4,8 @@
  * Functions for interacting with the editor UI.
  */
 
-import { openEditorTab, setCurrentEditorTab } from '@shared/redux/actions/editor';
-import { traitCompoentFromSchema } from '@shared/utils/clipboard-utils';
+import { openEditorTab, setCurrentEditorTab } from '../../redux/actions/editor';
+import { traitCompoentFromSchema } from '../../utils/clipboard-utils';
 
 export function createEditorFunctions() {
   return {

@@ -5,10 +5,10 @@
  */
 
 import Editor from '../../state/editor';
-import { addComponentAction, deleteComponentAction } from '@shared/redux/actions/component';
-import { copyCpmponentToClipboard, pasteComponentFromClipboard } from '@shared/utils/clipboard-utils';
-import { GenerateName } from '@shared/utils/naming-generator';
-import type { ComponentElement } from '@shared/redux/store/component';
+import { addComponentAction, deleteComponentAction } from '../../redux/actions/component';
+import { copyCpmponentToClipboard, pasteComponentFromClipboard } from '../../utils/clipboard-utils';
+import { GenerateName } from '../../utils/naming-generator';
+import type { ComponentElement } from '../../redux/store/component';
 
 export function createComponentFunctions(runtimeContext: any) {
   const { applications } = runtimeContext;
