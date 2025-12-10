@@ -19,8 +19,8 @@
  */
 
 import deepEqual from 'fast-deep-equal';
-import { eventDispatcher } from '@shared/utils/change-detection';
-import type { ComponentElement } from '@shared/redux/store/component/component.interface';
+import { eventDispatcher } from './change-detection';
+import type { ComponentElement } from '../redux/store/component/component.interface';
 
 /**
  * Configuration for reactive proxy creation

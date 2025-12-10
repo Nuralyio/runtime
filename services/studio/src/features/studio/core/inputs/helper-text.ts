@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme, TextInputTheme } from "../utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export default [
     uuid: "helper_text_block",
     application_id: "1",
     name: "helper text block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     styleHandlers: {},
     input: {
       direction: "vertical"
@@ -22,7 +21,7 @@ export default [
     uuid: "helper_input_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -34,7 +33,7 @@ export default [
   {
     uuid: "helper_text_label",
     name: "helper text label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -51,7 +50,7 @@ export default [
     uuid: "helper_text_input",
     name: "helper text input",
     application_id: "1",
-    component_type: ComponentType.TextInput,
+    component_type: "text_input",
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
@@ -101,7 +100,7 @@ export default [
     uuid: "helper_handler_block",
     application_id: "1",
     name: "helper handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -112,7 +111,7 @@ export default [
   {
     uuid: "helper_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "helper handler",

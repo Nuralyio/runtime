@@ -1,11 +1,9 @@
-import { COMMON_ATTRIBUTES } from "@studio/core/helpers/common_attributes.ts";
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
-
+import { COMMON_ATTRIBUTES } from '../../core/helpers/common_attributes.ts';
 export default [
   {
     name: "font icon",
     uuid: "font_icon",
-    component_type: ComponentType.Icon,
+    component_type: "Icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -23,7 +21,7 @@ export default [
   {
     name: "font icon",
     uuid: "font_size_icon",
-    component_type: ComponentType.Icon,
+    component_type: "Icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -42,7 +40,7 @@ export default [
   {
     name: "width_icon",
     uuid: "width_icon",
-    component_type: ComponentType.Icon,
+    component_type: "Icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -60,7 +58,7 @@ export default [
   {
     name: "height_icon",
     uuid: "height_icon",
-    component_type: ComponentType.Icon,
+    component_type: "Icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -77,7 +75,7 @@ export default [
   {
     name: "font icon",
     uuid: "bold_icon",
-    component_type: ComponentType.Icon,
+    component_type: "Icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -96,7 +94,7 @@ export default [
     uuid: "quick-action-wrapper",
     application_id: "1",
     name: "helper text block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     styleHandlers: {},
     ...COMMON_ATTRIBUTES,
     input: {
@@ -124,7 +122,7 @@ export default [
   {
     uuid: "text_input_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -142,7 +140,7 @@ export default [
   {
     uuid: "checkbox_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -160,7 +158,7 @@ export default [
   {
     uuid: "select_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -177,7 +175,7 @@ export default [
   {
     uuid: "datepicker_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -193,7 +191,7 @@ export default [
   {
     uuid: "container_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -209,7 +207,7 @@ export default [
   {
     uuid: "icon_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -225,7 +223,7 @@ export default [
   {
     uuid: "image_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -241,7 +239,7 @@ export default [
   {
     uuid: "collection_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       display: {
         type: "handler",
@@ -257,7 +255,7 @@ export default [
   {
     uuid: "text_label_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     input: {
       display: {
@@ -274,7 +272,7 @@ export default [
   {
     uuid: "button_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     input: {
       display: {
@@ -292,7 +290,7 @@ export default [
   {
     uuid: "table_quick_action",
     application_id: "1",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     input: {
       display: {
@@ -311,7 +309,7 @@ export default [
     name: "text label font size",
     uuid: "label_font_size_input",
     application_id: "1",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -328,7 +326,7 @@ export default [
     name: "text label font size",
     uuid: "label_icon_input",
     application_id: "1",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -345,7 +343,7 @@ export default [
     name: "text label font size",
     uuid: "label_collection_column_input",
     application_id: "1",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -360,13 +358,13 @@ export default [
   {
     name: "name",
     application_id: "1",
-    component_type: ComponentType.AI
+    component_type: "AI"
   },
   {
     uuid: "export-import-block-wrapper",
     application_id: "1",
     name: "export-import-block-wrapper",
-    component_type: ComponentType.ExportImport
+    component_type: "ExportImport"
   },
 
 ];

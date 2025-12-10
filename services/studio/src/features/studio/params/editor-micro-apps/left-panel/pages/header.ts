@@ -1,10 +1,8 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 export const menuHeader = {
   uuid: "menu_header",
   name: "menu header",
   application_id: "1",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   style: {
     "gap": "5px",
     "align-items": "center",

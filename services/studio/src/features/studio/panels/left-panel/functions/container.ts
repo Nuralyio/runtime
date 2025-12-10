@@ -1,12 +1,11 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
-import { COMMON_ATTRIBUTES } from "@studio/core/helpers/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from '../../../core/helpers/common_attributes.ts';
 
 export const StudioFunctionContainer = [
   {
     uuid: "studio_function_container",
     application_id: "1",
     name: "Parent Color Container",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",

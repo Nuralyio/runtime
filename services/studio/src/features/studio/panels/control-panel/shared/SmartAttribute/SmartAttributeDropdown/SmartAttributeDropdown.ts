@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "../SmartAttributeHandler/SmartAttributeHandler.ts";
-import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
+import { type ComponentElement } from '../runtime/redux/store/component/component.interface';
 
 @customElement("smart-attribute-editor-dropdown")
 export class SmartAttributeEditorDropDown extends LitElement {

@@ -1,8 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { type ComponentElement } from "@shared/redux/store/component/component.interface";
-import { $editorState } from "@shared/redux/store/apps";
-import { isServer } from "@shared/utils/envirement";
+import { type ComponentElement } from '@nuraly/runtime/redux/store';
+import { $editorState } from '@nuraly/runtime/redux/store';
+import { isServer } from "@nuraly/runtime/utils/envirement";
 
  let filesAppUUID = "" ;
  let rightMenuUUID = "" ;
@@ -109,7 +109,9 @@ export class ParametersPanel extends LitElement {
    */
   @state() selectedComponent: ComponentElement | null = null;
   @state() editableTabs = [];
-  @state() currentTab = {  };
+  @state() currentTab = { 
+    type: "page" // set it to default value to prevent the hydration issue
+   };
 
   /**
    * Constructor

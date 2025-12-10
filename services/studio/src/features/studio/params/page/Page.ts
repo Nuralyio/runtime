@@ -1,38 +1,24 @@
-import "@shared/ui/components/advanced/Collections/Collections";
-import "@shared/ui/components/inputs/Button/Button";
-import "@shared/ui/components/layout/Containers/Container";
-import "@shared/ui/components/inputs/TextInput/TextInput";
-import "@shared/ui/components/display/TextLabel/TextLabel";
-import "@features/studio/panels/main-panel/wrappers/GenerikWrapper/GenerikWrapper";
-import "@features/studio/panels/main-panel/wrappers/RectangleSelection/RectangleSelection";
+import "@nuraly/runtime/components";
 import styles from "./Page.style";
-import { $currentApplication, $resizing } from "@shared/redux/store/apps";
-import { type ComponentElement, type DraggingComponentInfo } from "@shared/redux/store/component/component.interface";
-import { $applicationComponents, $draggingComponentInfo } from "@shared/redux/store/component/store";
-import { type PageElement } from "@shared/redux/handlers/pages/page.interface";
-import { $applicationPages, $currentPage, $currentPageViewPort } from "@shared/redux/store/page";
+import { $currentApplication, $resizing } from '@nuraly/runtime/redux/store';
+import { type ComponentElement, type DraggingComponentInfo } from '@nuraly/runtime/redux/store';
+import { $applicationComponents, $draggingComponentInfo } from '@nuraly/runtime/redux/store';
+import { type PageElement } from '@nuraly/runtime/redux/handlers';
+import { $applicationPages, $currentPage, $currentPageViewPort } from '@nuraly/runtime/redux/store';
 import { html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { renderComponent } from "@shared/utils/render-util";
-import { getVar } from "@shared/redux/store/context";
-import { log } from "@shared/utils/logger";
-import { eventDispatcher } from "@shared/utils/change-detection";
-import { ViewMode } from "@shared/redux/store/environment";
-import {
-  moveDraggedComponentIntoCurrentPageRoot
-} from "@shared/redux/actions/component/moveDraggedComponentIntoCurrentPageRoot";
-import { deleteComponentAction } from "@shared/redux/actions/component/deleteComponentAction";
-import { updatePageInfo } from "@shared/redux/actions/page/updatePageInfo";
-import { setEnvirementMode } from "@shared/redux/actions/editor/setEnvirementMode";
-import { copyCpmponentToClipboard, pasteComponentFromClipboard } from "@shared/utils/clipboard-utils";
-import { ExecuteInstance } from "@features/runtime/state/runtime-context";
-import type { LogPanel } from "@studio/panels/log-panel/LogPanel";
+import { renderComponent, Logger, eventDispatcher, copyCpmponentToClipboard, pasteComponentFromClipboard, debounce } from '@nuraly/runtime/utils';
+import { getVar } from '@nuraly/runtime/redux/store/context';
+import { ViewMode } from '@nuraly/runtime/redux/store';
+import { moveDraggedComponentIntoCurrentPageRoot, deleteComponentAction, updatePageInfo, setEnvirementMode } from '@nuraly/runtime/redux/actions';
+import { ExecuteInstance } from '@nuraly/runtime';
+import type { LogPanel } from '../../panels/log-panel/LogPanel';
 import { Subscription } from "rxjs";
 import Convert from "ansi-to-html";
-import { debounce } from "@shared/utils/performance-utils";
 
 const convert = new Convert();
+const log = Logger;
 
 @customElement("content-page")
 export class PageContent extends LitElement {

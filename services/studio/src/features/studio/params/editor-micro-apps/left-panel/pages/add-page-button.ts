@@ -1,9 +1,7 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 export const addPageButton = {
   uuid: "add_page",
   name: "add page",
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   application_id: "1",
   style: {},
   input: {

@@ -1,8 +1,7 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 // Helper functions (inlined from factories)
-const createBaseComponent = (uuid: string, name: string, componentType: ComponentType, additionalProps = {}) => ({
+const createBaseComponent = (uuid: string, name: string, componentType: string, additionalProps = {}) => ({
   uuid,
   name,
   application_id: "1",
@@ -12,7 +11,7 @@ const createBaseComponent = (uuid: string, name: string, componentType: Componen
 });
 
 const createTextLabel = (uuid: string, text: string, style = {}) =>
-  createBaseComponent(uuid, "text_label", ComponentType.TextLabel, {
+  createBaseComponent(uuid, "text_label", "text_label", {
     parameters: { value: text },
     input: {
       value: {
@@ -27,7 +26,7 @@ const createTextLabel = (uuid: string, text: string, style = {}) =>
 const containerComponent = createBaseComponent(
   "box_model_vertical_container",
   "Box Model Container",
-  ComponentType.Container,
+  "vertical-container-block",
   {
     style: {
       display: "flex",
@@ -48,7 +47,7 @@ const labelComponent = createTextLabel(
 const boxModelComponent = createBaseComponent(
   "box_model_display_block",
   "box model display block",
-  ComponentType.BoxModel,
+  "box_model",
   {
     style: { width: "100%", display: "block" },
     input: {
@@ -116,7 +115,7 @@ const boxModelComponent = createBaseComponent(
 const collapseComponent = createBaseComponent(
   "box_model_collapse",
   "Box Model Collapse",
-  ComponentType.Collapse,
+  "Collapse",
   {
     style: {
       marginTop: "16px",

@@ -1,14 +1,17 @@
+// CRITICAL: Register all runtime components first
+import "../../../runtime/utils/register-components";
+
 import "../../params/page/Page.ts";
 import "../../params/flow/Flow.ts";
 import "../../params/function/Function.ts";
 import "../../params/database/Database.ts";
 import "../../params/files/Files.ts";
 import "./EditorInteractivePanel.ts";
-import { $editorState } from "@shared/redux/store/apps.ts";
+import { $editorState } from '../../../runtime/redux/store/apps.ts';
 import { css, html, LitElement } from "lit";
 import { state } from "lit/decorators.js";
-import { closeEditorTab } from "@shared/redux/actions/editor/closeEditorTab.ts";
-import { setCurrentEditorTab } from "@shared/redux/actions/editor/setCurrentEditorTab.ts";
+import { closeEditorTab } from '../../../runtime/redux/actions/editor/closeEditorTab.ts';
+import { setCurrentEditorTab } from '../../../runtime/redux/actions/editor/setCurrentEditorTab.ts';
 
 export class TabsPanel extends LitElement {
   static override styles = [

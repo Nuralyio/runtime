@@ -1,5 +1,4 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-import { isServer } from "@shared/utils/envirement";
+import { isServer } from '../../../../runtime/utils/envirement';
 export let functionAppUUID = "" ;
 export let functionPageUUID = "" ;
 if(!isServer){
@@ -48,7 +47,7 @@ export const StudioFunctionCollection = [
     application_id: "1",
     uuid: "function_micro_app_block",
     name: "function_micro_app",
-    component_type: ComponentType.MicroApp,
+    component_type: "MicroApp",
     input: {
       appUUID: {
         type: "string",

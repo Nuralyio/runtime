@@ -7,8 +7,8 @@ WORKDIR /usr/src/app
 # Copy only necessary files to install dependencies
 COPY package.json package-lock.json ./
 
-# Install only production dependencies in final stage
-RUN npm ci --omit=dev
+# Install dependencies (including dev dependencies needed for build)
+RUN npm ci --legacy-peer-deps
 
 # Copy the rest of the app
 COPY . .

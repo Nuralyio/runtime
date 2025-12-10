@@ -5,7 +5,7 @@ node_modules
 .git
 .gitignore
 .dockerignore
-dist
+/dist
 build
 .DS_Store
 npm-debug.log

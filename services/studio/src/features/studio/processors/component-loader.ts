@@ -14,7 +14,6 @@
  * - Significantly reduces CPU usage and prevents infinite loops
  */
 
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../core/helpers/common_attributes.ts";
 import { generateFromConfig, type BlockConfig } from "./property-block/index.ts";
 import { createHandlersFromEvents } from "../core/utils/handler-generator.ts";
@@ -145,7 +144,7 @@ export function loadComponentProperties(
     uuid: metadata.uuid,
     application_id: "1",
     name: metadata.name,
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: metadata.containerStyle || {
       display: "flex",

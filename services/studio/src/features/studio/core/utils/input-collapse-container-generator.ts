@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { v4 as uuidv4 } from "uuid"; // Import UUID package
 
@@ -14,7 +13,7 @@ export function generateDynamicContainer(
       uuid: mainUuid,
       application_id: "1",
       name: "position collapse container",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         marginTop: "15px"
@@ -25,7 +24,7 @@ export function generateDynamicContainer(
       uuid: collapseUuid,
       application_id: "1",
       name: collapseUuid,
-      component_type: ComponentType.Collapse,
+      component_type: "Collapse",
       style: {
         marginTop: "16px",
         marginBottom: "16px",
@@ -56,7 +55,7 @@ export function generateDynamicContainer(
       uuid: `${collapseUuid}_children`,
       application_id: "1",
       name: "Left panel",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       style: {},
       childrenIds: [...childrenIds] // Pass the dynamic children here
     }

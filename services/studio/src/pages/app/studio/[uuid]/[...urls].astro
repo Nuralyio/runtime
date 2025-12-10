@@ -1,18 +1,18 @@
 ---
 import MakeLayout from "../../../_layouts/MakeLayout.astro";
 
-import "@studio/panels/main-panel/EditorInteractivePanel";
-import { TabsPanel } from "@studio/panels/main-panel/TabsPanel";
-import { TopbarPanelWrapper } from "@studio/panels/top-bar/TopbarWrapper/TopbarWrapper";
-import { LeftPanel } from "@studio/panels/layout/LeftPanel";
-import { RightPanel } from "@studio/panels/layout/RightPanel";
-import { $pages } from "@shared/redux/store/page"
-import { $components } from "@shared/redux/store/component/store";
-import { $applications } from "@shared/redux/store/apps";
-import { processHeaders } from "@shared/utils/api-calls-utils";
-import { fetchAllApplications, fetchApplicationPagesById, fetchApplicationComponentById } from "@services";
-import { EditorSpinner } from '@studio/panels/layout/EditorSpinner'
-import { ApplicationNotFound } from "@services/applications/exceptions/ApplicationNotFound";
+import "../../../../features/studio/panels/main-panel/EditorInteractivePanel";
+import { TabsPanel } from '../../../../features/studio/panels/main-panel/TabsPanel';
+import { TopbarPanelWrapper } from '../../../../features/studio/panels/top-bar/TopbarWrapper/TopbarWrapper';
+import { LeftPanel } from '../../../../features/studio/panels/layout/LeftPanel';
+import { RightPanel } from '../../../../features/studio/panels/layout/RightPanel';
+import { $pages } from '../../../../features/runtime/redux//store/page'
+import { $components } from '../../../../features/runtime/redux//store/component/store';
+import { $applications } from '../../../../features/runtime/redux/store/apps';
+import { processHeaders } from '../../../../features/runtime/utils/api-calls-utils';
+import { fetchAllApplications, fetchApplicationPagesById, fetchApplicationComponentById } from '../../../../services';
+import { EditorSpinner } from '../../../../features/studio/panels/layout/EditorSpinner'
+import { ApplicationNotFound } from '../../../../services/applications/exceptions/ApplicationNotFound';
 const { title, uuid, urls = "" } = Astro.params;
 const functionAppUUID = process.env.FUNCTION_APP_UUID;
 const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
@@ -85,6 +85,13 @@ try {
 
   window.__URL__ = urls;
 </script>
+
+<script>
+  // Initialize studio components (client-side only)
+  import('../../../../features/studio/studio-bootstrap');
+</script>
+
+
 <MakeLayout title="Make Apps">
   {(() => {
     switch (occurredError) {

@@ -1,11 +1,10 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { componentCollectionComponents } from "./component-collections";
 
 export const componentPanel = {
   application_id: "1",
   uuid: "component_panel",
   name: "Files panel",
-  component_type: ComponentType.Panel,
+  component_type: "Panel",
   input: {
     title: {
       type: "string",

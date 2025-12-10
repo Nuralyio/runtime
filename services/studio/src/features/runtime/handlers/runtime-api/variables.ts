@@ -92,7 +92,7 @@
  * ```
  */
 
-import { setVar } from '@shared/redux/store/context';
+import { setVar } from '../../redux/store/context';
 
 /**
  * Creates variable management functions with closure over runtime context.

@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 export default [
@@ -6,7 +5,7 @@ export default [
     uuid: "micro_app_selection_blocks",
     application_id: "1",
     name: "micro_app_selection_blocks",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -17,7 +16,7 @@ export default [
   {
     uuid: "micro_app_selection_label",
     name: "label image src",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -30,7 +29,7 @@ export default [
   {
     uuid: "micro_app_selection_select",
     application_id: "1",
-    component_type: ComponentType.Select,
+    component_type: "select",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "label font family select",

@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme, InputTextLabelTheme, RadioButtonWithTwoOptionsTheme } from "../utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export default [
     uuid: "display_block",
     application_id: "1",
     name: "display block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -17,7 +16,7 @@ export default [
   {
     uuid: "display_label",
     name: "display label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -33,7 +32,7 @@ export default [
   {
     uuid: "display_radio",
     application_id: "1",
-    component_type: ComponentType.RadioButton,
+    component_type: "RadioButton",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "display radio",
@@ -85,7 +84,7 @@ export default [
     uuid: "display_handler_block",
     application_id: "1",
     name: "icon position handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -96,7 +95,7 @@ export default [
   {
     uuid: "display_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "display handler",
@@ -131,7 +130,7 @@ export default [
   {
     uuid: "display_divider",
     name: "divider",
-    component_type: ComponentType.Divider,
+    component_type: "Divider",
     application_id: "1",
     ...COMMON_ATTRIBUTES
   }

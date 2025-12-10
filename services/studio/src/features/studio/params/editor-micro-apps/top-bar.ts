@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { Edit } from "./top-menu/edit";
 import { Insert } from "./top-menu/insert";
 
@@ -6,7 +5,7 @@ export default [{
   uuid: "top-bar",
   application_id: "1",
   name: "top bar",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
 
   style: {
     width: "100vw",
@@ -21,7 +20,7 @@ export default [{
   uuid: "info-top-bar",
   name: "info top bar",
   application_id: "1",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   style: {
     width: "60vw",
     display: "flex",
@@ -34,7 +33,7 @@ export default [{
   uuid: "app_details_top_bar",
   name: "details top bar",
   application_id: "1",
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   style: {
     "align-items": "center",
     "gap": "5px",
@@ -48,7 +47,7 @@ export default [{
   style: {
         "height": "24px"
   },
-  component_type: ComponentType.InsertDropdown,
+  component_type: "InsertDropdown",
   input: {
     label: {
       type: "handler",
@@ -111,7 +110,7 @@ export default [{
       "height": "24px",
       "margin-left": "5px",
   },
-  component_type: ComponentType.InsertDropdown,
+  component_type: "InsertDropdown",
   input: {
     label: {
       type: "handler",
@@ -171,7 +170,7 @@ export default [{
     "border-left": "1px solid grey",
     "padding-left": "14px",
   },
-  component_type: ComponentType.InsertDropdown,
+  component_type: "InsertDropdown",
   input: {
     label: {
       type: "handler",
@@ -220,7 +219,7 @@ export default [{
 {
   uuid: "app_logo",
   name: "app name top bar",
-  component_type: ComponentType.Image,
+  component_type: "Image",
   input: {
     darkSrc: {
       type: "handler",
@@ -252,7 +251,7 @@ export default [{
   name: "app name top bar",
   application_id: "1",
 
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   style: {
     "margin-left": "5px",
     "type": "ghost",
@@ -285,7 +284,7 @@ export default [{
   name: "app name top bar",
   application_id: "1",
 
-  component_type: ComponentType.TextLabel,
+  component_type: "text_label",
   input: {
     value: {
       type: "handler",
@@ -302,7 +301,7 @@ export default [{
   name: "settings top bar",
   application_id: "1",
 
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   style: {
     width: "40vw",
     "justify-content": "flex-end",
@@ -315,7 +314,7 @@ export default [{
   name: "zoom top bar",
   application_id: "1",
 
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   childrenIds: ["zoom_input"]
 },
 {
@@ -323,7 +322,7 @@ export default [{
   name: "zoom input",
   application_id: "1",
 
-  component_type: ComponentType.TextInput,
+  component_type: "text_input",
   style: {
     "size": "small",
     "width": "90px"
@@ -368,7 +367,7 @@ export default [{
   name: "mode_topbar",
   application_id: "1",
 
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   style: {
     "margin-right": "14px",
     "align-items": "center",
@@ -382,7 +381,7 @@ export default [{
   name: "website-name",
   application_id: "1",
   
-  component_type: ComponentType.TextLabel,
+  component_type: "text_label",
   input: {
     value: {
       type: "string",
@@ -401,7 +400,7 @@ export default [{
   name: "edit_mode platform button",
   application_id: "1",
 
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   event: {
     onClick: /* js */`
       Vars.currentEditingMode = "edit";
@@ -440,7 +439,7 @@ export default [{
   name: "preview_mode platform button",
   application_id: "1",
 
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   event: {
     onClick: /* js */`
       Vars.currentEditingMode = "preview"
@@ -485,7 +484,7 @@ export default [{
   uuid: "platform_top_bar",
   name: "platform radio button",
   application_id: "1",
-  component_type: ComponentType.RadioButton,
+  component_type: "RadioButton",
   input: {
     autoWidth: {
       type: "boolean",
@@ -556,7 +555,7 @@ export default [{
   name: "prev next top bar",
   application_id: "1",
 
-  component_type: ComponentType.Container,
+  component_type: "vertical-container-block",
   style: {
     "gap": "4px",
   },
@@ -568,7 +567,7 @@ export default [{
   name: "previous button",
   application_id: "1",
 
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   input: {
     iconOnly: {
       type: "boolean",
@@ -620,7 +619,7 @@ export default [{
   name: "next button",
   application_id: "1",
 
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   input: {
     size: {
       type: "string",
@@ -677,7 +676,7 @@ export default [{
   application_id: "1",
 
   name: "logout",
-  component_type: ComponentType.Button,
+  component_type: "button_input",
   input: {
     size:{
       type : "string",
@@ -710,7 +709,7 @@ export default [{
   name: "app page top bar",
   application_id: "1",
 
-  component_type: ComponentType.TextLabel,
+  component_type: "text_label",
   style: {
     "margin-left": "15px",
     "margin-top": "9px",
