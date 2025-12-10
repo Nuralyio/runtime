@@ -36,7 +36,7 @@ export class ExportImportBlock extends BaseElementBlock {
     URL.revokeObjectURL(url);
   }
 
-  override async firstUpdated(): Promise<void> {}
+  override firstUpdated() {}
 
   renderDropdown(templateContent: string, buttonLabel: string, type: string) {
     const isExport = type === "export";
