@@ -1,16 +1,16 @@
 import { customElement, property, query, state } from "lit/decorators.js";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import "@nuralyui/canvas";
-import "@studio/panels/log-panel/LogPanel.ts"; // Ensure the log-panel component is imported
-import { LogPanel } from "@studio/panels/log-panel/LogPanel.ts";
-import { updateFunctionHandler } from "@shared/redux/handlers/functions/update-function-handler.ts";
-import { getVar, setVar } from "@shared/redux/store/context.ts";
+// import "@studio/panels/log-panel/LogPanel.ts"; // Ensure the log-panel component is imported
+import { LogPanel } from '../../panels/log-panel/LogPanel.ts';
+import { updateFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/update-function-handler.ts';
+import { getVar, setVar } from '../../../../features/runtime/redux/store/context.ts';
 import { styleMap } from "lit/directives/style-map.js";
-import { invokeFunctionHandler } from "@shared/redux/handlers/functions/invoke-function-handler.ts";
-import { ButtonTheme } from "@studio/core/utils/common-editor-theme.ts";
-import { buildFunctionHandler } from "@shared/redux/handlers/functions/build-function-handler.ts";
-import { deployFunctionHandler } from "@shared/redux/handlers/functions/deploy-function-handler.ts";
-import { ExecuteInstance } from "@features/runtime/state/runtime-context";
+import { invokeFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/invoke-function-handler.ts';
+import { ButtonTheme } from '../../core/utils/common-editor-theme.ts';
+import { buildFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/build-function-handler.ts';
+import { deployFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/deploy-function-handler.ts';
+import { ExecuteInstance } from '../../../runtime/state/runtime-context';
 
 // debounce.ts
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
@@ -51,7 +51,7 @@ export class FunctionContent extends LitElement {
    */
   private async loadCodeEditor() {
     try {
-      await import("@shared/ui/components/advanced/CodeEditor/CodeEditor");
+      // await import("@shared/ui/components/advanced/CodeEditor/CodeEditor");
       this.codeEditorLoaded = true;
       this.requestUpdate();
     } catch (error) {

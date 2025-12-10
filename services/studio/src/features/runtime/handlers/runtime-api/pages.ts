@@ -4,9 +4,9 @@
  * Operations for creating, updating, and deleting pages.
  */
 
-import { addPageHandler, updatePageHandler } from '@shared/redux/handlers/pages/handler';
-import { deletePageAction } from '@shared/redux/actions/page/deletePageAction';
-import type { PageElement } from '@shared/redux/handlers/pages/page.interface';
+import { addPageHandler, updatePageHandler } from '../../redux/handlers/pages/handler';
+import { deletePageAction } from '../../redux/actions/page/deletePageAction';
+import type { PageElement } from '../../redux/handlers/pages/page.interface';
 
 export function createPageFunctions() {
   return {

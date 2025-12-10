@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme, InputTextLabelTheme, TextInputTheme } from "../utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export const StudioTextValueInput = [
     uuid: "value_text_block",
     application_id: "1",
     name: "value text block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     style: {
       ...InputBlockContainerTheme
     },
@@ -17,7 +16,7 @@ export const StudioTextValueInput = [
     uuid: "value_handler_block",
     application_id: "1",
     name: "icon picker handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -28,7 +27,7 @@ export const StudioTextValueInput = [
   {
     uuid: "value_text_label",
     name: "value text label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     style: {
       ...InputTextLabelTheme
@@ -44,7 +43,7 @@ export const StudioTextValueInput = [
     uuid: "value_text_input",
     name: "value text input",
     application_id: "1",
-    component_type: ComponentType.TextInput,
+    component_type: "text_input",
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
@@ -84,7 +83,7 @@ export const StudioTextValueInput = [
   {
     uuid: "value_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "value handler",

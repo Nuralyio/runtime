@@ -3,9 +3,9 @@ import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorLabel/BackgroundColorLabel";
 import "./BackgroundColorValue/BackgroundColorValue";
 import styles from "./BackgroundColorAttribute.style";
-import { type PageElement } from "@shared/redux/handlers/pages/page.interface";
+import { type PageElement } from '../../../../redux/handlers/pages/page.interface';
 
-import { updatePageStyleAttributes } from "@shared/redux/actions/page/updatePageStyleAttributes";
+import { updatePageStyleAttributes } from '../../../../redux/actions/page/updatePageStyleAttributes';
 
 @customElement("attribute-page-background-color")
 export class AttributeColor extends LitElement {

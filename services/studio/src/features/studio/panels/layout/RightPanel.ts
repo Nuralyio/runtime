@@ -1,6 +1,9 @@
+// CRITICAL: Register all runtime components first
+import "../../../runtime/utils/register-components";
+
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $environment, type Environment, ViewMode } from "@shared/redux/store/environment.ts";
+import { $environment, type Environment, ViewMode } from '../../../runtime/redux/store/environment.ts';
 
 import "../control-panel/ControlPanelTabs.ts";
 

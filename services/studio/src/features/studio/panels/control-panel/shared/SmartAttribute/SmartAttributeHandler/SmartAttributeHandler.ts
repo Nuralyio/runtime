@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing, type PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
 import "../SmartAttributeCodeEditor/SmartAttributeCodeEditor.ts";
 
 @customElement("smart-attribute-handler")
@@ -13,7 +12,7 @@ export class SmartAttributeHandler extends LitElement {
     `
   ];
   @property({ type: Object })
-  component: ComponentElement;
+  component: any;
   @property()
   attributeName: string;
   @property()

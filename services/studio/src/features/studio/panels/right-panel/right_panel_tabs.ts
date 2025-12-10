@@ -1,11 +1,9 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
-
 export default [
 {
   uuid: "right_panel_tabs",
   application_id: "1",
   name: "right_panel_tabs",
-  component_type: ComponentType.Tabs,
+  component_type: "tabs",
   event: {},
   style: {
     width: "100%",

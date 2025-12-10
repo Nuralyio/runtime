@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
 export default [
@@ -6,7 +5,7 @@ export default [
     uuid: "page_bg_color_theme_block",
     application_id: "1",
     name: "page name block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -20,7 +19,7 @@ export default [
   {
     uuid: "page_bg-color_label",
     name: "page name text label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -38,7 +37,7 @@ export default [
   {
     uuid: "page_color_input",
     application_id: "1",
-    component_type: ComponentType.ColorPicker,
+    component_type: "color_picker",
     ...COMMON_ATTRIBUTES,
     style: {},
     event: {

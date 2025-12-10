@@ -1,12 +1,11 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
-import { COMMON_ATTRIBUTES } from "@studio/core/helpers/common_attributes.ts";
+import { COMMON_ATTRIBUTES } from '../../../core/helpers/common_attributes.ts';
 
 export default [
     {
       uuid: "right_panel_function_invoke",
       application_id: "1",
       name: "Parent Color Container",
-      component_type: ComponentType.Container,
+      component_type: "vertical-container-block",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -18,7 +17,7 @@ export default [
   {
     uuid: "invoke_text_label",
     name: "invoke_text_label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     style: {
     },
     input: {
@@ -32,7 +31,7 @@ export default [
   {
     uuid: "invoke_function_block",
     name: "invoke_function_block",
-    component_type: ComponentType.invokeFunctionTemplate,
+    component_type: "InvokeFunction",
     style: {
 
     },

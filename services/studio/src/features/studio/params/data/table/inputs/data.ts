@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../core/helpers/common_attributes.ts";
 import { InputBlockContainerTheme } from "../../../../core/utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export default [
     uuid: "table_values_handler_block",
     application_id: "1",
     name: "value handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -18,7 +17,7 @@ export default [
   {
     uuid: "table_values_handler_label",
     name: "table values handler label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -34,7 +33,7 @@ export default [
   {
     uuid: "table_values_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "table value handler",

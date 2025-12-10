@@ -1,4 +1,4 @@
-import { type PageElement } from "@shared/redux/handlers/pages/page.interface";
+import { type PageElement } from '../../../../../redux/handlers/pages/page.interface';
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 

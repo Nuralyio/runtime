@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
 import { InputBlockContainerTheme, SelectTheme } from "../utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export const StudioInnerContainerInputAlignment = [
     uuid: "inner_container_alignement_block",
     application_id: "1",
     name: "button type block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -18,7 +17,7 @@ export const StudioInnerContainerInputAlignment = [
     uuid: "inner_container_radio_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -30,7 +29,7 @@ export const StudioInnerContainerInputAlignment = [
   {
     uuid: "inner_container_label",
     name: "button type label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -46,7 +45,7 @@ export const StudioInnerContainerInputAlignment = [
   {
     uuid: "inner_container_select",
     application_id: "1",
-    component_type: ComponentType.Select,
+    component_type: "select",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "button type select",
@@ -93,7 +92,7 @@ export const StudioInnerContainerInputAlignment = [
     uuid: "inner_container_handler_block",
     application_id: "1",
     name: "button type handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -105,7 +104,7 @@ export const StudioInnerContainerInputAlignment = [
   {
     uuid: "inner_container_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "type handler",

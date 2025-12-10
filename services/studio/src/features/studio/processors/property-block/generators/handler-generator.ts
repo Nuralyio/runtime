@@ -3,7 +3,6 @@
  * Generates handler (code icon) components for properties
  */
 
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../core/helpers/common_attributes.ts";
 import type { PropertyConfig } from '../types.ts';
 import { HandlerResolver } from '../handler-resolver.ts';
@@ -58,7 +57,7 @@ export class HandlerGenerator {
       uuid: handlerUuid,
       application_id: "1",
       name: `${property.label} Handler`,
-      component_type: ComponentType.Event,
+      component_type: "event",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "block",

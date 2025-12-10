@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface";
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes";
 
 import inputs from "./pages-bg-color";
@@ -10,7 +9,7 @@ export const PageThemeStudio = [
         uuid: "PageThemeStudio",
         application_id: "1",
         name: "PageThemeStudio",
-        component_type: ComponentType.Container,
+        component_type: "vertical-container-block",
         ...COMMON_ATTRIBUTES,
         style: {
             display: "flex",

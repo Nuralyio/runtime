@@ -1,12 +1,10 @@
-import { COMMON_ATTRIBUTES } from "@studio/core/helpers/common_attributes.ts";
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
-
+import { COMMON_ATTRIBUTES } from '../../core/helpers/common_attributes.ts';
 export default [
   {
     uuid: "quick-action-wrapper-bottom",
     application_id: "1",
     name: "helper text block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     input: {
       direction: {
         type: "string",
@@ -21,13 +19,13 @@ export default [
   //   uuid: "export-import-block-wrapper",
   //   application_id: "1",
   //   name: "export-import-block-wrapper",
-  //   component_type: ComponentType.ExportImport
+  //   component_type: "ExportImport"
   // },
   {
     uuid: "dropdonwn-context",
     application_id: "1",
     name: "dropdonwn-context",
-    component_type: ComponentType.Dropdown,
+    component_type: "dropdown",
     input : {
       show:{
         type : "boolean",

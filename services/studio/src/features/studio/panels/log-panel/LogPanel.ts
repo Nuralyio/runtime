@@ -2,13 +2,10 @@ import { customElement, state, query } from "lit/decorators.js";
 import { repeat } from 'lit/directives/repeat.js';
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { LocalStorage } from "@shared/utils/local-storage";
-import EditorInstance from "@features/runtime/state/editor";
-import { executeHandler, ExecuteInstance } from "@features/runtime/state/runtime-context";
-import { $componentById } from "@shared/redux/store/component/store";
-import Editor from "@features/runtime/state/editor";
-import { formatCodeWithErrorHighlight } from "@shared/ui/components/base/BaseElement/input-handler.helpers";
-import { RuntimeHelpers } from "@shared/utils/runtime-helpers";
+import { LocalStorage, RuntimeHelpers } from '@nuraly/runtime/utils';
+import { executeHandler, ExecuteInstance } from '@nuraly/runtime';
+import { $componentById } from '@nuraly/runtime/redux/store';
+import Editor from '@nuraly/runtime/state';
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {

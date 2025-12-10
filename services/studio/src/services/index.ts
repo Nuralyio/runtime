@@ -10,10 +10,10 @@
  * 
  * @example
  * ```typescript
- * import { fetchApplicationById, fetchAllApplications } from '@services';
+ * import { fetchApplicationById, fetchAllApplications } from './';
  * 
  * // Or import from specific domain
- * import { fetchApplicationById } from '@services/applications';
+ * import { fetchApplicationById } from './applications';
  * ```
  */
 

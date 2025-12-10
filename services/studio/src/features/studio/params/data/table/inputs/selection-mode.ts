@@ -1,4 +1,3 @@
-import { ComponentType } from "@shared/redux/store/component/component.interface.ts";
 import { COMMON_ATTRIBUTES } from "../../../../core/helpers/common_attributes.ts";
 import { InputBlockContainerTheme, RadioButtonWithThreeOptionsTheme } from "../../../../core/utils/common-editor-theme.ts";
 
@@ -7,7 +6,7 @@ export default [
     uuid: "table_selection_mode",
     application_id: "1",
     name: "table selection mode block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
@@ -19,7 +18,7 @@ export default [
     uuid: "table_selectionmode_radio_block",
     application_id: "1",
     name: "table selection mode radio block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -32,7 +31,7 @@ export default [
   {
     uuid: "table_selectionmode_label",
     name: "table selection mode label",
-    component_type: ComponentType.TextLabel,
+    component_type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -49,7 +48,7 @@ export default [
   {
     uuid: "table_selectionmode_radio",
     application_id: "1",
-    component_type: ComponentType.RadioButton,
+    component_type: "RadioButton",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "selection mode radio",
@@ -107,7 +106,7 @@ export default [
     uuid: "table_selectionmode_handler_block",
     application_id: "1",
     name: "table selection mode handler block",
-    component_type: ComponentType.Container,
+    component_type: "vertical-container-block",
     ...COMMON_ATTRIBUTES,
     style: {},
 
@@ -116,7 +115,7 @@ export default [
   {
     uuid: "table_selectionmode_handler",
     application_id: "1",
-    component_type: ComponentType.Event,
+    component_type: "event",
     ...COMMON_ATTRIBUTES,
     styleHandlers: {},
     name: "selection mode handler",

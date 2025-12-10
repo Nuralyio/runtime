@@ -1,9 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./BackgroundColorHandler/BackgroundColorHandler.ts";
-import { type ComponentElement } from "@shared/redux/store/component/component.interface.ts";
+import { type ComponentElement } from '../../../../../../features/runtime/redux/store/component/component.interface.ts';
 import styles from "./BackgroundColor.style.ts";
-import { updateComponentAttributes } from "@shared/redux/actions/component/updateComponentAttributes.ts";
+import { updateComponentAttributes } from '../../../../../../features/runtime//redux/actions/component/updateComponentAttributes.ts';
 
 @customElement("attribute-background-color")
 export class AttributeBackgroundColor extends LitElement {
