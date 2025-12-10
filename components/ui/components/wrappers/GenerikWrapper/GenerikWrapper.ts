@@ -54,8 +54,6 @@ export class GenerikComponentWrapper extends LitElement {
 
     $environment.subscribe((environment: Environment) => {
       this.environmentMode = environment.mode;
-      this.wrapperStyle =
-        environment.mode === ViewMode.Edit ? {  } : {};
     });
     $hoveredComponent.subscribe((hoveredComponent: ComponentElement) => {
       this.hoveredComponent = hoveredComponent;
@@ -113,11 +111,6 @@ export class GenerikComponentWrapper extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    // Find the closest parent "generik-component-wrapper"
-    const closestWrapper = this.closest("generik-component-wrapper");
-    if (closestWrapper) {
-    } else {
-    }
   }
 
   render() {

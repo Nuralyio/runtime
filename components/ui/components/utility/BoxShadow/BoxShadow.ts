@@ -77,10 +77,8 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
   });
 
   boxShadow() {
-	return
     const shadowBox = ` ${this.horizontalValue}px ${this.verticalValue}px ${this.blurValue}px ${this.spreadValue}px ${this.colorValue} ${this.insetValue ? "inset" : ""}`;
     if (this.component.event.boxShadowChanged) {
-
       const fn = executeHandler(this.component, getNestedAttribute(this.component, `event.boxShadowChanged`), {
         value: shadowBox
       });

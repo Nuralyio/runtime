@@ -298,17 +298,10 @@ export class BaseElementBlock extends LitElement {
       this.component.uniqueUUID = this.uniqueUUID;
       this.component.parent = this.parentcomponent;
 
-      if (prev?.uuid !== curr?.uuid) {
-        this.traitInputsHandlers();
-        this.traitStylesHandlers();
-      } else {
-        // component does not change but properties inside may have changed
-        // when psedo states styles are used for example
-        this.traitInputsHandlers();
-        this.traitStylesHandlers();
-        // Re-process handlers even if UUID hasn't changed
-        // This ensures property updates in the studio are reflected
-      }
+      // Re-process handlers on any component change
+      // This ensures property updates (including pseudo-states) are reflected
+      this.traitInputsHandlers();
+      this.traitStylesHandlers();
     }
   }
 

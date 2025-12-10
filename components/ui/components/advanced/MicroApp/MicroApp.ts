@@ -74,7 +74,7 @@ export class MicroAppBlock extends BaseElementBlock {
   
 
   render() {
-    const isPreviewMode = this.inputHandlersValue.mode === ViewMode.Preview || this.inputHandlersValue.mode === ViewMode.Preview;
+    const isPreviewMode = this.inputHandlersValue.mode === ViewMode.Preview;
 
     return html`
       ${this.inputHandlersValue.appUUID

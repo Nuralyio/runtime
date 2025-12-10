@@ -13,7 +13,7 @@ const isServer = typeof window === "undefined";
 const initialStates = isServer ? [] : JSON.parse(window["__INITIAL_COMPONENT_STATE__"] ?? "[]");
 
 // Initialize with empty object
-const initialState: ComponentStore = isServer ? {} : {};
+const initialState: ComponentStore = {};
 
 if (currentLoadedApplication) {
   initialState[currentLoadedApplication.uuid] = initialStates;
