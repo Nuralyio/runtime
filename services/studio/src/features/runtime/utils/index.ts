@@ -55,7 +55,6 @@ export { getNestedAttribute, hasOnlyEmptyObjects } from './object.utils';
 export { processHeaders } from './api-calls-utils';
 
 // Style Utilities
-export { getStyleFronmAttribute } from './styleUtil';
 
 // Time/Performance Utilities
 export { debounce } from './performance-utils';
