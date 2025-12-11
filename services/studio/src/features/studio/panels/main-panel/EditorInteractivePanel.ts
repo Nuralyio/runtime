@@ -8,7 +8,6 @@ import { $selectedComponent } from '@nuraly/runtime/redux/store';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 import { $currentApplication } from '@nuraly/runtime/redux/store';
 
-import "./AI-Assistant.ts";
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
 @customElement("editor-interactive-panel")
