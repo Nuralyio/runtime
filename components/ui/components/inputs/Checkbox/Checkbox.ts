@@ -1,7 +1,5 @@
-import { css, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
-import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
+import { html } from "lit";
+import { customElement } from "lit/decorators.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
@@ -15,39 +13,16 @@ try {
 
 @customElement("checkbox-block")
 export class CheckboxBlock extends BaseElementBlock {
-  static styles = [
-    css``,
-  ];
-
-  @property({ type: Object })
-  component: ComponentElement;
-
-  unsubscribe: () => void;
-
-  override async connectedCallback() {
-    await super.connectedCallback();
-    this.registerCallback("value", () => {});
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.unsubscribe) this.unsubscribe();
-  }
 
   renderComponent() {
-    const checkBoxStyles = this.component?.style || {};
-    const size = checkBoxStyles.size as 'small' | 'medium' | 'large' | undefined;
-
     return html`
       <nr-checkbox
+        class="${`drop-${this.component.uuid}`}"
         ${ref(this.inputRef)}
-        style=${styleMap({
-          ...this.getStyles(),
-        })}
-        .checked=${this.inputHandlersValue?.value}
-        .indeterminate=${this.inputHandlersValue?.checked == "indeterminate"}
-        .disabled=${this.inputHandlersValue?.state == "disabled"}
-        .size=${size || 'medium'}
+        .checked=${this.inputHandlersValue?.value === true}
+        .indeterminate=${this.inputHandlersValue?.value === "indeterminate"}
+        .disabled=${this.inputHandlersValue?.disabled}
+        .size=${this.inputHandlersValue?.size || 'medium'}
         .name=${this.inputHandlersValue?.name || ''}
         .value=${this.inputHandlersValue?.value || ''}
         .required=${this.inputHandlersValue?.required || false}
@@ -55,28 +30,28 @@ export class CheckboxBlock extends BaseElementBlock {
         .id=${this.inputHandlersValue?.id || ''}
         .title=${this.inputHandlersValue?.title || ''}
         .tabIndex=${this.inputHandlersValue?.tabIndex || 0}
-        @nr-change=${(e) => {
+        @nr-change=${(e : CustomEvent) => {
           this.executeEvent('onChange', e , {
             checked: e.detail.checked
           });
         }}
-        @nr-focus=${(e) => {
+        @nr-focus=${(e : CustomEvent) => {
           this.executeEvent('onFocus', e);
         }}
-        @nr-blur=${(e) => {
+        @nr-blur=${(e : CustomEvent) => {
           this.executeEvent('onBlur', e);
         }}
-        @nr-keydown=${(e) => {
+        @nr-keydown=${(e : CustomEvent) => {
           this.executeEvent('onKeydown', e);
         }}
-        @nr-mouseenter=${(e) => {
+        @nr-mouseenter=${(e : CustomEvent) => {
           this.executeEvent('onMouseEnter', e);
         }}
-        @nr-mouseleave=${(e) => {
+        @nr-mouseleave=${(e : CustomEvent) => {
           this.executeEvent('onMouseLeave', e);
         }}
       >
-        ${this.inputHandlersValue?.label ?? ""}
+       <nr-label .size=${this.inputHandlersValue?.size || 'medium'}> ${this.inputHandlersValue?.label ?? ""}</nr-label>
       </nr-checkbox>
     `;
   }
