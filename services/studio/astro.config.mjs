@@ -67,6 +67,7 @@ export default defineConfig({
        '@nuralyui/timeline': path.join(nuralyUIPath, 'timeline'),
        '@nuralyui/toast': path.join(nuralyUIPath, 'toast'),
        '@nuralyui/video': path.join(nuralyUIPath, 'video'),
+       '@nuralyui/radio-group': path.join(nuralyUIPath, 'radio-group'),
      }
    },
    build:{

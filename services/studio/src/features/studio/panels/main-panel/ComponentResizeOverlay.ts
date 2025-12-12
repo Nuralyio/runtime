@@ -6,6 +6,7 @@ import { ComponentType } from '@nuraly/runtime/redux/store/component/component.i
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { updateComponentAttributes } from '@nuraly/runtime/redux/actions';
 import { setResizing } from '@nuraly/runtime/redux/actions';
+import './ComponentTitle';
 
 @customElement("component-resize-overlay")
 export class ComponentResizeOverlay extends LitElement {
