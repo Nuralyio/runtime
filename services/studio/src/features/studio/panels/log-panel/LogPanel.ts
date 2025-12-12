@@ -111,9 +111,6 @@ export class LogPanel extends LitElement {
       bottom: 8px;
       right: 8px;
       z-index: 999; /* Just below the panel but above other content */
-      background-color: var(--header-background);
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
       cursor: pointer;
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -404,9 +401,11 @@ export class LogPanel extends LitElement {
         `
         : html`
           <nr-button 
+          size="small"
+          .iconLeft=${"chevrons-left-right-ellipsis"}
             class="show-log-button" 
             @click=${this.toggleLog}>
-            Console
+            
           </nr-button>
         `}
     `;

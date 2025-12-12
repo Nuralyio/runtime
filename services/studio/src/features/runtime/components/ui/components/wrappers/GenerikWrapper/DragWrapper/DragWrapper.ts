@@ -129,6 +129,7 @@ export class DragWrapper extends LitElement {
       } else {
         this.draggingSituation = false;
         this.draggingComponentInfo = null;
+        this.resetDropZones();
       }
     });
   }

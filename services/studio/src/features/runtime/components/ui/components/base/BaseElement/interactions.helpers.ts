@@ -5,10 +5,10 @@ export function handleMouseEnter(
   isViewMode: boolean,
   component: any
 ) {
-  if (!isViewMode) setHoveredComponentAction(component);
+  //if (!isViewMode) setHoveredComponentAction(component);
 }
 
 export function handleMouseLeave(isViewMode: boolean) {
-  if (!isViewMode) setHoveredComponentAction(null);
+  //if (!isViewMode) setHoveredComponentAction(null);
 }
 
