@@ -1,8 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
+import { keyed } from "lit/directives/keyed.js";
 import { ViewMode } from '@nuraly/runtime/redux/store';
-import { $contextMenuEvent, $currentPageViewPort, $pageZoom } from '@nuraly/runtime/redux/store';
+import { $contextMenuEvent, $currentPageViewPort, $pageZoom, $draggingComponentInfo } from '@nuraly/runtime/redux/store';
 import { type ComponentElement } from '@nuraly/runtime/redux/store';
 import { $selectedComponent } from '@nuraly/runtime/redux/store';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
@@ -10,6 +11,8 @@ import { $currentApplication } from '@nuraly/runtime/redux/store';
 
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
+import './ComponentResizeOverlay.ts';
+import './ComponentTitleOverlay.ts';
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
@@ -34,9 +37,12 @@ export class EditorInteractivePanel extends LitElement {
   @state() mode: ViewMode = ViewMode.Edit;
   @state() zoomLevel = 95;
   @state() selectedComponent: ComponentElement;
+  @state() hoveredComponent: ComponentElement;
   @state() currentPageViewPort: string;
   private inputRef: Ref<HTMLInputElement> = createRef();
   private inputRef2: Ref<HTMLInputElement> = createRef();
+  private selectedComponentRef: Ref<HTMLElement> = createRef();
+  private hoveredComponentRef: Ref<HTMLElement> = createRef();
 
   @state() currentcontextMenuEvent: any;
   @state() showContextMeny: boolean = false;
@@ -46,9 +52,36 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   handleScroll = (event: Event) => {
-    if (this.inputRef.value) {
-      
+    // Scroll handled by overlay components
+  };
+  
+  handleComponentSelected = (event: CustomEvent) => {
+    const { component, elementRef } = event.detail;
+    if (component && elementRef) {
+      this.selectedComponent = component;
+      this.selectedComponentRef = elementRef;
+      this.requestUpdate();
     }
+  };
+  
+  handleComponentHovered = (event: CustomEvent) => {
+    const { component, elementRef } = event.detail;
+    
+    if (component && elementRef) {
+      this.hoveredComponent = component;
+      this.hoveredComponentRef = elementRef;
+    } else {
+      this.hoveredComponent = null;
+      this.hoveredComponentRef = null;
+    }
+    this.requestUpdate();
+  };
+
+  handleDragEnd = () => {
+    // Force re-render of overlays after drag/drop
+    requestAnimationFrame(() => {
+      this.requestUpdate();
+    });
   };
 
   connectedCallback() {
@@ -56,10 +89,17 @@ export class EditorInteractivePanel extends LitElement {
     this.initializeSubscriptions();
     $contextMenuEvent.subscribe(this.handleContextMenuEvent);
     requestAnimationFrame(() => {
-      this.shadowRoot?.querySelector(".page-container")?.addEventListener("scroll", this.handleScroll);
+      const pageContainer = this.shadowRoot?.querySelector(".page-container");
+      pageContainer?.addEventListener("scroll", this.handleScroll);
     });
     document.addEventListener("keydown", this.handleEscapeKey);
     document.addEventListener("click", this.handleClickOutside);
+    document.addEventListener("dragend", this.handleDragEnd);
+    document.addEventListener("drop", this.handleDragEnd);
+    
+    // Listen for component selection and hover events
+    this.addEventListener('component-selected', this.handleComponentSelected as EventListener);
+    this.addEventListener('component-hovered', this.handleComponentHovered as EventListener);
   }
 
   disconnectedCallback() {
@@ -67,6 +107,10 @@ export class EditorInteractivePanel extends LitElement {
     this.shadowRoot?.querySelector(".page-container")?.removeEventListener("scroll", this.handleScroll);
     document.removeEventListener("keydown", this.handleEscapeKey);
     document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener("dragend", this.handleDragEnd);
+    document.removeEventListener("drop", this.handleDragEnd);
+    this.removeEventListener('component-selected', this.handleComponentSelected as EventListener);
+    this.removeEventListener('component-hovered', this.handleComponentHovered as EventListener);
   }
 
   render() {
@@ -78,6 +122,35 @@ export class EditorInteractivePanel extends LitElement {
     </style>
     <ai-assistant-block> </ai-assistant-block>
       <div>
+        ${this.hoveredComponent && this.hoveredComponentRef?.value && this.hoveredComponent.uuid !== this.selectedComponent?.uuid ? html`
+          <component-title-overlay
+            .component=${this.hoveredComponent}
+            .componentRef=${this.hoveredComponentRef}
+            .isSelected=${false}
+            .opacity=${0.9}
+          ></component-title-overlay>
+          
+          <component-resize-overlay
+            .component=${this.hoveredComponent}
+            .componentRef=${this.hoveredComponentRef}
+            .isSelected=${false}
+          ></component-resize-overlay>
+        ` : nothing}
+        
+        ${this.selectedComponent && this.selectedComponentRef?.value ? keyed(this.selectedComponent.uuid, html`
+          <component-title-overlay
+            .component=${this.selectedComponent}
+            .componentRef=${this.selectedComponentRef}
+            .isSelected=${true}
+          ></component-title-overlay>
+          
+          <component-resize-overlay
+            .component=${this.selectedComponent}
+            .componentRef=${this.selectedComponentRef}
+            .isSelected=${true}
+            .opacity=${1}
+          ></component-resize-overlay>
+        `) : nothing}
         ${
           this.showContextMeny  ? html`
            <quick-action-wrapper
@@ -130,10 +203,6 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   private initializeSubscriptions() {
-    $selectedComponent($currentApplication.get()?.uuid).subscribe(selectedComponent => {
-      this.selectedComponent = selectedComponent;
-    });
-
     eventDispatcher.on('Vars:currentEditingMode', (data)=>{
       this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
     })
@@ -144,6 +213,15 @@ export class EditorInteractivePanel extends LitElement {
 
     $pageZoom.subscribe(pageZoom => {
       this.updateZoomLevel(pageZoom);
+    });
+
+    $draggingComponentInfo.subscribe(draggingInfo => {
+      // When dragging ends (draggingInfo becomes null), force re-render
+      if (draggingInfo === null) {
+        requestAnimationFrame(() => {
+          this.requestUpdate();
+        });
+      }
     });
   }
 
@@ -178,9 +256,16 @@ export class EditorInteractivePanel extends LitElement {
   };
 
   private handleEscapeKey = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && this.inputRef.value) {
-      
-      this.showContextMeny = false;
+    if (event.key === "Escape") {
+      if (this.inputRef.value) {
+        this.showContextMeny = false;
+      } else if (this.selectedComponent) {
+        // Clear component selection
+        this.selectedComponent = null;
+        this.selectedComponentRef = null;
+        ExecuteInstance.VarsProxy.selectedComponents = [];
+        this.requestUpdate();
+      }
     }
   };
 
