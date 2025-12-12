@@ -2,8 +2,8 @@
     "handlerPrefix": "studio_checkbox_handler",
     "events": [
         {
-        "name": "checkboxChanged",
-        "label": "checkboxChanged"
+        "name": "onChange",
+        "label": "onChange"
         }
     ]
 }

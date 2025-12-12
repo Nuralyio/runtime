@@ -159,7 +159,10 @@ export const Insert = /* js */`
             value: {
               value: "select",
               additionalData: {
-              action: "add",                
+              action: "add",    
+              style:{
+                  width: "200px",
+              },
               input : {
                   "options": {
                       "type": "handler",

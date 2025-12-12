@@ -118,7 +118,7 @@ export default [
         }
     },
     event: {
-        changed: /* js */ `
+        onSelect: /* js */ `
             Vars.selected_component_style_state = EventData.value;
         `
     },

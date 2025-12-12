@@ -518,7 +518,11 @@ export default [{
         ];
         
         const radioType = 'button';
-        const result = [options, currentPlatform, radioType];
+        const result = {
+          options: options,
+          currentValue: currentPlatform,
+          type: radioType
+        };
         return result;
       `
     }

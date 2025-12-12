@@ -26,13 +26,11 @@ export const createHandlersFromEvents = (
       name: "collapse",
       component_type: "Collapse",
       style: {
-        "--nr-collapse-content-small-size-padding": "5px",
-        "--nr-collapse-font-weight": "normal",
-        "--nr-collapse-border-radius": "0px",
-        "--nr-collapse-width": "280px",
-        "--nr-collapse-border": "none",
-        "--nr-collapse-border-bottom": "1px solid #636363",
-        "--nr-collapse-local-header-background-color": "#3d3d3d"
+        "--nuraly-spacing-collapse-padding": "0px",
+        "--nuraly-spacing-collapse-content-padding": "6px",
+        "--nuraly-shadow-collapse-hover": "none",
+        "--nuraly-border-radius-collapse": "0",
+        "--nuraly-border-radius-collapse-header": "0"
       },
       input: {
         size: {

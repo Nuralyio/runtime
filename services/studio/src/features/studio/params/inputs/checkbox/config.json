@@ -82,15 +82,6 @@
         "default": false,
         "width": "180px",
         "stateHandler": { "ref": "inputHandler", "params": ["disabled"] }
-      },
-      {
-        "name": "checkboxrequired",
-        "inputProperty": "required",
-        "label": "Required",
-        "type": "boolean",
-        "default": false,
-        "width": "180px",
-        "stateHandler": { "ref": "inputHandler", "params": ["required"] }
       }
     ]
   }
