@@ -159,7 +159,8 @@ export class InputGenerator {
         width: property.width || "180px",
         size: "small",
         "--nuraly-input-helper-text-font-size": "11px",
-        "--nuraly-input-helper-text-color": "#8c8c8c"
+        "--nuraly-input-helper-text-color": "#8c8c8c",
+        ...(property.type === 'radio' ? { "--nuraly-button-min-width": "60px" } : {})
       },
       input: {
         value: {

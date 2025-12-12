@@ -71,9 +71,12 @@
         "stateHandler": { "ref": "inputHandler", "params": ["size"] },
         "eventHandlers": {
           "onChange": { "ref": "updateInput", "params": ["size", "value"] }
-        }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size"
       },
-      
+
       {
         "name": "checboxdisabled",
         "inputProperty": "disabled",
@@ -81,7 +84,10 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] }
+        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled"
       }
     ]
   }
