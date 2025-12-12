@@ -10,9 +10,7 @@ import { $context, getVar, setVar } from '../../../../../redux/store/context.ts'
 import styles from "./GenerikWrapper.style.ts";
 
 import "./DragWrapper/DragWrapper.ts";
-import "./ResizeWrapper/ResizeWrapper.ts";
 import "./QuickActionWrapper/QuickActionWrapper.ts";
-import "../ComponentTitle/ComponentTitle.ts";
 import { setDraggingComponentInfo } from '../../../../../redux/actions/component/setDraggingComponentInfo.ts';
 import { updateComponentAttributes } from '../../../../../redux/actions/component/updateComponentAttributes.ts';
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
@@ -162,13 +160,7 @@ export class GenerikComponentWrapper extends LitElement {
               </div>
               <slot></slot>
             </div>
-            <component-title
-              @dragInit=${(e) => (this.isDragInitiator = e.detail.value)}
-              .component=${{ ...this.component }}
-              .selectedComponent=${{ ...this.selectedComponent }}
-              .hoveredComponent=${{ ...this.hoveredComponent }}
-
-            ></component-title>
+         
           </span>
         </drag-wrapper>
     `;
