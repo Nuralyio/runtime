@@ -8,7 +8,10 @@ export const Insert = /* js */`
             value: {
               value: "Table",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "500px",
+              }
               },
             },
             icon: "table",
@@ -20,7 +23,10 @@ export const Insert = /* js */`
             value: {
               value: "Collection",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "400px",
+              }
               },
             },
             icon: "database",
@@ -82,7 +88,10 @@ export const Insert = /* js */`
             value: {
               value: "MicroApp",
               additionalData: {
-              action: "add",               
+              action: "add",
+              style:{
+                  width: "300px",
+              }
               },
             },
             icon: "microchip",
@@ -97,7 +106,9 @@ export const Insert = /* js */`
               value: "vertical-container-block",
               additionalData: {
               action: "add",
-                
+              style:{
+                  width: "300px",
+              }
               },
             },
             icon: "grip-vertical",
@@ -109,7 +120,10 @@ export const Insert = /* js */`
             value: {
               value: "RefComponent",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "250px",
+              }
               },
             },
             icon: "asterisk",
@@ -131,6 +145,9 @@ export const Insert = /* js */`
                       "type": "value",
                       "value": " Check box"
                   }
+              },
+              style:{
+                  width: "150px",
               }
               },
             },
@@ -310,6 +327,9 @@ export const Insert = /* js */`
                       "type": "value",
                       "value": " Check box"
                   }
+              },
+              style:{
+                  width: "250px",
               }
               },
             },
@@ -320,7 +340,10 @@ export const Insert = /* js */`
             value: {
               value: "Datepicker",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "200px",
+              }
               },
             },
             icon: "calendar",
@@ -330,7 +353,10 @@ export const Insert = /* js */`
             value: {
               value: "Icon",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "50px",
+              }
               },
             },
             icon: "badge",
@@ -341,7 +367,10 @@ export const Insert = /* js */`
             value: {
               value: "text_input",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "250px",
+              }
               },
             },
             icon: "text-cursor-input",
@@ -361,6 +390,10 @@ export const Insert = /* js */`
                   "type": "value",
                   "value": "Enter text..."
                 }
+              },
+              style:{
+                  width: "300px",
+                  height: "150px",
               }
               },
             },
@@ -385,6 +418,9 @@ export const Insert = /* js */`
                   "type": "value",
                   "value": 100
                 }
+              },
+              style:{
+                  width: "200px",
               }
               },
             },
@@ -396,6 +432,9 @@ export const Insert = /* js */`
               value: "button_input",
               additionalData: {
                 action: "add",
+                style:{
+                    width: "120px",
+                }
               },
             },
             icon: "mouse",
@@ -409,7 +448,10 @@ export const Insert = /* js */`
             value: {
               value: "text_label",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "auto",
+              }
               },
             },
             icon: "case-sensitive",
@@ -426,7 +468,10 @@ export const Insert = /* js */`
                   "type": "string",
                   "value": "<h1>Rich Text</h1>"
                 }
-              }             
+              },
+              style:{
+                  width: "400px",
+              }
               },
             },
             icon: "whole-word",
@@ -442,6 +487,9 @@ export const Insert = /* js */`
                   "type": "value",
                   "value": 5
                 }
+              },
+              style:{
+                  width: "60px",
               }
               },
             },
@@ -458,6 +506,9 @@ export const Insert = /* js */`
                   "type": "value",
                   "value": "Tag"
                 }
+              },
+              style:{
+                  width: "80px",
               }
               },
             },
@@ -488,7 +539,10 @@ export const Insert = /* js */`
             value: {
               value: "Icon",
               additionalData: {
-              action: "add",                
+              action: "add",
+              style:{
+                  width: "50px",
+              }
               },
             },
             icon: "badge",
@@ -514,7 +568,8 @@ export const Insert = /* js */`
               additionalData: {
               action: "add",              
               style :{
-                height: "300px"
+                width: "600px",
+                height: "400px"
               }
               },
             },

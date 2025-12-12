@@ -7,6 +7,7 @@ import { executeHandler } from '../../../../../state/runtime-context.ts';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
 import { ref } from "lit/directives/ref.js";
+import "@nuralyui/select";
 
 
 @customElement("select-block")
@@ -27,9 +28,10 @@ export class SelectBlock extends BaseElementBlock {
   }
 
   handleValueChange = (customEvent: CustomEvent) => {
-    if (this.component.event.changed) {
+    console.log('[SelectBlock] nr-change event:', customEvent.detail);
+    if (this.component.event.onSelect) {
       const optionValue = customEvent.detail.value ?? EMPTY_STRING;
-      executeHandler(this.component, getNestedAttribute(this.component, `event.changed`), {
+      executeHandler(this.component, getNestedAttribute(this.component, `event.onSelect`), {
         value: optionValue
       });
     }
@@ -38,7 +40,6 @@ export class SelectBlock extends BaseElementBlock {
 override  renderComponent() {
 
     return html`
-    <span>
       <nr-select  
             ${ref(this.inputRef)}
             style=${styleMap({...this.getStyles(), 
@@ -59,7 +60,6 @@ override  renderComponent() {
         <span slot="label">${this.inputHandlersValue.label ?? nothing}</span>
         <span slot="helper-text">${this.inputHandlersValue.helper ?? nothing}</span>
       </nr-select>
-        </span>
     `;
   }
 }
