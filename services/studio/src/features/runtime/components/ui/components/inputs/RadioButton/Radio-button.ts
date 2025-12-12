@@ -17,10 +17,10 @@ export class RadioButtonBlock extends BaseElementBlock {
   renderComponent() {
     const radioStyles = this.component?.style || {};
     
-    // Extract values from the handler structure [options, defaultValue, type]
-    const options = this.inputHandlersValue?.value?.[0] || [];
-    const defaultValue = this.inputHandlersValue?.value?.[1] || '';
-    const type = this.inputHandlersValue?.value?.[2] || 'default';
+    // Extract values from the handler structure (object format)
+    const options = this.inputHandlersValue?.value?.options || [];
+    const defaultValue = this.inputHandlersValue?.value?.currentValue ?? '';
+    const type = this.inputHandlersValue?.value?.type || 'default';
     
     // Get other properties
     const direction = this.inputHandlersValue?.direction || 'vertical';

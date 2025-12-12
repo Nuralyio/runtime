@@ -42,22 +42,23 @@
         "type": "radio",
         "default": false,
         "width": "180px",
+        "inputProperty": "value",
         "options": [
           { "label": "✓", "value": true },
           { "label": "✗", "value": false },
           { "label": "—", "value": "indeterminate" }
         ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["value", [{"label": "✓ ", "value": true}, {"label": "✗ ", "value": false}, {"label": "— ", "value": "indeterminate"}], false] },
         "stateHandler": { "ref": "inputHandler", "params": ["value"] },
         "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["value", "mixed"] }
+          "onChange": { "ref": "updateInput", "params": ["value", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "onChange"
+        "handlerProperty": "value"
       },
       {
         "name": "sizeoption",
+        "inputProperty": "size",
         "label": "Size",
         "type": "radio",
         "default": "medium",
@@ -67,20 +68,19 @@
           { "label": "Medium", "value": "medium" },
           { "label": "Large", "value": "large" }
         ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["size", [{"label": "Small", "value": "small"}, {"label": "Medium", "value": "medium"}, {"label": "Large", "value": "large"}], "medium"] },
         "stateHandler": { "ref": "inputHandler", "params": ["size"] },
         "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["size", "string"] }
+          "onChange": { "ref": "updateInput", "params": ["size", "value"] }
         }
       },
       
       {
-        "name": "disabled",
+        "name": "checboxdisabled",
+        "inputProperty": "disabled",
         "label": "Disabled",
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); const input = Editor.getComponentBreakpointInput(selectedComponent, 'disabled'); return input?.type === 'value' ? (input.value ?? false) : false;",
         "stateHandler": { "ref": "inputHandler", "params": ["disabled"] }
       },
       {
@@ -89,7 +89,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": { "ref": "componentInput", "params": ["required", false] },
         "stateHandler": { "ref": "inputHandler", "params": ["required"] }
       }
     ]
