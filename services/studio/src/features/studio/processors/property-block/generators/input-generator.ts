@@ -178,7 +178,7 @@ export class InputGenerator {
                    ? `
                      const selectedComponent = Utils.first(Vars.selectedComponents);
                      const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
-                     return input?.type === 'value' ? (input.value ?? ${JSON.stringify(property.default)}) : ${JSON.stringify(property.default)};
+                     return input.value;
                    `
                    : `
                      let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"

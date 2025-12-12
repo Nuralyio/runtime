@@ -84,7 +84,8 @@
         "stateHandler": { "ref": "inputHandler", "params": ["disabled"] }
       },
       {
-        "name": "required",
+        "name": "checkboxrequired",
+        "inputProperty": "required",
         "label": "Required",
         "type": "boolean",
         "default": false,
