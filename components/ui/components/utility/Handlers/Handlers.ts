@@ -137,6 +137,7 @@ constructor() {
         "--nuraly-button-border-bottom": "none"
       })}
               .icon=${["plus"]}
+              size="small"
               class="unit"
             >${this.inputHandlersValue?.triggerText ?? ""}
             </nr-button>
@@ -169,6 +170,7 @@ constructor() {
                   <nr-label>${eventName}</nr-label>
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <nr-button
+                    class="unit"
                       style=${styleMap({
           "--nuraly-button-text-color": "#b8b8b8",
           "--nuraly-button-height": "39px",
@@ -180,6 +182,7 @@ constructor() {
           "--nuraly-button-border-bottom": "none"
         })}
                       .icon=${["trash"]}
+                      class="unit"
                       class="unit"
                       @click=${() => {
           this.removeHandler(eventName);

@@ -25,7 +25,6 @@ export class CheckboxBlock extends BaseElementBlock {
         .size=${this.inputHandlersValue?.size || 'medium'}
         .name=${this.inputHandlersValue?.name || ''}
         .value=${this.inputHandlersValue?.value || ''}
-        .required=${this.inputHandlersValue?.required || false}
         .autoFocus=${this.inputHandlersValue?.autoFocus || false}
         .id=${this.inputHandlersValue?.id || ''}
         .title=${this.inputHandlersValue?.title || ''}

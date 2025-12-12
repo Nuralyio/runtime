@@ -118,14 +118,6 @@ export class GenerikComponentWrapper extends LitElement {
 
         }
       </style>
-      <resize-wrapper
-        .isSelected=${this.currentSelection.includes(this.component.uuid)}
-        .component=${{ ...this.component }}
-        .selectedComponent=${{ ...this.selectedComponent }}
-        .hoveredComponent=${{ ...this.hoveredComponent }}
-        .inputRef=${this.inputRef}
-      >
-      </resize-wrapper>
 
         <drag-wrapper
           .component=${{ ...this.component }}
