@@ -14,6 +14,7 @@ import Editor from '../../../../state/editor.ts';
 import EditorInstance, { getInitPlatform } from '../../../../state/editor.ts';
 import { createRef, type Ref } from "lit/directives/ref.js";
 import { $hoveredComponent, $runtimeStylescomponentStyleByID } from '../../../../redux/store/component/store.ts';
+import { $resizing } from '../../../../redux/store/apps.ts';
 import "../wrappers/GenerikWrapper/DragWrapper/DragWrapper.ts";
 import { RuntimeHelpers } from '../../../../utils/runtime-helpers.ts';
 import { setContextMenuEvent } from '../../../../redux/actions/page/setContextMenuEvent.ts';
@@ -302,6 +303,9 @@ export class BaseElementBlock extends LitElement {
       // This ensures property updates (including pseudo-states) are reflected
       this.traitInputsHandlers();
       this.traitStylesHandlers();
+      
+      // Emit update event if this component is selected
+     
     }
   }
 
@@ -352,6 +356,40 @@ export class BaseElementBlock extends LitElement {
         eventDispatcher.on('Vars:selectedComponents', () => {
           this.currentSelection = Array.from(ExecuteInstance.Vars.selectedComponents).map((comppnent :ComponentElement) => comppnent.uuid);
           EditorInstance.currentSelection = this.currentSelection;
+          
+          // If this component is the selected one, emit the selection event for overlay
+          if (ExecuteInstance.Vars.selectedComponents.length === 1 && 
+              ExecuteInstance.Vars.selectedComponents[0]?.uuid === this.component.uuid) {
+            requestAnimationFrame(() => {
+              // Scroll into view only if not already visible
+              if (this.inputRef.value) {
+                const rect = this.inputRef.value.getBoundingClientRect();
+                const isInViewport = (
+                  rect.top >= 0 &&
+                  rect.left >= 0 &&
+                  rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                  rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+                
+                if (!isInViewport) {
+                  this.inputRef.value.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'nearest'
+                  });
+                }
+              }
+              
+              this.dispatchEvent(new CustomEvent('component-selected', {
+                detail: { 
+                  component: this.component, 
+                  elementRef: this.inputRef 
+                },
+                bubbles: true,
+                composed: true
+              }));
+            });
+          }
         })
       );
     }
@@ -443,7 +481,22 @@ export class BaseElementBlock extends LitElement {
    * @private
    */
   private mouseEnterHandler() {
+    // Don't trigger hover when resizing
+    if ($resizing.get()) return;
+    
     handleMouseEnter(this.isViewMode, this.component);
+    
+    // Emit hover event with component reference
+    if (!this.isViewMode) {
+      this.dispatchEvent(new CustomEvent('component-hovered', {
+        detail: { 
+          component: this.component, 
+          elementRef: this.inputRef 
+        },
+        bubbles: true,
+        composed: true
+      }));
+    }
   }
   
   /**
@@ -452,7 +505,22 @@ export class BaseElementBlock extends LitElement {
    * @private
    */
   private mouseLeaveHandler() {
+    // Don't trigger hover clear when resizing
+    if ($resizing.get()) return;
+    
     handleMouseLeave(this.isViewMode);
+    
+    // Emit hover clear event
+    if (!this.isViewMode) {
+      this.dispatchEvent(new CustomEvent('component-hovered', {
+        detail: { 
+          component: null, 
+          elementRef: null 
+        },
+        bubbles: true,
+        composed: true
+      }));
+    }
   }
 
   /**
@@ -628,6 +696,16 @@ export class BaseElementBlock extends LitElement {
     this.currentSelection = Array.from([this.component.uuid]);
     EditorInstance.currentSelection = Array.from([this.component.uuid]);
     ExecuteInstance.VarsProxy.selectedComponents = Array.from([this.component]);
+    
+    // Emit event with component reference for resize wrapper
+    this.dispatchEvent(new CustomEvent('component-selected', {
+      detail: { 
+        component: this.component, 
+        elementRef: this.inputRef 
+      },
+      bubbles: true,
+      composed: true
+    }));
   }
 
   /**
@@ -671,25 +749,7 @@ export class BaseElementBlock extends LitElement {
       ${!this.isViewMode ? html`
         ${this.renderError()}
         ${[0, undefined].includes(this.item?.index) ? html`
-          <component-title
-            @click=${(e) => this.executeEvent("onclick", e)}
-            @dragInit=${(e) => {
-              this.isDragInitiator = e.detail.value;
-              this.setAttribute("draggable", "true");
-            }}
-            @dragend=${() => { this.isDragInitiator = false; }}
-            .component=${this.component}
-            .selectedComponent=${{ ...this.selectedComponent }}
-            .display=${EditorInstance.currentSelection.includes(this.component.uuid)}
-          ></component-title>
-          <resize-wrapper
-            .hoveredComponent=${{ ...this.hoveredComponent }}
-            .isSelected=${EditorInstance.currentSelection.includes(this.component.uuid)}
-            .component=${{ ...this.component }}
-            .selectedComponent=${{ ...this.selectedComponent }}
-            .inputRef=${this.inputRef}
-            style="width: fit-content; height: fit-content;"
-          ></resize-wrapper>
+   
           <drag-wrapper .where=${"before"} .message=${"Drop before"} .component=${{ ...this.component }}
             .inputRef=${this.inputRef} .isDragInitiator=${this.isDragInitiator}></drag-wrapper>
         ` : nothing}
