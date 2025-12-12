@@ -8,7 +8,6 @@ import { styleMap } from "lit/directives/style-map.js";
 export class ComponentTitle extends LitElement {
   static styles = css`
     .component-name {
-      position: absolute;
       /* z-index: 7; */
       padding: 1px;
    
