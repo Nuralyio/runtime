@@ -169,14 +169,16 @@ export class InputGenerator {
                    ? `
                      const options = ${JSON.stringify(property.options || [])};
                      const selectedComponent = Utils.first(Vars.selectedComponents);
-                     const currentValue = Editor.getComponentStyle(selectedComponent, '${property.name}') || "${property.default}";
+                     const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                     const currentValue = input?.type === 'value' ? (input.value ?? ${JSON.stringify(property.default)}) : ${JSON.stringify(property.default)};
                      const type = "button";
-                     return [options, currentValue, type];
+                     return {options, currentValue, type};
                    `
                    : property.type === 'boolean'
                    ? `
                      const selectedComponent = Utils.first(Vars.selectedComponents);
-                     return Editor.getComponentInput(selectedComponent, '${property.name}');
+                     const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                     return input?.type === 'value' ? (input.value ?? ${JSON.stringify(property.default)}) : ${JSON.stringify(property.default)};
                    `
                    : `
                      let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"
@@ -193,7 +195,7 @@ export class InputGenerator {
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
                  `
                    const selectedComponent = Utils.first(Vars.selectedComponents);
-                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.name}'] ? 'disabled' : 'enabled';
+                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.inputProperty || property.name}'] ? 'disabled' : 'enabled';
                  `
         }
       },
@@ -241,7 +243,7 @@ export class InputGenerator {
       baseInput.event.onChange = `
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        updateStyle(selectedComponent, "${property.name}", EventData.value);
+        updateStyle(selectedComponent, "${property.inputProperty || property.name}", EventData.value);
       `;
     }
     
@@ -261,7 +263,7 @@ export class InputGenerator {
       baseInput.event.onChange = `
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        updateInput(selectedComponent, "${property.name}", "boolean", Boolean(EventData.checked));
+        updateInput(selectedComponent, "${property.inputProperty || property.name}", "boolean", Boolean(EventData.checked));
       `;
     }
     

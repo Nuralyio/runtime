@@ -15,6 +15,8 @@ export interface PropertyConfig {
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
   autoCheckbox?: boolean;
+  // Input property mapping
+  inputProperty?: string;  // The actual component input property name (if different from 'name')
   // Generic handlers - can be inline code, handler reference, or simple value
   valueHandler?: string | { ref: string; params?: any[] };
   stateHandler?: string | { ref: string; params?: any[] };
