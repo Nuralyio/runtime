@@ -353,3 +353,59 @@ When updating or creating component configurations:
   }
 ]
 ```
+
+**From Nuraly UI component events** (`select.component.ts`):
+```typescript
+/**
+ * @fires nr-change - Selection changed
+ * @fires nr-focus - Component focused
+ * @fires nr-blur - Component blurred
+ * @fires nr-dropdown-open - Dropdown opened
+ * @fires nr-dropdown-close - Dropdown closed
+ * @fires nr-validation - Validation state changed
+ */
+```
+
+**Update handlers.json**:
+```json
+{
+  "handlerPrefix": "studio_select_handler",
+  "events": [
+    { "name": "onChange", "label": "onChange" },
+    { "name": "onFocus", "label": "onFocus" },
+    { "name": "onBlur", "label": "onBlur" },
+    { "name": "onDropdownOpen", "label": "onDropdownOpen" },
+    { "name": "onDropdownClose", "label": "onDropdownClose" },
+    { "name": "onValidation", "label": "onValidation" }
+  ]
+}
+```
+
+**Add event handlers to wrapper** (`Select.ts`):
+```typescript
+<nr-select
+  @nr-change=${(e: CustomEvent) => {
+    this.executeEvent('onChange', e, {
+      value: e.detail.value ?? EMPTY_STRING
+    });
+  }}
+  @nr-focus=${(e: CustomEvent) => {
+    this.executeEvent('onFocus', e);
+  }}
+  @nr-blur=${(e: CustomEvent) => {
+    this.executeEvent('onBlur', e);
+  }}
+  @nr-dropdown-open=${(e: CustomEvent) => {
+    this.executeEvent('onDropdownOpen', e);
+  }}
+  @nr-dropdown-close=${(e: CustomEvent) => {
+    this.executeEvent('onDropdownClose', e);
+  }}
+  @nr-validation=${(e: CustomEvent) => {
+    this.executeEvent('onValidation', e, {
+      isValid: e.detail.isValid,
+      message: e.detail.message
+    });
+  }}
+>
+```
