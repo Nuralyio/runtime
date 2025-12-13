@@ -7,46 +7,62 @@
     },
     "collapse": {
       "uuid": "select_collapse",
-      "title": "Select Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Select Properties"
     },
     "properties": [
       {
-        "name": "options",
-        "label": "Data",
-        "type": "event",
-        "default": "",
-        "width": "50px",
-        "placeholder": "",
-        "hasHandler": true,
-        "handlerType": "input",
-        "handlerProperty": "options",
-        "handlerValueGetter": "const parameter = 'value'; let valueHandler = ''; const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.options?.type =='handler' && selectedComponent.input?.options?.value){ valueHandler = selectedComponent.input?.options?.value } return [parameter, valueHandler];",
-        "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents); if(EventData.value != selectedComponent.input?.options?.value) updateInput(selectedComponent,'options','handler',EventData.value);"
-      },
-      {
-        "name": "defaultSelected",
-        "label": "Default",
+        "name": "label",
+        "label": "Label",
         "type": "text",
         "default": "",
         "width": "180px",
-        "placeholder": "",
-        "valueHandler": { "ref": "componentInput", "params": ["defaultSelected"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["defaultSelected"] },
+        "placeholder": "Select label",
+        "valueHandler": { "ref": "componentInput", "params": ["label"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["label"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["defaultSelected", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["label", "value"] }
+        }
+      },
+      {
+        "name": "placeholder",
+        "label": "Placeholder",
+        "type": "text",
+        "default": "Select an option",
+        "width": "180px",
+        "placeholder": "Placeholder text",
+        "valueHandler": { "ref": "componentInput", "params": ["placeholder"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["placeholder"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["placeholder", "value"] }
+        }
+      },
+      {
+        "name": "options",
+        "label": "Options",
+        "type": "event",
+        "default": "",
+        "width": "50px",
+        "handlerType": "input",
+        "handlerProperty": "options",
+        "handlerValueGetter": "const parameter = 'options'; let valueHandler = ''; const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.options?.type =='handler' && selectedComponent.input?.options?.value){ valueHandler = selectedComponent.input?.options?.value } return [parameter, valueHandler];",
+        "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents); if(EventData.value != selectedComponent.input?.options?.value) updateInput(selectedComponent,'options','handler',EventData.value);"
+      },
+      {
+        "name": "value",
+        "label": "Value",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Selected value",
+        "valueHandler": { "ref": "componentInput", "params": ["value"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["value"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["value", "value"] }
         }
       },
       {
         "name": "type",
+        "inputProperty": "type",
         "label": "Type",
         "type": "radio",
         "default": "default",
@@ -55,15 +71,18 @@
           { "label": "Default", "value": "default" },
           { "label": "Inline", "value": "inline" }
         ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["type", [{"label": "Default", "value": "default"}, {"label": "Inline", "value": "inline"}], "default"] },
         "stateHandler": { "ref": "inputHandler", "params": ["type"] },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["type", "string"] }
-        }
+          "onChange": { "ref": "updateInput", "params": ["type", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "type"
       },
       {
         "name": "selectionMode",
-        "label": "Selection mode",
+        "inputProperty": "selectionMode",
+        "label": "Selection Mode",
         "type": "radio",
         "default": "single",
         "width": "180px",
@@ -71,14 +90,82 @@
           { "label": "Single", "value": "single" },
           { "label": "Multiple", "value": "multiple" }
         ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["selectionMode", [{"label": "Single", "value": "single"}, {"label": "Multiple", "value": "multiple"}], "single"] },
         "stateHandler": { "ref": "inputHandler", "params": ["selectionMode"] },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["selectionMode", "string"] }
+          "onChange": { "ref": "updateInput", "params": ["selectionMode", "value"] }
         },
         "hasHandler": true,
-        "handlerProperty": "selectionMode",
-        "handlerType": "input"
+        "handlerType": "input",
+        "handlerProperty": "selectionMode"
+      },
+      {
+        "name": "sizeselect",
+        "inputProperty": "size",
+        "label": "Size",
+        "type": "radio",
+        "default": "medium",
+        "width": "180px",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" }
+        ],
+        "stateHandler": { "ref": "inputHandler", "params": ["size"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["size", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size"
+      },
+      {
+        "name": "searchable",
+        "inputProperty": "searchable",
+        "label": "Searchable",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": { "ref": "inputHandler", "params": ["searchable"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "searchable"
+      },
+      {
+        "name": "searchPlaceholder",
+        "label": "Search Placeholder",
+        "type": "text",
+        "default": "Search options...",
+        "width": "180px",
+        "placeholder": "Search placeholder text",
+        "valueHandler": { "ref": "componentInput", "params": ["searchPlaceholder"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["searchPlaceholder"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["searchPlaceholder", "value"] }
+        }
+      },
+      {
+        "name": "clearable",
+        "inputProperty": "clearable",
+        "label": "Clearable",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": { "ref": "inputHandler", "params": ["clearable"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "clearable"
+      },
+      {
+        "name": "disabled",
+        "inputProperty": "disabled",
+        "label": "Disabled",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled"
       }
     ]
   }
