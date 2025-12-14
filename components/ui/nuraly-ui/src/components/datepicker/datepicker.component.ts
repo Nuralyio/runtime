@@ -122,6 +122,7 @@ export class HyDatePickerElement extends NuralyUIBaseMixin(LitElement) implement
   @property({ type: String }) placement: DatePickerPlacement = DatePickerPlacement.Auto;
   @property({ type: String }) label = '';
   @property({ type: String }) helper = '';
+  @property({ type: String }) placeholder = '';
   @property({ type: String }) state: DatePickerState | INPUT_STATE = INPUT_STATE.Default;
   @property({ type: Boolean, attribute: 'use-select-dropdowns' }) useSelectDropdowns = false;
 
@@ -482,6 +483,7 @@ export class HyDatePickerElement extends NuralyUIBaseMixin(LitElement) implement
           id="${INPUT_FIELD_ID}"
           .type="${this.INPUT_TYPE}"
           .value="${this.inputFieldValue}"
+          .placeholder="${this.placeholder}"
           .size="${this.size}"
           .state="${this.state}"
           .disabled="${this.disabled}"
