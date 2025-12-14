@@ -1,17 +1,17 @@
 {
-  "textInputFields": {
+  "textareaFields": {
     "container": {
-      "uuid": "text_input_fields_collapse_container",
-      "name": "Text Input Fields Container",
+      "uuid": "textarea_fields_collapse_container",
+      "name": "Textarea Fields Container",
       "style": {}
     },
     "collapse": {
-      "uuid": "text_input_fields_collapse",
-      "title": "Input Fields"
+      "uuid": "textarea_fields_collapse",
+      "title": "Textarea Fields"
     },
     "properties": [
       {
-        "name": "textinput_label",
+        "name": "textarea_label",
         "inputProperty": "label",
         "label": "Label",
         "type": "text",
@@ -37,7 +37,7 @@
         "handlerProperty": "label"
       },
       {
-        "name": "textinput_placeholder",
+        "name": "textarea_placeholder",
         "inputProperty": "placeholder",
         "label": "Placeholder",
         "type": "text",
@@ -63,8 +63,8 @@
         "handlerProperty": "placeholder"
       },
       {
-        "name": "textinput_helperText",
-        "inputProperty": "helper",
+        "name": "textarea_helperText",
+        "inputProperty": "helperText",
         "label": "Helper Text",
         "type": "text",
         "default": "",
@@ -72,117 +72,138 @@
         "placeholder": "Enter helper text",
         "valueHandler": {
           "ref": "componentInput",
-          "params": ["helper"]
+          "params": ["helperText"]
         },
         "stateHandler": {
           "ref": "inputHandler",
-          "params": ["helper"]
+          "params": ["helperText"]
         },
         "eventHandlers": {
           "valueChange": {
             "ref": "updateInput",
-            "params": ["helper", "string"]
+            "params": ["helperText", "string"]
           }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "helper"
+        "handlerProperty": "helperText"
       },
       {
-        "name": "textinput_type",
-        "inputProperty": "type",
-        "label": "Type",
-        "type": "radio",
-        "default": "text",
-        "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentType = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) {\n  isDisabled = true;\n} else {\n  currentType = selectedComponent?.input?.type?.value || 'text';\n}\nconst options = [\n  { value: 'text', icon: 'font', disabled: isDisabled },\n  { value: 'password', icon: 'lock', disabled: isDisabled },\n  { value: 'email', icon: 'envelope', disabled: isDisabled },\n  { value: 'number', icon: 'hashtag', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentType, radioType];",
-        "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'type', 'string', EventData.value);\n}"
-        },
-        "hasHandler": true,
-        "handlerType": "input",
-        "handlerProperty": "type"
-      },
-      {
-        "name": "textinput_size",
+        "name": "textarea_size",
         "inputProperty": "size",
         "label": "Size",
         "type": "radio",
         "default": "medium",
         "width": "180px",
-        "options": [
-          { "label": "Small", "value": "small" },
-          { "label": "Medium", "value": "medium" },
-          { "label": "Large", "value": "large" }
-        ],
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["size"]
-        },
-        "stateHandler": {
-          "ref": "inputHandler",
-          "params": ["size"]
-        },
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentSize = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {\n  isDisabled = true;\n} else {\n  currentSize = selectedComponent?.input?.size?.value || 'medium';\n}\nconst options = [\n  { value: 'small', label: 'Small', disabled: isDisabled },\n  { value: 'medium', label: 'Medium', disabled: isDisabled },\n  { value: 'large', label: 'Large', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentSize, radioType];",
         "eventHandlers": {
-          "onChange": {
-            "ref": "updateInput",
-            "params": ["size", "string"]
-          }
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'size', 'string', EventData.value);\n}"
         },
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "size"
       },
       {
-        "name": "textinput_variant",
+        "name": "textarea_variant",
         "inputProperty": "variant",
         "label": "Variant",
         "type": "radio",
-        "default": "outlined",
+        "default": "underlined",
         "width": "180px",
-        "options": [
-          { "label": "Outlined", "value": "outlined" },
-          { "label": "Filled", "value": "filled" },
-          { "label": "Underlined", "value": "underlined" },
-          { "label": "Borderless", "value": "borderless" }
-        ],
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["variant"]
-        },
-        "stateHandler": {
-          "ref": "inputHandler",
-          "params": ["variant"]
-        },
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentVariant = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.variant?.type == 'handler' && selectedComponent?.input?.variant?.value) {\n  isDisabled = true;\n} else {\n  currentVariant = selectedComponent?.input?.variant?.value || 'underlined';\n}\nconst options = [\n  { value: 'outlined', label: 'Outlined', disabled: isDisabled },\n  { value: 'filled', label: 'Filled', disabled: isDisabled },\n  { value: 'underlined', label: 'Underlined', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentVariant, radioType];",
         "eventHandlers": {
-          "onChange": {
-            "ref": "updateInput",
-            "params": ["variant", "string"]
-          }
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'variant', 'string', EventData.value);\n}"
         },
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "variant"
       },
       {
-        "name": "textinput_status",
-        "inputProperty": "status",
-        "label": "Status",
+        "name": "textarea_state",
+        "inputProperty": "state",
+        "label": "State",
         "type": "radio",
         "default": "default",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet isDisabled = false;\nlet currentStatus = '';\nif (selectedComponent?.input?.status?.type == 'handler' && selectedComponent?.input?.status?.value != '') {\n  isDisabled = true;\n} else {\n  currentStatus = selectedComponent?.input?.status?.value || 'default';\n}\nconst options = [\n  { value: 'default', icon: 'font-awesome', disabled: isDisabled },\n  { value: 'warning', icon: 'triangle-exclamation', disabled: isDisabled },\n  { value: 'error', icon: 'circle-exclamation', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentStatus, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet isDisabled = false;\nlet currentState = '';\nif (selectedComponent?.input?.state?.type == 'handler' && selectedComponent?.input?.state?.value != '') {\n  isDisabled = true;\n} else {\n  currentState = selectedComponent?.input?.state?.value || 'default';\n}\nconst options = [\n  { value: 'default', icon: 'font-awesome', disabled: isDisabled },\n  { value: 'warning', icon: 'triangle-exclamation', disabled: isDisabled },\n  { value: 'error', icon: 'circle-exclamation', disabled: isDisabled },\n  { value: 'success', icon: 'circle-check', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentState, radioType];",
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst statusValue = EventData.value ? EventData.value : 'default';\nupdateInput(selectedComponent, 'status', 'string', statusValue);"
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst stateValue = EventData.value ? EventData.value : 'default';\nupdateInput(selectedComponent, 'state', 'string', stateValue);"
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "status",
-        "handlerValueGetter": "const parameter = 'status';\nlet statusHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.status?.type == 'handler') {\n  statusHandler = selectedComponent?.input?.status?.value || '';\n}\nreturn [parameter, statusHandler];",
-        "handlerEventUpdate": "updateInput(Utils.first(Vars.selectedComponents), 'status', 'handler', EventData.value);"
+        "handlerProperty": "state",
+        "handlerValueGetter": "const parameter = 'state';\nlet stateHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.state?.type == 'handler') {\n  stateHandler = selectedComponent?.input?.state?.value || '';\n}\nreturn [parameter, stateHandler];",
+        "handlerEventUpdate": "updateInput(Utils.first(Vars.selectedComponents), 'state', 'handler', EventData.value);"
       },
       {
-        "name": "textinput_readonly",
+        "name": "textarea_resize",
+        "inputProperty": "resize",
+        "label": "Resize",
+        "type": "radio",
+        "default": "vertical",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentResize = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.resize?.type == 'handler' && selectedComponent?.input?.resize?.value) {\n  isDisabled = true;\n} else {\n  currentResize = selectedComponent?.input?.resize?.value || 'vertical';\n}\nconst options = [\n  { value: 'none', label: 'None', disabled: isDisabled },\n  { value: 'vertical', label: 'Vertical', disabled: isDisabled },\n  { value: 'horizontal', label: 'Horizontal', disabled: isDisabled },\n  { value: 'both', label: 'Both', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentResize, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'resize', 'string', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "resize"
+      },
+      {
+        "name": "textarea_rows",
+        "inputProperty": "rows",
+        "label": "Rows",
+        "type": "number",
+        "default": "4",
+        "width": "180px",
+        "placeholder": "4",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["rows"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["rows"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["rows", "number"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "rows"
+      },
+      {
+        "name": "textarea_cols",
+        "inputProperty": "cols",
+        "label": "Cols",
+        "type": "number",
+        "default": "",
+        "width": "180px",
+        "placeholder": "50",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["cols"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["cols"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["cols", "number"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "cols"
+      },
+      {
+        "name": "textarea_readonly",
         "inputProperty": "readonly",
         "label": "Read Only",
         "type": "boolean",
@@ -201,7 +222,7 @@
         "handlerProperty": "readonly"
       },
       {
-        "name": "textinput_required",
+        "name": "textarea_required",
         "inputProperty": "required",
         "label": "Required",
         "type": "boolean",
@@ -220,7 +241,7 @@
         "handlerProperty": "required"
       },
       {
-        "name": "textinput_allowClear",
+        "name": "textarea_allowClear",
         "inputProperty": "allowClear",
         "label": "Allow Clear",
         "type": "boolean",
@@ -239,26 +260,7 @@
         "handlerProperty": "allowClear"
       },
       {
-        "name": "textinput_withCopy",
-        "inputProperty": "withCopy",
-        "label": "With Copy",
-        "type": "boolean",
-        "default": false,
-        "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["withCopy"]
-        },
-        "stateHandler": {
-          "ref": "inputHandler",
-          "params": ["withCopy"]
-        },
-        "hasHandler": true,
-        "handlerType": "input",
-        "handlerProperty": "withCopy"
-      },
-      {
-        "name": "textinput_showCount",
+        "name": "textarea_showCount",
         "inputProperty": "showCount",
         "label": "Show Count",
         "type": "boolean",
@@ -277,7 +279,26 @@
         "handlerProperty": "showCount"
       },
       {
-        "name": "textinput_hasFeedback",
+        "name": "textarea_autoResize",
+        "inputProperty": "autoResize",
+        "label": "Auto Resize",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["autoResize"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["autoResize"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "autoResize"
+      },
+      {
+        "name": "textarea_hasFeedback",
         "inputProperty": "hasFeedback",
         "label": "Has Feedback",
         "type": "boolean",
@@ -296,13 +317,13 @@
         "handlerProperty": "hasFeedback"
       },
       {
-        "name": "textinput_maxLength",
+        "name": "textarea_maxLength",
         "inputProperty": "maxLength",
         "label": "Max Length",
         "type": "number",
         "default": "",
         "width": "180px",
-        "placeholder": "100",
+        "placeholder": "500",
         "valueHandler": {
           "ref": "componentInput",
           "params": ["maxLength"]
@@ -322,85 +343,59 @@
         "handlerProperty": "maxLength"
       },
       {
-        "name": "textinput_min",
-        "inputProperty": "min",
-        "label": "Min (Number)",
-        "type": "number",
-        "default": "",
-        "width": "180px",
-        "placeholder": "0",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["min"]
-        },
-        "stateHandler": {
-          "ref": "inputHandler",
-          "params": ["min"]
-        },
-        "eventHandlers": {
-          "valueChange": {
-            "ref": "updateInput",
-            "params": ["min", "string"]
-          }
-        },
-        "hasHandler": true,
-        "handlerType": "input",
-        "handlerProperty": "min"
-      },
-      {
-        "name": "textinput_max",
-        "inputProperty": "max",
-        "label": "Max (Number)",
+        "name": "textarea_minHeight",
+        "inputProperty": "minHeight",
+        "label": "Min Height",
         "type": "number",
         "default": "",
         "width": "180px",
         "placeholder": "100",
         "valueHandler": {
           "ref": "componentInput",
-          "params": ["max"]
+          "params": ["minHeight"]
         },
         "stateHandler": {
           "ref": "inputHandler",
-          "params": ["max"]
+          "params": ["minHeight"]
         },
         "eventHandlers": {
           "valueChange": {
             "ref": "updateInput",
-            "params": ["max", "string"]
+            "params": ["minHeight", "number"]
           }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "max"
+        "handlerProperty": "minHeight"
       },
       {
-        "name": "textinput_step",
-        "inputProperty": "step",
-        "label": "Step (Number)",
+        "name": "textarea_maxHeight",
+        "inputProperty": "maxHeight",
+        "label": "Max Height",
         "type": "number",
         "default": "",
         "width": "180px",
-        "placeholder": "1",
+        "placeholder": "400",
         "valueHandler": {
           "ref": "componentInput",
-          "params": ["step"]
+          "params": ["maxHeight"]
         },
         "stateHandler": {
           "ref": "inputHandler",
-          "params": ["step"]
+          "params": ["maxHeight"]
         },
         "eventHandlers": {
           "valueChange": {
             "ref": "updateInput",
-            "params": ["step", "string"]
+            "params": ["maxHeight", "number"]
           }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "step"
+        "handlerProperty": "maxHeight"
       },
       {
-        "name": "textinput_name",
+        "name": "textarea_name",
         "inputProperty": "name",
         "label": "Name",
         "type": "text",
@@ -426,7 +421,7 @@
         "handlerProperty": "name"
       },
       {
-        "name": "textinput_autocomplete",
+        "name": "textarea_autocomplete",
         "inputProperty": "autocomplete",
         "label": "Autocomplete",
         "type": "text",

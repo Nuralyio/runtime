@@ -150,6 +150,9 @@ Based on the checkbox component configuration, follow these patterns:
 ```
 
 #### Boolean/Checkbox Properties (with Handler Support)
+
+**IMPORTANT:** Boolean properties should NOT have `eventHandlers` defined. The checkbox component handles its own change events internally.
+
 ```json
 {
   "name": "disabled",
@@ -221,6 +224,13 @@ Different component wrappers use specific event names. Always verify the event n
 - `onArrowUp` - When ArrowUp key is pressed (keydown event)
 - `onArrowDown` - When ArrowDown key is pressed (keydown event)
 
+#### Textarea (`Textarea/Textarea.ts`)
+- `onChange` - When textarea value changes (fires on `@nr-textarea-change`)
+- `onFocus` - When textarea gains focus
+- `onBlur` - When textarea loses focus
+- `onClear` - When clear button is clicked
+- `onResize` - When textarea is resized
+
 #### Checkbox (`Checkbox/Checkbox.ts`)
 - `onChange` - When checkbox state changes (fires on `@nr-change`)
 - `onFocus` - When checkbox gains focus
@@ -260,11 +270,18 @@ Different component wrappers use specific event names. Always verify the event n
 - The wrapper components translate these to camelCase event names (e.g., `onChange`, `onFocus`, `onBlur`)
 - For studio parameter configs, use the camelCase wrapper event names (e.g., `onChange`, NOT `changed`)
 - Always check the component's wrapper file in `src/features/runtime/components/ui/components/` to verify the correct event names
-  - Use: `{ "ref": "inputHandler", "params": ["propertyName"] }`
-- **eventHandlers**: Event handler mappings
-  - `onChange`: For radio/boolean inputs
-  - `valueChange`: For text inputs
-  - Use: `{ "ref": "updateInput", "params": ["propertyName", "value"] }`
+
+### Event Handler Configuration
+
+**IMPORTANT: Boolean properties should NOT have eventHandlers defined.** Boolean inputs (checkboxes) handle their own change events internally.
+
+For other property types:
+- **Radio inputs**: Use `changed` event handler (NOT `onChange`)
+  - Example: `"eventHandlers": { "changed": "const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent) { updateInput(selectedComponent, 'size', 'string', EventData.value); }" }`
+- **Text inputs**: Use `valueChange` event handler
+  - Example: `"eventHandlers": { "valueChange": { "ref": "updateInput", "params": ["label", "string"] } }`
+- **Number inputs**: Use `valueChange` event handler
+  - Example: `"eventHandlers": { "valueChange": { "ref": "updateInput", "params": ["maxLength", "number"] } }`
 
 ### Handler References
 

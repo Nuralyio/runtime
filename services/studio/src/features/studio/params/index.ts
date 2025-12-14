@@ -25,10 +25,10 @@ export const StudioTextInput = loadComponentProperties(
 );
 
 // Textarea
-import textareaConfig from "./inputs/textarea/textarea-config.yaml";
-import textareaHandlers from "./inputs/textarea/textarea-handlers.yaml";
-import textareaTheme from "./inputs/textarea/textarea-theme.yaml";
-import textareaMeta from "./inputs/textarea/textarea-meta.yaml";
+import textareaConfig from "./inputs/textarea/config.json";
+import textareaHandlers from "./inputs/textarea/handlers.json";
+import textareaTheme from "./inputs/textarea/theme.json";
+import textareaMeta from "./inputs/textarea/meta.json";
 
 export const StudioTextarea = loadComponentProperties(
   textareaConfig,
