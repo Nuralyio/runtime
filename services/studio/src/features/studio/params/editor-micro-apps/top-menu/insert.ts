@@ -243,7 +243,7 @@ export const Insert = /* js */`
                 action: "add",
                 style: {
                   "--nuraly-menu-border": "none",
-                  width: "100%",
+                  width: "200px",
                   "--nuraly-menu-font-size": "12px",
                   "--nuraly-sub-menu-padding-y": "4px",
                   "--nuraly-menu-link-padding-y": "4px",

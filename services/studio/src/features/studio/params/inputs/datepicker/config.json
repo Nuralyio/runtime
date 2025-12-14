@@ -21,6 +21,7 @@
     "properties": [
       {
         "name": "value",
+        "inputProperty": "value",
         "label": "Value",
         "type": "text",
         "default": "",
@@ -29,11 +30,15 @@
         "valueHandler": { "ref": "componentInput", "params": ["value"] },
         "stateHandler": { "ref": "inputHandler", "params": ["value"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["value", "string"] }
-        }
+          "valueChange": { "ref": "updateInput", "params": ["value", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "value"
       },
       {
         "name": "label",
+        "inputProperty": "label",
         "label": "Label",
         "type": "text",
         "default": "",
@@ -42,24 +47,32 @@
         "valueHandler": { "ref": "componentInput", "params": ["label"] },
         "stateHandler": { "ref": "inputHandler", "params": ["label"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["label", "string"] }
-        }
+          "valueChange": { "ref": "updateInput", "params": ["label", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "label"
       },
       {
         "name": "helperText",
+        "inputProperty": "helper",
         "label": "Helper Text",
         "type": "text",
         "default": "",
         "width": "180px",
         "placeholder": "Enter helper text",
-        "valueHandler": { "ref": "componentInput", "params": ["helperText"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["helperText"] },
+        "valueHandler": { "ref": "componentInput", "params": ["helper"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["helper"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["helperText", "string"] }
-        }
+          "valueChange": { "ref": "updateInput", "params": ["helper", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "helper"
       },
       {
         "name": "locale",
+        "inputProperty": "locale",
         "label": "Language",
         "type": "select",
         "default": "en",
@@ -68,17 +81,21 @@
           { "label": "English", "value": "en" },
           { "label": "French", "value": "fr" },
           { "label": "Arabic", "value": "ar" },
-          { "label": "Espagnol", "value": "es" },
+          { "label": "Spanish", "value": "es" },
           { "label": "Chinese", "value": "zh" }
         ],
         "valueHandler": { "ref": "componentInput", "params": ["locale"] },
         "stateHandler": { "ref": "inputHandler", "params": ["locale"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["locale", "string"] }
-        }
+          "valueChange": { "ref": "updateInput", "params": ["locale", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "locale"
       },
       {
         "name": "format",
+        "inputProperty": "format",
         "label": "Format",
         "type": "select",
         "default": "DD/MM/YYYY",
@@ -92,8 +109,110 @@
         "valueHandler": { "ref": "componentInput", "params": ["format"] },
         "stateHandler": { "ref": "inputHandler", "params": ["format"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["format", "string"] }
-        }
+          "valueChange": { "ref": "updateInput", "params": ["format", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "format"
+      },
+      {
+        "name": "sizeoption",
+        "inputProperty": "size",
+        "label": "Size",
+        "type": "radio",
+        "default": "medium",
+        "width": "180px",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" }
+        ],
+        "stateHandler": { "ref": "inputHandler", "params": ["size"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["size", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size"
+      },
+      {
+        "name": "disabled",
+        "inputProperty": "disabled",
+        "label": "Disabled",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["disabled", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled"
+      },
+      {
+        "name": "required",
+        "inputProperty": "required",
+        "label": "Required",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": { "ref": "inputHandler", "params": ["required"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["required", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "required"
+      },
+      {
+        "name": "range",
+        "inputProperty": "range",
+        "label": "Range Mode",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": { "ref": "inputHandler", "params": ["range"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["range", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "range"
+      },
+      {
+        "name": "minDate",
+        "inputProperty": "minDate",
+        "label": "Min Date",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "YYYY-MM-DD",
+        "valueHandler": { "ref": "componentInput", "params": ["minDate"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["minDate"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["minDate", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "minDate"
+      },
+      {
+        "name": "maxDate",
+        "inputProperty": "maxDate",
+        "label": "Max Date",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "YYYY-MM-DD",
+        "valueHandler": { "ref": "componentInput", "params": ["maxDate"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["maxDate"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["maxDate", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "maxDate"
       }
     ]
   }
