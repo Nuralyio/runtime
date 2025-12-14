@@ -7,10 +7,216 @@
     },
     "collapse": {
       "uuid": "table_collapse",
-      "title": "Table Properties",
-      "style": {
-      }
+      "title": "Table Properties"
     },
-    "properties": []
+    "properties": [
+      {
+        "name": "table_data",
+        "inputProperty": "data",
+        "label": "Data Source",
+        "type": "event",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Configure data",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "data",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.data || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'data', EventData.value);"
+      },
+      {
+        "name": "table_size",
+        "inputProperty": "size",
+        "label": "Size",
+        "type": "radio",
+        "default": "normal",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentSize = '';\nlet isDisabled = false;\nif (selectedComponent?.style?.size?.type == 'handler' && selectedComponent?.style?.size?.value) {\n  isDisabled = true;\n} else {\n  currentSize = selectedComponent?.style?.size || 'normal';\n}\nconst options = [\n  { value: 'small', label: 'Small', disabled: isDisabled },\n  { value: 'normal', label: 'Normal', disabled: isDisabled },\n  { value: 'large', label: 'Large', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentSize, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateStyle(selectedComponent, 'size', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "size"
+      },
+      {
+        "name": "table_selectionMode",
+        "inputProperty": "selectionMode",
+        "label": "Selection Mode",
+        "type": "radio",
+        "default": "",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentMode = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.selectionMode?.type == 'handler' && selectedComponent?.input?.selectionMode?.value) {\n  isDisabled = true;\n} else {\n  currentMode = selectedComponent?.input?.selectionMode?.value || '';\n}\nconst options = [\n  { value: '', icon: 'ban', disabled: isDisabled },\n  { value: 'single', icon: 'check', disabled: isDisabled },\n  { value: 'multiple', icon: 'list-check', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentMode, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'selectionMode', 'string', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "selectionMode",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.selectionMode || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'selectionMode', EventData.value);"
+      },
+      {
+        "name": "table_filter",
+        "inputProperty": "filter",
+        "label": "Filter",
+        "type": "radio",
+        "default": "",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentFilter = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.filter?.type == 'handler' && selectedComponent?.input?.filter?.value) {\n  isDisabled = true;\n} else {\n  currentFilter = selectedComponent?.input?.filter?.value || '';\n}\nconst options = [\n  { value: '', icon: 'ban', disabled: isDisabled },\n  { value: 'filter', icon: 'filter', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentFilter, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'filter', 'string', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "filter",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.filter || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'filter', EventData.value);"
+      },
+      {
+        "name": "table_fixedHeader",
+        "inputProperty": "fixedHeader",
+        "label": "Fixed Header",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["fixedHeader"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "fixedHeader",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.fixedHeader || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'fixedHeader', EventData.value);"
+      },
+      {
+        "name": "table_loading",
+        "inputProperty": "loading",
+        "label": "Loading",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["loading"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "loading",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.loading || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'loading', EventData.value);"
+      },
+      {
+        "name": "table_expandable",
+        "inputProperty": "expandable",
+        "label": "Expandable Row Key",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Row property key",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["expandable"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["expandable"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["expandable", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "expandable",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.expandable || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'expandable', EventData.value);"
+      },
+      {
+        "name": "table_emptyText",
+        "inputProperty": "emptyText",
+        "label": "Empty Text",
+        "type": "text",
+        "default": "No data available",
+        "width": "180px",
+        "placeholder": "Empty state message",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["emptyText"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["emptyText"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["emptyText", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "emptyText",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.emptyText || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'emptyText', EventData.value);"
+      },
+      {
+        "name": "table_emptyIcon",
+        "inputProperty": "emptyIcon",
+        "label": "Empty Icon",
+        "type": "icon",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Select empty state icon",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["emptyIcon"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["emptyIcon"]
+        },
+        "eventHandlers": {
+          "iconChanged": {
+            "ref": "updateInput",
+            "params": ["emptyIcon", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "emptyIcon",
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.emptyIcon || '';",
+        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'emptyIcon', EventData.value);"
+      },
+      {
+        "name": "table_scrollConfigX",
+        "inputProperty": "scrollConfigX",
+        "label": "Scroll Width (X)",
+        "type": "number",
+        "default": "",
+        "width": "88px",
+        "placeholder": "px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.scrollConfig?.x || '';",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (!selectedComponent) return;\nconst currentConfig = selectedComponent?.inputHandlers?.scrollConfig || {};\nconst newConfig = { ...currentConfig, x: EventData.value };\nupdateInputHandlers(selectedComponent, 'scrollConfig', newConfig);"
+        }
+      },
+      {
+        "name": "table_scrollConfigY",
+        "inputProperty": "scrollConfigY",
+        "label": "Scroll Height (Y)",
+        "type": "number",
+        "default": "",
+        "width": "88px",
+        "placeholder": "px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.scrollConfig?.y || '';",
+        "eventHandlers": {
+          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (!selectedComponent) return;\nconst currentConfig = selectedComponent?.inputHandlers?.scrollConfig || {};\nconst newConfig = { ...currentConfig, y: EventData.value };\nupdateInputHandlers(selectedComponent, 'scrollConfig', newConfig);"
+        }
+      }
+    ]
   }
 }
