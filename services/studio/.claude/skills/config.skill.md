@@ -158,10 +158,8 @@ Based on the checkbox component configuration, follow these patterns:
   "type": "boolean",
   "default": false,
   "width": "180px",
+  "valueHandler": { "ref": "componentInput", "params": ["disabled"] },
   "stateHandler": { "ref": "inputHandler", "params": ["disabled"] },
-  "eventHandlers": {
-    "onChange": { "ref": "updateInput", "params": ["disabled", "value"] }
-  },
   "hasHandler": true,
   "handlerType": "input",
   "handlerProperty": "disabled"
@@ -209,6 +207,59 @@ For properties that support dynamic handlers (code-driven values):
 - **handlerType**: `"input"` or `"style"` - Type of handler
 - **handlerProperty**: Property name to use for handler (often same as `inputProperty`)
 - **stateHandler**: Controls input enabled/disabled state
+
+### Event Handler Names by Component Type
+
+Different component wrappers use specific event names. Always verify the event name in the component's wrapper file (`src/features/runtime/components/ui/components/`):
+
+#### Text Input (`TextInput/TextInput.ts`)
+- `onChange` - When text value changes (fires on `@nr-input`)
+- `onFocus` - When input gains focus
+- `onBlur` - When input loses focus
+- `onEnter` - When Enter key is pressed
+- `onClear` - When clear button is clicked
+- `onArrowUp` - When ArrowUp key is pressed (keydown event)
+- `onArrowDown` - When ArrowDown key is pressed (keydown event)
+
+#### Checkbox (`Checkbox/Checkbox.ts`)
+- `onChange` - When checkbox state changes (fires on `@nr-change`)
+- `onFocus` - When checkbox gains focus
+- `onBlur` - When checkbox loses focus
+- `onKeydown` - When key is pressed
+- `onMouseEnter` - When mouse enters
+- `onMouseLeave` - When mouse leaves
+
+#### Select (`Select/Select.ts`)
+- `onChange` - When selection changes (fires on `@nr-change`)
+- `onFocus` - When select gains focus
+- `onBlur` - When select loses focus
+- `onDropdownOpen` - When dropdown opens
+- `onDropdownClose` - When dropdown closes
+- `onValidation` - When validation occurs
+
+#### Date Picker (`DatePicker/DatePicker.ts`)
+- `onDateChange` - When date is selected
+- `onRangeChange` - When date range is selected
+- `onCalendarOpen` - When calendar opens
+- `onCalendarClose` - When calendar closes
+- `onFocus` - When input gains focus
+- `onBlur` - When input loses focus
+- `onValidation` - When validation occurs
+
+#### Color Picker (`ColorPicker/colorpicker.ts`)
+- `onChange` - When color changes (fires on `@nr-color-change`)
+- `onOpen` - When color picker opens
+- `onClose` - When color picker closes
+
+#### Slider (`Slider/Slider.ts`)
+- `onChange` - When slider value changes (fires on `@nr-change`)
+- `onAfterChange` - When slider interaction ends
+
+**Important Notes:**
+- Most Nuraly UI components fire `@nr-*` events (e.g., `@nr-change`, `@nr-input`, `@nr-focus`)
+- The wrapper components translate these to camelCase event names (e.g., `onChange`, `onFocus`, `onBlur`)
+- For studio parameter configs, use the camelCase wrapper event names (e.g., `onChange`, NOT `changed`)
+- Always check the component's wrapper file in `src/features/runtime/components/ui/components/` to verify the correct event names
   - Use: `{ "ref": "inputHandler", "params": ["propertyName"] }`
 - **eventHandlers**: Event handler mappings
   - `onChange`: For radio/boolean inputs
