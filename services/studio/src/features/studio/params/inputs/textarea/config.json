@@ -209,10 +209,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["readonly"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["readonly"]
@@ -247,10 +243,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["allowClear"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["allowClear"]
@@ -266,10 +258,7 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["showCount"]
-        },
+       
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["showCount"]
@@ -285,10 +274,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["autoResize"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["autoResize"]
@@ -304,10 +289,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["hasFeedback"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["hasFeedback"]
