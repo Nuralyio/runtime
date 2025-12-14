@@ -1,10 +1,7 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { executeHandler } from '../../../../../state/runtime-context.ts';
-import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { ref } from "lit/directives/ref.js";
 // Safely import @nuralyui/datepicker
 try {
@@ -67,12 +64,11 @@ export class DatepickertBlock extends BaseElementBlock {
     return html`
       <nr-datepicker
         ${ref(this.inputRef)}
-        style=${styleMap({
-          ...this.getStyles(),
-          "display": this.getStyles().display ?? "block",
-        })}
+             class="${`drop-${this.component.uuid}`}"
+
         .helper=${this.inputHandlersValue.helper || ''}
         .label=${this.inputHandlersValue.label || ''}
+        .placeholder=${this.inputHandlersValue.placeholder || ''}
         .locale=${this.inputHandlersValue.locale || 'en'}
         .state=${state}
         .size=${this.inputHandlersValue.size ?? size}
