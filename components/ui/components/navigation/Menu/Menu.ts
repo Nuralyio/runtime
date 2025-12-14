@@ -52,11 +52,11 @@ export class MenuBlock extends BaseElementBlock {
           .items=${this.inputHandlersValue?.options ?? []}
           @change="${(e: CustomEvent) => {
             const selectedOptionPath = e.detail.path;
-            const selectedPage = this.inputHandlersValue.items[selectedOptionPath[0]]?.id;
+            const selectedPage = this.inputHandlersValue.options[selectedOptionPath[0]]?.id;
             const option = selectedOptionPath.reduce((acc: {
               children: { [x: string]: any; };
-            }, curr: string | number) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.items });
-            this.executeEvent('onChange', e, {
+            }, curr: string | number) => acc && acc.children && acc.children[curr], { children: this.inputHandlersValue?.options });
+            this.executeEvent('onSelect', e, {
               id: option?.id,
               text: option?.text,
               type: option?.type,
