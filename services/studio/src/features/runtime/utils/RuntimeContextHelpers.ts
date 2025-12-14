@@ -180,7 +180,7 @@ export class RuntimeContextHelpers {
             : `${scope}:${String(prop)}`;
 
           if (debug || (scope === 'Vars' && String(prop) === 'selectedComponents')) {
-            console.log(`[RuntimeContextHelpers] Emitting event: ${eventName}`, { value, ctx: current });
+            // console.log(`[RuntimeContextHelpers] Emitting event: ${eventName}`, { value, ctx: current });
           }
 
           eventDispatcher.emit(eventName, {

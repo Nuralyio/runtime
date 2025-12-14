@@ -6,6 +6,10 @@
       "label": "onChange"
     },
     {
+      "name": "onSelect",
+      "label": "onSelect"
+    },
+    {
       "name": "onActionClick",
       "label": "onActionClick"
     }

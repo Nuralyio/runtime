@@ -11,11 +11,11 @@ import { loadComponentProperties } from "../processors/component-loader.ts";
 // INPUT COMPONENTS
 // ========================================
 
-// Text Input - Now using YAML for better readability
-import textInputConfig from "./inputs/text-input/input-config.yaml";
-import textInputHandlers from "./inputs/text-input/input-handlers.yaml";
-import textInputTheme from "./inputs/text-input/input-theme.yaml";
-import textInputMeta from "./inputs/text-input/input-meta.yaml";
+// Text Input
+import textInputConfig from "./inputs/text-input/config.json";
+import textInputHandlers from "./inputs/text-input/handlers.json";
+import textInputTheme from "./inputs/text-input/theme.json";
+import textInputMeta from "./inputs/text-input/meta.json";
 
 export const StudioTextInput = loadComponentProperties(
   textInputConfig,
