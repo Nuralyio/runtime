@@ -5,9 +5,7 @@ import { keyed } from "lit/directives/keyed.js";
 import { ViewMode } from '@nuraly/runtime/redux/store';
 import { $contextMenuEvent, $currentPageViewPort, $pageZoom, $draggingComponentInfo } from '@nuraly/runtime/redux/store';
 import { type ComponentElement } from '@nuraly/runtime/redux/store';
-import { $selectedComponent } from '@nuraly/runtime/redux/store';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
-import { $currentApplication } from '@nuraly/runtime/redux/store';
 
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
@@ -119,38 +117,43 @@ export class EditorInteractivePanel extends LitElement {
       :host{
         width: ${this.mode == ViewMode.Edit ? "calc(100vw - 650px)" : "100vw"};
       }
+      .overlay-container {
+        display: ${this.mode == ViewMode.Edit ? "block" : "none"};
+      }
     </style>
     <ai-assistant-block> </ai-assistant-block>
       <div>
-        ${this.hoveredComponent && this.hoveredComponentRef?.value && this.hoveredComponent.uuid !== this.selectedComponent?.uuid ? html`
-          <component-title-overlay
-            .component=${this.hoveredComponent}
-            .componentRef=${this.hoveredComponentRef}
-            .isSelected=${false}
-            .opacity=${0.9}
-          ></component-title-overlay>
+        <div class="overlay-container">
+          ${this.hoveredComponent && this.hoveredComponentRef?.value && this.hoveredComponent.uuid !== this.selectedComponent?.uuid ? html`
+            <component-title-overlay
+              .component=${this.hoveredComponent}
+              .componentRef=${this.hoveredComponentRef}
+              .isSelected=${false}
+              .opacity=${0.9}
+            ></component-title-overlay>
+            
+            <component-resize-overlay
+              .component=${this.hoveredComponent}
+              .componentRef=${this.hoveredComponentRef}
+              .isSelected=${false}
+            ></component-resize-overlay>
+          ` : nothing}
           
-          <component-resize-overlay
-            .component=${this.hoveredComponent}
-            .componentRef=${this.hoveredComponentRef}
-            .isSelected=${false}
-          ></component-resize-overlay>
-        ` : nothing}
-        
-        ${this.selectedComponent && this.selectedComponentRef?.value ? keyed(this.selectedComponent.uuid, html`
-          <component-title-overlay
-            .component=${this.selectedComponent}
-            .componentRef=${this.selectedComponentRef}
-            .isSelected=${true}
-          ></component-title-overlay>
-          
-          <component-resize-overlay
-            .component=${this.selectedComponent}
-            .componentRef=${this.selectedComponentRef}
-            .isSelected=${true}
-            .opacity=${1}
-          ></component-resize-overlay>
-        `) : nothing}
+          ${this.selectedComponent && this.selectedComponentRef?.value ? keyed(this.selectedComponent.uuid, html`
+            <component-title-overlay
+              .component=${this.selectedComponent}
+              .componentRef=${this.selectedComponentRef}
+              .isSelected=${true}
+            ></component-title-overlay>
+            
+            <component-resize-overlay
+              .component=${this.selectedComponent}
+              .componentRef=${this.selectedComponentRef}
+              .isSelected=${true}
+              .opacity=${1}
+            ></component-resize-overlay>
+          `) : nothing}
+        </div>
         ${
           this.showContextMeny  ? html`
            <quick-action-wrapper
