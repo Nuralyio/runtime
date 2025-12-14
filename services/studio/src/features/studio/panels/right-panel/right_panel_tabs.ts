@@ -110,9 +110,9 @@ export default [
                             themes: ["studio_select_theme_container", "box_model_collapse"]
                         },
                         "Table": {
-                            parameters: ["table_fields_collapse_container"],
+                            parameters: ["table_blocks"],
                             handlers: ["studio_table_handler"],
-                            themes: ["select_component_text", "box_model_collapse"]
+                            themes: ["studio_table_theme_container", "box_model_collapse"]
                         },
                         "Icon": {
                             parameters: ["icon_blocks"],
