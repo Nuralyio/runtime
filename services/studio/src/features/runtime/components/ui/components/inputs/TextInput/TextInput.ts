@@ -1,6 +1,5 @@
 import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
@@ -74,12 +73,8 @@ export class TextInputBlock extends BaseElementBlock {
     return html`
         <nr-input
         ${ref(this.inputRef)}
-          style=${styleMap({...this.getStyles(),
-              "--nuraly-input-local-border-top-left-radius": inputStyles?.["border-top-left-radius"] ?? "",
-              "--nuraly-input-local-border-top-right-radius": inputStyles?.["border-top-right-radius"] ?? "",
-              "--nuraly-input-local-border-bottom-left-radius": inputStyles?.["border-bottom-left-radius"] ?? "",
-              "--nuraly-input-local-border-bottom-right-radius": inputStyles?.["border-bottom-right-radius"] ?? "",
-          })}
+     class="${`drop-${this.component.uuid}`}"
+         
           .value=${this.inputHandlersValue?.value ?? nothing}
           .size=${this.inputHandlersValue?.size ?? "medium"}
           .state=${this.inputHandlersValue.status ?? nothing}

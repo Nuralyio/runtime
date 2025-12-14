@@ -17,7 +17,7 @@ interface Item {
   type?: "color" | "text" | "number" | "select";  // Input type (defaults to "color")
   defaultValue?: string;  // Default value for the input
   placeholder?: string;  // Placeholder for text/number inputs
-  options?: Array<{ label: string; value: string }>;  // Options for select inputs
+  options?: Array<{ label: string; value: string; htmlContent?: string }>;  // Options for select inputs
 }
 
 interface Category {
@@ -220,7 +220,7 @@ export const generateComponents = (colorVariables2: Mode[], mainContainerName: s
         const selectedComponent = Utils.first(Vars.selectedComponents);
         updateStyle(selectedComponent, "${item.cssVar}", EventData.value);
       `;
-      eventType = "changed";
+      eventType = "onChange";
     } else {
       // For text and number inputs
       valueHandler = /* js */ `

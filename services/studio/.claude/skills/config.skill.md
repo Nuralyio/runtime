@@ -234,9 +234,9 @@ Common handler references to use:
 
 ### Theme Structure
 
-Following the checkbox component pattern, theme files should:
+Theme files should follow this structure:
 
-1. **Use a flat structure** - No Dark/Light mode sections
+1. **Wrap in theme.modes structure** - All theme configurations must be wrapped in `{ "theme": { "modes": [...] } }`
 2. **Group by functionality** - Organize CSS variables by purpose (General, Border, States, etc.)
 3. **Use actual CSS variables** - Extract variables directly from the component's `.style.ts` file
 4. **Remove interactive state sections** - Hover, focus, and active states are managed outside the theme
@@ -247,32 +247,36 @@ Following the checkbox component pattern, theme files should:
 #### Basic Color Inputs (Default)
 
 ```json
-[
-  {
-    "name": "General",
-    "open": true,
-    "items": [
-      { "label": "Background Color", "cssVar": "--nuraly-color-component-background" },
-      { "label": "Text Color", "cssVar": "--nuraly-color-component-text" },
-      { "label": "Placeholder Color", "cssVar": "--nuraly-color-text-secondary" }
-    ]
-  },
-  {
-    "name": "Border",
-    "open": false,
-    "items": [
-      { "label": "Border Color", "cssVar": "--nuraly-color-border" }
-    ]
-  },
-  {
-    "name": "Disabled State",
-    "open": false,
-    "items": [
-      { "label": "Disabled Background Color", "cssVar": "--nuraly-component-disabled-background" },
-      { "label": "Disabled Text Color", "cssVar": "--nuraly-component-disabled-text-color" }
+{
+  "theme": {
+    "modes": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          { "label": "Background Color", "cssVar": "--nuraly-color-component-background" },
+          { "label": "Text Color", "cssVar": "--nuraly-color-component-text" },
+          { "label": "Placeholder Color", "cssVar": "--nuraly-color-text-secondary" }
+        ]
+      },
+      {
+        "name": "Border",
+        "open": false,
+        "items": [
+          { "label": "Border Color", "cssVar": "--nuraly-color-border" }
+        ]
+      },
+      {
+        "name": "Disabled State",
+        "open": false,
+        "items": [
+          { "label": "Disabled Background Color", "cssVar": "--nuraly-component-disabled-background" },
+          { "label": "Disabled Text Color", "cssVar": "--nuraly-component-disabled-text-color" }
+        ]
+      }
     ]
   }
-]
+}
 ```
 
 #### Multiple Input Types
@@ -280,73 +284,98 @@ Following the checkbox component pattern, theme files should:
 Theme items support different input types for different CSS properties:
 
 ```json
-[
-  {
-    "name": "Typography",
-    "open": false,
-    "items": [
+{
+  "theme": {
+    "modes": [
       {
-        "label": "Font Family",
-        "cssVar": "--nuraly-component-font-family",
-        "type": "text",
-        "placeholder": "Inter, sans-serif",
-        "defaultValue": "Inter, ui-sans-serif, system-ui"
+        "name": "Typography",
+        "open": false,
+        "items": [
+          {
+            "label": "Font Family",
+            "cssVar": "--nuraly-component-font-family",
+            "type": "select",
+            "defaultValue": "system-ui, -apple-system, sans-serif",
+            "options": [
+              { "label": "System UI", "value": "system-ui, -apple-system, sans-serif", "htmlContent": "<span style=\"font-family: system-ui, -apple-system, sans-serif;\">System UI</span>" },
+              { "label": "Arial", "value": "Arial, sans-serif", "htmlContent": "<span style=\"font-family: Arial, sans-serif;\">Arial</span>" },
+              { "label": "Helvetica", "value": "Helvetica, Arial, sans-serif", "htmlContent": "<span style=\"font-family: Helvetica, Arial, sans-serif;\">Helvetica</span>" },
+              { "label": "Times New Roman", "value": "Times New Roman, serif", "htmlContent": "<span style=\"font-family: Times New Roman, serif;\">Times New Roman</span>" },
+              { "label": "Georgia", "value": "Georgia, serif", "htmlContent": "<span style=\"font-family: Georgia, serif;\">Georgia</span>" },
+              { "label": "Verdana", "value": "Verdana, sans-serif", "htmlContent": "<span style=\"font-family: Verdana, sans-serif;\">Verdana</span>" },
+              { "label": "Trebuchet MS", "value": "Trebuchet MS, sans-serif", "htmlContent": "<span style=\"font-family: Trebuchet MS, sans-serif;\">Trebuchet MS</span>" },
+              { "label": "Courier New", "value": "Courier New, monospace", "htmlContent": "<span style=\"font-family: Courier New, monospace;\">Courier New</span>" },
+              { "label": "Roboto", "value": "Roboto, sans-serif", "htmlContent": "<span style=\"font-family: Roboto, sans-serif;\">Roboto</span>" },
+              { "label": "Inter", "value": "Inter, sans-serif", "htmlContent": "<span style=\"font-family: Inter, sans-serif;\">Inter</span>" },
+              { "label": "Sans Serif (Generic)", "value": "sans-serif", "htmlContent": "<span style=\"font-family: sans-serif; font-style: italic; opacity: 0.8;\">sans-serif</span>" },
+              { "label": "Serif (Generic)", "value": "serif", "htmlContent": "<span style=\"font-family: serif; font-style: italic; opacity: 0.8;\">serif</span>" },
+              { "label": "Monospace (Generic)", "value": "monospace", "htmlContent": "<span style=\"font-family: monospace; font-style: italic; opacity: 0.8;\">monospace</span>" }
+            ]
+          },
+          {
+            "label": "Font Size",
+            "cssVar": "--nuraly-component-font-size",
+            "type": "text",
+            "placeholder": "14px",
+            "defaultValue": "14px"
+          },
+          {
+            "label": "Font Weight",
+            "cssVar": "--nuraly-component-font-weight",
+            "type": "select",
+            "defaultValue": "400",
+            "options": [
+              { "label": "Light (300)", "value": "300" },
+              { "label": "Normal (400)", "value": "400" },
+              { "label": "Medium (500)", "value": "500" },
+              { "label": "Semi Bold (600)", "value": "600" },
+              { "label": "Bold (700)", "value": "700" }
+            ]
+          }
+        ]
       },
       {
-        "label": "Font Size",
-        "cssVar": "--nuraly-component-font-size",
-        "type": "text",
-        "placeholder": "14px",
-        "defaultValue": "14px"
+        "name": "Spacing",
+        "open": false,
+        "items": [
+          {
+            "label": "Padding",
+            "cssVar": "--nuraly-component-padding",
+            "type": "text",
+            "placeholder": "8px 12px",
+            "defaultValue": "8px 12px"
+          },
+          {
+            "label": "Border Radius",
+            "cssVar": "--nuraly-component-border-radius",
+            "type": "text",
+            "placeholder": "8px",
+            "defaultValue": "8px"
+          }
+        ]
       },
       {
-        "label": "Font Weight",
-        "cssVar": "--nuraly-component-font-weight",
-        "type": "number",
-        "placeholder": "400",
-        "defaultValue": "400"
-      }
-    ]
-  },
-  {
-    "name": "Spacing",
-    "open": false,
-    "items": [
-      {
-        "label": "Padding",
-        "cssVar": "--nuraly-component-padding",
-        "type": "text",
-        "placeholder": "8px 12px",
-        "defaultValue": "8px 12px"
-      },
-      {
-        "label": "Border Radius",
-        "cssVar": "--nuraly-component-border-radius",
-        "type": "text",
-        "placeholder": "8px",
-        "defaultValue": "8px"
-      }
-    ]
-  },
-  {
-    "name": "Animation",
-    "open": false,
-    "items": [
-      {
-        "label": "Transition Timing",
-        "cssVar": "--nuraly-component-transition-timing",
-        "type": "select",
-        "options": [
-          { "label": "Ease", "value": "ease" },
-          { "label": "Ease In", "value": "ease-in" },
-          { "label": "Ease Out", "value": "ease-out" },
-          { "label": "Linear", "value": "linear" }
-        ],
-        "defaultValue": "ease-in-out"
+        "name": "Animation",
+        "open": false,
+        "items": [
+          {
+            "label": "Transition Timing",
+            "cssVar": "--nuraly-component-transition-timing",
+            "type": "select",
+            "defaultValue": "ease-in-out",
+            "options": [
+              { "label": "Ease", "value": "ease" },
+              { "label": "Ease In", "value": "ease-in" },
+              { "label": "Ease Out", "value": "ease-out" },
+              { "label": "Ease In Out", "value": "ease-in-out" },
+              { "label": "Linear", "value": "linear" }
+            ]
+          }
+        ]
       }
     ]
   }
-]
+}
 ```
 
 ### Theme Input Type Reference
@@ -354,11 +383,13 @@ Theme items support different input types for different CSS properties:
 | Type | Use Case | Example Properties | Additional Fields |
 |------|----------|-------------------|-------------------|
 | `color` (default) | Color values | Colors, backgrounds, borders | None required |
-| `text` | Text values, sizes, spacing | Font family, padding, margin, sizes | `placeholder`, `defaultValue` |
-| `number` | Numeric values | Font weight, opacity, z-index | `placeholder`, `defaultValue` |
-| `select` | Predefined choices | Transition timing, text-align | `options` (required), `defaultValue` |
+| `text` | Text values, sizes, spacing | Font size, padding, margin, sizes | `placeholder`, `defaultValue` |
+| `number` | Numeric values | Opacity, z-index | `placeholder`, `defaultValue` |
+| `select` | Predefined choices | Font family, font weight, transition timing | `options` (required), `defaultValue`, optional `htmlContent` per option |
 
 **Note:** If `type` is omitted, it defaults to `"color"`
+
+**Font Family Select Pattern:** For font family selects, use `htmlContent` in options to preview the font in the dropdown. The `htmlContent` should include inline styles to render the option in its respective font.
 
 ### Updating Component Configuration Workflow
 
@@ -446,22 +477,26 @@ When updating or creating component configurations:
 
 **Update theme.json**:
 ```json
-[
-  {
-    "name": "General",
-    "open": true,
-    "items": [
-      { "label": "Background Color", "cssVar": "--nuraly-color-background-panel" }
-    ]
-  },
-  {
-    "name": "Options",
-    "open": false,
-    "items": [
-      { "label": "Option Hover Background", "cssVar": "--nuraly-select-option-hover-background" }
+{
+  "theme": {
+    "modes": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          { "label": "Background Color", "cssVar": "--nuraly-color-background-panel" }
+        ]
+      },
+      {
+        "name": "Options",
+        "open": false,
+        "items": [
+          { "label": "Option Hover Background", "cssVar": "--nuraly-select-option-hover-background" }
+        ]
+      }
     ]
   }
-]
+}
 ```
 
 **From Nuraly UI component events** (`select.component.ts`):
