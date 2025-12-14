@@ -48,7 +48,8 @@
         "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents); if(EventData.value != selectedComponent.input?.options?.value) updateInput(selectedComponent,'options','handler',EventData.value);"
       },
       {
-        "name": "value",
+        "name": "select_value",
+        "inputProperty": "value",
         "label": "Value",
         "type": "text",
         "default": "",
@@ -57,11 +58,11 @@
         "valueHandler": { "ref": "componentInput", "params": ["value"] },
         "stateHandler": { "ref": "inputHandler", "params": ["value"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["value", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["value", "value"] }
         }
       },
       {
-        "name": "type",
+        "name": "select_type",
         "inputProperty": "type",
         "label": "Type",
         "type": "radio",
@@ -80,7 +81,7 @@
         "handlerProperty": "type"
       },
       {
-        "name": "selectionMode",
+        "name": "select_selection_mode",
         "inputProperty": "selectionMode",
         "label": "Selection Mode",
         "type": "radio",
