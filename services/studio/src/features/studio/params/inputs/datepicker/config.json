@@ -7,20 +7,11 @@
     },
     "collapse": {
       "uuid": "datepickerFields_collapse",
-      "title": "Datepicker Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Datepicker Properties"
     },
     "properties": [
       {
-        "name": "value",
+        "name": "datepickervalue",
         "inputProperty": "value",
         "label": "Value",
         "type": "text",
@@ -30,7 +21,7 @@
         "valueHandler": { "ref": "componentInput", "params": ["value"] },
         "stateHandler": { "ref": "inputHandler", "params": ["value"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["value", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["value", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -71,6 +62,23 @@
         "handlerProperty": "helper"
       },
       {
+        "name": "placeholder",
+        "inputProperty": "placeholder",
+        "label": "Placeholder",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter placeholder text",
+        "valueHandler": { "ref": "componentInput", "params": ["placeholder"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["placeholder"] },
+        "eventHandlers": {
+          "valueChange": { "ref": "updateInput", "params": ["placeholder", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "placeholder"
+      },
+      {
         "name": "locale",
         "inputProperty": "locale",
         "label": "Language",
@@ -87,7 +95,7 @@
         "valueHandler": { "ref": "componentInput", "params": ["locale"] },
         "stateHandler": { "ref": "inputHandler", "params": ["locale"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["locale", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["locale", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -109,7 +117,7 @@
         "valueHandler": { "ref": "componentInput", "params": ["format"] },
         "stateHandler": { "ref": "inputHandler", "params": ["format"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["format", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["format", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -184,14 +192,15 @@
         "name": "minDate",
         "inputProperty": "minDate",
         "label": "Min Date",
-        "type": "text",
+        "type": "date",
         "default": "",
         "width": "180px",
         "placeholder": "YYYY-MM-DD",
+        "format": "YYYY-MM-DD",
         "valueHandler": { "ref": "componentInput", "params": ["minDate"] },
         "stateHandler": { "ref": "inputHandler", "params": ["minDate"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["minDate", "value"] }
+          "onDateChange": { "ref": "updateInput", "params": ["minDate", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -201,14 +210,15 @@
         "name": "maxDate",
         "inputProperty": "maxDate",
         "label": "Max Date",
-        "type": "text",
+        "type": "date",
         "default": "",
         "width": "180px",
         "placeholder": "YYYY-MM-DD",
+        "format": "YYYY-MM-DD",
         "valueHandler": { "ref": "componentInput", "params": ["maxDate"] },
         "stateHandler": { "ref": "inputHandler", "params": ["maxDate"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["maxDate", "value"] }
+          "onDateChange": { "ref": "updateInput", "params": ["maxDate", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",

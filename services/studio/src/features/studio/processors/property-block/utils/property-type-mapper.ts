@@ -20,6 +20,8 @@ export class PropertyTypeMapper {
         return "event";  // Low-code editor for dynamic data
       case 'icon':
         return "IconPicker";  // Icon picker component
+      case 'date':
+        return "Datepicker";  // Date picker component
       default:
         return "text_input";
     }

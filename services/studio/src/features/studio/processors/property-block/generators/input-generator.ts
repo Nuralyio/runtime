@@ -14,12 +14,17 @@ export class InputGenerator {
     if (property.type === 'event') {
       return this.generateEventInput(property, inputUuid);
     }
-    
+
     // Icon type components use IconPicker with special input structure
     if (property.type === 'icon') {
       return this.generateIconInput(property, inputUuid);
     }
-    
+
+    // Date type components use Datepicker with special input structure
+    if (property.type === 'date') {
+      return this.generateDateInput(property, inputUuid);
+    }
+
     // Standard input components (text, number, select, color, etc.)
     return this.generateStandardInput(property, inputUuid);
   }
@@ -137,7 +142,91 @@ export class InputGenerator {
     
     return iconInput;
   }
-  
+
+  private static generateDateInput(property: PropertyConfig, inputUuid: string): any {
+    const dateInput: any = {
+      uuid: inputUuid,
+      application_id: "1",
+      name: `${property.label} Input`,
+      component_type: "Datepicker",
+      inputHandlers: {},
+      styleHandlers: {},
+      styleBreakPoints: {
+        mobile: {},
+        tablet: {},
+        laptop: {}
+      },
+      attributesHandlers: {},
+      errors: {},
+      childrenIds: [],
+      style: {
+        display: "block",
+        width: property.width || "180px",
+        "--nuraly-input-helper-text-font-size": "11px",
+        "--nuraly-input-helper-text-color": "#8c8c8c",
+        "--nuraly-datepicker-width": property.width || "180px",
+        "--nuraly-input-width": property.width || "180px"
+      },
+      input: {
+        value: {
+          type: "handler",
+          value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
+                 `
+                   const selectedComponent = Utils.first(Vars.selectedComponents);
+                   if (!selectedComponent) return '';
+                   const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                   if (!input) return '';
+                   return (typeof input === 'object' && input.value !== undefined) ? input.value : (input || '');
+                 `
+        },
+        placeholder: {
+          type: "string",
+          value: property.placeholder || 'YYYY-MM-DD'
+        },
+        format: {
+          type: "string",
+          value: property.format || 'YYYY-MM-DD'
+        },
+        size: {
+          type: "string",
+          value: "small"
+        }
+      },
+      event: {}
+    };
+
+    // Add helper text showing if value is driven by handler
+    if (property.hasHandler) {
+      dateInput.input.helper = {
+        type: "handler",
+        value: property.helperHandler
+          ? HandlerResolver.resolveHandler(property.helperHandler, StateHandlers)
+          : StateHandlers.inputHelperText(property.handlerProperty || property.name)
+      };
+    }
+
+    // Add event handlers
+    if (property.eventHandlers) {
+      Object.entries(property.eventHandlers).forEach(([eventName, handler]) => {
+        const resolvedHandler = HandlerResolver.resolveHandler(handler, EventHandlers);
+        if (resolvedHandler) {
+          dateInput.event[eventName] = resolvedHandler;
+        }
+      });
+    }
+
+    // Add default date change event if not provided
+    if (!dateInput.event.onDateChange) {
+      dateInput.event.onDateChange = `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (!selectedComponent) return;
+        updateInput(selectedComponent, "${property.inputProperty || property.name}", "string", EventData.value);
+      `;
+    }
+
+    return dateInput;
+  }
+
   private static generateStandardInput(property: PropertyConfig, inputUuid: string): any {
     const baseInput: any = {
       uuid: inputUuid,
