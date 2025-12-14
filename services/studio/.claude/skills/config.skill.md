@@ -168,6 +168,28 @@ Based on the checkbox component configuration, follow these patterns:
 }
 ```
 
+#### Date Picker Properties (with Handler Support)
+```json
+{
+  "name": "minDate",
+  "inputProperty": "minDate",
+  "label": "Min Date",
+  "type": "date",
+  "default": "",
+  "width": "180px",
+  "placeholder": "YYYY-MM-DD",
+  "format": "YYYY-MM-DD",
+  "valueHandler": { "ref": "componentInput", "params": ["minDate"] },
+  "stateHandler": { "ref": "inputHandler", "params": ["minDate"] },
+  "eventHandlers": {
+    "onDateChange": { "ref": "updateInput", "params": ["minDate", "value"] }
+  },
+  "hasHandler": true,
+  "handlerType": "input",
+  "handlerProperty": "minDate"
+}
+```
+
 ### Key Configuration Fields
 
 - **name**: Internal property identifier (used in code)

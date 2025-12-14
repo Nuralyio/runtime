@@ -5,7 +5,7 @@
 export interface PropertyConfig {
   name: string;
   label: string;
-  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event' | 'icon';
+  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event' | 'icon' | 'date';
   default: any;
   unit?: string;
   min?: number;
@@ -13,6 +13,7 @@ export interface PropertyConfig {
   step?: number;
   width?: string;
   placeholder?: string;
+  format?: string;  // Date format for date inputs
   options?: Array<{ value: string; label: string }>;
   autoCheckbox?: boolean;
   // Input property mapping
@@ -20,6 +21,7 @@ export interface PropertyConfig {
   // Generic handlers - can be inline code, handler reference, or simple value
   valueHandler?: string | { ref: string; params?: any[] };
   stateHandler?: string | { ref: string; params?: any[] };
+  helperHandler?: string | { ref: string; params?: any[] };  // Custom helper text handler
   eventHandlers?: {
     [eventName: string]: string | { ref: string; params?: any[] };
   };
