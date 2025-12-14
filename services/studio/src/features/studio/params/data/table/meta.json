@@ -4,6 +4,6 @@
   "themeContainerId": "studio_table_theme_container",
   "configKey": "tableFields",
   "childrenIds": [
-    "table_collapse_container"
+    "table_fields_collapse_container"
   ]
 }

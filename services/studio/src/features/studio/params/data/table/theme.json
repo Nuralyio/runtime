@@ -1,281 +1,277 @@
-{
-  "theme": {
-    "modes": [
+[
+  {
+    "name": "General",
+    "open": true,
+    "items": [
       {
-        "name": "General",
-        "open": true,
-        "items": [
-          {
-            "label": "Font Family",
-            "cssVar": "--nuraly-font-family",
-            "type": "select",
-            "defaultValue": "system-ui, -apple-system, sans-serif",
-            "options": [
-              { "label": "System UI", "value": "system-ui, -apple-system, sans-serif", "htmlContent": "<span style=\"font-family: system-ui, -apple-system, sans-serif;\">System UI</span>" },
-              { "label": "Arial", "value": "Arial, sans-serif", "htmlContent": "<span style=\"font-family: Arial, sans-serif;\">Arial</span>" },
-              { "label": "Helvetica", "value": "Helvetica, Arial, sans-serif", "htmlContent": "<span style=\"font-family: Helvetica, Arial, sans-serif;\">Helvetica</span>" },
-              { "label": "Times New Roman", "value": "Times New Roman, serif", "htmlContent": "<span style=\"font-family: Times New Roman, serif;\">Times New Roman</span>" },
-              { "label": "Georgia", "value": "Georgia, serif", "htmlContent": "<span style=\"font-family: Georgia, serif;\">Georgia</span>" },
-              { "label": "Verdana", "value": "Verdana, sans-serif", "htmlContent": "<span style=\"font-family: Verdana, sans-serif;\">Verdana</span>" },
-              { "label": "Trebuchet MS", "value": "Trebuchet MS, sans-serif", "htmlContent": "<span style=\"font-family: Trebuchet MS, sans-serif;\">Trebuchet MS</span>" },
-              { "label": "Courier New", "value": "Courier New, monospace", "htmlContent": "<span style=\"font-family: Courier New, monospace;\">Courier New</span>" },
-              { "label": "Roboto", "value": "Roboto, sans-serif", "htmlContent": "<span style=\"font-family: Roboto, sans-serif;\">Roboto</span>" },
-              { "label": "Inter", "value": "Inter, sans-serif", "htmlContent": "<span style=\"font-family: Inter, sans-serif;\">Inter</span>" },
-              { "label": "Sans Serif (Generic)", "value": "sans-serif", "htmlContent": "<span style=\"font-family: sans-serif; font-style: italic; opacity: 0.8;\">sans-serif</span>" },
-              { "label": "Serif (Generic)", "value": "serif", "htmlContent": "<span style=\"font-family: serif; font-style: italic; opacity: 0.8;\">serif</span>" },
-              { "label": "Monospace (Generic)", "value": "monospace", "htmlContent": "<span style=\"font-family: monospace; font-style: italic; opacity: 0.8;\">monospace</span>" }
-            ]
-          },
-          {
-            "label": "Font Size (Input)",
-            "cssVar": "--nuraly-font-size-input",
-            "type": "text",
-            "placeholder": "14px",
-            "defaultValue": "14px"
-          }
+        "label": "Font Family",
+        "cssVar": "--nuraly-font-family",
+        "type": "select",
+        "defaultValue": "system-ui, -apple-system, sans-serif",
+        "options": [
+          { "label": "System UI", "value": "system-ui, -apple-system, sans-serif", "htmlContent": "<span style=\"font-family: system-ui, -apple-system, sans-serif;\">System UI</span>" },
+          { "label": "Arial", "value": "Arial, sans-serif", "htmlContent": "<span style=\"font-family: Arial, sans-serif;\">Arial</span>" },
+          { "label": "Helvetica", "value": "Helvetica, Arial, sans-serif", "htmlContent": "<span style=\"font-family: Helvetica, Arial, sans-serif;\">Helvetica</span>" },
+          { "label": "Times New Roman", "value": "Times New Roman, serif", "htmlContent": "<span style=\"font-family: Times New Roman, serif;\">Times New Roman</span>" },
+          { "label": "Georgia", "value": "Georgia, serif", "htmlContent": "<span style=\"font-family: Georgia, serif;\">Georgia</span>" },
+          { "label": "Verdana", "value": "Verdana, sans-serif", "htmlContent": "<span style=\"font-family: Verdana, sans-serif;\">Verdana</span>" },
+          { "label": "Trebuchet MS", "value": "Trebuchet MS, sans-serif", "htmlContent": "<span style=\"font-family: Trebuchet MS, sans-serif;\">Trebuchet MS</span>" },
+          { "label": "Courier New", "value": "Courier New, monospace", "htmlContent": "<span style=\"font-family: Courier New, monospace;\">Courier New</span>" },
+          { "label": "Roboto", "value": "Roboto, sans-serif", "htmlContent": "<span style=\"font-family: Roboto, sans-serif;\">Roboto</span>" },
+          { "label": "Inter", "value": "Inter, sans-serif", "htmlContent": "<span style=\"font-family: Inter, sans-serif;\">Inter</span>" },
+          { "label": "Sans Serif (Generic)", "value": "sans-serif", "htmlContent": "<span style=\"font-family: sans-serif; font-style: italic; opacity: 0.8;\">sans-serif</span>" },
+          { "label": "Serif (Generic)", "value": "serif", "htmlContent": "<span style=\"font-family: serif; font-style: italic; opacity: 0.8;\">serif</span>" },
+          { "label": "Monospace (Generic)", "value": "monospace", "htmlContent": "<span style=\"font-family: monospace; font-style: italic; opacity: 0.8;\">monospace</span>" }
         ]
       },
       {
-        "name": "Colors",
-        "open": false,
-        "items": [
-          {
-            "label": "Text Color",
-            "cssVar": "--nuraly-color-text",
-            "type": "color"
-          },
-          {
-            "label": "Background Color",
-            "cssVar": "--nuraly-color-background",
-            "type": "color"
-          },
-          {
-            "label": "Primary Color",
-            "cssVar": "--nuraly-color-primary",
-            "type": "color"
-          },
-          {
-            "label": "Border Color",
-            "cssVar": "--nuraly-color-border",
-            "type": "color"
-          }
-        ]
+        "label": "Font Size (Input)",
+        "cssVar": "--nuraly-font-size-input",
+        "type": "text",
+        "placeholder": "14px",
+        "defaultValue": "14px"
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "open": false,
+    "items": [
+      {
+        "label": "Text Color",
+        "cssVar": "--nuraly-color-text",
+        "type": "color"
       },
       {
-        "name": "Table Rows",
-        "open": false,
-        "items": [
-          {
-            "label": "Row Background",
-            "cssVar": "--nuraly-table-row-background",
-            "type": "color",
-            "defaultValue": "#ffffff"
-          },
-          {
-            "label": "Row Hover Background",
-            "cssVar": "--nuraly-table-row-hover-background",
-            "type": "color",
-            "defaultValue": "#f5f5f5"
-          },
-          {
-            "label": "Row Selected Background",
-            "cssVar": "--nuraly-table-row-selected-background",
-            "type": "color",
-            "defaultValue": "#e6f7ff"
-          },
-          {
-            "label": "Row Border Color",
-            "cssVar": "--nuraly-table-row-border-color",
-            "type": "color",
-            "defaultValue": "#f0f0f0"
-          },
-          {
-            "label": "Table Text Color",
-            "cssVar": "--nuraly-table-text-color",
-            "type": "color"
-          }
-        ]
+        "label": "Background Color",
+        "cssVar": "--nuraly-color-background",
+        "type": "color"
       },
       {
-        "name": "Table Header",
-        "open": false,
-        "items": [
-          {
-            "label": "Header Background",
-            "cssVar": "--nuraly-table-header-background",
-            "type": "color",
-            "defaultValue": "#fafafa"
-          }
-        ]
+        "label": "Primary Color",
+        "cssVar": "--nuraly-color-primary",
+        "type": "color"
       },
       {
-        "name": "Borders",
-        "open": false,
-        "items": [
-          {
-            "label": "Border Width",
-            "cssVar": "--nuraly-table-border-width",
-            "type": "text",
-            "placeholder": "1px",
-            "defaultValue": "1px"
-          },
-          {
-            "label": "Border Color",
-            "cssVar": "--nuraly-table-border-color",
-            "type": "color",
-            "defaultValue": "#d9d9d9"
-          }
-        ]
+        "label": "Border Color",
+        "cssVar": "--nuraly-color-border",
+        "type": "color"
+      }
+    ]
+  },
+  {
+    "name": "Table Rows",
+    "open": false,
+    "items": [
+      {
+        "label": "Row Background",
+        "cssVar": "--nuraly-table-row-background",
+        "type": "color",
+        "defaultValue": "#ffffff"
       },
       {
-        "name": "Filter",
-        "open": false,
-        "items": [
-          {
-            "label": "Filter Background",
-            "cssVar": "--nuraly-table-filter-background",
-            "type": "color",
-            "defaultValue": "#ffffff"
-          },
-          {
-            "label": "Filter Text Color",
-            "cssVar": "--nuraly-table-filter-text",
-            "type": "color",
-            "defaultValue": "#000000"
-          },
-          {
-            "label": "Filter Border",
-            "cssVar": "--nuraly-table-filter-border",
-            "type": "color",
-            "defaultValue": "#1890ff"
-          },
-          {
-            "label": "Filter Hover",
-            "cssVar": "--nuraly-table-filter-hover",
-            "type": "color",
-            "defaultValue": "rgba(0, 0, 0, 0.04)"
-          },
-          {
-            "label": "Filter Active Color",
-            "cssVar": "--nuraly-table-filter-active",
-            "type": "color",
-            "defaultValue": "#1890ff"
-          }
-        ]
+        "label": "Row Hover Background",
+        "cssVar": "--nuraly-table-row-hover-background",
+        "type": "color",
+        "defaultValue": "#f5f5f5"
       },
       {
-        "name": "Actions Bar",
-        "open": false,
-        "items": [
-          {
-            "label": "Action Background",
-            "cssVar": "--nuraly-table-action-color",
-            "type": "color",
-            "defaultValue": "#0f62fe"
-          },
-          {
-            "label": "Action Text/Background",
-            "cssVar": "--nuraly-table-background",
-            "type": "color",
-            "defaultValue": "#ffffff"
-          }
-        ]
+        "label": "Row Selected Background",
+        "cssVar": "--nuraly-table-row-selected-background",
+        "type": "color",
+        "defaultValue": "#e6f7ff"
       },
       {
-        "name": "Pagination",
-        "open": false,
-        "items": [
-          {
-            "label": "Pagination Background",
-            "cssVar": "--nuraly-pagination-background-color",
-            "type": "color"
-          },
-          {
-            "label": "Pagination Text Color",
-            "cssVar": "--nuraly-pagination-text-color",
-            "type": "color"
-          },
-          {
-            "label": "Pagination Borders",
-            "cssVar": "--nuraly-pagination-borders",
-            "type": "text",
-            "placeholder": "1px solid #d9d9d9"
-          },
-          {
-            "label": "Pagination Item Background",
-            "cssVar": "--nuraly-table-pagination-background",
-            "type": "color",
-            "defaultValue": "#fafafa"
-          },
-          {
-            "label": "Pagination Item Text",
-            "cssVar": "--nuraly-table-pagination-text",
-            "type": "color",
-            "defaultValue": "#000000"
-          }
-        ]
+        "label": "Row Border Color",
+        "cssVar": "--nuraly-table-row-border-color",
+        "type": "color",
+        "defaultValue": "#f0f0f0"
       },
       {
-        "name": "Selection",
-        "open": false,
-        "items": [
-          {
-            "label": "Checkbox Checked Color",
-            "cssVar": "--nuraly-table-checkbox-checked",
-            "type": "color",
-            "defaultValue": "#1890ff"
-          }
-        ]
+        "label": "Table Text Color",
+        "cssVar": "--nuraly-table-text-color",
+        "type": "color"
+      }
+    ]
+  },
+  {
+    "name": "Table Header",
+    "open": false,
+    "items": [
+      {
+        "label": "Header Background",
+        "cssVar": "--nuraly-table-header-background",
+        "type": "color",
+        "defaultValue": "#fafafa"
+      }
+    ]
+  },
+  {
+    "name": "Borders",
+    "open": false,
+    "items": [
+      {
+        "label": "Border Width",
+        "cssVar": "--nuraly-table-border-width",
+        "type": "text",
+        "placeholder": "1px",
+        "defaultValue": "1px"
       },
       {
-        "name": "Empty State",
-        "open": false,
-        "items": [
-          {
-            "label": "Secondary Text Color",
-            "cssVar": "--nuraly-color-text-secondary",
-            "type": "color",
-            "defaultValue": "#666666"
-          },
-          {
-            "label": "Quaternary Text Color",
-            "cssVar": "--nuraly-color-text-quaternary",
-            "type": "color",
-            "defaultValue": "#bfbfbf"
-          }
-        ]
+        "label": "Border Color",
+        "cssVar": "--nuraly-table-border-color",
+        "type": "color",
+        "defaultValue": "#d9d9d9"
+      }
+    ]
+  },
+  {
+    "name": "Filter",
+    "open": false,
+    "items": [
+      {
+        "label": "Filter Background",
+        "cssVar": "--nuraly-table-filter-background",
+        "type": "color",
+        "defaultValue": "#ffffff"
       },
       {
-        "name": "Expansion",
-        "open": false,
-        "items": [
-          {
-            "label": "Fill Tertiary",
-            "cssVar": "--nuraly-color-fill-tertiary",
-            "type": "color",
-            "defaultValue": "#f5f5f5"
-          },
-          {
-            "label": "Fill Quaternary",
-            "cssVar": "--nuraly-color-fill-quaternary",
-            "type": "color",
-            "defaultValue": "#fafafa"
-          }
-        ]
+        "label": "Filter Text Color",
+        "cssVar": "--nuraly-table-filter-text",
+        "type": "color",
+        "defaultValue": "#000000"
       },
       {
-        "name": "Spacing",
-        "open": false,
-        "items": [
-          {
-            "label": "Spacing 2",
-            "cssVar": "--nuraly-spacing-2",
-            "type": "text",
-            "placeholder": "0.5rem",
-            "defaultValue": "0.5rem"
-          }
-        ]
+        "label": "Filter Border",
+        "cssVar": "--nuraly-table-filter-border",
+        "type": "color",
+        "defaultValue": "#1890ff"
+      },
+      {
+        "label": "Filter Hover",
+        "cssVar": "--nuraly-table-filter-hover",
+        "type": "color",
+        "defaultValue": "rgba(0, 0, 0, 0.04)"
+      },
+      {
+        "label": "Filter Active Color",
+        "cssVar": "--nuraly-table-filter-active",
+        "type": "color",
+        "defaultValue": "#1890ff"
+      }
+    ]
+  },
+  {
+    "name": "Actions Bar",
+    "open": false,
+    "items": [
+      {
+        "label": "Action Background",
+        "cssVar": "--nuraly-table-action-color",
+        "type": "color",
+        "defaultValue": "#0f62fe"
+      },
+      {
+        "label": "Action Text/Background",
+        "cssVar": "--nuraly-table-background",
+        "type": "color",
+        "defaultValue": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Pagination",
+    "open": false,
+    "items": [
+      {
+        "label": "Pagination Background",
+        "cssVar": "--nuraly-pagination-background-color",
+        "type": "color"
+      },
+      {
+        "label": "Pagination Text Color",
+        "cssVar": "--nuraly-pagination-text-color",
+        "type": "color"
+      },
+      {
+        "label": "Pagination Borders",
+        "cssVar": "--nuraly-pagination-borders",
+        "type": "text",
+        "placeholder": "1px solid #d9d9d9"
+      },
+      {
+        "label": "Pagination Item Background",
+        "cssVar": "--nuraly-table-pagination-background",
+        "type": "color",
+        "defaultValue": "#fafafa"
+      },
+      {
+        "label": "Pagination Item Text",
+        "cssVar": "--nuraly-table-pagination-text",
+        "type": "color",
+        "defaultValue": "#000000"
+      }
+    ]
+  },
+  {
+    "name": "Selection",
+    "open": false,
+    "items": [
+      {
+        "label": "Checkbox Checked Color",
+        "cssVar": "--nuraly-table-checkbox-checked",
+        "type": "color",
+        "defaultValue": "#1890ff"
+      }
+    ]
+  },
+  {
+    "name": "Empty State",
+    "open": false,
+    "items": [
+      {
+        "label": "Secondary Text Color",
+        "cssVar": "--nuraly-color-text-secondary",
+        "type": "color",
+        "defaultValue": "#666666"
+      },
+      {
+        "label": "Quaternary Text Color",
+        "cssVar": "--nuraly-color-text-quaternary",
+        "type": "color",
+        "defaultValue": "#bfbfbf"
+      }
+    ]
+  },
+  {
+    "name": "Expansion",
+    "open": false,
+    "items": [
+      {
+        "label": "Fill Tertiary",
+        "cssVar": "--nuraly-color-fill-tertiary",
+        "type": "color",
+        "defaultValue": "#f5f5f5"
+      },
+      {
+        "label": "Fill Quaternary",
+        "cssVar": "--nuraly-color-fill-quaternary",
+        "type": "color",
+        "defaultValue": "#fafafa"
+      }
+    ]
+  },
+  {
+    "name": "Spacing",
+    "open": false,
+    "items": [
+      {
+        "label": "Spacing 2",
+        "cssVar": "--nuraly-spacing-2",
+        "type": "text",
+        "placeholder": "0.5rem",
+        "defaultValue": "0.5rem"
       }
     ]
   }
-}
+]
