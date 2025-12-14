@@ -10,7 +10,6 @@ try {
 }
 
 import { BaseElementBlock } from "../../base/BaseElement.ts";
-import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 
 @customElement("menu-block")
@@ -44,10 +43,9 @@ export class MenuBlock extends BaseElementBlock {
 
         <nr-menu
                     ${ref(this.inputRef)}
+     class="${`drop-${this.component.uuid}`}"
 
-          style=${styleMap({ ...this.getStyles(),
-            display : 'block',
-           })}
+         
           placeholder="Select an option"
           size=${this.inputHandlersValue?.size ?? 'medium'}
           arrowPosition=${this.inputHandlersValue?.arrowPosition ?? 'right'}
