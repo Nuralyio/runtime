@@ -218,8 +218,11 @@ Following the checkbox component pattern, theme files should:
 2. **Group by functionality** - Organize CSS variables by purpose (General, Border, States, etc.)
 3. **Use actual CSS variables** - Extract variables directly from the component's `.style.ts` file
 4. **Remove interactive state sections** - Hover, focus, and active states are managed outside the theme
+5. **Support multiple input types** - Use color, text, number, or select inputs based on the CSS property
 
 ### Theme Configuration Example
+
+#### Basic Color Inputs (Default)
 
 ```json
 [
@@ -249,6 +252,91 @@ Following the checkbox component pattern, theme files should:
   }
 ]
 ```
+
+#### Multiple Input Types
+
+Theme items support different input types for different CSS properties:
+
+```json
+[
+  {
+    "name": "Typography",
+    "open": false,
+    "items": [
+      {
+        "label": "Font Family",
+        "cssVar": "--nuraly-component-font-family",
+        "type": "text",
+        "placeholder": "Inter, sans-serif",
+        "defaultValue": "Inter, ui-sans-serif, system-ui"
+      },
+      {
+        "label": "Font Size",
+        "cssVar": "--nuraly-component-font-size",
+        "type": "text",
+        "placeholder": "14px",
+        "defaultValue": "14px"
+      },
+      {
+        "label": "Font Weight",
+        "cssVar": "--nuraly-component-font-weight",
+        "type": "number",
+        "placeholder": "400",
+        "defaultValue": "400"
+      }
+    ]
+  },
+  {
+    "name": "Spacing",
+    "open": false,
+    "items": [
+      {
+        "label": "Padding",
+        "cssVar": "--nuraly-component-padding",
+        "type": "text",
+        "placeholder": "8px 12px",
+        "defaultValue": "8px 12px"
+      },
+      {
+        "label": "Border Radius",
+        "cssVar": "--nuraly-component-border-radius",
+        "type": "text",
+        "placeholder": "8px",
+        "defaultValue": "8px"
+      }
+    ]
+  },
+  {
+    "name": "Animation",
+    "open": false,
+    "items": [
+      {
+        "label": "Transition Timing",
+        "cssVar": "--nuraly-component-transition-timing",
+        "type": "select",
+        "options": [
+          { "label": "Ease", "value": "ease" },
+          { "label": "Ease In", "value": "ease-in" },
+          { "label": "Ease Out", "value": "ease-out" },
+          { "label": "Linear", "value": "linear" }
+        ],
+        "defaultValue": "ease-in-out"
+      }
+    ]
+  }
+]
+```
+
+### Theme Input Type Reference
+
+| Type | Use Case | Example Properties | Additional Fields |
+|------|----------|-------------------|-------------------|
+| `color` (default) | Color values | Colors, backgrounds, borders | None required |
+| `text` | Text values, sizes, spacing | Font family, padding, margin, sizes | `placeholder`, `defaultValue` |
+| `number` | Numeric values | Font weight, opacity, z-index | `placeholder`, `defaultValue` |
+| `select` | Predefined choices | Transition timing, text-align | `options` (required), `defaultValue` |
+
+**Note:** If `type` is omitted, it defaults to `"color"`
 
 ### Updating Component Configuration Workflow
 
