@@ -188,10 +188,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["readonly"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["readonly"]
@@ -207,10 +203,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["required"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["required"]
@@ -226,10 +218,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["allowClear"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["allowClear"]
@@ -245,10 +233,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["withCopy"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["withCopy"]
@@ -264,10 +248,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["showCount"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["showCount"]
@@ -283,10 +263,6 @@
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": {
-          "ref": "componentInput",
-          "params": ["hasFeedback"]
-        },
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["hasFeedback"]

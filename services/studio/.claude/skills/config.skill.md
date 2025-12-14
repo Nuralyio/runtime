@@ -151,7 +151,9 @@ Based on the checkbox component configuration, follow these patterns:
 
 #### Boolean/Checkbox Properties (with Handler Support)
 
-**IMPORTANT:** Boolean properties should NOT have `eventHandlers` defined. The checkbox component handles its own change events internally.
+**IMPORTANT:**
+- Boolean properties should NOT have `eventHandlers` defined. The checkbox component handles its own change events internally.
+- Boolean properties should NOT have `valueHandler` defined. They only need `stateHandler`.
 
 ```json
 {
@@ -161,7 +163,6 @@ Based on the checkbox component configuration, follow these patterns:
   "type": "boolean",
   "default": false,
   "width": "180px",
-  "valueHandler": { "ref": "componentInput", "params": ["disabled"] },
   "stateHandler": { "ref": "inputHandler", "params": ["disabled"] },
   "hasHandler": true,
   "handlerType": "input",
