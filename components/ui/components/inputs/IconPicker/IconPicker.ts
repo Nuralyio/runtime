@@ -4,9 +4,8 @@ import { customElement, property } from "lit/decorators.js";
 import { BaseElementBlock } from '../../base/BaseElement';
 import { styles } from "./IconPicker.style.ts";
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
-import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
-// import "@nuralyui/iconpicker"; // TODO: Package doesn't exist, needs to be created or removed
+import "@nuralyui/iconpicker"; // TODO: Package doesn't exist, needs to be created or removed
 
 @customElement("icon-picker-block")
 export class IconPicker extends BaseElementBlock {
@@ -21,25 +20,30 @@ export class IconPicker extends BaseElementBlock {
   }
 
   renderComponent() {
-    const iconPickerStyles = this.component?.style || {};
-    const size = (iconPickerStyles.size as 'small' | 'medium' | 'large') || 'medium';
+    const inputValue = this.inputHandlersValue.value ?? EMPTY_STRING;
+    const size = this.inputHandlersValue?.size || 'small';
+    const placement = this.inputHandlersValue?.placement || 'auto';
+    const trigger = this.inputHandlersValue?.trigger || 'manual';
+    const disabled = this.inputHandlersValue?.disable === 'disabled' || this.inputHandlersValue?.disable === true;
+    const readonly = this.inputHandlersValue?.readonly || false;
+    const placeholder = this.inputHandlersValue?.placeholder || 'Select icon';
+    const showSearch = this.inputHandlersValue?.showSearch !== false;
+    const showClear = this.inputHandlersValue?.showClear !== false;
+    const maxVisible = this.inputHandlersValue?.maxVisible || 500;
 
     return html`
       <nr-icon-picker
         ${ref(this.inputRef)}
-        style=${styleMap({
-          ...this.getStyles(),
-        })}
-        .value=${this.inputHandlersValue.value ?? EMPTY_STRING}
-        .disabled=${this.inputHandlersValue?.state === "disabled"}
-        .readonly=${this.inputHandlersValue?.readonly || false}
+        .value=${inputValue}
         .size=${size}
-        .placement=${this.inputHandlersValue?.placement || 'auto'}
-        .trigger=${this.inputHandlersValue?.trigger || 'manual'}
-        .placeholder=${this.inputHandlersValue?.placeholder || 'Select icon'}
-        .showSearch=${this.inputHandlersValue?.showSearch !== false}
-        .showClear=${this.inputHandlersValue?.showClear !== false}
-        .maxVisible=${this.inputHandlersValue?.maxVisible || 500}
+        .placement=${placement}
+        .trigger=${trigger}
+        .disabled=${disabled}
+        .readonly=${readonly}
+        .placeholder=${placeholder}
+        .showSearch=${showSearch}
+        .showClear=${showClear}
+        .maxVisible=${maxVisible}
         @nr-icon-picker-change=${(e: CustomEvent) => {
           this.executeEvent('onChange', e, { value: e.detail.value, icon: e.detail.icon });
         }}
