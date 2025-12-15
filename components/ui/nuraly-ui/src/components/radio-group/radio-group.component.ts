@@ -61,6 +61,8 @@ import { ButtonType } from '../button/button.types.js';
  * ```
  * 
  * @fires nr-change - Dispatched when the selected option changes
+ * 
+ * @slot helper-text - Helper text displayed below the radio group
  */
 @customElement('nr-radio-group')
 export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
@@ -80,6 +82,7 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: String }) size: 'small' | 'medium' | 'large' = 'medium';
   @property({ type: String }) position: 'left' | 'right' = 'left';
   @property({ type: Boolean, attribute: 'auto-width' }) autoWidth: boolean = false;
+  @property({ type: String }) helper: string = '';
 
   // Reactive Controllers - PROPERLY implemented now
   private groupController = new RadioGroupController(this);
@@ -416,11 +419,14 @@ export class NrRadioGroupElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   protected override render() {
-    return html`${choose(this.type, [
-      [RadioButtonType.Default, () => this.renderOptionDefault()],
-      [RadioButtonType.Button, () => this.renderOptionsWithButtons()],
-      [RadioButtonType.Slot, () => this.renderOptionsWithSlots()],
-      [RadioButtonType.ButtonSlot, () => this.renderButtonsWithSlots()], // Special case for button with slots
-    ])} `;
+    return html`
+      ${choose(this.type, [
+        [RadioButtonType.Default, () => this.renderOptionDefault()],
+        [RadioButtonType.Button, () => this.renderOptionsWithButtons()],
+        [RadioButtonType.Slot, () => this.renderOptionsWithSlots()],
+        [RadioButtonType.ButtonSlot, () => this.renderButtonsWithSlots()], // Special case for button with slots
+      ])}
+      <slot name="helper-text"></slot>
+    `;
   }
 }
