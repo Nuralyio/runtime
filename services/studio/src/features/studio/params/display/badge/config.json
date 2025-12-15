@@ -1,0 +1,256 @@
+{
+  "badgeFields": {
+    "container": {
+      "uuid": "badge_fields_collapse_container",
+      "name": "Badge Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "badge_fields_collapse",
+      "title": "Badge Properties"
+    },
+    "properties": [
+      {
+        "name": "badge_count",
+        "inputProperty": "count",
+        "label": "Count",
+        "type": "number",
+        "default": "0",
+        "width": "80px",
+        "placeholder": "0",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["count"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["count"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["count", "value"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "count"
+      },
+      {
+        "name": "badge_text",
+        "inputProperty": "text",
+        "label": "Text",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Badge text",
+        "helperText": "Text will only be visible when no status is selected",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["text"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["text"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["text", "value"]
+          }
+        },
+        "helperHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst hasInputHandler = selectedComponent?.inputHandlers?.['text'];\nconst hasHandlerType = selectedComponent?.input?.text?.type === 'handler' && selectedComponent?.input?.text?.value;\nif (hasInputHandler || hasHandlerType) return 'Value driven by handler';\nconst status = selectedComponent?.input?.status?.value || '';\nreturn status ? 'Text is visible only when no status selected' : '';",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "text"
+      },
+      {
+        "name": "badge_dot",
+        "inputProperty": "dot",
+        "label": "Dot Badge",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["dot"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "dot"
+      },
+      {
+        "name": "badge_showZero",
+        "inputProperty": "showZero",
+        "label": "Show Zero",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["showZero"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "showZero"
+      },
+      {
+        "name": "badge_overflowCount",
+        "inputProperty": "overflowCount",
+        "label": "Overflow Count",
+        "type": "number",
+        "default": "99",
+        "width": "80px",
+        "placeholder": "99",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["overflowCount"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["overflowCount"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["overflowCount", "value"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "overflowCount"
+      },
+      {
+        "name": "badge_size",
+        "inputProperty": "size",
+        "label": "Size",
+        "type": "radio",
+        "default": "default",
+        "width": "180px",
+        "options": [
+          { "label": "S", "value": "small" },
+          { "label": "M", "value": "default" }
+        ],
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["size"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["size", "value"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size"
+      },
+      {
+        "name": "badge_color",
+        "inputProperty": "color",
+        "label": "Color",
+        "type": "select",
+        "default": "",
+        "width": "180px",
+        "options": [
+          { "label": "Default", "value": "" },
+          { "label": "Primary", "value": "primary" },
+          { "label": "Success", "value": "success" },
+          { "label": "Warning", "value": "warning" },
+          { "label": "Danger", "value": "danger" }
+        ],
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["color"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["color"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["color", "value"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "color"
+      },
+      {
+        "name": "badge_status",
+        "inputProperty": "status",
+        "label": "Status",
+        "type": "select",
+        "default": "",
+        "width": "180px",
+        "options": [
+          { "label": "None", "value": "" },
+          { "label": "Default", "value": "default" },
+          { "label": "Processing", "value": "processing" },
+          { "label": "Success", "value": "success" },
+          { "label": "Error", "value": "error" },
+          { "label": "Warning", "value": "warning" }
+        ],
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["status"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["status"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["status", "value"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "status"
+      },
+      {
+        "name": "badge_ribbon",
+        "inputProperty": "ribbon",
+        "label": "Ribbon",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["ribbon"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "ribbon"
+      },
+      {
+        "name": "badge_ribbonPlacement",
+        "inputProperty": "ribbonPlacement",
+        "label": "Ribbon Position",
+        "helperText": "Position of the ribbon on the corner of the component",
+        "type": "radio",
+        "default": "end",
+        "width": "180px",
+        "options": [
+          { "value": "start", "icon": "arrow-left" },
+          { "value": "end", "icon": "arrow-right" }
+        ],
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["ribbonPlacement"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["ribbonPlacement", "value"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "ribbonPlacement"
+      }
+    ]
+  }
+}

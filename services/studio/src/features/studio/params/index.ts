@@ -219,10 +219,10 @@ export const StudioIcon = loadComponentProperties(
 );
 
 // Badge
-import badgeConfig from "./display/badge/badge-config.yaml";
-import badgeHandlers from "./display/badge/badge-handlers.yaml";
-import badgeTheme from "./display/badge/badge-theme.yaml";
-import badgeMeta from "./display/badge/badge-meta.yaml";
+import badgeConfig from "./display/badge/config.json";
+import badgeHandlers from "./display/badge/handlers.json";
+import badgeTheme from "./display/badge/theme.json";
+import badgeMeta from "./display/badge/meta.json";
 
 export const StudioBadge = loadComponentProperties(
   badgeConfig,

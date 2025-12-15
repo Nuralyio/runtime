@@ -13,6 +13,7 @@ export interface PropertyConfig {
   step?: number;
   width?: string;
   placeholder?: string;
+  helperText?: string;
   format?: string;  // Date format for date inputs
   options?: Array<{ value: string; label: string }>;
   autoCheckbox?: boolean;

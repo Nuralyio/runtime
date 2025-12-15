@@ -1,7 +1,0 @@
-uuid: badge_blocks
-name: Parent Badge Container
-themeContainerId: badge_theme_container
-configKey: badgeFields
-
-childrenIds:
-  - badge_fields_collapse_container
