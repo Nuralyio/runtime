@@ -80,22 +80,12 @@
         "name": "table_filter",
         "inputProperty": "filter",
         "label": "Filter",
-        "type": "radio",
-        "default": "",
+        "type": "boolean",
+        "default": false,
         "width": "180px",
-        "options": [
-          { "value": "", "icon": "ban" },
-          { "value": "filter", "icon": "filter" }
-        ],
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["filter"]
-        },
-        "eventHandlers": {
-          "onChange": {
-            "ref": "updateInput",
-            "params": ["filter", "value"]
-          }
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -105,22 +95,12 @@
         "name": "table_fixedHeader",
         "inputProperty": "fixedHeader",
         "label": "Fixed Header",
-        "type": "radio",
+        "type": "boolean",
         "default": false,
         "width": "180px",
-        "options": [
-          { "value": false, "icon": "toggle-off" },
-          { "value": true, "icon": "toggle-on" }
-        ],
         "stateHandler": {
           "ref": "inputHandler",
           "params": ["fixedHeader"]
-        },
-        "eventHandlers": {
-          "onChange": {
-            "ref": "updateInput",
-            "params": ["fixedHeader", "value"]
-          }
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -145,7 +125,7 @@
         "eventHandlers": {
           "valueChange": {
             "ref": "updateInput",
-            "params": ["expandable", "string"]
+            "params": ["expandable", "value"]
           }
         },
         "hasHandler": true,
@@ -186,7 +166,7 @@
         "eventHandlers": {
           "valueChange": {
             "ref": "updateInput",
-            "params": ["emptyText", "string"]
+            "params": ["emptyText", "value"]
           }
         },
         "hasHandler": true,
@@ -212,7 +192,7 @@
         "eventHandlers": {
           "iconChanged": {
             "ref": "updateInput",
-            "params": ["emptyIcon", "string"]
+            "params": ["emptyIcon", "value"]
           }
         },
         "hasHandler": true,
