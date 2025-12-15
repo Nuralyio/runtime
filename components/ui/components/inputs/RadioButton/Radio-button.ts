@@ -61,7 +61,11 @@ export class RadioButtonBlock extends BaseElementBlock {
               oldValue: e.detail.oldValue
             });
           }}
-        ></nr-radio-group>
+        >
+          <span slot="helper-text" style="display: block; margin-top: 4px;">
+            ${this.inputHandlersValue?.helper ?? ""}
+          </span>
+        </nr-radio-group>
       </span>
     `;
   }
