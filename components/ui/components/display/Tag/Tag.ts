@@ -37,18 +37,17 @@ export class TagBlock extends BaseElementBlock {
       <nr-tag
         ${ref(this.inputRef)}
         style=${styleMap(tagStyles)}
-        .label=${label}
         .color=${color}
-        .icon=${icon}
         ?closable=${closable}
         ?bordered=${bordered}
-        @nr-close=${(e: CustomEvent) => {
+        @nr-tag-close=${(e: CustomEvent) => {
           this.executeEvent('onClose', e);
         }}
         @click=${(e: MouseEvent) => {
           this.executeEvent('onClick', e);
         }}
       >
+        ${icon ? html`<nr-icon slot="icon" .name=${icon}></nr-icon>` : ''}
         ${label}
       </nr-tag>
     `;
