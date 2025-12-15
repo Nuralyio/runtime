@@ -232,10 +232,10 @@ export const StudioBadge = loadComponentProperties(
 );
 
 // Tag
-import tagConfig from "./display/tag/tag-config.yaml";
-import tagHandlers from "./display/tag/tag-handlers.yaml";
-import tagTheme from "./display/tag/tag-theme.yaml";
-import tagMeta from "./display/tag/tag-meta.yaml";
+import tagConfig from "./display/tag/tag-config.json";
+import tagHandlers from "./display/tag/tag-handlers.json";
+import tagTheme from "./display/tag/tag-theme.json";
+import tagMeta from "./display/tag/tag-meta.json";
 
 export const StudioTag = loadComponentProperties(
   tagConfig,
