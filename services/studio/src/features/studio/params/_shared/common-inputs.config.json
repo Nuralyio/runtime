@@ -61,6 +61,7 @@
       {
         "name": "display",
         "label": "Display",
+        "helperText": "Show or hide the component",
         "type": "radio",
         "default": true,
         "width": "80px",

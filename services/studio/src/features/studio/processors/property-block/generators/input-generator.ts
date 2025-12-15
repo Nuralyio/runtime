@@ -71,6 +71,10 @@ export class InputGenerator {
         value: {
           type: "handler",
           value: valueGetter
+        },
+        helper: {
+          type: "handler",
+          value: `return '${property.helperText || ''}';`
         }
       },
       event: {
@@ -125,6 +129,10 @@ export class InputGenerator {
                      selectedComponent?.input?.${property.name}?.value
                    );
                  `
+        },
+        helper: {
+          type: "handler",
+          value: `return '${property.helperText || ''}';`
         }
       },
       event: {}
@@ -279,7 +287,6 @@ export class InputGenerator {
           type: "string",
           value: "small"
         } : undefined,
-
         state: {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
@@ -300,16 +307,17 @@ export class InputGenerator {
       };
     }
 
-    // Add helper text for inputs with handler support (text, number, radio)
-    // Shows "Value driven by handler" when handler is active
-    if (property.hasHandler || property.type === 'text' || property.type === 'number' || property.type === 'radio') {
-      baseInput.input.helper = {
-        type: "handler",
-        value: property.helperHandler
+    // Add helper text - always add for all input types
+    baseInput.input.helper = {
+      type: "handler",
+      value: property.helperText 
+        ? `return '${property.helperText}';`
+        : (property.helperHandler
           ? HandlerResolver.resolveHandler(property.helperHandler, StateHandlers)
-          : StateHandlers.inputHelperText(property.handlerProperty || property.name)
-      };
-    }
+          : (property.hasHandler || property.type === 'text' || property.type === 'number' || property.type === 'radio')
+            ? StateHandlers.inputHelperText(property.handlerProperty || property.name)
+            : `return '';`)
+    };
 
     // Resolve event handlers from references or use custom events
     if (property.eventHandlers) {
