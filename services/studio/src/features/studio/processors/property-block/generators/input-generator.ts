@@ -111,7 +111,7 @@ export class InputGenerator {
           value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
                  `
                    const selectedComponent = Utils.first(Vars.selectedComponents);
-                   const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, '${property.name}') : null;
+                   const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}') : null;
                    return Input?.value || '';
                  `
         },
