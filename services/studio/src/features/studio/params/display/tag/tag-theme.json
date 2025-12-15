@@ -1,0 +1,59 @@
+[
+  {
+    "name": "Tag Theme",
+    "open": true,
+    "items": [
+      {
+        "name": "General",
+        "items": [
+          {
+            "label": "Background Color",
+            "cssVar": "--tag-background-color",
+            "type": "color"
+          },
+          {
+            "label": "Text Color",
+            "cssVar": "--tag-text-color",
+            "type": "color"
+          },
+          {
+            "label": "Border Color",
+            "cssVar": "--tag-border-color",
+            "type": "color"
+          },
+          {
+            "label": "Border Radius",
+            "cssVar": "--tag-border-radius",
+            "type": "text",
+            "defaultValue": "4px"
+          }
+        ]
+      },
+      {
+        "name": "Color Variants",
+        "items": [
+          {
+            "label": "Primary Background",
+            "cssVar": "--tag-primary-background",
+            "type": "color"
+          },
+          {
+            "label": "Success Background",
+            "cssVar": "--tag-success-background",
+            "type": "color"
+          },
+          {
+            "label": "Warning Background",
+            "cssVar": "--tag-warning-background",
+            "type": "color"
+          },
+          {
+            "label": "Danger Background",
+            "cssVar": "--tag-danger-background",
+            "type": "color"
+          }
+        ]
+      }
+    ]
+  }
+]
