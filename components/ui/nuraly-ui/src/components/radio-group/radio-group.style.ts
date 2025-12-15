@@ -245,4 +245,27 @@ export const styles = css`
   .slot-container.selected .slot-wrapper {
     background-color: var(--nuraly-radio-group-slot-selected-bg);
   }
+
+  /* ========================================
+   * HELPER TEXT SLOT STYLING
+   * ======================================== */
+
+  ::slotted([slot='helper-text']) {
+    color: var(--nuraly-input-helper-text-color, var(--nuraly-helper-text-color, #8c8c8c));
+    font-size: var(--nuraly-input-helper-text-font-size, var(--nuraly-helper-text-font-size, 12px));
+    padding-top: var(--nuraly-input-helper-text-padding-top, var(--nuraly-helper-text-padding-top, 4px));
+    
+    /* Prevent text overflow and ensure proper wrapping without affecting parent width */
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    white-space: normal;
+    max-width: 100%;
+    width: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+    line-height: 1.4;
+    display: block;
+  }
 `;

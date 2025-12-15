@@ -31,11 +31,12 @@ export const styles = css`
 
   /* Main badge indicator (count or dot) */
   .badge-indicator {
-    position: absolute;
+    /* position: absolute; */
     top: 0;
     right: 0;
-    transform: translate(50%, -50%);
-    transform-origin: 100% 0%;
+    /* Temporarily disabled for demo - positions badge at exact corner */
+    /* transform: translate(50%, -50%); */
+    /* transform-origin: 100% 0%; */
     z-index: var(--nuraly-badge-indicator-z-index, auto);
     display: inline-flex;
     align-items: center;
