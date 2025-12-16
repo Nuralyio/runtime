@@ -450,7 +450,7 @@ export class BaseElementBlock extends LitElement {
       ["dragleave", this.dragLeaveHandlerBound],
     ];
 
-    this.eventsManager.forEach(([event, handler]) => this.addEventListener(event, handler, true));
+    this.eventsManager.forEach(([event, handler]) => this.addEventListener(event, handler, false));
 
     // Subscribe to keydown events
     this.subscription.add(
