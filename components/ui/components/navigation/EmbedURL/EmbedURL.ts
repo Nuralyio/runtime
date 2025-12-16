@@ -13,6 +13,20 @@ export class EmbedUrlBlock extends BaseElementBlock {
       height: 100%;
       border: none;
     }
+    .embed-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      min-height: 200px;
+      border-radius: 8px;
+      border: 2px dashed #cbd5e1;
+      gap: 12px;
+    }
+    .embed-placeholder nr-icon {
+      --nuraly-icon-size: 48px;
+    }
   `];
 
   @property({ type: Object })
@@ -84,25 +98,46 @@ export class EmbedUrlBlock extends BaseElementBlock {
   }
 
   override renderComponent() {
+    const embedStyles = this.getStyles() || {};
+    const embedStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
+
     const url = this.currentUrl || this.inputHandlersValue?.url || "";
+
+    // Show placeholder when no URL
+    if (!url) {
+      return html`
+        <div
+          ${ref(this.inputRef)}
+          class="embed-placeholder"
+          style=${styleMap({
+            ...this.getStyles(),
+            width: embedStyleHandlers?.width || embedStyles?.width || '100%',
+            height: embedStyleHandlers?.height || embedStyles?.height || '200px',
+          })}
+          @click=${(e: MouseEvent) => this.executeEvent('onClick', e)}
+        >
+          <nr-icon name="globe"></nr-icon>
+          <nr-label>No URL provided</nr-label>
+        </div>
+      `;
+    }
 
     return html`
       <div
-      ${ref(this.inputRef)}
+        ${ref(this.inputRef)}
         tabindex="0"
         @focus=${this.onFocus}
         @blur=${this.onBlur}
         @click=${(e: MouseEvent) => this.executeEvent('onClick', e)}
         style=${styleMap(this.getStyles())}
       >
-        ${url
-          ? html`<iframe
-              ${ref(this.iframeRef)}
-              src=${url}
-              @load=${(e: Event) => this.handleIframeLoad(e)}
-              @error=${(e: Event) => this.handleIframeError(e)}
-            ></iframe>`
-          : html`<div style="text-align:center; color:gray;">No URL provided</div>`}
+        <iframe
+          ${ref(this.iframeRef)}
+          src=${url}
+          @load=${(e: Event) => this.handleIframeLoad(e)}
+          @error=${(e: Event) => this.handleIframeError(e)}
+        ></iframe>
       </div>
     `;
   }

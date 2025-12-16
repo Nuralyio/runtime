@@ -20,15 +20,14 @@ export class VideoBlock extends BaseElementBlock {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #8892b0;
+      color: #64748b;
       min-height: 200px;
       border-radius: 8px;
-      border: 2px dashed #334155;
+      border: 2px dashed #cbd5e1;
       gap: 12px;
     }
     .video-placeholder nr-icon {
       --nuraly-icon-size: 48px;
-      opacity: 0.6;
     }
     .video-placeholder span {
       font-size: 14px;

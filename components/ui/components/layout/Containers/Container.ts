@@ -72,7 +72,12 @@ export class VerticalContainer extends BaseElementBlock {
       >
         ${this.childrenComponents.length
           ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode, {...this.component, uniqueUUID : this.uniqueUUID})
-          : nothing}
+          : html`
+              <div class="container-placeholder">
+                <nr-icon name="layout-grid"></nr-icon>
+                <nr-label>No content</nr-label>
+              </div>
+            `}
       </div>
     `;
   }
@@ -106,10 +111,11 @@ export class VerticalContainer extends BaseElementBlock {
                 ? renderComponent(this.childrenComponents.map((component) => ({ ...component, item: this.item })), this.item, this.isViewMode, {...this.component, uniqueUUID : this.uniqueUUID})
                 : html`
                     <div
-                      class="empty-message"
+                      class="container-placeholder"
                       @click="${() => setCurrentComponentIdAction(this.component?.uuid)}"
                     >
-                      Add or Drag an item into this container
+                      <nr-icon name="layout-grid"></nr-icon>
+                      <nr-label>Add or drag an item into this container</nr-label>
                       <drag-wrapper
                         .where=${"inside"}
                         .message=${"Drop inside"}
