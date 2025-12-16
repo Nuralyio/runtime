@@ -24,6 +24,7 @@ export { default as studioBorderCollapse } from "./common-blocks/studio-border-c
 export { default as studioBorderRadiusBlock } from "./common-blocks/studio-border-radius-block.ts";
 export { default as studioBoxShadowBlock } from "./common-blocks/studio-box-shadow-block.ts";
 export { default as studioBoxModelBlock } from "./common-blocks/studio-box-model-block.ts";
+export { default as studioValidationRulesBlock } from "./common-blocks/studio-validation-rules-block.ts";
 
 // Dashboard Blocks
 export { StudioDashboard } from "./dashboard-blocks/index.ts";

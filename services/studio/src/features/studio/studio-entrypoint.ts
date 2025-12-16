@@ -40,7 +40,8 @@ import {
   microAppContainerBlocks,
   StudioDashboard,
   PageThemeStudio,
-  studioTablePropertiesBlock
+  studioTablePropertiesBlock,
+  studioValidationRulesBlock
 } from "./blocks/index.ts";
 
 import {
@@ -467,5 +468,6 @@ export default [
     ...StudioVideo,
     ...StudioGridRow,
     ...StudioGridCol,
-    ...StudioForm
+    ...StudioForm,
+    ...studioValidationRulesBlock
 ];
