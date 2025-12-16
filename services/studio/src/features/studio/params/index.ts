@@ -120,10 +120,10 @@ export const StudioContainer = loadComponentProperties(
 );
 
 // Card
-import cardConfig from "./layout/card/card-config.yaml";
-import cardHandlers from "./layout/card/card-handlers.yaml";
-import cardTheme from "./layout/card/card-theme.yaml";
-import cardMeta from "./layout/card/card-meta.yaml";
+import cardConfig from "./layout/card/card-config.json";
+import cardHandlers from "./layout/card/card-handlers.json";
+import cardTheme from "./layout/card/card-theme.json";
+import cardMeta from "./layout/card/card-meta.json";
 
 export const StudioCard = loadComponentProperties(
   cardConfig,

@@ -7,33 +7,61 @@
     },
     "collapse": {
       "uuid": "icon_collapse",
-      "title": "Icon Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Icon Properties"
     },
     "properties": [
       {
-        "name": "name",
+        "name": "icon",
         "label": "Icon Name",
         "type": "icon",
-        "default": "",
+        "inputProperty": "name",
+        "default": "smile",
         "width": "100%",
         "placeholder": "Choose an icon",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "icon",
         "valueHandler": {
           "ref": "componentInput",
-          "params": ["name"]
+          "params": ["icon"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["icon"]
         },
         "eventHandlers": {
           "iconChanged": {
             "ref": "updateInput",
-            "params": ["name", "string"]
+            "params": ["icon", "value"]
+          }
+        }
+      },
+      {
+        "name": "type",
+        "label": "Icon Type",
+        "type": "radio",
+        "inputProperty": "type",
+        "default": "solid",
+        "width": "180px",
+        "options": [
+          { "label": "Solid", "value": "solid" },
+          { "label": "Regular", "value": "regular" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "type",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["type"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["type"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["type", "value"]
           }
         }
       },
@@ -41,8 +69,9 @@
         "name": "size",
         "label": "Size",
         "type": "select",
+        "inputProperty": "size",
         "default": "medium",
-        "width": "100%",
+        "width": "180px",
         "options": [
           { "label": "Small", "value": "small" },
           { "label": "Medium", "value": "medium" },
@@ -50,6 +79,9 @@
           { "label": "X-Large", "value": "xlarge" },
           { "label": "XX-Large", "value": "xxlarge" }
         ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size",
         "valueHandler": {
           "ref": "componentInput",
           "params": ["size"]
@@ -59,9 +91,9 @@
           "params": ["size"]
         },
         "eventHandlers": {
-          "changed": {
+          "onChange": {
             "ref": "updateInput",
-            "params": ["size", "string"]
+            "params": ["size", "value"]
           }
         }
       },
@@ -69,8 +101,12 @@
         "name": "color",
         "label": "Icon Color",
         "type": "color",
+        "inputProperty": "color",
         "default": "",
-        "width": "100%",
+        "width": "180px",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "color",
         "valueHandler": {
           "ref": "componentInput",
           "params": ["color"]
@@ -80,9 +116,9 @@
           "params": ["color"]
         },
         "eventHandlers": {
-          "changed": {
+          "onChange": {
             "ref": "updateInput",
-            "params": ["color", "string"]
+            "params": ["color", "value"]
           }
         }
       },
@@ -90,9 +126,13 @@
         "name": "width",
         "label": "Width",
         "type": "text",
+        "inputProperty": "width",
         "default": "",
-        "width": "100%",
+        "width": "180px",
         "placeholder": "e.g., 24px, 2rem",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "width",
         "valueHandler": {
           "ref": "componentInput",
           "params": ["width"]
@@ -102,7 +142,7 @@
           "params": ["width"]
         },
         "eventHandlers": {
-          "valueChange": {
+          "onChange": {
             "ref": "updateInput",
             "params": ["width", "value"]
           }
@@ -112,9 +152,13 @@
         "name": "height",
         "label": "Height",
         "type": "text",
+        "inputProperty": "height",
         "default": "",
-        "width": "100%",
+        "width": "180px",
         "placeholder": "e.g., 24px, 2rem",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "height",
         "valueHandler": {
           "ref": "componentInput",
           "params": ["height"]
@@ -124,7 +168,7 @@
           "params": ["height"]
         },
         "eventHandlers": {
-          "valueChange": {
+          "onChange": {
             "ref": "updateInput",
             "params": ["height", "value"]
           }
@@ -134,9 +178,13 @@
         "name": "alt",
         "label": "Alt Text",
         "type": "text",
+        "inputProperty": "alt",
         "default": "",
-        "width": "100%",
+        "width": "180px",
         "placeholder": "Accessibility text",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "alt",
         "valueHandler": {
           "ref": "componentInput",
           "params": ["alt"]
@@ -146,11 +194,26 @@
           "params": ["alt"]
         },
         "eventHandlers": {
-          "valueChange": {
+          "onChange": {
             "ref": "updateInput",
             "params": ["alt", "value"]
           }
         }
+      },
+      {
+        "name": "clickable",
+        "label": "Clickable",
+        "type": "boolean",
+        "inputProperty": "clickable",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["clickable"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "clickable"
       }
     ],
     "includeCommonProperties": [

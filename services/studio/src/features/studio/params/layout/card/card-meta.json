@@ -1,0 +1,9 @@
+{
+  "uuid": "card_blocks",
+  "name": "Parent Card Container",
+  "themeContainerId": "card_theme_container",
+  "configKey": "cardFields",
+  "childrenIds": [
+    "card_fields_collapse_container"
+  ]
+}

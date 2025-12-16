@@ -8,6 +8,14 @@
     {
       "name": "onClick",
       "label": "onClick"
+    },
+    {
+      "name": "onIconClick",
+      "label": "onIconClick"
+    },
+    {
+      "name": "onIconKeyboardActivation",
+      "label": "onIconKeyboardActivation"
     }
   ]
 }
