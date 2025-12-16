@@ -29,11 +29,18 @@ export const addComponentAction = (
     childrenIds: component.childrenIds ?? [], // Initialize childrenIds if necessary
   };
 
+  // Container types that can have children
+  const containerTypes = [
+    ComponentType.Container,
+    ComponentType.Collection,
+    ComponentType.Link,
+    ComponentType.GridRow,
+    ComponentType.GridCol,
+  ];
+
   if (
     !currentComponentId ||
-    (currentComponent?.component_type !== ComponentType.Container &&
-      currentComponent?.component_type !== ComponentType.Collection&&
-      currentComponent?.component_type !== ComponentType.Link)
+    !containerTypes.includes(currentComponent?.component_type)
   ) {
     newComponent.root = true;
   }
@@ -43,7 +50,9 @@ export const addComponentAction = (
       currentComponent?.component_type === ComponentType.Container ||
       currentComponent?.component_type === ComponentType.Dropdown ||
       currentComponent?.component_type === ComponentType.Link ||
-      currentComponent?.component_type === ComponentType.Collection
+      currentComponent?.component_type === ComponentType.Collection ||
+      currentComponent?.component_type === ComponentType.GridRow ||
+      currentComponent?.component_type === ComponentType.GridCol
     ) {
       // Add as child of the current component
       //addComponentAsChildOf(componentId, currentComponentId, currentApplicationId);
