@@ -28,12 +28,16 @@ export class LeftPanel extends LitElement {
   }
 
   render() {
+    if (this.mode !== ViewMode.Edit) {
+      return html``;
+    }
+
     return html`
       <div
-        class="flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
+        class="flex flex-col visible"
         style="height: 100%;width : 300px;"
       >
-      
+
         <micro-app uuid="1" componentToRenderUUID="331" style="height: 100%;" class="flex-grow"></micro-app>
       </div>
     `;

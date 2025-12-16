@@ -7,20 +7,37 @@
     },
     "collapse": {
       "uuid": "rich_text_collapse",
-      "title": "Rich Text Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Rich Text Properties"
     },
-    "properties": [],
+    "properties": [
+      {
+        "name": "richtext_value",
+        "label": "Content",
+        "type": "textarea",
+        "inputProperty": "value",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Enter HTML content",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "value",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["value", ""]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["value"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["value", "string"]
+          }
+        }
+      }
+    ],
     "includeCommonProperties": [
-      "component_value_text_block",
       "component_id_text_block"
     ],
     "includeContainers": []

@@ -14,12 +14,17 @@ export class InputGenerator {
     if (property.type === 'event') {
       return this.generateEventInput(property, inputUuid);
     }
-    
+
     // Icon type components use IconPicker with special input structure
     if (property.type === 'icon') {
       return this.generateIconInput(property, inputUuid);
     }
-    
+
+    // Date type components use Datepicker with special input structure
+    if (property.type === 'date') {
+      return this.generateDateInput(property, inputUuid);
+    }
+
     // Standard input components (text, number, select, color, etc.)
     return this.generateStandardInput(property, inputUuid);
   }
@@ -66,6 +71,10 @@ export class InputGenerator {
         value: {
           type: "handler",
           value: valueGetter
+        },
+        helper: {
+          type: "handler",
+          value: `return '${property.helperText || ''}';`
         }
       },
       event: {
@@ -102,7 +111,7 @@ export class InputGenerator {
           value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
                  `
                    const selectedComponent = Utils.first(Vars.selectedComponents);
-                   const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, '${property.name}') : null;
+                   const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}') : null;
                    return Input?.value || '';
                  `
         },
@@ -120,6 +129,10 @@ export class InputGenerator {
                      selectedComponent?.input?.${property.name}?.value
                    );
                  `
+        },
+        helper: {
+          type: "handler",
+          value: `return '${property.helperText || ''}';`
         }
       },
       event: {}
@@ -137,7 +150,91 @@ export class InputGenerator {
     
     return iconInput;
   }
-  
+
+  private static generateDateInput(property: PropertyConfig, inputUuid: string): any {
+    const dateInput: any = {
+      uuid: inputUuid,
+      application_id: "1",
+      name: `${property.label} Input`,
+      component_type: "Datepicker",
+      inputHandlers: {},
+      styleHandlers: {},
+      styleBreakPoints: {
+        mobile: {},
+        tablet: {},
+        laptop: {}
+      },
+      attributesHandlers: {},
+      errors: {},
+      childrenIds: [],
+      style: {
+        display: "block",
+        width: property.width || "180px",
+        "--nuraly-input-helper-text-font-size": "11px",
+        "--nuraly-input-helper-text-color": "#8c8c8c",
+        "--nuraly-datepicker-width": property.width || "180px",
+        "--nuraly-input-width": property.width || "180px"
+      },
+      input: {
+        value: {
+          type: "handler",
+          value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
+                 `
+                   const selectedComponent = Utils.first(Vars.selectedComponents);
+                   if (!selectedComponent) return '';
+                   const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                   if (!input) return '';
+                   return (typeof input === 'object' && input.value !== undefined) ? input.value : (input || '');
+                 `
+        },
+        placeholder: {
+          type: "string",
+          value: property.placeholder || 'YYYY-MM-DD'
+        },
+        format: {
+          type: "string",
+          value: property.format || 'YYYY-MM-DD'
+        },
+        size: {
+          type: "string",
+          value: "small"
+        }
+      },
+      event: {}
+    };
+
+    // Add helper text showing if value is driven by handler
+    if (property.hasHandler) {
+      dateInput.input.helper = {
+        type: "handler",
+        value: property.helperHandler
+          ? HandlerResolver.resolveHandler(property.helperHandler, StateHandlers)
+          : StateHandlers.inputHelperText(property.handlerProperty || property.name)
+      };
+    }
+
+    // Add event handlers
+    if (property.eventHandlers) {
+      Object.entries(property.eventHandlers).forEach(([eventName, handler]) => {
+        const resolvedHandler = HandlerResolver.resolveHandler(handler, EventHandlers);
+        if (resolvedHandler) {
+          dateInput.event[eventName] = resolvedHandler;
+        }
+      });
+    }
+
+    // Add default date change event if not provided
+    if (!dateInput.event.onDateChange) {
+      dateInput.event.onDateChange = `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (!selectedComponent) return;
+        updateInput(selectedComponent, "${property.inputProperty || property.name}", "string", EventData.value);
+      `;
+    }
+
+    return dateInput;
+  }
+
   private static generateStandardInput(property: PropertyConfig, inputUuid: string): any {
     const baseInput: any = {
       uuid: inputUuid,
@@ -159,24 +256,33 @@ export class InputGenerator {
         width: property.width || "180px",
         size: "small",
         "--nuraly-input-helper-text-font-size": "11px",
-        "--nuraly-input-helper-text-color": "#8c8c8c"
+        "--nuraly-input-helper-text-color": "#8c8c8c",
+        ...(property.type === 'radio' ? { "--nuraly-button-min-width": "60px" } : {})
       },
       input: {
         value: {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
-                 (property.type === 'radio' 
+                 (property.type === 'radio'
                    ? `
                      const options = ${JSON.stringify(property.options || [])};
                      const selectedComponent = Utils.first(Vars.selectedComponents);
-                     const currentValue = Editor.getComponentStyle(selectedComponent, '${property.name}') || "${property.default}";
+                     const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                     const currentValue = input?.type === 'value' ? (input.value ?? ${JSON.stringify(property.default)}) : ${JSON.stringify(property.default)};
                      const type = "button";
-                     return [options, currentValue, type];
+                     return {options, currentValue, type};
                    `
                    : property.type === 'boolean'
                    ? `
                      const selectedComponent = Utils.first(Vars.selectedComponents);
-                     return Editor.getComponentInput(selectedComponent, '${property.name}');
+                     const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                     return input.value;
+                   `
+                   : property.type === 'textarea'
+                   ? `
+                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                     return input?.value || "${property.default || ''}";
                    `
                    : `
                      let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"
@@ -187,13 +293,12 @@ export class InputGenerator {
           type: "string",
           value: "small"
         } : undefined,
-
         state: {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
                  `
                    const selectedComponent = Utils.first(Vars.selectedComponents);
-                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.name}'] ? 'disabled' : 'enabled';
+                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.inputProperty || property.name}'] ? 'disabled' : 'enabled';
                  `
         }
       },
@@ -208,16 +313,17 @@ export class InputGenerator {
       };
     }
 
-    // Add helper text for inputs with handler support (text, number, radio)
-    // Shows "Value driven by handler" when handler is active
-    if (property.hasHandler || property.type === 'text' || property.type === 'number' || property.type === 'radio') {
-      baseInput.input.helper = {
-        type: "handler",
-        value: property.helperHandler
+    // Add helper text - always add for all input types
+    baseInput.input.helper = {
+      type: "handler",
+      value: property.helperText 
+        ? `return '${property.helperText}';`
+        : (property.helperHandler
           ? HandlerResolver.resolveHandler(property.helperHandler, StateHandlers)
-          : StateHandlers.inputHelperText(property.handlerProperty || property.name)
-      };
-    }
+          : (property.hasHandler || property.type === 'text' || property.type === 'number' || property.type === 'radio')
+            ? StateHandlers.inputHelperText(property.handlerProperty || property.name)
+            : `return '';`)
+    };
 
     // Resolve event handlers from references or use custom events
     if (property.eventHandlers) {
@@ -241,17 +347,18 @@ export class InputGenerator {
       baseInput.event.onChange = `
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        updateStyle(selectedComponent, "${property.name}", EventData.value);
+        updateStyle(selectedComponent, "${property.inputProperty || property.name}", EventData.value);
       `;
     }
     
     // Add default change event for select inputs
-    if (property.type === 'select' && !baseInput.event.changed && !property.eventHandlers) {
-      baseInput.event.changed = `
+    if (property.type === 'select' && !baseInput.event.onSelect) {
+      baseInput.event.onSelect = `
+      console.log(EventData.value);
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
         
-        updateStyle(selectedComponent, "${property.name}", EventData.value);
+        updateInput(selectedComponent, "${property.name}", 'string', EventData.value);
       `;
     }
     
@@ -260,7 +367,16 @@ export class InputGenerator {
       baseInput.event.onChange = `
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        updateInput(selectedComponent, "${property.name}", "boolean", Boolean(EventData.checked));
+        updateInput(selectedComponent, "${property.inputProperty || property.name}", "boolean", Boolean(EventData.checked));
+      `;
+    }
+
+    // Add default change event for textarea inputs
+    if (property.type === 'textarea' && !baseInput.event.onChange && !property.eventHandlers) {
+      baseInput.event.onChange = `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (!selectedComponent) return;
+        updateInput(selectedComponent, "${property.inputProperty || property.name}", "string", EventData.value);
       `;
     }
     

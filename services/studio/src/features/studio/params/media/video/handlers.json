@@ -1,21 +1,37 @@
 {
-  "handlerPrefix": "video_handler",
+  "handlerPrefix": "studio_video_handler",
   "events": [
     {
       "name": "onClick",
       "label": "onClick"
     },
     {
-      "name": "onMouseEnter",
-      "label": "onMouseEnter"
+      "name": "onPlay",
+      "label": "onPlay"
     },
     {
-      "name": "onMouseLeave",
-      "label": "onMouseLeave"
+      "name": "onPause",
+      "label": "onPause"
     },
     {
-      "name": "onDoubleClick",
-      "label": "onDoubleClick"
+      "name": "onEnded",
+      "label": "onEnded"
+    },
+    {
+      "name": "onLoad",
+      "label": "onLoad"
+    },
+    {
+      "name": "onError",
+      "label": "onError"
+    },
+    {
+      "name": "onTimeUpdate",
+      "label": "onTimeUpdate"
+    },
+    {
+      "name": "onVolumeChange",
+      "label": "onVolumeChange"
     }
   ]
 }

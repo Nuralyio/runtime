@@ -1,74 +1,45 @@
 [
   {
-    "name": "Dark Mode",
+    "name": "General",
     "open": true,
     "items": [
-      {
-        "name": "General",
-        "open": true,
-        "items": [
-          { "label": "Checkbox Text Color", "cssVar": "--nuraly-checkbox-color" },
-          { "label": "Checkbox Symbol Color", "cssVar": "--nuraly-checkbox-symbol-color" }
-        ]
-      },
-      {
-        "name": "Empty State",
-        "open": false,
-        "items": [
-          { "label": "Empty Background Color", "cssVar": "--nuraly-checkbox-empty-background-color" }
-        ]
-      },
-      {
-        "name": "Filled State",
-        "open": false,
-        "items": [
-          { "label": "Filled Background Color", "cssVar": "--nuraly-checkbox-filled-background-color" }
-        ]
-      },
-      {
-        "name": "Disabled State",
-        "open": false,
-        "items": [
-          { "label": "Disabled Text Color", "cssVar": "--nuraly-checkbox-disabled-text-color" },
-          { "label": "Disabled Background Color", "cssVar": "--nuraly-checkbox-disabled-background-color" }
-        ]
-      }
+      { "label": "Text Color", "cssVar": "--nuraly-color-checkbox-text" },
+      { "label": "Label Color", "cssVar": "--nuraly-color-checkbox-label" },
+      { "label": "Background Color", "cssVar": "--nuraly-color-checkbox-background" }
     ]
   },
   {
-    "name": "Light Mode",
+    "name": "Border",
     "open": false,
     "items": [
-      {
-        "name": "General",
-        "open": false,
-        "items": [
-          { "label": "Checkbox Text Color", "cssVar": "--nuraly-checkbox-color" },
-          { "label": "Checkbox Symbol Color", "cssVar": "--nuraly-checkbox-symbol-color" }
-        ]
-      },
-      {
-        "name": "Empty State",
-        "open": false,
-        "items": [
-          { "label": "Empty Background Color", "cssVar": "--nuraly-checkbox-empty-background-color" }
-        ]
-      },
-      {
-        "name": "Filled State",
-        "open": false,
-        "items": [
-          { "label": "Filled Background Color", "cssVar": "--nuraly-checkbox-filled-background-color" }
-        ]
-      },
-      {
-        "name": "Disabled State",
-        "open": false,
-        "items": [
-          { "label": "Disabled Text Color", "cssVar": "--nuraly-checkbox-disabled-text-color" },
-          { "label": "Disabled Background Color", "cssVar": "--nuraly-checkbox-disabled-background-color" }
-        ]
-      }
+      { "label": "Border Color", "cssVar": "--nuraly-color-checkbox-border" }
+    ]
+  },
+  {
+    "name": "Checked State",
+    "open": false,
+    "items": [
+      { "label": "Checked Background Color", "cssVar": "--nuraly-color-checkbox-checked-background" },
+      { "label": "Checked Border Color", "cssVar": "--nuraly-color-checkbox-checked-border" },
+      { "label": "Checkmark Color", "cssVar": "--nuraly-color-checkbox-checkmark" }
+    ]
+  },
+  {
+    "name": "Indeterminate State",
+    "open": false,
+    "items": [
+      { "label": "Indeterminate Background Color", "cssVar": "--nuraly-color-checkbox-indeterminate-background" },
+      { "label": "Indeterminate Mark Color", "cssVar": "--nuraly-color-checkbox-indeterminate-mark" }
+    ]
+  },
+  {
+    "name": "Disabled State",
+    "open": false,
+    "items": [
+      { "label": "Disabled Background Color", "cssVar": "--nuraly-color-checkbox-disabled-background" },
+      { "label": "Disabled Border Color", "cssVar": "--nuraly-color-checkbox-disabled-border" },
+      { "label": "Disabled Text Color", "cssVar": "--nuraly-color-checkbox-disabled-text" },
+      { "label": "Disabled Checkmark Color", "cssVar": "--nuraly-color-checkbox-disabled-checkmark" }
     ]
   }
 ]

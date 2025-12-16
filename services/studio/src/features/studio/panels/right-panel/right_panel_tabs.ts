@@ -110,9 +110,9 @@ export default [
                             themes: ["studio_select_theme_container", "box_model_collapse"]
                         },
                         "Table": {
-                            parameters: ["table_fields_collapse_container", "table_blocks"],
+                            parameters: ["table_blocks"],
                             handlers: ["studio_table_handler"],
-                            themes: ["select_component_text", "box_model_collapse"]
+                            themes: ["studio_table_theme_container", "box_model_collapse"]
                         },
                         "Icon": {
                             parameters: ["icon_blocks"],
@@ -151,6 +151,7 @@ export default [
                         },
                         "code-block": {
                             parameters: ["code_blocks"],
+                            handlers: ["studio_code_handler"],
                             themes: ["box_model_collapse"]
                         },
                         "rich-text": {
@@ -174,13 +175,14 @@ export default [
                             themes: ["studio_dropdown_theme_container", "box_model_collapse"]
                         },
                         "embed-url": {
-                            parameters: ["embed_collapse_container"],
+                            parameters: ["embed_blocks"],
+                            handlers: ["studio_embed_handler"],
                             themes: ["box_model_collapse"]
                         },
                         "link": {
-                            parameters: ["link_collapse_container"],
+                            parameters: ["link_blocks"],
                             handlers: ["studio_link_handler"],
-                            themes: ["studio_link_theme_container", "box_model_collapse"]
+                            themes: ["box_model_collapse"]
                         },
                         "file-upload": {
                             parameters: ["FileUpload_input_collapse_container"],
@@ -188,12 +190,12 @@ export default [
                             themes: ["box_model_collapse"]
                         },
                         "video": {
-                            parameters: ["video_collapse_container"],
+                            parameters: ["video_blocks"],
                             handlers: ["studio_video_handler"],
                             themes: ["box_model_collapse"]
                         },
                         "document": {
-                            parameters: ["document_collapse_container"],
+                            parameters: ["document_blocks"],
                             handlers: ["studio_document_handler"],
                             themes: ["box_model_collapse"]
                         }

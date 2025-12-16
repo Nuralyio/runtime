@@ -4,9 +4,6 @@
   "themeContainerId": "checkbox_button_theme_container",
   "configKey": "checkboxFields",
   "childrenIds": [
-    "checkbox_collapse_container",
-    "typography_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "checkbox_collapse_container"
   ]
 }

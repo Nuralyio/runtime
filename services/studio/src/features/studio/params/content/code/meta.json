@@ -4,7 +4,6 @@
   "themeContainerId": "studio_code_theme_container",
   "configKey": "codeFields",
   "childrenIds": [
-    "code_collapse_container",
-    "size_collapse_container"
+    "code_collapse_container"
   ]
 }
