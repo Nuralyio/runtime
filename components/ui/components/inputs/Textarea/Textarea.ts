@@ -25,39 +25,39 @@ export class TextareaBlock extends BaseElementBlock {
 
   renderComponent() {
     const textareaStyles = this.component?.style || {};
-    
-    // Get properties from input or inputHandlers
-    const value = this.component?.input?.value?.value || this.inputHandlersValue?.value || '';
-    const placeholder = this.component?.input?.placeholder?.value || this.inputHandlersValue?.placeholder || '';
-    const label = this.component?.input?.label?.value || this.inputHandlersValue?.label || '';
-    const helperText = this.component?.input?.helperText?.value || this.inputHandlersValue?.helperText || '';
-    const disabled = this.component?.input?.disabled?.value ?? this.inputHandlersValue?.disabled ?? false;
-    const readonly = this.component?.input?.readonly?.value ?? this.inputHandlersValue?.readonly ?? false;
-    const required = this.component?.input?.required?.value ?? this.inputHandlersValue?.required ?? false;
-    const allowClear = this.component?.input?.allowClear?.value ?? this.inputHandlersValue?.allowClear ?? false;
-    const showCount = this.component?.input?.showCount?.value ?? this.inputHandlersValue?.showCount ?? false;
-    const autoResize = this.component?.input?.autoResize?.value ?? this.inputHandlersValue?.autoResize ?? false;
-    
+
+    // Get properties from inputHandlersValue (evaluated handlers) - prioritize over raw input values
+    const value = this.inputHandlersValue?.value ?? '';
+    const placeholder = this.inputHandlersValue?.placeholder ?? '';
+    const label = this.inputHandlersValue?.label ?? '';
+    const helperText = this.inputHandlersValue?.helperText ?? this.inputHandlersValue?.helper ?? '';
+    const disabled = this.inputHandlersValue?.disabled ?? this.inputHandlersValue?.state === 'disabled' ?? false;
+    const readonly = this.inputHandlersValue?.readonly ?? false;
+    const required = this.inputHandlersValue?.required ?? false;
+    const allowClear = this.inputHandlersValue?.allowClear ?? false;
+    const showCount = this.inputHandlersValue?.showCount ?? false;
+    const autoResize = this.inputHandlersValue?.autoResize ?? false;
+
     // Get styling properties
-    const size = this.component?.input?.size?.value || this.inputHandlersValue?.size || 'medium';
-    const variant = this.component?.input?.variant?.value || this.inputHandlersValue?.variant || 'underlined';
-    const state = this.component?.input?.state?.value || this.inputHandlersValue?.state || 'default';
-    const resize = this.component?.input?.resize?.value || this.inputHandlersValue?.resize || 'vertical';
-    
+    const size = this.inputHandlersValue?.size ?? 'medium';
+    const variant = this.inputHandlersValue?.variant ?? 'underlined';
+    const state = this.inputHandlersValue?.state ?? 'default';
+    const resize = this.inputHandlersValue?.resize ?? 'vertical';
+
     // Get numeric properties
-    const rows = this.component?.input?.rows?.value || this.inputHandlersValue?.rows || 4;
-    const cols = this.component?.input?.cols?.value || this.inputHandlersValue?.cols;
-    const maxLength = this.component?.input?.maxLength?.value || this.inputHandlersValue?.maxLength;
-    const minHeight = this.component?.input?.minHeight?.value || this.inputHandlersValue?.minHeight;
-    const maxHeight = this.component?.input?.maxHeight?.value || this.inputHandlersValue?.maxHeight;
-    
+    const rows = this.inputHandlersValue?.rows ?? 4;
+    const cols = this.inputHandlersValue?.cols;
+    const maxLength = this.inputHandlersValue?.maxLength;
+    const minHeight = this.inputHandlersValue?.minHeight;
+    const maxHeight = this.inputHandlersValue?.maxHeight;
+
     // Get validation rules and other properties
-    const rules = this.inputHandlersValue?.rules || [];
-    const name = this.component?.input?.name?.value || this.inputHandlersValue?.name;
-    const autocomplete = this.component?.input?.autocomplete?.value || this.inputHandlersValue?.autocomplete || 'off';
-    const validateOnChange = this.component?.input?.validateOnChange?.value ?? this.inputHandlersValue?.validateOnChange ?? true;
-    const validateOnBlur = this.component?.input?.validateOnBlur?.value ?? this.inputHandlersValue?.validateOnBlur ?? true;
-    const hasFeedback = this.component?.input?.hasFeedback?.value ?? this.inputHandlersValue?.hasFeedback ?? false;
+    const rules = this.inputHandlersValue?.rules ?? [];
+    const name = this.inputHandlersValue?.name;
+    const autocomplete = this.inputHandlersValue?.autocomplete ?? 'off';
+    const validateOnChange = this.inputHandlersValue?.validateOnChange ?? true;
+    const validateOnBlur = this.inputHandlersValue?.validateOnBlur ?? true;
+    const hasFeedback = this.inputHandlersValue?.hasFeedback ?? false;
 
     return html`
       <nr-textarea

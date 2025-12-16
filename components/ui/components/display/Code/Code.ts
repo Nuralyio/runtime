@@ -3,11 +3,8 @@ import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { executeHandler } from '../../../../../state/runtime-context.ts';
-import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
-// Removed static import
-// import "@shared/ui/CodeEditor/CodeEditor";
 
 @customElement("code-block")
 export class TextInputBlock extends BaseElementBlock {
@@ -43,17 +40,10 @@ export class TextInputBlock extends BaseElementBlock {
     super.disconnectedCallback();
   }
 
-  handleCheckboxChange = (e) => {
-    if (this.component.event?.checkboxChanged) {
-      executeHandler(
-        this.component,
-        getNestedAttribute(this.component, `event.onCodeChange`),
-        { value: e.detail.value }
-      );
-    }
-  };
+  private handleCodeEditorChange(event: CustomEvent) {
+    const value = event.detail.value;
 
-  private handleCodeEditorChange(value: string) {
+    // Update the input value in editor mode
     if (!this.isViewMode) {
       const serializedValue = JSON.stringify(value);
       executeHandler(
@@ -69,6 +59,9 @@ export class TextInputBlock extends BaseElementBlock {
         {}
       );
     }
+
+    // Execute the onChange event handler
+    this.executeEvent('onChange', event, { value });
   }
 
   renderComponent() {
@@ -76,24 +69,41 @@ export class TextInputBlock extends BaseElementBlock {
       ${this.isEditorLoaded
         ? html`
             <code-editor
-              @click=${(e) => {
-                this.executeEvent("onClick", e);
-              }}
               ${ref(this.inputRef)}
               style=${styleMap({
                 ...this.getStyles(),
                 display: "block"
               })}
               language="${this.inputHandlersValue?.language ?? "javascript"}"
-              theme="${this.inputHandlersValue?.theme ?? "vs"}"
+              theme="${this.inputHandlersValue?.theme ?? "vs-dark"}"
               .readonly=${this.inputHandlersValue?.readonly ?? this.isViewMode === true}
-              @change=${(event: CustomEvent) => {
-                const {
-                  detail: { value }
-                } = event;
-                this.handleCodeEditorChange(value);
-              }}
               .code=${this.inputHandlersValue?.value ?? ""}
+              @click=${(e: MouseEvent) => {
+                this.executeEvent("onClick", e);
+              }}
+              @change=${(event: CustomEvent) => {
+                this.handleCodeEditorChange(event);
+              }}
+              @editor-keydown=${(event: CustomEvent) => {
+                this.executeEvent("onKeyDown", event, {
+                  key: event.detail.key,
+                  code: event.detail.code,
+                  ctrlKey: event.detail.ctrlKey,
+                  shiftKey: event.detail.shiftKey,
+                  altKey: event.detail.altKey,
+                  metaKey: event.detail.metaKey
+                });
+              }}
+              @editor-keyup=${(event: CustomEvent) => {
+                this.executeEvent("onKeyUp", event, {
+                  key: event.detail.key,
+                  code: event.detail.code,
+                  ctrlKey: event.detail.ctrlKey,
+                  shiftKey: event.detail.shiftKey,
+                  altKey: event.detail.altKey,
+                  metaKey: event.detail.metaKey
+                });
+              }}
             >
             </code-editor>
           `
