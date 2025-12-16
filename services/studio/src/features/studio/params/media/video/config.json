@@ -7,70 +7,66 @@
     },
     "collapse": {
       "uuid": "video_collapse",
-      "title": "Video Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Video Properties"
     },
     "properties": [
       {
         "name": "src",
-        "label": "Src",
+        "label": "Source URL",
         "type": "text",
+        "inputProperty": "src",
         "default": "",
         "width": "180px",
-        "placeholder": "Video source URL",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.src?.type=='value'){ return selectedComponent.input?.src?.value??''; } return '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let state = 'unabled'; if(selectedComponent.input?.src?.type =='handler'&&selectedComponent.input?.src?.value){ state = 'disabled' } return state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents); const newSrcText = EventData.value; updateInput(selectedComponent,'src','string',newSrcText);"
-        },
+        "placeholder": "Video URL",
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "src"
-      },
-      {
-        "name": "previewable",
-        "label": "Previewable",
-        "type": "text",
-        "default": "",
-        "width": "180px",
-        "placeholder": "Previewable",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.previewable?.type=='value'){ return selectedComponent.input?.previewable?.value??''; } return '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let state = 'unabled'; if(selectedComponent.input?.previewable?.type =='handler'&&selectedComponent.input?.previewable?.value){ state = 'disabled' } return state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents); const newAltText = EventData.value; updateInput(selectedComponent,'previewable','string',newAltText);"
+        "handlerProperty": "src",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["src"]
         },
-        "hasHandler": true,
-        "handlerType": "input",
-        "handlerProperty": "previewable"
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["src"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["src", "string"]
+          }
+        }
       },
       {
         "name": "poster",
-        "label": "Poster",
+        "label": "Poster Image",
         "type": "text",
+        "inputProperty": "poster",
         "default": "",
         "width": "180px",
         "placeholder": "Poster image URL",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.poster?.type=='value'){ return selectedComponent.input?.poster?.value??''; } return '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let state = 'enabled'; if(selectedComponent.input?.poster?.type =='handler'&&selectedComponent.input?.poster?.value){ state = 'disabled' } return state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents); const newPoster = EventData.value; updateInput(selectedComponent,'poster','string',newPoster);"
-        },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "poster"
+        "handlerProperty": "poster",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["poster"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["poster"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["poster", "string"]
+          }
+        }
       },
       {
         "name": "preload",
         "label": "Preload",
-        "type": "dropdown",
+        "type": "select",
+        "inputProperty": "preload",
         "default": "metadata",
         "width": "180px",
         "placeholder": "Select preload mode",
@@ -79,15 +75,88 @@
           { "label": "Metadata", "value": "metadata" },
           { "label": "Auto", "value": "auto" }
         ],
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.preload?.type=='value'){ return selectedComponent.input?.preload?.value??'metadata'; } return 'metadata';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); let state = 'enabled'; if(selectedComponent.input?.preload?.type =='handler'&&selectedComponent.input?.preload?.value){ state = 'disabled' } return state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents); const newPreload = EventData.value; updateInput(selectedComponent,'preload','string',newPreload);"
-        },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "preload"
+        "handlerProperty": "preload",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["preload"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["preload"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["preload", "value"]
+          }
+        }
+      },
+      {
+        "name": "autoplay",
+        "label": "Autoplay",
+        "type": "boolean",
+        "inputProperty": "autoplay",
+        "default": false,
+        "width": "180px",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "autoplay",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["autoplay"]
+        }
+      },
+      {
+        "name": "controls",
+        "label": "Show Controls",
+        "type": "boolean",
+        "inputProperty": "controls",
+        "default": true,
+        "width": "180px",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "controls",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["controls"]
+        }
+      },
+      {
+        "name": "loop",
+        "label": "Loop",
+        "type": "boolean",
+        "inputProperty": "loop",
+        "default": false,
+        "width": "180px",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "loop",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["loop"]
+        }
+      },
+      {
+        "name": "muted",
+        "label": "Muted",
+        "type": "boolean",
+        "inputProperty": "muted",
+        "default": false,
+        "width": "180px",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "muted",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["muted"]
+        }
       }
-    ]
+    ],
+    "includeCommonProperties": [
+      "component_id_text_block"
+    ],
+    "includeContainers": []
   }
 }
