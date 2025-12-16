@@ -1,0 +1,9 @@
+{
+  "uuid": "form_blocks",
+  "name": "Parent Form Container",
+  "themeContainerId": "form_theme_container",
+  "configKey": "formFields",
+  "childrenIds": [
+    "form_fields_collapse_container"
+  ]
+}

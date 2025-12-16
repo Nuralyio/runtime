@@ -1,0 +1,145 @@
+{
+  "formFields": {
+    "container": {
+      "uuid": "form_fields_collapse_container",
+      "name": "Form Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "form_fields_collapse",
+      "title": "Form Settings"
+    },
+    "properties": [
+      {
+        "name": "form_validateOnChange",
+        "inputProperty": "validateOnChange",
+        "label": "Validate On Change",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["validateOnChange"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "validateOnChange"
+      },
+      {
+        "name": "form_validateOnBlur",
+        "inputProperty": "validateOnBlur",
+        "label": "Validate On Blur",
+        "type": "boolean",
+        "default": true,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["validateOnBlur"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "validateOnBlur"
+      },
+      {
+        "name": "form_preventInvalidSubmission",
+        "inputProperty": "preventInvalidSubmission",
+        "label": "Prevent Invalid Submission",
+        "type": "boolean",
+        "default": true,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["preventInvalidSubmission"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "preventInvalidSubmission"
+      },
+      {
+        "name": "form_resetOnSuccess",
+        "inputProperty": "resetOnSuccess",
+        "label": "Reset On Success",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["resetOnSuccess"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "resetOnSuccess"
+      },
+      {
+        "name": "form_disabled",
+        "inputProperty": "disabled",
+        "label": "Disabled",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["disabled"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled"
+      },
+      {
+        "name": "form_action",
+        "inputProperty": "action",
+        "label": "Action URL",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "https://example.com/submit",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["action"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["action"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["action", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "action"
+      },
+      {
+        "name": "form_method",
+        "inputProperty": "method",
+        "label": "Method",
+        "type": "radio",
+        "default": "POST",
+        "width": "180px",
+        "options": [
+          { "label": "POST", "value": "POST" },
+          { "label": "GET", "value": "GET" }
+        ],
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["method"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["method"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["method", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "method"
+      }
+    ]
+  }
+}
