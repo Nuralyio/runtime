@@ -5,7 +5,10 @@
       "Bash(git checkout:*)",
       "Bash(timeout 60 npm run build:*)",
       "Bash(npm run build:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(python3:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

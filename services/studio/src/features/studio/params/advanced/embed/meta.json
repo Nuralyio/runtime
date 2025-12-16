@@ -4,9 +4,6 @@
   "themeContainerId": "studio_embed_theme_container",
   "configKey": "embedFields",
   "childrenIds": [
-    "embed_collapse_container",
-    "typography_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "embed_collapse_container"
   ]
 }

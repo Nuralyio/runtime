@@ -4,9 +4,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
-import { executeHandler } from '../../../../../state/runtime-context.ts';
-import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
-import { debounce } from '../../../../../utils/time.ts';
 
 @customElement("embed-url-block")
 export class EmbedUrlBlock extends BaseElementBlock {
@@ -15,6 +12,20 @@ export class EmbedUrlBlock extends BaseElementBlock {
       width: 100%;
       height: 100%;
       border: none;
+    }
+    .embed-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      min-height: 200px;
+      border-radius: 8px;
+      border: 2px dashed #cbd5e1;
+      gap: 12px;
+    }
+    .embed-placeholder nr-icon {
+      --nuraly-icon-size: 48px;
     }
   `];
 
@@ -50,29 +61,27 @@ export class EmbedUrlBlock extends BaseElementBlock {
     });
   }
 
-  handleUrlChange = debounce((url: string) => {
-    if (this.component?.event?.valueChange) {
-      executeHandler(
-        this.component,
-        getNestedAttribute(this.component, `event.valueChange`),
-        { value: url }
-      );
-    }
-    this.resetFocusAfterInactivity();
-  }, 0);
+  private handleIframeLoad(e: Event) {
+    this.executeEvent('onLoad', e, {
+      url: this.currentUrl || this.inputHandlersValue?.url || ""
+    });
+  }
 
-  onFocus = () => {
+  private handleIframeError(e: Event) {
+    this.executeEvent('onError', e, {
+      url: this.currentUrl || this.inputHandlersValue?.url || "",
+      error: 'Failed to load iframe content'
+    });
+  }
+
+  onFocus = (e: FocusEvent) => {
     this._isUserFocused = true;
-    if (this.component?.event?.focus) {
-      executeHandler(this.component, getNestedAttribute(this.component, `event.focus`));
-    }
+    this.executeEvent('onFocus', e);
   };
 
-  onBlur = () => {
+  onBlur = (e: FocusEvent) => {
     this._isUserFocused = false;
-    if (this.component?.event?.blur) {
-      executeHandler(this.component, getNestedAttribute(this.component, `event.blur`));
-    }
+    this.executeEvent('onBlur', e);
   };
 
   private resetFocusAfterInactivity() {
@@ -89,19 +98,46 @@ export class EmbedUrlBlock extends BaseElementBlock {
   }
 
   override renderComponent() {
+    const embedStyles = this.getStyles() || {};
+    const embedStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
+      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
+
     const url = this.currentUrl || this.inputHandlersValue?.url || "";
+
+    // Show placeholder when no URL
+    if (!url) {
+      return html`
+        <div
+          ${ref(this.inputRef)}
+          class="embed-placeholder"
+          style=${styleMap({
+            ...this.getStyles(),
+            width: embedStyleHandlers?.width || embedStyles?.width || '100%',
+            height: embedStyleHandlers?.height || embedStyles?.height || '200px',
+          })}
+          @click=${(e: MouseEvent) => this.executeEvent('onClick', e)}
+        >
+          <nr-icon name="globe"></nr-icon>
+          <nr-label>No URL provided</nr-label>
+        </div>
+      `;
+    }
 
     return html`
       <div
-      ${ref(this.inputRef)}
+        ${ref(this.inputRef)}
         tabindex="0"
         @focus=${this.onFocus}
         @blur=${this.onBlur}
+        @click=${(e: MouseEvent) => this.executeEvent('onClick', e)}
         style=${styleMap(this.getStyles())}
       >
-        ${url
-          ? html`<iframe ${ref(this.iframeRef)} src=${url}></iframe>`
-          : html`<div style="text-align:center; color:gray;">No URL provided</div>`}
+        <iframe
+          ${ref(this.iframeRef)}
+          src=${url}
+          @load=${(e: Event) => this.handleIframeLoad(e)}
+          @error=${(e: Event) => this.handleIframeError(e)}
+        ></iframe>
       </div>
     `;
   }

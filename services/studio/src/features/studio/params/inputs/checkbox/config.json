@@ -7,16 +7,7 @@
     },
     "collapse": {
       "uuid": "checkbox_collapse",
-      "title": "Checkbox Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Checkbox Properties"
     },
     "properties": [
       {
@@ -26,7 +17,7 @@
         "default": "Checkbox",
         "width": "180px",
         "placeholder": "Checkbox label",
-        "valueHandler": { "ref": "componentInput", "params": ["label"] },
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent?.inputHandlers?.label) { return selectedComponent.inputHandlers.label; } const input = Editor.getComponentBreakpointInput(selectedComponent, 'label'); return input?.type === 'value' ? (input.value || 'Checkbox') : 'Checkbox';",
         "stateHandler": { "ref": "inputHandler", "params": ["label"] },
         "eventHandlers": {
           "valueChange": { "ref": "updateInput", "params": ["label", "value"] }
@@ -47,28 +38,29 @@
       },
       {
         "name": "checked",
-        "label": "Checked",
+        "label": "State",
         "type": "radio",
-        "default": "uncheck",
+        "default": false,
         "width": "180px",
+        "inputProperty": "value",
         "options": [
-          { "label": "✓", "value": "check" },
-          { "label": "✗", "value": "uncheck" },
+          { "label": "✓", "value": true },
+          { "label": "✗", "value": false },
           { "label": "—", "value": "indeterminate" }
         ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["checked", [{"label": "✓", "value": "check"}, {"label": "✗", "value": "uncheck"}, {"label": "—", "value": "indeterminate"}], "uncheck"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["checked"] },
+        "stateHandler": { "ref": "inputHandler", "params": ["value"] },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["checked", "string"] }
+          "onChange": { "ref": "updateInput", "params": ["value", "value"] }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "checked"
+        "handlerProperty": "value"
       },
       {
-        "name": "size",
+        "name": "sizeoption",
+        "inputProperty": "size",
         "label": "Size",
-        "type": "select",
+        "type": "radio",
         "default": "medium",
         "width": "180px",
         "options": [
@@ -76,55 +68,26 @@
           { "label": "Medium", "value": "medium" },
           { "label": "Large", "value": "large" }
         ],
-        "valueHandler": { "ref": "componentInput", "params": ["size"] },
         "stateHandler": { "ref": "inputHandler", "params": ["size"] },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["size", "string"] }
-        }
+          "onChange": { "ref": "updateInput", "params": ["size", "value"] }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size"
       },
+
       {
-        "name": "name",
-        "label": "Name",
-        "type": "text",
-        "default": "",
-        "width": "180px",
-        "placeholder": "Field name",
-        "valueHandler": { "ref": "componentInput", "params": ["name"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["name"] },
-        "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["name", "value"] }
-        }
-      },
-      {
-        "name": "value",
-        "label": "Value",
-        "type": "text",
-        "default": "",
-        "width": "180px",
-        "placeholder": "Field value",
-        "valueHandler": { "ref": "componentInput", "params": ["value"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["value"] },
-        "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["value", "value"] }
-        }
-      },
-      {
-        "name": "disabled",
+        "name": "checboxdisabled",
+        "inputProperty": "disabled",
         "label": "Disabled",
         "type": "boolean",
         "default": false,
         "width": "180px",
-        "valueHandler": { "ref": "componentInput", "params": ["disabled"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] }
-      },
-      {
-        "name": "required",
-        "label": "Required",
-        "type": "boolean",
-        "default": false,
-        "width": "180px",
-        "valueHandler": { "ref": "componentInput", "params": ["required"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["required"] }
+        "stateHandler": { "ref": "inputHandler", "params": ["disabled"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled"
       }
     ]
   }

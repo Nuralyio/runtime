@@ -4,9 +4,6 @@
   "themeContainerId": "studio_select_theme_container",
   "configKey": "selectFields",
   "childrenIds": [
-    "select_collapse_container",
-    "typography_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "select_collapse_container"
   ]
 }

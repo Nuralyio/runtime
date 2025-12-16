@@ -7,54 +7,40 @@
     },
     "collapse": {
       "uuid": "document_collapse",
-      "title": "Document Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Document Properties"
     },
     "properties": [
       {
-        "name": "previewable",
-        "label": "Previewable",
+        "name": "document_src",
+        "label": "Source URL",
         "type": "text",
+        "inputProperty": "src",
         "default": "",
         "width": "180px",
-        "placeholder": "Previewable",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.previewable?.type=='value'){\n  const currentAlt=selectedComponent.input?.previewable?.value??'';\n  return currentAlt;\n}",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'unabled';\nif(selectedComponent.input?.previewable?.type =='handler'&&selectedComponent.input?.previewable?.value){\n  state = 'disabled'\n}\nreturn state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newAltText = EventData.value;\nupdateInput(selectedComponent,'previewable','string',newAltText);"
+        "placeholder": "Document URL",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "src",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["src"]
         },
-        "autoCheckbox": false,
-        "checkboxHandler": "const parameter ='previewable';\nlet altHandler=''\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.previewable?.type =='handler' && selectedComponent.input?.previewable?.value){\n  altHandler = selectedComponent.input?.previewable?.value\n}\nreturn [parameter,altHandler];",
-        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(EventData.value != selectedComponent.input?.previewable?.value != EventData.value )\n  updateInput(selectedComponent,'previewable','handler',EventData.value);"
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["src"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["src", "string"]
+          }
+        }
       },
       {
-        "name": "src",
-        "label": "Src",
-        "type": "text",
-        "default": "",
-        "width": "180px",
-        "placeholder": "src",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.src?.type == 'value'){\n  const currentSrc=selectedComponent.input?.src?.value??'';\n  return currentSrc;\n}",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'unabled';\nif(selectedComponent.input?.src?.type =='handler'&&selectedComponent.input?.src?.value){\n  state = 'disabled'\n}\nreturn state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newSrcText = EventData.value;\nupdateInput(selectedComponent,'src','string',newSrcText);"
-        },
-        "autoCheckbox": false,
-        "checkboxHandler": "const parameter ='src';\nlet srcHandler=''\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.src?.type =='handler' && selectedComponent.input?.src?.value){\n  srcHandler = selectedComponent.input?.src?.value\n}\nreturn [parameter,srcHandler];",
-        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(EventData.value != selectedComponent.input?.src?.value != EventData.value )\n  updateInput(selectedComponent,'src','handler',EventData.value);"
-      },
-      {
-        "name": "type",
-        "label": "Type",
-        "type": "dropdown",
+        "name": "document_type",
+        "label": "Document Type",
+        "type": "select",
+        "inputProperty": "type",
         "default": "pdf",
         "width": "180px",
         "placeholder": "Select document type",
@@ -63,20 +49,43 @@
           { "label": "Image", "value": "image" },
           { "label": "Other", "value": "other" }
         ],
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.type?.type == 'value'){\n  const currentType=selectedComponent.input?.type?.value??'pdf';\n  return currentType;\n}\nreturn 'pdf';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif(selectedComponent.input?.type?.type =='handler'&&selectedComponent.input?.type?.value){\n  state = 'disabled'\n}\nreturn state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst newType = EventData.value;\nupdateInput(selectedComponent,'type','string',newType);"
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "type",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["type"]
         },
-        "autoCheckbox": false,
-        "checkboxHandler": "const parameter ='type';\nlet typeHandler=''\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif(selectedComponent.input?.type?.type =='handler' && selectedComponent.input?.type?.value){\n  typeHandler = selectedComponent.input?.type?.value\n}\nreturn [parameter,typeHandler];",
-        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif(EventData.value != selectedComponent.input?.type?.value != EventData.value )\n  updateInput(selectedComponent,'type','handler',EventData.value);"
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["type"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["type", "value"]
+          }
+        }
+      },
+      {
+        "name": "document_previewable",
+        "label": "Previewable",
+        "type": "boolean",
+        "inputProperty": "previewable",
+        "default": false,
+        "width": "180px",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "previewable",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["previewable"]
+        }
       }
     ],
-    "includeCommonProperties": [],
-    "includeContainers": [
-      "size_collapse_container",
-      "display_block"
-    ]
+    "includeCommonProperties": [
+      "component_id_text_block"
+    ],
+    "includeContainers": []
   }
 }

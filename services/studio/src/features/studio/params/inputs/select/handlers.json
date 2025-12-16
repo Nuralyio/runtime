@@ -2,8 +2,28 @@
   "handlerPrefix": "studio_select_handler",
   "events": [
     {
-      "name": "changed",
-      "label": "onChanged"
+      "name": "onChange",
+      "label": "onChange"
+    },
+    {
+      "name": "onFocus",
+      "label": "onFocus"
+    },
+    {
+      "name": "onBlur",
+      "label": "onBlur"
+    },
+    {
+      "name": "onDropdownOpen",
+      "label": "onDropdownOpen"
+    },
+    {
+      "name": "onDropdownClose",
+      "label": "onDropdownClose"
+    },
+    {
+      "name": "onValidation",
+      "label": "onValidation"
     }
   ]
 }

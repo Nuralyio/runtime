@@ -11,11 +11,11 @@ import { loadComponentProperties } from "../processors/component-loader.ts";
 // INPUT COMPONENTS
 // ========================================
 
-// Text Input - Now using YAML for better readability
-import textInputConfig from "./inputs/text-input/input-config.yaml";
-import textInputHandlers from "./inputs/text-input/input-handlers.yaml";
-import textInputTheme from "./inputs/text-input/input-theme.yaml";
-import textInputMeta from "./inputs/text-input/input-meta.yaml";
+// Text Input
+import textInputConfig from "./inputs/text-input/config.json";
+import textInputHandlers from "./inputs/text-input/handlers.json";
+import textInputTheme from "./inputs/text-input/theme.json";
+import textInputMeta from "./inputs/text-input/meta.json";
 
 export const StudioTextInput = loadComponentProperties(
   textInputConfig,
@@ -25,10 +25,10 @@ export const StudioTextInput = loadComponentProperties(
 );
 
 // Textarea
-import textareaConfig from "./inputs/textarea/textarea-config.yaml";
-import textareaHandlers from "./inputs/textarea/textarea-handlers.yaml";
-import textareaTheme from "./inputs/textarea/textarea-theme.yaml";
-import textareaMeta from "./inputs/textarea/textarea-meta.yaml";
+import textareaConfig from "./inputs/textarea/config.json";
+import textareaHandlers from "./inputs/textarea/handlers.json";
+import textareaTheme from "./inputs/textarea/theme.json";
+import textareaMeta from "./inputs/textarea/meta.json";
 
 export const StudioTextarea = loadComponentProperties(
   textareaConfig,
@@ -120,10 +120,10 @@ export const StudioContainer = loadComponentProperties(
 );
 
 // Card
-import cardConfig from "./layout/card/card-config.yaml";
-import cardHandlers from "./layout/card/card-handlers.yaml";
-import cardTheme from "./layout/card/card-theme.yaml";
-import cardMeta from "./layout/card/card-meta.yaml";
+import cardConfig from "./layout/card/card-config.json";
+import cardHandlers from "./layout/card/card-handlers.json";
+import cardTheme from "./layout/card/card-theme.json";
+import cardMeta from "./layout/card/card-meta.json";
 
 export const StudioCard = loadComponentProperties(
   cardConfig,
@@ -219,10 +219,10 @@ export const StudioIcon = loadComponentProperties(
 );
 
 // Badge
-import badgeConfig from "./display/badge/badge-config.yaml";
-import badgeHandlers from "./display/badge/badge-handlers.yaml";
-import badgeTheme from "./display/badge/badge-theme.yaml";
-import badgeMeta from "./display/badge/badge-meta.yaml";
+import badgeConfig from "./display/badge/config.json";
+import badgeHandlers from "./display/badge/handlers.json";
+import badgeTheme from "./display/badge/theme.json";
+import badgeMeta from "./display/badge/meta.json";
 
 export const StudioBadge = loadComponentProperties(
   badgeConfig,
@@ -232,10 +232,10 @@ export const StudioBadge = loadComponentProperties(
 );
 
 // Tag
-import tagConfig from "./display/tag/tag-config.yaml";
-import tagHandlers from "./display/tag/tag-handlers.yaml";
-import tagTheme from "./display/tag/tag-theme.yaml";
-import tagMeta from "./display/tag/tag-meta.yaml";
+import tagConfig from "./display/tag/tag-config.json";
+import tagHandlers from "./display/tag/tag-handlers.json";
+import tagTheme from "./display/tag/tag-theme.json";
+import tagMeta from "./display/tag/tag-meta.json";
 
 export const StudioTag = loadComponentProperties(
   tagConfig,

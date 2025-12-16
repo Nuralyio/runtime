@@ -20,110 +20,396 @@
     },
     "properties": [
       {
-        "name": "label",
+        "name": "button_label",
+        "inputProperty": "label",
         "label": "Label",
         "type": "text",
         "default": "Button",
         "width": "180px",
         "placeholder": "Button text",
-        "valueHandler": { "ref": "componentInput", "params": ["label"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["label"] },
-        "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["label", "value"] }
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["label"]
         },
-        "handlerType": "input"
-      },
-      {
-        "name": "id",
-        "label": "ID",
-        "type": "text",
-        "default": "",
-        "width": "180px",
-        "placeholder": "Component ID",
-        "valueHandler": { "ref": "componentInput", "params": ["id"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["id"] },
-        "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["id", "value"] }
-        }
-      },
-      {
-        "name": "type",
-        "label": "Type",
-        "type": "select",
-        "default": "default",
-        "width": "180px",
-        "options": [
-          { "label": "Default", "value": "default" },
-          { "label": "Primary", "value": "primary" },
-          { "label": "Secondary", "value": "secondary" },
-          { "label": "Tertiary", "value": "tertiary" },
-          { "label": "Danger", "value": "danger" },
-          { "label": "Ghost", "value": "ghost" },
-          { "label": "Text", "value": "text" },
-          { "label": "Link", "value": "link" }
-        ],
-        "valueHandler": { "ref": "componentStyleSelect", "params": ["type", [{"label": "Default", "value": "default"}, {"label": "Primary", "value": "primary"}, {"label": "Secondary", "value": "secondary"}, {"label": "Tertiary", "value": "tertiary"}, {"label": "Danger", "value": "danger"}, {"label": "Ghost", "value": "ghost"}, {"label": "Text", "value": "text"}, {"label": "Link", "value": "link"}], "default"] },
-        "stateHandler": { "ref": "styleHandler", "params": ["type"] },
-        "eventHandlers": {
-          "changed": { "ref": "updateStyle", "params": ["type", "value"] }
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["label"]
         },
-        "hasHandler": true,
-        "handlerType": "style",
-        "handlerProperty": "type"
-      },
-      {
-        "name": "iconPosition",
-        "label": "Icon position",
-        "type": "radio",
-        "default": "left",
-        "width": "180px",
-        "options": [
-          { "label": "Left", "value": "left" },
-          { "label": "Right", "value": "right" }
-        ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["iconPosition", [{"label": "Left", "value": "left"}, {"label": "Right", "value": "right"}], "left"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["iconPosition"] },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["iconPosition", "value"] }
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["label", "string"]
+          }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "iconPosition"
+        "handlerProperty": "label"
       },
       {
-        "name": "icon",
+        "name": "button_type",
+        "inputProperty": "type",
+        "label": "Type",
+        "type": "radio",
+        "default": "default",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentType = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) {\n  isDisabled = true;\n} else {\n  currentType = selectedComponent?.input?.type?.value || 'default';\n}\nconst options = [\n  { value: 'default', label: 'Default', disabled: isDisabled },\n  { value: 'primary', label: 'Primary', disabled: isDisabled },\n  { value: 'secondary', label: 'Secondary', disabled: isDisabled },\n  { value: 'tertiary', label: 'Tertiary', disabled: isDisabled },\n  { value: 'danger', label: 'Danger', disabled: isDisabled },\n  { value: 'ghost', label: 'Ghost', disabled: isDisabled },\n  { value: 'text', label: 'Text', disabled: isDisabled },\n  { value: 'link', label: 'Link', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentType, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'type', 'string', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "type"
+      },
+      {
+        "name": "button_size",
+        "inputProperty": "size",
+        "label": "Size",
+        "type": "radio",
+        "default": "medium",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentSize = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {\n  isDisabled = true;\n} else {\n  currentSize = selectedComponent?.input?.size?.value || 'medium';\n}\nconst options = [\n  { value: 'small', label: 'Small', disabled: isDisabled },\n  { value: 'medium', label: 'Medium', disabled: isDisabled },\n  { value: 'large', label: 'Large', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentSize, radioType];",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size"
+      },
+      {
+        "name": "button_shape",
+        "inputProperty": "shape",
+        "label": "Shape",
+        "type": "radio",
+        "default": "default",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentShape = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.shape?.type == 'handler' && selectedComponent?.input?.shape?.value) {\n  isDisabled = true;\n} else {\n  currentShape = selectedComponent?.input?.shape?.value || 'default';\n}\nconst options = [\n  { value: 'default', label: 'Default', disabled: isDisabled },\n  { value: 'circle', label: 'Circle', disabled: isDisabled },\n  { value: 'round', label: 'Round', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentShape, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'shape', 'string', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "shape"
+      },
+      {
+        "name": "button_disabled",
+        "inputProperty": "disabled",
+        "label": "Disabled",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["disabled"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled"
+      },
+      {
+        "name": "button_loading",
+        "inputProperty": "loading",
+        "label": "Loading",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["loading"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "loading"
+      },
+      {
+        "name": "button_block",
+        "inputProperty": "block",
+        "label": "Full Width",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["block"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "block"
+      },
+      {
+        "name": "button_dashed",
+        "inputProperty": "dashed",
+        "label": "Dashed Border",
+        "type": "boolean",
+        "default": false,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["dashed"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "dashed"
+      },
+      {
+        "name": "button_ripple",
+        "inputProperty": "ripple",
+        "label": "Ripple Effect",
+        "type": "boolean",
+        "default": true,
+        "width": "180px",
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["ripple"]
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "ripple"
+      },
+      {
+        "name": "button_icon",
+        "inputProperty": "icon",
         "label": "Icon",
         "type": "icon",
         "default": "",
         "width": "180px",
         "placeholder": "Choose an icon",
-        "valueHandler": { "ref": "componentInput", "params": ["icon"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["icon"] },
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["icon"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["icon"]
+        },
         "eventHandlers": {
-          "iconChanged": { "ref": "updateInput", "params": ["icon", "string"] }
+          "iconChanged": {
+            "ref": "updateInput",
+            "params": ["icon", "string"]
+          }
         },
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "icon"
       },
       {
-        "name": "state",
-        "label": "State",
-        "type": "radio",
-        "default": "enabled",
+        "name": "button_iconLeft",
+        "inputProperty": "iconLeft",
+        "label": "Icon Left",
+        "type": "icon",
+        "default": "",
         "width": "180px",
-        "options": [
-          { "label": "Enabled", "value": "enabled" },
-          { "label": "Disabled", "value": "disabled" }
-        ],
-        "valueHandler": { "ref": "componentInputRadio", "params": ["state", [{"label": "Enabled", "value": "enabled"}, {"label": "Disabled", "value": "disabled"}], "enabled"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["state"] },
+        "placeholder": "Choose left icon",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["iconLeft"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["iconLeft"]
+        },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["state", "value"] }
+          "iconChanged": {
+            "ref": "updateInput",
+            "params": ["iconLeft", "string"]
+          }
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "state"
+        "handlerProperty": "iconLeft"
+      },
+      {
+        "name": "button_iconRight",
+        "inputProperty": "iconRight",
+        "label": "Icon Right",
+        "type": "icon",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Choose right icon",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["iconRight"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["iconRight"]
+        },
+        "eventHandlers": {
+          "iconChanged": {
+            "ref": "updateInput",
+            "params": ["iconRight", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "iconRight"
+      },
+      {
+        "name": "button_iconPosition",
+        "inputProperty": "iconPosition",
+        "label": "Icon Position",
+        "type": "radio",
+        "default": "left",
+        "width": "180px",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentPosition = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.iconPosition?.type == 'handler' && selectedComponent?.input?.iconPosition?.value) {\n  isDisabled = true;\n} else {\n  currentPosition = selectedComponent?.input?.iconPosition?.value || 'left';\n}\nconst options = [\n  { value: 'left', label: 'Left', disabled: isDisabled },\n  { value: 'right', label: 'Right', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentPosition, radioType];",
+        "eventHandlers": {
+          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'iconPosition', 'string', EventData.value);\n}"
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "iconPosition"
+      },
+      {
+        "name": "button_href",
+        "inputProperty": "href",
+        "label": "Link URL",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "https://example.com",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["href"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["href"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["href", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "href"
+      },
+      {
+        "name": "button_target",
+        "inputProperty": "target",
+        "label": "Link Target",
+        "type": "select",
+        "default": "_self",
+        "width": "180px",
+        "options": [
+          { "label": "Same Tab (_self)", "value": "_self" },
+          { "label": "New Tab (_blank)", "value": "_blank" },
+          { "label": "Parent Frame (_parent)", "value": "_parent" },
+          { "label": "Top Frame (_top)", "value": "_top" }
+        ],
+        "valueHandler": {
+          "ref": "componentInputSelect",
+          "params": [
+            "target",
+            [
+              { "label": "Same Tab (_self)", "value": "_self" },
+              { "label": "New Tab (_blank)", "value": "_blank" },
+              { "label": "Parent Frame (_parent)", "value": "_parent" },
+              { "label": "Top Frame (_top)", "value": "_top" }
+            ],
+            "_self"
+          ]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["target"]
+        },
+        "eventHandlers": {
+          "changed": {
+            "ref": "updateInput",
+            "params": ["target", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "target"
+      },
+      {
+        "name": "button_htmlType",
+        "inputProperty": "htmlType",
+        "label": "HTML Type",
+        "type": "select",
+        "default": "button",
+        "width": "180px",
+        "options": [
+          { "label": "Button", "value": "button" },
+          { "label": "Submit", "value": "submit" },
+          { "label": "Reset", "value": "reset" }
+        ],
+        "valueHandler": {
+          "ref": "componentInputSelect",
+          "params": [
+            "htmlType",
+            [
+              { "label": "Button", "value": "button" },
+              { "label": "Submit", "value": "submit" },
+              { "label": "Reset", "value": "reset" }
+            ],
+            "button"
+          ]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["htmlType"]
+        },
+        "eventHandlers": {
+          "changed": {
+            "ref": "updateInput",
+            "params": ["htmlType", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "htmlType"
+      },
+      {
+        "name": "button_buttonAriaLabel",
+        "inputProperty": "buttonAriaLabel",
+        "label": "Aria Label",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Custom aria-label",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["buttonAriaLabel"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["buttonAriaLabel"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["buttonAriaLabel", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "buttonAriaLabel"
+      },
+      {
+        "name": "button_ariaDescribedBy",
+        "inputProperty": "ariaDescribedBy",
+        "label": "Aria Described By",
+        "type": "text",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Element IDs",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["ariaDescribedBy"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["ariaDescribedBy"]
+        },
+        "eventHandlers": {
+          "valueChange": {
+            "ref": "updateInput",
+            "params": ["ariaDescribedBy", "string"]
+          }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "ariaDescribedBy"
       }
     ]
   }

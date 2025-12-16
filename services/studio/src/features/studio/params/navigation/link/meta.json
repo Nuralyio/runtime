@@ -4,9 +4,6 @@
   "themeContainerId": "studio_link_theme_container",
   "configKey": "linkFields",
   "childrenIds": [
-    "link_collapse_container",
-    "typography_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "link_collapse_container"
   ]
 }

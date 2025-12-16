@@ -3,7 +3,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
-// import "@nuralyui/radio-group";
+import "@nuralyui/radio-group";
 
 @customElement("radio-button-block")
 export class RadioButtonBlock extends BaseElementBlock {
@@ -17,10 +17,10 @@ export class RadioButtonBlock extends BaseElementBlock {
   renderComponent() {
     const radioStyles = this.component?.style || {};
     
-    // Extract values from the handler structure [options, defaultValue, type]
-    const options = this.inputHandlersValue?.value?.[0] || [];
-    const defaultValue = this.inputHandlersValue?.value?.[1] || '';
-    const type = this.inputHandlersValue?.value?.[2] || 'default';
+    // Extract values from the handler structure (object format)
+    const options = this.inputHandlersValue?.value?.options || [];
+    const defaultValue = this.inputHandlersValue?.value?.currentValue ?? '';
+    const type = this.inputHandlersValue?.value?.type || 'default';
     
     // Get other properties
     const direction = this.inputHandlersValue?.direction || 'vertical';
@@ -61,7 +61,11 @@ export class RadioButtonBlock extends BaseElementBlock {
               oldValue: e.detail.oldValue
             });
           }}
-        ></nr-radio-group>
+        >
+          <span slot="helper-text" style="display: block; margin-top: 4px;">
+            ${this.inputHandlersValue?.helper ?? ""}
+          </span>
+        </nr-radio-group>
       </span>
     `;
   }

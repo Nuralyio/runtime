@@ -1,0 +1,545 @@
+{
+  "theme": {
+    "modes": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          {
+            "label": "Background Color",
+            "cssVar": "--nuraly-color-input-background",
+            "type": "color"
+          },
+          {
+            "label": "Text Color",
+            "cssVar": "--nuraly-color-input-text",
+            "type": "color"
+          },
+          {
+            "label": "Font Family",
+            "cssVar": "--nuraly-font-family-input",
+            "type": "select",
+            "defaultValue": "IBM Plex Sans, ui-sans-serif, system-ui",
+            "options": [
+              { "label": "IBM Plex Sans", "value": "IBM Plex Sans, ui-sans-serif, system-ui", "htmlContent": "<span style=\"font-family: IBM Plex Sans, ui-sans-serif, system-ui;\">IBM Plex Sans</span>" },
+              { "label": "System UI", "value": "system-ui, -apple-system, sans-serif", "htmlContent": "<span style=\"font-family: system-ui, -apple-system, sans-serif;\">System UI</span>" },
+              { "label": "Arial", "value": "Arial, sans-serif", "htmlContent": "<span style=\"font-family: Arial, sans-serif;\">Arial</span>" },
+              { "label": "Helvetica", "value": "Helvetica, Arial, sans-serif", "htmlContent": "<span style=\"font-family: Helvetica, Arial, sans-serif;\">Helvetica</span>" },
+              { "label": "Times New Roman", "value": "Times New Roman, serif", "htmlContent": "<span style=\"font-family: Times New Roman, serif;\">Times New Roman</span>" },
+              { "label": "Georgia", "value": "Georgia, serif", "htmlContent": "<span style=\"font-family: Georgia, serif;\">Georgia</span>" },
+              { "label": "Verdana", "value": "Verdana, sans-serif", "htmlContent": "<span style=\"font-family: Verdana, sans-serif;\">Verdana</span>" },
+              { "label": "Trebuchet MS", "value": "Trebuchet MS, sans-serif", "htmlContent": "<span style=\"font-family: Trebuchet MS, sans-serif;\">Trebuchet MS</span>" },
+              { "label": "Courier New", "value": "Courier New, monospace", "htmlContent": "<span style=\"font-family: Courier New, monospace;\">Courier New</span>" },
+              { "label": "Roboto", "value": "Roboto, sans-serif", "htmlContent": "<span style=\"font-family: Roboto, sans-serif;\">Roboto</span>" },
+              { "label": "Inter", "value": "Inter, sans-serif", "htmlContent": "<span style=\"font-family: Inter, sans-serif;\">Inter</span>" },
+              { "label": "Sans Serif (Generic)", "value": "sans-serif", "htmlContent": "<span style=\"font-family: sans-serif; font-style: italic; opacity: 0.8;\">sans-serif</span>" },
+              { "label": "Serif (Generic)", "value": "serif", "htmlContent": "<span style=\"font-family: serif; font-style: italic; opacity: 0.8;\">serif</span>" },
+              { "label": "Monospace (Generic)", "value": "monospace", "htmlContent": "<span style=\"font-family: monospace; font-style: italic; opacity: 0.8;\">monospace</span>" }
+            ]
+          },
+          {
+            "label": "Font Size",
+            "cssVar": "--nuraly-font-size-input",
+            "type": "text",
+            "placeholder": "14px",
+            "defaultValue": "14px"
+          }
+        ]
+      },
+      {
+        "name": "Border",
+        "open": false,
+        "items": [
+          {
+            "label": "Border Color",
+            "cssVar": "--nuraly-color-input-border",
+            "type": "color"
+          },
+          {
+            "label": "Border Width",
+            "cssVar": "--nuraly-border-width-input",
+            "type": "text",
+            "placeholder": "1px",
+            "defaultValue": "1px"
+          },
+          {
+            "label": "Border Radius",
+            "cssVar": "--nuraly-border-radius-input",
+            "type": "text",
+            "placeholder": "6px",
+            "defaultValue": "6px"
+          },
+          {
+            "label": "Focus Border Color",
+            "cssVar": "--nuraly-color-input-border-focus",
+            "type": "color"
+          },
+          {
+            "label": "Focus Box Shadow",
+            "cssVar": "--nuraly-shadow-input-focus",
+            "type": "text",
+            "placeholder": "0 0 0 2px rgba(24, 144, 255, 0.2)",
+            "defaultValue": "0 0 0 2px rgba(24, 144, 255, 0.2)"
+          }
+        ]
+      },
+      {
+        "name": "Placeholder",
+        "open": false,
+        "items": [
+          {
+            "label": "Placeholder Color",
+            "cssVar": "--nuraly-color-input-placeholder",
+            "type": "color"
+          },
+          {
+            "label": "Placeholder Font Size",
+            "cssVar": "--nuraly-font-size-input-placeholder",
+            "type": "text",
+            "placeholder": "14px",
+            "defaultValue": "14px"
+          }
+        ]
+      },
+      {
+        "name": "Disabled State",
+        "open": false,
+        "items": [
+          {
+            "label": "Disabled Background Color",
+            "cssVar": "--nuraly-color-input-disabled-background",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Text Color",
+            "cssVar": "--nuraly-color-input-disabled-text",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Border Color",
+            "cssVar": "--nuraly-color-input-disabled-border",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Placeholder Color",
+            "cssVar": "--nuraly-color-input-disabled-placeholder",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Icon Opacity",
+            "cssVar": "--nuraly-input-disabled-icon-opacity",
+            "type": "number",
+            "placeholder": "0.5",
+            "defaultValue": "0.5"
+          },
+          {
+            "label": "Disabled Label Color",
+            "cssVar": "--nuraly-input-disabled-label-color",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Helper Text Color",
+            "cssVar": "--nuraly-input-disabled-helper-text-color",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Error State",
+        "open": false,
+        "items": [
+          {
+            "label": "Error Border",
+            "cssVar": "--nuraly-input-error-border",
+            "type": "text",
+            "placeholder": "1px solid #da1e28"
+          },
+          {
+            "label": "Error Color",
+            "cssVar": "--nuraly-input-error-color",
+            "type": "color"
+          },
+          {
+            "label": "Error Message Color",
+            "cssVar": "--nuraly-input-error-message-color",
+            "type": "color"
+          },
+          {
+            "label": "Error Helper Text Color",
+            "cssVar": "--nuraly-input-error-helper-text-color",
+            "type": "color"
+          },
+          {
+            "label": "Error Icon Color",
+            "cssVar": "--nuraly-color-input-error-icon",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Warning State",
+        "open": false,
+        "items": [
+          {
+            "label": "Warning Color",
+            "cssVar": "--nuraly-input-warning-color",
+            "type": "color"
+          },
+          {
+            "label": "Warning Message Color",
+            "cssVar": "--nuraly-input-warning-message-color",
+            "type": "color"
+          },
+          {
+            "label": "Warning Helper Text Color",
+            "cssVar": "--nuraly-input-warning-helper-text-color",
+            "type": "color"
+          },
+          {
+            "label": "Warning Icon Color",
+            "cssVar": "--nuraly-color-input-warning-icon",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Success State",
+        "open": false,
+        "items": [
+          {
+            "label": "Success Color",
+            "cssVar": "--nuraly-input-success-color",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Icons",
+        "open": false,
+        "items": [
+          {
+            "label": "Icon Color",
+            "cssVar": "--nuraly-color-input-icon",
+            "type": "color"
+          },
+          {
+            "label": "Icon Size",
+            "cssVar": "--nuraly-size-input-icon",
+            "type": "text",
+            "placeholder": "18px",
+            "defaultValue": "18px"
+          },
+          {
+            "label": "Calendar Icon Color",
+            "cssVar": "--nuraly-color-input-calendar-icon",
+            "type": "color"
+          },
+          {
+            "label": "Password Icon Color",
+            "cssVar": "--nuraly-color-input-password-icon",
+            "type": "color"
+          },
+          {
+            "label": "Copy Icon Color",
+            "cssVar": "--nuraly-color-input-copy-icon",
+            "type": "color"
+          },
+          {
+            "label": "Clear Icon Color",
+            "cssVar": "--nuraly-color-input-clear-icon",
+            "type": "color"
+          },
+          {
+            "label": "Number Icons Color",
+            "cssVar": "--nuraly-color-input-number-icons",
+            "type": "color"
+          },
+          {
+            "label": "Number Icons Separator Color",
+            "cssVar": "--nuraly-input-number-icons-separator-color",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Outlined Variant",
+        "open": false,
+        "items": [
+          {
+            "label": "Outlined Border",
+            "cssVar": "--nuraly-input-outlined-border",
+            "type": "text",
+            "placeholder": "1px solid #d1d5db",
+            "defaultValue": "1px solid #d1d5db"
+          },
+          {
+            "label": "Outlined Border Radius",
+            "cssVar": "--nuraly-input-outlined-border-radius",
+            "type": "text",
+            "placeholder": "6px",
+            "defaultValue": "6px"
+          },
+          {
+            "label": "Outlined Background",
+            "cssVar": "--nuraly-input-outlined-background",
+            "type": "color"
+          },
+          {
+            "label": "Outlined Focus Border",
+            "cssVar": "--nuraly-input-outlined-focus-border",
+            "type": "text",
+            "placeholder": "2px solid #3b82f6",
+            "defaultValue": "2px solid #3b82f6"
+          }
+        ]
+      },
+      {
+        "name": "Filled Variant",
+        "open": false,
+        "items": [
+          {
+            "label": "Filled Background",
+            "cssVar": "--nuraly-input-filled-background",
+            "type": "color"
+          },
+          {
+            "label": "Filled Border Radius",
+            "cssVar": "--nuraly-input-filled-border-radius",
+            "type": "text",
+            "placeholder": "6px",
+            "defaultValue": "6px"
+          },
+          {
+            "label": "Filled Border Bottom",
+            "cssVar": "--nuraly-input-filled-border-bottom",
+            "type": "text",
+            "placeholder": "1px solid #d1d5db"
+          },
+          {
+            "label": "Filled Focus Border Bottom",
+            "cssVar": "--nuraly-input-filled-focus-border-bottom",
+            "type": "text",
+            "placeholder": "2px solid #3b82f6"
+          }
+        ]
+      },
+      {
+        "name": "Borderless Variant",
+        "open": false,
+        "items": [
+          {
+            "label": "Borderless Background",
+            "cssVar": "--nuraly-input-borderless-background",
+            "type": "color"
+          },
+          {
+            "label": "Borderless Border Radius",
+            "cssVar": "--nuraly-input-borderless-border-radius",
+            "type": "text",
+            "placeholder": "6px"
+          },
+          {
+            "label": "Borderless Focus Outline",
+            "cssVar": "--nuraly-input-borderless-focus-outline",
+            "type": "text",
+            "placeholder": "2px solid #3b82f6"
+          }
+        ]
+      },
+      {
+        "name": "Underlined Variant",
+        "open": false,
+        "items": [
+          {
+            "label": "Underlined Border Bottom",
+            "cssVar": "--nuraly-input-underlined-border-bottom",
+            "type": "text",
+            "placeholder": "1px solid #d1d5db"
+          },
+          {
+            "label": "Underlined Focus Border Bottom",
+            "cssVar": "--nuraly-input-underlined-focus-border-bottom",
+            "type": "text",
+            "placeholder": "2px solid #3b82f6"
+          }
+        ]
+      },
+      {
+        "name": "Label",
+        "open": false,
+        "items": [
+          {
+            "label": "Label Color",
+            "cssVar": "--nuraly-input-label-color",
+            "type": "color"
+          },
+          {
+            "label": "Label Font Size",
+            "cssVar": "--nuraly-input-label-font-size",
+            "type": "text",
+            "placeholder": "14px"
+          },
+          {
+            "label": "Label Padding Bottom",
+            "cssVar": "--nuraly-input-label-padding-bottom",
+            "type": "text",
+            "placeholder": "4px"
+          }
+        ]
+      },
+      {
+        "name": "Helper Text",
+        "open": false,
+        "items": [
+          {
+            "label": "Helper Text Color",
+            "cssVar": "--nuraly-input-helper-text-color",
+            "type": "color"
+          },
+          {
+            "label": "Helper Text Font Size",
+            "cssVar": "--nuraly-input-helper-text-font-size",
+            "type": "text",
+            "placeholder": "12px"
+          },
+          {
+            "label": "Helper Text Padding Top",
+            "cssVar": "--nuraly-input-helper-text-padding-top",
+            "type": "text",
+            "placeholder": "4px"
+          }
+        ]
+      },
+      {
+        "name": "Prefix/Suffix",
+        "open": false,
+        "items": [
+          {
+            "label": "Prefix Color",
+            "cssVar": "--nuraly-input-prefix-color",
+            "type": "color"
+          },
+          {
+            "label": "Prefix Font Size",
+            "cssVar": "--nuraly-input-prefix-font-size",
+            "type": "text",
+            "placeholder": "14px"
+          },
+          {
+            "label": "Prefix Padding Right",
+            "cssVar": "--nuraly-input-prefix-padding-right",
+            "type": "text",
+            "placeholder": "8px"
+          },
+          {
+            "label": "Suffix Color",
+            "cssVar": "--nuraly-input-suffix-color",
+            "type": "color"
+          },
+          {
+            "label": "Suffix Font Size",
+            "cssVar": "--nuraly-input-suffix-font-size",
+            "type": "text",
+            "placeholder": "14px"
+          },
+          {
+            "label": "Suffix Padding Left",
+            "cssVar": "--nuraly-input-suffix-padding-left",
+            "type": "text",
+            "placeholder": "8px"
+          }
+        ]
+      },
+      {
+        "name": "Addons",
+        "open": false,
+        "items": [
+          {
+            "label": "Addon Background Color",
+            "cssVar": "--nuraly-input-addon-background-color",
+            "type": "color"
+          },
+          {
+            "label": "Addon Color",
+            "cssVar": "--nuraly-input-addon-color",
+            "type": "color"
+          },
+          {
+            "label": "Addon Padding",
+            "cssVar": "--nuraly-input-addon-padding",
+            "type": "text",
+            "placeholder": "8px 12px"
+          }
+        ]
+      },
+      {
+        "name": "Validation",
+        "open": false,
+        "items": [
+          {
+            "label": "Validation Message Font Size",
+            "cssVar": "--nuraly-input-validation-message-font-size",
+            "type": "text",
+            "placeholder": "0.875rem",
+            "defaultValue": "0.875rem"
+          },
+          {
+            "label": "Validation Message Margin Top",
+            "cssVar": "--nuraly-input-validation-message-margin-top",
+            "type": "text",
+            "placeholder": "0.25rem",
+            "defaultValue": "0.25rem"
+          },
+          {
+            "label": "Validation Message Line Height",
+            "cssVar": "--nuraly-input-validation-message-line-height",
+            "type": "text",
+            "placeholder": "1.4",
+            "defaultValue": "1.4"
+          }
+        ]
+      },
+      {
+        "name": "Character Count",
+        "open": false,
+        "items": [
+          {
+            "label": "Character Count Font Size",
+            "cssVar": "--nuraly-input-character-count-font-size",
+            "type": "text",
+            "placeholder": "12px"
+          },
+          {
+            "label": "Character Count Color",
+            "cssVar": "--nuraly-input-character-count-color",
+            "type": "color"
+          },
+          {
+            "label": "Character Count Margin Top",
+            "cssVar": "--nuraly-input-character-count-margin-top",
+            "type": "text",
+            "placeholder": "4px"
+          },
+          {
+            "label": "Character Count Over Limit Color",
+            "cssVar": "--nuraly-input-character-count-over-limit-color",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Transitions",
+        "open": false,
+        "items": [
+          {
+            "label": "Transition",
+            "cssVar": "--nuraly-transition-input",
+            "type": "text",
+            "placeholder": "border-color 0.2s, box-shadow 0.2s",
+            "defaultValue": "border-color 0.2s, box-shadow 0.2s"
+          }
+        ]
+      }
+    ]
+  }
+}

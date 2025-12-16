@@ -1,0 +1,9 @@
+{
+  "uuid": "text_input_blocks",
+  "name": "Parent Text Input Container",
+  "themeContainerId": "text_input_icon_theme_container",
+  "configKey": "textInputFields",
+  "childrenIds": [
+    "text_input_fields_collapse_container"
+  ]
+}

@@ -7,34 +7,94 @@
     },
     "collapse": {
       "uuid": "link_collapse",
-      "title": "Link Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Link Properties"
     },
     "properties": [
+      {
+        "name": "label",
+        "label": "Label",
+        "type": "text",
+        "inputProperty": "label",
+        "default": "Link",
+        "width": "180px",
+        "placeholder": "Link text",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "label",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["label"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["label"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["label", "string"]
+          }
+        }
+      },
       {
         "name": "url",
         "label": "URL",
         "type": "text",
+        "inputProperty": "url",
         "default": "",
-        "width": "100%",
-        "placeholder": "https://nuraly.io",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'url') : null;\nreturn Input?.type === 'value' ? Input.value ?? '' : '';",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.input?.url?.type === 'handler' && selectedComponent?.input?.url?.value ? 'disabled' : 'enabled';",
+        "width": "180px",
+        "placeholder": "https://example.com",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "url",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["url"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["url"]
+        },
         "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'url', 'value', EventData.value);\n}"
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["url", "string"]
+          }
+        }
+      },
+      {
+        "name": "target",
+        "label": "Target",
+        "type": "select",
+        "inputProperty": "target",
+        "default": "_self",
+        "width": "180px",
+        "options": [
+          { "label": "Same Tab (_self)", "value": "_self" },
+          { "label": "New Tab (_blank)", "value": "_blank" },
+          { "label": "Parent Frame (_parent)", "value": "_parent" },
+          { "label": "Top Frame (_top)", "value": "_top" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "target",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["target"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["target"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["target", "value"]
+          }
         }
       }
     ],
     "includeCommonProperties": [
-      "component_value_text_block",
       "component_id_text_block"
     ],
     "includeContainers": []

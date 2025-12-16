@@ -1,5 +1,0 @@
-handlerPrefix: studio_card_handler
-
-events:
-  - name: click
-    label: onClick

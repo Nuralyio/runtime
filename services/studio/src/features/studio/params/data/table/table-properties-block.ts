@@ -1,21 +1,21 @@
 /**
  * Table Properties Block
  * 
- * This file generates table component configuration properties from a YAML configuration file
- * (table-config.yaml). It uses the generic JSON/YAML processor for generation.
+ * This file generates table component configuration properties from a JSON configuration file
+ * (config.json). It uses the generic JSON processor for generation.
  * 
- * The configuration is in table-config.yaml and processed by property-block-processor.ts
+ * The configuration is in config.json and processed by property-block-processor.ts
  */
 
 import { generateFromConfig, type BlockConfig } from "../../../processors/property-block/index.ts";
-import tableConfigYaml from "./table-config.yaml";
+import tableConfig from "./config.json";
 
-// Type assertion for the YAML config
-const tableConfig = tableConfigYaml as { tableFields: BlockConfig };
+// Type assertion for the JSON config
+const tableConfigData = tableConfig as { tableFields: BlockConfig };
 
-// Generate table components from YAML config
+// Generate table components from JSON config
 const generatedTableComponents = generateFromConfig(
-  tableConfig.tableFields,
+  tableConfigData.tableFields,
   'table'
 );
 

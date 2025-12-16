@@ -77,7 +77,7 @@ export default [
       }
     },
     event: {
-      iconChanged: /* js */ `
+      onChange: /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
           updateInput(selectedComponent, 'icon', 'string', EventData.value);
       `

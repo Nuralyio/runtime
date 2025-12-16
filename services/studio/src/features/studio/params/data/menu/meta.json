@@ -1,12 +1,9 @@
 {
   "uuid": "menu_blocks",
   "name": "Parent Select Container",
-  "themeContainerId": "menu_blocks_theme_container",
+  "themeContainerId": "studio_menu_theme_container",
   "configKey": "menuFields",
   "childrenIds": [
-    "menu_collapse_container",
-    "typography_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "menu_collapse_container"
   ]
 }

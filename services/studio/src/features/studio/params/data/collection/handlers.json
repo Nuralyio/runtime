@@ -3,7 +3,11 @@
   "events": [
     {
       "name": "onInit",
-      "label": "onInit"
+      "label": "On Init"
+    },
+    {
+      "name": "onClick",
+      "label": "On Click"
     }
   ]
 }
