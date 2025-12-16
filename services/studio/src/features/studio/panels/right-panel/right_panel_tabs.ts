@@ -190,7 +190,7 @@ export default [
                             themes: ["box_model_collapse"]
                         },
                         "video": {
-                            parameters: ["video_collapse_container"],
+                            parameters: ["video_blocks"],
                             handlers: ["studio_video_handler"],
                             themes: ["box_model_collapse"]
                         },
