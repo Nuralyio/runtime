@@ -47,3 +47,5 @@ import "../components/ui/components/layout/Card/Card";
 import "../components/ui/components/display/Tag/Tag";
 import "../components/ui/components/inputs/Slider/Slider";
 import "../components/ui/components/layout/Panel/Panel";
+import "../components/ui/components/layout/Grid/Row";
+import "../components/ui/components/layout/Grid/Col";
