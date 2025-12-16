@@ -4,9 +4,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
-import { executeHandler } from '../../../../../state/runtime-context.ts';
-import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
-import { debounce } from '../../../../../utils/time.ts';
 
 @customElement("embed-url-block")
 export class EmbedUrlBlock extends BaseElementBlock {
@@ -50,29 +47,27 @@ export class EmbedUrlBlock extends BaseElementBlock {
     });
   }
 
-  handleUrlChange = debounce((url: string) => {
-    if (this.component?.event?.valueChange) {
-      executeHandler(
-        this.component,
-        getNestedAttribute(this.component, `event.valueChange`),
-        { value: url }
-      );
-    }
-    this.resetFocusAfterInactivity();
-  }, 0);
+  private handleIframeLoad(e: Event) {
+    this.executeEvent('onLoad', e, {
+      url: this.currentUrl || this.inputHandlersValue?.url || ""
+    });
+  }
 
-  onFocus = () => {
+  private handleIframeError(e: Event) {
+    this.executeEvent('onError', e, {
+      url: this.currentUrl || this.inputHandlersValue?.url || "",
+      error: 'Failed to load iframe content'
+    });
+  }
+
+  onFocus = (e: FocusEvent) => {
     this._isUserFocused = true;
-    if (this.component?.event?.focus) {
-      executeHandler(this.component, getNestedAttribute(this.component, `event.focus`));
-    }
+    this.executeEvent('onFocus', e);
   };
 
-  onBlur = () => {
+  onBlur = (e: FocusEvent) => {
     this._isUserFocused = false;
-    if (this.component?.event?.blur) {
-      executeHandler(this.component, getNestedAttribute(this.component, `event.blur`));
-    }
+    this.executeEvent('onBlur', e);
   };
 
   private resetFocusAfterInactivity() {
@@ -97,10 +92,16 @@ export class EmbedUrlBlock extends BaseElementBlock {
         tabindex="0"
         @focus=${this.onFocus}
         @blur=${this.onBlur}
+        @click=${(e: MouseEvent) => this.executeEvent('onClick', e)}
         style=${styleMap(this.getStyles())}
       >
         ${url
-          ? html`<iframe ${ref(this.iframeRef)} src=${url}></iframe>`
+          ? html`<iframe
+              ${ref(this.iframeRef)}
+              src=${url}
+              @load=${(e: Event) => this.handleIframeLoad(e)}
+              @error=${(e: Event) => this.handleIframeError(e)}
+            ></iframe>`
           : html`<div style="text-align:center; color:gray;">No URL provided</div>`}
       </div>
     `;
