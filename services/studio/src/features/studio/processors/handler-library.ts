@@ -183,8 +183,12 @@ export const ValueHandlers = {
   componentInput: (propertyName: string, defaultValue?: any) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
     const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
-    // Only return the value if type is "value", otherwise return default
-    return input?.type === 'value' ? (input.value ${defaultValue !== undefined ? `?? ${JSON.stringify(defaultValue)}` : `|| ''`}) : ${defaultValue !== undefined ? JSON.stringify(defaultValue) : `''`};
+    // Return the value if it exists (handles both {type: 'value', value: x} and direct values)
+    if (input?.type === 'handler' && input?.value) {
+      // If type is handler, return the default (the value is code, not displayable)
+      return ${defaultValue !== undefined ? JSON.stringify(defaultValue) : `''`};
+    }
+    return input?.value ${defaultValue !== undefined ? `?? ${JSON.stringify(defaultValue)}` : `?? ''`};
   `,
   
   // Get component inputHandlers property (for icon, etc.)
