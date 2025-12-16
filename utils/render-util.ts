@@ -49,6 +49,8 @@ const cardTemplate = (props: any, isViewMode: boolean)  => html`<card-block .isV
 const tagTemplate = (props: any, isViewMode: boolean)  => html`<tag-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></tag-block>`;
 const sliderTemplate = (props: any, isViewMode: boolean)  => html`<slider-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></slider-block>`;
 const panelTemplate = (props: any, isViewMode: boolean)  => html`<panel-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></panel-block>`;
+const gridRowTemplate = (props: any, isViewMode: boolean)  => html`<grid-row-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-row-block>`;
+const gridColTemplate = (props: any, isViewMode: boolean)  => html`<grid-col-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-col-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -157,6 +159,10 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return sliderTemplate(commonProps, isViewMode);
     case ComponentType.Panel:
         return panelTemplate(commonProps, isViewMode);
+    case ComponentType.GridRow:
+        return gridRowTemplate(commonProps, isViewMode);
+    case ComponentType.GridCol:
+        return gridColTemplate(commonProps, isViewMode);
     default:
       return html``;
   }
