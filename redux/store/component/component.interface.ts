@@ -52,6 +52,7 @@ export const enum ComponentType {
   GridRow = "grid-row-block",
   GridCol = "grid-col-block",
   Form = "form",
+  ValidationRules = "validation_rules",
 }
 
 export interface DraggingComponentInfo {
