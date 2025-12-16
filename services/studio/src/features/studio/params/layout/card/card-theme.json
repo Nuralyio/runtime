@@ -1,0 +1,210 @@
+{
+  "theme": {
+    "modes": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          {
+            "label": "Background Color",
+            "cssVar": "--nuraly-card-background-color",
+            "type": "color"
+          },
+          {
+            "label": "Font Family",
+            "cssVar": "--nuraly-card-font-family",
+            "type": "text",
+            "placeholder": "IBM Plex Sans, ui-sans-serif, system-ui",
+            "defaultValue": "IBM Plex Sans, ui-sans-serif, system-ui"
+          },
+          {
+            "label": "Font Size",
+            "cssVar": "--nuraly-card-font-size",
+            "type": "text",
+            "placeholder": "14px",
+            "defaultValue": "14px"
+          },
+          {
+            "label": "Line Height",
+            "cssVar": "--nuraly-card-line-height",
+            "type": "text",
+            "placeholder": "1.5",
+            "defaultValue": "1.5"
+          },
+          {
+            "label": "Padding",
+            "cssVar": "--nuraly-card-padding",
+            "type": "text",
+            "placeholder": "16px",
+            "defaultValue": "16px"
+          },
+          {
+            "label": "Transition",
+            "cssVar": "--nuraly-card-transition",
+            "type": "text",
+            "placeholder": "all 0.3s ease",
+            "defaultValue": "all 0.3s ease"
+          }
+        ]
+      },
+      {
+        "name": "Border",
+        "open": false,
+        "items": [
+          {
+            "label": "Border",
+            "cssVar": "--nuraly-card-border",
+            "type": "text",
+            "placeholder": "1px solid #d9d9d9",
+            "defaultValue": "1px solid #d9d9d9"
+          },
+          {
+            "label": "Border Radius",
+            "cssVar": "--nuraly-card-border-radius",
+            "type": "text",
+            "placeholder": "8px",
+            "defaultValue": "8px"
+          }
+        ]
+      },
+      {
+        "name": "Shadow",
+        "open": false,
+        "items": [
+          {
+            "label": "Box Shadow",
+            "cssVar": "--nuraly-card-shadow",
+            "type": "text",
+            "placeholder": "0 1px 2px rgba(0, 0, 0, 0.05)",
+            "defaultValue": "0 1px 2px rgba(0, 0, 0, 0.05)"
+          }
+        ]
+      },
+      {
+        "name": "Header",
+        "open": false,
+        "items": [
+          {
+            "label": "Header Background Color",
+            "cssVar": "--nuraly-card-header-background-color",
+            "type": "color"
+          },
+          {
+            "label": "Header Text Color",
+            "cssVar": "--nuraly-card-header-color",
+            "type": "color"
+          },
+          {
+            "label": "Header Font Weight",
+            "cssVar": "--nuraly-card-header-font-weight",
+            "type": "text",
+            "placeholder": "600",
+            "defaultValue": "600"
+          },
+          {
+            "label": "Header Border Bottom",
+            "cssVar": "--nuraly-card-header-border-bottom",
+            "type": "text",
+            "placeholder": "1px solid #f0f0f0",
+            "defaultValue": "1px solid #f0f0f0"
+          }
+        ]
+      },
+      {
+        "name": "Content",
+        "open": false,
+        "items": [
+          {
+            "label": "Content Text Color",
+            "cssVar": "--nuraly-card-content-color",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Hover State",
+        "open": false,
+        "items": [
+          {
+            "label": "Hover Shadow",
+            "cssVar": "--nuraly-card-hover-shadow",
+            "type": "text",
+            "placeholder": "0 4px 12px rgba(0, 0, 0, 0.1)",
+            "defaultValue": "0 4px 12px rgba(0, 0, 0, 0.1)"
+          },
+          {
+            "label": "Hover Background Color",
+            "cssVar": "--nuraly-card-hover-background-color",
+            "type": "color"
+          },
+          {
+            "label": "Hover Border Color",
+            "cssVar": "--nuraly-card-hover-border-color",
+            "type": "color"
+          },
+          {
+            "label": "Hover Cursor",
+            "cssVar": "--nuraly-card-cursor",
+            "type": "text",
+            "placeholder": "default",
+            "defaultValue": "default"
+          }
+        ]
+      },
+      {
+        "name": "Size Variants",
+        "open": false,
+        "items": [
+          {
+            "label": "Small Padding",
+            "cssVar": "--nuraly-card-small-padding",
+            "type": "text",
+            "placeholder": "12px",
+            "defaultValue": "12px"
+          },
+          {
+            "label": "Small Font Size",
+            "cssVar": "--nuraly-card-small-font-size",
+            "type": "text",
+            "placeholder": "12px",
+            "defaultValue": "12px"
+          },
+          {
+            "label": "Large Padding",
+            "cssVar": "--nuraly-card-large-padding",
+            "type": "text",
+            "placeholder": "24px",
+            "defaultValue": "24px"
+          },
+          {
+            "label": "Large Font Size",
+            "cssVar": "--nuraly-card-large-font-size",
+            "type": "text",
+            "placeholder": "16px",
+            "defaultValue": "16px"
+          }
+        ]
+      },
+      {
+        "name": "Focus",
+        "open": false,
+        "items": [
+          {
+            "label": "Focus Outline",
+            "cssVar": "--nuraly-card-focus-outline",
+            "type": "text",
+            "placeholder": "2px solid #1890ff",
+            "defaultValue": "2px solid #1890ff"
+          },
+          {
+            "label": "Focus Outline Offset",
+            "cssVar": "--nuraly-card-focus-offset",
+            "type": "text",
+            "placeholder": "2px",
+            "defaultValue": "2px"
+          }
+        ]
+      }
+    ]
+  }
+}

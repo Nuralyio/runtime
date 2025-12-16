@@ -4,8 +4,6 @@
   "themeContainerId": "studio_icon_theme_container",
   "configKey": "iconFields",
   "childrenIds": [
-    "icon_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "icon_collapse_container"
   ]
 }
