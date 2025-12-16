@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
+import { registerWithParentForm, unregisterFromParentForm, notifyFieldValueChange } from "../../base/FormRegisterable.ts";
 
 // Safely import @nuralyui/input
 try {
@@ -46,14 +47,24 @@ export class TextInputBlock extends BaseElementBlock {
       }
     });
 
-    // Récupération de l'élément input
+    // Get reference to the nr-input element
     this._inputElement = this.renderRoot.querySelector("nr-input");
+
+    // Register with parent form if this input has a name
+    if (this._inputElement && this.inputHandlersValue?.name) {
+      registerWithParentForm(this, this._inputElement);
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.unsubscribe) this.unsubscribe();
     if (this._focusResetTimeout) clearTimeout(this._focusResetTimeout);
+
+    // Unregister from parent form
+    if (this.inputHandlersValue?.name) {
+      unregisterFromParentForm(this);
+    }
   }
 
   private resetFocusAfterInactivity() {
