@@ -4,7 +4,6 @@
   "themeContainerId": "studio_collection_theme_container",
   "configKey": "collectionFields",
   "childrenIds": [
-    "collection_collapse_container",
-    "size_collapse_container"
+    "collection_collapse_container"
   ]
 }

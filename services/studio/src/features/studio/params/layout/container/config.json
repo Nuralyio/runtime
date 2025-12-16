@@ -7,95 +7,194 @@
     },
     "collapse": {
       "uuid": "container_collapse",
-      "title": "Container Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Container Properties"
     },
     "properties": [
       {
-        "name": "direction",
+        "name": "container_direction",
         "label": "Direction",
         "type": "select",
+        "inputProperty": "direction",
         "default": "row",
         "width": "180px",
-        "placeholder": "Direction",
+        "placeholder": "Select direction",
         "options": [
           { "label": "Row", "value": "row" },
           { "label": "Row Reverse", "value": "row-reverse" },
           { "label": "Column", "value": "column" },
           { "label": "Column Reverse", "value": "column-reverse" }
         ],
-        "valueHandler": { "ref": "componentInputSelect", "params": ["direction", "row"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["direction"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "direction",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["direction", "row"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["direction"]
+        },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["direction", "value"] }
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["direction", "value"]
+          }
         }
       },
       {
-        "name": "alignment",
-        "label": "Alignment",
-        "type": "select",
-        "default": "default",
-        "width": "180px",
-        "placeholder": "Direction",
-        "options": [
-          { "label": "flex-start", "value": "flex-start" },
-          { "label": "flex-end", "value": "flex-end" },
-          { "label": "center", "value": "center" }
-        ],
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst currentType = Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'justify-content') ?? 'default';\nconst options = [\n  { label: 'flex-start', value: 'flex-start' },\n  { label: 'flex-end', value: 'flex-end' },\n  { label: 'center', value: 'center' },\n];\nreturn [options, [[currentType]]];",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet isDisabled = 'enabled';\nif (selectedComponent?.styleHandlers?.['justify-content']) {\n  isDisabled = 'disabled';\n}\nreturn isDisabled;",
-        "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst typeValue = EventData.value || 'default';\nupdateStyle(selectedComponent, 'justify-content', typeValue);"
-        },
-        "autoCheckbox": false,
-        "checkboxHandler": "const parameter = 'justify-content';\nlet typeHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\ntypeHandler = selectedComponent?.styleHandlers?.['justify-content'] || '';\nreturn [parameter, typeHandler];",
-        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyleHandlers(selectedComponent, 'justify-content', EventData.value);"
-      },
-      {
-        "name": "gap",
-        "label": "Gap",
-        "type": "number",
-        "default": 0,
-        "width": "153px",
-        "valueHandler": "return Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'gap') ?? 0",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state = 'enabled';\nif (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap']) {\n  state = 'disabled';\n}\nreturn state;",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyle(selectedComponent, 'gap', EventData.value + 'px');"
-        },
-        "autoCheckbox": false,
-        "checkboxHandler": "const parameter = 'gap';\nlet heightHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nheightHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['gap'] || '';\nreturn [parameter, heightHandler];",
-        "checkboxEvent": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyleHandlers(selectedComponent, 'gap', EventData.value);"
-      },
-      {
-        "name": "layout",
+        "name": "container_layout",
         "label": "Layout",
         "type": "select",
+        "inputProperty": "layout",
         "default": "default",
         "width": "180px",
-        "placeholder": "layout",
+        "placeholder": "Select layout",
         "options": [
           { "label": "Default", "value": "default" },
           { "label": "Boxed", "value": "boxed" }
         ],
-        "valueHandler": { "ref": "componentInputSelect", "params": ["layout", "default"] },
-        "stateHandler": { "ref": "inputHandler", "params": ["layout"] },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "layout",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["layout", "default"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["layout"]
+        },
         "eventHandlers": {
-          "changed": { "ref": "updateInput", "params": ["layout", "value"] }
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["layout", "value"]
+          }
+        }
+      },
+      {
+        "name": "container_alignment",
+        "label": "Alignment",
+        "type": "select",
+        "default": "flex-start",
+        "width": "180px",
+        "placeholder": "Select alignment",
+        "options": [
+          { "label": "Start", "value": "flex-start" },
+          { "label": "Center", "value": "center" },
+          { "label": "End", "value": "flex-end" },
+          { "label": "Space Between", "value": "space-between" },
+          { "label": "Space Around", "value": "space-around" },
+          { "label": "Space Evenly", "value": "space-evenly" }
+        ],
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "justify-content",
+        "valueHandler": {
+          "ref": "componentStyle",
+          "params": ["justify-content", "flex-start"]
+        },
+        "stateHandler": {
+          "ref": "defaultStyle",
+          "params": ["justify-content"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateStyle",
+            "params": ["justify-content"]
+          }
+        }
+      },
+      {
+        "name": "container_align_items",
+        "label": "Align Items",
+        "type": "select",
+        "default": "stretch",
+        "width": "180px",
+        "placeholder": "Select align items",
+        "options": [
+          { "label": "Stretch", "value": "stretch" },
+          { "label": "Start", "value": "flex-start" },
+          { "label": "Center", "value": "center" },
+          { "label": "End", "value": "flex-end" },
+          { "label": "Baseline", "value": "baseline" }
+        ],
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "align-items",
+        "valueHandler": {
+          "ref": "componentStyle",
+          "params": ["align-items", "stretch"]
+        },
+        "stateHandler": {
+          "ref": "defaultStyle",
+          "params": ["align-items"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateStyle",
+            "params": ["align-items"]
+          }
+        }
+      },
+      {
+        "name": "container_gap",
+        "label": "Gap",
+        "type": "text",
+        "default": "0px",
+        "width": "180px",
+        "placeholder": "e.g. 10px",
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "gap",
+        "valueHandler": {
+          "ref": "componentStyle",
+          "params": ["gap", "0px"]
+        },
+        "stateHandler": {
+          "ref": "defaultStyle",
+          "params": ["gap"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateStyle",
+            "params": ["gap"]
+          }
+        }
+      },
+      {
+        "name": "container_wrap",
+        "label": "Wrap",
+        "type": "select",
+        "default": "nowrap",
+        "width": "180px",
+        "placeholder": "Select wrap",
+        "options": [
+          { "label": "No Wrap", "value": "nowrap" },
+          { "label": "Wrap", "value": "wrap" },
+          { "label": "Wrap Reverse", "value": "wrap-reverse" }
+        ],
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "flex-wrap",
+        "valueHandler": {
+          "ref": "componentStyle",
+          "params": ["flex-wrap", "nowrap"]
+        },
+        "stateHandler": {
+          "ref": "defaultStyle",
+          "params": ["flex-wrap"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateStyle",
+            "params": ["flex-wrap"]
+          }
         }
       }
     ],
     "includeCommonProperties": [
-      "component_value_text_block",
-      "component_id_text_block",
-      "display_block"
+      "component_id_text_block"
     ],
     "includeContainers": []
   }

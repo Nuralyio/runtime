@@ -7,40 +7,87 @@
     },
     "collapse": {
       "uuid": "collection_collapse",
-      "title": "Collection Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Collection Properties"
     },
     "properties": [
       {
-        "name": "column",
-        "label": "Column",
+        "name": "collection_columns",
+        "label": "Columns",
         "type": "number",
         "default": 1,
-        "width": "100px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet fontSize = Editor.getComponentStyle(Utils.first(Vars.selectedComponents), '--columns') || 1;\nreturn [fontSize]",
-        "stateHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet state='enabled';\nif(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['fontSize']){\n  state='disabled'\n}\nreturn state",
-        "eventHandlers": {
-          "valueChange": "const selectedComponent = Utils.first(Vars.selectedComponents);\nupdateStyle(selectedComponent, '--columns', EventData.value);"
+        "width": "180px",
+        "placeholder": "Number of columns",
+        "hasHandler": false,
+        "valueHandler": {
+          "ref": "componentStyle",
+          "params": ["--columns", "1"]
         },
-        "autoCheckbox": true
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateStyle",
+            "params": ["--columns"]
+          }
+        }
+      },
+      {
+        "name": "collection_direction",
+        "label": "Direction",
+        "type": "select",
+        "inputProperty": "direction",
+        "default": "horizontal",
+        "width": "180px",
+        "placeholder": "Select direction",
+        "options": [
+          { "label": "Horizontal", "value": "horizontal" },
+          { "label": "Vertical", "value": "vertical" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "direction",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["direction", "horizontal"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["direction"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["direction", "value"]
+          }
+        }
+      },
+      {
+        "name": "collection_gap",
+        "label": "Gap",
+        "type": "text",
+        "default": "0px",
+        "width": "180px",
+        "placeholder": "e.g. 10px",
+        "hasHandler": true,
+        "handlerType": "style",
+        "handlerProperty": "gap",
+        "valueHandler": {
+          "ref": "componentStyle",
+          "params": ["gap", "0px"]
+        },
+        "stateHandler": {
+          "ref": "defaultStyle",
+          "params": ["gap"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateStyle",
+            "params": ["gap"]
+          }
+        }
       }
     ],
     "includeCommonProperties": [
-      "component_value_text_block",
-      "component_id_text_block",
-      "collection_data",
-      "table_direction_block"
+      "component_id_text_block"
     ],
-    "includeContainers": [
-      "border_collapse_container"
-    ]
+    "includeContainers": []
   }
 }

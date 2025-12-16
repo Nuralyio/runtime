@@ -7,22 +7,38 @@
     },
     "collapse": {
       "uuid": "refcomponent_collapse",
-      "title": "Ref Component Properties",
-      "style": {
-        "--hy-collapse-content-small-size-padding": "5px",
-        "--hy-collapse-font-weight": "normal",
-        "--hy-collapse-border-radius": "0px",
-        "--hy-collapse-width": "292px",
-        "--hy-collapse-border": "none",
-        "--hy-collapse-border-bottom": "1px solid #ccc",
-        "--hy-collapse-local-header-background-color": "#3d3d3d"
-      }
+      "title": "Ref Component Properties"
     },
-    "properties": [],
+    "properties": [
+      {
+        "name": "refcomponent_ref",
+        "label": "Reference",
+        "type": "text",
+        "inputProperty": "ref",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Component UUID",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "ref",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["ref"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["ref"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["ref", "string"]
+          }
+        }
+      }
+    ],
     "includeCommonProperties": [
-      "component_value_text_block",
-      "component_id_text_block",
-      "component_refs_block"
+      "component_id_text_block"
     ],
     "includeContainers": []
   }

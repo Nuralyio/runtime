@@ -1,4 +1,9 @@
 {
   "handlerPrefix": "studio_ref_component_handler",
-  "events": []
+  "events": [
+    {
+      "name": "onClick",
+      "label": "On Click"
+    }
+  ]
 }
