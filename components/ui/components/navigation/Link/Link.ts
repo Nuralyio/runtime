@@ -9,7 +9,7 @@ import { renderComponent } from '../../../../../utils/render-util';
 
 
 @customElement("link-block")
-export class DropdownBlock extends BaseElementBlock {
+export class LinkBlock extends BaseElementBlock {
     @property({ type: Object })
     component: ComponentElement;
 
@@ -18,7 +18,6 @@ export class DropdownBlock extends BaseElementBlock {
 
     constructor() {
         super();
-
     }
 
     override async connectedCallback() {
@@ -42,18 +41,30 @@ export class DropdownBlock extends BaseElementBlock {
     }
 
 
-    override  renderComponent() {
+    override renderComponent() {
+        const url = this.inputHandlersValue?.url ?? '#';
+        const target = this.inputHandlersValue?.target ?? '_self';
+        const label = this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ?? '';
 
         return html`
-      <a  
-     
+      <a
             ${ref(this.inputRef)}
+            href=${this.isViewMode ? url : nothing}
+            target=${target}
             style=${styleMap({
-            ...this.getStyles(),
-        })} 
-        
-          @click=${(e: CustomEvent) => {
-                this.executeEvent("onClick", e)
+                ...this.getStyles(),
+            })}
+            @click=${(e: MouseEvent) => {
+                if (!this.isViewMode) {
+                    e.preventDefault();
+                }
+                this.executeEvent("onClick", e, { url, target });
+            }}
+            @mouseenter=${(e: MouseEvent) => {
+                this.executeEvent("onMouseEnter", e);
+            }}
+            @mouseleave=${(e: MouseEvent) => {
+                this.executeEvent("onMouseLeave", e);
             }}
             >
        <span>
@@ -64,8 +75,8 @@ export class DropdownBlock extends BaseElementBlock {
                 style=${styleMap({
                     "--resolved-text-label-color": this.getStyles()["title-color"],
                 })}
-                >${this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ?? nothing}</nr-label>
-                  
+                >${label}</nr-label>
+
                 <drag-wrapper
                         .where=${"inside"}
                         .message=${"Drop inside"}
@@ -74,7 +85,7 @@ export class DropdownBlock extends BaseElementBlock {
                         .isDragInitiator=${this.isDragInitiator}
                       >
                       </drag-wrapper>
-              
+
                   `}
        </span>
       </a>
