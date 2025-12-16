@@ -81,7 +81,8 @@ constructor() {
     return html`
       <nr-dropdown
         placement="bottom-start"
-        trigger="click">
+        trigger="click"
+        min-width="624px">
         <nr-button
           slot="trigger"
           style=${styleMap({
@@ -99,7 +100,7 @@ constructor() {
           iconPosition=${!this.inputHandlersValue?.triggerText ? "left" : "right"}
         >${this.inputHandlersValue?.triggerText ?? ""}
         </nr-button>
-        <div slot="content" style="padding: 12px; min-width: 400px;">
+        <div slot="content" style="padding: 12px; min-width: 700px;">
           ${this.renderCodeEditorTemplate(eventName, eventValue)}
         </div>
       </nr-dropdown>
