@@ -22,6 +22,8 @@ export class PropertyTypeMapper {
         return "IconPicker";  // Icon picker component
       case 'date':
         return "Datepicker";  // Date picker component
+      case 'textarea':
+        return "Textarea";  // Textarea component for multiline text
       default:
         return "text_input";
     }

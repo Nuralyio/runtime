@@ -30,7 +30,7 @@
           "params": ["icon"]
         },
         "eventHandlers": {
-          "iconChanged": {
+          "onChange": {
             "ref": "updateInput",
             "params": ["icon", "value"]
           }

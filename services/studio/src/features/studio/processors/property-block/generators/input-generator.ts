@@ -263,7 +263,7 @@ export class InputGenerator {
         value: {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
-                 (property.type === 'radio' 
+                 (property.type === 'radio'
                    ? `
                      const options = ${JSON.stringify(property.options || [])};
                      const selectedComponent = Utils.first(Vars.selectedComponents);
@@ -277,6 +277,12 @@ export class InputGenerator {
                      const selectedComponent = Utils.first(Vars.selectedComponents);
                      const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
                      return input.value;
+                   `
+                   : property.type === 'textarea'
+                   ? `
+                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
+                     return input?.value || "${property.default || ''}";
                    `
                    : `
                      let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"
@@ -362,6 +368,15 @@ export class InputGenerator {
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
         updateInput(selectedComponent, "${property.inputProperty || property.name}", "boolean", Boolean(EventData.checked));
+      `;
+    }
+
+    // Add default change event for textarea inputs
+    if (property.type === 'textarea' && !baseInput.event.onChange && !property.eventHandlers) {
+      baseInput.event.onChange = `
+        const selectedComponent = Utils.first(Vars.selectedComponents);
+        if (!selectedComponent) return;
+        updateInput(selectedComponent, "${property.inputProperty || property.name}", "string", EventData.value);
       `;
     }
     
