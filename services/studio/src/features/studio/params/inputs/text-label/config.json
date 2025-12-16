@@ -32,7 +32,10 @@
             "ref": "updateInput",
             "params": ["value", "string"]
           }
-        }
+        },
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "value"
       },
       {
         "name": "size",
