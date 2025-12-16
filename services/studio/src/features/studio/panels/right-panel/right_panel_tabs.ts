@@ -151,6 +151,7 @@ export default [
                         },
                         "code-block": {
                             parameters: ["code_blocks"],
+                            handlers: ["studio_code_handler"],
                             themes: ["box_model_collapse"]
                         },
                         "rich-text": {
