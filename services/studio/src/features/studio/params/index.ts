@@ -119,6 +119,32 @@ export const StudioContainer = loadComponentProperties(
   containerMeta
 );
 
+// Grid Row
+import gridRowConfig from "./layout/grid-row/config.json";
+import gridRowHandlers from "./layout/grid-row/handlers.json";
+import gridRowTheme from "./layout/grid-row/theme.json";
+import gridRowMeta from "./layout/grid-row/meta.json";
+
+export const StudioGridRow = loadComponentProperties(
+  gridRowConfig,
+  gridRowHandlers,
+  gridRowTheme,
+  gridRowMeta
+);
+
+// Grid Col
+import gridColConfig from "./layout/grid-col/config.json";
+import gridColHandlers from "./layout/grid-col/handlers.json";
+import gridColTheme from "./layout/grid-col/theme.json";
+import gridColMeta from "./layout/grid-col/meta.json";
+
+export const StudioGridCol = loadComponentProperties(
+  gridColConfig,
+  gridColHandlers,
+  gridColTheme,
+  gridColMeta
+);
+
 // Card
 import cardConfig from "./layout/card/card-config.json";
 import cardHandlers from "./layout/card/card-handlers.json";
@@ -402,6 +428,8 @@ export const StudioComponents = {
   
   // Layout
   StudioContainer,
+  StudioGridRow,
+  StudioGridCol,
   StudioCard,
   
   // Data
