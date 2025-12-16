@@ -1,4 +1,13 @@
 {
   "handlerPrefix": "studio_rich_text_handler",
-  "events": []
+  "events": [
+    {
+      "name": "onClick",
+      "label": "On Click"
+    },
+    {
+      "name": "onDoubleClick",
+      "label": "On Double Click"
+    }
+  ]
 }
