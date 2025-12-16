@@ -7,7 +7,16 @@
     },
     "collapse": {
       "uuid": "grid_row_collapse",
-      "title": "Grid Row Properties"
+      "title": "Grid Row Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
     },
     "properties": [
       {
@@ -19,7 +28,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["gutter", 0] },
         "stateHandler": { "ref": "inputHandler", "params": ["gutter"] },
         "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["gutter", "value"] }
+          "valueChange": { "ref": "updateInput", "params": ["gutter", "value"] }
         }
       },
       {
@@ -39,7 +48,7 @@
         "valueHandler": { "ref": "componentInputSelect", "params": ["align", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["align"] },
         "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["align", "value"] }
+          "changed": { "ref": "updateInput", "params": ["align", "value"] }
         }
       },
       {
@@ -61,7 +70,7 @@
         "valueHandler": { "ref": "componentInputSelect", "params": ["justify", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["justify"] },
         "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["justify", "value"] }
+          "changed": { "ref": "updateInput", "params": ["justify", "value"] }
         }
       },
       {
@@ -73,7 +82,7 @@
         "valueHandler": { "ref": "componentInputCheckbox", "params": ["wrap", true] },
         "stateHandler": { "ref": "inputHandler", "params": ["wrap"] },
         "eventHandlers": {
-          "onChange": { "ref": "updateInput", "params": ["wrap", "checked"] }
+          "changed": { "ref": "updateInput", "params": ["wrap", "checked"] }
         }
       }
     ],
