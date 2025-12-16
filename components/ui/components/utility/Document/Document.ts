@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
@@ -12,41 +12,70 @@ try {
   console.warn('[@nuralyui/document] Package not found or failed to load.');
 }
 
-
-
 @customElement("document-block")
-export class ImageBlock extends BaseElementBlock {
+export class DocumentBlock extends BaseElementBlock {
+  static styles = [css`
+    .document-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      min-height: 200px;
+      border-radius: 8px;
+      border: 2px dashed #cbd5e1;
+      gap: 12px;
+    }
+    .document-placeholder nr-icon {
+      --nuraly-icon-size: 48px;
+    }
+  `];
+
   @property({ type: Object })
   component: ComponentElement;
-  isDarkMode: boolean;
-
-
 
   renderComponent() {
-
     const documentStyles = this.getStyles() || {};
     const documentStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
       Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
-      const documentSrc = this.isDarkMode 
-      ? this.inputHandlersValue.darkSrc ?? this.inputHandlersValue.src 
-      : this.inputHandlersValue.src;
+
+    const src = this.inputHandlersValue?.src;
+    const type = this.inputHandlersValue?.type ?? 'pdf';
+    const previewable = this.inputHandlersValue?.previewable ?? false;
+
+    // Show placeholder when no document source
+    if (!src) {
+      return html`
+        <div
+          ${ref(this.inputRef)}
+          class="document-placeholder"
+          style=${styleMap({
+            ...this.getStyles(),
+            width: documentStyleHandlers?.width || documentStyles?.width || '100%',
+            height: documentStyleHandlers?.height || documentStyles?.height || '200px',
+          })}
+          @click=${(e: MouseEvent) => this.executeEvent("onClick", e)}
+        >
+          <nr-icon name="file-text"></nr-icon>
+          <nr-label>No document source</nr-label>
+        </div>
+      `;
+    }
+
     return html`
       <nr-document-viewer
-      ${ref(this.inputRef)}
-      @click=${(e: MouseEvent) => {
-        this.executeEvent("onClick", e);
-      }}
-      style=${
-        styleMap({
+        ${ref(this.inputRef)}
+        style=${styleMap({
           ...this.getStyles(),
-      },
-          
-        )
-      }
-        .src=${documentSrc ?? nothing}
-        .previewable=${this.inputHandlersValue.previewable ?? nothing}
-        .width=${documentStyleHandlers?.width ? documentStyleHandlers.width : documentStyles?.width}
-        .height=${documentStyleHandlers?.height ? documentStyleHandlers?.height : documentStyles?.height}
+        })}
+        .src=${src}
+        .type=${type}
+        .previewable=${previewable}
+        .width=${documentStyleHandlers?.width || documentStyles?.width}
+        .height=${documentStyleHandlers?.height || documentStyles?.height}
+        @click=${(e: MouseEvent) => this.executeEvent("onClick", e)}
+        @load=${(e: Event) => this.executeEvent("onLoad", e, { src })}
+        @error=${(e: Event) => this.executeEvent("onError", e, { src, error: 'Failed to load document' })}
       >
       </nr-document-viewer>
     `;
