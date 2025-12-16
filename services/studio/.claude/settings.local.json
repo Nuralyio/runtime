@@ -6,7 +6,9 @@
       "Bash(timeout 60 npm run build:*)",
       "Bash(npm run build:*)",
       "Bash(cat:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(python3:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

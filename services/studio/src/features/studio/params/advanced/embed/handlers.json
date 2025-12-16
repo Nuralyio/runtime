@@ -2,8 +2,24 @@
   "handlerPrefix": "studio_embed_handler",
   "events": [
     {
-      "name": "onItemClicked",
-      "label": "onItemClicked"
+      "name": "onLoad",
+      "label": "onLoad"
+    },
+    {
+      "name": "onError",
+      "label": "onError"
+    },
+    {
+      "name": "onClick",
+      "label": "onClick"
+    },
+    {
+      "name": "onFocus",
+      "label": "onFocus"
+    },
+    {
+      "name": "onBlur",
+      "label": "onBlur"
     }
   ]
 }
