@@ -1,0 +1,64 @@
+{
+  "theme": {
+    "modes": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          {
+            "label": "Background Color",
+            "cssVar": "--nuraly-form-background",
+            "type": "color"
+          },
+          {
+            "label": "Padding",
+            "cssVar": "--nuraly-form-padding",
+            "type": "text",
+            "placeholder": "16px",
+            "defaultValue": "16px"
+          },
+          {
+            "label": "Gap",
+            "cssVar": "--nuraly-form-gap",
+            "type": "text",
+            "placeholder": "16px",
+            "defaultValue": "16px"
+          }
+        ]
+      },
+      {
+        "name": "Border",
+        "open": false,
+        "items": [
+          {
+            "label": "Border",
+            "cssVar": "--nuraly-form-border",
+            "type": "text",
+            "placeholder": "1px solid #e5e7eb",
+            "defaultValue": "none"
+          },
+          {
+            "label": "Border Radius",
+            "cssVar": "--nuraly-form-border-radius",
+            "type": "text",
+            "placeholder": "8px",
+            "defaultValue": "0"
+          }
+        ]
+      },
+      {
+        "name": "Disabled State",
+        "open": false,
+        "items": [
+          {
+            "label": "Disabled Opacity",
+            "cssVar": "--nuraly-form-disabled-opacity",
+            "type": "text",
+            "placeholder": "0.6",
+            "defaultValue": "0.6"
+          }
+        ]
+      }
+    ]
+  }
+}
