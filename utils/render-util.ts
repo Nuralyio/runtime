@@ -51,6 +51,7 @@ const sliderTemplate = (props: any, isViewMode: boolean)  => html`<slider-block 
 const panelTemplate = (props: any, isViewMode: boolean)  => html`<panel-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></panel-block>`;
 const gridRowTemplate = (props: any, isViewMode: boolean)  => html`<grid-row-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-row-block>`;
 const gridColTemplate = (props: any, isViewMode: boolean)  => html`<grid-col-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-col-block>`;
+const formTemplate = (props: any, isViewMode: boolean)  => html`<form-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></form-block>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -163,6 +164,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return gridRowTemplate(commonProps, isViewMode);
     case ComponentType.GridCol:
         return gridColTemplate(commonProps, isViewMode);
+    case ComponentType.Form:
+        return formTemplate(commonProps, isViewMode);
     default:
       return html``;
   }
