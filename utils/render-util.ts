@@ -52,6 +52,7 @@ const panelTemplate = (props: any, isViewMode: boolean)  => html`<panel-block .i
 const gridRowTemplate = (props: any, isViewMode: boolean)  => html`<grid-row-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-row-block>`;
 const gridColTemplate = (props: any, isViewMode: boolean)  => html`<grid-col-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-col-block>`;
 const formTemplate = (props: any, isViewMode: boolean)  => html`<form-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></form-block>`;
+const validationRulesTemplate = (props: any, isViewMode: boolean)  => html`<validation-rules-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></validation-rules-display>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -166,6 +167,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return gridColTemplate(commonProps, isViewMode);
     case ComponentType.Form:
         return formTemplate(commonProps, isViewMode);
+    case ComponentType.ValidationRules:
+        return validationRulesTemplate(commonProps, isViewMode);
     default:
       return html``;
   }
