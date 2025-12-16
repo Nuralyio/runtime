@@ -195,7 +195,7 @@ export default [
                             themes: ["box_model_collapse"]
                         },
                         "document": {
-                            parameters: ["document_collapse_container"],
+                            parameters: ["document_blocks"],
                             handlers: ["studio_document_handler"],
                             themes: ["box_model_collapse"]
                         }
