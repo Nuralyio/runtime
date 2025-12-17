@@ -4,8 +4,6 @@
   "themeContainerId": "studio_grid_row_theme_container",
   "configKey": "containerFields",
   "childrenIds": [
-    "grid_row_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "grid_row_collapse_container"
   ]
 }
