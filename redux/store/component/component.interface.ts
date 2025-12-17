@@ -49,6 +49,8 @@ export const enum ComponentType {
   Modal = "Modal",
   Toast = "Toast",
   Panel = "Panel",
+  GridRow = "grid-row-block",
+  GridCol = "grid-col-block",
 }
 
 export interface DraggingComponentInfo {
