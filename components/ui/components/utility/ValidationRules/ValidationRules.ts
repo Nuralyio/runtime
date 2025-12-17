@@ -1,14 +1,74 @@
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from '../../base/BaseElement';
-import { css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import { handleComponentEvent } from '../../base/BaseElement/execute-event.helpers.ts';
 
+
+// ValidationRule interface matching nr-input's expected format
 interface ValidationRule {
-  type: 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'email' | 'url' | 'custom';
-  value?: any;
+  type?: 'string' | 'number' | 'boolean' | 'method' | 'regexp' | 'integer' | 'float' | 'array' | 'object' | 'enum' | 'date' | 'url' | 'hex' | 'email';
+  required?: boolean;
+  pattern?: string;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
   message?: string;
+  warningOnly?: boolean;
 }
+
+// Rule presets matching nr-input's VALIDATION_RULES
+const RULE_PRESETS = {
+  required: (): ValidationRule => ({
+    required: true,
+    message: 'This field is required'
+  }),
+  email: (): ValidationRule => ({
+    type: 'email',
+    message: 'Please enter a valid email address'
+  }),
+  url: (): ValidationRule => ({
+    type: 'url',
+    message: 'Please enter a valid URL'
+  }),
+  phone: (): ValidationRule => ({
+    pattern: '^[\\+]?[1-9][\\d]{0,15}$',
+    message: 'Please enter a valid phone number'
+  }),
+  minLength: (value: number = 1): ValidationRule => ({
+    minLength: value,
+    message: `Minimum length is ${value} characters`
+  }),
+  maxLength: (value: number = 100): ValidationRule => ({
+    maxLength: value,
+    message: `Maximum length is ${value} characters`
+  }),
+  min: (value: number = 0): ValidationRule => ({
+    type: 'number',
+    min: value,
+    message: `Minimum value is ${value}`
+  }),
+  max: (value: number = 100): ValidationRule => ({
+    type: 'number',
+    max: value,
+    message: `Maximum value is ${value}`
+  }),
+  alphanumeric: (): ValidationRule => ({
+    pattern: '^[a-zA-Z0-9]+$',
+    message: 'Only letters and numbers allowed'
+  }),
+  numeric: (): ValidationRule => ({
+    pattern: '^\\d+$',
+    message: 'Only numbers allowed'
+  }),
+  strongPassword: (): ValidationRule => ({
+    pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$',
+    message: 'Password must contain at least 8 characters, including uppercase, lowercase, number and special character'
+  }),
+};
+
+type RulePresetKey = keyof typeof RULE_PRESETS;
 
 @customElement("validation-rules-display")
 export class ValidationRulesDisplay extends BaseElementBlock {
@@ -18,13 +78,12 @@ export class ValidationRulesDisplay extends BaseElementBlock {
         display: block;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 12px;
-        color: #e0e0e0;
+        min-height: 0;
+        flex-shrink: 0;
       }
 
       .validation-container {
-        background: #2a2a2a;
-        border-radius: 6px;
-        padding: 12px;
+        padding: 8px;
         width: 100%;
         box-sizing: border-box;
       }
@@ -33,219 +92,156 @@ export class ValidationRulesDisplay extends BaseElementBlock {
         margin-bottom: 12px;
       }
 
-      .section:last-child {
-        margin-bottom: 0;
-      }
-
       .section-title {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
-        color: #888;
+        color: var(--nuraly-text-secondary, #888);
         text-transform: uppercase;
         margin-bottom: 8px;
         letter-spacing: 0.5px;
-      }
-
-      .row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 8px;
-      }
-
-      .row:last-child {
-        margin-bottom: 0;
-      }
-
-      .label {
-        font-size: 12px;
-        color: #ccc;
-        flex: 1;
-      }
-
-      .toggle-switch {
-        position: relative;
-        width: 36px;
-        height: 20px;
-        background: #444;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      .toggle-switch.active {
-        background: #4a9eff;
-      }
-
-      .toggle-switch::after {
-        content: '';
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 16px;
-        height: 16px;
-        background: white;
-        border-radius: 50%;
-        transition: transform 0.2s;
-      }
-
-      .toggle-switch.active::after {
-        transform: translateX(16px);
-      }
-
-      .input-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .input-field {
-        flex: 1;
-        background: #333;
-        border: 1px solid #444;
-        border-radius: 4px;
-        padding: 6px 8px;
-        color: #e0e0e0;
-        font-size: 12px;
-        outline: none;
-        transition: border-color 0.2s;
-      }
-
-      .input-field:focus {
-        border-color: #4a9eff;
-      }
-
-      .input-field::placeholder {
-        color: #666;
-      }
-
-      .input-field.small {
-        width: 60px;
-        flex: none;
       }
 
       .preset-buttons {
         display: flex;
         flex-wrap: wrap;
         gap: 4px;
-        margin-top: 6px;
       }
 
       .preset-btn {
-        background: #333;
-        border: 1px solid #444;
+        background: var(--nuraly-bg-tertiary, #f0f0f0);
+        border: 1px dashed var(--nuraly-border, #ddd);
         border-radius: 4px;
         padding: 4px 8px;
-        color: #ccc;
-        font-size: 10px;
+        color: var(--nuraly-text-secondary, #666);
+        font-size: 11px;
         cursor: pointer;
         transition: all 0.2s;
       }
 
       .preset-btn:hover {
-        background: #3a3a3a;
-        border-color: #555;
-      }
-
-      .preset-btn.active {
-        background: #4a9eff;
-        border-color: #4a9eff;
-        color: white;
+        background: var(--nuraly-primary-light, #e6f0ff);
+        border-color: var(--nuraly-primary, #4a9eff);
+        color: var(--nuraly-primary, #4a9eff);
       }
 
       .rules-list {
-        background: #252525;
-        border-radius: 4px;
-        padding: 8px;
-        margin-top: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
       }
 
       .rule-item {
+        padding: 10px;
+        background: var(--nuraly-bg-secondary, #f5f5f5);
+        border-radius: 6px;
+        border: 1px solid var(--nuraly-border, #e0e0e0);
+      }
+
+      .rule-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 6px 8px;
-        background: #333;
+        margin-bottom: 8px;
+      }
+
+      .rule-type-badge {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--nuraly-primary, #4a9eff);
+        background: var(--nuraly-primary-light, #e6f0ff);
+        padding: 3px 8px;
         border-radius: 4px;
-        margin-bottom: 4px;
       }
 
-      .rule-item:last-child {
-        margin-bottom: 0;
-      }
-
-      .rule-info {
+      .rule-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
-        flex: 1;
+        gap: 4px;
       }
 
-      .rule-type {
-        font-size: 11px;
-        font-weight: 500;
-        color: #4a9eff;
-      }
-
-      .rule-value {
-        font-size: 11px;
-        color: #888;
-      }
-
-      .rule-message {
+      .warning-toggle {
+        display: flex;
+        align-items: center;
+        gap: 4px;
         font-size: 10px;
-        color: #666;
-        font-style: italic;
+        color: var(--nuraly-text-tertiary, #888);
+        cursor: pointer;
+      }
+
+      .warning-toggle input {
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
       }
 
       .delete-btn {
         background: transparent;
         border: none;
-        color: #666;
+        color: var(--nuraly-text-tertiary, #999);
         cursor: pointer;
-        padding: 4px;
-        font-size: 14px;
+        padding: 4px 8px;
+        font-size: 16px;
         line-height: 1;
-        transition: color 0.2s;
+        border-radius: 4px;
+        transition: all 0.2s;
       }
 
       .delete-btn:hover {
-        color: #ff6b6b;
+        color: var(--nuraly-error, #ff4d4f);
+        background: var(--nuraly-error-light, #fff1f0);
       }
 
-      .add-rule-btn {
+      .rule-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .rule-field {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 4px;
-        width: 100%;
-        background: #333;
-        border: 1px dashed #555;
-        border-radius: 4px;
-        padding: 8px;
-        color: #888;
-        font-size: 11px;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 8px;
+        gap: 8px;
       }
 
-      .add-rule-btn:hover {
-        background: #3a3a3a;
-        border-color: #4a9eff;
-        color: #4a9eff;
+      .rule-field-label {
+        font-size: 10px;
+        color: var(--nuraly-text-tertiary, #888);
+        min-width: 50px;
+        text-transform: uppercase;
+      }
+
+      nr-input {
+        flex: 1;
+        --nuraly-spacing-input-height: 24px;
+        --nuraly-font-size-input: 10px;
+        --nuraly-font-size-input-placeholder: 10px;
+        --nuraly-color-input-background: var(--validation-input-bg, white);
+        --nuraly-color-input-inner-background: var(--validation-input-bg, white);
+      }
+
+      nr-input.small {
+        width: 70px;
+        flex: none;
+      }
+
+      nr-checkbox {
+        --nuraly-checkbox-size: 14px;
       }
 
       .empty-state {
         text-align: center;
         padding: 16px;
-        color: #666;
+        color: var(--nuraly-text-tertiary, #888);
         font-size: 11px;
+        background: var(--nuraly-bg-secondary, #f5f5f5);
+        border-radius: 4px;
+        margin-bottom: 12px;
       }
 
       .divider {
         height: 1px;
-        background: #3a3a3a;
+        background: var(--nuraly-border, #e0e0e0);
         margin: 12px 0;
       }
     `,
@@ -254,212 +250,174 @@ export class ValidationRulesDisplay extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
-  @state()
-  private _showCustomPattern = false;
-
-  private emitChange(property: string, type: string, value: any) {
+  private emitRulesChange(rules: ValidationRule[]) {
     handleComponentEvent({
       isViewMode: true,
       component: this.component,
       item: this.item,
       eventName: "onChange",
       event: new CustomEvent('change'),
-      data: { property, type, value },
+      data: { property: 'rules', type: 'array', value: rules },
     });
-  }
 
-  private handleToggle(property: string, currentValue: boolean) {
-    this.emitChange(property, 'boolean', !currentValue);
-  }
-
-  private handleNumberChange(property: string, event: Event) {
-    const input = event.target as HTMLInputElement;
-    const value = input.value ? parseInt(input.value, 10) : null;
-    this.emitChange(property, 'number', value);
-  }
-
-  private handlePatternPreset(preset: string) {
-    const patterns: Record<string, string> = {
-      email: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-      url: '^(https?:\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$',
-      phone: '^[+]?[(]?[0-9]{1,3}[)]?[-\\s.]?[0-9]{1,4}[-\\s.]?[0-9]{1,4}[-\\s.]?[0-9]{1,9}$',
-      alphanumeric: '^[a-zA-Z0-9]+$',
-      numeric: '^[0-9]+$',
-    };
-
-    if (preset === 'custom') {
-      this._showCustomPattern = true;
+    // Optimistically update local state for immediate UI feedback
+    if (this.inputHandlersValue?.value) {
+      this.inputHandlersValue = {
+        ...this.inputHandlersValue,
+        value: { ...this.inputHandlersValue.value, rules }
+      };
     } else {
-      this._showCustomPattern = false;
-      this.emitChange('pattern', 'string', patterns[preset] || '');
+      this.inputHandlersValue = { ...this.inputHandlersValue, rules };
     }
+    this.requestUpdate();
   }
 
-  private handleCustomPattern(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.emitChange('pattern', 'string', input.value);
-  }
-
-  private handleRulesChange(rules: ValidationRule[]) {
-    this.emitChange('rules', 'array', rules);
-  }
-
-  private addRule(type: ValidationRule['type']) {
-    const currentRules = this.inputHandlersValue?.rules || [];
-    const newRule: ValidationRule = { type, message: '' };
-
-    if (type === 'minLength' || type === 'maxLength') {
-      newRule.value = type === 'minLength' ? 1 : 100;
-    } else if (type === 'min' || type === 'max') {
-      newRule.value = type === 'min' ? 0 : 100;
-    } else if (type === 'pattern') {
-      newRule.value = '';
+  private getRulesFromHandlers(): ValidationRule[] {
+    const handlers = this.inputHandlersValue;
+    if (handlers?.value?.rules) {
+      return handlers.value.rules;
     }
+    if (handlers?.rules) {
+      return handlers.rules;
+    }
+    return [];
+  }
 
-    this.handleRulesChange([...currentRules, newRule]);
+  private addRule(presetKey: RulePresetKey) {
+    const currentRules = this.getRulesFromHandlers();
+    const presetFn = RULE_PRESETS[presetKey];
+    const newRule = presetFn();
+    this.emitRulesChange([...currentRules, newRule]);
   }
 
   private removeRule(index: number) {
-    const currentRules = [...(this.inputHandlersValue?.rules || [])];
+    const currentRules = [...this.getRulesFromHandlers()];
     currentRules.splice(index, 1);
-    this.handleRulesChange(currentRules);
+    this.emitRulesChange(currentRules);
   }
 
-  private getActivePreset(pattern: string): string {
-    const patterns: Record<string, string> = {
-      email: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-      url: '^(https?:\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$',
-      phone: '^[+]?[(]?[0-9]{1,3}[)]?[-\\s.]?[0-9]{1,4}[-\\s.]?[0-9]{1,4}[-\\s.]?[0-9]{1,9}$',
-      alphanumeric: '^[a-zA-Z0-9]+$',
-      numeric: '^[0-9]+$',
-    };
+  private updateRule(index: number, updates: Partial<ValidationRule>) {
+    const currentRules = [...this.getRulesFromHandlers()];
+    currentRules[index] = { ...currentRules[index], ...updates };
+    this.emitRulesChange(currentRules);
+  }
 
-    for (const [key, value] of Object.entries(patterns)) {
-      if (pattern === value) return key;
-    }
-    return pattern ? 'custom' : '';
+  private getRuleType(rule: ValidationRule): string {
+    if (rule.required) return 'required';
+    if (rule.type === 'email') return 'email';
+    if (rule.type === 'url') return 'url';
+    if (rule.minLength !== undefined) return 'minLength';
+    if (rule.maxLength !== undefined) return 'maxLength';
+    if (rule.min !== undefined) return 'min';
+    if (rule.max !== undefined) return 'max';
+    if (rule.pattern) return 'pattern';
+    return 'custom';
+  }
+
+  private getEditableValue(rule: ValidationRule): { key: string; value: any; type: 'number' | 'text' } | null {
+    if (rule.minLength !== undefined) return { key: 'minLength', value: rule.minLength, type: 'number' };
+    if (rule.maxLength !== undefined) return { key: 'maxLength', value: rule.maxLength, type: 'number' };
+    if (rule.min !== undefined) return { key: 'min', value: rule.min, type: 'number' };
+    if (rule.max !== undefined) return { key: 'max', value: rule.max, type: 'number' };
+    if (rule.pattern !== undefined) return { key: 'pattern', value: rule.pattern, type: 'text' };
+    return null;
+  }
+
+  private handleValueChange(index: number, key: string, value: string, type: 'number' | 'text') {
+    const parsedValue = type === 'number' ? (value ? parseInt(value, 10) : 0) : value;
+    this.updateRule(index, { [key]: parsedValue });
+  }
+
+  private handleMessageChange(index: number, message: string) {
+    this.updateRule(index, { message });
+  }
+
+  private handleWarningToggle(index: number, warningOnly: boolean) {
+    this.updateRule(index, { warningOnly });
+  }
+
+  private renderRuleItem(rule: ValidationRule, index: number) {
+    const ruleType = this.getRuleType(rule);
+    const editableValue = this.getEditableValue(rule);
+
+    return html`
+      <div class="rule-item">
+        <div class="rule-header">
+          <span class="rule-type-badge">${ruleType}</span>
+          <div class="rule-actions">
+            <label class="warning-toggle">
+              <nr-checkbox
+                size="small"
+                .checked=${rule.warningOnly || false}
+                @nr-change=${(e: CustomEvent) => this.handleWarningToggle(index, e.detail?.checked || false)}
+              ></nr-checkbox>
+              Warning only
+            </label>
+            <button class="delete-btn" @click=${() => this.removeRule(index)}>×</button>
+          </div>
+        </div>
+        <div class="rule-fields">
+          ${editableValue ? html`
+            <div class="rule-field">
+              <span class="rule-field-label">Value</span>
+              <nr-input
+                type=${editableValue.type}
+                size="small"
+                class=${editableValue.type === 'text' ? '' : 'small'}
+                .value=${String(editableValue.value)}
+                @nr-input=${(e: CustomEvent) => this.handleValueChange(index, editableValue.key, e.detail?.value || '', editableValue.type)}
+              ></nr-input>
+            </div>
+          ` : nothing}
+          <div class="rule-field">
+            <span class="rule-field-label">Message</span>
+            <nr-input
+              size="small"
+              .value=${rule.message || ''}
+              placeholder="Validation message"
+              @nr-input=${(e: CustomEvent) => this.handleMessageChange(index, e.detail?.value || '')}
+            ></nr-input>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   override renderComponent() {
-    const handlers = this.inputHandlersValue || {};
-
-    if (!handlers || Object.keys(handlers).length === 0) {
-      return html`
-        <div class="validation-container">
-          <div class="empty-state">
-            Select a component to configure validation
-          </div>
-        </div>
-      `;
-    }
-
-    const required = handlers.required || false;
-    const minLength = handlers.minLength ?? '';
-    const maxLength = handlers.maxLength ?? '';
-    const pattern = handlers.pattern || '';
-    const rules = handlers.rules || [];
-    const activePreset = this.getActivePreset(pattern);
+    const rules: ValidationRule[] = this.getRulesFromHandlers();
 
     return html`
       <div class="validation-container">
-        <!-- Required Toggle -->
+        <!-- Current Rules -->
         <div class="section">
-          <div class="row">
-            <span class="label">Required</span>
-            <div
-              class="toggle-switch ${required ? 'active' : ''}"
-              @click=${() => this.handleToggle('required', required)}
-            ></div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Length Constraints -->
-        <div class="section">
-          <div class="section-title">Length</div>
-          <div class="row">
-            <span class="label">Min Length</span>
-            <input
-              type="number"
-              class="input-field small"
-              .value=${minLength}
-              placeholder="0"
-              min="0"
-              @change=${(e: Event) => this.handleNumberChange('minLength', e)}
-            />
-          </div>
-          <div class="row">
-            <span class="label">Max Length</span>
-            <input
-              type="number"
-              class="input-field small"
-              .value=${maxLength}
-              placeholder="100"
-              min="0"
-              @change=${(e: Event) => this.handleNumberChange('maxLength', e)}
-            />
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Pattern Validation -->
-        <div class="section">
-          <div class="section-title">Pattern</div>
-          <div class="preset-buttons">
-            ${['email', 'url', 'phone', 'alphanumeric', 'numeric', 'custom'].map(preset => html`
-              <button
-                class="preset-btn ${activePreset === preset ? 'active' : ''}"
-                @click=${() => this.handlePatternPreset(preset)}
-              >
-                ${preset}
-              </button>
-            `)}
-          </div>
-          ${this._showCustomPattern || activePreset === 'custom' ? html`
-            <input
-              type="text"
-              class="input-field"
-              style="margin-top: 8px;"
-              .value=${pattern}
-              placeholder="Enter regex pattern"
-              @change=${(e: Event) => this.handleCustomPattern(e)}
-            />
-          ` : ''}
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Custom Rules -->
-        <div class="section">
-          <div class="section-title">Custom Rules</div>
+          <div class="section-title">Validation Rules</div>
           ${rules.length > 0 ? html`
             <div class="rules-list">
-              ${rules.map((rule: ValidationRule, index: number) => html`
-                <div class="rule-item">
-                  <div class="rule-info">
-                    <span class="rule-type">${rule.type}</span>
-                    ${rule.value !== undefined ? html`
-                      <span class="rule-value">${rule.value}</span>
-                    ` : ''}
-                    ${rule.message ? html`
-                      <span class="rule-message">"${rule.message}"</span>
-                    ` : ''}
-                  </div>
-                  <button
-                    class="delete-btn"
-                    @click=${() => this.removeRule(index)}
-                  >×</button>
-                </div>
-              `)}
+              ${rules.map((rule, index) => this.renderRuleItem(rule, index))}
             </div>
           ` : html`
-            <div class="empty-state">No custom rules defined</div>
+            <div class="empty-state">No validation rules configured</div>
           `}
-          <button class="add-rule-btn" @click=${() => this.addRule('custom')}>
-            + Add Custom Rule
-          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Add Rules -->
+        <div class="section">
+          <div class="section-title">Add Rule</div>
+          <div class="preset-buttons">
+            <button class="preset-btn" @click=${() => this.addRule('required')}>+ required</button>
+            <button class="preset-btn" @click=${() => this.addRule('email')}>+ email</button>
+            <button class="preset-btn" @click=${() => this.addRule('url')}>+ url</button>
+            <button class="preset-btn" @click=${() => this.addRule('phone')}>+ phone</button>
+            <button class="preset-btn" @click=${() => this.addRule('minLength')}>+ minLength</button>
+            <button class="preset-btn" @click=${() => this.addRule('maxLength')}>+ maxLength</button>
+            <button class="preset-btn" @click=${() => this.addRule('min')}>+ min</button>
+            <button class="preset-btn" @click=${() => this.addRule('max')}>+ max</button>
+            <button class="preset-btn" @click=${() => this.addRule('alphanumeric')}>+ alphanumeric</button>
+            <button class="preset-btn" @click=${() => this.addRule('numeric')}>+ numeric</button>
+            <button class="preset-btn" @click=${() => this.addRule('strongPassword')}>+ strongPassword</button>
+          </div>
         </div>
       </div>
     `;
