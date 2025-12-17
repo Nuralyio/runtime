@@ -18,6 +18,7 @@ The system uses a **hybrid authentication/authorization model**:
 - [Core Concepts](#core-concepts)
 - [Database Models](#database-models)
 - [Application-Scoped Roles](#application-scoped-roles)
+- [Resource-Level Permissions](#resource-level-permissions-dynamic-access)
 - [Ownership System](#ownership-system)
 - [Permission System](#permission-system)
 - [Authentication Flow](#authentication-flow)
@@ -479,6 +480,250 @@ Creator ──► Application ──► Ownership (owner)
 
 ---
 
+## Resource-Level Permissions (Dynamic Access)
+
+Beyond application-scoped roles, the system supports **fine-grained access control** for specific resources (pages, components, files). This enables scenarios like:
+
+- Grant a user access to **one specific page** without access to the entire application
+- Allow external reviewers to view **only certain components**
+- Share a **single file** with a collaborator
+
+### Permission Layers
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PERMISSION CHECK ORDER                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   1. Resource-Level Permission (most specific)                              │
+│      └── Does user have explicit permission on THIS page/component/file?   │
+│                           │                                                 │
+│                           ▼ if not found                                    │
+│   2. Application Role                                                       │
+│      └── Does user's role in the app grant this permission?                │
+│                           │                                                 │
+│                           ▼ if not found                                    │
+│   3. Ownership                                                              │
+│      └── Does user own this resource?                                       │
+│                           │                                                 │
+│                           ▼ if not found                                    │
+│   4. Public Access                                                          │
+│      └── Is this resource publicly accessible?                              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### ResourcePermission Table
+
+Stores dynamic permissions for specific resources.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ResourcePermission                                  │
+├────────────────┬─────────────┬──────────────────────────────────────────────┤
+│ Column         │ Type        │ Description                                  │
+├────────────────┼─────────────┼──────────────────────────────────────────────┤
+│ id             │ INT (PK)    │ Auto-increment identifier                    │
+│ resource_id    │ STRING      │ UUID of the resource (page/component/file)   │
+│ resource_type  │ STRING      │ Type: page, component, file                  │
+│ grantee_type   │ STRING      │ user, role, public, anonymous                │
+│ grantee_id     │ STRING      │ User UUID or Role ID (NULL for public)       │
+│ permission     │ STRING      │ Permission: read, write, delete, share       │
+│ granted_by     │ STRING      │ User who granted this permission             │
+│ expires_at     │ TIMESTAMP   │ Optional expiration (NULL = permanent)       │
+│ created_at     │ TIMESTAMP   │ When permission was granted                  │
+├────────────────┴─────────────┴──────────────────────────────────────────────┤
+│ UNIQUE (resource_id, resource_type, grantee_type, grantee_id, permission)   │
+│ INDEX (resource_id, resource_type)                                          │
+│ INDEX (grantee_id, grantee_type)                                            │
+│ INDEX (expires_at) WHERE expires_at IS NOT NULL                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Grantee Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `user` | Specific user by UUID | Grant read access to user X |
+| `role` | Application role | All editors can view this page |
+| `public` | Anyone with the link | Public portfolio page |
+| `anonymous` | Unauthenticated users | Landing page |
+
+### Resource Permission Types
+
+| Permission | Description |
+|------------|-------------|
+| `read` | View the resource |
+| `write` | Modify the resource |
+| `delete` | Remove the resource |
+| `share` | Grant permissions to others |
+
+### Access Check Flow
+
+```
+Request to access Page X
+              │
+              ▼
+┌─────────────────────────────────┐
+│ 1. Check ResourcePermission     │
+│    WHERE resource_id = X        │
+│    AND resource_type = 'page'   │
+│    AND grantee matches user     │
+│    AND (expires_at IS NULL      │
+│         OR expires_at > NOW)    │
+└─────────────────────────────────┘
+              │
+         found? ─── YES ──► GRANT based on permission
+              │
+              NO
+              ▼
+┌─────────────────────────────────┐
+│ 2. Check ApplicationMember      │
+│    Get user's role in app       │
+│    Check role.permissions       │
+└─────────────────────────────────┘
+              │
+         found? ─── YES ──► GRANT based on role
+              │
+              NO
+              ▼
+┌─────────────────────────────────┐
+│ 3. Check Ownership              │
+│    Is user the resource owner?  │
+└─────────────────────────────────┘
+              │
+         owner? ─── YES ──► GRANT all permissions
+              │
+              NO
+              ▼
+           DENY
+```
+
+### Use Cases
+
+#### 1. Share a Page with External User
+
+User who has no application role can access a specific page:
+
+```
+ResourcePermission:
+├── resource_id: "page-uuid-123"
+├── resource_type: "page"
+├── grantee_type: "user"
+├── grantee_id: "external-user-uuid"
+├── permission: "read"
+├── granted_by: "owner-uuid"
+└── expires_at: "2025-01-15T00:00:00Z"
+```
+
+#### 2. Make a Component Public
+
+Anyone can view this component (e.g., embedded widget):
+
+```
+ResourcePermission:
+├── resource_id: "component-uuid-456"
+├── resource_type: "component"
+├── grantee_type: "public"
+├── grantee_id: NULL
+├── permission: "read"
+├── granted_by: "owner-uuid"
+└── expires_at: NULL
+```
+
+#### 3. Grant Edit Access to Specific File
+
+Allow a user to edit one file in the application:
+
+```
+ResourcePermission:
+├── resource_id: "file-uuid-789"
+├── resource_type: "file"
+├── grantee_type: "user"
+├── grantee_id: "collaborator-uuid"
+├── permission: "write"
+├── granted_by: "owner-uuid"
+└── expires_at: NULL
+```
+
+#### 4. Role-Based Page Access
+
+All users with "reviewer" role can access this page:
+
+```
+ResourcePermission:
+├── resource_id: "page-uuid-review"
+├── resource_type: "page"
+├── grantee_type: "role"
+├── grantee_id: "reviewer-role-id"
+├── permission: "read"
+├── granted_by: "owner-uuid"
+└── expires_at: NULL
+```
+
+### Permission Inheritance
+
+Resources can inherit permissions from their parent:
+
+```
+Application (App A)
+    │
+    ├── Page 1 ──► inherits from App A
+    │      │
+    │      └── Component 1 ──► inherits from Page 1 OR App A
+    │
+    └── Page 2 (has explicit ResourcePermission)
+           │
+           └── Component 2 ──► inherits from Page 2 (NOT App A)
+```
+
+**Inheritance Rules:**
+- If resource has explicit `ResourcePermission` → use it
+- Else check parent resource permissions
+- Else fall back to application role
+- Else check ownership
+
+### Sharing Permissions
+
+Users with `share` permission on a resource can grant permissions to others.
+
+**Rules:**
+- Can only grant permissions they themselves have
+- Cannot grant `share` permission unless they are owner
+- Cannot grant permissions that exceed their own access level
+
+### Permission Revocation
+
+Permissions can be revoked by:
+- The user who granted them (`granted_by`)
+- Application owner
+- Application admin (for non-owner grants)
+
+### Expiring Permissions
+
+Temporary access can be granted using `expires_at`:
+
+| Use Case | Expiration |
+|----------|------------|
+| Review period | 7 days |
+| Client preview | 30 days |
+| Temporary collaboration | Custom date |
+| Permanent access | NULL |
+
+**Cleanup:** A scheduled job removes expired permissions.
+
+### API Endpoints for Resource Permissions
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/resources/{type}/{id}/permissions` | List permissions for a resource |
+| POST | `/api/resources/{type}/{id}/permissions` | Grant permission |
+| DELETE | `/api/resources/{type}/{id}/permissions/{permId}` | Revoke permission |
+| GET | `/api/users/{userId}/resource-permissions` | List resources user can access |
+| POST | `/api/resources/{type}/{id}/share` | Generate shareable link |
+
+---
+
 ## Ownership System
 
 ### How Ownership Works
@@ -841,11 +1086,16 @@ User
 | ApplicationMember Service | `src/application-member/services/application-member.service.ts` |
 | ApplicationMember Repository | `src/application-member/repositories/application-member.repository.ts` |
 | ApplicationMember Controller | `src/application-member/controllers/application-member.controller.ts` |
+| **Resource Permissions** | |
+| ResourcePermission Model | `src/resource-permission/models/resource-permission.ts` |
+| ResourcePermission Service | `src/resource-permission/services/resource-permission.service.ts` |
+| ResourcePermission Repository | `src/resource-permission/repositories/resource-permission.repository.ts` |
+| ResourcePermission Controller | `src/resource-permission/controllers/resource-permission.controller.ts` |
 | **Ownership** | |
 | Ownership Model | `src/ownership/models/ownership.ts` |
 | Ownership Service | `src/ownership/services/ownership.service.ts` |
 | Ownership Repository | `src/ownership/repositories/ownership.repository.ts` |
-| **Permissions** | |
+| **Permissions (Legacy)** | |
 | Permission Model | `src/permission/models/permission.ts` |
 | Permission Service | `src/permission/services/permission.service.ts` |
 | Permission Repository | `src/permission/repositories/permission.repository.ts` |
