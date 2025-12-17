@@ -485,7 +485,20 @@ export const Insert = /* js */`
             },
             icon: "mouse",
           },
-         
+          {
+            label: "Form",
+            value: {
+              value: "form",
+              additionalData: {
+                action: "add",
+                style:{
+                    width: "400px",
+                }
+              },
+            },
+            icon: "square-pen",
+          },
+
         ];
 
         const displayOptions = [
