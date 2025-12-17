@@ -107,21 +107,11 @@ export class ValidationRulesDisplay extends BaseElementBlock {
         gap: 4px;
       }
 
-      .preset-btn {
-        background: var(--nuraly-bg-tertiary, #f0f0f0);
-        border: 1px dashed var(--nuraly-border, #ddd);
-        border-radius: 4px;
-        padding: 4px 8px;
-        color: var(--nuraly-text-secondary, #666);
-        font-size: 11px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .preset-btn:hover {
-        background: var(--nuraly-primary-light, #e6f0ff);
-        border-color: var(--nuraly-primary, #4a9eff);
-        color: var(--nuraly-primary, #4a9eff);
+      .preset-buttons nr-button {
+        --nuraly-button-height: 24px;
+        --nuraly-button-font-size: 10px;
+        --nuraly-button-padding-horizontal: 8px;
+        --nuraly-button-padding-small: 5px;
       }
 
       .rules-list {
@@ -176,20 +166,6 @@ export class ValidationRulesDisplay extends BaseElementBlock {
       }
 
       .delete-btn {
-        background: transparent;
-        border: none;
-        color: var(--nuraly-text-tertiary, #999);
-        cursor: pointer;
-        padding: 4px 8px;
-        font-size: 16px;
-        line-height: 1;
-        border-radius: 4px;
-        transition: all 0.2s;
-      }
-
-      .delete-btn:hover {
-        color: var(--nuraly-error, #ff4d4f);
-        background: var(--nuraly-error-light, #fff1f0);
       }
 
       .rule-fields {
@@ -353,7 +329,7 @@ export class ValidationRulesDisplay extends BaseElementBlock {
               ></nr-checkbox>
               Warning only
             </label>
-            <button class="delete-btn" @click=${() => this.removeRule(index)}>×</button>
+            <nr-button class="delete-btn" type="text" size="small" @click=${() => this.removeRule(index)}>×</nr-button>
           </div>
         </div>
         <div class="rule-fields">
@@ -406,17 +382,17 @@ export class ValidationRulesDisplay extends BaseElementBlock {
         <div class="section">
           <div class="section-title">Add Rule</div>
           <div class="preset-buttons">
-            <button class="preset-btn" @click=${() => this.addRule('required')}>+ required</button>
-            <button class="preset-btn" @click=${() => this.addRule('email')}>+ email</button>
-            <button class="preset-btn" @click=${() => this.addRule('url')}>+ url</button>
-            <button class="preset-btn" @click=${() => this.addRule('phone')}>+ phone</button>
-            <button class="preset-btn" @click=${() => this.addRule('minLength')}>+ minLength</button>
-            <button class="preset-btn" @click=${() => this.addRule('maxLength')}>+ maxLength</button>
-            <button class="preset-btn" @click=${() => this.addRule('min')}>+ min</button>
-            <button class="preset-btn" @click=${() => this.addRule('max')}>+ max</button>
-            <button class="preset-btn" @click=${() => this.addRule('alphanumeric')}>+ alphanumeric</button>
-            <button class="preset-btn" @click=${() => this.addRule('numeric')}>+ numeric</button>
-            <button class="preset-btn" @click=${() => this.addRule('strongPassword')}>+ strongPassword</button>
+            <nr-button dashed size="small" @click=${() => this.addRule('required')}>+ required</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('email')}>+ email</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('url')}>+ url</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('phone')}>+ phone</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('minLength')}>+ minLength</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('maxLength')}>+ maxLength</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('min')}>+ min</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('max')}>+ max</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('alphanumeric')}>+ alphanumeric</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('numeric')}>+ numeric</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addRule('strongPassword')}>+ strongPassword</nr-button>
           </div>
         </div>
       </div>
