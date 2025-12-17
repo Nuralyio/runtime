@@ -22,7 +22,8 @@ export const componentCollection = {
           { id: "file-upload", icon: "file-up", label: "File Upload" },
           { id: "datepicker", icon: "calendar", label: "DatePicker" },
           { id: "textarea", icon: "align-left", label: "Textarea" },
-          { id: "slider", icon: "sliders", label: "Slider" }
+          { id: "slider", icon: "sliders", label: "Slider" },
+          { id: "form", icon: "file-text", label: "Form" }
         ];
 
         const displayOptions = [
