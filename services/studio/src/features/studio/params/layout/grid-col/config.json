@@ -30,7 +30,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["span", 24] },
         "stateHandler": { "ref": "inputHandler", "params": ["span"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["span", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["span", "value"] }
         }
       },
       {
@@ -44,7 +44,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["offset", 0] },
         "stateHandler": { "ref": "inputHandler", "params": ["offset"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["offset", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["offset", "value"] }
         }
       },
       {
@@ -56,7 +56,35 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["order", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["order"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["order", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["order", "value"] }
+        }
+      },
+      {
+        "name": "pull",
+        "label": "Pull",
+        "type": "number",
+        "default": 0,
+        "width": "100px",
+        "min": 0,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["pull", 0] },
+        "stateHandler": { "ref": "inputHandler", "params": ["pull"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["pull", "value"] }
+        }
+      },
+      {
+        "name": "push",
+        "label": "Push",
+        "type": "number",
+        "default": 0,
+        "width": "100px",
+        "min": 0,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["push", 0] },
+        "stateHandler": { "ref": "inputHandler", "params": ["push"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["push", "value"] }
         }
       },
       {
@@ -69,7 +97,7 @@
         "valueHandler": { "ref": "componentInputText", "params": ["flex", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["flex"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["flex", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["flex", "value"] }
         }
       },
       {
@@ -83,7 +111,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["xs", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["xs"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["xs", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["xs", "value"] }
         }
       },
       {
@@ -97,7 +125,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["sm", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["sm"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["sm", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["sm", "value"] }
         }
       },
       {
@@ -111,7 +139,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["md", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["md"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["md", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["md", "value"] }
         }
       },
       {
@@ -125,7 +153,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["lg", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["lg"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["lg", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["lg", "value"] }
         }
       },
       {
@@ -139,7 +167,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["xl", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["xl"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["xl", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["xl", "value"] }
         }
       },
       {
@@ -153,7 +181,7 @@
         "valueHandler": { "ref": "componentInputNumber", "params": ["xxl", ""] },
         "stateHandler": { "ref": "inputHandler", "params": ["xxl"] },
         "eventHandlers": {
-          "valueChange": { "ref": "updateInput", "params": ["xxl", "value"] }
+          "onChange": { "ref": "updateInput", "params": ["xxl", "value"] }
         }
       }
     ],
