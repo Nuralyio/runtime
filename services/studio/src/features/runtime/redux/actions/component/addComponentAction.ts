@@ -36,6 +36,7 @@ export const addComponentAction = (
     ComponentType.Link,
     ComponentType.GridRow,
     ComponentType.GridCol,
+    ComponentType.Form,
   ];
 
   if (
@@ -52,7 +53,8 @@ export const addComponentAction = (
       currentComponent?.component_type === ComponentType.Link ||
       currentComponent?.component_type === ComponentType.Collection ||
       currentComponent?.component_type === ComponentType.GridRow ||
-      currentComponent?.component_type === ComponentType.GridCol
+      currentComponent?.component_type === ComponentType.GridCol ||
+      currentComponent?.component_type === ComponentType.Form
     ) {
       // Add as child of the current component
       //addComponentAsChildOf(componentId, currentComponentId, currentApplicationId);

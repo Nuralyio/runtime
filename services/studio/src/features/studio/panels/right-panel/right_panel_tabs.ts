@@ -28,7 +28,7 @@ export default [
     "--nuraly-border-width-tabs-left-focus": "2px",
     "--nuraly-tabs-labels-gap": "0px",
       "--nuraly-spacing-tabs-content-padding-small": 0,
-    "overflow": "visible"
+    "overflow-y": "auto"
   },
   input: {
     // index: {
@@ -208,6 +208,11 @@ export default [
                             parameters: ["grid_col_blocks"],
                             handlers: ["studio_grid_col_handler"],
                             themes: ["studio_grid_col_theme_container", "box_model_collapse"]
+                        },
+                        "form": {
+                            parameters: ["form_blocks"],
+                            handlers: ["studio_form_handler"],
+                            themes: ["form_theme_container", "box_model_collapse"]
                         }
                     };
                     // prepare select_component_text into themes

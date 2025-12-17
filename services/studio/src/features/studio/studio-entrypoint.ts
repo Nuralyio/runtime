@@ -13,7 +13,7 @@ import {
   StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioCard, StudioDocument,
   StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
   StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
-  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol
+  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol, StudioForm
 } from "./params/index.ts";
 
 import {
@@ -40,7 +40,8 @@ import {
   microAppContainerBlocks,
   StudioDashboard,
   PageThemeStudio,
-  studioTablePropertiesBlock
+  studioTablePropertiesBlock,
+  studioValidationRulesBlock
 } from "./blocks/index.ts";
 
 import {
@@ -466,5 +467,7 @@ export default [
     ...StudioDocument,
     ...StudioVideo,
     ...StudioGridRow,
-    ...StudioGridCol
+    ...StudioGridCol,
+    ...StudioForm,
+    ...studioValidationRulesBlock
 ];

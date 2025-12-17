@@ -102,6 +102,19 @@ export const StudioDatepicker = loadComponentProperties(
   datepickerMeta
 );
 
+// Form
+import formConfig from "./inputs/form/config.json";
+import formHandlers from "./inputs/form/handlers.json";
+import formTheme from "./inputs/form/theme.json";
+import formMeta from "./inputs/form/meta.json";
+
+export const StudioForm = loadComponentProperties(
+  formConfig,
+  formHandlers,
+  formTheme,
+  formMeta
+);
+
 // ========================================
 // LAYOUT COMPONENTS
 // ========================================
@@ -425,6 +438,7 @@ export const StudioComponents = {
   StudioSelect,
   StudioCheckbox,
   StudioDatepicker,
+  StudioForm,
   
   // Layout
   StudioContainer,
