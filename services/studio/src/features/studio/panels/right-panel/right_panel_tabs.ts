@@ -198,6 +198,16 @@ export default [
                             parameters: ["document_blocks"],
                             handlers: ["studio_document_handler"],
                             themes: ["box_model_collapse"]
+                        },
+                        "grid-row-block": {
+                            parameters: ["grid_row_blocks"],
+                            handlers: ["studio_grid_row_handler"],
+                            themes: ["studio_grid_row_theme_container", "box_model_collapse"]
+                        },
+                        "grid-col-block": {
+                            parameters: ["grid_col_blocks"],
+                            handlers: ["studio_grid_col_handler"],
+                            themes: ["studio_grid_col_theme_container", "box_model_collapse"]
                         }
                     };
                     // prepare select_component_text into themes

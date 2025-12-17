@@ -44,6 +44,8 @@ export const componentCollection = {
 
         const layoutOptions = [
           { id: "container", icon: "grip-vertical", label: "Container" },
+          { id: "grid-row-block", icon: "rows-3", label: "Grid Row" },
+          { id: "grid-col-block", icon: "columns-3", label: "Grid Col" },
           { id: "ref-component", icon: "asterisk", label: "Ref Component" }
         ];
 

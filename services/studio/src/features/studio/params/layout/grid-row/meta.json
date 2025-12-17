@@ -1,0 +1,9 @@
+{
+  "uuid": "grid_row_blocks",
+  "name": "Parent Grid Row Container",
+  "themeContainerId": "studio_grid_row_theme_container",
+  "configKey": "containerFields",
+  "childrenIds": [
+    "grid_row_collapse_container"
+  ]
+}
