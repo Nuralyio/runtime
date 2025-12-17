@@ -28,7 +28,7 @@ export default [
     "--nuraly-border-width-tabs-left-focus": "2px",
     "--nuraly-tabs-labels-gap": "0px",
       "--nuraly-spacing-tabs-content-padding-small": 0,
-    "overflow": "visible"
+    "overflow-y": "auto"
   },
   input: {
     // index: {
