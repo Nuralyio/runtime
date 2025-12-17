@@ -7,6 +7,7 @@ import { handleComponentEvent } from '../../base/BaseElement/execute-event.helpe
 
 // ValidationRule interface matching nr-input's expected format
 interface ValidationRule {
+  name?: string; // Custom name for the rule
   type?: 'string' | 'number' | 'boolean' | 'method' | 'regexp' | 'integer' | 'float' | 'array' | 'object' | 'enum' | 'date' | 'url' | 'hex' | 'email';
   required?: boolean;
   pattern?: string;
@@ -266,6 +267,20 @@ export class ValidationRulesDisplay extends BaseElementBlock {
     this.emitRulesChange([...currentRules, newRule]);
   }
 
+  private addCustomPattern() {
+    const currentRules = this.getRulesFromHandlers();
+    const newRule: ValidationRule = {
+      name: 'custom',
+      pattern: '',
+      message: 'Invalid format'
+    };
+    this.emitRulesChange([...currentRules, newRule]);
+  }
+
+  private handleNameChange(index: number, name: string) {
+    this.updateRule(index, { name });
+  }
+
   private removeRule(index: number) {
     const currentRules = [...this.getRulesFromHandlers()];
     currentRules.splice(index, 1);
@@ -279,6 +294,8 @@ export class ValidationRulesDisplay extends BaseElementBlock {
   }
 
   private getRuleType(rule: ValidationRule): string {
+    // Use custom name if available
+    if (rule.name) return rule.name;
     if (rule.required) return 'required';
     if (rule.type === 'email') return 'email';
     if (rule.type === 'url') return 'url';
@@ -288,6 +305,11 @@ export class ValidationRulesDisplay extends BaseElementBlock {
     if (rule.max !== undefined) return 'max';
     if (rule.pattern) return 'pattern';
     return 'custom';
+  }
+
+  private isCustomPatternRule(rule: ValidationRule): boolean {
+    // A rule is a custom pattern if it has a name and pattern fields
+    return rule.name !== undefined && rule.pattern !== undefined;
   }
 
   private getEditableValue(rule: ValidationRule): { key: string; value: any; type: 'number' | 'text' } | null {
@@ -315,6 +337,7 @@ export class ValidationRulesDisplay extends BaseElementBlock {
   private renderRuleItem(rule: ValidationRule, index: number) {
     const ruleType = this.getRuleType(rule);
     const editableValue = this.getEditableValue(rule);
+    const isCustomPattern = this.isCustomPatternRule(rule);
 
     return html`
       <div class="rule-item">
@@ -333,7 +356,26 @@ export class ValidationRulesDisplay extends BaseElementBlock {
           </div>
         </div>
         <div class="rule-fields">
-          ${editableValue ? html`
+          ${isCustomPattern ? html`
+            <div class="rule-field">
+              <span class="rule-field-label">Name</span>
+              <nr-input
+                size="small"
+                .value=${rule.name || ''}
+                placeholder="Rule name"
+                @nr-input=${(e: CustomEvent) => this.handleNameChange(index, e.detail?.value || '')}
+              ></nr-input>
+            </div>
+            <div class="rule-field">
+              <span class="rule-field-label">Pattern</span>
+              <nr-input
+                size="small"
+                .value=${rule.pattern || ''}
+                placeholder="^[a-z]+$"
+                @nr-input=${(e: CustomEvent) => this.handleValueChange(index, 'pattern', e.detail?.value || '', 'text')}
+              ></nr-input>
+            </div>
+          ` : editableValue ? html`
             <div class="rule-field">
               <span class="rule-field-label">Value</span>
               <nr-input
@@ -393,6 +435,7 @@ export class ValidationRulesDisplay extends BaseElementBlock {
             <nr-button dashed size="small" @click=${() => this.addRule('alphanumeric')}>+ alphanumeric</nr-button>
             <nr-button dashed size="small" @click=${() => this.addRule('numeric')}>+ numeric</nr-button>
             <nr-button dashed size="small" @click=${() => this.addRule('strongPassword')}>+ strongPassword</nr-button>
+            <nr-button dashed size="small" @click=${() => this.addCustomPattern()}>+ custom pattern</nr-button>
           </div>
         </div>
       </div>
