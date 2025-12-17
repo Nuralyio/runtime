@@ -4,6 +4,7 @@
   "themeContainerId": "text_input_icon_theme_container",
   "configKey": "textInputFields",
   "childrenIds": [
-    "text_input_fields_collapse_container"
+    "text_input_fields_collapse_container",
+    "validation_rules_collapse"
   ]
 }

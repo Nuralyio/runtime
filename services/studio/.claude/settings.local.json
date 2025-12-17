@@ -9,7 +9,7 @@
       "Bash(find:*)",
       "Bash(python3:*)",
       "Bash(tree:*)",
-      "Bash(git add:*)"
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

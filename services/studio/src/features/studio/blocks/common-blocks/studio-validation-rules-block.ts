@@ -111,7 +111,7 @@ const collapseComponent = createBaseComponent(
         value: [{
           blockName: "validation_rules_vertical_container",
           label: "Validation",
-          open: false
+          open: true
         }]
       }
     },
