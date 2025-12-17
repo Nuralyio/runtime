@@ -1,0 +1,195 @@
+{
+  "containerFields": {
+    "container": {
+      "uuid": "grid_col_collapse_container",
+      "name": "Grid Col Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "grid_col_collapse",
+      "title": "Grid Column Properties",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "span",
+        "label": "Span (1-24)",
+        "type": "number",
+        "default": 24,
+        "width": "153px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["span", 24] },
+        "stateHandler": { "ref": "inputHandler", "params": ["span"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["span", "value"] }
+        }
+      },
+      {
+        "name": "offset",
+        "label": "Offset (0-23)",
+        "type": "number",
+        "default": 0,
+        "width": "153px",
+        "min": 0,
+        "max": 23,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["offset", 0] },
+        "stateHandler": { "ref": "inputHandler", "params": ["offset"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["offset", "value"] }
+        }
+      },
+      {
+        "name": "order",
+        "label": "Order",
+        "type": "number",
+        "default": "",
+        "width": "153px",
+        "valueHandler": { "ref": "componentInputNumber", "params": ["order", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["order"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["order", "value"] }
+        }
+      },
+      {
+        "name": "pull",
+        "label": "Pull",
+        "type": "number",
+        "default": 0,
+        "width": "100px",
+        "min": 0,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["pull", 0] },
+        "stateHandler": { "ref": "inputHandler", "params": ["pull"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["pull", "value"] }
+        }
+      },
+      {
+        "name": "push",
+        "label": "Push",
+        "type": "number",
+        "default": 0,
+        "width": "100px",
+        "min": 0,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["push", 0] },
+        "stateHandler": { "ref": "inputHandler", "params": ["push"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["push", "value"] }
+        }
+      },
+      {
+        "name": "flex",
+        "label": "Flex",
+        "type": "text",
+        "default": "",
+        "width": "153px",
+        "placeholder": "auto, 1, 100px...",
+        "valueHandler": { "ref": "componentInputText", "params": ["flex", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["flex"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["flex", "value"] }
+        }
+      },
+      {
+        "name": "xs",
+        "label": "XS (<576px)",
+        "type": "number",
+        "default": "",
+        "width": "100px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["xs", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["xs"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["xs", "value"] }
+        }
+      },
+      {
+        "name": "sm",
+        "label": "SM (≥576px)",
+        "type": "number",
+        "default": "",
+        "width": "100px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["sm", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["sm"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["sm", "value"] }
+        }
+      },
+      {
+        "name": "md",
+        "label": "MD (≥768px)",
+        "type": "number",
+        "default": "",
+        "width": "100px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["md", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["md"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["md", "value"] }
+        }
+      },
+      {
+        "name": "lg",
+        "label": "LG (≥992px)",
+        "type": "number",
+        "default": "",
+        "width": "100px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["lg", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["lg"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["lg", "value"] }
+        }
+      },
+      {
+        "name": "xl",
+        "label": "XL (≥1200px)",
+        "type": "number",
+        "default": "",
+        "width": "100px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["xl", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["xl"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["xl", "value"] }
+        }
+      },
+      {
+        "name": "xxl",
+        "label": "XXL (≥1600px)",
+        "type": "number",
+        "default": "",
+        "width": "100px",
+        "min": 1,
+        "max": 24,
+        "valueHandler": { "ref": "componentInputNumber", "params": ["xxl", ""] },
+        "stateHandler": { "ref": "inputHandler", "params": ["xxl"] },
+        "eventHandlers": {
+          "onChange": { "ref": "updateInput", "params": ["xxl", "value"] }
+        }
+      }
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block",
+      "display_block"
+    ],
+    "includeContainers": []
+  }
+}

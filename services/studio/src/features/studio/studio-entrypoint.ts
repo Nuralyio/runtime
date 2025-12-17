@@ -13,7 +13,7 @@ import {
   StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioCard, StudioDocument,
   StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
   StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
-  StudioMenu, StudioBadge, StudioTag
+  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol
 } from "./params/index.ts";
 
 import {
@@ -464,5 +464,7 @@ export default [
   ...StudioLink,
   ...StudioFileUpload,
     ...StudioDocument,
-    ...StudioVideo
+    ...StudioVideo,
+    ...StudioGridRow,
+    ...StudioGridCol
 ];

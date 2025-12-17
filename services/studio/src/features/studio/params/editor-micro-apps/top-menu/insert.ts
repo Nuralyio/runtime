@@ -113,7 +113,50 @@ export const Insert = /* js */`
             },
             icon: "grip-vertical",
           },
-         
+          {
+            id: "grid-row",
+            label: "Grid Row",
+            value: {
+              value: "grid-row-block",
+              additionalData: {
+              action: "add",
+              input: {
+                "gutter": {
+                  "type": "number",
+                  "value": 16
+                },
+                "wrap": {
+                  "type": "boolean",
+                  "value": true
+                }
+              },
+              style:{
+                  width: "100%",
+              }
+              },
+            },
+            icon: "rows-3",
+          },
+          {
+            id: "grid-col",
+            label: "Grid Col",
+            value: {
+              value: "grid-col-block",
+              additionalData: {
+              action: "add",
+              input: {
+                "span": {
+                  "type": "number",
+                  "value": 12
+                }
+              },
+              style:{
+                  minHeight: "60px",
+              }
+              },
+            },
+            icon: "columns-3",
+          },
           {
             id: "ref-component",
             label: "Ref Component",
