@@ -116,6 +116,11 @@ export class BorderManagerDisplay extends BaseElementBlock {
     });
   }
 
+  private getCurrentState(): string {
+    const handlers = this.inputHandlersValue;
+    return handlers?.currentState || handlers?.value?.currentState || 'default';
+  }
+
   private getBorderFromHandlers(): BorderState {
     const handlers = this.inputHandlersValue;
     const style = handlers?.value?.style || handlers?.style || {};
@@ -282,6 +287,28 @@ export class BorderManagerDisplay extends BaseElementBlock {
     this.updateConfig('color', e.detail.value);
   }
 
+  private getStateLabel(state: string): string {
+    const labels: Record<string, string> = {
+      'default': 'Default',
+      ':hover': 'Hover',
+      ':focus': 'Focus',
+      ':active': 'Active',
+      ':disabled': 'Disabled'
+    };
+    return labels[state] || state;
+  }
+
+  private renderStateIndicator() {
+    const currentState = this.getCurrentState();
+    if (currentState === 'default') return null;
+
+    return html`
+      <div class="state-indicator">
+        Editing: <span class="state-badge">${this.getStateLabel(currentState)}</span>
+      </div>
+    `;
+  }
+
   private renderPresetButtons() {
     return html`
       <div class="section">
@@ -443,11 +470,12 @@ export class BorderManagerDisplay extends BaseElementBlock {
   }
 
   override renderComponent() {
-    // Initialize state from handlers on first render
-    const handlersState = this.getBorderFromHandlers();
+    // Sync state from handlers on each render to reflect pseudo-state changes
+    this.borderState = this.getBorderFromHandlers();
 
     return html`
       <div class="border-container">
+        ${this.renderStateIndicator()}
         ${this.renderPresetButtons()}
         <div class="divider"></div>
         ${this.renderBorderConfig()}

@@ -1,6 +1,7 @@
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
-// Create border manager components following the validation rules pattern
+// Create border manager components following the theme block pattern
+// Uses Editor.getComponentStyleForState for pseudo-state support (:hover, :focus, :active, etc.)
 const containerComponent = {
   uuid: "border_manager_vertical_container",
   name: "Border Manager Container",
@@ -46,20 +47,22 @@ const borderManagerComponent = {
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return {};
 
-        const style = selectedComponent.style || {};
-
+        // Use Editor.getComponentStyleForState to support pseudo-states (:hover, :focus, :active)
+        // This respects Vars.selected_component_style_state
         return {
           style: {
-            'border': style['border'] || '',
-            'border-top': style['border-top'] || '',
-            'border-right': style['border-right'] || '',
-            'border-bottom': style['border-bottom'] || '',
-            'border-left': style['border-left'] || '',
-            'border-top-left-radius': style['border-top-left-radius'] || '',
-            'border-top-right-radius': style['border-top-right-radius'] || '',
-            'border-bottom-left-radius': style['border-bottom-left-radius'] || '',
-            'border-bottom-right-radius': style['border-bottom-right-radius'] || '',
-          }
+            'border': Editor.getComponentStyleForState(selectedComponent, 'border') || '',
+            'border-top': Editor.getComponentStyleForState(selectedComponent, 'border-top') || '',
+            'border-right': Editor.getComponentStyleForState(selectedComponent, 'border-right') || '',
+            'border-bottom': Editor.getComponentStyleForState(selectedComponent, 'border-bottom') || '',
+            'border-left': Editor.getComponentStyleForState(selectedComponent, 'border-left') || '',
+            'border-top-left-radius': Editor.getComponentStyleForState(selectedComponent, 'border-top-left-radius') || '',
+            'border-top-right-radius': Editor.getComponentStyleForState(selectedComponent, 'border-top-right-radius') || '',
+            'border-bottom-left-radius': Editor.getComponentStyleForState(selectedComponent, 'border-bottom-left-radius') || '',
+            'border-bottom-right-radius': Editor.getComponentStyleForState(selectedComponent, 'border-bottom-right-radius') || '',
+          },
+          // Pass the current state for UI feedback
+          currentState: Vars.selected_component_style_state || 'default'
         };
       `
     }
@@ -72,15 +75,8 @@ const borderManagerComponent = {
       const property = EventData.property;
       const value = EventData.value;
 
-      // Update the component style with the new border value
-      if (value === undefined) {
-        // Remove the property
-        delete selectedComponent.style[property];
-      } else {
-        selectedComponent.style[property] = value;
-      }
-
-      // Trigger component update
+      // updateStyle automatically handles pseudo-states via Vars.selected_component_style_state
+      // If :hover is selected, it will update style[':hover'][property] instead of style[property]
       updateStyle(selectedComponent, property, value);
     `
   }
