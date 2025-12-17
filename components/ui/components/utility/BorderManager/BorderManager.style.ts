@@ -210,4 +210,28 @@ export const borderManagerStyles = css`
     margin-bottom: 6px;
     color: var(--nuraly-text-secondary, #666);
   }
+
+  .state-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+    background: var(--nuraly-warning-light, #fff7e6);
+    border: 1px solid var(--nuraly-warning, #faad14);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--nuraly-warning-dark, #d48806);
+  }
+
+  .state-badge {
+    font-weight: 600;
+    padding: 2px 6px;
+    background: var(--nuraly-warning, #faad14);
+    color: white;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-size: 9px;
+  }
 `;
