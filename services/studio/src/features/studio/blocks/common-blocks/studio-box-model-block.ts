@@ -1,148 +1,136 @@
 import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
 
-// Helper functions (inlined from factories)
-const createBaseComponent = (uuid: string, name: string, componentType: string, additionalProps = {}) => ({
-  uuid,
-  name,
-  application_id: "1",
-  component_type: componentType,
-  ...COMMON_ATTRIBUTES,
-  ...additionalProps
-});
-
-const createTextLabel = (uuid: string, text: string, style = {}) =>
-  createBaseComponent(uuid, "text_label", "text_label", {
-    parameters: { value: text },
-    input: {
-      value: {
-        type: "string",
-        value: text
-      }
-    },
-    style
-  });
-
 // Create box model components
-const containerComponent = createBaseComponent(
-  "box_model_vertical_container",
-  "Box Model Container",
-  "vertical-container-block",
-  {
-    style: {
-      display: "flex",
-      "align-items": "center",
-      "justify-content": "space-between",
-      "width": "100%"
-    },
-    childrenIds: ["box_model_label", "box_model_display_block"]
-  }
-);
+const containerComponent = {
+  uuid: "box_model_vertical_container",
+  name: "Box Model Container",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  ...COMMON_ATTRIBUTES,
+  style: {
+    display: "flex",
+    "align-items": "center",
+    "justify-content": "space-between",
+    width: "100%"
+  },
+  childrenIds: ["box_model_label", "box_model_display_block"]
+};
 
-const labelComponent = createTextLabel(
-  "box_model_label",
-  " ",
-  { width: "90px" }
-);
+const labelComponent = {
+  uuid: "box_model_label",
+  name: "text_label",
+  application_id: "1",
+  component_type: "text_label",
+  ...COMMON_ATTRIBUTES,
+  parameters: { value: " " },
+  input: {
+    value: {
+      type: "string",
+      value: " "
+    }
+  },
+  style: { width: "90px" }
+};
 
-const boxModelComponent = createBaseComponent(
-  "box_model_display_block",
-  "box model display block",
-  "box_model",
-  {
-    style: { width: "100%", display: "block" },
-    input: {
-      value: {
-        type: "handler",
-        value: /* js */`
-          const selectedComponent = Utils.first(Vars.selectedComponents);
-          if (!selectedComponent) return {};
-
-          const propertiesToExtract = [
-            "margin-left",
-            "margin-top",
-            "margin-bottom",
-            "margin-right",
-            "padding-left",
-            "padding-right",
-            "padding-top",
-            "padding-bottom",
-            "border",
-            "width",
-            "height"
-          ];
-
-          const extractedStyles = {};
-          const componentStyle = selectedComponent.style || {};
-
-          propertiesToExtract.forEach((prop) => {
-            const propValue = componentStyle[prop];
-            if (propValue) {
-              const match = propValue.match(/^(\d+(?:\.\d+)?)(.*)$/);
-              const value = match && match[1] ? match[1] : '';
-              const unit = match && match[2] ? match[2] : '';
-
-              extractedStyles[prop] = {
-                value: parseFloat(value) || 0,
-                unit: unit || 'px'
-              };
-            } else {
-              extractedStyles[prop] = {
-                value: 0,
-                unit: 'px'
-              };
-            }
-          });
-
-          return extractedStyles;
-        `
-      }
-    },
-    event: {
-      onChange: /* js */`
+const boxModelComponent = {
+  uuid: "box_model_display_block",
+  name: "box model display block",
+  application_id: "1",
+  component_type: "box_model",
+  ...COMMON_ATTRIBUTES,
+  style: { width: "100%", display: "block" },
+  input: {
+    value: {
+      type: "handler",
+      value: /* js */`
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        if (!selectedComponent) return;
+        if (!selectedComponent) return {};
 
-        const property = EventData.property;
-        const value = EventData.value;
+        const propertiesToExtract = [
+          "margin-left",
+          "margin-top",
+          "margin-bottom",
+          "margin-right",
+          "padding-left",
+          "padding-right",
+          "padding-top",
+          "padding-bottom",
+          "border",
+          "width",
+          "height"
+        ];
 
-        // Update the component style with the new value
-        updateStyle(selectedComponent, property, value);
+        const extractedStyles = {};
+        const componentStyle = selectedComponent.style || {};
+
+        propertiesToExtract.forEach((prop) => {
+          const propValue = componentStyle[prop];
+          if (propValue) {
+            const match = propValue.match(/^(\\d+(?:\\.\\d+)?)(.*)$/);
+            const value = match && match[1] ? match[1] : '';
+            const unit = match && match[2] ? match[2] : '';
+
+            extractedStyles[prop] = {
+              value: parseFloat(value) || 0,
+              unit: unit || 'px'
+            };
+          } else {
+            extractedStyles[prop] = {
+              value: 0,
+              unit: 'px'
+            };
+          }
+        });
+
+        return extractedStyles;
       `
     }
-  }
-);
+  },
+  event: {
+    onChange: /* js */`
+      const selectedComponent = Utils.first(Vars.selectedComponents);
+      if (!selectedComponent) return;
 
-const collapseComponent = createBaseComponent(
-  "box_model_collapse",
-  "Box Model Collapse",
-  "Collapse",
-  {
-    style: {
-      marginTop: "16px",
-      marginBottom: "16px",
-      "--nuraly-spacing-collapse-padding": "0px",
-      "--nuraly-spacing-collapse-content-padding": "0px",
-      "--nuraly-shadow-collapse-hover": "none",
-      "--nuraly-border-radius-collapse": "0",
-      "--nuraly-border-radius-collapse-header": "0"
-    },
-    input: {
-      size: {
-        type: "string",
-        value: "small"
-      },
-      components: {
-        type: "array",
-        value: [{
-          blockName: "box_model_vertical_container",
-          label: "Box Model",
-          open: true
-        }]
-      }
-    },
-    childrenIds: ["box_model_vertical_container"]
+      const property = EventData.property;
+      const value = EventData.value;
+
+      // Update the component style with the new value
+      updateStyle(selectedComponent, property, value);
+    `
   }
-);
+};
+
+const collapseComponent = {
+  uuid: "box_model_collapse",
+  name: "Box Model Collapse",
+  application_id: "1",
+  component_type: "Collapse",
+  ...COMMON_ATTRIBUTES,
+  style: {
+    marginTop: "16px",
+    marginBottom: "16px",
+    "--nuraly-spacing-collapse-padding": "0px",
+    "--nuraly-spacing-collapse-content-padding": "0px",
+    "--nuraly-shadow-collapse-hover": "none",
+    "--nuraly-border-radius-collapse": "0",
+    "--nuraly-border-radius-collapse-header": "0"
+  },
+  input: {
+    size: {
+      type: "string",
+      value: "small"
+    },
+    components: {
+      type: "array",
+      value: [{
+        blockName: "box_model_vertical_container",
+        label: "Box Model",
+        open: true
+      }]
+    }
+  },
+  childrenIds: ["box_model_vertical_container"]
+};
 
 export default [
   collapseComponent,
