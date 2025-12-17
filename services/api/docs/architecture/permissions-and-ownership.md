@@ -2,15 +2,17 @@
 
 ## Overview
 
-This document describes the permissions and ownership architecture of the API, which controls access to resources (applications, pages, components) through a combination of:
+This document describes the permissions and ownership architecture of the API, which controls access to resources (applications, pages, components) through a **consolidated 3-table model**:
 
-1. **Ownership records** - Direct ownership relationship
-2. **Application-scoped roles** - Role-based membership per application
-3. **Explicit permissions** - Fine-grained permission grants
+1. **ApplicationRole** - System and custom roles per application
+2. **ApplicationMember** - User role assignments within applications
+3. **ResourcePermission** - Fine-grained access control for specific resources
 
 The system uses a **hybrid authentication/authorization model**:
 - **Keycloak** handles authentication and global identity
 - **API** handles application-scoped authorization
+
+**Note:** The `user_id` field on entities (Application, Page, Component) tracks the original creator for reference purposes.
 
 ## Table of Contents
 
@@ -19,8 +21,6 @@ The system uses a **hybrid authentication/authorization model**:
 - [Database Models](#database-models)
 - [Application-Scoped Roles](#application-scoped-roles)
 - [Resource-Level Permissions](#resource-level-permissions-dynamic-access)
-- [Ownership System](#ownership-system)
-- [Permission System](#permission-system)
 - [Authentication Flow](#authentication-flow)
 - [Authorization Flow](#authorization-flow)
 - [Resource Hierarchy](#resource-hierarchy)
@@ -54,9 +54,9 @@ The system uses a **hybrid authentication/authorization model**:
 │                               API                                           │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                    Application-Scoped Authorization                   │  │
+│  │  • ApplicationRole: system + custom roles per application            │  │
 │  │  • ApplicationMember: user roles per application (owner/admin/...)   │  │
-│  │  • Ownership: resource ownership tracking                             │  │
-│  │  • Permission: fine-grained access control                            │  │
+│  │  • ResourcePermission: fine-grained access to specific resources     │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -76,14 +76,17 @@ The system uses a **hybrid authentication/authorization model**:
 
 ## Core Concepts
 
-### Dual Access Control Model
+### Unified Access Control Model
 
-The system implements a **dual access control model**:
+The system implements a **unified access control model** with three components:
 
-1. **Ownership** - Direct ownership relationship between users and resources
-2. **Permissions** - Explicit permission grants supporting users, roles, and anonymous access
+1. **Application Roles** - Define permissions available within each application (system + custom)
+2. **Application Membership** - Assign users to roles within specific applications
+3. **Resource Permissions** - Grant fine-grained access to specific pages/components/files
 
-A user can access a resource if they either **own it** OR have an **explicit permission** for it.
+A user can access a resource if they have:
+- An **application role** with the required permission, OR
+- An explicit **resource permission** for that specific resource
 
 ### Resource Types
 
@@ -109,61 +112,29 @@ enum ApplicationPermission {
 
 ## Database Models
 
-### Ownership Table
-
-Tracks who owns which resources.
+The permission system uses **three core tables**:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Ownership                            │
-├──────────────┬─────────────┬────────────────────────────────┤
-│ Column       │ Type        │ Description                    │
-├──────────────┼─────────────┼────────────────────────────────┤
-│ id           │ INT (PK)    │ Auto-increment identifier      │
-│ owner_id     │ STRING      │ User UUID who owns resource    │
-│ resource_id  │ STRING      │ UUID of the owned resource     │
-│ resource_type│ STRING      │ Type: application/component    │
-└──────────────┴─────────────┴────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           DATA MODEL                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ApplicationRole ◄──────┐                                                  │
+│   (system + custom)      │ role_id                                          │
+│          │               │                                                  │
+│          │               │                                                  │
+│          ▼               │                                                  │
+│   permissions[]          │                                                  │
+│                          │                                                  │
+│                  ApplicationMember                                          │
+│                  (user ↔ app ↔ role)                                        │
+│                                                                             │
+│                                                                             │
+│   ResourcePermission                                                        │
+│   (fine-grained access to specific resources)                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
-
-### Permission Table
-
-Stores explicit permission grants with flexible access control.
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Permission                           │
-├──────────────┬─────────────┬────────────────────────────────┤
-│ Column       │ Type        │ Description                    │
-├──────────────┼─────────────┼────────────────────────────────┤
-│ id           │ INT (PK)    │ Auto-increment identifier      │
-│ user_id      │ STRING      │ User who granted permission    │
-│ resource_id  │ STRING      │ UUID of the resource           │
-│ resource_type│ STRING      │ Type: application/component    │
-│ public       │ BOOLEAN     │ Whether publicly accessible    │
-│ permission_type│ STRING    │ read/write/delete              │
-│ owner_id     │ STRING      │ Original owner of resource     │
-│ allowed      │ JSON        │ Access control list (see below)│
-└──────────────┴─────────────┴────────────────────────────────┘
-```
-
-#### Allowed JSON Structure
-
-The `allowed` field stores a flexible access control list:
-
-```json
-{
-  "roles": ["admin", "editor", "viewer"],
-  "userIds": ["user-uuid-1", "user-uuid-2"],
-  "anonymous": true
-}
-```
-
-| Field     | Type       | Description                          |
-|-----------|------------|--------------------------------------|
-| roles     | string[]   | Roles that have this permission      |
-| userIds   | string[]   | Specific user UUIDs with permission  |
-| anonymous | boolean    | Allow anonymous/unauthenticated access|
 
 ### ApplicationRole Table (Custom Roles per Application)
 
@@ -432,13 +403,12 @@ Same user, different app with CUSTOM role:
 #### 1. Application Creation
 
 When a user creates an application:
-1. Create the Application record
-2. Create Ownership record (for backward compatibility)
-3. Create ApplicationMember with system `owner` role
+1. Create the Application record (with `user_id` = creator)
+2. Create ApplicationMember with system `owner` role
 
 ```
-Creator ──► Application ──► Ownership (owner)
-                       └──► ApplicationMember (role: owner)
+Creator ──► Application (user_id = creator)
+                   └──► ApplicationMember (role: owner)
 ```
 
 #### 2. Inviting Members
@@ -503,12 +473,11 @@ Beyond application-scoped roles, the system supports **fine-grained access contr
 │      └── Does user's role in the app grant this permission?                │
 │                           │                                                 │
 │                           ▼ if not found                                    │
-│   3. Ownership                                                              │
-│      └── Does user own this resource?                                       │
+│   3. Public/Anonymous Access                                                │
+│      └── Is this resource publicly accessible?                              │
 │                           │                                                 │
 │                           ▼ if not found                                    │
-│   4. Public Access                                                          │
-│      └── Is this resource publicly accessible?                              │
+│                          DENY                                               │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -588,11 +557,12 @@ Request to access Page X
               NO
               ▼
 ┌─────────────────────────────────┐
-│ 3. Check Ownership              │
-│    Is user the resource owner?  │
+│ 3. Check Public/Anonymous       │
+│    Is resource public or        │
+│    anonymous-accessible?        │
 └─────────────────────────────────┘
               │
-         owner? ─── YES ──► GRANT all permissions
+         public? ─── YES ──► GRANT read permission
               │
               NO
               ▼
@@ -724,129 +694,6 @@ Temporary access can be granted using `expires_at`:
 
 ---
 
-## Ownership System
-
-### How Ownership Works
-
-When a resource is created, an ownership record is automatically created linking the creator to the resource.
-
-```
-┌──────────┐     creates      ┌─────────────┐
-│   User   │ ───────────────► │ Application │
-└──────────┘                  └─────────────┘
-     │                              │
-     │                              │
-     ▼                              ▼
-┌──────────────────────────────────────────┐
-│              Ownership Record            │
-│  owner_id: user-uuid                     │
-│  resource_id: app-uuid                   │
-│  resource_type: 'application'            │
-└──────────────────────────────────────────┘
-```
-
-### Ownership Creation Flow
-
-```typescript
-// ApplicationService.create()
-public async create(published: boolean, uuid: string, user_id: string, name?: string) {
-  // 1. Create the application
-  const application = await this.ApplicationRepository.create(application);
-
-  // 2. Create ownership record
-  this.ownershipService.create('application', application.uuid, user_id);
-
-  // 3. Create default page (also creates its ownership)
-  this.pageService.create("Page1", "page1", "", application.uuid, user_id, ...);
-
-  return application;
-}
-```
-
-### Checking Ownership
-
-```typescript
-// OwnershipRepository.isOwner()
-async isOwner(ownerId: string, resourceId: string, resourceType: string): Promise<boolean> {
-  const ownership = await this.prisma.ownership.findFirst({
-    where: {
-      ownerId: ownerId,
-      resourceId: resourceId,
-      resourceType: resourceType
-    }
-  });
-  return ownership !== null;
-}
-```
-
----
-
-## Permission System
-
-### Permission Grant Structure
-
-Permissions are explicit grants that allow access beyond ownership.
-
-```
-┌──────────────┐                    ┌──────────────┐
-│  Resource    │◄───────────────────│  Permission  │
-│  Owner       │    grants          │    Grant     │
-└──────────────┘                    └──────────────┘
-                                          │
-                                          │ allows
-                                          ▼
-                          ┌───────────────────────────────┐
-                          │     • Specific Users (UUIDs)  │
-                          │     • Roles (admin, editor)   │
-                          │     • Anonymous Users         │
-                          └───────────────────────────────┘
-```
-
-### Permission Check Logic
-
-The system checks permissions in the following order:
-
-```
-1. Is user the OWNER?
-   └─► YES → ACCESS GRANTED
-   └─► NO  → Continue to step 2
-
-2. Does user have EXPLICIT PERMISSION?
-   └─► Check if user UUID in allowed.userIds
-   └─► Check if user roles overlap with allowed.roles
-   └─► Check if anonymous access and user is anonymous
-   └─► Any match → ACCESS GRANTED
-   └─► No match → ACCESS DENIED
-```
-
-### Combined Query for Access
-
-```typescript
-// Get all resources user can access (owns OR has permission)
-async getResourceIDWithPermissionOrOwner(request: ResourcePermissionRequest): Promise<string[]> {
-  // Query 1: Get owned resources
-  const owned = await prisma.ownership.findMany({
-    where: {
-      resourceType: request.resourceType,
-      ownerId: request.user.uuid
-    }
-  });
-
-  // Query 2: Get permitted resources
-  const permitted = await prisma.permission.findMany({
-    where: {
-      resourceType: request.resourceType,
-      permissionType: request.permissionType,
-      // Check allowed JSON for user or roles
-    }
-  });
-
-  return [...owned, ...permitted].map(r => r.resourceId);
-}
-```
-
----
-
 ## Authentication Flow
 
 ### User Context Extraction
@@ -870,20 +717,29 @@ User information flows through the system via HTTP headers from an upstream gate
 
 ```typescript
 // src/middlewares/user.middleware.ts
+const ANONYMOUS_USER: User = {
+  anonymous: true,
+  uuid: '00000000-0000-0000-0000-000000000000',
+  username: 'anonymous',
+  roles: []
+};
+
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const headerValue = req.header('X-USER');
+
+  // Validate gateway origin when X-USER header is present
+  if (headerValue && !validateGatewayOrigin(req)) {
+    return res.status(403).json({ message: 'Forbidden: Invalid gateway credentials' });
+  }
+
   try {
     const user: User = JSON.parse(headerValue as string);
+    if (!isValidUserObject(user)) throw new Error('Invalid user');
     (req as any).user = user;
     next();
   } catch (error) {
     // Fallback to anonymous user
-    (req as any).user = {
-      anonymous: false,
-      uuid: '0000-0000-0000-0000',
-      username: 'anonymous',
-      roles: []
-    };
+    (req as any).user = { ...ANONYMOUS_USER };
     next();
   }
 };
@@ -920,29 +776,29 @@ export const expressAuthentication = (request: Request, securityName: string) =>
 ### Request Authorization Sequence
 
 ```
-┌────────┐   ┌────────────┐   ┌────────────┐   ┌───────────┐   ┌──────────┐
-│ Client │   │ Middleware │   │ Controller │   │ Ownership │   │ Database │
-└───┬────┘   └─────┬──────┘   └─────┬──────┘   │  Service  │   └────┬─────┘
-    │              │                │          └─────┬─────┘        │
-    │ HTTP Request │                │                │              │
-    │──────────────►                │                │              │
-    │              │                │                │              │
-    │              │ Extract User   │                │              │
-    │              │───────────────►│                │              │
-    │              │                │                │              │
-    │              │                │ Check Access   │              │
-    │              │                │───────────────►│              │
-    │              │                │                │              │
-    │              │                │                │ Query        │
-    │              │                │                │─────────────►│
-    │              │                │                │              │
-    │              │                │                │◄─────────────│
-    │              │                │                │   Results    │
-    │              │                │◄───────────────│              │
-    │              │                │  Allowed IDs   │              │
-    │              │                │                │              │
-    │◄─────────────────────────────│                │              │
-    │        Filtered Response     │                │              │
+┌────────┐   ┌────────────┐   ┌────────────┐   ┌────────────┐   ┌──────────┐
+│ Client │   │ Middleware │   │ Controller │   │ Permission │   │ Database │
+└───┬────┘   └─────┬──────┘   └─────┬──────┘   │  Service   │   └────┬─────┘
+    │              │                │          └─────┬──────┘        │
+    │ HTTP Request │                │                │               │
+    │──────────────►                │                │               │
+    │              │                │                │               │
+    │              │ Extract User   │                │               │
+    │              │───────────────►│                │               │
+    │              │                │                │               │
+    │              │                │ Check Access   │               │
+    │              │                │───────────────►│               │
+    │              │                │                │               │
+    │              │                │                │ Query         │
+    │              │                │                │──────────────►│
+    │              │                │                │               │
+    │              │                │                │◄──────────────│
+    │              │                │                │   Results     │
+    │              │                │◄───────────────│               │
+    │              │                │  Allowed IDs   │               │
+    │              │                │                │               │
+    │◄─────────────────────────────│                │               │
+    │        Filtered Response     │                │               │
 ```
 
 ### Controller Authorization Pattern
@@ -950,18 +806,16 @@ export const expressAuthentication = (request: Request, securityName: string) =>
 ```typescript
 @Get()
 public async findAll(@Request() request: NRequest): Promise<Application[]> {
-  // 1. Build permission request
-  const resourcePermissionRequest: ResourcePermissionRequest = {
-    user: request.user,
-    resourceType: ResourceType.application,
-    permissionType: ApplicationPermission.read
-  };
+  // 1. Check user's application membership
+  const memberApps = await this.applicationMemberService
+    .getApplicationsForUser(request.user.uuid, 'application:read');
 
-  // 2. Get accessible resource IDs
-  const accessibleIds = await this.ownershipService
-    .getResourceIDWithPermissionOrOwner(resourcePermissionRequest);
+  // 2. Check explicit resource permissions
+  const permittedApps = await this.resourcePermissionService
+    .getAccessibleResources(request.user.uuid, 'application', 'read');
 
   // 3. Return only accessible resources
+  const accessibleIds = [...new Set([...memberApps, ...permittedApps])];
   return await this.applicationService.findAll(accessibleIds);
 }
 ```
@@ -970,20 +824,20 @@ public async findAll(@Request() request: NRequest): Promise<Application[]> {
 
 ## Resource Hierarchy
 
-### Ownership Hierarchy
+### Resource Structure
 
 ```
 User
  │
- ├── Application (owned via Ownership table)
+ ├── Application (user_id = creator, ApplicationMember for access)
  │    │
- │    ├── Pages (owned via user_id, linked via application_id)
+ │    ├── Pages (user_id = creator, linked via application_id)
  │    │    │
  │    │    └── Components (referenced via component_ids array)
  │    │
- │    └── Components (owned via user_id, linked via application_id)
+ │    └── Components (user_id = creator, linked via application_id)
  │
- └── Direct Components (standalone, owned via Ownership table)
+ └── ResourcePermission (fine-grained access grants)
 ```
 
 ### Entity Relationships
@@ -1049,24 +903,15 @@ User
 | DELETE | `/api/applications/{appId}/roles/{roleId}` | Delete custom role | `role:delete` |
 | GET | `/api/roles/system` | List system roles | (public) |
 
-### Ownership Endpoints
+### Resource Permission Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/ownership` | Create ownership record |
-| GET | `/api/ownership/check` | Check if user owns resource |
-| GET | `/api/ownership/{resourceType}` | Get owned resources by type |
-
-### Permission Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/permissions` | Create permission grant |
-| POST | `/api/permissions/has` | Check if permission exists |
-| GET | `/api/permissions/{permissionType}` | Get permissions by type |
-| GET | `/api/permissions/resource/{resourceId}` | Get permissions for resource |
-| PUT | `/api/permissions/{id}` | Update permission |
-| DELETE | `/api/permissions/{id}` | Delete permission |
+| Method | Endpoint | Description | Required Permission |
+|--------|----------|-------------|---------------------|
+| GET | `/api/resources/{type}/{id}/permissions` | List permissions for resource | `share` or owner |
+| POST | `/api/resources/{type}/{id}/permissions` | Grant permission | `share` or owner |
+| DELETE | `/api/resources/{type}/{id}/permissions/{permId}` | Revoke permission | `share` or owner |
+| GET | `/api/users/{userId}/resource-permissions` | List accessible resources | (self only) |
+| POST | `/api/resources/{type}/{id}/share` | Generate shareable link | `share` or owner |
 
 ---
 
@@ -1091,14 +936,6 @@ User
 | ResourcePermission Service | `src/resource-permission/services/resource-permission.service.ts` |
 | ResourcePermission Repository | `src/resource-permission/repositories/resource-permission.repository.ts` |
 | ResourcePermission Controller | `src/resource-permission/controllers/resource-permission.controller.ts` |
-| **Ownership** | |
-| Ownership Model | `src/ownership/models/ownership.ts` |
-| Ownership Service | `src/ownership/services/ownership.service.ts` |
-| Ownership Repository | `src/ownership/repositories/ownership.repository.ts` |
-| **Permissions (Legacy)** | |
-| Permission Model | `src/permission/models/permission.ts` |
-| Permission Service | `src/permission/services/permission.service.ts` |
-| Permission Repository | `src/permission/repositories/permission.repository.ts` |
 | **Auth & Middleware** | |
 | User Middleware | `src/middlewares/user.middleware.ts` |
 | Auth Middleware | `src/auth/middleware/express.authentication.ts` |
@@ -1113,10 +950,10 @@ Services use `tsyringe` for dependency injection:
 
 ```typescript
 @injectable()
-export class OwnershipService {
+export class ResourcePermissionService {
   constructor(
-    @inject('OwnershipRepository') private repository: IOwnershipRepository,
-    @inject('PermissionRepository') private permissionRepository: IPermissionRepository
+    @inject('ResourcePermissionRepository') private repository: IResourcePermissionRepository,
+    @inject('ApplicationMemberRepository') private memberRepository: IApplicationMemberRepository
   ) {}
 }
 ```
@@ -1161,12 +998,13 @@ public async create(@Body() body: CreateRequest): Promise<Response> {
 | Cannot be deleted | Can be modified/deleted |
 | Cover common use cases | Cover edge cases |
 
-### Why Dual Ownership/Permission Model?
+### Why Consolidated 3-Table Model?
 
-1. **Ownership** provides fast, simple access checks for resource creators
-2. **Permissions** enable flexible sharing without transferring ownership
-3. **Separation** allows changing permissions without modifying ownership
-4. **Scalability** - ownership queries are simple; permission queries handle complex cases
+1. **Single Source of Truth** - No redundant tables storing the same data
+2. **Simpler Mental Model** - Roles for applications, permissions for specific resources
+3. **Flexible Sharing** - ResourcePermission handles users, roles, public, and anonymous access
+4. **Creator Tracking** - `user_id` on entities tracks who created what (informational only)
+5. **Clean Separation** - ApplicationMember for app access, ResourcePermission for fine-grained control
 
 ### Why JSON for Permissions in Roles?
 
@@ -1180,9 +1018,9 @@ public async create(@Body() body: CreateRequest): Promise<Response> {
 ## Future Considerations
 
 1. **Organization/Team Support** - Add organization model for multi-tenant scenarios
-2. **Permission Inheritance** - Automatically inherit permissions from parent resources
-3. **Audit Logging** - Track permission and role changes for compliance
-4. **Permission Caching** - Cache role permission checks for performance
-5. **Batch Permission Checks** - Optimize multiple permission checks in single query
-6. **Role Templates** - Pre-built role templates for common use cases
-7. **Invitation Flow** - Email-based member invitations with acceptance workflow
+2. **Audit Logging** - Track permission and role changes for compliance
+3. **Permission Caching** - Cache role permission checks for performance (Redis)
+4. **Batch Permission Checks** - Optimize multiple permission checks in single query
+5. **Role Templates** - Pre-built role templates for common use cases
+6. **Invitation Flow** - Email-based member invitations with acceptance workflow
+7. **Rate Limiting** - Prevent permission enumeration attacks
