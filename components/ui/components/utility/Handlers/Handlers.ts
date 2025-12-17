@@ -23,9 +23,9 @@ constructor() {
   super();
 
   eventDispatcher.onAny( ()=>{
-   this.traitInputsHandlers()
+   this.refreshInputs()
   } );
- 
+
 }
 
 
@@ -49,7 +49,7 @@ constructor() {
         `, {
         value: ""
       });
-        this.traitInputsHandlers();
+        this.refreshInputs();
         this.requestUpdate( )
   };
 

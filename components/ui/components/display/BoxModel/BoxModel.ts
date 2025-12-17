@@ -2,7 +2,6 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from '../../base/BaseElement';
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { handleComponentEvent } from '../../base/BaseElement/execute-event.helpers.ts';
 
 @customElement("box-model-display")
 export class BoxModelDisplay extends BaseElementBlock {
@@ -194,16 +193,9 @@ export class BoxModelDisplay extends BaseElementBlock {
     }
 
     // Trigger the onChange event handler
-    handleComponentEvent({
-      isViewMode: true,
-      component: this.component,
-      item: this.item,
-      eventName: "onChange",
-      event: event,
-      data: {
-        property,
-        value: numericValue ? `${numericValue}px` : "0px",
-      },
+    this.executeEvent("onChange", event, {
+      property,
+      value: numericValue ? `${numericValue}px` : "0px",
     });
   }
 
@@ -221,16 +213,9 @@ export class BoxModelDisplay extends BaseElementBlock {
       this.moveCursorToEnd(div);
 
       // Trigger update
-      handleComponentEvent({
-        isViewMode: true,
-        component: this.component,
-        item: this.item,
-        eventName: "onChange",
-        event: event,
-        data: {
-          property,
-          value: `${finalValue}px`,
-        },
+      this.executeEvent("onChange", event, {
+        property,
+        value: `${finalValue}px`,
       });
     } else if (event.key === "Enter") {
       event.preventDefault();
