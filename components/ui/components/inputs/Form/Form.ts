@@ -1,9 +1,12 @@
 import { html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
+import { $components } from '../../../../../redux/store/component/store.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 import { formStyles } from "./Form.style.ts";
+import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
+import { renderComponent } from '../../../../../utils/render-util.ts';
 
 // Safely import @nuralyui/forms
 try {
@@ -11,6 +14,10 @@ try {
 } catch (error) {
   console.warn('[@nuralyui/forms] Package not found or failed to load.');
 }
+
+// Import icon and label for placeholder
+import "@nuralyui/icon";
+import "@nuralyui/label";
 
 /**
  * Form block component that wraps nr-form and handles field registration
@@ -32,6 +39,9 @@ export class FormBlock extends BaseElementBlock {
   @state()
   private _registeredFields: Map<string, any> = new Map();
 
+  @state()
+  childrenComponents: ComponentElement[] = [];
+
   private _fieldRegisterHandler = this._handleFieldRegister.bind(this);
   private _fieldUnregisterHandler = this._handleFieldUnregister.bind(this);
   private _fieldValueChangeHandler = this._handleFieldValueChange.bind(this);
@@ -42,11 +52,25 @@ export class FormBlock extends BaseElementBlock {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.updateChildrenComponents();
 
     // Listen for field registration events from child input blocks
     this.addEventListener('nr-field-register', this._fieldRegisterHandler as EventListener);
     this.addEventListener('nr-field-unregister', this._fieldUnregisterHandler as EventListener);
     this.addEventListener('nr-field-value-change', this._fieldValueChangeHandler as EventListener);
+  }
+
+  override willUpdate(changedProperties: Map<string, any>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("component")) {
+      this.updateChildrenComponents();
+    }
+  }
+
+  private updateChildrenComponents(): void {
+    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+      return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
+    }).filter(Boolean) ?? [];
   }
 
   override disconnectedCallback() {
@@ -200,9 +224,90 @@ export class FormBlock extends BaseElementBlock {
     };
   }
 
+  /**
+   * Render placeholder when form is empty in editor mode
+   */
+  private renderPlaceholder() {
+    return html`
+      <div
+        class="form-placeholder"
+        @click="${() => setCurrentComponentIdAction(this.component?.uuid)}"
+      >
+        <nr-icon name="file-text"></nr-icon>
+        <nr-label>Add form fields to this form</nr-label>
+        <drag-wrapper
+          .where=${"inside"}
+          .message=${"Drop inside"}
+          .component=${{ ...this.component }}
+          .inputRef=${this.inputRef}
+          .isDragInitiator=${this.isDragInitiator}
+        >
+        </drag-wrapper>
+      </div>
+    `;
+  }
+
+  /**
+   * Render children components
+   */
+  private renderChildren() {
+    return renderComponent(
+      this.childrenComponents.map((component) => ({ ...component, item: this.item })),
+      this.item,
+      this.isViewMode,
+      { ...this.component, uniqueUUID: this.uniqueUUID }
+    );
+  }
+
   override renderComponent() {
     const inputStyles = this.getStyles();
+    const hasChildren = this.childrenComponents.length > 0;
 
+    // In view mode, always render the form with children (or empty)
+    if (this.isViewMode) {
+      return html`
+        <nr-form
+          ${ref(this.inputRef)}
+          class="${`drop-${this.component.uuid}`}"
+          style=${Object.entries(inputStyles).map(([k, v]) => `${k}:${v}`).join(';')}
+          .disabled=${this.inputHandlersValue?.disabled || false}
+          .validateOnChange=${this.inputHandlersValue?.validateOnChange ?? false}
+          .validateOnBlur=${this.inputHandlersValue?.validateOnBlur ?? true}
+          .preventInvalidSubmission=${this.inputHandlersValue?.preventInvalidSubmission ?? true}
+          .resetOnSuccess=${this.inputHandlersValue?.resetOnSuccess ?? false}
+          .action=${this.inputHandlersValue?.action ?? nothing}
+          .method=${this.inputHandlersValue?.method ?? 'POST'}
+          @nr-form-submit-success=${(e: CustomEvent) => {
+            this.executeEvent('onSubmitSuccess', e, {
+              formData: e.detail?.formData,
+              values: this.getFieldsValue()
+            });
+          }}
+          @nr-form-submit-error=${(e: CustomEvent) => {
+            this.executeEvent('onSubmitError', e, {
+              error: e.detail?.error
+            });
+          }}
+          @nr-form-validation-changed=${(e: CustomEvent) => {
+            this.executeEvent('onValidationChange', e, {
+              validationResult: e.detail?.validationResult
+            });
+          }}
+          @nr-form-field-changed=${(e: CustomEvent) => {
+            this.executeEvent('onFieldChange', e, {
+              field: e.detail?.field
+            });
+          }}
+          @nr-form-reset=${(e: CustomEvent) => {
+            this.executeEvent('onReset', e, {});
+          }}
+        >
+          ${hasChildren ? this.renderChildren() : nothing}
+        </nr-form>
+      `;
+    }
+
+    // In editor mode, show placeholder if empty
     return html`
       <nr-form
         ${ref(this.inputRef)}
@@ -240,7 +345,7 @@ export class FormBlock extends BaseElementBlock {
           this.executeEvent('onReset', e, {});
         }}
       >
-        <slot></slot>
+        ${hasChildren ? this.renderChildren() : this.renderPlaceholder()}
       </nr-form>
     `;
   }
