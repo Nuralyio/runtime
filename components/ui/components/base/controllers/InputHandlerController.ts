@@ -226,32 +226,14 @@ export class InputHandlerController implements ReactiveController, Disposable {
   ): Promise<{ value: any; error?: { message: string } }> {
     const { component, item, uniqueUUID } = this.host;
 
-    // Check inputHandlers first (dynamic handlers take precedence)
-    const inputHandler = component?.inputHandlers?.[inputName];
-    if (inputHandler) {
-      try {
-        const fn = executeHandler(
-          { ...component, uniqueUUID },
-          inputHandler,
-          undefined,
-          { ...item }
-        );
-        const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
-        return { value: result };
-      } catch (error: any) {
-        this.logHandlerError(inputName, inputHandler, error, "inputHandlers");
-        return { value: undefined, error: { message: error.message } };
-      }
-    }
-
-    // Fall back to input property
+    // Execute handler if input type is "handler"
     if (input.type === "handler") {
       try {
-        const raw = getNestedAttribute(component, `input.${inputName}`)?.value;
-        if (raw) {
+        const code = input.value;
+        if (code) {
           const fn = executeHandler(
             { ...component, uniqueUUID },
-            raw,
+            code,
             undefined,
             { ...item }
           );
@@ -260,8 +242,7 @@ export class InputHandlerController implements ReactiveController, Disposable {
         }
         return { value: undefined };
       } catch (error: any) {
-        const code = getNestedAttribute(component, `input.${inputName}`)?.value;
-        this.logHandlerError(inputName, code, error, "input");
+        this.logHandlerError(inputName, input.value, error, "input");
         return { value: undefined, error: { message: error.message } };
       }
     }

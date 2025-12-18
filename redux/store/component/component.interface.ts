@@ -74,7 +74,6 @@ export interface ComponentElement {
   style?: { [key: string]: string };
   breakpoints?: any;
   styleHandlers: { [key: string]: string };
-  inputHandlers: { [key: string]: string };
   parameters?: { [key: string]: string };
   event?: { [key: string]: string };
   input?: { [key: string]: any };
