@@ -31,7 +31,7 @@ export class TextareaBlock extends BaseElementBlock {
     const placeholder = this.inputHandlersValue?.placeholder ?? '';
     const label = this.inputHandlersValue?.label ?? '';
     const helperText = this.inputHandlersValue?.helperText ?? this.inputHandlersValue?.helper ?? '';
-    const disabled = this.inputHandlersValue?.disabled ?? this.inputHandlersValue?.state === 'disabled' ?? false;
+    const disabled = this.inputHandlersValue?.disabled ?? (this.inputHandlersValue?.state === 'disabled') || false;
     const readonly = this.inputHandlersValue?.readonly ?? false;
     const required = this.inputHandlersValue?.required ?? false;
     const allowClear = this.inputHandlersValue?.allowClear ?? false;
