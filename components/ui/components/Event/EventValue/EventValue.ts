@@ -52,6 +52,7 @@ export class ParameterEventLabel extends BaseElementBlock {
     <nr-dropdown
       trigger="click"
       placement="left"
+      position-strategy="fixed"
       style=${styleMap({
         "--nuraly-dropdown-max-width": "500px",
       })}
