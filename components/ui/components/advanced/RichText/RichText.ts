@@ -70,9 +70,10 @@ export class RichTextContainer extends BaseElementBlock {
 
   override renderComponent() {
     return html`
+    
       <div ${ref(this.inputRef)}
+     class="${`drop-${this.component.uuid}`}"
       style=${styleMap({
-        ...this.getStyles(),
         width: this.editing  ? "auto" : this.getStyles().width,
         display: "block",})}
       >
