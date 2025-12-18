@@ -223,12 +223,10 @@ export default [
                         parameters = [...(config.parameters || []), "access_control_panel_block"];
                         handlers = [...(config.handlers || [])];
                         themes = ["select_component_styles_state_container", ...(config.themes || [])];
-                        console.log('[DEBUG] Component parameters order:', parameters);
                     }
                 } else if(currentPageId) {
                     parameters = ["page_info_container_block", "access_control_panel_block"];
                     themes = ["PageThemeStudio"];
-                    console.log('[DEBUG] Page parameters order:', parameters);
                 }
                 
                 return [

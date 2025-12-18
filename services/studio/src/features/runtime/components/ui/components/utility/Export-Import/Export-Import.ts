@@ -17,13 +17,15 @@ export class ExportImportBlock extends BaseElementBlock {
     const {
       detail: { value },
     } = event;
-    console.log(`${type} code changed:`, value);
+    // Code change can be handled here if needed
   }
 
   copyToClipboard(content: string) {
-    navigator.clipboard.writeText(content).then(() => {
-      console.log("Content copied to clipboard:", content);
-    });
+    navigator.clipboard.writeText(content);
+  }
+
+  handleImportConfirm(type: string) {
+    // Import confirmation can be handled here
   }
 
   downloadContent(content: string, fileName: string) {
@@ -61,7 +63,7 @@ export class ExportImportBlock extends BaseElementBlock {
                     </nr-button>
                   `
       : nothing}
-              ${isExport ? nothing : html` <nr-button @click=${() => console.log(`${type} confirmed`)}>
+              ${isExport ? nothing : html` <nr-button @click=${() => this.handleImportConfirm(type)}>
                 Confirm Import
               </nr-button>`}
              
@@ -91,7 +93,6 @@ export class ExportImportBlock extends BaseElementBlock {
         });
 
         this.exportCode = JSON.stringify(components, null, 2);
-        console.log("Exported UUIDs as JSON:", this.exportCode);
       });
     }}>
           ${buttonLabel}

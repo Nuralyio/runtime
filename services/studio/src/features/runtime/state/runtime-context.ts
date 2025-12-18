@@ -191,19 +191,6 @@ import { executeHandler } from "../handlers/handler-executor";
 import type { IRuntimeContext } from "../types/IRuntimeContext";
 import { RuntimeContextHelpers } from "../utils/RuntimeContextHelpers";
 
-/**
- * Debug flag for verbose logging.
- * Set to `true` to enable detailed console logs for:
- * - Property access and mutations
- * - Proxy creation and caching
- * - Component registration steps
- * - Event emissions
- * 
- * @constant
- * @type {boolean}
- * @default false
- */
-const DEBUG = false;
 
 /**
  * @class RuntimeContext
@@ -430,10 +417,6 @@ class RuntimeContext implements IRuntimeContext {
     $components.subscribe(() => this.registerApplications());
     eventDispatcher.on("component:refresh", () => this.registerApplications())
     eventDispatcher.on("component:updated", () => this.registerApplications())
-
-    if (DEBUG) {
-      console.log("Executor initialized with debug mode enabled.");
-    }
   }
 
   /**
@@ -476,9 +459,6 @@ class RuntimeContext implements IRuntimeContext {
         // IMPORTANT: Emit global variable change events for micro-apps to listen to
         // This ensures that when global RuntimeContext changes a variable, all micro-apps are notified
         if (scope === 'Vars') {
-          if (DEBUG) {
-            console.log(`[RuntimeContext] Emitting global variable change: ${prop} = ${value}`);
-          }
           eventDispatcher.emit('global:variable:changed', {
             varName: prop,
             name: prop,
@@ -486,8 +466,7 @@ class RuntimeContext implements IRuntimeContext {
             oldValue: undefined // Global context doesn't track oldValue
           });
         }
-      },
-      debug: DEBUG
+      }
     });
   }
 
@@ -569,7 +548,6 @@ class RuntimeContext implements IRuntimeContext {
     const proxy = new Proxy(target, {
       set(obj, prop: any, value) {
         if (obj[prop] !== value) {
-          console.log(`Style property changed: ${prop} = ${value}`);
           callback(prop, value);
         }
         obj[prop] = value;

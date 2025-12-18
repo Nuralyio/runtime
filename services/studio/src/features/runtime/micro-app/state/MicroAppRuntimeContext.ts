@@ -12,8 +12,6 @@ import { VariableScope } from './VariableScopeManager'
 import { eventDispatcher } from '../../utils/change-detection'
 import { RuntimeContextHelpers } from '../../utils/RuntimeContextHelpers'
 
-const DEBUG = false
-
 export class MicroAppRuntimeContext {
   // Store context reference
   private storeContext: MicroAppStoreContext
@@ -64,18 +62,10 @@ export class MicroAppRuntimeContext {
 
     return new Proxy(this.Vars, {
       get(target, prop: string) {
-        if (DEBUG) {
-          console.log(`[MicroApp ${self.eventNamespace}] Getting var: ${String(prop)}`)
-        }
-
         // Use scope manager for variable access
         return scopeManager.get(String(prop))
       },
       set(target, prop: string, value) {
-        if (DEBUG) {
-          console.log(`[MicroApp ${self.eventNamespace}] Setting var: ${String(prop)} = ${value}`)
-        }
-
         const oldValue = scopeManager.get(String(prop))
 
         // Parse to determine target scope (check if prop starts with 'global.' or 'local.')
@@ -108,7 +98,6 @@ export class MicroAppRuntimeContext {
 
           // For GLOBAL variables, emit a global event that all micro-apps can listen to
           if (targetScope === VariableScope.GLOBAL) {
-            console.log(`[MicroApp ${self.eventNamespace}] Emitting global variable change: ${propStr}`)
             eventDispatcher.emit('global:variable:changed', {
               varName: propStr, // Use full prop name with 'global.' prefix
               name: varName, // Just the variable name without prefix
@@ -155,8 +144,7 @@ export class MicroAppRuntimeContext {
             ctx: this.Current
           })
         })
-      },
-      debug: DEBUG
+      }
     })
   }
 
@@ -173,11 +161,8 @@ export class MicroAppRuntimeContext {
     // Subscribe to generic GLOBAL variable change events (emitted by any micro-app)
     // This ensures that when one micro-app changes a global variable, all micro-apps update
     const globalVarUnsub = eventDispatcher.on('global:variable:changed', (data: any) => {
-      console.log(`[MicroApp ${this.eventNamespace}] Received global variable change: ${data.varName} = ${data.value}`)
-
       // Trigger component input refresh for all components in this micro-app
       const components = this.storeContext.getComponents()
-      console.log(`[MicroApp ${this.eventNamespace}] Refreshing ${components.length} components`)
 
       components.forEach((component: any) => {
         eventDispatcher.emit(`component-input-refresh-request:${component.uuid}`, {
@@ -201,10 +186,6 @@ export class MicroAppRuntimeContext {
     const components = this.storeContext.getComponents()
     const appUUID = this.storeContext.appUUID
     const runtimeValues = this.storeContext.$runtimeValues.get()
-
-    if (DEBUG) {
-      console.log(`[MicroApp ${this.eventNamespace}] Registering ${components.length} components`)
-    }
 
     // Initialize registry for this app
     if (!this.applications[appUUID]) {
@@ -255,10 +236,6 @@ export class MicroAppRuntimeContext {
         })
       }
     })
-
-    if (DEBUG) {
-      console.log(`[MicroApp ${this.eventNamespace}] Registration complete`)
-    }
   }
 
   /**
@@ -415,9 +392,5 @@ export class MicroAppRuntimeContext {
     this.styleProxyCache = new WeakMap()
     this.valuesProxyCache = new WeakMap()
     this.listeners = {}
-
-    if (DEBUG) {
-      console.log(`[MicroApp ${this.eventNamespace}] Cleaned up`)
-    }
   }
 }

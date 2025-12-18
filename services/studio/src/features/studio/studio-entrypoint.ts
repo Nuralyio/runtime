@@ -202,11 +202,9 @@ export default [
         }
       `,
       onTabPopOut: /* js */ `
-        console.log('Tab popped out:', EventData);
         // Tab is now in its own window - you can store state or handle custom logic here
       `,
       onTabPopIn: /* js */ `
-        console.log('Tab popped back in:', EventData);
         // Tab is restored to the main tabs - you can restore state or handle custom logic here
       `
     },

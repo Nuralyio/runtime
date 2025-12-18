@@ -106,7 +106,6 @@ export const componentItemContainer = {
   },
   event: {
     onClick: /* js */`
-      console.log("Component clicked:", Item.id);
       // Add component to canvas
       // AddComponentToCanvas(Item.id);
     `

@@ -56,9 +56,7 @@ export default [
             is_default: isDefault
           };
           
-          UpdatePage(newPage, currentEditingApplication.uuid).then(() => {
-            console.log('Page default status updated');
-          }).catch((e) => {
+          UpdatePage(newPage, currentEditingApplication.uuid).catch((e) => {
             console.error('Error updating page default status:', e);
           });
         }

@@ -50,7 +50,6 @@ export class ColorPickerBlock extends BaseElementBlock {
         .helperText=${this.inputHandlersValue?.helperText || ''}
         .defaultColorSets=${this.inputHandlersValue?.defaultColorSets || []}
         @nr-color-change=${(e) => {
-          console.log(e.detail)
           this.executeEvent('onChange', e, { value: e.detail.color });
         }}
         @nr-colorpicker-open=${(e) => {

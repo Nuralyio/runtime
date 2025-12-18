@@ -612,7 +612,6 @@ export default [{
         if (previousState) {
           // Restore the previous component state
           // This would need to be implemented based on your state management
-          console.log("Going back to:", previousState);
         }
       }
     `
@@ -669,7 +668,6 @@ export default [{
         if (nextState) {
           // Restore the next component state
           // This would need to be implemented based on your state management
-          console.log("Going forward to:", nextState);
         }
       }
     `
