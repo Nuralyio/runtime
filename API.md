@@ -106,11 +106,8 @@ PasteComponentFromClipboard();
 // Static value
 updateInput(Current, 'text', 'static', 'Hello World');
 
-// Handler value
-updateInput(Current, 'label', 'handler', "GetVar('username')");
-
-// Update input handlers
-updateInputHandlers(Current, 'placeholder', { type: 'static', value: 'Enter text' });
+// Handler value (dynamic - computed at runtime)
+updateInput(Current, 'label', 'handler', "return GetVar('username')");
 ```
 
 ### Update Style
