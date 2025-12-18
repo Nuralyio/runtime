@@ -17,7 +17,7 @@
         "default": "Checkbox",
         "width": "180px",
         "placeholder": "Checkbox label",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent?.inputHandlers?.label) { return selectedComponent.inputHandlers.label; } const input = Editor.getComponentBreakpointInput(selectedComponent, 'label'); return input?.type === 'value' ? (input.value || 'Checkbox') : 'Checkbox';",
+        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents); const input = Editor.getComponentBreakpointInput(selectedComponent, 'label'); if (input?.type === 'handler' && input?.value) { return 'Checkbox'; } return input?.type === 'value' ? (input.value || 'Checkbox') : 'Checkbox';",
         "stateHandler": { "ref": "inputHandler", "params": ["label"] },
         "eventHandlers": {
           "valueChange": { "ref": "updateInput", "params": ["label", "value"] }
