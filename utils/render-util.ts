@@ -53,6 +53,7 @@ const gridRowTemplate = (props: any, isViewMode: boolean)  => html`<grid-row-blo
 const gridColTemplate = (props: any, isViewMode: boolean)  => html`<grid-col-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-col-block>`;
 const formTemplate = (props: any, isViewMode: boolean)  => html`<form-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></form-block>`;
 const validationRulesTemplate = (props: any, isViewMode: boolean)  => html`<validation-rules-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></validation-rules-display>`;
+const borderManagerTemplate = (props: any, isViewMode: boolean)  => html`<border-manager-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></border-manager-display>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -169,6 +170,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return formTemplate(commonProps, isViewMode);
     case ComponentType.ValidationRules:
         return validationRulesTemplate(commonProps, isViewMode);
+    case ComponentType.BorderManager:
+        return borderManagerTemplate(commonProps, isViewMode);
     default:
       return html``;
   }
