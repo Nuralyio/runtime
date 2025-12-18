@@ -1,48 +1,36 @@
-# Plan: Editor IFrame Preview (SPA-based)
+# Plan: Editor IFrame Preview
 
 ## Overview
-Implement iframe-based preview using the **same SPA** with a `?mode=preview` query parameter. Communication between editor and preview iframe uses the existing `MicroAppMessageBus`.
+Implement iframe-based preview using a **separate preview route**. The editor shows the iframe when Preview mode is active. Communication uses `postMessage` API for cross-origin iframe messaging.
 
 ## Architecture
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│ TopBar:  [Edit] [Split] [Preview]                              │
-├────────────────────┬───────────────────────────────────────────┤
-│                    │                                           │
-│  Edit Canvas       │    IFrame (same SPA)                      │
-│  (Editor Mode)     │    /app/studio/[uuid]/[page]?mode=preview │
-│                    │                                           │
-│  - Full editor UI  │    - No TopBar, LeftPanel, RightPanel     │
-│  - Selection       │    - Only page content rendered           │
-│  - Drag & drop     │    - Click sends COMPONENT_SELECTED       │
-│                    │                                           │
-└────────────────────┴───────────────────────────────────────────┘
+│ TopBar:  [Edit] [Preview]                                      │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  EDIT MODE:                    PREVIEW MODE:                   │
+│  ┌─────┬──────────┬──────┐    ┌────────────────────────────┐  │
+│  │Left │ Editor   │Right │    │                            │  │
+│  │Panel│ Canvas   │Panel │    │  IFrame (full width)       │  │
+│  │     │          │      │    │  /app/preview/[uuid]/[url] │  │
+│  │     │          │      │    │                            │  │
+│  └─────┴──────────┴──────┘    └────────────────────────────┘  │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
 ```
-
-## Communication via MicroAppMessageBus
-
-The existing `MicroAppMessageBus` (singleton) will be used for iframe ↔ editor communication:
-
-### Message Types (already defined):
-- `COMPONENT_SELECTED` - When user clicks element in preview
-- `DATA_UPDATED` - When component data changes
-- `STATE_CHANGED` - When state changes
-
-### New Message Types to Add:
-- `PREVIEW_COMPONENTS_UPDATE` - Editor sends updated components to preview
-- `PREVIEW_STYLE_UPDATE` - Editor sends style changes to preview
 
 ## Implementation Steps
 
-### Step 1: Detect Preview Mode in Studio Page
-**File**: `src/pages/app/studio/[uuid]/[...urls].astro`
+### Step 1: Create Preview Route
+**File**: `src/pages/app/preview/[uuid]/[...urls].astro`
 
-- Check for `?mode=preview` query parameter
-- If preview mode:
-  - Skip rendering TopBar, LeftPanel, RightPanel
-  - Render only the page content (TabsPanel/EditorInteractivePanel in view mode)
-  - Initialize preview message listeners
+- Lightweight route that renders only the page content
+- No TopBar, LeftPanel, RightPanel
+- Uses `PageContent isViewMode="true"` like the view route
+- Sets up postMessage listener for component updates from editor
+- Sends `COMPONENT_SELECTED` message on element click
 
 ### Step 2: Create PreviewIFramePanel Component
 **File**: `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts`
@@ -53,69 +41,80 @@ export class PreviewIFramePanel extends LitElement {
   @property() applicationId: string;
   @property() pageUrl: string;
 
-  // IFrame pointing to same SPA with ?mode=preview
-  // Subscribe to component store changes
-  // Send updates to iframe via MicroAppMessageBus
+  private iframeRef: HTMLIFrameElement;
+
+  // Creates iframe pointing to /app/preview/[uuid]/[pageUrl]
+  // Subscribes to component store changes
+  // Sends updates to iframe via postMessage
+  // Listens for COMPONENT_SELECTED from iframe
 }
 ```
 
-### Step 3: Add Preview Mode to EditorInteractivePanel
-**File**: `src/features/studio/panels/main-panel/EditorInteractivePanel.ts`
-
-- Add `ViewMode.Split` support
-- When split mode: render edit canvas (50%) + PreviewIFramePanel (50%)
-- When preview mode: render only PreviewIFramePanel (100%)
-
-### Step 4: Update TopBar with View Mode Selector
+### Step 3: Update TopBar Preview Button
 **File**: `src/features/studio/params/editor-micro-apps/top-bar.ts`
 
-- Replace current Edit/Preview toggle with 3-way selector:
-  - **Edit**: Current editor (no iframe)
-  - **Split**: Editor + iframe side by side
-  - **Preview**: Full iframe only
+- Keep existing Edit/Preview toggle
+- When Preview clicked: hide LeftPanel, RightPanel, show PreviewIFramePanel
+- When Edit clicked: show normal editor layout
 
-### Step 5: Implement Click-to-Select in Preview
-**File**: `src/features/studio/studio-bootstrap.ts` (or preview-specific bootstrap)
+### Step 4: Modify EditorInteractivePanel
+**File**: `src/features/studio/panels/main-panel/EditorInteractivePanel.ts`
 
-- In preview mode, attach click listeners to components
-- On click, send `COMPONENT_SELECTED` message via MicroAppMessageBus
-- Editor receives message and selects the component
+- When `ViewMode.Preview`: render `<preview-iframe-panel>` instead of edit canvas
+- When `ViewMode.Edit`: render normal editor
+
+### Step 5: Implement Click-to-Select
+**In preview route**:
+- Attach click listeners to rendered components
+- On click, send postMessage to parent: `{ type: 'COMPONENT_SELECTED', uuid: '...' }`
+
+**In editor (PreviewIFramePanel)**:
+- Listen for messages from iframe
+- On `COMPONENT_SELECTED`, update `Vars.selectedComponent`
 
 ### Step 6: Implement Real-time Sync
-- Editor subscribes to component store changes
-- On change, send `PREVIEW_COMPONENTS_UPDATE` to iframe via postMessage
-- Preview iframe receives and re-renders components
+**Editor → Preview**:
+- Subscribe to component store
+- On change, postMessage to iframe: `{ type: 'COMPONENTS_UPDATE', data: [...] }`
+
+**Preview**:
+- Listen for `COMPONENTS_UPDATE`
+- Update local component state and re-render
 
 ## File Changes Summary
 
 | File | Action | Description |
 |------|--------|-------------|
-| `src/pages/app/studio/[uuid]/[...urls].astro` | Modify | Detect `?mode=preview`, conditional render |
-| `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts` | Create | IFrame wrapper component |
-| `src/features/studio/panels/main-panel/EditorInteractivePanel.ts` | Modify | Add split view layout |
-| `src/features/studio/params/editor-micro-apps/top-bar.ts` | Modify | Add 3-way view mode selector |
-| `src/features/runtime/micro-app/messaging/MicroAppMessageBus.ts` | Modify | Add preview message types |
-| `src/features/studio/studio-bootstrap.ts` | Modify | Preview mode initialization |
+| `src/pages/app/preview/[uuid]/[...urls].astro` | **Create** | Lightweight preview route |
+| `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts` | **Create** | IFrame wrapper component |
+| `src/features/studio/panels/main-panel/EditorInteractivePanel.ts` | Modify | Render iframe in preview mode |
+| `src/features/studio/params/editor-micro-apps/top-bar.ts` | Modify | Keep existing toggle, wire to iframe |
 
-## IFrame Communication Flow
+## postMessage Communication
 
-```
-┌─────────────────┐                      ┌─────────────────┐
-│     EDITOR      │                      │  IFRAME PREVIEW │
-│                 │                      │                 │
-│  Component      │  postMessage         │  Receives       │
-│  Store Change   │ ──────────────────►  │  & Re-renders   │
-│                 │  PREVIEW_UPDATE      │                 │
-│                 │                      │                 │
-│  Select         │  postMessage         │  Click on       │
-│  Component   ◄──│ ──────────────────── │  Element        │
-│                 │  COMPONENT_SELECTED  │                 │
-└─────────────────┘                      └─────────────────┘
+```typescript
+// Message types
+interface PreviewMessage {
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_SELECTED' | 'STYLE_UPDATE';
+  payload: any;
+}
+
+// Editor → Preview (component updates)
+iframe.contentWindow.postMessage({
+  type: 'COMPONENTS_UPDATE',
+  payload: components
+}, '*');
+
+// Preview → Editor (click to select)
+window.parent.postMessage({
+  type: 'COMPONENT_SELECTED',
+  payload: { uuid: componentUuid }
+}, '*');
 ```
 
 ## Benefits
-1. **Same codebase**: No duplicate rendering logic
-2. **True isolation**: Preview runs in separate browsing context
-3. **Real experience**: Components behave exactly as in production
-4. **Event bus reuse**: Leverages existing MicroAppMessageBus
-5. **Click-to-select**: Seamless workflow between preview and edit
+1. **Clean separation**: Preview route is independent, lightweight
+2. **True isolation**: CSS/JS don't leak between editor and preview
+3. **Same rendering**: Uses same `PageContent` component as view route
+4. **Click-to-select**: Seamless workflow between preview and edit
+5. **No split complexity**: Simple Edit/Preview toggle
