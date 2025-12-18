@@ -1,138 +1,121 @@
-# Plan: Editor IFrame Preview Implementation
+# Plan: Editor IFrame Preview (SPA-based)
 
 ## Overview
-Implement a real iframe-based preview system for the editor that allows users to see their page/app in an isolated environment, providing a true preview experience with actual component behavior.
+Implement iframe-based preview using the **same SPA** with a `?mode=preview` query parameter. Communication between editor and preview iframe uses the existing `MicroAppMessageBus`.
 
-## Current Architecture
-The editor uses a three-panel layout:
-- **LeftPanel** (300px): Pages, Functions, Files navigation
-- **TabsPanel/EditorInteractivePanel**: Main editing area
-- **RightPanel** (350px): Control panel & properties
-
-There's an existing Edit/Preview mode toggle that hides panels, but it doesn't use an iframe - it just renders in the same context with editing controls disabled.
-
-## Proposed Implementation
-
-### Phase 1: Create Preview IFrame Infrastructure
-
-#### Step 1: Create a dedicated preview page route
-Create a new Astro page that renders only the page content without editor UI:
-- **File**: `src/pages/app/preview/[uuid]/[...urls].astro`
-- Purpose: Lightweight page that only renders the component tree
-- Will receive page data and render in isolation
-
-#### Step 2: Create PreviewIFramePanel Component
-- **File**: `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts`
-- A Lit component that hosts an iframe pointing to the preview route
-- Handles communication with the preview via postMessage API
-- Syncs component state changes to the preview in real-time
-
-### Phase 2: Integrate with Editor Layout
-
-#### Step 3: Update EditorInteractivePanel to support split view
-- **File**: `src/features/studio/panels/main-panel/EditorInteractivePanel.ts`
-- Add a new view mode: `Split` (Edit + Preview side by side)
-- When in split mode, render both the edit canvas and PreviewIFramePanel
-
-#### Step 4: Update TopBar with new preview modes
-- **File**: `src/features/studio/params/editor-micro-apps/top-bar.ts`
-- Add buttons/dropdown for:
-  - **Edit**: Current editing mode
-  - **Split**: Side-by-side edit + iframe preview
-  - **Preview**: Full iframe preview
-
-### Phase 3: Real-time Sync
-
-#### Step 5: Implement preview message bus
-- Create messaging utilities for bi-directional communication
-- Editor → Preview: Component data updates, style changes
-- Preview → Editor: Click events for component selection
-
-### Implementation Files
+## Architecture
 
 ```
-src/
-├── pages/
-│   └── app/
-│       └── preview/
-│           └── [uuid]/
-│               └── [...urls].astro      ← NEW: Lightweight preview page
-├── features/
-│   └── studio/
-│       └── panels/
-│           ├── preview-panel/
-│           │   ├── PreviewIFramePanel.ts ← NEW: IFrame wrapper component
-│           │   └── preview-sync.ts       ← NEW: Sync utilities
-│           └── main-panel/
-│               └── EditorInteractivePanel.ts ← MODIFY: Add split view support
+┌────────────────────────────────────────────────────────────────┐
+│ TopBar:  [Edit] [Split] [Preview]                              │
+├────────────────────┬───────────────────────────────────────────┤
+│                    │                                           │
+│  Edit Canvas       │    IFrame (same SPA)                      │
+│  (Editor Mode)     │    /app/studio/[uuid]/[page]?mode=preview │
+│                    │                                           │
+│  - Full editor UI  │    - No TopBar, LeftPanel, RightPanel     │
+│  - Selection       │    - Only page content rendered           │
+│  - Drag & drop     │    - Click sends COMPONENT_SELECTED       │
+│                    │                                           │
+└────────────────────┴───────────────────────────────────────────┘
 ```
 
-## Detailed Implementation Steps
+## Communication via MicroAppMessageBus
 
-### 1. Create Preview Page Route (`src/pages/app/preview/[uuid]/[...urls].astro`)
-- Minimal Astro page with runtime bootstrap only (no studio features)
-- Receives application UUID and page URL from route params
-- Loads page data from API
-- Renders using existing `renderComponent()` utility
-- Sets up postMessage listener for updates
+The existing `MicroAppMessageBus` (singleton) will be used for iframe ↔ editor communication:
 
-### 2. Create PreviewIFramePanel Component
+### Message Types (already defined):
+- `COMPONENT_SELECTED` - When user clicks element in preview
+- `DATA_UPDATED` - When component data changes
+- `STATE_CHANGED` - When state changes
+
+### New Message Types to Add:
+- `PREVIEW_COMPONENTS_UPDATE` - Editor sends updated components to preview
+- `PREVIEW_STYLE_UPDATE` - Editor sends style changes to preview
+
+## Implementation Steps
+
+### Step 1: Detect Preview Mode in Studio Page
+**File**: `src/pages/app/studio/[uuid]/[...urls].astro`
+
+- Check for `?mode=preview` query parameter
+- If preview mode:
+  - Skip rendering TopBar, LeftPanel, RightPanel
+  - Render only the page content (TabsPanel/EditorInteractivePanel in view mode)
+  - Initialize preview message listeners
+
+### Step 2: Create PreviewIFramePanel Component
+**File**: `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts`
+
 ```typescript
-// Key features:
-- Create iframe pointing to /app/preview/[uuid]/[pageUrl]
-- Set up postMessage communication
-- Subscribe to component store changes
-- Send updates to iframe when components change
-- Handle responsive resize
-- Provide device size presets (mobile, tablet, desktop)
+@customElement('preview-iframe-panel')
+export class PreviewIFramePanel extends LitElement {
+  @property() applicationId: string;
+  @property() pageUrl: string;
+
+  // IFrame pointing to same SPA with ?mode=preview
+  // Subscribe to component store changes
+  // Send updates to iframe via MicroAppMessageBus
+}
 ```
 
-### 3. Update ViewMode enum
-Add new modes to the existing ViewMode:
-- `ViewMode.Edit` (existing)
-- `ViewMode.Preview` (existing, modify to use iframe)
-- `ViewMode.Split` (new)
+### Step 3: Add Preview Mode to EditorInteractivePanel
+**File**: `src/features/studio/panels/main-panel/EditorInteractivePanel.ts`
 
-### 4. Modify EditorInteractivePanel
-- When `ViewMode.Split`:
-  - Render edit canvas at 50% width
-  - Render PreviewIFramePanel at 50% width
-  - Add resizable divider between them
-- When `ViewMode.Preview`:
-  - Render only PreviewIFramePanel at 100% width
+- Add `ViewMode.Split` support
+- When split mode: render edit canvas (50%) + PreviewIFramePanel (50%)
+- When preview mode: render only PreviewIFramePanel (100%)
 
-### 5. Update TopBar buttons
-- Change existing Edit/Preview buttons to a dropdown or segmented control
-- Options: Edit | Split | Preview
-- Update Vars.currentEditingMode accordingly
+### Step 4: Update TopBar with View Mode Selector
+**File**: `src/features/studio/params/editor-micro-apps/top-bar.ts`
 
-### 6. Implement Real-time Sync
-```typescript
-// Editor side - send updates
-componentStore.subscribe(components => {
-  iframe.contentWindow.postMessage({
-    type: 'UPDATE_COMPONENTS',
-    data: components
-  }, '*');
-});
+- Replace current Edit/Preview toggle with 3-way selector:
+  - **Edit**: Current editor (no iframe)
+  - **Split**: Editor + iframe side by side
+  - **Preview**: Full iframe only
 
-// Preview side - receive updates
-window.addEventListener('message', (event) => {
-  if (event.data.type === 'UPDATE_COMPONENTS') {
-    updateComponents(event.data.data);
-  }
-});
+### Step 5: Implement Click-to-Select in Preview
+**File**: `src/features/studio/studio-bootstrap.ts` (or preview-specific bootstrap)
+
+- In preview mode, attach click listeners to components
+- On click, send `COMPONENT_SELECTED` message via MicroAppMessageBus
+- Editor receives message and selects the component
+
+### Step 6: Implement Real-time Sync
+- Editor subscribes to component store changes
+- On change, send `PREVIEW_COMPONENTS_UPDATE` to iframe via postMessage
+- Preview iframe receives and re-renders components
+
+## File Changes Summary
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/pages/app/studio/[uuid]/[...urls].astro` | Modify | Detect `?mode=preview`, conditional render |
+| `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts` | Create | IFrame wrapper component |
+| `src/features/studio/panels/main-panel/EditorInteractivePanel.ts` | Modify | Add split view layout |
+| `src/features/studio/params/editor-micro-apps/top-bar.ts` | Modify | Add 3-way view mode selector |
+| `src/features/runtime/micro-app/messaging/MicroAppMessageBus.ts` | Modify | Add preview message types |
+| `src/features/studio/studio-bootstrap.ts` | Modify | Preview mode initialization |
+
+## IFrame Communication Flow
+
+```
+┌─────────────────┐                      ┌─────────────────┐
+│     EDITOR      │                      │  IFRAME PREVIEW │
+│                 │                      │                 │
+│  Component      │  postMessage         │  Receives       │
+│  Store Change   │ ──────────────────►  │  & Re-renders   │
+│                 │  PREVIEW_UPDATE      │                 │
+│                 │                      │                 │
+│  Select         │  postMessage         │  Click on       │
+│  Component   ◄──│ ──────────────────── │  Element        │
+│                 │  COMPONENT_SELECTED  │                 │
+└─────────────────┘                      └─────────────────┘
 ```
 
-## Benefits of IFrame Approach
-1. **True isolation**: CSS and JS don't leak between editor and preview
-2. **Accurate rendering**: Components render exactly as they would in production
-3. **Device simulation**: Easy to resize iframe for responsive testing
-4. **Performance**: Preview updates independently of editor
-5. **Security**: Sandboxed execution environment
-
-## Questions to Clarify
-1. Should the split view be resizable (drag divider)?
-2. Should we add device preset buttons (iPhone, iPad, Desktop)?
-3. Should clicking elements in preview select them in editor?
-4. Should we implement hot-reload or manual refresh?
+## Benefits
+1. **Same codebase**: No duplicate rendering logic
+2. **True isolation**: Preview runs in separate browsing context
+3. **Real experience**: Components behave exactly as in production
+4. **Event bus reuse**: Leverages existing MicroAppMessageBus
+5. **Click-to-select**: Seamless workflow between preview and edit
