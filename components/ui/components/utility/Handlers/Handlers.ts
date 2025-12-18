@@ -60,7 +60,7 @@ constructor() {
           const selectedComponent = Utils.first(Vars.selectedComponents);
               updateEvent(selectedComponent, "${eventName}", null )
         }catch(error){
-            console.log(error);
+            console.error(error);
         }
         `, {});
   };
