@@ -40,8 +40,8 @@ export class ImageBlock extends BaseElementBlock {
   component: ComponentElement;
   isDarkMode: boolean;
 
-  async connectedCallback(): Promise<void> {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
       this.isDarkMode = event.matches;
