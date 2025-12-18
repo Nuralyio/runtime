@@ -1,9 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { keyed } from "lit/directives/keyed.js";
 import { ViewMode } from '@nuraly/runtime/redux/store';
-import { $contextMenuEvent, $currentPageViewPort, $pageZoom, $draggingComponentInfo } from '@nuraly/runtime/redux/store';
+import { $contextMenuEvent, $currentPageViewPort, $pageZoom, $draggingComponentInfo, $currentApplication } from '@nuraly/runtime/redux/store';
 import { type ComponentElement } from '@nuraly/runtime/redux/store';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
 
@@ -11,6 +11,7 @@ import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
 import './ComponentResizeOverlay.ts';
 import './ComponentTitleOverlay.ts';
+import '../preview-panel/PreviewIFramePanel.ts';
 @customElement("editor-interactive-panel")
 export class EditorInteractivePanel extends LitElement {
   static styles = css`
@@ -31,7 +32,13 @@ export class EditorInteractivePanel extends LitElement {
       bottom: 0;
       text-align: right;
     }
+    .iframe-wrapper {
+      width: 100%;
+      height: 100%;
+    }
   `;
+
+  @property({ type: Boolean }) useIframe = true;
   @state() mode: ViewMode = ViewMode.Edit;
   @state() zoomLevel = 95;
   @state() selectedComponent: ComponentElement;
@@ -112,6 +119,25 @@ export class EditorInteractivePanel extends LitElement {
   }
 
   render() {
+    // If useIframe is enabled, render the preview iframe panel
+    if (this.useIframe) {
+      return html`
+        <style>
+          :host {
+            width: ${this.mode == ViewMode.Edit ? "calc(100vw - 650px)" : "100vw"};
+          }
+        </style>
+        <div class="iframe-wrapper">
+          <preview-iframe-panel
+            .applicationId=${$currentApplication.get()?.uuid || ''}
+            .pageUrl=${ExecuteInstance.Vars.currentPage || ''}
+            @component-selected-from-iframe=${this.handleComponentSelectedFromIframe}
+          ></preview-iframe-panel>
+        </div>
+      `;
+    }
+
+    // Original render without iframe
     return html`
     <style>
       :host{
@@ -131,21 +157,21 @@ export class EditorInteractivePanel extends LitElement {
               .isSelected=${false}
               .opacity=${0.9}
             ></component-title-overlay>
-            
+
             <component-resize-overlay
               .component=${this.hoveredComponent}
               .componentRef=${this.hoveredComponentRef}
               .isSelected=${false}
             ></component-resize-overlay>
           ` : nothing}
-          
+
           ${this.selectedComponent && this.selectedComponentRef?.value ? keyed(this.selectedComponent.uuid, html`
             <component-title-overlay
               .component=${this.selectedComponent}
               .componentRef=${this.selectedComponentRef}
               .isSelected=${true}
             ></component-title-overlay>
-            
+
             <component-resize-overlay
               .component=${this.selectedComponent}
               .componentRef=${this.selectedComponentRef}
@@ -186,7 +212,7 @@ export class EditorInteractivePanel extends LitElement {
 
           `: nothing
         }
-       
+
 
         <div class="page-container">
           <div
@@ -203,6 +229,14 @@ export class EditorInteractivePanel extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private handleComponentSelectedFromIframe(event: CustomEvent) {
+    const { component } = event.detail;
+    if (component) {
+      this.selectedComponent = component;
+      this.requestUpdate();
+    }
   }
 
   private initializeSubscriptions() {
