@@ -23,7 +23,7 @@ export class UsersDropdownBlock extends BaseElementBlock {
       <nr-dropdown
         trigger=${this.inputHandlersValue?.trigger ?? nothing}
         .options=${this.inputHandlersValue?.users ?? []}
-        @click-item=${(e: CustomEvent) => console.log("value clicked", e.detail)}
+        @click-item=${(e: CustomEvent) => this.executeEvent('onClickItem', e, { value: e.detail })}
       >
         <nr-image
           .src="${this.inputHandlersValue?.userImage ?? nothing}"

@@ -120,7 +120,7 @@ export const borderManagerStyles = css`
   }
 
   nr-input.width-input {
-    width: 60px;
+    width: 90px;
     flex: none;
   }
 
