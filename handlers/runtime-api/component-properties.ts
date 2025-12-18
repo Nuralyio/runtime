@@ -26,14 +26,6 @@ export function createComponentPropertyFunctions() {
     },
 
     /**
-     * Updates component input handlers
-     */
-    updateInputHandlers: (component: ComponentElement, inputName: string, value: any) => {
-      const eventData = { [inputName]: value };
-      updateComponentAttributes(component.application_id, component.uuid, "inputHandlers", eventData);
-    },
-
-    /**
      * Updates component event handler
      */
     updateEvent: (component: ComponentElement, symbol: string, value: any) => {

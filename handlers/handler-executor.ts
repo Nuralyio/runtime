@@ -319,7 +319,6 @@ export function executeHandler(
     runtimeContext.context,
     runtimeContext.applications,
     globalFunctions.updateInput,
-    globalFunctions.updateInputHandlers,
     globalFunctions.deletePage,
     globalFunctions.CopyComponentToClipboard,
     globalFunctions.PasteComponentFromClipboard,

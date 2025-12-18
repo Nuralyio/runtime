@@ -23,9 +23,9 @@ constructor() {
   super();
 
   eventDispatcher.onAny( ()=>{
-   this.traitInputsHandlers()
+   this.refreshInputs()
   } );
- 
+
 }
 
 
@@ -49,7 +49,7 @@ constructor() {
         `, {
         value: ""
       });
-        this.traitInputsHandlers();
+        this.refreshInputs();
         this.requestUpdate( )
   };
 
@@ -82,6 +82,7 @@ constructor() {
       <nr-dropdown
         placement="bottom-start"
         trigger="click"
+        position-strategy="fixed"
         min-width="624px">
         <nr-button
           slot="trigger"

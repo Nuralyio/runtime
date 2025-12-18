@@ -86,7 +86,7 @@ const handlerFunctionCache: Record<string, Function> = {};
  * 5. **Application Functions** (UpdateApplication, Apps, applications)
  * 6. **Page Functions** (AddPage, UpdatePage, deletePage)
  * 7. **Navigation Functions** (NavigateToUrl, NavigateToHash, NavigateToPage)
- * 8. **Property Update Functions** (updateInput, updateName, updateEvent, updateStyle, updateStyleHandlers, updateInputHandlers)
+ * 8. **Property Update Functions** (updateInput, updateName, updateEvent, updateStyle, updateStyleHandlers)
  * 9. **Clipboard Functions** (CopyComponentToClipboard, PasteComponentFromClipboard, DeleteComponentAction)
  * 10. **Editor Functions** (openEditorTab, setCurrentEditorTab, TraitCompoentFromSchema)
  * 11. **Function Invocation** (InvokeFunction)
@@ -146,7 +146,6 @@ export const HANDLER_PARAMETERS = [
   "context",
   "applications",
   "updateInput",
-  "updateInputHandlers",
   "deletePage",
   "CopyComponentToClipboard",
   "PasteComponentFromClipboard",
