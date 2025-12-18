@@ -14,23 +14,23 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .box-model-container {
-        background-color: var(--box-model-margin-bg, #f6f6d8);
-        border: 2px dashed #9acd32;
-        border-radius: 4px;
-        padding: 28px 20px 20px 20px;
+        background-color: var(--box-model-margin-bg, #fef9e7);
+        border: 1px dashed #d4ac0d;
+        border-radius: 6px;
+        padding:22px 34px 22px;
         position: relative;
         width: fit-content;
-        margin: 10px auto 10px auto;
-        max-width: 500px;
+        margin: 8px auto;
       }
 
       .margin-label {
         position: absolute;
-        top: 6px;
-        left: 10px;
-        color: #666;
-        font-size: 10px;
-        font-weight: 500;
+        top: 5px;
+        left: 8px;
+        color: #9a7b0a;
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: lowercase;
         z-index: 1;
       }
 
@@ -38,15 +38,17 @@ export class BoxModelDisplay extends BaseElementBlock {
       .margin-values,
       .padding-values {
         position: absolute;
-        background: #666;
+        background: #5d6d7e;
         color: white;
-        border-radius: 10px;
-        width: 30px;
-        height: 20px;
+        border-radius: 8px;
+        min-width: 24px;
+        height: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 9px;
+        padding: 0 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
       }
 
       .editable-value {
@@ -68,11 +70,11 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .editable-value:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.15);
       }
 
       .editable-value:focus {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.25);
         cursor: text;
       }
 
@@ -82,115 +84,117 @@ export class BoxModelDisplay extends BaseElementBlock {
       }
 
       .margin-top {
-        top: -10px;
+        top: -8px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .margin-right {
-        right: -15px;
+        right: -12px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .margin-bottom {
-        bottom: -10px;
+        bottom: -8px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .margin-left {
-        left: -15px;
+        left: -12px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .padding-top {
-        top: -10px;
+        top: -8px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .padding-right {
-        right: -15px;
+        right: -12px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .padding-bottom {
-        bottom: -10px;
+        bottom: -8px;
         left: 50%;
         transform: translateX(-50%);
       }
 
       .padding-left {
-        left: -15px;
+        left: -12px;
         top: 50%;
         transform: translateY(-50%);
       }
 
       .padding-container {
-        background-color: var(--box-model-padding-bg, #b8b8d1);
-        border-radius: 3px;
-        padding: 26px 18px 18px 18px;
+        background-color: var(--box-model-padding-bg, #d5dbdb);
+        border-radius: 4px;
+        padding: 22px 16px 16px 16px;
         position: relative;
       }
 
       .padding-label {
         position: absolute;
-        top: 6px;
-        left: 10px;
-        color: #333;
-        font-size: 10px;
-        font-weight: 500;
+        top: 5px;
+        left: 8px;
+        color: #5d6d7e;
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: lowercase;
         z-index: 1;
       }
 
       .content-box {
-        background-color: var(--box-model-content-bg, #8ac4d0);
-        border: 2px dashed #4a9db0;
-        border-radius: 3px;
-        padding: 15px 30px;
+        background-color: var(--box-model-content-bg, #aed6f1);
+        border: 1px dashed #5dade2;
+        border-radius: 4px;
+        padding: 10px 20px;
         text-align: center;
-        color: #333;
-        font-size: 14px;
+        color: #2471a3;
+        font-size: 12px;
         font-weight: 600;
-        min-width: 120px;
+        min-width: 100px;
       }
 
       .dimensions {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
+        gap: 4px;
       }
 
       .dimension-separator {
         font-weight: normal;
-        color: #666;
+        color: #5dade2;
+        font-size: 11px;
       }
 
       .dimension-value {
         background: transparent;
         border: none;
-        color: #333;
+        color: #2471a3;
         text-align: center;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 600;
         outline: none;
         cursor: text;
-        min-width: 40px;
+        min-width: 35px;
         padding: 2px 4px;
         border-radius: 3px;
         transition: background 0.15s ease;
       }
 
       .dimension-value:hover {
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(46, 134, 193, 0.1);
       }
 
       .dimension-value:focus {
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(46, 134, 193, 0.2);
       }
     `,
   ];

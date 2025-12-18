@@ -40,7 +40,7 @@ export class TextareaBlock extends BaseElementBlock {
 
     // Get styling properties
     const size = this.inputHandlersValue?.size ?? 'medium';
-    const variant = this.inputHandlersValue?.variant ?? 'underlined';
+    const variant = this.inputHandlersValue?.variant ?? '';
     const state = this.inputHandlersValue?.state ?? 'default';
     const resize = this.inputHandlersValue?.resize ?? 'vertical';
 

@@ -59,10 +59,6 @@ export class NumberInputBlock extends BaseElementBlock {
           .validateOnBlurInput=${this.inputHandlersValue?.validateOnBlur !== false}
           .hasFeedback=${this.inputHandlersValue?.hasFeedback || false}
           @nr-input=${(e) => {
-            console.log('[NumberInput] nr-input event:', {
-              value: e.detail.value,
-              oldValue: e.detail.oldValue
-            });
             this.executeEvent('onChange', e, {
               value: e.detail.value,
               oldValue: e.detail.oldValue

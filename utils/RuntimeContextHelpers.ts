@@ -41,8 +41,6 @@ export interface ReactiveProxyConfig {
   /** Callback when property changes */
   onPropertyChange: (prop: string, value: any, listeners: Set<string>) => void;
 
-  /** Optional debug mode */
-  debug?: boolean;
 }
 
 /**
@@ -110,7 +108,7 @@ export class RuntimeContextHelpers {
     target: T,
     config: ReactiveProxyConfig
   ): T {
-    const { eventPrefix, scope, listeners, current, onPropertyChange, debug = false } = config;
+    const { eventPrefix, scope, listeners, current, onPropertyChange } = config;
 
     if (typeof target !== 'object' || target === null) {
       return target;
@@ -118,11 +116,6 @@ export class RuntimeContextHelpers {
 
     return new Proxy(target, {
       get(proxyTarget, prop, receiver) {
-        if (debug) {
-          const prefix = eventPrefix ? `[${eventPrefix}]` : '[Global]';
-          console.log(`${prefix} Accessing property '${String(prop)}'`);
-        }
-
         const value = Reflect.get(proxyTarget, prop, receiver);
 
         // Track listener for this property
@@ -164,11 +157,6 @@ export class RuntimeContextHelpers {
 
         const result = Reflect.set(proxyTarget, prop, value, receiver);
 
-        if (debug) {
-          const prefix = eventPrefix ? `[${eventPrefix}]` : '[Global]';
-          console.log(`${prefix} Setting property '${String(prop)}' to '${value}'`);
-        }
-
         // Emit property change events
         const propListeners = listeners[String(prop)] || new Set<string>();
         onPropertyChange(String(prop), value, propListeners);
@@ -178,10 +166,6 @@ export class RuntimeContextHelpers {
           const eventName = eventPrefix
             ? `${eventPrefix}:${scope}:${String(prop)}`
             : `${scope}:${String(prop)}`;
-
-          if (debug || (scope === 'Vars' && String(prop) === 'selectedComponents')) {
-            // console.log(`[RuntimeContextHelpers] Emitting event: ${eventName}`, { value, ctx: current });
-          }
 
           eventDispatcher.emit(eventName, {
             value,
@@ -208,19 +192,12 @@ export class RuntimeContextHelpers {
     target: T,
     config: NestedProxyConfig
   ): T {
-    const { eventPrefix, scope, listeners, current, parentProp, debug = false } = config;
+    const { eventPrefix, scope, listeners, current, parentProp } = config;
 
     return new Proxy(target, {
       set(proxyTarget, prop, value, receiver) {
         const oldValue = proxyTarget[prop as keyof T];
         const result = Reflect.set(proxyTarget, prop, value, receiver);
-
-        if (debug) {
-          const prefix = eventPrefix ? `[${eventPrefix}]` : '[Global]';
-          console.log(
-            `${prefix} Updated nested property '${String(prop)}' from '${oldValue}' to '${value}'`
-          );
-        }
 
         // Check if value changed, with error handling for proxy objects
         let valuesEqual = false;
@@ -265,11 +242,6 @@ export class RuntimeContextHelpers {
       },
 
       deleteProperty(proxyTarget, prop) {
-        if (debug) {
-          const prefix = eventPrefix ? `[${eventPrefix}]` : '[Global]';
-          console.log(`${prefix} Deleting nested property '${String(prop)}'`);
-        }
-
         const result = Reflect.deleteProperty(proxyTarget, prop);
 
         if (result) {

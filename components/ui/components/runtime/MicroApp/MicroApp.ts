@@ -251,8 +251,7 @@ export class MicroApp extends LitElement {
 
     // Subscribe to global variable changes to trigger micro-app re-render (LEGACY MODE)
     // This ensures that when global variables change, the micro-app components re-render
-    const globalVarHandler = (data: any) => {
-      // console.log(`[MicroApp ${this.uuid}] [LEGACY] Global variable changed: ${data.varName} = ${data.value}`);
+    const globalVarHandler = () => {
       // Trigger refresh of the micro-app
       this.refreshComponent();
     };
@@ -396,8 +395,7 @@ export class MicroApp extends LitElement {
 
     // Subscribe to global variable changes to trigger micro-app re-render
     // This ensures that when global variables change, the micro-app components re-render
-    const globalVarHandler = (data: any) => {
-      console.log(`[MicroApp ${this.uuid}] Global variable changed: ${data.varName} = ${data.value}`);
+    const globalVarHandler = () => {
       // Trigger re-render of the entire micro-app
       this.requestUpdate();
     };

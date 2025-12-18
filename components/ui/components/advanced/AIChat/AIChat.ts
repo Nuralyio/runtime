@@ -131,7 +131,6 @@ export class AiChat extends BaseElementBlock {
       requestAnimationFrame(() => {
         this.preview = true;
       });
-      console.log("Message sent:", this.messages);
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {

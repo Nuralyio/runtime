@@ -49,13 +49,7 @@ export class RadioButtonBlock extends BaseElementBlock {
           ?required=${required}
           ?auto-width=${autoWidth}
           @nr-change=${(e: CustomEvent) => {
-            console.log('[RadioButton] nr-change event:', {
-              detail: e.detail,
-              value: e.detail.value,
-              option: e.detail.option,
-              oldValue: e.detail.oldValue
-            });
-            this.executeEvent('onChange', e, { 
+            this.executeEvent('onChange', e, {
               value: e.detail.value,
               option: e.detail.option,
               oldValue: e.detail.oldValue

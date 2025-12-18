@@ -132,7 +132,6 @@ align-items: center; /* vertically center items */
         <div id="toolbar">
           ${toolbar(this.shadowRoot!, this.getSelection(), (command, val) => {
             document.execCommand(command, false, val);
-            console.log("command", command, val);
           })}
             <input id="bg" type="color" style="display: none" />
             <input id="fg" type="color" style="display: none" />
