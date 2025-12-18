@@ -62,7 +62,7 @@ export class RichTextContainer extends BaseElementBlock {
                       const selectedComponent = Utils.first(Vars.selectedComponents);
                       updateInput(selectedComponent, "value", "string", ${serializedValue}, null);
                   } catch (error) {
-                      console.log(error);
+                      console.error(error);
                   }
                 `, {});
         }

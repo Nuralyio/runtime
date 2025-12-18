@@ -234,7 +234,6 @@ export class LogPanel extends LitElement {
         if (uuid) {
           el.classList.add('listener-added');
           el.addEventListener('click', () => {
-            console.log(`Clicked UUID: ${uuid}`);
             EditorInstance.currentSelection = Array.from([uuid]);
             const component = $componentById(application_id!, uuid).get();
             ExecuteInstance.VarsProxy.selectedComponents = Array.from([component]);
@@ -381,10 +380,8 @@ export class LogPanel extends LitElement {
                     }
                     processedCode = `return (async () => { ${processedCode} })()`;
                     
-                    console.log(processedCode);
                     const fn = executeHandler({}, processedCode, {});
                     const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
-                    console.log('result', result);
                     Editor.Console.log(result);
                             
                   } catch(error) {

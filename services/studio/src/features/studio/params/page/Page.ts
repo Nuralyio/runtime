@@ -360,7 +360,6 @@ export class PageContent extends LitElement {
           zoom: ${this.zoomLevel}%;
         }
       </style>
-       <!-- <rectangle-selection> -->
       <div
         class="page-container ${this.currentPlatform?.isMobile  ? "mobile" : ""} ${this.isPreviewMode() ? "viewer" : ""}"
         style=${styleMap({
@@ -389,8 +388,6 @@ export class PageContent extends LitElement {
               </div>`}
       </div>
       <log-panel></log-panel>
-
-      <!-- </rectangle-selection> -->
     `;
   }
 

@@ -33,12 +33,11 @@ export const addPageButton = {
           description: "",
           component_ids: []
         };
-        AddPage(newPage, currentEditingApplication.uuid).then(() => {
-        }).catch((e) => {
+        AddPage(newPage, currentEditingApplication.uuid).catch((e) => {
           console.error(e);
         })
       } catch(e) {
-        console.log(e);
+        console.error(e);
       }
     `
   }

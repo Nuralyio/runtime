@@ -122,7 +122,6 @@ export default [
     event: {
       codeChange: /* js */ `
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        console.log(EventData.value)
         updateInput(selectedComponent, 'display', 'handler', EventData.value);
       `
     }

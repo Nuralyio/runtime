@@ -26,7 +26,6 @@ const componentCache = new Map<string, any[]>();
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
     componentCache.clear();
-    console.log('[Component Loader] Cache cleared for hot reload');
   });
 }
 

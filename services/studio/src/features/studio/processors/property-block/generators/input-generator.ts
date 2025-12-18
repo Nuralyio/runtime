@@ -354,10 +354,9 @@ export class InputGenerator {
     // Add default change event for select inputs
     if (property.type === 'select' && !baseInput.event.onSelect) {
       baseInput.event.onSelect = `
-      console.log(EventData.value);
         const selectedComponent = Utils.first(Vars.selectedComponents);
         if (!selectedComponent) return;
-        
+
         updateInput(selectedComponent, "${property.name}", 'string', EventData.value);
       `;
     }
