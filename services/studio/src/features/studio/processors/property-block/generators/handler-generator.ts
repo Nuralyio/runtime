@@ -48,7 +48,7 @@ export class HandlerGenerator {
         if (selectedComponent) {
           ${handlerType === 'style'
             ? `updateStyleHandlers(selectedComponent, '${handlerProperty}', EventData.value);`
-            : `updateInputHandlers(selectedComponent, '${handlerProperty}', EventData.value);`
+            : `updateInput(selectedComponent, '${handlerProperty}', 'handler', EventData.value);`
           }
         }
       `;

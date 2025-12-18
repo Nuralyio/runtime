@@ -107,7 +107,7 @@ const collapseComponent = {
       value: [{
         blockName: "border_manager_vertical_container",
         label: "Border",
-        open: false
+        open: true
       }]
     }
   },

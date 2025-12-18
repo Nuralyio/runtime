@@ -59,7 +59,7 @@
             "params": ["text", "value"]
           }
         },
-        "helperHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst hasInputHandler = selectedComponent?.inputHandlers?.['text'];\nconst hasHandlerType = selectedComponent?.input?.text?.type === 'handler' && selectedComponent?.input?.text?.value;\nif (hasInputHandler || hasHandlerType) return 'Value driven by handler';\nconst status = selectedComponent?.input?.status?.value || '';\nreturn status ? 'Text is visible only when no status selected' : '';",
+        "helperHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst hasHandlerType = selectedComponent?.input?.text?.type === 'handler' && selectedComponent?.input?.text?.value;\nif (hasHandlerType) return 'Value driven by handler';\nconst status = selectedComponent?.input?.status?.value || '';\nreturn status ? 'Text is visible only when no status selected' : '';",
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "text"
