@@ -79,8 +79,11 @@ export class Collapse extends BaseElementBlock {
   }
 
   private generateSection() {
-    const components = this.inputHandlersValue.components;
-    return components?.map(
+    const components = this.inputHandlersValue?.components;
+    if (!components || !Array.isArray(components)) {
+      return [];
+    }
+    return components.map(
       (section: { label: any; blockName: string; open: boolean }, index: number) => {
         return {
           header: section.label,
