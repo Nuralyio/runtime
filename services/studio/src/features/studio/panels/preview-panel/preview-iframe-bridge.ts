@@ -42,6 +42,11 @@ export function initializePreviewBridge() {
 }
 
 function handleParentMessage(event: MessageEvent) {
+  // Verify the origin of the message
+  if (event.origin !== window.location.origin) {
+    return;
+  }
+
   const message = event.data as PreviewMessage;
 
   if (!message || typeof message !== 'object' || !message.type) {
@@ -85,7 +90,7 @@ function handleParentMessage(event: MessageEvent) {
 
 function sendMessageToParent(message: PreviewMessage) {
   if (window.parent && window.parent !== window) {
-    window.parent.postMessage(message, '*');
+    window.parent.postMessage(message, window.location.origin);
   }
 }
 

@@ -89,7 +89,10 @@ export class PreviewIFramePanel extends LitElement {
 
   private setupMessageListener() {
     this.messageHandler = (event: MessageEvent) => {
-      // Validate origin if needed
+      // Verify the origin of the message
+      if (event.origin !== window.location.origin) {
+        return;
+      }
       if (event.data && typeof event.data === 'object' && event.data.type) {
         this.handleIframeMessage(event.data as PreviewMessage);
       }
@@ -176,7 +179,7 @@ export class PreviewIFramePanel extends LitElement {
 
   private sendMessageToIframe(message: PreviewMessage) {
     if (this.iframeElement?.contentWindow) {
-      this.iframeElement.contentWindow.postMessage(message, '*');
+      this.iframeElement.contentWindow.postMessage(message, window.location.origin);
     }
   }
 
