@@ -22,7 +22,7 @@
  * 
  * 3. **Component Properties** (`component-properties.ts`)
  *    - `updateName`, `updateInput`, `updateStyle`, `updateEvent` - Property updates
- *    - `updateInputHandlers`, `updateStyleHandlers` - Handler updates
+ *    - `updateStyleHandlers` - Style handler updates
  * 
  * 4. **Page Management** (`pages.ts`)
  *    - `AddPage`, `UpdatePage`, `deletePage` - Page CRUD

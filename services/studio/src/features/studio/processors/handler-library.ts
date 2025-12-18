@@ -191,10 +191,12 @@ export const ValueHandlers = {
     return input?.value ${defaultValue !== undefined ? `?? ${JSON.stringify(defaultValue)}` : `?? ''`};
   `,
   
-  // Get component inputHandlers property (for icon, etc.)
+  // Get component input handler value (when type is 'handler')
   componentInputHandler: (propertyName: string, defaultValue: string = '') => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    return selectedComponent?.inputHandlers?.${propertyName} || '${defaultValue}';
+    const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
+    // Return handler code if it exists, otherwise default
+    return input?.type === 'handler' ? (input.value || '${defaultValue}') : '${defaultValue}';
   `,
   
   // Get component input property for radio buttons (returns {options, currentValue, type})
@@ -375,24 +377,24 @@ export const StateHandlers = {
   
   /**
    * Input property state handler.
-   * 
+   *
    * @description
-   * Disables input when the property has an active inputHandler (code icon).
+   * Disables input when the property has an active handler (type === 'handler').
    * Used for component input properties rather than style properties.
-   * 
+   *
    * **Use For:**
    * - Input properties (placeholder, value, label, etc.)
    * - Non-style component properties
    * - Dynamic input behavior
-   * 
+   *
    * **Behavior:**
-   * - Checks `component.inputHandlers[propertyName]`
+   * - Checks `component.input[propertyName].type === 'handler'`
    * - Returns 'disabled' if handler exists
    * - Returns 'enabled' otherwise
-   * 
+   *
    * @param {string} propertyName - The input property name (e.g., 'placeholder', 'label')
    * @returns {string} Handler code that evaluates to 'enabled' | 'disabled'
-   * 
+   *
    * @example Usage in Config
    * ```yaml
    * properties:
@@ -405,10 +407,9 @@ export const StateHandlers = {
    */
   inputHandler: (propertyName: string) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    const hasInputHandler = selectedComponent?.inputHandlers?.['${propertyName}'];
     const hasHandlerType = selectedComponent?.input?.${propertyName}?.type === 'handler' &&
                            selectedComponent?.input?.${propertyName}?.value;
-    return (hasInputHandler || hasHandlerType) ? 'disabled' : 'enabled';
+    return hasHandlerType ? 'disabled' : 'enabled';
   `,
 
   /**
@@ -442,37 +443,36 @@ export const StateHandlers = {
    */
   inputHelperText: (propertyName: string) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    const hasInputHandler = selectedComponent?.inputHandlers?.['${propertyName}'];
     const hasHandlerType = selectedComponent?.input?.${propertyName}?.type === 'handler' &&
                            selectedComponent?.input?.${propertyName}?.value;
-    return (hasInputHandler || hasHandlerType) ? 'Value driven by handler' : '';
+    return hasHandlerType ? 'Value driven by handler' : '';
   `,
 
   /**
    * Icon picker disable state handler.
-   * 
+   *
    * @description
-   * Returns boolean to disable icon picker when the icon property has an inputHandler.
+   * Returns boolean to disable icon picker when the icon property has a handler.
    * Specifically designed for IconPicker components which expect boolean disable state.
-   * 
+   *
    * **Use For:**
    * - IconPicker components
    * - Icon selection inputs
    * - Components with icon properties
-   * 
+   *
    * **Behavior:**
-   * - Checks `component.inputHandlers[propertyName]`
+   * - Checks `component.input[propertyName].type === 'handler'`
    * - Returns true if handler exists (disabled)
    * - Returns false otherwise (enabled)
-   * 
+   *
    * **Difference from inputHandler:**
    * - Returns boolean instead of 'enabled'/'disabled' string
    * - Specifically for IconPicker compatibility
    * - Uses double-bang (!!) for explicit boolean conversion
-   * 
+   *
    * @param {string} propertyName - The icon property name (typically 'icon')
    * @returns {string} Handler code that evaluates to boolean
-   * 
+   *
    * @example Usage in Config
    * ```yaml
    * properties:
@@ -485,7 +485,7 @@ export const StateHandlers = {
    */
   iconPickerDisable: (propertyName: string) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
-    return !!(selectedComponent?.inputHandlers?.['${propertyName}']);
+    return !!(selectedComponent?.input?.${propertyName}?.type === 'handler' && selectedComponent?.input?.${propertyName}?.value);
   `,
   
   /**
@@ -567,8 +567,7 @@ export const StateHandlers = {
  * 
  * **Update Functions Available:**
  * - `updateName(component, name)` - Update component name
- * - `updateInput(component, prop, type, value)` - Update input property
- * - `updateInputHandlers(component, prop, handler)` - Update input handler
+ * - `updateInput(component, prop, type, value)` - Update input property (type can be 'handler' for dynamic values)
  * - `updateStyle(component, prop, value)` - Update style property
  * - `updateStyleHandlers(component, prop, handler)` - Update style handler
  * - `updateEvent(component, event, code)` - Update event handler
@@ -723,32 +722,32 @@ export const EventHandlers = {
   
   /**
    * Update component input handler (dynamic code).
-   * 
+   *
    * @description
-   * Updates an inputHandler property, which contains JavaScript code that
+   * Updates an input property to be a handler, which contains JavaScript code that
    * computes input values dynamically at runtime. This is used by the code icon
    * functionality to enable dynamic property values.
-   * 
+   *
    * **Use For:**
    * - Icon selection with dynamic values
    * - Placeholder text from variables
    * - Label text based on state
    * - Any input that can be dynamic
-   * 
+   *
    * **Behavior:**
    * - Gets selected component
-   * - Calls `updateInputHandlers` with property and handler code
-   * - Updates `component.inputHandlers[propertyName]`
+   * - Calls `updateInput` with type 'handler' and the code as value
+   * - Updates `component.input[propertyName]` with `{type: 'handler', value: code}`
    * - Disables static input (via stateHandler)
-   * 
+   *
    * **Handler Code:**
    * - EventData.value contains the JavaScript code string
    * - Code executes in runtime context
    * - Has access to all runtime API functions
-   * 
+   *
    * @param {string} propertyName - The input property handler to update
    * @returns {string} Handler code for updating input handler
-   * 
+   *
    * @example Icon Handler Update
    * ```yaml
    * properties:
@@ -763,7 +762,7 @@ export const EventHandlers = {
   updateInputHandler: (propertyName: string) => `
     const selectedComponent = Utils.first(Vars.selectedComponents);
     if (selectedComponent) {
-      updateInputHandlers(selectedComponent, '${propertyName}', EventData.value);
+      updateInput(selectedComponent, '${propertyName}', 'handler', EventData.value);
     }
   `,
   

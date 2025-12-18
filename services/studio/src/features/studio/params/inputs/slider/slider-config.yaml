@@ -214,6 +214,7 @@ sliderFields:
       handlerProperty: marks
       handlerValueGetter: |
         const selectedComponent = Utils.first(Vars.selectedComponents);
-        return selectedComponent?.inputHandlers?.marks || '';
+        const input = Editor.getComponentBreakpointInput(selectedComponent, 'marks');
+        return input?.type === 'handler' ? (input.value || '') : '';
       handlerEventUpdate: |
-        updateInputHandlers(Utils.first(Vars.selectedComponents), 'marks', EventData.value);
+        updateInput(Utils.first(Vars.selectedComponents), 'marks', 'handler', EventData.value);

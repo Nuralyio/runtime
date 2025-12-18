@@ -21,8 +21,8 @@
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "data",
-        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nreturn selectedComponent?.inputHandlers?.data || '';",
-        "handlerEventUpdate": "updateInputHandlers(Utils.first(Vars.selectedComponents), 'data', EventData.value);"
+        "handlerValueGetter": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst input = Editor.getComponentBreakpointInput(selectedComponent, 'data');\nreturn input?.type === 'handler' ? (input.value || '') : '';",
+        "handlerEventUpdate": "updateInput(Utils.first(Vars.selectedComponents), 'data', 'handler', EventData.value);"
       },
       {
         "name": "table_size",
