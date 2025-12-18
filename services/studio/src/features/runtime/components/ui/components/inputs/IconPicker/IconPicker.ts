@@ -14,8 +14,8 @@ export class IconPicker extends BaseElementBlock {
   @property({ type: Object })
   component: ComponentElement;
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.registerCallback("value", () => {});
   }
 

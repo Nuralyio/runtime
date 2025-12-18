@@ -53,7 +53,7 @@ export class AiChat extends BaseElementBlock {
   @state()
   private isLoading = false;
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
   }
 

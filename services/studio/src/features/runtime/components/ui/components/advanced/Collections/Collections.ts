@@ -40,8 +40,8 @@ export class CollectionViewer extends BaseElementBlock {
   selectedComponent: Readonly<ComponentElement>;
   containerRef: Ref<HTMLInputElement> = createRef();
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.updateChildrenComponents();
     if (this.component?.event?.onInit) {
       executeHandler(
