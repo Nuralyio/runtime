@@ -17,25 +17,25 @@ export class BoxModelDisplay extends BaseElementBlock {
         background-color: var(--box-model-margin-bg, #f6f6d8);
         border: 2px dashed #9acd32;
         border-radius: 4px;
-        padding: 20px;
+        padding: 28px 20px 20px 20px;
         position: relative;
         width: fit-content;
-        margin: 10px auto;
+        margin: 10px auto 10px auto;
         max-width: 500px;
       }
 
       .margin-label {
         position: absolute;
-        top: 8px;
-        left: 8px;
+        top: 6px;
+        left: 10px;
         color: #666;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 500;
+        z-index: 1;
       }
 
       /* Shared styles for all box model value badges */
       .margin-values,
-      .border-values,
       .padding-values {
         position: absolute;
         background: #666;
@@ -47,11 +47,6 @@ export class BoxModelDisplay extends BaseElementBlock {
         align-items: center;
         justify-content: center;
         font-size: 9px;
-      }
-
-      /* Override background for border values */
-      .border-values {
-        background: #444;
       }
 
       .editable-value {
@@ -86,68 +81,69 @@ export class BoxModelDisplay extends BaseElementBlock {
         color: rgba(255, 255, 255, 0.6);
       }
 
-      .margin-top,
-      .border-top,
+      .margin-top {
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .margin-right {
+        right: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .margin-bottom {
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .margin-left {
+        left: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
       .padding-top {
         top: -10px;
         left: 50%;
         transform: translateX(-50%);
       }
 
-      .margin-right,
-      .border-right,
       .padding-right {
-        right: -10px;
+        right: -15px;
         top: 50%;
         transform: translateY(-50%);
       }
 
-      .margin-bottom,
-      .border-bottom,
       .padding-bottom {
         bottom: -10px;
         left: 50%;
         transform: translateX(-50%);
       }
 
-      .margin-left,
-      .border-left,
       .padding-left {
-        left: -10px;
+        left: -15px;
         top: 50%;
         transform: translateY(-50%);
-      }
-
-      .border-container {
-        background-color: var(--box-model-border-bg, #656565);
-        border-radius: 3px;
-        padding: 18px;
-        position: relative;
-      }
-
-      .border-label {
-        position: absolute;
-        top: 5px;
-        left: 8px;
-        color: white;
-        font-size: 11px;
-        font-weight: 500;
       }
 
       .padding-container {
         background-color: var(--box-model-padding-bg, #b8b8d1);
         border-radius: 3px;
-        padding: 18px;
+        padding: 26px 18px 18px 18px;
         position: relative;
       }
 
       .padding-label {
         position: absolute;
-        top: 5px;
-        left: 8px;
+        top: 6px;
+        left: 10px;
         color: #333;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 500;
+        z-index: 1;
       }
 
       .content-box {
@@ -172,6 +168,29 @@ export class BoxModelDisplay extends BaseElementBlock {
       .dimension-separator {
         font-weight: normal;
         color: #666;
+      }
+
+      .dimension-value {
+        background: transparent;
+        border: none;
+        color: #333;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        outline: none;
+        cursor: text;
+        min-width: 40px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        transition: background 0.15s ease;
+      }
+
+      .dimension-value:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .dimension-value:focus {
+        background: rgba(0, 0, 0, 0.1);
       }
     `,
   ];
@@ -280,6 +299,77 @@ export class BoxModelDisplay extends BaseElementBlock {
     >${value}</div>`;
   }
 
+  private handleDimensionChange(property: string, event: Event) {
+    const div = event.target as HTMLDivElement;
+    const value = div.textContent?.trim() || "";
+
+    // Allow "auto" or numbers (with optional decimals)
+    const isAuto = value.toLowerCase() === "auto";
+    const numericValue = value.replace(/[^0-9.]/g, '');
+
+    if (!isAuto && value !== numericValue && value.toLowerCase() !== "a" && value.toLowerCase() !== "au" && value.toLowerCase() !== "aut") {
+      div.textContent = numericValue || "auto";
+      this.moveCursorToEnd(div);
+    }
+
+    // Trigger the onChange event handler
+    const finalValue = isAuto ? "auto" : (numericValue ? `${numericValue}px` : "auto");
+    this.executeEvent("onChange", event, {
+      property,
+      value: finalValue,
+    });
+  }
+
+  private handleDimensionKeyDown(property: string, event: KeyboardEvent) {
+    const div = event.target as HTMLDivElement;
+    const currentText = div.textContent?.trim() || "";
+
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      event.preventDefault();
+      const currentValue = parseFloat(currentText) || 0;
+      const step = event.shiftKey ? 10 : 1;
+      const newValue = event.key === "ArrowUp" ? currentValue + step : currentValue - step;
+      const finalValue = Math.max(0, newValue);
+
+      div.textContent = finalValue.toString();
+      this.moveCursorToEnd(div);
+
+      this.executeEvent("onChange", event, {
+        property,
+        value: `${finalValue}px`,
+      });
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      div.blur();
+    }
+  }
+
+  private handleDimensionBlur(property: string, event: FocusEvent) {
+    const div = event.target as HTMLDivElement;
+    const value = div.textContent?.trim() || "";
+
+    // Allow "auto" or ensure we have a valid number
+    if (value.toLowerCase() === "auto") {
+      div.textContent = "auto";
+    } else {
+      const numericValue = value.replace(/[^0-9.]/g, '');
+      div.textContent = numericValue || "auto";
+    }
+  }
+
+  private createEditableDimension(value: number | string, property: string) {
+    const displayValue = value || "auto";
+    return html`<div
+      class="dimension-value"
+      contenteditable="true"
+      spellcheck="false"
+      @input=${(e: Event) => this.handleDimensionChange(property, e)}
+      @keydown=${(e: KeyboardEvent) => this.handleDimensionKeyDown(property, e)}
+      @paste=${(e: ClipboardEvent) => this.handlePaste(e)}
+      @blur=${(e: FocusEvent) => this.handleDimensionBlur(property, e)}
+    >${displayValue}</div>`;
+  }
+
   override renderComponent() {
     const handlers = this.inputHandlersValue?.value;
 
@@ -306,16 +396,6 @@ export class BoxModelDisplay extends BaseElementBlock {
       left: handlers?.["padding-left"]?.value || 0,
     };
 
-    // Border handler also returns {value: number, unit: string}
-    const borderWidth = handlers?.["border"]?.value || 0;
-
-    const border = {
-      top: borderWidth,
-      right: borderWidth,
-      bottom: borderWidth,
-      left: borderWidth,
-    };
-
     // Get width and height from handler (already numeric values)
     const width = handlers?.["width"]?.value || 0;
     const height = handlers?.["height"]?.value || 0;
@@ -328,26 +408,18 @@ export class BoxModelDisplay extends BaseElementBlock {
         <div class="margin-values margin-bottom">${this.createEditableValue(margin.bottom, "margin-bottom")}</div>
         <div class="margin-values margin-left">${this.createEditableValue(margin.left, "margin-left")}</div>
 
-        <div class="border-container">
-          <div class="border-label">border</div>
-          <div class="border-values border-top">${this.createEditableValue(border.top, "border-top")}</div>
-          <div class="border-values border-right">${this.createEditableValue(border.right, "border-right")}</div>
-          <div class="border-values border-bottom">${this.createEditableValue(border.bottom, "border-bottom")}</div>
-          <div class="border-values border-left">${this.createEditableValue(border.left, "border-left")}</div>
+        <div class="padding-container">
+          <div class="padding-label">padding</div>
+          <div class="padding-values padding-top">${this.createEditableValue(padding.top, "padding-top")}</div>
+          <div class="padding-values padding-right">${this.createEditableValue(padding.right, "padding-right")}</div>
+          <div class="padding-values padding-bottom">${this.createEditableValue(padding.bottom, "padding-bottom")}</div>
+          <div class="padding-values padding-left">${this.createEditableValue(padding.left, "padding-left")}</div>
 
-          <div class="padding-container">
-            <div class="padding-label">padding</div>
-            <div class="padding-values padding-top">${this.createEditableValue(padding.top, "padding-top")}</div>
-            <div class="padding-values padding-right">${this.createEditableValue(padding.right, "padding-right")}</div>
-            <div class="padding-values padding-bottom">${this.createEditableValue(padding.bottom, "padding-bottom")}</div>
-            <div class="padding-values padding-left">${this.createEditableValue(padding.left, "padding-left")}</div>
-
-            <div class="content-box">
-              <div class="dimensions">
-                <span>${width || "auto"}</span>
-                <span class="dimension-separator">×</span>
-                <span>${height || "auto"}</span>
-              </div>
+          <div class="content-box">
+            <div class="dimensions">
+              ${this.createEditableDimension(width, "width")}
+              <span class="dimension-separator">×</span>
+              ${this.createEditableDimension(height, "height")}
             </div>
           </div>
         </div>
