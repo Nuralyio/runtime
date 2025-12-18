@@ -36,8 +36,8 @@ export class MicroAppBlock extends BaseElementBlock {
     super();
   }
 
-  override async connectedCallback(): Promise<void> {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     const pageUUID = $microAppCurrentPage.get()["84105b5d-49fe-4724-bc0e-325b578cbe17"];
     this.registerCallback("appUUID", debounce((appUUID: string) => {
       if (appUUID) {

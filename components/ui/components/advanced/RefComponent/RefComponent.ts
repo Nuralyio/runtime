@@ -42,8 +42,8 @@ export class RefComponentContainer extends BaseElementBlock {
     @state()
     components: ComponentElement[];
 
-    override async connectedCallback() {
-        await super.connectedCallback();
+    override connectedCallback() {
+        super.connectedCallback();
     }
     constructor() {
         super();

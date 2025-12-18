@@ -32,8 +32,8 @@ export class PanelBlock extends BaseElementBlock {
   @state()
   childrenComponents: ComponentElement[] = [];
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.updateChildrenComponents();
   }
 

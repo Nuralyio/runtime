@@ -28,8 +28,12 @@ export class TextInputBlock extends BaseElementBlock {
   @state()
   private isEditorLoaded: boolean = false;
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
+    this.loadEditor();
+  }
+
+  private async loadEditor() {
     if (!this.isEditorLoaded) {
       await import("../../advanced/CodeEditor/CodeEditor.ts");
       this.isEditorLoaded = true;

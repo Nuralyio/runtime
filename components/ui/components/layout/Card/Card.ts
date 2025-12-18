@@ -37,8 +37,8 @@ export class CardBlock extends BaseElementBlock {
   @state()
   dragOverSituation = false;
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.updateChildrenComponents();
   }
 

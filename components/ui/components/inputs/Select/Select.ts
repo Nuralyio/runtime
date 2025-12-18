@@ -18,8 +18,8 @@ export class SelectBlock extends BaseElementBlock {
     
   }
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.registerCallback("value", (v) => {
       this.requestUpdate();
     });

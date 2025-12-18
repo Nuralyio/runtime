@@ -30,8 +30,8 @@ export class ButtonBlock extends BaseElementBlock {
   @state()
   display: any = false;
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.registerCallback("value", () => {});
   }
 
