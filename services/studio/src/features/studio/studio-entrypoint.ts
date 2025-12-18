@@ -41,7 +41,8 @@ import {
   StudioDashboard,
   PageThemeStudio,
   studioTablePropertiesBlock,
-  studioValidationRulesBlock
+  studioValidationRulesBlock,
+  studioBorderManagerBlock
 } from "./blocks/index.ts";
 
 import {
@@ -119,7 +120,7 @@ export default [
         }
     },
     event: {
-        onSelect: /* js */ `
+        onChange: /* js */ `
             Vars.selected_component_style_state = EventData.value;
         `
     },
@@ -469,5 +470,6 @@ export default [
     ...StudioGridRow,
     ...StudioGridCol,
     ...StudioForm,
-    ...studioValidationRulesBlock
+    ...studioValidationRulesBlock,
+    ...studioBorderManagerBlock
 ];

@@ -2,7 +2,6 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from '../../base/BaseElement';
 import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { handleComponentEvent } from '../../base/BaseElement/execute-event.helpers.ts';
 import { borderManagerStyles } from './BorderManager.style.ts';
 
 // Border configuration interface
@@ -106,13 +105,10 @@ export class BorderManagerDisplay extends BaseElementBlock {
   };
 
   private emitBorderChange(property: string, value: any) {
-    handleComponentEvent({
-      isViewMode: true,
-      component: this.component,
-      item: this.item,
-      eventName: "onChange",
-      event: new CustomEvent('change'),
-      data: { property, type: 'style', value },
+    this.executeEvent("onChange", new CustomEvent('change'), {
+      property,
+      type: 'style',
+      value,
     });
   }
 
