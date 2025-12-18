@@ -30,7 +30,7 @@ export class RichTextContainer extends BaseElementBlock {
     super();
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     window.addEventListener("keydown", this.handleKeyDown);
   }
