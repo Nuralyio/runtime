@@ -2,7 +2,6 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from '../../base/BaseElement';
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { handleComponentEvent } from '../../base/BaseElement/execute-event.helpers.ts';
 
 
 // ValidationRule interface matching nr-input's expected format
@@ -228,13 +227,10 @@ export class ValidationRulesDisplay extends BaseElementBlock {
   component: ComponentElement;
 
   private emitRulesChange(rules: ValidationRule[]) {
-    handleComponentEvent({
-      isViewMode: true,
-      component: this.component,
-      item: this.item,
-      eventName: "onChange",
-      event: new CustomEvent('change'),
-      data: { property: 'rules', type: 'array', value: rules },
+    this.executeEvent("onChange", new CustomEvent('change'), {
+      property: 'rules',
+      type: 'array',
+      value: rules,
     });
 
     // Optimistically update local state for immediate UI feedback
