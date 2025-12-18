@@ -1,120 +1,91 @@
 # Plan: Editor IFrame Preview
 
 ## Overview
-Implement iframe-based preview using a **separate preview route**. The editor shows the iframe when Preview mode is active. Communication uses `postMessage` API for cross-origin iframe messaging.
+Move the editor canvas inside an iframe. The iframe route renders the page with full editing capabilities. Edit/Preview mode switching is handled internally via `Vars.currentEditingMode`, not through URL parameters.
 
 ## Architecture
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │ TopBar:  [Edit] [Preview]                                      │
-├────────────────────────────────────────────────────────────────┤
-│                                                                │
-│  EDIT MODE:                    PREVIEW MODE:                   │
-│  ┌─────┬──────────┬──────┐    ┌────────────────────────────┐  │
-│  │Left │ Editor   │Right │    │                            │  │
-│  │Panel│ Canvas   │Panel │    │  IFrame (full width)       │  │
-│  │     │          │      │    │  /app/preview/[uuid]/[url] │  │
-│  │     │          │      │    │                            │  │
-│  └─────┴──────────┴──────┘    └────────────────────────────┘  │
-│                                                                │
-└────────────────────────────────────────────────────────────────┘
+├─────────┬──────────────────────────────────────┬───────────────┤
+│         │                                      │               │
+│  Left   │         IFRAME                       │    Right      │
+│  Panel  │  /app/preview/[uuid]/[url]           │    Panel      │
+│         │                                      │               │
+│         │  - Renders PageContent               │               │
+│         │  - Edit mode: selection, drag-drop   │               │
+│         │  - Preview mode: view only           │               │
+│         │  - Mode controlled via postMessage   │               │
+│         │                                      │               │
+└─────────┴──────────────────────────────────────┴───────────────┘
 ```
+
+## Key Points
+1. **Single route** - `/app/preview/[uuid]/[...urls].astro`
+2. **No mode in URL** - Always loads with edit capabilities
+3. **Mode via postMessage** - Parent sends edit/preview mode changes
+4. **Panels outside iframe** - LeftPanel, RightPanel, TopBar stay in parent
 
 ## Implementation Steps
 
 ### Step 1: Create Preview Route
 **File**: `src/pages/app/preview/[uuid]/[...urls].astro`
 
-- Lightweight route that renders only the page content
-- No TopBar, LeftPanel, RightPanel
-- Uses `PageContent isViewMode="true"` like the view route
-- Sets up postMessage listener for component updates from editor
-- Sends `COMPONENT_SELECTED` message on element click
+- Renders `PageContent` component (same as current editor)
+- Loads page and component data
+- Sets up postMessage listeners for:
+  - Mode changes (edit/preview)
+  - Component updates
+  - Selection changes
+- Sends messages for:
+  - Component clicked (for selection)
+  - Component changes (for saving)
 
 ### Step 2: Create PreviewIFramePanel Component
 **File**: `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts`
 
-```typescript
-@customElement('preview-iframe-panel')
-export class PreviewIFramePanel extends LitElement {
-  @property() applicationId: string;
-  @property() pageUrl: string;
+- Hosts the iframe
+- Sends postMessage for:
+  - Mode changes when TopBar toggle clicked
+  - Component data updates
+- Receives postMessage for:
+  - Component selection (updates Vars.selectedComponent)
 
-  private iframeRef: HTMLIFrameElement;
-
-  // Creates iframe pointing to /app/preview/[uuid]/[pageUrl]
-  // Subscribes to component store changes
-  // Sends updates to iframe via postMessage
-  // Listens for COMPONENT_SELECTED from iframe
-}
-```
-
-### Step 3: Update TopBar Preview Button
-**File**: `src/features/studio/params/editor-micro-apps/top-bar.ts`
-
-- Keep existing Edit/Preview toggle
-- When Preview clicked: hide LeftPanel, RightPanel, show PreviewIFramePanel
-- When Edit clicked: show normal editor layout
-
-### Step 4: Modify EditorInteractivePanel
+### Step 3: Replace Editor Canvas with IFrame
 **File**: `src/features/studio/panels/main-panel/EditorInteractivePanel.ts`
 
-- When `ViewMode.Preview`: render `<preview-iframe-panel>` instead of edit canvas
-- When `ViewMode.Edit`: render normal editor
+- Replace current canvas rendering with `<preview-iframe-panel>`
+- The iframe handles all rendering
 
-### Step 5: Implement Click-to-Select
-**In preview route**:
-- Attach click listeners to rendered components
-- On click, send postMessage to parent: `{ type: 'COMPONENT_SELECTED', uuid: '...' }`
-
-**In editor (PreviewIFramePanel)**:
-- Listen for messages from iframe
-- On `COMPONENT_SELECTED`, update `Vars.selectedComponent`
-
-### Step 6: Implement Real-time Sync
-**Editor → Preview**:
-- Subscribe to component store
-- On change, postMessage to iframe: `{ type: 'COMPONENTS_UPDATE', data: [...] }`
-
-**Preview**:
-- Listen for `COMPONENTS_UPDATE`
-- Update local component state and re-render
-
-## File Changes Summary
-
-| File | Action | Description |
-|------|--------|-------------|
-| `src/pages/app/preview/[uuid]/[...urls].astro` | **Create** | Lightweight preview route |
-| `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts` | **Create** | IFrame wrapper component |
-| `src/features/studio/panels/main-panel/EditorInteractivePanel.ts` | Modify | Render iframe in preview mode |
-| `src/features/studio/params/editor-micro-apps/top-bar.ts` | Modify | Keep existing toggle, wire to iframe |
+### Step 4: Wire TopBar to IFrame
+- When Edit/Preview clicked, send postMessage to iframe
+- Iframe updates `Vars.currentEditingMode` internally
 
 ## postMessage Communication
 
 ```typescript
-// Message types
-interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_SELECTED' | 'STYLE_UPDATE';
-  payload: any;
-}
+// Parent → IFrame
+{ type: 'SET_MODE', payload: 'edit' | 'preview' }
+{ type: 'UPDATE_COMPONENTS', payload: components[] }
+{ type: 'SELECT_COMPONENT', payload: { uuid: string } }
 
-// Editor → Preview (component updates)
-iframe.contentWindow.postMessage({
-  type: 'COMPONENTS_UPDATE',
-  payload: components
-}, '*');
-
-// Preview → Editor (click to select)
-window.parent.postMessage({
-  type: 'COMPONENT_SELECTED',
-  payload: { uuid: componentUuid }
-}, '*');
+// IFrame → Parent
+{ type: 'COMPONENT_CLICKED', payload: { uuid: string } }
+{ type: 'COMPONENT_UPDATED', payload: component }
+{ type: 'READY' }  // iframe loaded and ready
 ```
 
+## File Changes
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/pages/app/preview/[uuid]/[...urls].astro` | **Create** | IFrame route with edit capabilities |
+| `src/features/studio/panels/preview-panel/PreviewIFramePanel.ts` | **Create** | IFrame wrapper component |
+| `src/features/studio/panels/main-panel/EditorInteractivePanel.ts` | **Modify** | Use PreviewIFramePanel |
+
 ## Benefits
-1. **Clean separation**: Preview route is independent, lightweight
-2. **True isolation**: CSS/JS don't leak between editor and preview
-3. **Same rendering**: Uses same `PageContent` component as view route
-4. **Click-to-select**: Seamless workflow between preview and edit
-5. **No split complexity**: Simple Edit/Preview toggle
+1. **True isolation** - Editor canvas runs in separate context
+2. **Same experience** - Full editing inside iframe
+3. **Clean architecture** - Panels communicate via postMessage
+4. **No URL complexity** - Single route, mode handled internally
