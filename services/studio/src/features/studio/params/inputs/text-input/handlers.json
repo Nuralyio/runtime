@@ -6,8 +6,8 @@
       "label": "onFocus"
     },
     {
-      "name": "valueChange",
-      "label": "onChanged"
+      "name": "onChange",
+      "label": "onChange"
     },
     {
       "name": "blur",
