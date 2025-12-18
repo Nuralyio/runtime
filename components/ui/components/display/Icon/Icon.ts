@@ -26,9 +26,8 @@ export class IconBlock extends BaseElementBlock {
     this.registerCallback("icon", () => {
     });
   }
-  override async connectedCallback() {
-    await super.connectedCallback();
-
+  override connectedCallback() {
+    super.connectedCallback();
   }
 
   renderComponent() {
