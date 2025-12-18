@@ -41,8 +41,8 @@ export class DividerBlock extends BaseElementBlock {
   item: any;
   unsubscribe: () => void;
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.registerCallback("value", () => {
     });
     // Set data-type attribute for CSS styling

@@ -20,8 +20,8 @@ export class LinkBlock extends BaseElementBlock {
         super();
     }
 
-    override async connectedCallback() {
-        await super.connectedCallback();
+    override connectedCallback() {
+        super.connectedCallback();
     }
 
     private updateChildrenComponents(): void {

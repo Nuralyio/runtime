@@ -48,8 +48,8 @@ export class GridCol extends BaseElementBlock {
   @state() childrenComponents: ComponentElement[] = [];
   @state() containerRef = createRef();
 
-  override async connectedCallback() {
-    await super.connectedCallback();
+  override connectedCallback() {
+    super.connectedCallback();
     this.updateChildrenComponents();
 
     // Register callbacks for input changes to trigger re-render
