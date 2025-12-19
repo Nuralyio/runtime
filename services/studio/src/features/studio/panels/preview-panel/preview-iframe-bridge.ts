@@ -22,7 +22,7 @@ const updatesFromParent = new Set<string>();
  */
 export function initializePreviewBridge() {
   // Only initialize if we're in an iframe
-  if (window.self === window.top) {
+  if (globalThis.self === globalThis.top) {
     return;
   }
 
@@ -30,7 +30,7 @@ export function initializePreviewBridge() {
   ExecuteInstance.VarsProxy.currentEditingMode = 'edit';
 
   // Set up message listener for parent communication
-  window.addEventListener('message', handleParentMessage);
+  globalThis.addEventListener('message', handleParentMessage);
 
   // Set up click listener for component selection
   setupClickToSelect();
@@ -57,7 +57,7 @@ export function initializePreviewBridge() {
 
 function handleParentMessage(event: MessageEvent) {
   // Verify the origin of the message
-  if (event.origin !== window.location.origin) {
+  if (event.origin !== globalThis.location.origin) {
     return;
   }
 
@@ -132,8 +132,8 @@ function handleParentMessage(event: MessageEvent) {
 }
 
 function sendMessageToParent(message: PreviewMessage) {
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage(message, window.location.origin);
+  if (globalThis.parent && globalThis.parent !== globalThis) {
+    globalThis.parent.postMessage(message, globalThis.location.origin);
   }
 }
 

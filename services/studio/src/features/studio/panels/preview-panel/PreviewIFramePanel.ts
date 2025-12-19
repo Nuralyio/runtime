@@ -96,12 +96,12 @@ export class PreviewIFramePanel extends LitElement {
         this.handleIframeMessage(event.data as PreviewMessage);
       }
     };
-    window.addEventListener('message', this.messageHandler);
+    globalThis.addEventListener('message', this.messageHandler);
   }
 
   private cleanupMessageListener() {
     if (this.messageHandler) {
-      window.removeEventListener('message', this.messageHandler);
+      globalThis.removeEventListener('message', this.messageHandler);
       this.messageHandler = null;
     }
   }
@@ -238,7 +238,7 @@ export class PreviewIFramePanel extends LitElement {
 
   private sendMessageToIframe(message: PreviewMessage) {
     if (this.iframeElement?.contentWindow) {
-      this.iframeElement.contentWindow.postMessage(message, window.location.origin);
+      this.iframeElement.contentWindow.postMessage(message, globalThis.location.origin);
     }
   }
 
