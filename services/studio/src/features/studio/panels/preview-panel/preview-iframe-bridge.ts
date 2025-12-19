@@ -56,78 +56,81 @@ export function initializePreviewBridge() {
 }
 
 function handleParentMessage(event: MessageEvent) {
-  // Verify the origin of the message
   if (event.origin !== globalThis.location.origin) {
     return;
   }
 
   const message = event.data as PreviewMessage;
-
   if (!message || typeof message !== 'object' || !message.type) {
     return;
   }
 
   switch (message.type) {
     case 'SET_MODE':
-      // Update editing mode
-      if (message.payload) {
-        ExecuteInstance.VarsProxy.currentEditingMode = message.payload;
-      }
+      handleSetMode(message.payload);
       break;
-
     case 'COMPONENTS_UPDATE':
-      // Update all components from parent (used for initial sync)
-      if (message.payload) {
-        const appId = $currentApplication.get()?.uuid;
-        if (appId) {
-          $components.setKey(appId, message.payload);
-          // Mark all as from parent to prevent loop
-          message.payload.forEach((c: any) => updatesFromParent.add(c.uuid));
-          queueMicrotask(() => {
-            eventDispatcher.emit('component:updated', {});
-            // Clear after emit
-            message.payload.forEach((c: any) => updatesFromParent.delete(c.uuid));
-          });
-        }
-      }
+      handleComponentsUpdate(message.payload);
       break;
-
     case 'COMPONENT_UPDATE_SINGLE':
-      // Update a single component from parent (efficient updates)
-      if (message.payload) {
-        const appId = $currentApplication.get()?.uuid;
-        if (appId) {
-          const currentComponents = $components.get()[appId] || [];
-          const updatedComponent = message.payload;
-          const index = currentComponents.findIndex(c => c.uuid === updatedComponent.uuid);
-          if (index !== -1) {
-            // Replace the component at the found index
-            const newComponents = [...currentComponents];
-            newComponents[index] = updatedComponent;
-            $components.setKey(appId, newComponents);
-          }
-          // Mark this UUID as coming from parent to prevent loop
-          updatesFromParent.add(updatedComponent.uuid);
-          queueMicrotask(() => {
-            eventDispatcher.emit('component:updated', { uuid: updatedComponent.uuid });
-          });
-        }
-      }
+      handleComponentUpdateSingle(message.payload);
       break;
-
     case 'SELECT_COMPONENT':
-      // Select a component from parent
-      if (message.payload?.uuid) {
-        const appId = $currentApplication.get()?.uuid;
-        if (appId) {
-          const components = $components.get()[appId] || [];
-          const component = components.find(c => c.uuid === message.payload.uuid);
-          if (component) {
-            ExecuteInstance.VarsProxy.selectedComponents = [component];
-          }
-        }
-      }
+      handleSelectComponent(message.payload);
       break;
+  }
+}
+
+function handleSetMode(payload: string | undefined) {
+  if (payload) {
+    ExecuteInstance.VarsProxy.currentEditingMode = payload;
+  }
+}
+
+function handleComponentsUpdate(payload: any[] | undefined) {
+  if (!payload) return;
+
+  const appId = $currentApplication.get()?.uuid;
+  if (!appId) return;
+
+  $components.setKey(appId, payload);
+  payload.forEach((c: any) => updatesFromParent.add(c.uuid));
+  queueMicrotask(() => {
+    eventDispatcher.emit('component:updated', {});
+    payload.forEach((c: any) => updatesFromParent.delete(c.uuid));
+  });
+}
+
+function handleComponentUpdateSingle(payload: any | undefined) {
+  if (!payload) return;
+
+  const appId = $currentApplication.get()?.uuid;
+  if (!appId) return;
+
+  const currentComponents = $components.get()[appId] || [];
+  const index = currentComponents.findIndex(c => c.uuid === payload.uuid);
+  if (index !== -1) {
+    const newComponents = [...currentComponents];
+    newComponents[index] = payload;
+    $components.setKey(appId, newComponents);
+  }
+
+  updatesFromParent.add(payload.uuid);
+  queueMicrotask(() => {
+    eventDispatcher.emit('component:updated', { uuid: payload.uuid });
+  });
+}
+
+function handleSelectComponent(payload: { uuid?: string } | undefined) {
+  if (!payload?.uuid) return;
+
+  const appId = $currentApplication.get()?.uuid;
+  if (!appId) return;
+
+  const components = $components.get()[appId] || [];
+  const component = components.find(c => c.uuid === payload.uuid);
+  if (component) {
+    ExecuteInstance.VarsProxy.selectedComponents = [component];
   }
 }
 
