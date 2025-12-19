@@ -13,7 +13,6 @@ const pageStyle = css`
   }
 
   .page-container {
-    height: calc(100vh - 120px);
     position: relative;
     background: var(--page-background-color, white);
     --nuraly-tabs-content-padding: 0;
