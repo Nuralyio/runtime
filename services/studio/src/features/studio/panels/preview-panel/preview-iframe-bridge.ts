@@ -5,8 +5,7 @@
  * It should be imported in the preview route.
  */
 
-import { $currentApplication } from '@nuraly/runtime/redux/store';
-import { $components } from '@nuraly/runtime/redux/store/component/store';
+import { $currentApplication, $components } from '@nuraly/runtime/redux/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 
@@ -148,7 +147,7 @@ function setupClickToSelect() {
     const componentElement = findComponentElementFromEvent(event);
 
     if (componentElement) {
-      const uuid = componentElement.getAttribute('data-component-uuid');
+      const uuid = componentElement.dataset.componentUuid;
       if (uuid) {
         const rect = componentElement.getBoundingClientRect();
         sendMessageToParent({
@@ -177,7 +176,7 @@ function findComponentElementFromEvent(event: Event): HTMLElement | null {
 
   for (const element of path) {
     if (element instanceof HTMLElement) {
-      if (element.hasAttribute('data-component-uuid')) {
+      if (element.dataset.componentUuid) {
         return element;
       }
     }
@@ -194,7 +193,7 @@ function findComponentElement(element: HTMLElement | null): HTMLElement | null {
   let searchCount = 0;
   while (element && searchCount < 50) {
     searchCount++;
-    if (element.hasAttribute && element.hasAttribute('data-component-uuid')) {
+    if (element.dataset?.componentUuid) {
       return element;
     }
     element = element.parentElement;
@@ -213,7 +212,7 @@ function setupHoverDetection() {
     const componentElement = findComponentElementFromEvent(event);
 
     if (componentElement) {
-      const uuid = componentElement.getAttribute('data-component-uuid');
+      const uuid = componentElement.dataset.componentUuid;
       if (uuid && uuid !== lastHoveredUuid) {
         lastHoveredUuid = uuid;
         const rect = componentElement.getBoundingClientRect();
