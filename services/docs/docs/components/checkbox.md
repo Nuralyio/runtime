@@ -82,17 +82,6 @@ input: {
 }
 ```
 
-### disabled
-**Type:** `boolean`
-
-Whether the checkbox is disabled.
-
-```typescript
-input: {
-  disabled: { type: "boolean", value: true }
-}
-```
-
 ### size
 **Type:** `string`
 
@@ -101,28 +90,6 @@ Checkbox size: `small`, `medium`, `large`.
 ```typescript
 input: {
   size: { type: "string", value: "large" }
-}
-```
-
-### name
-**Type:** `string`
-
-Form field name for form submission.
-
-```typescript
-input: {
-  name: { type: "string", value: "newsletter" }
-}
-```
-
-### autoFocus
-**Type:** `boolean`
-
-Automatically focus the checkbox on mount.
-
-```typescript
-input: {
-  autoFocus: { type: "boolean", value: true }
 }
 ```
 
@@ -190,25 +157,13 @@ event: {
 }
 ```
 
-### onMouseEnter
-**Triggered:** When mouse enters the checkbox area
+### onMouseEnter / onMouseLeave
+**Triggered:** When mouse enters/leaves the checkbox area
 
 ```typescript
 event: {
-  onMouseEnter: `
-    Vars.isHovering = true;
-  `
-}
-```
-
-### onMouseLeave
-**Triggered:** When mouse leaves the checkbox area
-
-```typescript
-event: {
-  onMouseLeave: `
-    Vars.isHovering = false;
-  `
+  onMouseEnter: `Vars.isHovering = true;`,
+  onMouseLeave: `Vars.isHovering = false;`
 }
 ```
 
@@ -218,7 +173,6 @@ event: {
 
 ### Select All / Indeterminate
 ```typescript
-// Parent checkbox with indeterminate state
 {
   component_type: "checkbox",
   input: {

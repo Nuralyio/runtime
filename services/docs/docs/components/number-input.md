@@ -67,73 +67,6 @@ NumberInput provides a complete numeric input solution with:
 
 ---
 
-## Inputs
-
-### value
-**Type:** `number`
-
-Current numeric value.
-
-```typescript
-inputHandlers: {
-  value: `return Vars.count || 0;`
-}
-```
-
-### min / max
-**Type:** `number`
-
-Value constraints.
-
-```typescript
-input: {
-  min: { type: "number", value: 0 },
-  max: { type: "number", value: 100 }
-}
-```
-
-### step
-**Type:** `number`
-
-Increment/decrement step value.
-
-```typescript
-input: {
-  step: { type: "number", value: 5 }
-}
-```
-
-### rules
-**Type:** `array`
-
-Validation rules.
-
-```typescript
-input: {
-  rules: {
-    type: "array",
-    value: [
-      { required: true, message: "Quantity is required" },
-      { min: 1, message: "Minimum quantity is 1" },
-      { max: 100, message: "Maximum quantity is 100" }
-    ]
-  }
-}
-```
-
-### readonly
-**Type:** `boolean`
-
-Make input read-only.
-
-```typescript
-input: {
-  readonly: { type: "boolean", value: true }
-}
-```
-
----
-
 ## Events
 
 ### onChange
@@ -147,58 +80,11 @@ input: {
 }
 ```
 
-**Example:**
-```typescript
-event: {
-  onChange: `
-    const value = parseFloat(EventData.value);
-    Vars.quantity = value;
-
-    // Update calculated total
-    Vars.total = value * Vars.pricePerUnit;
-  `
-}
-```
-
-### onFocus
-**Triggered:** When input receives focus
-
-```typescript
-event: {
-  onFocus: `
-    Vars.activeField = "quantity";
-  `
-}
-```
-
-### onBlur
-**Triggered:** When input loses focus
-
-```typescript
-event: {
-  onBlur: `
-    Vars.activeField = null;
-
-    // Validate on blur
-    const value = parseFloat(EventData.event.target.value);
-    if (isNaN(value)) {
-      Vars.quantityError = "Please enter a valid number";
-    }
-  `
-}
-```
+### onFocus / onBlur
+**Triggered:** When input receives/loses focus
 
 ### onEnter
 **Triggered:** When Enter key is pressed
-
-```typescript
-event: {
-  onEnter: `
-    // Submit on enter
-    await UpdateQuantity(Vars.itemId, Vars.quantity);
-  `
-}
-```
 
 ---
 
@@ -225,7 +111,6 @@ event: {
         quantity: qty
       };
 
-      // Update cart total
       Vars.cartTotal = Vars.cart.reduce((sum, item) =>
         sum + (item.price * item.quantity), 0
       );
@@ -250,13 +135,9 @@ event: {
   event: {
     onChange: `
       const price = parseFloat(EventData.value);
-      Vars.product = {
-        ...Vars.product,
-        price: price
-      };
+      Vars.product = { ...Vars.product, price: price };
     `,
     onBlur: `
-      // Format to 2 decimal places
       const price = parseFloat(EventData.event.target.value);
       Vars.product.price = Math.round(price * 100) / 100;
     `
@@ -312,37 +193,7 @@ event: {
     onChange: `
       const percent = parseFloat(EventData.value);
       Vars.discountPercent = Math.min(100, Math.max(0, percent));
-
-      // Calculate discounted price
       Vars.discountedPrice = Vars.originalPrice * (1 - percent / 100);
-    `
-  }
-}
-```
-
-### Rating Input
-```typescript
-{
-  component_type: "number-input",
-  input: {
-    min: { type: "number", value: 1 },
-    max: { type: "number", value: 5 },
-    step: { type: "number", value: 0.5 }
-  },
-  inputHandlers: {
-    label: `return "Rating (1-5)";`,
-    helper: `return "Enter a rating between 1 and 5 stars";`,
-    value: `return Vars.userRating || 3;`
-  },
-  event: {
-    onChange: `
-      const rating = parseFloat(EventData.value);
-      Vars.userRating = Math.min(5, Math.max(1, rating));
-    `,
-    onBlur: `
-      // Round to nearest 0.5
-      const rating = parseFloat(EventData.event.target.value);
-      Vars.userRating = Math.round(rating * 2) / 2;
     `
   }
 }

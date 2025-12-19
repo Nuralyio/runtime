@@ -85,61 +85,6 @@ inputHandlers: {
 }
 ```
 
-### direction
-**Type:** `string`
-
-Layout direction: `vertical` or `horizontal`.
-
-```typescript
-input: {
-  direction: { type: "string", value: "horizontal" }
-}
-```
-
-### position
-**Type:** `string`
-
-Label position relative to radio: `left` or `right`.
-
-```typescript
-input: {
-  position: { type: "string", value: "right" }
-}
-```
-
-### size
-**Type:** `string`
-
-Radio button size: `small`, `medium`, `large`.
-
-```typescript
-input: {
-  size: { type: "string", value: "large" }
-}
-```
-
-### autoWidth
-**Type:** `boolean`
-
-Auto-width for button-style variant.
-
-```typescript
-input: {
-  autoWidth: { type: "boolean", value: true }
-}
-```
-
-### helper
-**Type:** `string`
-
-Helper text displayed below the radio group.
-
-```typescript
-input: {
-  helper: { type: "string", value: "Select your preferred option" }
-}
-```
-
 ---
 
 ## Events
@@ -156,23 +101,6 @@ input: {
 }
 ```
 
-**Example:**
-```typescript
-event: {
-  onChange: `
-    Vars.selectedOption = EventData.value;
-    Vars.selectedLabel = EventData.option.label;
-
-    // Handle selection change
-    if (EventData.value === 'other') {
-      Vars.showOtherInput = true;
-    } else {
-      Vars.showOtherInput = false;
-    }
-  `
-}
-```
-
 ---
 
 ## Common Patterns
@@ -181,17 +109,14 @@ event: {
 ```typescript
 {
   component_type: "radio-button",
-  input: {
-    direction: { type: "string", value: "vertical" }
-  },
+  input: { direction: { type: "string", value: "vertical" } },
   inputHandlers: {
     value: `
       return {
         options: [
-          { label: 'Credit Card', value: 'credit', icon: 'credit-card' },
-          { label: 'PayPal', value: 'paypal', icon: 'paypal' },
-          { label: 'Apple Pay', value: 'apple', icon: 'apple' },
-          { label: 'Bank Transfer', value: 'bank', icon: 'building' }
+          { label: 'Credit Card', value: 'credit' },
+          { label: 'PayPal', value: 'paypal' },
+          { label: 'Bank Transfer', value: 'bank' }
         ],
         currentValue: Vars.paymentMethod || 'credit',
         type: 'default'
@@ -201,8 +126,6 @@ event: {
   event: {
     onChange: `
       Vars.paymentMethod = EventData.value;
-
-      // Show additional fields based on selection
       Vars.showCardForm = EventData.value === 'credit';
       Vars.showBankForm = EventData.value === 'bank';
     `
@@ -214,17 +137,14 @@ event: {
 ```typescript
 {
   component_type: "radio-button",
-  input: {
-    direction: { type: "string", value: "horizontal" }
-  },
+  input: { direction: { type: "string", value: "horizontal" } },
   inputHandlers: {
     value: `
       return {
         options: [
           { label: 'Daily', value: 'daily' },
           { label: 'Weekly', value: 'weekly' },
-          { label: 'Monthly', value: 'monthly' },
-          { label: 'Yearly', value: 'yearly' }
+          { label: 'Monthly', value: 'monthly' }
         ],
         currentValue: Vars.timeframe || 'monthly',
         type: 'button'
@@ -234,8 +154,6 @@ event: {
   event: {
     onChange: `
       Vars.timeframe = EventData.value;
-
-      // Reload data for new timeframe
       Vars.chartData = await LoadChartData(EventData.value);
     `
   }
@@ -252,7 +170,7 @@ event: {
   },
   inputHandlers: {
     value: `
-      const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+      const sizes = ['XS', 'S', 'M', 'L', 'XL'];
       const availableSizes = Vars.product?.availableSizes || sizes;
 
       return {
@@ -269,77 +187,8 @@ event: {
   event: {
     onChange: `
       Vars.selectedSize = EventData.value;
-
-      // Check stock for selected size
       const stock = await CheckStock(Vars.product.id, EventData.value);
       Vars.inStock = stock > 0;
-      Vars.stockCount = stock;
-    `
-  }
-}
-```
-
-### Gender Selection
-```typescript
-{
-  component_type: "radio-button",
-  input: {
-    direction: { type: "string", value: "horizontal" },
-    required: { type: "boolean", value: true },
-    helper: { type: "string", value: "Required for personalization" }
-  },
-  inputHandlers: {
-    value: `
-      return {
-        options: [
-          { label: 'Male', value: 'male' },
-          { label: 'Female', value: 'female' },
-          { label: 'Other', value: 'other' },
-          { label: 'Prefer not to say', value: 'unspecified' }
-        ],
-        currentValue: Vars.gender || '',
-        type: 'default'
-      };
-    `
-  },
-  event: {
-    onChange: `
-      Vars.gender = EventData.value;
-    `
-  }
-}
-```
-
-### Yes/No Question
-```typescript
-{
-  component_type: "radio-button",
-  input: {
-    direction: { type: "string", value: "horizontal" }
-  },
-  inputHandlers: {
-    value: `
-      return {
-        options: [
-          { label: 'Yes', value: true },
-          { label: 'No', value: false }
-        ],
-        currentValue: Vars.hasAccount,
-        type: 'button'
-      };
-    `
-  },
-  event: {
-    onChange: `
-      Vars.hasAccount = EventData.value;
-
-      if (EventData.value) {
-        Vars.showLoginForm = true;
-        Vars.showRegistrationForm = false;
-      } else {
-        Vars.showLoginForm = false;
-        Vars.showRegistrationForm = true;
-      }
     `
   }
 }

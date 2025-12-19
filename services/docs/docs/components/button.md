@@ -63,139 +63,11 @@ Button provides a complete action trigger solution with:
 
 ---
 
-## Inputs
-
-### label
-**Type:** `string`
-
-Button text content.
-
-```typescript
-input: {
-  label: { type: "string", value: "Click Me" }
-}
-```
-
-### type
-**Type:** `string`
-
-Button type/variant: `default`, `primary`, `danger`, `text`, `link`.
-
-```typescript
-input: {
-  type: { type: "string", value: "primary" }
-}
-```
-
-### size
-**Type:** `string`
-
-Button size: `small`, `medium`, `large`.
-
-```typescript
-input: {
-  size: { type: "string", value: "large" }
-}
-```
-
-### shape
-**Type:** `string`
-
-Button shape: `circle`, `round`.
-
-```typescript
-input: {
-  shape: { type: "string", value: "round" }
-}
-```
-
-### loading
-**Type:** `boolean`
-
-Show loading spinner and disable button.
-
-```typescript
-input: {
-  loading: { type: "boolean", value: true }
-}
-
-// Dynamic loading
-inputHandlers: {
-  loading: `return Vars.isSubmitting;`
-}
-```
-
-### block
-**Type:** `boolean`
-
-Make button full-width.
-
-```typescript
-input: {
-  block: { type: "boolean", value: true }
-}
-```
-
-### dashed
-**Type:** `boolean`
-
-Apply dashed border style.
-
-```typescript
-input: {
-  dashed: { type: "boolean", value: true }
-}
-```
-
-### icon / iconLeft / iconRight
-**Type:** `string`
-
-Icon configuration.
-
-```typescript
-input: {
-  icon: { type: "string", value: "plus" },
-  iconPosition: { type: "string", value: "left" }
-}
-
-// Or separate icons
-input: {
-  iconLeft: { type: "string", value: "download" },
-  iconRight: { type: "string", value: "arrow-right" }
-}
-```
-
-### href / target
-**Type:** `string`
-
-Convert button to a link.
-
-```typescript
-input: {
-  href: { type: "string", value: "https://example.com" },
-  target: { type: "string", value: "_blank" }
-}
-```
-
-### htmlType
-**Type:** `string`
-
-HTML button type for form integration.
-
-```typescript
-input: {
-  htmlType: { type: "string", value: "submit" }
-}
-```
-
----
-
 ## Events
 
 ### onClick
 **Triggered:** When button is clicked
 
-**Example:**
 ```typescript
 event: {
   onClick: `
@@ -208,25 +80,8 @@ event: {
 ### onButtonClicked
 **Triggered:** Alternative click event
 
-```typescript
-event: {
-  onButtonClicked: `
-    // Same as onClick
-  `
-}
-```
-
 ### onLinkNavigation
 **Triggered:** When link button navigates
-
-```typescript
-event: {
-  onLinkNavigation: `
-    // Track navigation
-    Analytics.track('link_click', { url: Vars.href });
-  `
-}
-```
 
 ---
 
@@ -249,7 +104,6 @@ event: {
   event: {
     onClick: `
       Vars.isSubmitting = true;
-
       try {
         await SubmitForm(Vars.formData);
         Vars.submitSuccess = true;
@@ -273,9 +127,7 @@ event: {
     type: { type: "string", value: "primary" },
     icon: { type: "string", value: "save" }
   },
-  event: {
-    onClick: `await SaveChanges();`
-  }
+  event: { onClick: `await SaveChanges();` }
 }
 
 // Cancel button
@@ -285,9 +137,7 @@ event: {
     label: { type: "string", value: "Cancel" },
     type: { type: "string", value: "default" }
   },
-  event: {
-    onClick: `Vars.editMode = false;`
-  }
+  event: { onClick: `Vars.editMode = false;` }
 }
 
 // Delete button
@@ -298,29 +148,7 @@ event: {
     type: { type: "string", value: "danger" },
     icon: { type: "string", value: "trash" }
   },
-  event: {
-    onClick: `Vars.showDeleteConfirm = true;`
-  }
-}
-```
-
-### Icon Button with Tooltip
-```typescript
-{
-  component_type: "button",
-  input: {
-    icon: { type: "string", value: "copy" },
-    iconOnly: { type: "boolean", value: true },
-    type: { type: "string", value: "text" },
-    ariaLabel: { type: "string", value: "Copy to clipboard" }
-  },
-  event: {
-    onClick: `
-      await navigator.clipboard.writeText(Vars.textToCopy);
-      Vars.copied = true;
-      setTimeout(() => Vars.copied = false, 2000);
-    `
-  }
+  event: { onClick: `Vars.showDeleteConfirm = true;` }
 }
 ```
 
@@ -334,57 +162,6 @@ event: {
     href: { type: "string", value: "https://docs.example.com" },
     target: { type: "string", value: "_blank" },
     iconRight: { type: "string", value: "external-link" }
-  }
-}
-```
-
-### Dynamic Button State
-```typescript
-{
-  component_type: "button",
-  inputHandlers: {
-    label: `
-      if (Vars.isFollowing) return 'Following';
-      return 'Follow';
-    `,
-    type: `
-      if (Vars.isFollowing) return 'default';
-      return 'primary';
-    `,
-    icon: `
-      if (Vars.isFollowing) return 'check';
-      return 'plus';
-    `
-  },
-  event: {
-    onClick: `
-      if (Vars.isFollowing) {
-        await Unfollow(Vars.userId);
-        Vars.isFollowing = false;
-      } else {
-        await Follow(Vars.userId);
-        Vars.isFollowing = true;
-      }
-    `
-  }
-}
-```
-
-### Add New Button
-```typescript
-{
-  component_type: "button",
-  input: {
-    label: { type: "string", value: "Add New" },
-    type: { type: "string", value: "primary" },
-    icon: { type: "string", value: "plus" },
-    dashed: { type: "boolean", value: true },
-    block: { type: "boolean", value: true }
-  },
-  event: {
-    onClick: `
-      Vars.showAddModal = true;
-    `
   }
 }
 ```
