@@ -53,7 +53,7 @@ export function updateComponentName(
       });
 
       // Trigger a refresh event for any listeners - ONLY when actual update occurred
-      eventDispatcher.emit("component:updated");
+      eventDispatcher.emit("component:updated", { uuid: componentId });
       refreshPageStoreVar()
     } else {
       // No update needed, log a message or handle accordingly

@@ -5,14 +5,18 @@
  * It should be imported in the preview route.
  */
 
-import { $applicationComponents, $currentApplication } from '@nuraly/runtime/redux/store';
+import { $currentApplication } from '@nuraly/runtime/redux/store';
+import { $components } from '@nuraly/runtime/redux/store/component/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED';
   payload?: any;
 }
+
+// Track UUIDs of components being updated from parent to prevent loops
+const updatesFromParent = new Set<string>();
 
 /**
  * Initialize the iframe bridge for communication with parent editor
@@ -23,17 +27,28 @@ export function initializePreviewBridge() {
     return;
   }
 
+  // Default to edit mode - parent will override if needed
+  ExecuteInstance.VarsProxy.currentEditingMode = 'edit';
+
   // Set up message listener for parent communication
   window.addEventListener('message', handleParentMessage);
 
   // Set up click listener for component selection
   setupClickToSelect();
 
+  // Set up hover listener for component hover
+  setupHoverDetection();
+
   // Notify parent that iframe is ready
   sendMessageToParent({ type: 'READY' });
 
-  // Listen for component updates and forward to parent
-  eventDispatcher.on('component:updated', (data) => {
+  // Listen for component updates and forward to parent (only for local changes, not parent-triggered)
+  eventDispatcher.on('component:updated', (data: { uuid?: string; fromParent?: boolean }) => {
+    // Don't forward updates that came from parent to avoid loops
+    if (data?.uuid && updatesFromParent.has(data.uuid)) {
+      updatesFromParent.delete(data.uuid);
+      return;
+    }
     sendMessageToParent({
       type: 'COMPONENT_UPDATED',
       payload: data
@@ -62,12 +77,44 @@ function handleParentMessage(event: MessageEvent) {
       break;
 
     case 'COMPONENTS_UPDATE':
-      // Update components from parent
+      // Update all components from parent (used for initial sync)
       if (message.payload) {
         const appId = $currentApplication.get()?.uuid;
         if (appId) {
-          $applicationComponents(appId).set(message.payload);
-          eventDispatcher.emit('component:updated', {});
+          $components.setKey(appId, message.payload);
+          // Mark all as from parent to prevent loop
+          message.payload.forEach((c: any) => updatesFromParent.add(c.uuid));
+          queueMicrotask(() => {
+            eventDispatcher.emit('component:updated', {});
+            // Clear after emit
+            message.payload.forEach((c: any) => updatesFromParent.delete(c.uuid));
+          });
+        }
+      }
+      break;
+
+    case 'COMPONENT_UPDATE_SINGLE':
+      // Update a single component from parent (efficient updates)
+      if (message.payload) {
+        const appId = $currentApplication.get()?.uuid;
+        console.log('[PreviewBridge] COMPONENT_UPDATE_SINGLE received, uuid:', message.payload?.uuid);
+        if (appId) {
+          const currentComponents = $components.get()[appId] || [];
+          const updatedComponent = message.payload;
+          const index = currentComponents.findIndex(c => c.uuid === updatedComponent.uuid);
+          if (index !== -1) {
+            // Replace the component at the found index
+            const newComponents = [...currentComponents];
+            newComponents[index] = updatedComponent;
+            $components.setKey(appId, newComponents);
+            console.log('[PreviewBridge] Store updated');
+          }
+          // Mark this UUID as coming from parent to prevent loop
+          updatesFromParent.add(updatedComponent.uuid);
+          queueMicrotask(() => {
+            console.log('[PreviewBridge] Emitting component:updated');
+            eventDispatcher.emit('component:updated', { uuid: updatedComponent.uuid });
+          });
         }
       }
       break;
@@ -77,7 +124,7 @@ function handleParentMessage(event: MessageEvent) {
       if (message.payload?.uuid) {
         const appId = $currentApplication.get()?.uuid;
         if (appId) {
-          const components = $applicationComponents(appId).get();
+          const components = $components.get()[appId] || [];
           const component = components.find(c => c.uuid === message.payload.uuid);
           if (component) {
             ExecuteInstance.VarsProxy.selectedComponents = [component];
@@ -100,17 +147,24 @@ function sendMessageToParent(message: PreviewMessage) {
  */
 function setupClickToSelect() {
   document.addEventListener('click', (event) => {
-    const target = event.target as HTMLElement;
-
-    // Find the closest component element with data-component-uuid
-    const componentElement = findComponentElement(target);
+    // Use composedPath to handle Shadow DOM
+    const componentElement = findComponentElementFromEvent(event);
 
     if (componentElement) {
       const uuid = componentElement.getAttribute('data-component-uuid');
       if (uuid) {
+        const rect = componentElement.getBoundingClientRect();
         sendMessageToParent({
           type: 'COMPONENT_CLICKED',
-          payload: { uuid }
+          payload: {
+            uuid,
+            rect: {
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height
+            }
+          }
         });
       }
     }
@@ -118,16 +172,83 @@ function setupClickToSelect() {
 }
 
 /**
+ * Find component element from event using composedPath for Shadow DOM support
+ */
+function findComponentElementFromEvent(event: Event): HTMLElement | null {
+  // Use composedPath to get all elements including through Shadow DOM boundaries
+  const path = event.composedPath();
+
+  for (const element of path) {
+    if (element instanceof HTMLElement) {
+      if (element.hasAttribute('data-component-uuid')) {
+        return element;
+      }
+    }
+  }
+
+  // Fallback to traditional DOM traversal
+  return findComponentElement(event.target as HTMLElement);
+}
+
+/**
  * Find the closest parent element that is a component
  */
 function findComponentElement(element: HTMLElement | null): HTMLElement | null {
-  while (element) {
+  let searchCount = 0;
+  while (element && searchCount < 50) {
+    searchCount++;
     if (element.hasAttribute && element.hasAttribute('data-component-uuid')) {
       return element;
     }
     element = element.parentElement;
   }
   return null;
+}
+
+/**
+ * Set up hover detection for components
+ */
+function setupHoverDetection() {
+  let lastHoveredUuid: string | null = null;
+
+  document.addEventListener('mouseover', (event) => {
+    // Use composedPath for Shadow DOM support
+    const componentElement = findComponentElementFromEvent(event);
+
+    if (componentElement) {
+      const uuid = componentElement.getAttribute('data-component-uuid');
+      if (uuid && uuid !== lastHoveredUuid) {
+        lastHoveredUuid = uuid;
+        const rect = componentElement.getBoundingClientRect();
+        sendMessageToParent({
+          type: 'COMPONENT_HOVERED',
+          payload: {
+            uuid,
+            rect: {
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height
+            }
+          }
+        });
+      }
+    }
+  }, true);
+
+  document.addEventListener('mouseout', (event) => {
+    const relatedTarget = (event as MouseEvent).relatedTarget as HTMLElement;
+    const componentElement = findComponentElement(relatedTarget);
+
+    // Only clear if we're leaving to a non-component element
+    if (!componentElement) {
+      lastHoveredUuid = null;
+      sendMessageToParent({
+        type: 'COMPONENT_HOVERED',
+        payload: { uuid: null, rect: null }
+      });
+    }
+  }, true);
 }
 
 // Auto-initialize if we're in iframe preview mode

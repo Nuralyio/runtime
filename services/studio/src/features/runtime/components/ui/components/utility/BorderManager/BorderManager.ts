@@ -104,6 +104,8 @@ export class BorderManagerDisplay extends BaseElementBlock {
     }
   };
 
+  private isInitialized = false;
+
   private emitBorderChange(property: string, value: any) {
     this.executeEvent("onChange", new CustomEvent('change'), {
       property,
@@ -466,8 +468,14 @@ export class BorderManagerDisplay extends BaseElementBlock {
   }
 
   override renderComponent() {
-    // Sync state from handlers on each render to reflect pseudo-state changes
-    this.borderState = this.getBorderFromHandlers();
+    // Only initialize from handlers once we have data
+    const handlers = this.inputHandlersValue;
+    const hasHandlerData = handlers?.value?.style || handlers?.style;
+
+    if (!this.isInitialized && hasHandlerData) {
+      this.borderState = this.getBorderFromHandlers();
+      this.isInitialized = true;
+    }
 
     return html`
       <div class="border-container">

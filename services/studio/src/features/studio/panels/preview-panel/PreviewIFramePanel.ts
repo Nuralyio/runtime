@@ -9,7 +9,7 @@ import { eventDispatcher } from '@nuraly/runtime/utils';
  * Message types for iframe communication
  */
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED';
   payload?: any;
 }
 
@@ -107,15 +107,32 @@ export class PreviewIFramePanel extends LitElement {
     }
   }
 
+  // Track UUIDs we've already sent to iframe to prevent loops
+  private sentToIframe = new Set<string>();
+
   private setupComponentStoreSubscription() {
     const appId = this.applicationId || $currentApplication.get()?.uuid;
     if (appId) {
-      this.componentStoreUnsubscribe = $applicationComponents(appId).subscribe((components) => {
-        if (this.iframeReady) {
-          this.sendMessageToIframe({
-            type: 'COMPONENTS_UPDATE',
-            payload: components
-          });
+      // Listen for single component updates (efficient - only sends changed component)
+      eventDispatcher.on('component:updated', (data: { uuid?: string; component?: any }) => {
+        console.log('[PreviewIFramePanel] component:updated received:', data);
+        if (this.iframeReady && data?.uuid) {
+          // Prevent loop: don't re-send if we just sent this
+          if (this.sentToIframe.has(data.uuid)) {
+            console.log('[PreviewIFramePanel] Skipping - already sent this UUID');
+            this.sentToIframe.delete(data.uuid);
+            return;
+          }
+          const components = $applicationComponents(appId).get();
+          const updatedComponent = components.find(c => c.uuid === data.uuid);
+          if (updatedComponent) {
+            console.log('[PreviewIFramePanel] Sending COMPONENT_UPDATE_SINGLE');
+            this.sentToIframe.add(data.uuid);
+            this.sendMessageToIframe({
+              type: 'COMPONENT_UPDATE_SINGLE',
+              payload: updatedComponent
+            });
+          }
         }
       });
     }
@@ -144,9 +161,10 @@ export class PreviewIFramePanel extends LitElement {
         this.iframeReady = true;
         this.isLoading = false;
         // Send initial mode
+        const initialMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
         this.sendMessageToIframe({
           type: 'SET_MODE',
-          payload: ExecuteInstance.Vars.currentEditingMode || 'edit'
+          payload: initialMode
         });
         break;
 
@@ -159,9 +177,18 @@ export class PreviewIFramePanel extends LitElement {
             const selectedComponent = components.find(c => c.uuid === message.payload.uuid);
             if (selectedComponent) {
               ExecuteInstance.VarsProxy.selectedComponents = [selectedComponent];
+              // Calculate absolute position (iframe position + component position within iframe)
+              const iframeRect = this.iframeElement?.getBoundingClientRect();
+              const componentRect = message.payload.rect;
+              const absoluteRect = iframeRect && componentRect ? {
+                top: iframeRect.top + componentRect.top,
+                left: iframeRect.left + componentRect.left,
+                width: componentRect.width,
+                height: componentRect.height
+              } : null;
               // Dispatch event for EditorInteractivePanel
               this.dispatchEvent(new CustomEvent('component-selected-from-iframe', {
-                detail: { component: selectedComponent },
+                detail: { component: selectedComponent, rect: absoluteRect },
                 bubbles: true,
                 composed: true
               }));
@@ -173,6 +200,39 @@ export class PreviewIFramePanel extends LitElement {
       case 'COMPONENT_UPDATED':
         // Component was updated in iframe, trigger refresh
         eventDispatcher.emit('component:updated', message.payload);
+        break;
+
+      case 'COMPONENT_HOVERED':
+        // Update hovered component in parent
+        if (message.payload?.uuid) {
+          const appId = this.applicationId || $currentApplication.get()?.uuid;
+          if (appId) {
+            const components = $applicationComponents(appId).get();
+            const hoveredComponent = components.find(c => c.uuid === message.payload.uuid);
+            // Calculate absolute position (iframe position + component position within iframe)
+            const iframeRect = this.iframeElement?.getBoundingClientRect();
+            const componentRect = message.payload.rect;
+            const absoluteRect = iframeRect && componentRect ? {
+              top: iframeRect.top + componentRect.top,
+              left: iframeRect.left + componentRect.left,
+              width: componentRect.width,
+              height: componentRect.height
+            } : null;
+            // Dispatch event for hover overlay
+            this.dispatchEvent(new CustomEvent('component-hovered-from-iframe', {
+              detail: { component: hoveredComponent || null, rect: absoluteRect },
+              bubbles: true,
+              composed: true
+            }));
+          }
+        } else {
+          // Clear hover
+          this.dispatchEvent(new CustomEvent('component-hovered-from-iframe', {
+            detail: { component: null, rect: null },
+            bubbles: true,
+            composed: true
+          }));
+        }
         break;
     }
   }
@@ -193,6 +253,20 @@ export class PreviewIFramePanel extends LitElement {
     });
   }
 
+  /**
+   * Sync components from parent store to iframe
+   */
+  syncComponentsToIframe() {
+    const appId = this.applicationId || $currentApplication.get()?.uuid;
+    if (appId && this.iframeReady) {
+      const components = $applicationComponents(appId).get();
+      this.sendMessageToIframe({
+        type: 'COMPONENTS_UPDATE',
+        payload: components
+      });
+    }
+  }
+
   private getPreviewUrl(): string {
     const appId = this.applicationId || $currentApplication.get()?.uuid || '';
     const pageUrl = this.pageUrl || ExecuteInstance.Vars.currentPage || '';
@@ -200,10 +274,11 @@ export class PreviewIFramePanel extends LitElement {
   }
 
   private handleIframeLoad() {
-    // Iframe loaded, wait for READY message from inside
+    // Iframe loaded, waiting for READY message from preview bridge
   }
 
   render() {
+    const previewUrl = this.getPreviewUrl();
     return html`
       <div class="iframe-container">
         ${this.isLoading ? html`
@@ -212,7 +287,7 @@ export class PreviewIFramePanel extends LitElement {
           </div>
         ` : ''}
         <iframe
-          src=${this.getPreviewUrl()}
+          src=${previewUrl}
           @load=${this.handleIframeLoad}
         ></iframe>
       </div>
