@@ -153,87 +153,79 @@ export class PreviewIFramePanel extends LitElement {
 
   private handleIframeMessage(message: PreviewMessage) {
     switch (message.type) {
-      case 'READY': {
-        this.iframeReady = true;
-        this.isLoading = false;
-        // Send initial mode
-        const initialMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
-        this.sendMessageToIframe({
-          type: 'SET_MODE',
-          payload: initialMode
-        });
+      case 'READY':
+        this.handleReady();
         break;
-      }
-
-      case 'COMPONENT_CLICKED': {
-        // Update selected component in parent
-        if (message.payload?.uuid) {
-          const appId = this.applicationId || $currentApplication.get()?.uuid;
-          if (appId) {
-            const components = $applicationComponents(appId).get();
-            const selectedComponent = components.find(c => c.uuid === message.payload.uuid);
-            if (selectedComponent) {
-              ExecuteInstance.VarsProxy.selectedComponents = [selectedComponent];
-              // Calculate absolute position (iframe position + component position within iframe)
-              const iframeRect = this.iframeElement?.getBoundingClientRect();
-              const componentRect = message.payload.rect;
-              const absoluteRect = iframeRect && componentRect ? {
-                top: iframeRect.top + componentRect.top,
-                left: iframeRect.left + componentRect.left,
-                width: componentRect.width,
-                height: componentRect.height
-              } : null;
-              // Dispatch event for EditorInteractivePanel
-              this.dispatchEvent(new CustomEvent('component-selected-from-iframe', {
-                detail: { component: selectedComponent, rect: absoluteRect },
-                bubbles: true,
-                composed: true
-              }));
-            }
-          }
-        }
+      case 'COMPONENT_CLICKED':
+        this.handleComponentClicked(message.payload);
         break;
-      }
-
       case 'COMPONENT_UPDATED':
-        // Component was updated in iframe, trigger refresh
         eventDispatcher.emit('component:updated', message.payload);
         break;
-
-      case 'COMPONENT_HOVERED': {
-        // Update hovered component in parent
-        if (message.payload?.uuid) {
-          const appId = this.applicationId || $currentApplication.get()?.uuid;
-          if (appId) {
-            const components = $applicationComponents(appId).get();
-            const hoveredComponent = components.find(c => c.uuid === message.payload.uuid);
-            // Calculate absolute position (iframe position + component position within iframe)
-            const iframeRect = this.iframeElement?.getBoundingClientRect();
-            const componentRect = message.payload.rect;
-            const absoluteRect = iframeRect && componentRect ? {
-              top: iframeRect.top + componentRect.top,
-              left: iframeRect.left + componentRect.left,
-              width: componentRect.width,
-              height: componentRect.height
-            } : null;
-            // Dispatch event for hover overlay
-            this.dispatchEvent(new CustomEvent('component-hovered-from-iframe', {
-              detail: { component: hoveredComponent || null, rect: absoluteRect },
-              bubbles: true,
-              composed: true
-            }));
-          }
-        } else {
-          // Clear hover
-          this.dispatchEvent(new CustomEvent('component-hovered-from-iframe', {
-            detail: { component: null, rect: null },
-            bubbles: true,
-            composed: true
-          }));
-        }
+      case 'COMPONENT_HOVERED':
+        this.handleComponentHovered(message.payload);
         break;
-      }
     }
+  }
+
+  private handleReady() {
+    this.iframeReady = true;
+    this.isLoading = false;
+    const initialMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
+    this.sendMessageToIframe({ type: 'SET_MODE', payload: initialMode });
+  }
+
+  private handleComponentClicked(payload: { uuid?: string; rect?: DOMRect }) {
+    if (!payload?.uuid) return;
+
+    const appId = this.applicationId || $currentApplication.get()?.uuid;
+    if (!appId) return;
+
+    const components = $applicationComponents(appId).get();
+    const selectedComponent = components.find(c => c.uuid === payload.uuid);
+    if (!selectedComponent) return;
+
+    ExecuteInstance.VarsProxy.selectedComponents = [selectedComponent];
+    const absoluteRect = this.calculateAbsoluteRect(payload.rect);
+    this.dispatchEvent(new CustomEvent('component-selected-from-iframe', {
+      detail: { component: selectedComponent, rect: absoluteRect },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private handleComponentHovered(payload: { uuid?: string; rect?: DOMRect } | null) {
+    if (!payload?.uuid) {
+      this.dispatchEvent(new CustomEvent('component-hovered-from-iframe', {
+        detail: { component: null, rect: null },
+        bubbles: true,
+        composed: true
+      }));
+      return;
+    }
+
+    const appId = this.applicationId || $currentApplication.get()?.uuid;
+    if (!appId) return;
+
+    const components = $applicationComponents(appId).get();
+    const hoveredComponent = components.find(c => c.uuid === payload.uuid);
+    const absoluteRect = this.calculateAbsoluteRect(payload.rect);
+    this.dispatchEvent(new CustomEvent('component-hovered-from-iframe', {
+      detail: { component: hoveredComponent || null, rect: absoluteRect },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private calculateAbsoluteRect(componentRect?: DOMRect) {
+    const iframeRect = this.iframeElement?.getBoundingClientRect();
+    if (!iframeRect || !componentRect) return null;
+    return {
+      top: iframeRect.top + componentRect.top,
+      left: iframeRect.left + componentRect.left,
+      width: componentRect.width,
+      height: componentRect.height
+    };
   }
 
   private sendMessageToIframe(message: PreviewMessage) {
