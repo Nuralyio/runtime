@@ -235,8 +235,8 @@ function setupHoverDetection() {
     }
   }, true);
 
-  document.addEventListener('mouseout', (event) => {
-    const relatedTarget = (event as MouseEvent).relatedTarget as HTMLElement;
+  document.addEventListener('mouseout', (event: MouseEvent) => {
+    const relatedTarget = event.relatedTarget as HTMLElement;
     const componentElement = findComponentElement(relatedTarget);
 
     // Only clear if we're leaving to a non-component element
@@ -251,7 +251,7 @@ function setupHoverDetection() {
 }
 
 // Auto-initialize if we're in iframe preview mode
-if (typeof window !== 'undefined' && (window as any).__IS_IFRAME_PREVIEW__) {
+if (typeof globalThis !== 'undefined' && (globalThis as any).__IS_IFRAME_PREVIEW__) {
   // Wait for DOM to be ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializePreviewBridge);
