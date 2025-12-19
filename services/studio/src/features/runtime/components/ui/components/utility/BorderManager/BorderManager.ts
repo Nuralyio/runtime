@@ -104,6 +104,9 @@ export class BorderManagerDisplay extends BaseElementBlock {
     }
   };
 
+  private isInitialized = false;
+  private lastInitializedState: string | null = null;
+
   private emitBorderChange(property: string, value: any) {
     this.executeEvent("onChange", new CustomEvent('change'), {
       property,
@@ -151,6 +154,13 @@ export class BorderManagerDisplay extends BaseElementBlock {
 
     const mainConfig = parseBorder(style.border || style['border-top'] || style['border-right'] || style['border-bottom'] || style['border-left'] || '');
 
+    // Parse radius values and determine if they should be linked
+    const topLeft = parseRadius(style['border-top-left-radius']);
+    const topRight = parseRadius(style['border-top-right-radius']);
+    const bottomLeft = parseRadius(style['border-bottom-left-radius']);
+    const bottomRight = parseRadius(style['border-bottom-right-radius']);
+    const allRadiusEqual = topLeft === topRight && topLeft === bottomLeft && topLeft === bottomRight;
+
     return {
       sides: {
         all: hasBorder,
@@ -161,12 +171,12 @@ export class BorderManagerDisplay extends BaseElementBlock {
       },
       config: mainConfig,
       radius: {
-        topLeft: parseRadius(style['border-top-left-radius']),
-        topRight: parseRadius(style['border-top-right-radius']),
-        bottomLeft: parseRadius(style['border-bottom-left-radius']),
-        bottomRight: parseRadius(style['border-bottom-right-radius']),
+        topLeft,
+        topRight,
+        bottomLeft,
+        bottomRight,
         unit: 'px',
-        linked: true
+        linked: allRadiusEqual
       },
       individualConfigs: {
         top: parseBorder(style['border-top']),
@@ -466,8 +476,19 @@ export class BorderManagerDisplay extends BaseElementBlock {
   }
 
   override renderComponent() {
-    // Sync state from handlers on each render to reflect pseudo-state changes
-    this.borderState = this.getBorderFromHandlers();
+    // Only initialize from handlers once we have data, or when state changes
+    const handlers = this.inputHandlersValue;
+    const hasHandlerData = handlers?.value?.style || handlers?.style;
+    const currentState = this.getCurrentState();
+
+    // Re-initialize when state changes (e.g., default -> hover)
+    const stateChanged = this.lastInitializedState !== null && this.lastInitializedState !== currentState;
+
+    if ((!this.isInitialized || stateChanged) && hasHandlerData) {
+      this.borderState = this.getBorderFromHandlers();
+      this.isInitialized = true;
+      this.lastInitializedState = currentState;
+    }
 
     return html`
       <div class="border-container">
