@@ -68,7 +68,7 @@ export class PreviewIFramePanel extends LitElement {
   @state() private isLoading = true;
   @state() private iframeReady = false;
 
-  @query('iframe') private iframeElement: HTMLIFrameElement | null;
+  @query('iframe') private readonly iframeElement: HTMLIFrameElement | null;
 
   private messageHandler: ((event: MessageEvent) => void) | null = null;
   private componentStoreUnsubscribe: (() => void) | null = null;
@@ -89,7 +89,7 @@ export class PreviewIFramePanel extends LitElement {
   private setupMessageListener() {
     this.messageHandler = (event: MessageEvent) => {
       // Verify the origin of the message
-      if (event.origin !== window.location.origin) {
+      if (event.origin !== globalThis.location.origin) {
         return;
       }
       if (event.data && typeof event.data === 'object' && event.data.type) {
@@ -107,7 +107,7 @@ export class PreviewIFramePanel extends LitElement {
   }
 
   // Track UUIDs we've already sent to iframe to prevent loops
-  private sentToIframe = new Set<string>();
+  private readonly sentToIframe = new Set<string>();
 
   private setupComponentStoreSubscription() {
     const appId = this.applicationId || $currentApplication.get()?.uuid;
@@ -153,7 +153,7 @@ export class PreviewIFramePanel extends LitElement {
 
   private handleIframeMessage(message: PreviewMessage) {
     switch (message.type) {
-      case 'READY':
+      case 'READY': {
         this.iframeReady = true;
         this.isLoading = false;
         // Send initial mode
@@ -163,8 +163,9 @@ export class PreviewIFramePanel extends LitElement {
           payload: initialMode
         });
         break;
+      }
 
-      case 'COMPONENT_CLICKED':
+      case 'COMPONENT_CLICKED': {
         // Update selected component in parent
         if (message.payload?.uuid) {
           const appId = this.applicationId || $currentApplication.get()?.uuid;
@@ -192,13 +193,14 @@ export class PreviewIFramePanel extends LitElement {
           }
         }
         break;
+      }
 
       case 'COMPONENT_UPDATED':
         // Component was updated in iframe, trigger refresh
         eventDispatcher.emit('component:updated', message.payload);
         break;
 
-      case 'COMPONENT_HOVERED':
+      case 'COMPONENT_HOVERED': {
         // Update hovered component in parent
         if (message.payload?.uuid) {
           const appId = this.applicationId || $currentApplication.get()?.uuid;
@@ -230,6 +232,7 @@ export class PreviewIFramePanel extends LitElement {
           }));
         }
         break;
+      }
     }
   }
 
