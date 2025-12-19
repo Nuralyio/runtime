@@ -158,7 +158,7 @@ export class BaseElementCore extends LitElement {
     if (this.component?.uuid) {
       this.classList.add(`component-${this.component.uuid}`);
       // Add data attribute for iframe preview selection
-      this.setAttribute('data-component-uuid', this.component.uuid);
+      this.dataset.componentUuid = this.component.uuid;
     }
 
     // Set component metadata
@@ -205,7 +205,7 @@ export class BaseElementCore extends LitElement {
         curr.parent = this.parentcomponent;
         // Update data attribute for iframe preview selection
         if (curr.uuid) {
-          this.setAttribute('data-component-uuid', curr.uuid);
+          this.dataset.componentUuid = curr.uuid;
         }
       }
 
