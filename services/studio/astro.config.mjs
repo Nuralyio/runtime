@@ -15,6 +15,9 @@ const nuralyUIPath = path.resolve(__dirname, 'src/features/runtime/components/ui
 
 // https://astro.build/config
 export default defineConfig({
+  devToolbar: {
+    enabled: false
+  },
   integrations: [react(), lit(),  worker(), compressor()],
   output: "server",
   adapter: node({
