@@ -127,9 +127,17 @@ export class RuntimeContextHelpers {
           listeners[String(prop)].add(current.name);
         }
 
-        // Create nested proxy for object values
-        if (typeof value === 'object' && value !== null) {
+        // Create nested proxy for object values (non-arrays)
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
           return RuntimeContextHelpers.createNestedProxy(value, {
+            ...config,
+            parentProp: String(prop)
+          });
+        }
+
+        // Create array proxy for array values
+        if (Array.isArray(value)) {
+          return RuntimeContextHelpers.createArrayProxy(value, {
             ...config,
             parentProp: String(prop)
           });
@@ -192,9 +200,46 @@ export class RuntimeContextHelpers {
     target: T,
     config: NestedProxyConfig
   ): T {
-    const { eventPrefix, scope, listeners, current, parentProp } = config;
+    const { eventPrefix, scope, listeners, current, parentProp, onPropertyChange } = config;
 
     return new Proxy(target, {
+      get(proxyTarget, prop, receiver) {
+        const value = Reflect.get(proxyTarget, prop, receiver);
+
+        // Track listener for nested property access
+        const nestedPropKey = `${parentProp}.${String(prop)}`;
+        if (!listeners[nestedPropKey]) {
+          listeners[nestedPropKey] = new Set<string>();
+        }
+
+        if (current.name) {
+          listeners[nestedPropKey].add(current.name);
+          // Also add to parent property listeners for coarse-grained tracking
+          if (!listeners[parentProp]) {
+            listeners[parentProp] = new Set<string>();
+          }
+          listeners[parentProp].add(current.name);
+        }
+
+        // Recursively proxy deeper nested objects
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          return RuntimeContextHelpers.createNestedProxy(value, {
+            ...config,
+            parentProp: nestedPropKey
+          });
+        }
+
+        // Handle arrays with mutation tracking
+        if (Array.isArray(value)) {
+          return RuntimeContextHelpers.createArrayProxy(value, {
+            ...config,
+            parentProp: nestedPropKey
+          });
+        }
+
+        return value;
+      },
+
       set(proxyTarget, prop, value, receiver) {
         const oldValue = proxyTarget[prop as keyof T];
         const result = Reflect.set(proxyTarget, prop, value, receiver);
@@ -246,6 +291,164 @@ export class RuntimeContextHelpers {
 
         if (result) {
           // Emit to parent property listeners
+          const parentListeners = listeners[parentProp] || new Set<string>();
+          parentListeners.forEach((componentName: string) => {
+            const eventName = eventPrefix
+              ? `${eventPrefix}:component-property-changed:${componentName}`
+              : `component-property-changed:${componentName}`;
+
+            eventDispatcher.emit(eventName, {
+              prop: parentProp,
+              ctx: current
+            });
+          });
+        }
+
+        return result;
+      }
+    });
+  }
+
+  /**
+   * Create a proxy for arrays that tracks mutation methods.
+   *
+   * Arrays need special handling because methods like push, pop, splice
+   * mutate the array without triggering the set trap.
+   *
+   * @param target - Array to wrap
+   * @param config - Configuration including parent property name
+   * @returns Reactive proxy for array
+   */
+  private static createArrayProxy<T>(
+    target: T[],
+    config: NestedProxyConfig
+  ): T[] {
+    const { eventPrefix, scope, listeners, current, parentProp } = config;
+
+    // Array mutation methods that need to trigger updates
+    const mutationMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill', 'copyWithin'];
+
+    return new Proxy(target, {
+      get(proxyTarget, prop, receiver) {
+        const value = Reflect.get(proxyTarget, prop, receiver);
+
+        // Track access for dependency collection
+        if (current.name) {
+          if (!listeners[parentProp]) {
+            listeners[parentProp] = new Set<string>();
+          }
+          listeners[parentProp].add(current.name);
+        }
+
+        // Intercept mutation methods
+        if (typeof prop === 'string' && mutationMethods.includes(prop) && typeof value === 'function') {
+          return function (this: T[], ...args: any[]) {
+            const oldLength = proxyTarget.length;
+            const oldArray = [...proxyTarget]; // Snapshot for comparison
+            const result = value.apply(proxyTarget, args);
+
+            // Emit change event after mutation
+            const parentListeners = listeners[parentProp] || new Set<string>();
+            parentListeners.forEach((componentName: string) => {
+              const eventName = eventPrefix
+                ? `${eventPrefix}:component-property-changed:${componentName}`
+                : `component-property-changed:${componentName}`;
+
+              eventDispatcher.emit(eventName, {
+                prop: parentProp,
+                value: proxyTarget,
+                oldValue: oldArray,
+                mutation: prop,
+                ctx: current
+              });
+            });
+
+            // Emit scope event if scope is provided
+            if (scope) {
+              const eventName = eventPrefix
+                ? `${eventPrefix}:${scope}:${parentProp}`
+                : `${scope}:${parentProp}`;
+
+              eventDispatcher.emit(eventName, {
+                prop: parentProp,
+                value: proxyTarget,
+                oldValue: oldArray,
+                mutation: prop
+              });
+            }
+
+            return result;
+          };
+        }
+
+        // Proxy nested objects/arrays within the array
+        if (typeof value === 'object' && value !== null) {
+          const indexKey = `${parentProp}[${String(prop)}]`;
+          if (Array.isArray(value)) {
+            return RuntimeContextHelpers.createArrayProxy(value, {
+              ...config,
+              parentProp: indexKey
+            });
+          }
+          return RuntimeContextHelpers.createNestedProxy(value, {
+            ...config,
+            parentProp: indexKey
+          });
+        }
+
+        return value;
+      },
+
+      set(proxyTarget, prop, value, receiver) {
+        const oldValue = proxyTarget[prop as any];
+        const result = Reflect.set(proxyTarget, prop, value, receiver);
+
+        // Check if value changed
+        let valuesEqual = false;
+        try {
+          valuesEqual = deepEqual(oldValue, value);
+        } catch (e) {
+          valuesEqual = false;
+        }
+
+        if (!valuesEqual) {
+          // Emit to parent property listeners
+          const parentListeners = listeners[parentProp] || new Set<string>();
+          parentListeners.forEach((componentName: string) => {
+            const eventName = eventPrefix
+              ? `${eventPrefix}:component-property-changed:${componentName}`
+              : `component-property-changed:${componentName}`;
+
+            eventDispatcher.emit(eventName, {
+              prop: parentProp,
+              value: proxyTarget,
+              index: prop,
+              ctx: current
+            });
+          });
+
+          // Emit scope event if scope is provided
+          if (scope) {
+            const eventName = eventPrefix
+              ? `${eventPrefix}:${scope}:${parentProp}`
+              : `${scope}:${parentProp}`;
+
+            eventDispatcher.emit(eventName, {
+              prop: parentProp,
+              value: proxyTarget,
+              index: prop,
+              oldValue
+            });
+          }
+        }
+
+        return result;
+      },
+
+      deleteProperty(proxyTarget, prop) {
+        const result = Reflect.deleteProperty(proxyTarget, prop);
+
+        if (result) {
           const parentListeners = listeners[parentProp] || new Set<string>();
           parentListeners.forEach((componentName: string) => {
             const eventName = eventPrefix
