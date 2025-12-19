@@ -97,7 +97,6 @@ function handleParentMessage(event: MessageEvent) {
       // Update a single component from parent (efficient updates)
       if (message.payload) {
         const appId = $currentApplication.get()?.uuid;
-        console.log('[PreviewBridge] COMPONENT_UPDATE_SINGLE received, uuid:', message.payload?.uuid);
         if (appId) {
           const currentComponents = $components.get()[appId] || [];
           const updatedComponent = message.payload;
@@ -107,12 +106,10 @@ function handleParentMessage(event: MessageEvent) {
             const newComponents = [...currentComponents];
             newComponents[index] = updatedComponent;
             $components.setKey(appId, newComponents);
-            console.log('[PreviewBridge] Store updated');
           }
           // Mark this UUID as coming from parent to prevent loop
           updatesFromParent.add(updatedComponent.uuid);
           queueMicrotask(() => {
-            console.log('[PreviewBridge] Emitting component:updated');
             eventDispatcher.emit('component:updated', { uuid: updatedComponent.uuid });
           });
         }

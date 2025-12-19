@@ -115,18 +115,15 @@ export class PreviewIFramePanel extends LitElement {
     if (appId) {
       // Listen for single component updates (efficient - only sends changed component)
       eventDispatcher.on('component:updated', (data: { uuid?: string; component?: any }) => {
-        console.log('[PreviewIFramePanel] component:updated received:', data);
         if (this.iframeReady && data?.uuid) {
           // Prevent loop: don't re-send if we just sent this
           if (this.sentToIframe.has(data.uuid)) {
-            console.log('[PreviewIFramePanel] Skipping - already sent this UUID');
             this.sentToIframe.delete(data.uuid);
             return;
           }
           const components = $applicationComponents(appId).get();
           const updatedComponent = components.find(c => c.uuid === data.uuid);
           if (updatedComponent) {
-            console.log('[PreviewIFramePanel] Sending COMPONENT_UPDATE_SINGLE');
             this.sentToIframe.add(data.uuid);
             this.sendMessageToIframe({
               type: 'COMPONENT_UPDATE_SINGLE',
