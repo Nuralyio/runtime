@@ -43,25 +43,29 @@
  */
 
 import { validateHandlerCode } from '../utils/handler-validator';
+import { createHandlerScope } from './handler-scope';
 
 /**
  * Cache storage for compiled handler functions.
- * 
+ *
  * @description
  * Maps handler code strings to their compiled Function objects.
  * Cache is maintained for the lifetime of the application session.
- * 
+ *
  * @type {Record<string, Function>}
- * 
+ *
  * @remarks
  * - Key: Handler code string (exactly as written in component properties)
  * - Value: Compiled JavaScript function with injected parameters
  * - Thread-safe: Single-threaded JavaScript execution model
  * - Memory impact: ~1-2KB per unique handler on average
- * 
+ *
  * @private
  */
 const handlerFunctionCache: Record<string, Function> = {};
+
+// Export createHandlerScope for use in handler-executor
+export { createHandlerScope };
 
 /**
  * List of all parameters passed to compiled handler functions.
@@ -170,6 +174,7 @@ export const HANDLER_PARAMETERS = [
   "ShowInfoToast",
   "HideToast",
   "ClearAllToasts",
+  "__createScope__", // For transparent variable access
 ] as const;
 
 /**
@@ -253,9 +258,41 @@ export const HANDLER_PARAMETERS = [
  * @see {@link executeHandler} for the execution wrapper that calls compiled functions
  * @see {@link HANDLER_PARAMETERS} for the list of available parameters in handler code
  */
+/**
+ * Flag to enable/disable transparent variable access.
+ * When enabled, users can write `username = 'John'` instead of `Vars.username = 'John'`.
+ *
+ * Set to false to use traditional explicit Vars access.
+ */
+let transparentVarsEnabled = true;
+
+/**
+ * Enable or disable transparent variable access in handlers.
+ *
+ * When enabled (default), variables like `username` automatically
+ * resolve to `Vars.username` for reactive access.
+ *
+ * @param enabled - Whether to enable transparent variable access
+ */
+export function setTransparentVarsEnabled(enabled: boolean): void {
+  transparentVarsEnabled = enabled;
+  // Clear cache when mode changes to recompile handlers
+  clearHandlerCache();
+}
+
+/**
+ * Check if transparent variable access is enabled.
+ */
+export function isTransparentVarsEnabled(): boolean {
+  return transparentVarsEnabled;
+}
+
 export function compileHandlerFunction(code: string): Function {
+  // Include mode in cache key to handle mode changes
+  const cacheKey = transparentVarsEnabled ? `scope:${code}` : code;
+
   // Check cache first for performance
-  if (!handlerFunctionCache[code]) {
+  if (!handlerFunctionCache[cacheKey]) {
     // Validate handler code before compilation
     // This is a safety layer in case validation was bypassed at save time
     const validationResult = validateHandlerCode(code);
@@ -263,14 +300,44 @@ export function compileHandlerFunction(code: string): Function {
       throw new Error(`Handler validation failed: ${validationResult.errors[0]?.message || 'Unknown error'}`);
     }
 
-    // Create new Function with all runtime parameters
-    // The code is wrapped in an IIFE to provide proper scoping
-    handlerFunctionCache[code] = new Function(
-      ...HANDLER_PARAMETERS,
-      `return (function() { ${code} }).apply(this);`
-    );
+    if (transparentVarsEnabled) {
+      // Compile with transparent variable access using `with` statement
+      // The scope proxy routes unknown variables to VarsProxy
+      handlerFunctionCache[cacheKey] = new Function(
+        ...HANDLER_PARAMETERS,
+        '__createScope__',
+        `
+        var __scope__ = __createScope__({
+          VarsProxy: Vars,
+          parameters: {
+            Database, eventHandler: eventHandler, Components, Editor, Event, Item,
+            Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,
+            UpdateApplication, GetVar, GetComponent, GetComponents, AddComponent,
+            SetContextVar, AddPage, TraitCompoentFromSchema, NavigateToUrl,
+            NavigateToHash, NavigateToPage, UpdatePage, context, applications,
+            updateInput, deletePage, CopyComponentToClipboard, PasteComponentFromClipboard,
+            DeleteComponentAction, updateName, updateEvent, updateStyleHandlers,
+            EventData, updateStyle, openEditorTab, setCurrentEditorTab, InvokeFunction,
+            Utils, console, UploadFile, BrowseFiles, Instance, ShowToast,
+            ShowSuccessToast, ShowErrorToast, ShowWarningToast, ShowInfoToast,
+            HideToast, ClearAllToasts
+          }
+        });
+        with (__scope__) {
+          return (function() { ${code} }).apply(this);
+        }
+        `
+      );
+    } else {
+      // Traditional compilation without scope proxy
+      handlerFunctionCache[cacheKey] = new Function(
+        ...HANDLER_PARAMETERS,
+        '__createScope__',
+        `return (function() { ${code} }).apply(this);`
+      );
+    }
   }
-  return handlerFunctionCache[code];
+  return handlerFunctionCache[cacheKey];
 }
 
 /**

@@ -144,14 +144,17 @@ export {
 /**
  * Handler compilation utilities with automatic caching.
  * Compiles JavaScript code strings into executable functions.
- * 
+ *
  * @see {@link compiler.ts} for implementation details
  */
 export {
   compileHandlerFunction,
   clearHandlerCache,
   getHandlerCacheSize,
-  HANDLER_PARAMETERS
+  HANDLER_PARAMETERS,
+  setTransparentVarsEnabled,
+  isTransparentVarsEnabled,
+  createHandlerScope
 } from './compiler';
 
 // ============================================================================

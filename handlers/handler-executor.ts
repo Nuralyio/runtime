@@ -91,7 +91,7 @@ import { eventDispatcher } from '../utils/change-detection';
 import Editor from '../state/editor';
 import Database from '@nuraly/dbclient';
 
-import { compileHandlerFunction } from './compiler';
+import { compileHandlerFunction, createHandlerScope } from './compiler';
 import { setupRuntimeContext, extractRuntimeContext } from './context-setup';
 import { createGlobalHandlerFunctions } from './runtime-api';
 import type { IRuntimeContext } from '../types/IRuntimeContext';
@@ -290,6 +290,7 @@ export function executeHandler(
   };
 
   // Execute the compiled function with all context and global functions
+  // The last parameter is createHandlerScope for transparent variable access
   return compiledFunction(
     Database,
     eventDispatcher,
@@ -342,6 +343,7 @@ export function executeHandler(
     globalFunctions.ShowWarningToast,
     globalFunctions.ShowInfoToast,
     globalFunctions.HideToast,
-    globalFunctions.ClearAllToasts
+    globalFunctions.ClearAllToasts,
+    createHandlerScope // For transparent variable access (username = 'John' instead of Vars.username = 'John')
   );
 }
