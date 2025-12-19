@@ -2,10 +2,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { keyed } from "lit/directives/keyed.js";
-import { ViewMode } from '@nuraly/runtime/redux/store';
-import { $contextMenuEvent, $currentPageViewPort, $pageZoom, $draggingComponentInfo } from '@nuraly/runtime/redux/store';
-import { type ComponentElement } from '@nuraly/runtime/redux/store';
-import { createRef, type Ref, ref } from "lit/directives/ref.js";
+import { ViewMode, $currentPageViewPort, $pageZoom, $draggingComponentInfo, type ComponentElement } from '@nuraly/runtime/redux/store';
+import { createRef, type Ref } from "lit/directives/ref.js";
 
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';

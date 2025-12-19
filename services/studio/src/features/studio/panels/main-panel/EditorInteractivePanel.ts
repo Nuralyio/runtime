@@ -1,8 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
-import { ViewMode } from '@nuraly/runtime/redux/store';
-import { $currentApplication } from '@nuraly/runtime/redux/store';
-import { type ComponentElement } from '@nuraly/runtime/redux/store';
+import { ViewMode, $currentApplication, type ComponentElement } from '@nuraly/runtime/redux/store';
 
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
@@ -32,7 +30,7 @@ export class EditorInteractivePanel extends LitElement {
   @state() mode: ViewMode = ViewMode.Edit;
   @state() selectedComponent: ComponentElement;
 
-  @query('preview-iframe-panel') private iframePanel: PreviewIFramePanel;
+  @query('preview-iframe-panel') private readonly iframePanel: PreviewIFramePanel;
 
   connectedCallback() {
     super.connectedCallback();
