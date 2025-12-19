@@ -110,36 +110,6 @@ event: {
 }
 ```
 
-### Document Upload with Validation
-```typescript
-{
-  component_type: "file-upload",
-  event: {
-    onFilesChanged: `
-      const files = EventData.files;
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ['application/pdf', 'application/msword'];
-
-      const validFiles = [];
-      const errors = [];
-
-      for (const file of files) {
-        if (file.size > maxSize) {
-          errors.push(file.name + ' exceeds 5MB limit');
-        } else if (!allowedTypes.includes(file.type)) {
-          errors.push(file.name + ' is not a valid document type');
-        } else {
-          validFiles.push(file);
-        }
-      }
-
-      Vars.validFiles = validFiles;
-      Vars.uploadErrors = errors;
-    `
-  }
-}
-```
-
 ### Upload to Server
 ```typescript
 {
@@ -148,7 +118,6 @@ event: {
     onFilesChanged: `
       const files = EventData.files;
       Vars.uploading = true;
-      Vars.uploadProgress = 0;
 
       try {
         const formData = new FormData();

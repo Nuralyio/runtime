@@ -28,7 +28,7 @@ IconButton provides a compact button solution with:
     icon: "trash"
   },
   input: {
-    type: { type: "string", value: "danger" }
+    value: { type: "string", value: "danger" }
   },
   event: {
     click: `
@@ -52,82 +52,6 @@ IconButton provides a compact button solution with:
 
 ---
 
-## Inputs
-
-### value (type)
-**Type:** `string`
-
-Button type/variant: `default`, `primary`, `danger`, `text`, `link`.
-
-```typescript
-input: {
-  value: { type: "string", value: "primary" }
-}
-```
-
-### state
-**Type:** `string`
-
-Button state. Set to `disabled` to disable the button.
-
-```typescript
-input: {
-  state: { type: "string", value: "disabled" }
-}
-```
-
-### loading
-**Type:** `boolean`
-
-Show loading spinner.
-
-```typescript
-input: {
-  loading: { type: "boolean", value: true }
-}
-```
-
-### block
-**Type:** `boolean`
-
-Make button full-width.
-
-```typescript
-input: {
-  block: { type: "boolean", value: true }
-}
-```
-
-### dashed
-**Type:** `boolean`
-
-Apply dashed border style.
-
-```typescript
-input: {
-  dashed: { type: "boolean", value: true }
-}
-```
-
----
-
-## Events
-
-### click
-**Triggered:** When button is clicked
-
-**Example:**
-```typescript
-event: {
-  click: `
-    Vars.actionTriggered = true;
-    await PerformAction();
-  `
-}
-```
-
----
-
 ## Parameters
 
 ### icon
@@ -143,6 +67,22 @@ Common icon names: `trash`, `edit`, `copy`, `settings`, `plus`, `minus`, `close`
 
 ---
 
+## Events
+
+### click
+**Triggered:** When button is clicked
+
+```typescript
+event: {
+  click: `
+    Vars.actionTriggered = true;
+    await PerformAction();
+  `
+}
+```
+
+---
+
 ## Common Patterns
 
 ### Toolbar Actions
@@ -152,9 +92,7 @@ Common icon names: `trash`, `edit`, `copy`, `settings`, `plus`, `minus`, `close`
   component_type: "icon-button",
   parameters: { icon: "edit" },
   input: { value: { type: "string", value: "text" } },
-  event: {
-    click: `Vars.editMode = true;`
-  }
+  event: { click: `Vars.editMode = true;` }
 }
 
 // Delete button
@@ -162,40 +100,7 @@ Common icon names: `trash`, `edit`, `copy`, `settings`, `plus`, `minus`, `close`
   component_type: "icon-button",
   parameters: { icon: "trash" },
   input: { value: { type: "string", value: "danger" } },
-  event: {
-    click: `Vars.showDeleteModal = true;`
-  }
-}
-
-// Copy button
-{
-  component_type: "icon-button",
-  parameters: { icon: "copy" },
-  event: {
-    click: `
-      await navigator.clipboard.writeText(Vars.textToCopy);
-      Vars.copied = true;
-      setTimeout(() => Vars.copied = false, 2000);
-    `
-  }
-}
-```
-
-### Loading State
-```typescript
-{
-  component_type: "icon-button",
-  parameters: { icon: "refresh" },
-  inputHandlers: {
-    loading: `return Vars.isRefreshing;`
-  },
-  event: {
-    click: `
-      Vars.isRefreshing = true;
-      await RefreshData();
-      Vars.isRefreshing = false;
-    `
-  }
+  event: { click: `Vars.showDeleteModal = true;` }
 }
 ```
 

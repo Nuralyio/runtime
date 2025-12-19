@@ -62,83 +62,6 @@ ColorPicker provides a complete color selection solution with:
 
 ---
 
-## Inputs
-
-### value
-**Type:** `string`
-
-Current color value in the specified format.
-
-```typescript
-inputHandlers: {
-  value: `return Vars.selectedColor || '#ffffff';`
-}
-```
-
-### format
-**Type:** `string`
-
-Color format: `hex`, `rgb`, `hsl`.
-
-```typescript
-input: {
-  format: { type: "string", value: "rgb" }
-}
-```
-
-### showInput
-**Type:** `boolean`
-
-Show color input field for manual entry.
-
-```typescript
-input: {
-  showInput: { type: "boolean", value: true }
-}
-```
-
-### showCopyButton
-**Type:** `boolean`
-
-Show button to copy color value to clipboard.
-
-```typescript
-input: {
-  showCopyButton: { type: "boolean", value: true }
-}
-```
-
-### defaultColorSets
-**Type:** `array`
-
-Preset color options for quick selection.
-
-```typescript
-inputHandlers: {
-  defaultColorSets: `
-    return [
-      '#ef4444', '#f97316', '#f59e0b', '#eab308',
-      '#84cc16', '#22c55e', '#10b981', '#14b8a6',
-      '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
-      '#8b5cf6', '#a855f7', '#d946ef', '#ec4899'
-    ];
-  `
-}
-```
-
-### closeOnSelect
-**Type:** `boolean`
-
-Close picker automatically after selecting a color.
-
-```typescript
-input: {
-  closeOnSelect: { type: "boolean", value: true }
-}
-```
-
----
-
 ## Events
 
 ### onChange
@@ -151,39 +74,8 @@ input: {
 }
 ```
 
-**Example:**
-```typescript
-event: {
-  onChange: `
-    Vars.themeColor = EventData.value;
-
-    // Update CSS custom property
-    document.documentElement.style.setProperty('--primary-color', EventData.value);
-  `
-}
-```
-
-### onOpen
-**Triggered:** When picker opens
-
-```typescript
-event: {
-  onOpen: `
-    Vars.pickerOpen = true;
-  `
-}
-```
-
-### onClose
-**Triggered:** When picker closes
-
-```typescript
-event: {
-  onClose: `
-    Vars.pickerOpen = false;
-  `
-}
-```
+### onOpen / onClose
+**Triggered:** When picker opens/closes
 
 ---
 
@@ -212,8 +104,6 @@ event: {
         ...Vars.theme,
         primaryColor: EventData.value
       };
-
-      // Apply theme
       await ApplyTheme(Vars.theme);
     `
   }
@@ -257,75 +147,9 @@ event: {
       const color = EventData.value;
       Vars.currentPaletteColor = color;
 
-      // Add to palette if not exists
       if (!Vars.colorPalette.includes(color)) {
         Vars.colorPalette = [...Vars.colorPalette, color];
       }
-    `
-  }
-}
-```
-
-### Brand Color Configuration
-```typescript
-{
-  component_type: "color-picker",
-  input: {
-    label: { type: "string", value: "Brand Color" },
-    helperText: { type: "string", value: "Used for buttons and links" }
-  },
-  inputHandlers: {
-    value: `return Vars.brandSettings?.color || '#000000';`,
-    defaultColorSets: `
-      // Company brand colors
-      return Vars.companyColors || [];
-    `
-  },
-  event: {
-    onChange: `
-      Vars.brandSettings = {
-        ...Vars.brandSettings,
-        color: EventData.value
-      };
-
-      // Generate color variations
-      Vars.brandSettings.colorLight = lighten(EventData.value, 0.2);
-      Vars.brandSettings.colorDark = darken(EventData.value, 0.2);
-    `
-  }
-}
-```
-
-### Chart Color Assignment
-```typescript
-{
-  component_type: "color-picker",
-  input: {
-    format: { type: "string", value: "rgb" }
-  },
-  inputHandlers: {
-    value: `
-      const series = Vars.selectedSeries;
-      return series?.color || 'rgb(59, 130, 246)';
-    `,
-    defaultColorSets: `
-      return [
-        'rgb(239, 68, 68)',
-        'rgb(59, 130, 246)',
-        'rgb(34, 197, 94)',
-        'rgb(234, 179, 8)',
-        'rgb(168, 85, 247)',
-        'rgb(236, 72, 153)'
-      ];
-    `
-  },
-  event: {
-    onChange: `
-      const seriesIndex = Vars.selectedSeriesIndex;
-      Vars.chartConfig.series[seriesIndex].color = EventData.value;
-
-      // Refresh chart
-      Vars.chartKey = Date.now();
     `
   }
 }

@@ -53,65 +53,6 @@ IconPicker provides a complete icon selection solution with:
 
 ---
 
-## Inputs
-
-### value
-**Type:** `string`
-
-Currently selected icon name.
-
-```typescript
-input: {
-  value: { type: "string", value: "settings" }
-}
-```
-
-### placeholder
-**Type:** `string`
-
-Placeholder text when no icon is selected.
-
-```typescript
-input: {
-  placeholder: { type: "string", value: "Choose an icon" }
-}
-```
-
-### showSearch
-**Type:** `boolean`
-
-Enable search functionality in the picker.
-
-```typescript
-input: {
-  showSearch: { type: "boolean", value: true }
-}
-```
-
-### showClear
-**Type:** `boolean`
-
-Show clear button to remove selection.
-
-```typescript
-input: {
-  showClear: { type: "boolean", value: true }
-}
-```
-
-### maxVisible
-**Type:** `number`
-
-Maximum number of icons to display.
-
-```typescript
-input: {
-  maxVisible: { type: "number", value: 100 }
-}
-```
-
----
-
 ## Events
 
 ### onChange
@@ -125,37 +66,8 @@ input: {
 }
 ```
 
-**Example:**
-```typescript
-event: {
-  onChange: `
-    Vars.menuIcon = EventData.value;
-    Vars.iconDetails = EventData.icon;
-  `
-}
-```
-
-### onOpen
-**Triggered:** When picker opens
-
-```typescript
-event: {
-  onOpen: `
-    Vars.pickerOpen = true;
-  `
-}
-```
-
-### onClose
-**Triggered:** When picker closes
-
-```typescript
-event: {
-  onClose: `
-    Vars.pickerOpen = false;
-  `
-}
-```
+### onOpen / onClose
+**Triggered:** When picker opens/closes
 
 ### onSearch
 **Triggered:** When searching icons
@@ -167,25 +79,8 @@ event: {
 }
 ```
 
-**Example:**
-```typescript
-event: {
-  onSearch: `
-    Vars.searchQuery = EventData.query;
-  `
-}
-```
-
 ### onClear
 **Triggered:** When selection is cleared
-
-```typescript
-event: {
-  onClear: `
-    Vars.menuIcon = null;
-  `
-}
-```
 
 ---
 
@@ -207,27 +102,6 @@ event: {
         ...Vars.currentMenuItem,
         icon: EventData.value
       };
-    `
-  }
-}
-```
-
-### Category Icon Assignment
-```typescript
-{
-  component_type: "icon-picker",
-  input: {
-    showSearch: { type: "boolean", value: true }
-  },
-  event: {
-    onChange: `
-      const categoryId = Vars.selectedCategory;
-      await UpdateCategory(categoryId, { icon: EventData.value });
-
-      // Update local state
-      Vars.categories = Vars.categories.map(c =>
-        c.id === categoryId ? { ...c, icon: EventData.value } : c
-      );
     `
   }
 }
