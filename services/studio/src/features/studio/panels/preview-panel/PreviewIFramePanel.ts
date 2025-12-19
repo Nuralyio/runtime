@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { $currentApplication } from '@nuraly/runtime/redux/store';
-import { $applicationComponents } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $applicationComponents } from '@nuraly/runtime/redux/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 
@@ -15,7 +14,7 @@ export interface PreviewMessage {
 
 @customElement('preview-iframe-panel')
 export class PreviewIFramePanel extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: block;
       width: 100%;
