@@ -19,7 +19,7 @@ import '../main-panel/ComponentTitleOverlay.ts';
  */
 @customElement("preview-editor-panel")
 export class PreviewEditorPanel extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: block;
       height: 100%;
