@@ -182,7 +182,7 @@ export function updateComponentAttributes(
       }
 
       // Trigger a refresh event for any listeners - ONLY when actual update occurred
-      eventDispatcher.emit("component:updated");
+      eventDispatcher.emit("component:updated", { uuid: componentId });
       eventDispatcher.emit(`component-updated:${String(componentId)}`);
     } else {
       // No update needed
