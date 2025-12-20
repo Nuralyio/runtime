@@ -43,7 +43,9 @@
  */
 
 import { validateHandlerCode } from '../utils/handler-validator';
-import { createHandlerScope } from './handler-scope';
+
+// Re-export createHandlerScope for use in handler-executor
+export { createHandlerScope } from './handler-scope';
 
 /**
  * Cache storage for compiled handler functions.
@@ -63,9 +65,6 @@ import { createHandlerScope } from './handler-scope';
  * @private
  */
 const handlerFunctionCache: Record<string, Function> = {};
-
-// Export createHandlerScope for use in handler-executor
-export { createHandlerScope };
 
 /**
  * List of all parameters passed to compiled handler functions.
