@@ -235,7 +235,7 @@ export class RuntimeContextHelpers {
     target: T,
     config: NestedProxyConfig
   ): T {
-    const { eventPrefix, scope, listeners, current, parentProp, onPropertyChange } = config;
+    const { eventPrefix, scope, listeners, current, parentProp } = config;
 
     return new Proxy(target, {
       get(proxyTarget, prop, receiver) {
@@ -326,7 +326,7 @@ export class RuntimeContextHelpers {
     const { eventPrefix, scope, listeners, current, parentProp } = config;
 
     // Array mutation methods that need to trigger updates
-    const mutationMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill', 'copyWithin'];
+    const mutationMethods = new Set(['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill', 'copyWithin']);
 
     return new Proxy(target, {
       get(proxyTarget, prop, receiver) {
@@ -341,7 +341,7 @@ export class RuntimeContextHelpers {
         }
 
         // Intercept mutation methods
-        if (typeof prop === 'string' && mutationMethods.includes(prop) && typeof value === 'function') {
+        if (typeof prop === 'string' && mutationMethods.has(prop) && typeof value === 'function') {
           return function (this: T[], ...args: any[]) {
             const oldArray = [...proxyTarget]; // Snapshot for comparison
             const result = value.apply(proxyTarget, args);
