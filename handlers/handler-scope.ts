@@ -50,6 +50,15 @@ const RESERVED_NAMES = new Set([
   'Vars',
   'Instance',
 
+  // Namespaced APIs (new clean API)
+  'Nav',
+  'UI',
+  'Component',
+  'Data',
+  'Page',
+  'App',
+  'Var',
+
   // Variable functions
   'SetVar',
   'GetContextVar',

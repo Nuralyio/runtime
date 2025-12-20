@@ -175,6 +175,14 @@ export const HANDLER_PARAMETERS = [
   "HideToast",
   "ClearAllToasts",
   "__createScope__", // For transparent variable access
+  // Namespaced API object (new clean API)
+  "Nav",
+  "UI",
+  "Component",
+  "Data",
+  "Page",
+  "App",
+  "Var",
 ] as const;
 
 /**
@@ -305,7 +313,6 @@ export function compileHandlerFunction(code: string): Function {
       // The scope proxy routes unknown variables to VarsProxy
       handlerFunctionCache[cacheKey] = new Function(
         ...HANDLER_PARAMETERS,
-        '__createScope__',
         `
         var __scope__ = __createScope__({
           VarsProxy: Vars,
@@ -320,7 +327,8 @@ export function compileHandlerFunction(code: string): Function {
             EventData, updateStyle, openEditorTab, setCurrentEditorTab, InvokeFunction,
             Utils, console, UploadFile, BrowseFiles, Instance, ShowToast,
             ShowSuccessToast, ShowErrorToast, ShowWarningToast, ShowInfoToast,
-            HideToast, ClearAllToasts
+            HideToast, ClearAllToasts,
+            Nav, UI, Component, Data, Page, App, Var
           }
         });
         with (__scope__) {
@@ -332,7 +340,6 @@ export function compileHandlerFunction(code: string): Function {
       // Traditional compilation without scope proxy
       handlerFunctionCache[cacheKey] = new Function(
         ...HANDLER_PARAMETERS,
-        '__createScope__',
         `return (function() { ${code} }).apply(this);`
       );
     }
