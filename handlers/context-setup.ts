@@ -233,7 +233,9 @@ export function setupRuntimeContext(context: IRuntimeContext, component: any, Ev
   // This fixes the issue where we were caching proxy -> proxy instead of original -> proxy
   const originalStyle = context.Current.style;
 
-  if (!context.styleProxyCache.has(originalStyle)) {
+  if (context.styleProxyCache.has(originalStyle)) {
+    context.Current.style = context.styleProxyCache.get(originalStyle);
+  } else {
     const newProxy = observe(originalStyle, (target, prop, value) => {
       context.setComponentRuntimeStyleAttribute(
         context.Current.uniqueUUID,
@@ -245,8 +247,6 @@ export function setupRuntimeContext(context: IRuntimeContext, component: any, Ev
     // Cache using original object as key, proxy as value
     context.styleProxyCache.set(originalStyle, newProxy);
     context.Current.style = newProxy;
-  } else {
-    context.Current.style = context.styleProxyCache.get(originalStyle);
   }
 }
 
