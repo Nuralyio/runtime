@@ -22,6 +22,59 @@ import deepEqual from 'fast-deep-equal';
 import { eventDispatcher } from './change-detection';
 import type { ComponentElement } from '../redux/store/component/component.interface';
 
+// ============================================================================
+// Helper Functions (extracted to reduce duplication)
+// ============================================================================
+
+/**
+ * Safely compare two values for equality, handling proxy objects.
+ */
+function safeDeepEqual(oldValue: any, newValue: any): boolean {
+  try {
+    return deepEqual(oldValue, newValue);
+  } catch {
+    // If deepEqual fails (e.g., comparing proxies), assume values are different
+    return false;
+  }
+}
+
+/**
+ * Build a scoped event name with optional prefix.
+ */
+function buildEventName(eventPrefix: string, eventType: string, suffix?: string): string {
+  const base = eventPrefix ? `${eventPrefix}:${eventType}` : eventType;
+  return suffix ? `${base}:${suffix}` : base;
+}
+
+/**
+ * Emit property change events to all listeners.
+ */
+function emitToListeners(
+  listeners: Set<string>,
+  eventPrefix: string,
+  prop: string,
+  data: Record<string, any>
+): void {
+  listeners.forEach((componentName: string) => {
+    const eventName = buildEventName(eventPrefix, 'component-property-changed', componentName);
+    eventDispatcher.emit(eventName, { prop, ...data });
+  });
+}
+
+/**
+ * Emit scope-specific event if scope is provided.
+ */
+function emitScopeEvent(
+  scope: string | undefined,
+  eventPrefix: string,
+  propPath: string,
+  data: Record<string, any>
+): void {
+  if (!scope) return;
+  const eventName = buildEventName(eventPrefix, scope, propPath);
+  eventDispatcher.emit(eventName, data);
+}
+
 /**
  * Configuration for reactive proxy creation
  */
@@ -150,16 +203,7 @@ export class RuntimeContextHelpers {
         const oldValue = proxyTarget[prop as keyof T];
 
         // Guard: Don't emit events if value hasn't changed
-        // Wrap in try-catch to handle proxy objects that may not have valueOf
-        let valuesEqual = false;
-        try {
-          valuesEqual = deepEqual(oldValue, value);
-        } catch (e) {
-          // If deepEqual fails (e.g., comparing proxies), assume values are different
-          valuesEqual = false;
-        }
-
-        if (valuesEqual) {
+        if (safeDeepEqual(oldValue, value)) {
           return true;
         }
 
@@ -170,16 +214,7 @@ export class RuntimeContextHelpers {
         onPropertyChange(String(prop), value, propListeners);
 
         // Emit scope-specific event if scope is provided
-        if (scope) {
-          const eventName = eventPrefix
-            ? `${eventPrefix}:${scope}:${String(prop)}`
-            : `${scope}:${String(prop)}`;
-
-          eventDispatcher.emit(eventName, {
-            value,
-            ctx: current // IMPORTANT: Include ctx for scope events (e.g., Vars:selectedComponents)
-          });
-        }
+        emitScopeEvent(scope, eventPrefix, String(prop), { value, ctx: current });
 
         return result;
       }
@@ -244,43 +279,18 @@ export class RuntimeContextHelpers {
         const oldValue = proxyTarget[prop as keyof T];
         const result = Reflect.set(proxyTarget, prop, value, receiver);
 
-        // Check if value changed, with error handling for proxy objects
-        let valuesEqual = false;
-        try {
-          valuesEqual = deepEqual(oldValue, value);
-        } catch (e) {
-          // If deepEqual fails (e.g., comparing proxies), assume values are different
-          valuesEqual = false;
-        }
-
-        if (!valuesEqual) {
+        if (!safeDeepEqual(oldValue, value)) {
           // Emit to parent property listeners
           const parentListeners = listeners[parentProp] || new Set<string>();
-          parentListeners.forEach((componentName: string) => {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:component-property-changed:${componentName}`
-              : `component-property-changed:${componentName}`;
-
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
-              value,
-              ctx: current
-            });
-          });
+          emitToListeners(parentListeners, eventPrefix, parentProp, { value, ctx: current });
 
           // Emit nested scope event if scope is provided
-          if (scope) {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:${scope}:${parentProp}.${String(prop)}`
-              : `${scope}:${parentProp}.${String(prop)}`;
-
-            eventDispatcher.emit(eventName, {
-              prop,
-              value,
-              oldValue,
-              parent: parentProp
-            });
-          }
+          emitScopeEvent(scope, eventPrefix, `${parentProp}.${String(prop)}`, {
+            prop,
+            value,
+            oldValue,
+            parent: parentProp
+          });
         }
 
         return result;
@@ -290,18 +300,8 @@ export class RuntimeContextHelpers {
         const result = Reflect.deleteProperty(proxyTarget, prop);
 
         if (result) {
-          // Emit to parent property listeners
           const parentListeners = listeners[parentProp] || new Set<string>();
-          parentListeners.forEach((componentName: string) => {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:component-property-changed:${componentName}`
-              : `component-property-changed:${componentName}`;
-
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
-              ctx: current
-            });
-          });
+          emitToListeners(parentListeners, eventPrefix, parentProp, { ctx: current });
         }
 
         return result;
@@ -343,39 +343,25 @@ export class RuntimeContextHelpers {
         // Intercept mutation methods
         if (typeof prop === 'string' && mutationMethods.includes(prop) && typeof value === 'function') {
           return function (this: T[], ...args: any[]) {
-            const oldLength = proxyTarget.length;
             const oldArray = [...proxyTarget]; // Snapshot for comparison
             const result = value.apply(proxyTarget, args);
 
             // Emit change event after mutation
             const parentListeners = listeners[parentProp] || new Set<string>();
-            parentListeners.forEach((componentName: string) => {
-              const eventName = eventPrefix
-                ? `${eventPrefix}:component-property-changed:${componentName}`
-                : `component-property-changed:${componentName}`;
-
-              eventDispatcher.emit(eventName, {
-                prop: parentProp,
-                value: proxyTarget,
-                oldValue: oldArray,
-                mutation: prop,
-                ctx: current
-              });
+            emitToListeners(parentListeners, eventPrefix, parentProp, {
+              value: proxyTarget,
+              oldValue: oldArray,
+              mutation: prop,
+              ctx: current
             });
 
             // Emit scope event if scope is provided
-            if (scope) {
-              const eventName = eventPrefix
-                ? `${eventPrefix}:${scope}:${parentProp}`
-                : `${scope}:${parentProp}`;
-
-              eventDispatcher.emit(eventName, {
-                prop: parentProp,
-                value: proxyTarget,
-                oldValue: oldArray,
-                mutation: prop
-              });
-            }
+            emitScopeEvent(scope, eventPrefix, parentProp, {
+              prop: parentProp,
+              value: proxyTarget,
+              oldValue: oldArray,
+              mutation: prop
+            });
 
             return result;
           };
@@ -403,43 +389,22 @@ export class RuntimeContextHelpers {
         const oldValue = proxyTarget[prop as any];
         const result = Reflect.set(proxyTarget, prop, value, receiver);
 
-        // Check if value changed
-        let valuesEqual = false;
-        try {
-          valuesEqual = deepEqual(oldValue, value);
-        } catch (e) {
-          valuesEqual = false;
-        }
-
-        if (!valuesEqual) {
+        if (!safeDeepEqual(oldValue, value)) {
           // Emit to parent property listeners
           const parentListeners = listeners[parentProp] || new Set<string>();
-          parentListeners.forEach((componentName: string) => {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:component-property-changed:${componentName}`
-              : `component-property-changed:${componentName}`;
-
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
-              value: proxyTarget,
-              index: prop,
-              ctx: current
-            });
+          emitToListeners(parentListeners, eventPrefix, parentProp, {
+            value: proxyTarget,
+            index: prop,
+            ctx: current
           });
 
           // Emit scope event if scope is provided
-          if (scope) {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:${scope}:${parentProp}`
-              : `${scope}:${parentProp}`;
-
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
-              value: proxyTarget,
-              index: prop,
-              oldValue
-            });
-          }
+          emitScopeEvent(scope, eventPrefix, parentProp, {
+            prop: parentProp,
+            value: proxyTarget,
+            index: prop,
+            oldValue
+          });
         }
 
         return result;
@@ -450,16 +415,7 @@ export class RuntimeContextHelpers {
 
         if (result) {
           const parentListeners = listeners[parentProp] || new Set<string>();
-          parentListeners.forEach((componentName: string) => {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:component-property-changed:${componentName}`
-              : `component-property-changed:${componentName}`;
-
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
-              ctx: current
-            });
-          });
+          emitToListeners(parentListeners, eventPrefix, parentProp, { ctx: current });
         }
 
         return result;
