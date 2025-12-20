@@ -18,12 +18,12 @@ class EventDispatcher {
   public readonly allEvents$: Observable<{ eventName: string; data: any }>;
 
   // Batching state
-  private pendingEvents: Map<string, PendingEvent> = new Map();
+  private readonly pendingEvents: Map<string, PendingEvent> = new Map();
   private batchScheduled: boolean = false;
   private batchingEnabled: boolean = true;
 
   // Events that should always be batched (high-frequency property changes)
-  private batchableEventPatterns: RegExp[] = [
+  private readonly batchableEventPatterns: RegExp[] = [
     /^component-property-changed:/,
     /^microapp:.*:component-property-changed:/,
     /^Vars:/,
