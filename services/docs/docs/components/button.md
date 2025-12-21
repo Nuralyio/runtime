@@ -31,7 +31,7 @@ Button provides a complete action trigger solution with:
   },
   event: {
     onClick: `
-      Vars.formSubmitted = true;
+      $formSubmitted = true;
       await SubmitForm();
     `
   }
@@ -71,7 +71,7 @@ Button provides a complete action trigger solution with:
 ```typescript
 event: {
   onClick: `
-    Vars.buttonClicked = true;
+    $buttonClicked = true;
     await PerformAction();
   `
 }
@@ -98,19 +98,19 @@ event: {
     block: { type: "boolean", value: true }
   },
   inputHandlers: {
-    loading: `return Vars.isSubmitting;`,
-    disabled: `return !Vars.formValid;`
+    loading: `return $isSubmitting;`,
+    disabled: `return !$formValid;`
   },
   event: {
     onClick: `
-      Vars.isSubmitting = true;
+      $isSubmitting = true;
       try {
-        await SubmitForm(Vars.formData);
-        Vars.submitSuccess = true;
+        await SubmitForm($formData);
+        $submitSuccess = true;
       } catch (error) {
-        Vars.submitError = error.message;
+        $submitError = error.message;
       } finally {
-        Vars.isSubmitting = false;
+        $isSubmitting = false;
       }
     `
   }
@@ -137,7 +137,7 @@ event: {
     label: { type: "string", value: "Cancel" },
     type: { type: "string", value: "default" }
   },
-  event: { onClick: `Vars.editMode = false;` }
+  event: { onClick: `$editMode = false;` }
 }
 
 // Delete button
@@ -148,7 +148,7 @@ event: {
     type: { type: "string", value: "danger" },
     icon: { type: "string", value: "trash" }
   },
-  event: { onClick: `Vars.showDeleteConfirm = true;` }
+  event: { onClick: `$showDeleteConfirm = true;` }
 }
 ```
 

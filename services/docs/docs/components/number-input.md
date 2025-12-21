@@ -32,11 +32,11 @@ NumberInput provides a complete numeric input solution with:
   },
   inputHandlers: {
     label: `return "Quantity";`,
-    value: `return Vars.quantity || 1;`
+    value: `return $quantity || 1;`
   },
   event: {
     onChange: `
-      Vars.quantity = parseInt(EventData.value);
+      $quantity = parseInt(EventData.value);
     `
   }
 }
@@ -101,17 +101,17 @@ NumberInput provides a complete numeric input solution with:
   },
   inputHandlers: {
     label: `return "Quantity";`,
-    value: `return Vars.cartItem?.quantity || 1;`
+    value: `return $cartItem?.quantity || 1;`
   },
   event: {
     onChange: `
       const qty = parseInt(EventData.value);
-      Vars.cartItem = {
-        ...Vars.cartItem,
+      $cartItem = {
+        ...$cartItem,
         quantity: qty
       };
 
-      Vars.cartTotal = Vars.cart.reduce((sum, item) =>
+      $cartTotal = $cart.reduce((sum, item) =>
         sum + (item.price * item.quantity), 0
       );
     `
@@ -130,16 +130,16 @@ NumberInput provides a complete numeric input solution with:
   },
   inputHandlers: {
     label: `return "Price ($)";`,
-    value: `return Vars.product?.price || 0;`
+    value: `return $product?.price || 0;`
   },
   event: {
     onChange: `
       const price = parseFloat(EventData.value);
-      Vars.product = { ...Vars.product, price: price };
+      $product = { ...$product, price: price };
     `,
     onBlur: `
       const price = parseFloat(EventData.event.target.value);
-      Vars.product.price = Math.round(price * 100) / 100;
+      $product.price = Math.round(price * 100) / 100;
     `
   }
 }
@@ -164,13 +164,13 @@ NumberInput provides a complete numeric input solution with:
   inputHandlers: {
     label: `return "Age";`,
     helper: `return "You must be 18 or older";`,
-    value: `return Vars.userAge || '';`
+    value: `return $userAge || '';`
   },
   event: {
     onChange: `
       const age = parseInt(EventData.value);
-      Vars.userAge = age;
-      Vars.isAdult = age >= 18;
+      $userAge = age;
+      $isAdult = age >= 18;
     `
   }
 }
@@ -187,13 +187,13 @@ NumberInput provides a complete numeric input solution with:
   },
   inputHandlers: {
     label: `return "Discount (%)";`,
-    value: `return Vars.discountPercent || 0;`
+    value: `return $discountPercent || 0;`
   },
   event: {
     onChange: `
       const percent = parseFloat(EventData.value);
-      Vars.discountPercent = Math.min(100, Math.max(0, percent));
-      Vars.discountedPrice = Vars.originalPrice * (1 - percent / 100);
+      $discountPercent = Math.min(100, Math.max(0, percent));
+      $discountedPrice = $originalPrice * (1 - percent / 100);
     `
   }
 }

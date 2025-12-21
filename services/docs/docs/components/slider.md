@@ -32,7 +32,7 @@ Slider provides a complete range selection solution with:
   },
   event: {
     onChange: `
-      Vars.volume = EventData.value;
+      $volume = EventData.value;
     `
   }
 }
@@ -91,11 +91,11 @@ Slider provides a complete range selection solution with:
     showTooltip: { type: "boolean", value: true }
   },
   inputHandlers: {
-    value: `return Vars.volume || 50;`
+    value: `return $volume || 50;`
   },
   event: {
     onChange: `
-      Vars.volume = EventData.value;
+      $volume = EventData.value;
       AudioPlayer.setVolume(EventData.value / 100);
     `,
     onAfterChange: `
@@ -116,16 +116,16 @@ Slider provides a complete range selection solution with:
     step: { type: "number", value: 10 }
   },
   inputHandlers: {
-    value: `return [Vars.minPrice || 0, Vars.maxPrice || 1000];`,
+    value: `return [$minPrice || 0, $maxPrice || 1000];`,
     marks: `return { 0: '$0', 500: '$500', 1000: '$1000' };`
   },
   event: {
     onAfterChange: `
       const [min, max] = EventData.value;
-      Vars.minPrice = min;
-      Vars.maxPrice = max;
+      $minPrice = min;
+      $maxPrice = max;
 
-      Vars.filteredProducts = Vars.allProducts.filter(p =>
+      $filteredProducts = $allProducts.filter(p =>
         p.price >= min && p.price <= max
       );
     `

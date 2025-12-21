@@ -41,9 +41,9 @@ Dropdown provides a complete menu solution with:
     onItemClick: `
       const action = EventData.value;
       if (action === 'edit') {
-        Vars.editMode = true;
+        $editMode = true;
       } else if (action === 'delete') {
-        Vars.showDeleteConfirm = true;
+        $showDeleteConfirm = true;
       }
     `
   }
@@ -162,7 +162,7 @@ The dropdown supports custom trigger content via child components:
   inputHandlers: {
     options: `
       return [
-        { label: Vars.currentUser?.name || 'User', value: 'header', disabled: true },
+        { label: $currentUser?.name || 'User', value: 'header', disabled: true },
         { type: 'divider' },
         { label: 'Profile', value: 'profile', icon: 'user' },
         { label: 'Settings', value: 'settings', icon: 'settings' },

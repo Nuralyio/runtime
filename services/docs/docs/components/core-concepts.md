@@ -62,8 +62,8 @@ Dynamic values evaluated at runtime:
 
 ```typescript
 inputHandlers: {
-  value: `return Vars.username || '';`,
-  disabled: `return Vars.isProcessing || Vars.formSubmitted;`
+  value: `return $username || '';`,
+  disabled: `return $isProcessing || $formSubmitted;`
 }
 ```
 
@@ -96,13 +96,13 @@ Events trigger handler code in response to user interactions:
 event: {
   onChange: `
     console.log('Value changed to:', EventData.value);
-    Vars.lastValue = EventData.value;
+    $lastValue = EventData.value;
   `,
   onFocus: `
-    Vars.isFocused = true;
+    $isFocused = true;
   `,
   onBlur: `
-    Vars.isFocused = false;
+    $isFocused = false;
   `
 }
 ```
@@ -137,8 +137,8 @@ Current.Instance             // Component runtime state
 Current.Instance.myValue     // Custom property
 
 // Variables
-Vars.myVar                   // Local variable (microapp instance)
-Vars['global.myVar']         // Global variable (shared)
+$myVar                   // Local variable (microapp instance)
+$global.myVar         // Global variable (shared)
 
 // Global functions
 GetVar(key)                  // Get global variable
@@ -156,18 +156,18 @@ Dynamic styling based on runtime conditions:
 ```typescript
 styleHandlers: {
   width: `
-    return Vars.isCompact ? '200px' : '100%';
+    return $isCompact ? '200px' : '100%';
   `,
   backgroundColor: `
-    if (Vars.theme === 'dark') return '#333';
-    if (Vars.theme === 'light') return '#fff';
+    if ($theme === 'dark') return '#333';
+    if ($theme === 'light') return '#fff';
     return '#e0e0e0';
   `,
   color: `
-    return Vars.isError ? '#f44336' : '#000';
+    return $isError ? '#f44336' : '#000';
   `,
   display: `
-    return Vars.showField ? 'block' : 'none';
+    return $showField ? 'block' : 'none';
   `
 }
 ```
@@ -253,10 +253,10 @@ In microapps, handlers run in an isolated context:
 
 ```typescript
 // Local scope (isolated to microapp instance)
-Vars.localVar = value           // Isolated storage
+$localVar = value           // Isolated storage
 
 // Global scope (shared across all instances)
-Vars['global.sharedVar'] = value // Shared storage
+$global.sharedVar = value // Shared storage
 
 // Access to isolated stores
 const app = ExecuteInstance.applications['app-id'];
@@ -277,9 +277,9 @@ event: {
   onChange: `
     try {
       const parsed = JSON.parse(EventData.value);
-      Vars.parsedValue = parsed;
+      $parsedValue = parsed;
     } catch (error) {
-      Vars.parseError = error.message;
+      $parseError = error.message;
       console.error('Parse error:', error);
     }
   `
@@ -300,7 +300,7 @@ Errors display in:
 
 ### Optimization Tips
 1. Minimize computations in handlers
-2. Use `Vars` for frequently accessed values
+2. Use `$` variables for frequently accessed values
 3. Avoid DOM manipulations in handlers
 4. Cache expensive operations outside handlers
 5. Use conditional logic to short-circuit evaluation
@@ -311,12 +311,12 @@ Handlers support async/await:
 ```typescript
 event: {
   onClick: `
-    Vars.loading = true;
+    $loading = true;
     try {
       const result = await FetchData();
-      Vars.data = result;
+      $data = result;
     } finally {
-      Vars.loading = false;
+      $loading = false;
     }
   `
 }

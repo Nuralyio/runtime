@@ -41,7 +41,7 @@ Select provides a complete dropdown solution with:
   },
   event: {
     onChange: `
-      Vars.selectedCountry = EventData.value;
+      $selectedCountry = EventData.value;
     `
   }
 }
@@ -113,9 +113,9 @@ Select provides a complete dropdown solution with:
   },
   event: {
     onChange: `
-      Vars.selectedCountry = EventData.value;
-      Vars.selectedCity = null;
-      Vars.cities = await LoadCities(EventData.value);
+      $selectedCountry = EventData.value;
+      $selectedCity = null;
+      $cities = await LoadCities(EventData.value);
     `
   }
 }
@@ -126,11 +126,11 @@ Select provides a complete dropdown solution with:
   component_type: "select",
   input: { label: { type: "string", value: "City" } },
   inputHandlers: {
-    options: `return Vars.cities || [];`,
-    disabled: `return !Vars.selectedCountry;`
+    options: `return $cities || [];`,
+    disabled: `return !$selectedCountry;`
   },
   event: {
-    onChange: `Vars.selectedCity = EventData.value;`
+    onChange: `$selectedCity = EventData.value;`
   }
 }
 ```
@@ -145,11 +145,11 @@ Select provides a complete dropdown solution with:
     placeholder: { type: "string", value: "Select tags" }
   },
   inputHandlers: {
-    options: `return Vars.availableTags.map(tag => ({ label: tag.name, value: tag.id }));`,
-    value: `return Vars.selectedTags || [];`
+    options: `return $availableTags.map(tag => ({ label: tag.name, value: tag.id }));`,
+    value: `return $selectedTags || [];`
   },
   event: {
-    onChange: `Vars.selectedTags = EventData.value;`
+    onChange: `$selectedTags = EventData.value;`
   }
 }
 ```

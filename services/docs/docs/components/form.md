@@ -33,11 +33,11 @@ Form provides a complete form management solution with:
   event: {
     onSubmitSuccess: `
       console.log('Form submitted:', EventData.values);
-      Vars.formSubmitted = true;
+      $formSubmitted = true;
     `,
     onSubmitError: `
       console.error('Form error:', EventData.error);
-      Vars.formError = EventData.error;
+      $formError = EventData.error;
     `
   }
 }
@@ -75,8 +75,8 @@ Form provides a complete form management solution with:
 event: {
   onSubmitSuccess: `
     const values = EventData.values;
-    Vars.submittedData = values;
-    Vars.formSubmitted = true;
+    $submittedData = values;
+    $formSubmitted = true;
 
     const response = await fetch('/api/register', {
       method: 'POST',
@@ -85,7 +85,7 @@ event: {
     });
 
     if (response.ok) {
-      Vars.successMessage = 'Registration complete!';
+      $successMessage = 'Registration complete!';
     }
   `
 }
@@ -154,16 +154,16 @@ The Form component exposes several methods:
   event: {
     onSubmitSuccess: `
       const values = EventData.values;
-      Vars.isSubmitting = true;
+      $isSubmitting = true;
 
       try {
         const response = await RegisterUser(values);
-        Vars.registrationSuccess = true;
+        $registrationSuccess = true;
         navigateTo('dashboard');
       } catch (error) {
-        Vars.registrationError = error.message;
+        $registrationError = error.message;
       } finally {
-        Vars.isSubmitting = false;
+        $isSubmitting = false;
       }
     `
   }
