@@ -54,6 +54,7 @@ export const enum ComponentType {
   Form = "form",
   ValidationRules = "validation_rules",
   BorderManager = "border_manager",
+  AccessRoles = "access_roles",
 }
 
 export interface DraggingComponentInfo {
