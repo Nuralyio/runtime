@@ -10,6 +10,7 @@ export { default as studioPageUrlBlock } from "./page-blocks/studio-page-url-blo
 export { default as studioPageSEOBlock } from "./page-blocks/studio-page-seo-block.ts";
 export { default as studioPageDefaultCheckboxBlock } from "./page-blocks/studio-page-default-checkbox-block.ts";
 export { default as studioPageAccessControlBlock } from "./page-blocks/studio-page-access-control-block.ts";
+export { default as studioAppAccessControlBlock } from "./page-blocks/studio-app-access-control-block.ts";
 export { PageThemeStudio } from "./page-blocks/themes.ts";
 
 // Microapp Blocks
