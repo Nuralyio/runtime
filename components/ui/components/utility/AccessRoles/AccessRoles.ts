@@ -7,7 +7,7 @@ import { accessRolesStyles } from './AccessRoles.style';
 /**
  * ResourcePermission interface matching backend model
  */
-interface ResourcePermission {
+interface _ResourcePermission {
   id?: number;
   resource_id: string;
   resource_type: 'page' | 'component' | 'application';
@@ -87,7 +87,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
   static override styles = [accessRolesStyles];
 
   @property({ type: Object })
-  component: ComponentElement;
+  component!: ComponentElement;
 
   @state()
   private customRoleName: string = '';
@@ -95,31 +95,207 @@ export class AccessRolesDisplay extends BaseElementBlock {
   @state()
   private selectedPermission: string = 'read';
 
+  @state()
+  private initialized: boolean = false;
+
+  @state()
+  private loadedPermissions: {
+    is_public: boolean;
+    is_anonymous: boolean;
+    role_permissions: any[];
+  } | null = null;
+
+  /** Track the last resource_id we loaded permissions for */
+  private lastLoadedResourceId: string | null = null;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    // Register callback to watch for value input changes (contains resource_id)
+    this.registerCallback('value', (val: any) => {
+      console.log('[AccessRoles] value callback triggered:', val);
+      if (val?.resource_id && val.resource_id !== this.lastLoadedResourceId) {
+        console.log('[AccessRoles] Resource ID changed via callback, loading permissions:', val.resource_id);
+        this.lastLoadedResourceId = val.resource_id;
+        this.loadPermissions();
+      }
+    });
+  }
+
+  override disconnectedCallback(): void {
+    this.unregisterCallback('value');
+    super.disconnectedCallback();
+  }
+
+  /** Get the value input which contains resource config */
+  private getValueInput() {
+    return this.inputHandlersValue?.value || this.inputHandlersValue || {};
+  }
+
+  override async firstUpdated() {
+    // Try to load permissions immediately if resource_id is already available
+    const h = this.getValueInput();
+    if (h.resource_id && h.resource_id !== this.lastLoadedResourceId) {
+      console.log('[AccessRoles] firstUpdated: loading permissions for:', h.resource_id);
+      this.lastLoadedResourceId = h.resource_id;
+      await this.loadPermissions();
+    }
+
+    // Mark as initialized after first render to prevent initial change events
+    requestAnimationFrame(() => {
+      this.initialized = true;
+    });
+  }
+
+  private async loadPermissions() {
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    console.log('[AccessRoles] loadPermissions called:', { resourceId, resourceType });
+
+    if (!resourceId) {
+      console.log('[AccessRoles] No resourceId, skipping');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/resources/${resourceType}/${resourceId}/permissions`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok) {
+        console.error('Failed to load permissions:', response.status);
+        return;
+      }
+
+      const permissions = await response.json();
+      console.log('[AccessRoles] Permissions loaded from API:', permissions);
+
+      if (permissions && Array.isArray(permissions)) {
+        const is_public = permissions.some((p: any) => p.granteeType === 'public');
+        const is_anonymous = permissions.some((p: any) => p.granteeType === 'anonymous');
+        const role_permissions = permissions
+          .filter((p: any) => p.granteeType === 'role')
+          .map((p: any) => ({
+            role_name: p.granteeId,
+            permission: p.permission,
+            is_system: ['owner', 'admin', 'editor', 'viewer'].includes(p.granteeId)
+          }));
+
+        console.log('[AccessRoles] Setting loadedPermissions:', { is_public, is_anonymous, role_permissions });
+
+        // Set state - this triggers a re-render
+        this.loadedPermissions = { is_public, is_anonymous, role_permissions };
+      }
+    } catch (error) {
+      console.error('Error loading permissions:', error);
+    }
+  }
+
+  /** Public method to refresh permissions - called after changes */
+  public async refreshPermissions() {
+    await this.loadPermissions();
+  }
+
   private emitChange(action: string, data: any) {
+    // Skip events during initialization to prevent API calls on first render
+    if (!this.initialized) {
+      return;
+    }
     this.executeEvent("onChange", new CustomEvent('change'), { action, ...data });
   }
 
   private getConfig() {
-    const h = this.inputHandlersValue || {};
-    return {
-      is_public: h.is_public || false,
-      is_anonymous: h.is_anonymous || false,
-      role_permissions: h.role_permissions || [],
+    const h = this.getValueInput();
+    const loaded = this.loadedPermissions;
+    const config = {
+      resource_type: h.resource_type || 'page',
+      resource_id: h.resource_id,
+      is_public: loaded?.is_public ?? h.is_public ?? false,
+      is_anonymous: loaded?.is_anonymous ?? h.is_anonymous ?? false,
+      role_permissions: loaded?.role_permissions ?? h.role_permissions ?? [],
       available_roles: h.available_roles || SYSTEM_ROLES.map((r, i) => ({ ...r, id: i + 1, application_id: null }))
     };
+    return config;
   }
 
-  private handlePublicToggle(checked: boolean) {
+  private async handlePublicToggle(checked: boolean) {
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
+
+    try {
+      if (checked) {
+        await fetch(`${baseUrl}/make-public`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ permission: 'read' })
+        });
+      } else {
+        await fetch(`${baseUrl}/make-public`, { method: 'DELETE' });
+      }
+      await this.loadPermissions();
+    } catch (error) {
+      console.error('Failed to update public access:', error);
+    }
+
     this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission: 'read' });
   }
 
-  private handleAnonymousToggle(checked: boolean) {
+  private async handleAnonymousToggle(checked: boolean) {
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
+
+    try {
+      if (checked) {
+        await fetch(`${baseUrl}/make-anonymous`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ permission: 'read' })
+        });
+      } else {
+        await fetch(`${baseUrl}/make-anonymous`, { method: 'DELETE' });
+      }
+      await this.loadPermissions();
+    } catch (error) {
+      console.error('Failed to update anonymous access:', error);
+    }
+
     this.emitChange('toggle_anonymous', { is_anonymous: checked, grantee_type: 'anonymous', permission: 'read' });
   }
 
-  private addRolePermission(role: any) {
+  private async addRolePermission(role: any) {
     const config = this.getConfig();
     if (config.role_permissions.some((rp: any) => rp.role_name === role.name)) return;
+
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    try {
+      await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roleName: role.name, permission: this.selectedPermission })
+      });
+      await this.loadPermissions();
+    } catch (error) {
+      console.error('Failed to add role permission:', error);
+    }
+
     this.emitChange('add_role_permission', {
       grantee_type: 'role',
       role_name: role.name,
@@ -129,7 +305,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
     });
   }
 
-  private addCustomRolePermission() {
+  private async addCustomRolePermission() {
     if (!this.customRoleName.trim()) return;
     const roleName = this.customRoleName.trim().toLowerCase();
     const config = this.getConfig();
@@ -137,6 +313,24 @@ export class AccessRolesDisplay extends BaseElementBlock {
       this.customRoleName = '';
       return;
     }
+
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    try {
+      await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roleName, permission: this.selectedPermission })
+      });
+      await this.loadPermissions();
+    } catch (error) {
+      console.error('Failed to add custom role permission:', error);
+    }
+
     this.emitChange('add_role_permission', {
       grantee_type: 'role',
       role_name: roleName,
@@ -146,11 +340,47 @@ export class AccessRolesDisplay extends BaseElementBlock {
     this.customRoleName = '';
   }
 
-  private updateRolePermission(roleName: string, permission: string) {
+  private async updateRolePermission(roleName: string, permission: string) {
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    try {
+      // Delete existing then add new
+      await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission/${encodeURIComponent(roleName)}`, {
+        method: 'DELETE'
+      });
+      await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roleName, permission })
+      });
+      await this.loadPermissions();
+    } catch (error) {
+      console.error('Failed to update role permission:', error);
+    }
+
     this.emitChange('update_role_permission', { role_name: roleName, permission });
   }
 
-  private removeRolePermission(roleName: string) {
+  private async removeRolePermission(roleName: string) {
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    try {
+      await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission/${encodeURIComponent(roleName)}`, {
+        method: 'DELETE'
+      });
+      await this.loadPermissions();
+    } catch (error) {
+      console.error('Failed to remove role permission:', error);
+    }
+
     this.emitChange('remove_role_permission', { role_name: roleName });
   }
 
