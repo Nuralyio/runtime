@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators.js";
 
 /**
  * ResourcePermission interface matching backend model
- * Maps to: src/resource-permission/models/resource-permission.ts
  */
 interface ResourcePermission {
   id?: number;
@@ -14,14 +13,10 @@ interface ResourcePermission {
   grantee_type: 'user' | 'role' | 'public' | 'anonymous';
   grantee_id: string | null;
   permission: 'read' | 'write' | 'delete' | 'share';
-  granted_by?: string;
-  expires_at?: string | null;
-  created_at?: string;
 }
 
 /**
  * ApplicationRole interface matching backend model
- * Maps to: src/application-role/models/application-role.ts
  */
 interface ApplicationRole {
   id: number;
@@ -35,8 +30,7 @@ interface ApplicationRole {
 }
 
 /**
- * System roles that are always available (from backend)
- * These are prefilled roles with is_system = true
+ * System roles (from backend)
  */
 const SYSTEM_ROLES: Omit<ApplicationRole, 'id' | 'application_id'>[] = [
   {
@@ -73,9 +67,6 @@ const SYSTEM_ROLES: Omit<ApplicationRole, 'id' | 'application_id'>[] = [
   }
 ];
 
-/**
- * Permission type options for role-based access
- */
 const PERMISSION_OPTIONS = [
   { value: 'read', label: 'View', description: 'Can view the page' },
   { value: 'write', label: 'Edit', description: 'Can modify the page' },
@@ -83,6 +74,13 @@ const PERMISSION_OPTIONS = [
   { value: 'share', label: 'Share', description: 'Can share access with others' }
 ];
 
+/**
+ * AccessRoles Component
+ *
+ * A UI component for managing page access control.
+ * Displays public/anonymous access toggles and role-based permissions.
+ * Emits events for all actions - parent handles API calls.
+ */
 @customElement("access-roles-display")
 export class AccessRolesDisplay extends BaseElementBlock {
   static override styles = [
@@ -91,8 +89,6 @@ export class AccessRolesDisplay extends BaseElementBlock {
         display: block;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 12px;
-        min-height: 0;
-        flex-shrink: 0;
       }
 
       .access-container {
@@ -129,9 +125,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         border: 1px solid var(--nuraly-primary, #4a9eff);
       }
 
-      .toggle-content {
-        flex: 1;
-      }
+      .toggle-content { flex: 1; }
 
       .toggle-label {
         font-size: 12px;
@@ -143,10 +137,6 @@ export class AccessRolesDisplay extends BaseElementBlock {
         font-size: 10px;
         color: var(--nuraly-text-tertiary, #888);
         margin-top: 2px;
-      }
-
-      .permission-select {
-        margin-left: 12px;
       }
 
       nr-select.permission-select {
@@ -165,7 +155,6 @@ export class AccessRolesDisplay extends BaseElementBlock {
         --nuraly-button-height: 24px;
         --nuraly-button-font-size: 10px;
         --nuraly-button-padding-horizontal: 8px;
-        --nuraly-button-padding-small: 5px;
       }
 
       .roles-list {
@@ -185,37 +174,20 @@ export class AccessRolesDisplay extends BaseElementBlock {
         border: 1px solid var(--nuraly-border, #e0e0e0);
       }
 
-      .role-info {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
+      .role-info { display: flex; flex-direction: column; flex: 1; }
 
-      .role-header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
+      .role-header { display: flex; align-items: center; gap: 8px; }
 
       .role-name-badge {
         font-size: 11px;
         font-weight: 600;
-        color: var(--nuraly-primary, #4a9eff);
-        background: var(--nuraly-primary-light, #e6f0ff);
         padding: 2px 8px;
         border-radius: 4px;
         display: inline-block;
       }
 
-      .role-name-badge.system {
-        color: #6b7280;
-        background: #f3f4f6;
-      }
-
-      .role-name-badge.custom {
-        color: #059669;
-        background: #d1fae5;
-      }
+      .role-name-badge.system { color: #6b7280; background: #f3f4f6; }
+      .role-name-badge.custom { color: #059669; background: #d1fae5; }
 
       .role-type-tag {
         font-size: 9px;
@@ -229,24 +201,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         margin-top: 4px;
       }
 
-      .role-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .permission-badge {
-        font-size: 9px;
-        padding: 2px 6px;
-        border-radius: 3px;
-        background: #dbeafe;
-        color: #1d4ed8;
-        text-transform: uppercase;
-      }
-
-      .delete-btn {
-        font-size: 14px;
-      }
+      .role-actions { display: flex; align-items: center; gap: 8px; }
 
       .empty-state {
         text-align: center;
@@ -276,9 +231,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         --nuraly-font-size-input: 11px;
       }
 
-      nr-checkbox {
-        --nuraly-checkbox-size: 16px;
-      }
+      nr-checkbox { --nuraly-checkbox-size: 16px; }
 
       .info-text {
         font-size: 10px;
@@ -295,18 +248,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
         margin-bottom: 12px;
       }
 
-      .info-box-title {
-        font-size: 11px;
-        font-weight: 600;
-        color: #92400e;
-        margin-bottom: 4px;
-      }
-
-      .info-box-text {
-        font-size: 10px;
-        color: #a16207;
-        line-height: 1.4;
-      }
+      .info-box-title { font-size: 11px; font-weight: 600; color: #92400e; margin-bottom: 4px; }
+      .info-box-text { font-size: 10px; color: #a16207; line-height: 1.4; }
 
       .access-summary {
         padding: 10px 12px;
@@ -316,18 +259,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
         margin-bottom: 12px;
       }
 
-      .access-summary-title {
-        font-size: 11px;
-        font-weight: 600;
-        color: #166534;
-        margin-bottom: 4px;
-      }
-
-      .access-summary-text {
-        font-size: 10px;
-        color: #15803d;
-        line-height: 1.4;
-      }
+      .access-summary-title { font-size: 11px; font-weight: 600; color: #166534; margin-bottom: 4px; }
+      .access-summary-text { font-size: 10px; color: #15803d; line-height: 1.4; }
 
       .select-row {
         display: flex;
@@ -359,313 +292,156 @@ export class AccessRolesDisplay extends BaseElementBlock {
   @state()
   private selectedPermission: string = 'read';
 
-  /**
-   * Emit changes to the parent block for persisting to backend
-   */
   private emitChange(action: string, data: any) {
-    this.executeEvent("onChange", new CustomEvent('change'), {
-      action,
-      ...data
-    });
-
-    // Optimistically update local state for immediate UI feedback
-    this.requestUpdate();
+    this.executeEvent("onChange", new CustomEvent('change'), { action, ...data });
   }
 
-  /**
-   * Get current access configuration from handler values
-   */
-  private getAccessConfig(): {
-    is_public: boolean;
-    is_anonymous: boolean;
-    role_permissions: Array<{ role_name: string; role_id?: number; permission: string; is_system: boolean }>;
-    available_roles: ApplicationRole[];
-  } {
-    const handlers = this.inputHandlersValue || {};
+  private getConfig() {
+    const h = this.inputHandlersValue || {};
     return {
-      is_public: handlers.is_public || false,
-      is_anonymous: handlers.is_anonymous || false,
-      role_permissions: handlers.role_permissions || [],
-      available_roles: handlers.available_roles || SYSTEM_ROLES.map((r, i) => ({ ...r, id: i + 1, application_id: null }))
+      is_public: h.is_public || false,
+      is_anonymous: h.is_anonymous || false,
+      role_permissions: h.role_permissions || [],
+      available_roles: h.available_roles || SYSTEM_ROLES.map((r, i) => ({ ...r, id: i + 1, application_id: null }))
     };
   }
 
-  /**
-   * Toggle public access (grantee_type: 'public')
-   */
   private handlePublicToggle(checked: boolean) {
-    this.emitChange('toggle_public', {
-      is_public: checked,
-      grantee_type: 'public',
-      permission: 'read'
-    });
+    this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission: 'read' });
   }
 
-  /**
-   * Toggle anonymous access (grantee_type: 'anonymous')
-   */
   private handleAnonymousToggle(checked: boolean) {
-    this.emitChange('toggle_anonymous', {
-      is_anonymous: checked,
-      grantee_type: 'anonymous',
-      permission: 'read'
-    });
+    this.emitChange('toggle_anonymous', { is_anonymous: checked, grantee_type: 'anonymous', permission: 'read' });
   }
 
-  /**
-   * Add role-based permission (grantee_type: 'role')
-   */
-  private addRolePermission(role: ApplicationRole | { name: string; display_name: string; is_system: boolean }) {
-    const config = this.getAccessConfig();
-
-    // Prevent duplicates
-    if (config.role_permissions.some(rp => rp.role_name === role.name)) {
-      return;
-    }
-
+  private addRolePermission(role: any) {
+    const config = this.getConfig();
+    if (config.role_permissions.some((rp: any) => rp.role_name === role.name)) return;
     this.emitChange('add_role_permission', {
       grantee_type: 'role',
       role_name: role.name,
-      role_id: 'id' in role ? role.id : undefined,
+      role_id: role.id,
       permission: this.selectedPermission,
       is_system: role.is_system
     });
   }
 
-  /**
-   * Add custom role permission
-   */
   private addCustomRolePermission() {
     if (!this.customRoleName.trim()) return;
-
     const roleName = this.customRoleName.trim().toLowerCase();
-    const config = this.getAccessConfig();
-
-    // Prevent duplicates
-    if (config.role_permissions.some(rp => rp.role_name === roleName)) {
+    const config = this.getConfig();
+    if (config.role_permissions.some((rp: any) => rp.role_name === roleName)) {
       this.customRoleName = '';
       return;
     }
-
     this.emitChange('add_role_permission', {
       grantee_type: 'role',
       role_name: roleName,
       permission: this.selectedPermission,
       is_system: false
     });
-
     this.customRoleName = '';
   }
 
-  /**
-   * Update permission for an existing role
-   */
   private updateRolePermission(roleName: string, permission: string) {
-    this.emitChange('update_role_permission', {
-      role_name: roleName,
-      permission
-    });
+    this.emitChange('update_role_permission', { role_name: roleName, permission });
   }
 
-  /**
-   * Remove role-based permission
-   */
   private removeRolePermission(roleName: string) {
-    this.emitChange('remove_role_permission', {
-      role_name: roleName
-    });
+    this.emitChange('remove_role_permission', { role_name: roleName });
   }
 
-  /**
-   * Render access summary based on current configuration
-   */
   private renderAccessSummary() {
-    const config = this.getAccessConfig();
-
+    const config = this.getConfig();
     if (config.is_anonymous) {
-      return html`
-        <div class="access-summary">
-          <div class="access-summary-title">Anyone can access</div>
-          <div class="access-summary-text">
-            This page is accessible to everyone, including users who are not logged in.
-          </div>
-        </div>
-      `;
+      return html`<div class="access-summary"><div class="access-summary-title">Anyone can access</div><div class="access-summary-text">This page is accessible to everyone, including users who are not logged in.</div></div>`;
     }
-
     if (config.is_public) {
-      return html`
-        <div class="access-summary">
-          <div class="access-summary-title">Public with link</div>
-          <div class="access-summary-text">
-            Anyone with the link can view this page. Authentication is not required.
-          </div>
-        </div>
-      `;
+      return html`<div class="access-summary"><div class="access-summary-title">Public with link</div><div class="access-summary-text">Anyone with the link can view this page.</div></div>`;
     }
-
     if (config.role_permissions.length > 0) {
-      const roleNames = config.role_permissions.map(rp => rp.role_name).join(', ');
-      return html`
-        <div class="access-summary">
-          <div class="access-summary-title">Role-based access</div>
-          <div class="access-summary-text">
-            Only users with these roles can access: ${roleNames}
-          </div>
-        </div>
-      `;
+      const roleNames = config.role_permissions.map((rp: any) => rp.role_name).join(', ');
+      return html`<div class="access-summary"><div class="access-summary-title">Role-based access</div><div class="access-summary-text">Only users with these roles can access: ${roleNames}</div></div>`;
     }
-
-    return html`
-      <div class="info-box">
-        <div class="info-box-title">Restricted</div>
-        <div class="info-box-text">
-          This page is only accessible to application members. Configure public access or add role-based permissions below.
-        </div>
-      </div>
-    `;
+    return html`<div class="info-box"><div class="info-box-title">Restricted</div><div class="info-box-text">This page is only accessible to application members.</div></div>`;
   }
 
-  /**
-   * Render a single role permission item
-   */
-  private renderRoleItem(rp: { role_name: string; permission: string; is_system: boolean }, index: number) {
+  private renderRoleItem(rp: any) {
     const systemRole = SYSTEM_ROLES.find(r => r.name === rp.role_name);
-
     return html`
       <div class="role-item">
         <div class="role-info">
           <div class="role-header">
-            <span class="role-name-badge ${rp.is_system ? 'system' : 'custom'}">
-              ${systemRole?.display_name || rp.role_name}
-            </span>
+            <span class="role-name-badge ${rp.is_system ? 'system' : 'custom'}">${systemRole?.display_name || rp.role_name}</span>
             <span class="role-type-tag">${rp.is_system ? 'system' : 'custom'}</span>
           </div>
-          ${systemRole?.description ? html`
-            <div class="role-description">${systemRole.description}</div>
-          ` : nothing}
+          ${systemRole?.description ? html`<div class="role-description">${systemRole.description}</div>` : nothing}
         </div>
         <div class="role-actions">
-          <nr-select
-            class="permission-select"
-            size="small"
-            .value=${rp.permission}
-            @nr-change=${(e: CustomEvent) => this.updateRolePermission(rp.role_name, e.detail?.value || 'read')}
-          >
-            ${PERMISSION_OPTIONS.map(opt => html`
-              <nr-option value="${opt.value}">${opt.label}</nr-option>
-            `)}
+          <nr-select class="permission-select" size="small" .value=${rp.permission} @nr-change=${(e: CustomEvent) => this.updateRolePermission(rp.role_name, e.detail?.value || 'read')}>
+            ${PERMISSION_OPTIONS.map(opt => html`<nr-option value="${opt.value}">${opt.label}</nr-option>`)}
           </nr-select>
-          <nr-button class="delete-btn" type="text" size="small" @click=${() => this.removeRolePermission(rp.role_name)}>×</nr-button>
+          <nr-button type="text" size="small" @click=${() => this.removeRolePermission(rp.role_name)}>×</nr-button>
         </div>
       </div>
     `;
   }
 
   override renderComponent() {
-    const config = this.getAccessConfig();
-    const addedRoleNames = new Set(config.role_permissions.map(rp => rp.role_name));
+    const config = this.getConfig();
+    const addedRoleNames = new Set(config.role_permissions.map((rp: any) => rp.role_name));
 
     return html`
       <div class="access-container">
-        <!-- Access Summary -->
         ${this.renderAccessSummary()}
 
-        <!-- Public Access Section -->
         <div class="section">
           <div class="section-title">Public Access</div>
-
           <div class="access-toggle-row ${config.is_anonymous ? 'active' : ''}">
             <div class="toggle-content">
               <div class="toggle-label">Anonymous Access</div>
               <div class="toggle-description">Allow unauthenticated users (no login required)</div>
             </div>
-            <nr-checkbox
-              size="small"
-              .checked=${config.is_anonymous}
-              @nr-change=${(e: CustomEvent) => this.handleAnonymousToggle(e.detail?.checked || false)}
-            ></nr-checkbox>
+            <nr-checkbox size="small" .checked=${config.is_anonymous} @nr-change=${(e: CustomEvent) => this.handleAnonymousToggle(e.detail?.checked || false)}></nr-checkbox>
           </div>
-
           <div class="access-toggle-row ${config.is_public && !config.is_anonymous ? 'active' : ''}">
             <div class="toggle-content">
               <div class="toggle-label">Public with Link</div>
               <div class="toggle-description">Anyone with the page link can view</div>
             </div>
-            <nr-checkbox
-              size="small"
-              .checked=${config.is_public}
-              .disabled=${config.is_anonymous}
-              @nr-change=${(e: CustomEvent) => this.handlePublicToggle(e.detail?.checked || false)}
-            ></nr-checkbox>
+            <nr-checkbox size="small" .checked=${config.is_public} .disabled=${config.is_anonymous} @nr-change=${(e: CustomEvent) => this.handlePublicToggle(e.detail?.checked || false)}></nr-checkbox>
           </div>
         </div>
 
         <div class="divider"></div>
 
-        <!-- Role-Based Access Section -->
         <div class="section">
           <div class="section-title">Role-Based Access</div>
-          <p class="info-text" style="margin-bottom: 12px;">
-            Grant access to users based on their application role. Only users with these roles can access this page.
-          </p>
-
-          ${config.role_permissions.length > 0 ? html`
-            <div class="roles-list">
-              ${config.role_permissions.map((rp, index) => this.renderRoleItem(rp, index))}
-            </div>
-          ` : html`
-            <div class="empty-state">No role-based permissions configured</div>
-          `}
+          <p class="info-text" style="margin-bottom: 12px;">Grant access to users based on their application role.</p>
+          ${config.role_permissions.length > 0 ? html`<div class="roles-list">${config.role_permissions.map((rp: any) => this.renderRoleItem(rp))}</div>` : html`<div class="empty-state">No role-based permissions configured</div>`}
         </div>
 
         <div class="divider"></div>
 
-        <!-- Add Roles Section -->
         <div class="section">
           <div class="section-title">Add Role Permission</div>
-
           <div class="select-row">
             <span class="select-label">Permission:</span>
-            <nr-select
-              size="small"
-              .value=${this.selectedPermission}
-              @nr-change=${(e: CustomEvent) => this.selectedPermission = e.detail?.value || 'read'}
-            >
-              ${PERMISSION_OPTIONS.map(opt => html`
-                <nr-option value="${opt.value}">${opt.label} - ${opt.description}</nr-option>
-              `)}
+            <nr-select size="small" .value=${this.selectedPermission} @nr-change=${(e: CustomEvent) => this.selectedPermission = e.detail?.value || 'read'}>
+              ${PERMISSION_OPTIONS.map(opt => html`<nr-option value="${opt.value}">${opt.label} - ${opt.description}</nr-option>`)}
             </nr-select>
           </div>
-
           <div class="section-title" style="margin-top: 12px;">System Roles</div>
           <div class="preset-buttons">
-            ${SYSTEM_ROLES.filter(role => !addedRoleNames.has(role.name)).map(role => html`
-              <nr-button
-                dashed
-                size="small"
-                @click=${() => this.addRolePermission({ ...role, id: 0, application_id: null })}
-              >+ ${role.display_name}</nr-button>
-            `)}
-            ${SYSTEM_ROLES.every(role => addedRoleNames.has(role.name)) ? html`
-              <span class="info-text">All system roles added</span>
-            ` : nothing}
+            ${SYSTEM_ROLES.filter(role => !addedRoleNames.has(role.name)).map(role => html`<nr-button dashed size="small" @click=${() => this.addRolePermission({ ...role, id: 0, application_id: null })}>+ ${role.display_name}</nr-button>`)}
+            ${SYSTEM_ROLES.every(role => addedRoleNames.has(role.name)) ? html`<span class="info-text">All system roles added</span>` : nothing}
           </div>
-
           <div class="section-title" style="margin-top: 12px;">Custom Role</div>
           <div class="custom-role-input">
-            <nr-input
-              size="small"
-              .value=${this.customRoleName}
-              placeholder="Enter custom role name..."
-              @nr-input=${(e: CustomEvent) => this.customRoleName = e.detail?.value || ''}
-              @keydown=${(e: KeyboardEvent) => e.key === 'Enter' && this.addCustomRolePermission()}
-            ></nr-input>
+            <nr-input size="small" .value=${this.customRoleName} placeholder="Enter custom role name..." @nr-input=${(e: CustomEvent) => this.customRoleName = e.detail?.value || ''} @keydown=${(e: KeyboardEvent) => e.key === 'Enter' && this.addCustomRolePermission()}></nr-input>
             <nr-button size="small" @click=${() => this.addCustomRolePermission()}>Add</nr-button>
           </div>
-          <p class="info-text">
-            Custom roles must match roles defined in your application's role settings.
-          </p>
+          <p class="info-text">Custom roles must match roles defined in your application.</p>
         </div>
       </div>
     `;
