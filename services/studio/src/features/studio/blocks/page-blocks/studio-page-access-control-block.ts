@@ -63,8 +63,8 @@ export default [
       display: "flex",
       "flex-direction": "column",
       width: "100%",
-      padding: "12px",
-      gap: "8px"
+      padding: "0px",
+      gap: "0px"
     },
     input: {
       direction: {
@@ -72,25 +72,62 @@ export default [
         value: "vertical"
       }
     },
-    childrenIds: ["access_control_label"]
+    childrenIds: ["access_roles_display_block"]
   },
   {
-    uuid: "access_control_label",
-    name: "access control label",
-    component_type: "text_label",
+    uuid: "access_roles_display_block",
+    name: "access roles display block",
     application_id: "1",
+    component_type: "access_roles",
     ...COMMON_ATTRIBUTES,
-    input: {
-      value: {
-        type: "string",
-        value: 'Configure page access permissions and authentication requirements.'
-      }
-    },
     style: {
       width: "100%",
-      "font-size": "12px",
-      color: "var(--nuraly-color-text-muted)",
-      "line-height": "1.5"
+      display: "block"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */`
+          const currentPageId = Vars.currentPage;
+          if (!currentPageId) return {};
+
+          const currentEditingApplication = GetVar("currentEditingApplication");
+          const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+          const currentPage = appPages?.find((page) => page.uuid == currentPageId);
+
+          if (!currentPage) return {};
+
+          return {
+            is_public: currentPage.is_public || false,
+            access_level: currentPage.access_level || 'public',
+            allowed_roles: currentPage.allowed_roles || []
+          };
+        `
+      }
+    },
+    event: {
+      onChange: /* js */`
+        const currentPageId = Vars.currentPage;
+        if (!currentPageId) return;
+
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
+        const currentPage = appPages?.find((page) => page.uuid == currentPageId);
+
+        if (!currentPage) return;
+
+        const property = EventData.property;
+        const value = EventData.value;
+
+        const newPage = {
+          ...currentPage,
+          [property]: value
+        };
+
+        UpdatePage(newPage, currentEditingApplication.uuid).catch((e) => {
+          console.error('Error updating page access control:', e);
+        });
+      `
     }
   }
 ];
