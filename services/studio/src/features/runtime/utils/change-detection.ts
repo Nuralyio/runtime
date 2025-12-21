@@ -84,8 +84,6 @@ class EventDispatcher {
    * Flush all pending batched events
    */
   private flushBatch(): void {
-    this.batchScheduled = false;
-
     // Process all pending events
     const events = Array.from(this.pendingEvents.values());
     this.pendingEvents.clear();
@@ -93,6 +91,16 @@ class EventDispatcher {
     // Emit all batched events
     for (const { event, data } of events) {
       this.emitImmediate(event, data);
+    }
+
+    // Reset flag after emissions complete.
+    // If handlers added new events during emission, they would have been
+    // added to pendingEvents but no microtask scheduled (batchScheduled was true).
+    // Check and schedule if needed.
+    this.batchScheduled = false;
+    if (this.pendingEvents.size > 0) {
+      this.batchScheduled = true;
+      queueMicrotask(() => this.flushBatch());
     }
   }
 
