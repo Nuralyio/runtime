@@ -43,22 +43,131 @@
  */
 
 import { validateHandlerCode } from '../utils/handler-validator';
+import * as acorn from 'acorn';
+
+// Re-export createHandlerScope for use in handler-executor
+export { createHandlerScope } from './handler-scope';
+
+/**
+ * Node types that indicate control flow requiring explicit return.
+ */
+const CONTROL_FLOW_TYPES = new Set([
+  'IfStatement',
+  'ForStatement',
+  'ForInStatement',
+  'ForOfStatement',
+  'WhileStatement',
+  'DoWhileStatement',
+  'SwitchStatement',
+  'TryStatement',
+  'ThrowStatement',
+]);
+
+/**
+ * Analyzes code AST to determine if implicit return should be added.
+ * Uses acorn for proper JavaScript parsing.
+ *
+ * @param code - Handler code string
+ * @returns Analysis result with flags for return and control flow
+ */
+function analyzeCode(code: string): { hasTopLevelReturn: boolean; hasControlFlow: boolean; isMultiStatement: boolean } {
+  const trimmed = code.trim();
+
+  if (!trimmed) {
+    return { hasTopLevelReturn: false, hasControlFlow: false, isMultiStatement: false };
+  }
+
+  try {
+    // Parse as a script (not module) to allow return statements
+    // Wrap in function body to make it valid syntax for parsing
+    const wrappedCode = `(function() { ${trimmed} })`;
+    const ast = acorn.parse(wrappedCode, {
+      ecmaVersion: 'latest',
+      sourceType: 'script',
+    }) as any;
+
+    // Get the function body statements
+    const funcExpr = ast.body[0].expression;
+    const bodyStatements = funcExpr.body.body;
+
+    let hasTopLevelReturn = false;
+    let hasControlFlow = false;
+    const isMultiStatement = bodyStatements.length > 1;
+
+    // Check each top-level statement in the function body
+    for (const stmt of bodyStatements) {
+      if (stmt.type === 'ReturnStatement') {
+        hasTopLevelReturn = true;
+      }
+      if (CONTROL_FLOW_TYPES.has(stmt.type)) {
+        hasControlFlow = true;
+      }
+    }
+
+    return { hasTopLevelReturn, hasControlFlow, isMultiStatement };
+  } catch {
+    // If parsing fails, fall back to conservative behavior (no implicit return)
+    return { hasTopLevelReturn: true, hasControlFlow: false, isMultiStatement: false };
+  }
+}
+
+/**
+ * Checks if code needs an implicit return added.
+ * Uses AST analysis to properly detect top-level returns vs nested returns in callbacks.
+ *
+ * @param code - Handler code string
+ * @returns true if implicit return should be added
+ */
+function needsImplicitReturn(code: string): boolean {
+  const trimmed = code.trim();
+
+  // If empty, no return needed
+  if (!trimmed) return false;
+
+  const analysis = analyzeCode(trimmed);
+
+  // If has top-level return statement, don't add another
+  if (analysis.hasTopLevelReturn) return false;
+
+  // If has top-level control flow statements, require explicit return
+  if (analysis.hasControlFlow) return false;
+
+  // Multiple statements require explicit return
+  if (analysis.isMultiStatement) return false;
+
+  // Single expression - add implicit return
+  return true;
+}
+
+/**
+ * Wraps code with implicit return if needed.
+ *
+ * @param code - Handler code string
+ * @returns Code with return statement if needed
+ */
+function wrapWithImplicitReturn(code: string): string {
+  if (needsImplicitReturn(code)) {
+    const trimmed = code.trim().replace(/;$/, ''); // Remove trailing semicolon
+    return `return (${trimmed});`;
+  }
+  return code;
+}
 
 /**
  * Cache storage for compiled handler functions.
- * 
+ *
  * @description
  * Maps handler code strings to their compiled Function objects.
  * Cache is maintained for the lifetime of the application session.
- * 
+ *
  * @type {Record<string, Function>}
- * 
+ *
  * @remarks
  * - Key: Handler code string (exactly as written in component properties)
  * - Value: Compiled JavaScript function with injected parameters
  * - Thread-safe: Single-threaded JavaScript execution model
  * - Memory impact: ~1-2KB per unique handler on average
- * 
+ *
  * @private
  */
 const handlerFunctionCache: Record<string, Function> = {};
@@ -170,6 +279,15 @@ export const HANDLER_PARAMETERS = [
   "ShowInfoToast",
   "HideToast",
   "ClearAllToasts",
+  "__createScope__", // For transparent variable access
+  // Namespaced API object (new clean API)
+  "Nav",
+  "UI",
+  "Component",
+  "Data",
+  "Page",
+  "App",
+  "Var",
 ] as const;
 
 /**
@@ -253,9 +371,41 @@ export const HANDLER_PARAMETERS = [
  * @see {@link executeHandler} for the execution wrapper that calls compiled functions
  * @see {@link HANDLER_PARAMETERS} for the list of available parameters in handler code
  */
+/**
+ * Flag to enable/disable transparent variable access.
+ * When enabled, users can write `username = 'John'` instead of `Vars.username = 'John'`.
+ *
+ * Set to false to use traditional explicit Vars access.
+ */
+let transparentVarsEnabled = true;
+
+/**
+ * Enable or disable transparent variable access in handlers.
+ *
+ * When enabled (default), variables like `username` automatically
+ * resolve to `Vars.username` for reactive access.
+ *
+ * @param enabled - Whether to enable transparent variable access
+ */
+export function setTransparentVarsEnabled(enabled: boolean): void {
+  transparentVarsEnabled = enabled;
+  // Clear cache when mode changes to recompile handlers
+  clearHandlerCache();
+}
+
+/**
+ * Check if transparent variable access is enabled.
+ */
+export function isTransparentVarsEnabled(): boolean {
+  return transparentVarsEnabled;
+}
+
 export function compileHandlerFunction(code: string): Function {
+  // Include mode in cache key to handle mode changes
+  const cacheKey = transparentVarsEnabled ? `scope:${code}` : code;
+
   // Check cache first for performance
-  if (!handlerFunctionCache[code]) {
+  if (!handlerFunctionCache[cacheKey]) {
     // Validate handler code before compilation
     // This is a safety layer in case validation was bypassed at save time
     const validationResult = validateHandlerCode(code);
@@ -263,14 +413,46 @@ export function compileHandlerFunction(code: string): Function {
       throw new Error(`Handler validation failed: ${validationResult.errors[0]?.message || 'Unknown error'}`);
     }
 
-    // Create new Function with all runtime parameters
-    // The code is wrapped in an IIFE to provide proper scoping
-    handlerFunctionCache[code] = new Function(
-      ...HANDLER_PARAMETERS,
-      `return (function() { ${code} }).apply(this);`
-    );
+    // Wrap with implicit return if needed (e.g., "$name ?? 'hello'" becomes "return ($name ?? 'hello');")
+    const processedCode = wrapWithImplicitReturn(code);
+
+    if (transparentVarsEnabled) {
+      // Compile with transparent variable access using `with` statement
+      // The scope proxy routes unknown variables to VarsProxy
+      handlerFunctionCache[cacheKey] = new Function(
+        ...HANDLER_PARAMETERS,
+        `
+        var __scope__ = __createScope__({
+          VarsProxy: Vars,
+          parameters: {
+            Database, eventHandler: eventHandler, Components, Editor, Event, Item,
+            Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,
+            UpdateApplication, GetVar, GetComponent, GetComponents, AddComponent,
+            SetContextVar, AddPage, TraitCompoentFromSchema, NavigateToUrl,
+            NavigateToHash, NavigateToPage, UpdatePage, context, applications,
+            updateInput, deletePage, CopyComponentToClipboard, PasteComponentFromClipboard,
+            DeleteComponentAction, updateName, updateEvent, updateStyleHandlers,
+            EventData, updateStyle, openEditorTab, setCurrentEditorTab, InvokeFunction,
+            Utils, console, UploadFile, BrowseFiles, Instance, ShowToast,
+            ShowSuccessToast, ShowErrorToast, ShowWarningToast, ShowInfoToast,
+            HideToast, ClearAllToasts,
+            Nav, UI, Component, Data, Page, App, Var
+          }
+        });
+        with (__scope__) {
+          return (function() { ${processedCode} }).apply(this);
+        }
+        `
+      );
+    } else {
+      // Traditional compilation without scope proxy
+      handlerFunctionCache[cacheKey] = new Function(
+        ...HANDLER_PARAMETERS,
+        `return (function() { ${processedCode} }).apply(this);`
+      );
+    }
   }
-  return handlerFunctionCache[code];
+  return handlerFunctionCache[cacheKey];
 }
 
 /**
