@@ -222,14 +222,14 @@ input: {
 ```typescript
 event: {
   onChange: `
-    Vars.description = EventData.value;
-    Vars.charCount = EventData.characterCount;
+    $description = EventData.value;
+    $charCount = EventData.characterCount;
 
     // Validate
     if (EventData.value.length < 10) {
-      Vars.descriptionError = "Please enter at least 10 characters";
+      $descriptionError = "Please enter at least 10 characters";
     } else {
-      Vars.descriptionError = "";
+      $descriptionError = "";
     }
   `
 }
@@ -241,8 +241,8 @@ event: {
 ```typescript
 event: {
   onFocus: `
-    Vars.activeField = "description";
-    Vars.helpTextVisible = true;
+    $activeField = "description";
+    $helpTextVisible = true;
   `
 }
 ```
@@ -261,12 +261,12 @@ event: {
 ```typescript
 event: {
   onBlur: `
-    Vars.activeField = null;
+    $activeField = null;
 
     // Perform final validation
     const isValid = EventData.value.length >= 10;
-    Vars.showValidation = true;
-    Vars.descriptionValid = isValid;
+    $showValidation = true;
+    $descriptionValid = isValid;
   `
 }
 ```
@@ -277,9 +277,9 @@ event: {
 ```typescript
 event: {
   onClear: `
-    Vars.description = "";
-    Vars.descriptionError = "";
-    Vars.showValidation = false;
+    $description = "";
+    $descriptionError = "";
+    $showValidation = false;
   `
 }
 ```
@@ -299,8 +299,8 @@ event: {
 ```typescript
 event: {
   onResize: `
-    Vars.textareaHeight = EventData.height;
-    Vars.textareaWidth = EventData.width;
+    $textareaHeight = EventData.height;
+    $textareaWidth = EventData.width;
   `
 }
 ```
@@ -314,8 +314,8 @@ event: {
 event: {
   onChange: `
     const content = EventData.value;
-    Vars.draftContent = content;
-    Vars.charCount = EventData.characterCount;
+    $draftContent = content;
+    $charCount = EventData.characterCount;
 
     // Save draft
     await SaveDraft({
@@ -323,7 +323,7 @@ event: {
       timestamp: Date.now()
     });
 
-    Vars.lastSaved = new Date().toLocaleTimeString();
+    $lastSaved = new Date().toLocaleTimeString();
   `
 }
 ```
@@ -336,16 +336,16 @@ event: {
     const content = EventData.value;
     const remaining = maxChars - content.length;
 
-    Vars.charRemaining = remaining;
-    Vars.isNearLimit = remaining < 50;
-    Vars.isAtLimit = remaining <= 0;
+    $charRemaining = remaining;
+    $isNearLimit = remaining < 50;
+    $isAtLimit = remaining <= 0;
 
     if (remaining < 0) {
-      Vars.warningMessage = "Character limit exceeded";
+      $warningMessage = "Character limit exceeded";
     } else if (remaining < 50) {
-      Vars.warningMessage = remaining + " characters remaining";
+      $warningMessage = remaining + " characters remaining";
     } else {
-      Vars.warningMessage = "";
+      $warningMessage = "";
     }
   `
 }

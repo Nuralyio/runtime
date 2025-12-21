@@ -139,31 +139,31 @@ sequenceDiagram
 
 ```javascript
 // Implicit - defaults to LOCAL
-Vars.clickCount = 5
-Vars.tempData = { foo: 'bar' }
+$clickCount = 5
+$tempData = { foo: 'bar' }
 
 // Explicit
-Vars['local.formData'] = { name: '', email: '' }
+$local.formData = { name: '', email: '' }
 ```
 
 ### Setting GLOBAL Variables
 
 ```javascript
 // Must use explicit prefix
-Vars['global.theme'] = 'dark'
-Vars['global.userName'] = 'John Doe'
-Vars['global.isAuthenticated'] = true
+$global.theme = 'dark'
+$global.userName = 'John Doe'
+$global.isAuthenticated = true
 ```
 
 ### Getting Variables
 
 ```javascript
 // Auto-resolution (searches LOCAL → GLOBAL)
-const userName = Vars.userName
+const userName = $userName
 
 // Explicit scope access
-const theme = Vars['global.theme']  // Only checks GLOBAL
-const temp = Vars['local.tempData']  // Only checks LOCAL
+const theme = $global.theme  // Only checks GLOBAL
+const temp = $local.tempData  // Only checks LOCAL
 ```
 
 ---
@@ -259,34 +259,30 @@ sequenceDiagram
 stateDiagram-v2
     [*] --> Undefined
 
-    Undefined --> Local : Vars.myVar = value<br/>(no prefix)
-    Undefined --> Global : Vars['global.myVar'] = value
+    Undefined --> Local : $myVar = value (no prefix)
+    Undefined --> Global : $global.myVar = value
 
     Local --> Local : update value
     Local --> Global : publishToGlobal()
     Local --> Undefined : delete() or cleanup()
 
-    Global --> Global : update value<br/>(propagates to all instances)
+    Global --> Global : update value (propagates to all instances)
     Global --> Undefined : delete() or clearAll()
 
-    state Local {
-        note right
-            LOCAL Scope
-            - Isolated to instance
-            - Stored in local Map
-            - Cleared on unmount
-        end note
-    }
+    note right of Local
+        LOCAL Scope
+        Isolated to instance
+        Stored in local Map
+        Cleared on unmount
+    end note
 
-    state Global {
-        note right
-            GLOBAL Scope
-            - Shared across instances
-            - Stored in singleton Map
-            - Emits global events
-            - Persists until clearAll()
-        end note
-    }
+    note right of Global
+        GLOBAL Scope
+        Shared across instances
+        Stored in singleton Map
+        Emits global events
+        Persists until clearAll()
+    end note
 ```
 
 ---
@@ -414,13 +410,13 @@ You can promote a LOCAL variable to GLOBAL scope:
 
 ```javascript
 // Start with local variable
-Vars.selectedProduct = { id: 123, name: 'Widget' }
+$selectedProduct = { id: 123, name: 'Widget' }
 
 // Publish to global scope
 Runtime.publishToGlobal('selectedProduct')
 
 // Now accessible globally
-console.log(Vars['global.selectedProduct'])
+console.log($global.selectedProduct)
 ```
 
 ### Subscribing to Variable Changes
@@ -444,7 +440,7 @@ unsubscribe()
 
 1. **Use LOCAL by default** - Keep variables private unless needed elsewhere
 2. **Use GLOBAL sparingly** - Only for truly global state (auth, theme, etc.)
-3. **Explicit prefixes** - Use `global.` prefix for clarity when setting globals
+3. **Explicit prefixes** - Use `$global.` prefix for clarity when setting globals
 4. **Subscribe carefully** - Always unsubscribe to prevent memory leaks
 5. **Avoid large objects** - GLOBAL variable changes trigger updates in ALL instances
 6. ⚠️ **Not a security boundary** - All micro-apps run in same JavaScript context
@@ -468,25 +464,25 @@ unsubscribe()
 
 ```javascript
 // Good - Uses LOCAL scope by default
-Vars.isLoading = true
-Vars.errorMessage = null
-Vars.formData = { name: '', email: '' }
+$isLoading = true
+$errorMessage = null
+$formData = { name: '', email: '' }
 ```
 
 ### Pattern 2: Application-Wide State
 
 ```javascript
 // Good - Explicit GLOBAL for shared state
-Vars['global.theme'] = 'dark'
-Vars['global.userName'] = currentUser.name
-Vars['global.isAuthenticated'] = true
+$global.theme = 'dark'
+$global.userName = currentUser.name
+$global.isAuthenticated = true
 ```
 
 ### Pattern 3: Conditional Publishing
 
 ```javascript
 // Start local, publish when needed
-Vars.draftArticle = { title: '', content: '' }
+$draftArticle = { title: '', content: '' }
 
 // User clicks "Share with team"
 Runtime.publishToGlobal('draftArticle')

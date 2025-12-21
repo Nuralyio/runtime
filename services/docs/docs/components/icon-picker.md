@@ -30,7 +30,7 @@ IconPicker provides a complete icon selection solution with:
   },
   event: {
     onChange: `
-      Vars.selectedIcon = EventData.value;
+      $selectedIcon = EventData.value;
     `
   }
 }
@@ -94,12 +94,12 @@ IconPicker provides a complete icon selection solution with:
     placeholder: { type: "string", value: "Select menu icon" }
   },
   inputHandlers: {
-    value: `return Vars.currentMenuItem?.icon || '';`
+    value: `return $currentMenuItem?.icon || '';`
   },
   event: {
     onChange: `
-      Vars.currentMenuItem = {
-        ...Vars.currentMenuItem,
+      $currentMenuItem = {
+        ...$currentMenuItem,
         icon: EventData.value
       };
     `

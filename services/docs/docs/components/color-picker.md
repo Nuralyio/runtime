@@ -29,11 +29,11 @@ ColorPicker provides a complete color selection solution with:
     label: { type: "string", value: "Primary Color" }
   },
   inputHandlers: {
-    value: `return Vars.primaryColor || '#3b82f6';`
+    value: `return $primaryColor || '#3b82f6';`
   },
   event: {
     onChange: `
-      Vars.primaryColor = EventData.value;
+      $primaryColor = EventData.value;
     `
   }
 }
@@ -90,7 +90,7 @@ ColorPicker provides a complete color selection solution with:
     format: { type: "string", value: "hex" }
   },
   inputHandlers: {
-    value: `return Vars.theme?.primaryColor || '#3b82f6';`,
+    value: `return $theme?.primaryColor || '#3b82f6';`,
     defaultColorSets: `
       return [
         '#ef4444', '#f97316', '#eab308', '#22c55e',
@@ -100,11 +100,11 @@ ColorPicker provides a complete color selection solution with:
   },
   event: {
     onChange: `
-      Vars.theme = {
-        ...Vars.theme,
+      $theme = {
+        ...$theme,
         primaryColor: EventData.value
       };
-      await ApplyTheme(Vars.theme);
+      await ApplyTheme($theme);
     `
   }
 }
@@ -119,12 +119,12 @@ ColorPicker provides a complete color selection solution with:
     closeOnSelect: { type: "boolean", value: true }
   },
   inputHandlers: {
-    value: `return Vars.elementStyle?.backgroundColor || '#ffffff';`
+    value: `return $elementStyle?.backgroundColor || '#ffffff';`
   },
   event: {
     onChange: `
-      Vars.elementStyle = {
-        ...Vars.elementStyle,
+      $elementStyle = {
+        ...$elementStyle,
         backgroundColor: EventData.value
       };
     `
@@ -140,15 +140,15 @@ ColorPicker provides a complete color selection solution with:
     showCopyButton: { type: "boolean", value: true }
   },
   inputHandlers: {
-    value: `return Vars.currentPaletteColor || '';`
+    value: `return $currentPaletteColor || '';`
   },
   event: {
     onChange: `
       const color = EventData.value;
-      Vars.currentPaletteColor = color;
+      $currentPaletteColor = color;
 
-      if (!Vars.colorPalette.includes(color)) {
-        Vars.colorPalette = [...Vars.colorPalette, color];
+      if (!$colorPalette.includes(color)) {
+        $colorPalette = [...$colorPalette, color];
       }
     `
   }

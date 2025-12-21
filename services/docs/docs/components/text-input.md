@@ -81,7 +81,7 @@ input: {
     type: "handler",
     value: `
       // Load user's saved preference
-      const user = Vars.currentUser;
+      const user = $currentUser;
       return user?.preferences?.textInput?.lastValue || "";
     `
   }
@@ -106,7 +106,7 @@ input: {
   placeholder: {
     type: "handler",
     value: `
-      return Vars.appSettings?.placeholders?.textInput || "Enter text...";
+      return $appSettings?.placeholders?.textInput || "Enter text...";
     `
   }
 }
@@ -123,7 +123,7 @@ input: {
   label: {
     type: "handler",
     value: `
-      return Vars.isRequired ? "Username *" : "Username";
+      return $isRequired ? "Username *" : "Username";
     `
   }
 }
@@ -162,7 +162,7 @@ input: {
   disabled: {
     type: "handler",
     value: `
-      return Vars.isProcessing || Vars.formSubmitted;
+      return $isProcessing || $formSubmitted;
     `
   }
 }
@@ -201,7 +201,7 @@ input: {
   helper: {
     type: "handler",
     value: `
-      if (Vars.showValidation && !Vars.emailValid) {
+      if ($showValidation && !$emailValid) {
         return "Please enter a valid email address";
       }
       return "We'll never share your email";
@@ -317,7 +317,7 @@ When a handler is evaluated, you have access to:
 
 ```typescript
 // Access variables
-Vars.username = "John"
+$username = "John"
 
 // Access current component
 Current.name       // Component name
@@ -326,10 +326,10 @@ Current.Instance   // Component runtime values
 
 // Access microapp context (if in microapp)
 // Local scope (default)
-Vars.localVar = value
+$localVar = value
 
 // Global scope (shared)
-Vars['global.theme'] = 'dark'
+$global.theme = 'dark'
 ```
 
 ### Microapp Input Handler Isolation
@@ -373,13 +373,13 @@ graph LR
 ```typescript
 event: {
   onChange: `
-    Vars.username = EventData.value;
-    
+    $username = EventData.value;
+
     // Validate
     if (EventData.value.length < 3) {
-      Vars.usernameError = "Minimum 3 characters";
+      $usernameError = "Minimum 3 characters";
     } else {
-      Vars.usernameError = "";
+      $usernameError = "";
     }
   `
 }
@@ -400,8 +400,8 @@ event: {
 ```typescript
 event: {
   onFocus: `
-    Vars.activeField = "username";
-    Vars.helpTextVisible = true;
+    $activeField = "username";
+    $helpTextVisible = true;
   `
 }
 ```
@@ -421,12 +421,12 @@ event: {
 ```typescript
 event: {
   onBlur: `
-    Vars.activeField = null;
-    
+    $activeField = null;
+
     // Perform final validation
     const isValid = EventData.value.length >= 3;
-    Vars.showValidation = true;
-    Vars.usernameValid = isValid;
+    $showValidation = true;
+    $usernameValid = isValid;
   `
 }
 ```
@@ -447,7 +447,7 @@ event: {
 event: {
   onEnter: `
     // Submit form on Enter
-    if (Vars.usernameValid) {
+    if ($usernameValid) {
       SubmitForm();
     }
   `
@@ -469,9 +469,9 @@ event: {
 ```typescript
 event: {
   onClear: `
-    Vars.username = "";
-    Vars.usernameError = "";
-    Vars.showValidation = false;
+    $username = "";
+    $usernameError = "";
+    $showValidation = false;
   `
 }
 ```
@@ -511,13 +511,13 @@ event: {
     // Validate
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isValid) {
-      Vars.error = "Invalid email";
+      $error = "Invalid email";
       return;
     }
-    
+
     // Submit
     const result = await SubmitEmail(email);
-    Vars.success = result.success;
+    $success = result.success;
   `
 }
 ```
@@ -527,13 +527,13 @@ event: {
 event: {
   onChange: `
     const query = EventData.value;
-    Vars.searchQuery = query;
-    
+    $searchQuery = query;
+
     if (query.length >= 2) {
       const results = await SearchAPI(query);
-      Vars.searchResults = results;
+      $searchResults = results;
     } else {
-      Vars.searchResults = [];
+      $searchResults = [];
     }
   `
 }
@@ -544,12 +544,12 @@ event: {
 event: {
   onChange: `
     const country = EventData.value;
-    Vars.selectedCountry = country;
-    
+    $selectedCountry = country;
+
     // Update related field
-    const cities = Vars.citiesByCountry[country] || [];
-    Vars.availableCities = cities;
-    Vars.selectedCity = ""; // Reset city selection
+    const cities = $citiesByCountry[country] || [];
+    $availableCities = cities;
+    $selectedCity = ""; // Reset city selection
   `
 }
 ```
@@ -560,14 +560,14 @@ event: {
   onChange: `
     const maxChars = 100;
     let value = EventData.value;
-    
+
     if (value.length > maxChars) {
       value = value.substring(0, maxChars);
       Current.Instance.value = value;  // Update component
     }
-    
-    Vars.charCount = value.length;
-    Vars.charsRemaining = maxChars - value.length;
+
+    $charCount = value.length;
+    $charsRemaining = maxChars - value.length;
   `
 }
 ```
@@ -590,16 +590,16 @@ Events in microapps maintain isolation:
 
 ```typescript
 // Local scope (microapp instance only)
-Vars.username = EventData.value
+$username = EventData.value
 
 // Global scope (shared across instances)
-Vars['global.lastActivity'] = Date.now()
+$global.lastActivity = Date.now()
 
 // Component-scoped state
 Current.Instance.validationState = "pending"
 ```
 
-When an event handler accesses `Vars`, it operates in the microapp's local scope by default. To access global variables, use the `global.` prefix.
+When an event handler accesses variables via `$`, it operates in the microapp's local scope by default. To access global variables, use the `$global.` prefix.
 
 ### Async Event Handling
 
@@ -609,18 +609,18 @@ Event handlers support async operations:
 event: {
   onChange: `
     const value = EventData.value;
-    
+
     // Start validation
-    Vars.validating = true;
-    
+    $validating = true;
+
     try {
       const result = await ValidateUsername(value);
-      Vars.isAvailable = result.available;
-      Vars.validationError = result.error || "";
+      $isAvailable = result.available;
+      $validationError = result.error || "";
     } catch (err) {
-      Vars.validationError = "Validation failed";
+      $validationError = "Validation failed";
     } finally {
-      Vars.validating = false;
+      $validating = false;
     }
   `
 }
@@ -635,8 +635,8 @@ TextInput supports dynamic styling through `styleHandlers`:
 ```typescript
 {
   styleHandlers: {
-    width: `return Vars.isCompact ? '200px' : '100%';`,
-    backgroundColor: `return Vars.theme === 'dark' ? '#333' : '#fff';`
+    width: `return $isCompact ? '200px' : '100%';`,
+    backgroundColor: `return $theme === 'dark' ? '#333' : '#fff';`
   }
 }
 ```
@@ -657,11 +657,11 @@ Here's a complete TextInput example combining inputs, events, and styling:
   input: {
     value: {
       type: "handler",
-      value: `return Vars.email || "";`
+      value: `return $email || "";`
     },
     label: {
       type: "handler",
-      value: `return Vars.showValidation && !Vars.emailValid ? "Email *" : "Email";`
+      value: `return $showValidation && !$emailValid ? "Email *" : "Email";`
     },
     placeholder: {
       type: "string",
@@ -672,7 +672,7 @@ Here's a complete TextInput example combining inputs, events, and styling:
     helper: {
       type: "handler",
       value: `
-        if (Vars.showValidation && !Vars.emailValid) {
+        if ($showValidation && !$emailValid) {
           return "Please enter a valid email address";
         }
         return "We'll never share your email";
@@ -680,26 +680,26 @@ Here's a complete TextInput example combining inputs, events, and styling:
     },
     disabled: {
       type: "handler",
-      value: `return Vars.isSubmitting;`
+      value: `return $isSubmitting;`
     }
   },
   
   // Event handlers for user interactions
   event: {
     onChange: `
-      Vars.email = EventData.value;
-      
+      $email = EventData.value;
+
       // Real-time validation
       const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(EventData.value);
-      Vars.emailValid = isValid;
+      $emailValid = isValid;
     `,
     
     onBlur: `
-      Vars.showValidation = true;
+      $showValidation = true;
     `,
     
     onEnter: `
-      if (Vars.emailValid) {
+      if ($emailValid) {
         SubmitForm();
       }
     `
@@ -707,14 +707,14 @@ Here's a complete TextInput example combining inputs, events, and styling:
   
   // Dynamic styling
   styleHandlers: {
-    width: `return Vars.isCompact ? '200px' : '100%';`,
+    width: `return $isCompact ? '200px' : '100%';`,
     borderColor: `
-      if (Vars.showValidation && !Vars.emailValid) {
+      if ($showValidation && !$emailValid) {
         return '#ff0000';
       }
       return '#ccc';
     `,
-    opacity: `return Vars.isSubmitting ? '0.6' : '1';`
+    opacity: `return $isSubmitting ? '0.6' : '1';`
   }
 }
 ```
@@ -727,10 +727,10 @@ TextInput components in microapps maintain isolated state:
 
 ```typescript
 // Local variable (microapp-scoped)
-Vars.username = 'John'
+$username = 'John'
 
 // Global variable (shared across all instances)
-Vars['global.theme'] = 'dark'
+$global.theme = 'dark'
 ```
 
 See [Variable Scopes](../architecture/micro-apps/variable-scopes.md) for details on local vs global scope in microapps.
@@ -773,7 +773,7 @@ See [TextInput Events](./text-input-events.md) for complete reference including:
   input: {
     value: {
       type: "handler",
-      value: `return Vars.username || '';`
+      value: `return $username || '';`
     }
   }
 }
@@ -783,8 +783,8 @@ See [TextInput Events](./text-input-events.md) for complete reference including:
 ```typescript
 event: {
   onChange: `
-    Vars.username = EventData.value;
-    Vars.formDirty = true;
+    $username = EventData.value;
+    $formDirty = true;
   `
 }
 ```
@@ -802,7 +802,7 @@ event: {
   event: {
     onChange: `
       const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(EventData.value);
-      Vars.emailValid = isValid;
+      $emailValid = isValid;
     `
   }
 }
@@ -815,8 +815,8 @@ TextInput supports dynamic styling through `styleHandlers`:
 ```typescript
 {
   styleHandlers: {
-    width: `return Vars.isCompact ? '200px' : '100%';`,
-    backgroundColor: `return Vars.theme === 'dark' ? '#333' : '#fff';`
+    width: `return $isCompact ? '200px' : '100%';`,
+    backgroundColor: `return $theme === 'dark' ? '#333' : '#fff';`
   }
 }
 ```
@@ -827,10 +827,10 @@ TextInput components in microapps maintain isolated state:
 
 ```typescript
 // Local variable (microapp-scoped)
-Vars.username = 'John'
+$username = 'John'
 
 // Global variable (shared across all instances)
-Vars['global.theme'] = 'dark'
+$global.theme = 'dark'
 ```
 
 Events in microapps are scoped to the instance. See [Variable Scopes](../architecture/micro-apps/variable-scopes.md) for details.

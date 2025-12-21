@@ -32,7 +32,7 @@ DatePicker provides a complete date selection solution with:
   },
   event: {
     onDateChange: `
-      Vars.selectedDate = EventData.value;
+      $selectedDate = EventData.value;
     `
   }
 }
@@ -76,13 +76,13 @@ DatePicker provides a complete date selection solution with:
 ```typescript
 event: {
   onDateChange: `
-    Vars.selectedDate = EventData.value;
+    $selectedDate = EventData.value;
 
     // Calculate age if birth date
     const birthDate = new Date(EventData.value);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
-    Vars.userAge = age;
+    $userAge = age;
   `
 }
 ```
@@ -103,14 +103,14 @@ event: {
 ```typescript
 event: {
   onRangeChange: `
-    Vars.startDate = EventData.startDate;
-    Vars.endDate = EventData.endDate;
+    $startDate = EventData.startDate;
+    $endDate = EventData.endDate;
 
     // Calculate duration
     const start = new Date(EventData.startDate);
     const end = new Date(EventData.endDate);
     const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    Vars.durationDays = days;
+    $durationDays = days;
   `
 }
 ```
@@ -120,8 +120,8 @@ event: {
 
 ```typescript
 event: {
-  onCalendarOpen: `Vars.calendarVisible = true;`,
-  onCalendarClose: `Vars.calendarVisible = false;`
+  onCalendarOpen: `$calendarVisible = true;`,
+  onCalendarClose: `$calendarVisible = false;`
 }
 ```
 
@@ -153,14 +153,14 @@ event: {
   },
   event: {
     onRangeChange: `
-      Vars.checkIn = EventData.startDate;
-      Vars.checkOut = EventData.endDate;
+      $checkIn = EventData.startDate;
+      $checkOut = EventData.endDate;
 
       const start = new Date(EventData.startDate);
       const end = new Date(EventData.endDate);
       const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-      Vars.totalNights = nights;
-      Vars.totalPrice = nights * Vars.pricePerNight;
+      $totalNights = nights;
+      $totalPrice = nights * $pricePerNight;
     `
   }
 }

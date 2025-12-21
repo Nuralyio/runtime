@@ -33,14 +33,14 @@ RadioButton provides a complete single-selection solution with:
           { label: 'PayPal', value: 'paypal' },
           { label: 'Bank Transfer', value: 'bank' }
         ],
-        currentValue: Vars.paymentMethod || 'credit',
+        currentValue: $paymentMethod || 'credit',
         type: 'default'
       };
     `
   },
   event: {
     onChange: `
-      Vars.paymentMethod = EventData.value;
+      $paymentMethod = EventData.value;
     `
   }
 }
@@ -118,16 +118,16 @@ inputHandlers: {
           { label: 'PayPal', value: 'paypal' },
           { label: 'Bank Transfer', value: 'bank' }
         ],
-        currentValue: Vars.paymentMethod || 'credit',
+        currentValue: $paymentMethod || 'credit',
         type: 'default'
       };
     `
   },
   event: {
     onChange: `
-      Vars.paymentMethod = EventData.value;
-      Vars.showCardForm = EventData.value === 'credit';
-      Vars.showBankForm = EventData.value === 'bank';
+      $paymentMethod = EventData.value;
+      $showCardForm = EventData.value === 'credit';
+      $showBankForm = EventData.value === 'bank';
     `
   }
 }
@@ -146,15 +146,15 @@ inputHandlers: {
           { label: 'Weekly', value: 'weekly' },
           { label: 'Monthly', value: 'monthly' }
         ],
-        currentValue: Vars.timeframe || 'monthly',
+        currentValue: $timeframe || 'monthly',
         type: 'button'
       };
     `
   },
   event: {
     onChange: `
-      Vars.timeframe = EventData.value;
-      Vars.chartData = await LoadChartData(EventData.value);
+      $timeframe = EventData.value;
+      $chartData = await LoadChartData(EventData.value);
     `
   }
 }
@@ -171,7 +171,7 @@ inputHandlers: {
   inputHandlers: {
     value: `
       const sizes = ['XS', 'S', 'M', 'L', 'XL'];
-      const availableSizes = Vars.product?.availableSizes || sizes;
+      const availableSizes = $product?.availableSizes || sizes;
 
       return {
         options: sizes.map(size => ({
@@ -179,16 +179,16 @@ inputHandlers: {
           value: size,
           disabled: !availableSizes.includes(size)
         })),
-        currentValue: Vars.selectedSize || 'M',
+        currentValue: $selectedSize || 'M',
         type: 'button'
       };
     `
   },
   event: {
     onChange: `
-      Vars.selectedSize = EventData.value;
-      const stock = await CheckStock(Vars.product.id, EventData.value);
-      Vars.inStock = stock > 0;
+      $selectedSize = EventData.value;
+      const stock = await CheckStock($product.id, EventData.value);
+      $inStock = stock > 0;
     `
   }
 }

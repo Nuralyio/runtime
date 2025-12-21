@@ -31,7 +31,7 @@ Checkbox provides a complete selection solution with:
   },
   event: {
     onChange: `
-      Vars.termsAccepted = EventData.checked;
+      $termsAccepted = EventData.checked;
     `
   }
 }
@@ -111,12 +111,12 @@ input: {
 ```typescript
 event: {
   onChange: `
-    Vars.isChecked = EventData.checked;
+    $isChecked = EventData.checked;
 
     if (EventData.checked) {
-      Vars.selectedItems.push(Current.name);
+      $selectedItems.push(Current.name);
     } else {
-      Vars.selectedItems = Vars.selectedItems.filter(i => i !== Current.name);
+      $selectedItems = $selectedItems.filter(i => i !== Current.name);
     }
   `
 }
@@ -128,7 +128,7 @@ event: {
 ```typescript
 event: {
   onFocus: `
-    Vars.activeField = "checkbox";
+    $activeField = "checkbox";
   `
 }
 ```
@@ -139,7 +139,7 @@ event: {
 ```typescript
 event: {
   onBlur: `
-    Vars.activeField = null;
+    $activeField = null;
   `
 }
 ```
@@ -162,8 +162,8 @@ event: {
 
 ```typescript
 event: {
-  onMouseEnter: `Vars.isHovering = true;`,
-  onMouseLeave: `Vars.isHovering = false;`
+  onMouseEnter: `$isHovering = true;`,
+  onMouseLeave: `$isHovering = false;`
 }
 ```
 
@@ -180,8 +180,8 @@ event: {
   },
   inputHandlers: {
     value: `
-      const selected = Vars.selectedItems?.length || 0;
-      const total = Vars.allItems?.length || 0;
+      const selected = $selectedItems?.length || 0;
+      const total = $allItems?.length || 0;
 
       if (selected === 0) return false;
       if (selected === total) return true;
@@ -191,9 +191,9 @@ event: {
   event: {
     onChange: `
       if (EventData.checked) {
-        Vars.selectedItems = [...Vars.allItems];
+        $selectedItems = [...$allItems];
       } else {
-        Vars.selectedItems = [];
+        $selectedItems = [];
       }
     `
   }
@@ -210,8 +210,8 @@ event: {
   },
   event: {
     onChange: `
-      Vars.termsAccepted = EventData.checked;
-      Vars.canSubmit = EventData.checked && Vars.formValid;
+      $termsAccepted = EventData.checked;
+      $canSubmit = EventData.checked && $formValid;
     `
   }
 }

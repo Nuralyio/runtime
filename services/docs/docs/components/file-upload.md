@@ -27,7 +27,7 @@ FileUpload provides a complete file upload solution with:
   input: {},
   event: {
     onFilesChanged: `
-      Vars.uploadedFiles = EventData.files;
+      $uploadedFiles = EventData.files;
       console.log('Files uploaded:', EventData.files.length);
     `
   }
@@ -62,22 +62,22 @@ FileUpload provides a complete file upload solution with:
 event: {
   onFilesChanged: `
     const files = EventData.files;
-    Vars.uploadedFiles = files;
-    Vars.fileCount = files.length;
+    $uploadedFiles = files;
+    $fileCount = files.length;
 
     // Calculate total size
     let totalSize = 0;
     files.forEach(file => {
       totalSize += file.size;
     });
-    Vars.totalSize = (totalSize / 1024 / 1024).toFixed(2) + ' MB';
+    $totalSize = (totalSize / 1024 / 1024).toFixed(2) + ' MB';
 
     // Validate file types
     const invalidFiles = files.filter(f => !f.type.startsWith('image/'));
     if (invalidFiles.length > 0) {
-      Vars.uploadError = 'Only image files are allowed';
+      $uploadError = 'Only image files are allowed';
     } else {
-      Vars.uploadError = '';
+      $uploadError = '';
     }
   `
 }
@@ -94,7 +94,7 @@ event: {
   event: {
     onFilesChanged: `
       const files = EventData.files;
-      Vars.uploadedFiles = files;
+      $uploadedFiles = files;
 
       // Create preview URLs
       const previews = [];
@@ -104,7 +104,7 @@ event: {
           previews.push({ name: file.name, url, size: file.size });
         }
       }
-      Vars.imagePreviews = previews;
+      $imagePreviews = previews;
     `
   }
 }
@@ -117,7 +117,7 @@ event: {
   event: {
     onFilesChanged: `
       const files = EventData.files;
-      Vars.uploading = true;
+      $uploading = true;
 
       try {
         const formData = new FormData();
@@ -131,12 +131,12 @@ event: {
         });
 
         const result = await response.json();
-        Vars.uploadedUrls = result.urls;
-        Vars.uploadSuccess = true;
+        $uploadedUrls = result.urls;
+        $uploadSuccess = true;
       } catch (error) {
-        Vars.uploadError = 'Upload failed: ' + error.message;
+        $uploadError = 'Upload failed: ' + error.message;
       } finally {
-        Vars.uploading = false;
+        $uploading = false;
       }
     `
   }

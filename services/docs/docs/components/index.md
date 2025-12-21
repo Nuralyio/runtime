@@ -87,7 +87,7 @@ input: {
 input: {
   value: {
     type: "handler",
-    value: `return Vars.username || 'Guest';`
+    value: `return $username || 'Guest';`
   }
 }
 ```
@@ -101,8 +101,8 @@ Events allow components to respond to user interactions:
 ```typescript
 event: {
   onChange: `
-    Vars.username = EventData.value;
-    Vars.formDirty = true;
+    $username = EventData.value;
+    $formDirty = true;
   `
 }
 ```
@@ -137,10 +137,10 @@ All components work seamlessly in microapps with variable scoping:
 
 ```typescript
 // Local scope (isolated to microapp instance)
-Vars.username = 'John'
+$username = 'John'
 
 // Global scope (shared across all instances)
-Vars['global.theme'] = 'dark'
+$global.theme = 'dark'
 ```
 
 See [Variable Scopes](../architecture/micro-apps/variable-scopes.md) for detailed information.
@@ -168,8 +168,8 @@ Here's a simple form example using TextInput:
     },
     event: {
       onChange: `
-        Vars.email = EventData.value;
-        Vars.formValid = ValidateForm();
+        $email = EventData.value;
+        $formValid = ValidateForm();
       `
     }
   },
@@ -186,8 +186,8 @@ Here's a simple form example using TextInput:
     },
     event: {
       onChange: `
-        Vars.password = EventData.value;
-        Vars.formValid = ValidateForm();
+        $password = EventData.value;
+        $formValid = ValidateForm();
       `
     }
   },
@@ -201,15 +201,15 @@ Here's a simple form example using TextInput:
       label: { type: "string", value: "Login" },
       disabled: {
         type: "handler",
-        value: `return !Vars.formValid || Vars.isLoading;`
+        value: `return !$formValid || $isLoading;`
       }
     },
     event: {
       onClick: `
-        Vars.isLoading = true;
-        const result = await Login(Vars.email, Vars.password);
-        Vars.isLoading = false;
-        Vars.loginSuccess = result.success;
+        $isLoading = true;
+        const result = await Login($email, $password);
+        $isLoading = false;
+        $loginSuccess = result.success;
       `
     }
   }

@@ -32,7 +32,7 @@ IconButton provides a compact button solution with:
   },
   event: {
     click: `
-      Vars.showDeleteConfirmation = true;
+      $showDeleteConfirmation = true;
     `
   }
 }
@@ -75,7 +75,7 @@ Common icon names: `trash`, `edit`, `copy`, `settings`, `plus`, `minus`, `close`
 ```typescript
 event: {
   click: `
-    Vars.actionTriggered = true;
+    $actionTriggered = true;
     await PerformAction();
   `
 }
@@ -92,7 +92,7 @@ event: {
   component_type: "icon-button",
   parameters: { icon: "edit" },
   input: { value: { type: "string", value: "text" } },
-  event: { click: `Vars.editMode = true;` }
+  event: { click: `$editMode = true;` }
 }
 
 // Delete button
@@ -100,7 +100,7 @@ event: {
   component_type: "icon-button",
   parameters: { icon: "trash" },
   input: { value: { type: "string", value: "danger" } },
-  event: { click: `Vars.showDeleteModal = true;` }
+  event: { click: `$showDeleteModal = true;` }
 }
 ```
 
