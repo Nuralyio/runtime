@@ -15,7 +15,7 @@ export class ResourcePermissionService {
   }
 
   /**
-   * Grant a permission on a resource
+   * Grant a permission on a resource (upsert - returns existing if already exists)
    */
   async grantPermission(
     resourceId: string,
@@ -28,7 +28,7 @@ export class ResourcePermissionService {
       throw new Error(`granteeId is required for grantee type "${dto.granteeType}"`);
     }
 
-    // Check if permission already exists
+    // Check if permission already exists - return it if so (idempotent)
     const existing = await this.repository.findPermission(
       resourceId,
       resourceType,
@@ -38,7 +38,7 @@ export class ResourcePermissionService {
     );
 
     if (existing) {
-      throw new Error('Permission already exists');
+      return existing;
     }
 
     const permission = new ResourcePermission(
@@ -137,6 +137,48 @@ export class ResourcePermissionService {
       permission,
       expiresAt,
     });
+  }
+
+  /**
+   * Grant role-based permission on a resource
+   */
+  async grantRolePermission(
+    resourceId: string,
+    resourceType: string,
+    grantedBy: string,
+    roleName: string,
+    permission: PermissionType = 'read'
+  ): Promise<ResourcePermission> {
+    return this.grantPermission(resourceId, resourceType, grantedBy, {
+      granteeType: 'role',
+      granteeId: roleName,
+      permission,
+    });
+  }
+
+  /**
+   * Revoke role-based permission from a resource
+   */
+  async revokeRolePermission(
+    resourceId: string,
+    resourceType: string,
+    roleName: string
+  ): Promise<number> {
+    return this.repository.deleteByGrantee(resourceId, resourceType, 'role', roleName);
+  }
+
+  /**
+   * Revoke public access from a resource
+   */
+  async revokePublicAccess(resourceId: string, resourceType: string): Promise<number> {
+    return this.repository.deleteByGrantee(resourceId, resourceType, 'public', null);
+  }
+
+  /**
+   * Revoke anonymous access from a resource
+   */
+  async revokeAnonymousAccess(resourceId: string, resourceType: string): Promise<number> {
+    return this.repository.deleteByGrantee(resourceId, resourceType, 'anonymous', null);
   }
 
   /**

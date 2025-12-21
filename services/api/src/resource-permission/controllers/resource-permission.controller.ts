@@ -5,6 +5,8 @@ import { ResourcePermissionService } from "../services/resource-permission.servi
 import { AuthorizationService } from "../../auth/services/authorization.service";
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
 import { GrantPermissionDto } from "../interfaces/resource-permission.interface";
+import { PageRepository } from "../../page/repositories/page.repository";
+import { ComponentRepository } from "../../component/repositories/component.repository";
 
 interface PermissionResponse {
   id: number;
@@ -38,7 +40,9 @@ function toResponse(perm: ResourcePermission): PermissionResponse {
 export class ResourcePermissionController extends Controller {
   constructor(
     private readonly permissionService: ResourcePermissionService,
-    private readonly authorizationService: AuthorizationService
+    private readonly authorizationService: AuthorizationService,
+    private readonly pageRepository: PageRepository,
+    private readonly componentRepository: ComponentRepository
   ) {
     super();
   }
@@ -52,17 +56,24 @@ export class ResourcePermissionController extends Controller {
     @Path() resourceType: string,
     @Path() resourceId: string
   ): Promise<PermissionResponse[]> {
-    // User must have share permission or be owner to view permissions
-    const canShare = await this.authorizationService.canAccess(
-      request.user,
-      resourceId,
-      resourceType,
-      'share'
-    );
+    // For pages and components, check app-level permission
+    // The applicationId comes from the resource lookup or query param
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
 
-    if (!canShare) {
-      // Check if user is owner/admin of the parent application
-      // For now, just check if they have any access
+    if (applicationId) {
+      // Check if user has permission to view/share in the application
+      const hasAppPermission = await this.authorizationService.hasAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:read`
+      );
+
+      if (!hasAppPermission) {
+        this.setStatus(403);
+        throw new Error('Access denied');
+      }
+    } else {
+      // For application-level resources, check direct access
       const canRead = await this.authorizationService.canAccess(
         request.user,
         resourceId,
@@ -162,28 +173,199 @@ export class ResourcePermissionController extends Controller {
   public async makePublic(
     @Request() request: NRequest,
     @Path() resourceType: string,
-    @Path() resourceId: string
+    @Path() resourceId: string,
+    @Body() body?: { permission?: PermissionType }
   ): Promise<PermissionResponse> {
-    // User must have share permission
-    const canShare = await this.authorizationService.canAccess(
-      request.user,
-      resourceId,
-      resourceType,
-      'share'
-    );
-
-    if (!canShare) {
-      this.setStatus(403);
-      throw new Error('Access denied: you need share permission');
+    // Check for app-level permission for pages/components
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
+    if (applicationId) {
+      await this.authorizationService.requireAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:share`
+      );
     }
 
     const permission = await this.permissionService.makePublic(
       resourceId,
       resourceType,
-      request.user.uuid
+      request.user.uuid,
+      body?.permission || 'read'
     );
 
     return toResponse(permission);
+  }
+
+  /**
+   * Remove public access from a resource
+   */
+  @Delete('{resourceType}/{resourceId}/make-public')
+  public async removePublic(
+    @Request() request: NRequest,
+    @Path() resourceType: string,
+    @Path() resourceId: string
+  ): Promise<{ success: boolean; message: string }> {
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
+    if (applicationId) {
+      await this.authorizationService.requireAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:share`
+      );
+    }
+
+    await this.permissionService.revokePublicAccess(resourceId, resourceType);
+    return { success: true, message: 'Public access removed' };
+  }
+
+  /**
+   * Allow anonymous access to a resource
+   */
+  @Post('{resourceType}/{resourceId}/make-anonymous')
+  public async makeAnonymous(
+    @Request() request: NRequest,
+    @Path() resourceType: string,
+    @Path() resourceId: string,
+    @Body() body?: { permission?: PermissionType }
+  ): Promise<PermissionResponse> {
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
+    if (applicationId) {
+      await this.authorizationService.requireAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:share`
+      );
+    }
+
+    const permission = await this.permissionService.allowAnonymous(
+      resourceId,
+      resourceType,
+      request.user.uuid,
+      body?.permission || 'read'
+    );
+
+    return toResponse(permission);
+  }
+
+  /**
+   * Remove anonymous access from a resource
+   */
+  @Delete('{resourceType}/{resourceId}/make-anonymous')
+  public async removeAnonymous(
+    @Request() request: NRequest,
+    @Path() resourceType: string,
+    @Path() resourceId: string
+  ): Promise<{ success: boolean; message: string }> {
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
+    if (applicationId) {
+      await this.authorizationService.requireAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:share`
+      );
+    }
+
+    await this.permissionService.revokeAnonymousAccess(resourceId, resourceType);
+    return { success: true, message: 'Anonymous access removed' };
+  }
+
+  /**
+   * Grant role-based permission on a resource
+   */
+  @Post('{resourceType}/{resourceId}/role-permission')
+  public async grantRolePermission(
+    @Request() request: NRequest,
+    @Path() resourceType: string,
+    @Path() resourceId: string,
+    @Body() body: { roleName: string; permission: PermissionType }
+  ): Promise<PermissionResponse> {
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
+    if (applicationId) {
+      await this.authorizationService.requireAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:share`
+      );
+    }
+
+    const permission = await this.permissionService.grantRolePermission(
+      resourceId,
+      resourceType,
+      request.user.uuid,
+      body.roleName,
+      body.permission
+    );
+
+    return toResponse(permission);
+  }
+
+  /**
+   * Revoke role-based permission from a resource
+   */
+  @Delete('{resourceType}/{resourceId}/role-permission/{roleName}')
+  public async revokeRolePermission(
+    @Request() request: NRequest,
+    @Path() resourceType: string,
+    @Path() resourceId: string,
+    @Path() roleName: string
+  ): Promise<{ success: boolean; message: string }> {
+    const applicationId = await this.getApplicationIdFromResource(resourceType, resourceId);
+    if (applicationId) {
+      await this.authorizationService.requireAppPermission(
+        request.user,
+        applicationId,
+        `${resourceType}:share`
+      );
+    }
+
+    await this.permissionService.revokeRolePermission(resourceId, resourceType, roleName);
+    return { success: true, message: 'Role permission revoked' };
+  }
+
+  /**
+   * Check if a resource allows anonymous access (public endpoint - no auth required)
+   * Used by the gateway to determine if authentication should be bypassed
+   */
+  @Get('{resourceType}/{resourceId}/check-anonymous')
+  public async checkAnonymousAccess(
+    @Path() resourceType: string,
+    @Path() resourceId: string
+  ): Promise<{ allowed: boolean; permission: string | null }> {
+    const hasAnonymousAccess = await this.permissionService.hasAccess(
+      resourceId,
+      resourceType,
+      'read',
+      undefined,
+      true // isAnonymous
+    );
+
+    if (hasAnonymousAccess) {
+      return { allowed: true, permission: 'read' };
+    }
+
+    return { allowed: false, permission: null };
+  }
+
+  /**
+   * Get the application ID for a resource (page or component) from database
+   */
+  private async getApplicationIdFromResource(resourceType: string, resourceId: string): Promise<string | null> {
+    if (resourceType === 'application') {
+      return resourceId;
+    }
+
+    // Look up the application_id from the database
+    if (resourceType === 'page') {
+      const page = await this.pageRepository.findPageByUUID(resourceId);
+      return page?.application_id || null;
+    }
+
+    if (resourceType === 'component') {
+      const component = await this.componentRepository.findComponentByUuid(resourceId);
+      return component?.application_id || null;
+    }
+
+    return null;
   }
 
   /**

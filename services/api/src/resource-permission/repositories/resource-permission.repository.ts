@@ -223,4 +223,24 @@ export class ResourcePermissionRepository implements IResourcePermissionReposito
     });
     return result.count;
   }
+
+  /**
+   * Delete permissions by grantee (used for revoking public/anonymous/role access)
+   */
+  async deleteByGrantee(
+    resourceId: string,
+    resourceType: string,
+    granteeType: GranteeType,
+    granteeId: string | null
+  ): Promise<number> {
+    const result = await prisma.resourcePermission.deleteMany({
+      where: {
+        resourceId,
+        resourceType,
+        granteeType,
+        granteeId,
+      },
+    });
+    return result.count;
+  }
 }
