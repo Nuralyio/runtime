@@ -10,7 +10,8 @@
       "Bash(python3:*)",
       "Bash(tree:*)",
       "Bash(git stash:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
