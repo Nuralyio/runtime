@@ -83,7 +83,12 @@ export function updateComponentAttributes(
       };
 
       // SECOND: Apply the updates directly to the component
-      if ((updateType === "style" || (updateType === "input" && updatedAttributes.type !=="handler")) && currentPlatform.platform !== "desktop") {
+      //@todo: need more tests here.
+      // Check if any of the updated attributes is a handler (nested: { propName: { type: 'handler', value: '...' } })
+      const hasHandlerAttribute = updateType === "input" &&
+        Object.values(updatedAttributes).some((attr: any) => attr && typeof attr === 'object' && attr.type === 'handler');
+
+      if ((updateType === "style" || (updateType === "input" && !hasHandlerAttribute)) && currentPlatform.platform !== "desktop") {
         // Initialize breakpoints if not already
         componentToUpdate.breakpoints = componentToUpdate.breakpoints || {};
         componentToUpdate.breakpoints[currentPlatform.width] =

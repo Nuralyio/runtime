@@ -91,9 +91,10 @@ import { eventDispatcher } from '../utils/change-detection';
 import Editor from '../state/editor';
 import Database from '@nuraly/dbclient';
 
-import { compileHandlerFunction } from './compiler';
+import { compileHandlerFunction, createHandlerScope } from './compiler';
 import { setupRuntimeContext, extractRuntimeContext } from './context-setup';
 import { createGlobalHandlerFunctions } from './runtime-api';
+import { createHandlerAPI } from './handler-api-factory';
 import type { IRuntimeContext } from '../types/IRuntimeContext';
 import { ExecuteInstance } from '../state';
 
@@ -289,7 +290,21 @@ export function executeHandler(
     debug: Editor.Console.debug,
   };
 
+  // Create namespaced Handler API for clean access
+  const handlerAPI = createHandlerAPI(
+    runtimeContext,
+    globalFunctions as any,
+    component,
+    EventData,
+    item,
+    customConsole,
+    Database,
+    eventDispatcher,
+    RuntimeHelpers
+  );
+
   // Execute the compiled function with all context and global functions
+  // Includes both legacy flat parameters and new namespaced API
   return compiledFunction(
     Database,
     eventDispatcher,
@@ -342,6 +357,15 @@ export function executeHandler(
     globalFunctions.ShowWarningToast,
     globalFunctions.ShowInfoToast,
     globalFunctions.HideToast,
-    globalFunctions.ClearAllToasts
+    globalFunctions.ClearAllToasts,
+    createHandlerScope, // For transparent variable access ($username = 'John' instead of Vars.username = 'John')
+    // Namespaced APIs (new clean API)
+    handlerAPI.Nav,
+    handlerAPI.UI,
+    handlerAPI.Component,
+    handlerAPI.Data,
+    handlerAPI.Page,
+    handlerAPI.App,
+    handlerAPI.Var
   );
 }
