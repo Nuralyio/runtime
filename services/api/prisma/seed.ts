@@ -6,10 +6,107 @@ const prisma = new PrismaClient();
 // This is the fixed user ID from Keycloak dev user that matches nuraly-realm.json
 const KEYCLOAK_DEV_USER_ID = '550e8400-e29b-41d4-a716-446655440000';
 
-async function main() {
-  console.log('Starting database seed from backup...');
+// ============================================
+// SYSTEM ROLES - Default roles for all applications
+// ============================================
+const SYSTEM_ROLES = [
+  {
+    name: 'owner',
+    displayName: 'Owner',
+    description: 'Full control over the application. Can delete app and transfer ownership.',
+    hierarchy: 100,
+    permissions: ['*'], // Wildcard = all permissions
+    isSystem: true,
+    applicationId: null,
+  },
+  {
+    name: 'admin',
+    displayName: 'Administrator',
+    description: 'Can manage members, edit app settings, and manage all content.',
+    hierarchy: 80,
+    permissions: [
+      'application:read',
+      'application:write',
+      'page:*',
+      'component:*',
+      'member:*',
+      'role:read',
+    ],
+    isSystem: true,
+    applicationId: null,
+  },
+  {
+    name: 'editor',
+    displayName: 'Editor',
+    description: 'Can create and edit pages and components.',
+    hierarchy: 60,
+    permissions: [
+      'application:read',
+      'page:*',
+      'component:*',
+      'member:read',
+    ],
+    isSystem: true,
+    applicationId: null,
+  },
+  {
+    name: 'viewer',
+    displayName: 'Viewer',
+    description: 'Read-only access to the application.',
+    hierarchy: 40,
+    permissions: [
+      'application:read',
+      'page:read',
+      'component:read',
+      'member:read',
+    ],
+    isSystem: true,
+    applicationId: null,
+  },
+];
 
-  // Create the dev user that matches Keycloak import
+async function main() {
+  console.log('Starting database seed...');
+
+  // ============================================
+  // 1. SEED SYSTEM ROLES
+  // ============================================
+  console.log('Seeding system roles...');
+  const createdRoles: { [key: string]: number } = {};
+
+  for (const role of SYSTEM_ROLES) {
+    const createdRole = await prisma.applicationRole.upsert({
+      where: {
+        applicationId_name: {
+          applicationId: role.applicationId as string,
+          name: role.name,
+        },
+      },
+      update: {
+        displayName: role.displayName,
+        description: role.description,
+        hierarchy: role.hierarchy,
+        permissions: role.permissions,
+        isSystem: role.isSystem,
+      },
+      create: {
+        applicationId: role.applicationId,
+        name: role.name,
+        displayName: role.displayName,
+        description: role.description,
+        hierarchy: role.hierarchy,
+        permissions: role.permissions,
+        isSystem: role.isSystem,
+      },
+    });
+    createdRoles[role.name] = createdRole.id;
+    console.log(`  Created/Updated system role: ${role.name} (id: ${createdRole.id})`);
+  }
+  console.log('System roles seeded successfully!');
+
+  // ============================================
+  // 2. CREATE DEV USER
+  // ============================================
   const hashedPassword = await bcrypt.hash('dev123', 10);
 
   const user = await prisma.user.upsert({
@@ -66,54 +163,37 @@ async function main() {
   }
   console.log(`Seeded ${applications.length} applications`);
 
-  // Note: Components and pages data is extensive in the backup
-  // For now, we'll create ownership and permission records for all applications
-  console.log('Creating ownership and permission records...');
-  
-  let ownershipId = 1;
-  let permissionId = 1;
+  // ============================================
+  // 4. CREATE APPLICATION MEMBERS (NEW SYSTEM)
+  // ============================================
+  console.log('Creating application members with owner role...');
+
+  const ownerRoleId = createdRoles['owner'];
 
   for (const app of applications) {
-    // Create ownership
-    await prisma.ownership.upsert({
-      where: { id: ownershipId },
-      update: {},
-      create: {
-        id: ownershipId,
-        ownerId: KEYCLOAK_DEV_USER_ID,
-        resourceId: app.uuid,
-        resourceType: 'application',
-      },
-    });
-
-    // Create permission
-    await prisma.permission.upsert({
-      where: { id: permissionId },
-      update: {},
-      create: {
-        id: permissionId,
-        userId: KEYCLOAK_DEV_USER_ID,
-        resourceId: app.uuid,
-        resourceType: 'application',
-        publicState: false,
-        permissionType: 'owner',
-        ownerId: KEYCLOAK_DEV_USER_ID,
-        allowed: {
-          read: true,
-          write: true,
-          delete: true,
-          share: true,
+    // Create ApplicationMember with owner role for the dev user
+    await prisma.applicationMember.upsert({
+      where: {
+        userId_applicationId: {
+          userId: KEYCLOAK_DEV_USER_ID,
+          applicationId: app.uuid,
         },
       },
+      update: {
+        roleId: ownerRoleId,
+      },
+      create: {
+        userId: KEYCLOAK_DEV_USER_ID,
+        applicationId: app.uuid,
+        roleId: ownerRoleId,
+      },
     });
-
-    ownershipId++;
-    permissionId++;
   }
+  console.log(`Created ${applications.length} application member records with owner role`);
 
-  console.log('Created ownership and permission records for all applications');
-
-  // Seed a few sample components from the backup
+  // ============================================
+  // 5. SEED SAMPLE COMPONENTS
+  // ============================================
   const sampleComponents = [
     {
       id: 1,
