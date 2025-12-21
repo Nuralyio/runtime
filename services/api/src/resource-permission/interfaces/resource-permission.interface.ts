@@ -14,6 +14,13 @@ export interface IResourcePermissionRepository {
   create(permission: ResourcePermission): Promise<ResourcePermission>;
   delete(id: number): Promise<ResourcePermission>;
   deleteExpired(): Promise<number>;
+  deleteByResource(resourceId: string, resourceType: string): Promise<number>;
+  deleteByGrantee(
+    resourceId: string,
+    resourceType: string,
+    granteeType: GranteeType,
+    granteeId: string | null
+  ): Promise<number>;
 }
 
 export interface GrantPermissionDto {
