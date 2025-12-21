@@ -1,6 +1,18 @@
 # Nuraly Stack Makefile
 
+# Minikube configuration
+MINIKUBE_MEMORY ?= 4096
+MINIKUBE_CPUS ?= 2
+MINIKUBE_DRIVER ?= docker
+MINIKUBE_K8S_VERSION ?= stable
+
+# Knative version
+KNATIVE_VERSION ?= 1.12.0
+
 .PHONY: help init init-dev dev prod stop clean logs shell test build deploy update status
+.PHONY: minikube-start minikube-stop minikube-delete minikube-status minikube-dashboard
+.PHONY: knative-install knative-install-serving knative-install-eventing knative-status knative-uninstall
+.PHONY: k8s-init k8s-clean
 
 # Default target
 help:
@@ -19,6 +31,24 @@ help:
 	@echo "  make deploy     - Deploy to production"
 	@echo "  make update     - Update git submodules"
 	@echo "  make status     - Check submodule status"
+	@echo ""
+	@echo "Kubernetes (Minikube):"
+	@echo "  make minikube-start     - Start minikube cluster"
+	@echo "  make minikube-stop      - Stop minikube cluster"
+	@echo "  make minikube-delete    - Delete minikube cluster"
+	@echo "  make minikube-status    - Check minikube status"
+	@echo "  make minikube-dashboard - Open Kubernetes dashboard"
+	@echo ""
+	@echo "Knative:"
+	@echo "  make knative-install          - Install Knative Serving + Eventing with Kourier"
+	@echo "  make knative-install-serving  - Install Knative Serving only"
+	@echo "  make knative-install-eventing - Install Knative Eventing only"
+	@echo "  make knative-status           - Check Knative component status"
+	@echo "  make knative-uninstall        - Remove Knative components"
+	@echo ""
+	@echo "Combined K8s Setup:"
+	@echo "  make k8s-init  - Full setup: minikube + Knative"
+	@echo "  make k8s-clean - Clean teardown of K8s environment"
 	@echo ""
 
 # Initialize submodules
@@ -159,3 +189,124 @@ restore:
 ssl-cert:
 	@echo "Generating SSL certificates..."
 	./scripts/generate-ssl.sh
+
+# =============================================================================
+# Minikube Targets
+# =============================================================================
+
+minikube-start:
+	@echo "Starting minikube cluster..."
+	@echo "  Memory: $(MINIKUBE_MEMORY)MB"
+	@echo "  CPUs: $(MINIKUBE_CPUS)"
+	@echo "  Driver: $(MINIKUBE_DRIVER)"
+	@minikube start \
+		--memory=$(MINIKUBE_MEMORY) \
+		--cpus=$(MINIKUBE_CPUS) \
+		--driver=$(MINIKUBE_DRIVER) \
+		--kubernetes-version=$(MINIKUBE_K8S_VERSION)
+	@echo "✅ Minikube cluster started!"
+	@echo "Run 'make minikube-status' to verify"
+
+minikube-stop:
+	@echo "Stopping minikube cluster..."
+	@minikube stop
+	@echo "✅ Minikube cluster stopped"
+
+minikube-delete:
+	@echo "Deleting minikube cluster..."
+	@minikube delete
+	@echo "✅ Minikube cluster deleted"
+
+minikube-status:
+	@echo "Minikube Status:"
+	@minikube status || true
+	@echo ""
+	@echo "Kubectl cluster info:"
+	@kubectl cluster-info || true
+
+minikube-dashboard:
+	@echo "Opening Kubernetes dashboard..."
+	@minikube dashboard
+
+# =============================================================================
+# Knative Targets
+# =============================================================================
+
+knative-install-serving:
+	@echo "Installing Knative Serving v$(KNATIVE_VERSION)..."
+	@kubectl apply -f https://github.com/knative/serving/releases/download/knative-v$(KNATIVE_VERSION)/serving-crds.yaml
+	@kubectl apply -f https://github.com/knative/serving/releases/download/knative-v$(KNATIVE_VERSION)/serving-core.yaml
+	@echo "Installing Kourier networking layer..."
+	@kubectl apply -f https://github.com/knative/net-kourier/releases/download/knative-v$(KNATIVE_VERSION)/kourier.yaml
+	@echo "Configuring Kourier as default ingress..."
+	@kubectl patch configmap/config-network \
+		--namespace knative-serving \
+		--type merge \
+		--patch '{"data":{"ingress-class":"kourier.ingress.networking.knative.dev"}}'
+	@echo "Waiting for Knative Serving to be ready..."
+	@kubectl wait --for=condition=Ready pods --all -n knative-serving --timeout=300s || true
+	@echo "✅ Knative Serving installed with Kourier!"
+
+knative-install-eventing:
+	@echo "Installing Knative Eventing v$(KNATIVE_VERSION)..."
+	@kubectl apply -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/eventing-crds.yaml
+	@kubectl apply -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/eventing-core.yaml
+	@echo "Installing in-memory channel..."
+	@kubectl apply -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/in-memory-channel.yaml
+	@echo "Installing MT-Channel-based broker..."
+	@kubectl apply -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/mt-channel-broker.yaml
+	@echo "Waiting for Knative Eventing to be ready..."
+	@kubectl wait --for=condition=Ready pods --all -n knative-eventing --timeout=300s || true
+	@echo "✅ Knative Eventing installed!"
+
+knative-install: knative-install-serving knative-install-eventing
+	@echo ""
+	@echo "✅ Knative Serving + Eventing installed successfully!"
+	@echo "Run 'make knative-status' to verify"
+
+knative-status:
+	@echo "=== Knative Serving Status ==="
+	@kubectl get pods -n knative-serving 2>/dev/null || echo "Knative Serving not installed"
+	@echo ""
+	@echo "=== Knative Eventing Status ==="
+	@kubectl get pods -n knative-eventing 2>/dev/null || echo "Knative Eventing not installed"
+	@echo ""
+	@echo "=== Kourier Status ==="
+	@kubectl get pods -n kourier-system 2>/dev/null || echo "Kourier not installed"
+	@echo ""
+	@echo "=== Kourier External IP ==="
+	@kubectl get svc kourier -n kourier-system 2>/dev/null || echo "Kourier service not found"
+
+knative-uninstall:
+	@echo "Uninstalling Knative components..."
+	@kubectl delete -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/mt-channel-broker.yaml 2>/dev/null || true
+	@kubectl delete -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/in-memory-channel.yaml 2>/dev/null || true
+	@kubectl delete -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/eventing-core.yaml 2>/dev/null || true
+	@kubectl delete -f https://github.com/knative/eventing/releases/download/knative-v$(KNATIVE_VERSION)/eventing-crds.yaml 2>/dev/null || true
+	@kubectl delete -f https://github.com/knative/net-kourier/releases/download/knative-v$(KNATIVE_VERSION)/kourier.yaml 2>/dev/null || true
+	@kubectl delete -f https://github.com/knative/serving/releases/download/knative-v$(KNATIVE_VERSION)/serving-core.yaml 2>/dev/null || true
+	@kubectl delete -f https://github.com/knative/serving/releases/download/knative-v$(KNATIVE_VERSION)/serving-crds.yaml 2>/dev/null || true
+	@echo "✅ Knative uninstalled"
+
+# =============================================================================
+# Combined K8s Targets
+# =============================================================================
+
+k8s-init: minikube-start
+	@echo ""
+	@echo "Waiting for minikube to be fully ready..."
+	@sleep 10
+	@$(MAKE) knative-install
+	@echo ""
+	@echo "============================================"
+	@echo "✅ Kubernetes environment ready!"
+	@echo "============================================"
+	@echo ""
+	@echo "Useful commands:"
+	@echo "  make minikube-status    - Check cluster status"
+	@echo "  make knative-status     - Check Knative status"
+	@echo "  make minikube-dashboard - Open K8s dashboard"
+	@echo ""
+
+k8s-clean: knative-uninstall minikube-delete
+	@echo "✅ Kubernetes environment cleaned up"
