@@ -48,6 +48,49 @@ import { validateHandlerCode } from '../utils/handler-validator';
 export { createHandlerScope } from './handler-scope';
 
 /**
+ * Checks if code needs an implicit return added.
+ * Returns true if the code is a simple expression without explicit return.
+ *
+ * @param code - Handler code string
+ * @returns true if implicit return should be added
+ */
+function needsImplicitReturn(code: string): boolean {
+  const trimmed = code.trim();
+
+  // If empty, no return needed
+  if (!trimmed) return false;
+
+  // If already has return statement, don't add another
+  if (/\breturn\b/.test(trimmed)) return false;
+
+  // If has control flow statements, don't add implicit return
+  // (these are multi-statement handlers that should use explicit return)
+  if (/\b(if|for|while|switch|try|throw)\b/.test(trimmed)) return false;
+
+  // If has semicolons (multiple statements), don't add implicit return
+  // unless it's a single statement ending with semicolon
+  const semicolonCount = (trimmed.match(/;/g) || []).length;
+  if (semicolonCount > 1) return false;
+
+  // Single expression - add implicit return
+  return true;
+}
+
+/**
+ * Wraps code with implicit return if needed.
+ *
+ * @param code - Handler code string
+ * @returns Code with return statement if needed
+ */
+function wrapWithImplicitReturn(code: string): string {
+  if (needsImplicitReturn(code)) {
+    const trimmed = code.trim().replace(/;$/, ''); // Remove trailing semicolon
+    return `return (${trimmed});`;
+  }
+  return code;
+}
+
+/**
  * Cache storage for compiled handler functions.
  *
  * @description
@@ -307,6 +350,9 @@ export function compileHandlerFunction(code: string): Function {
       throw new Error(`Handler validation failed: ${validationResult.errors[0]?.message || 'Unknown error'}`);
     }
 
+    // Wrap with implicit return if needed (e.g., "$name ?? 'hello'" becomes "return ($name ?? 'hello');")
+    const processedCode = wrapWithImplicitReturn(code);
+
     if (transparentVarsEnabled) {
       // Compile with transparent variable access using `with` statement
       // The scope proxy routes unknown variables to VarsProxy
@@ -331,7 +377,7 @@ export function compileHandlerFunction(code: string): Function {
           }
         });
         with (__scope__) {
-          return (function() { ${code} }).apply(this);
+          return (function() { ${processedCode} }).apply(this);
         }
         `
       );
@@ -339,7 +385,7 @@ export function compileHandlerFunction(code: string): Function {
       // Traditional compilation without scope proxy
       handlerFunctionCache[cacheKey] = new Function(
         ...HANDLER_PARAMETERS,
-        `return (function() { ${code} }).apply(this);`
+        `return (function() { ${processedCode} }).apply(this);`
       );
     }
   }
