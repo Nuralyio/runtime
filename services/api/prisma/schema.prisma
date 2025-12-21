@@ -35,26 +35,65 @@ model applications {
   default_page_uuid String?
 }
 
-model Permission {
-  id             Int     @id @default(autoincrement())
-  userId         String  @map("user_id")
-  resourceId     String  @map("resource_id")
-  resourceType   String  @map("resource_type")
-  publicState    Boolean @map("public")
-  permissionType String  @map("permission_type")
-  ownerId        String  @map("owner_id")
-  allowed        Json
+// ============================================
+// ACCESS CONTROL MODELS (New 3-Table Architecture)
+// ============================================
 
-  @@map("permissions")
+// Application Roles - System roles + custom roles per application
+model ApplicationRole {
+  id            Int       @id @default(autoincrement())
+  applicationId String?   @map("application_id") // NULL for system roles
+  name          String
+  displayName   String    @map("display_name")
+  description   String?
+  permissions   Json      // Array of permission strings: ["application:read", "page:*"]
+  isSystem      Boolean   @default(false) @map("is_system")
+  hierarchy     Int       @default(0) // Higher = more permissions (owner=100, admin=80, etc.)
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  members ApplicationMember[]
+
+  @@unique([applicationId, name])
+  @@index([applicationId])
+  @@index([isSystem])
+  @@map("application_roles")
 }
 
-model Ownership {
-  id           Int    @id @default(autoincrement())
-  ownerId      String @map("owner_id")
-  resourceId   String @map("resource_id")
-  resourceType String @map("resource_type")
+// Application Members - User role assignments within applications
+model ApplicationMember {
+  id            Int      @id @default(autoincrement())
+  userId        String   @map("user_id")
+  applicationId String   @map("application_id")
+  roleId        Int      @map("role_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  @@map("ownership")
+  role ApplicationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, applicationId])
+  @@index([applicationId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("application_members")
+}
+
+// Resource Permissions - Fine-grained access control for specific resources
+model ResourcePermission {
+  id           Int       @id @default(autoincrement())
+  resourceId   String    @map("resource_id")
+  resourceType String    @map("resource_type") // page, component, file, application
+  granteeType  String    @map("grantee_type")  // user, role, public, anonymous
+  granteeId    String?   @map("grantee_id")    // User UUID or Role ID (NULL for public/anonymous)
+  permission   String                          // read, write, delete, share
+  grantedBy    String    @map("granted_by")    // User who granted this permission
+  expiresAt    DateTime? @map("expires_at")    // Optional expiration (NULL = permanent)
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@unique([resourceId, resourceType, granteeType, granteeId, permission])
+  @@index([resourceId, resourceType])
+  @@index([granteeId, granteeType])
+  @@index([expiresAt])
+  @@map("resource_permissions")
 }
 
 model components {

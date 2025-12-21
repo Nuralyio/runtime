@@ -1,48 +1,62 @@
 import { delay, inject, singleton } from 'tsyringe';
 import { Application } from '../models/application';
 import { ApplicationRepository } from '../repositories/application.repository';
-import { OwnershipService } from '../../ownership/services/ownership.service';
+import { ApplicationMemberService } from '../../application-member/services/application-member.service';
+import { ResourcePermissionService } from '../../resource-permission/services/resource-permission.service';
 import { PageService } from '../../page/services/page.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @singleton()
 export class ApplicationService {
-  private ApplicationRepository: ApplicationRepository;
-  private ownershipSercice: OwnershipService;
+  private applicationRepository: ApplicationRepository;
+  private memberService: ApplicationMemberService;
+  private resourcePermissionService: ResourcePermissionService;
 
-  constructor(productRepository: ApplicationRepository, ownershipService: OwnershipService, 
-
-   @inject(delay(()=>PageService)) private pageService: PageService
+  constructor(
+    applicationRepository: ApplicationRepository,
+    memberService: ApplicationMemberService,
+    resourcePermissionService: ResourcePermissionService,
+    @inject(delay(() => PageService)) private pageService: PageService
   ) {
-    this.ApplicationRepository = productRepository;
-    this.ownershipSercice = ownershipService
-    //this.ownershipSercice = new OwernshipService
+    this.applicationRepository = applicationRepository;
+    this.memberService = memberService;
+    this.resourcePermissionService = resourcePermissionService;
   }
 
   public async create(published: boolean, uuid: string, user_id: string, name?: string): Promise<Application> {
     const application: Application = new Application(published, name ?? this.generateAppName(), uuid, user_id);
-    const newApplication = await this.ApplicationRepository.create(application);
-    this.ownershipSercice.create('application', newApplication.uuid, user_id);
+    const newApplication = await this.applicationRepository.create(application);
+
+    // Create owner membership for the creator (new system)
+    await this.memberService.createOwnerMembership(user_id, newApplication.uuid);
+
+    // Create default page
     this.pageService.create("Page1", "page1", "", newApplication.uuid, user_id, uuidv4(), false, []);
     return newApplication;
   }
 
   public async findAll(applicationsIds: string[]): Promise<Application[]> {
-    return await this.ApplicationRepository.findAll(applicationsIds);
+    return await this.applicationRepository.findAll(applicationsIds);
   }
 
   public async findApplicationById(uuid: string): Promise<Application> {
-    return await this.ApplicationRepository.findApplicationById(uuid);
+    return await this.applicationRepository.findApplicationById(uuid);
   }
 
   public async update(published: boolean, uuid: string, name: string, user_id: string): Promise<Application> {
     const application: Application = new Application(published, name, uuid, user_id);
-    return await this.ApplicationRepository.update(uuid, application);
+    return await this.applicationRepository.update(uuid, application);
   }
 
   public async delete(uuid: string): Promise<Application> {
+    // Delete all pages first
     await this.pageService.deleteApplicationPages(uuid);
-    return await this.ApplicationRepository.delete(uuid);
+
+    // Delete all resource permissions for this application
+    await this.resourcePermissionService.deleteResourcePermissions(uuid, 'application');
+
+    // Delete the application
+    return await this.applicationRepository.delete(uuid);
   }
 
   private generateAppName(): string {
