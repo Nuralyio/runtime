@@ -144,14 +144,17 @@ export {
 /**
  * Handler compilation utilities with automatic caching.
  * Compiles JavaScript code strings into executable functions.
- * 
+ *
  * @see {@link compiler.ts} for implementation details
  */
 export {
   compileHandlerFunction,
   clearHandlerCache,
   getHandlerCacheSize,
-  HANDLER_PARAMETERS
+  HANDLER_PARAMETERS,
+  setTransparentVarsEnabled,
+  isTransparentVarsEnabled,
+  createHandlerScope
 } from './compiler';
 
 // ============================================================================
@@ -182,3 +185,32 @@ export {
 export {
   createGlobalHandlerFunctions
 } from './runtime-api';
+
+// ============================================================================
+// Namespaced Handler API
+// ============================================================================
+
+/**
+ * Namespaced Handler API for clean, organized access to runtime functions.
+ * Provides Nav, UI, Component, Data, Page, App, Var namespaces.
+ *
+ * @see {@link handler-api.ts} for type definitions
+ * @see {@link handler-api-factory.ts} for factory implementation
+ */
+export {
+  createHandlerAPI,
+  extractLegacyParameters
+} from './handler-api-factory';
+
+export type {
+  HandlerAPI,
+  NavAPI,
+  UIAPI,
+  ComponentAPI,
+  DataAPI,
+  PageAPI,
+  AppAPI,
+  EditorAPI,
+  VarAPI,
+  ToastType
+} from './handler-api';

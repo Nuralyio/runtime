@@ -22,6 +22,59 @@ import deepEqual from 'fast-deep-equal';
 import { eventDispatcher } from './change-detection';
 import type { ComponentElement } from '../redux/store/component/component.interface';
 
+// ============================================================================
+// Helper Functions (extracted to reduce duplication)
+// ============================================================================
+
+/**
+ * Safely compare two values for equality, handling proxy objects.
+ */
+function safeDeepEqual(oldValue: any, newValue: any): boolean {
+  try {
+    return deepEqual(oldValue, newValue);
+  } catch {
+    // If deepEqual fails (e.g., comparing proxies), assume values are different
+    return false;
+  }
+}
+
+/**
+ * Build a scoped event name with optional prefix.
+ */
+function buildEventName(eventPrefix: string, eventType: string, suffix?: string): string {
+  const base = eventPrefix ? `${eventPrefix}:${eventType}` : eventType;
+  return suffix ? `${base}:${suffix}` : base;
+}
+
+/**
+ * Emit property change events to all listeners.
+ */
+function emitToListeners(
+  listeners: Set<string>,
+  eventPrefix: string,
+  prop: string,
+  data: Record<string, any>
+): void {
+  listeners.forEach((componentName: string) => {
+    const eventName = buildEventName(eventPrefix, 'component-property-changed', componentName);
+    eventDispatcher.emit(eventName, { prop, ...data });
+  });
+}
+
+/**
+ * Emit scope-specific event if scope is provided.
+ */
+function emitScopeEvent(
+  scope: string | undefined,
+  eventPrefix: string,
+  propPath: string,
+  data: Record<string, any>
+): void {
+  if (!scope) return;
+  const eventName = buildEventName(eventPrefix, scope, propPath);
+  eventDispatcher.emit(eventName, data);
+}
+
 /**
  * Configuration for reactive proxy creation
  */
@@ -127,9 +180,17 @@ export class RuntimeContextHelpers {
           listeners[String(prop)].add(current.name);
         }
 
-        // Create nested proxy for object values
-        if (typeof value === 'object' && value !== null) {
+        // Create nested proxy for object values (non-arrays)
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
           return RuntimeContextHelpers.createNestedProxy(value, {
+            ...config,
+            parentProp: String(prop)
+          });
+        }
+
+        // Create array proxy for array values
+        if (Array.isArray(value)) {
+          return RuntimeContextHelpers.createArrayProxy(value, {
             ...config,
             parentProp: String(prop)
           });
@@ -142,16 +203,7 @@ export class RuntimeContextHelpers {
         const oldValue = proxyTarget[prop as keyof T];
 
         // Guard: Don't emit events if value hasn't changed
-        // Wrap in try-catch to handle proxy objects that may not have valueOf
-        let valuesEqual = false;
-        try {
-          valuesEqual = deepEqual(oldValue, value);
-        } catch (e) {
-          // If deepEqual fails (e.g., comparing proxies), assume values are different
-          valuesEqual = false;
-        }
-
-        if (valuesEqual) {
+        if (safeDeepEqual(oldValue, value)) {
           return true;
         }
 
@@ -162,16 +214,7 @@ export class RuntimeContextHelpers {
         onPropertyChange(String(prop), value, propListeners);
 
         // Emit scope-specific event if scope is provided
-        if (scope) {
-          const eventName = eventPrefix
-            ? `${eventPrefix}:${scope}:${String(prop)}`
-            : `${scope}:${String(prop)}`;
-
-          eventDispatcher.emit(eventName, {
-            value,
-            ctx: current // IMPORTANT: Include ctx for scope events (e.g., Vars:selectedComponents)
-          });
-        }
+        emitScopeEvent(scope, eventPrefix, String(prop), { value, ctx: current });
 
         return result;
       }
@@ -195,47 +238,59 @@ export class RuntimeContextHelpers {
     const { eventPrefix, scope, listeners, current, parentProp } = config;
 
     return new Proxy(target, {
+      get(proxyTarget, prop, receiver) {
+        const value = Reflect.get(proxyTarget, prop, receiver);
+
+        // Track listener for nested property access
+        const nestedPropKey = `${parentProp}.${String(prop)}`;
+        if (!listeners[nestedPropKey]) {
+          listeners[nestedPropKey] = new Set<string>();
+        }
+
+        if (current.name) {
+          listeners[nestedPropKey].add(current.name);
+          // Also add to parent property listeners for coarse-grained tracking
+          if (!listeners[parentProp]) {
+            listeners[parentProp] = new Set<string>();
+          }
+          listeners[parentProp].add(current.name);
+        }
+
+        // Recursively proxy deeper nested objects
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          return RuntimeContextHelpers.createNestedProxy(value, {
+            ...config,
+            parentProp: nestedPropKey
+          });
+        }
+
+        // Handle arrays with mutation tracking
+        if (Array.isArray(value)) {
+          return RuntimeContextHelpers.createArrayProxy(value, {
+            ...config,
+            parentProp: nestedPropKey
+          });
+        }
+
+        return value;
+      },
+
       set(proxyTarget, prop, value, receiver) {
         const oldValue = proxyTarget[prop as keyof T];
         const result = Reflect.set(proxyTarget, prop, value, receiver);
 
-        // Check if value changed, with error handling for proxy objects
-        let valuesEqual = false;
-        try {
-          valuesEqual = deepEqual(oldValue, value);
-        } catch (e) {
-          // If deepEqual fails (e.g., comparing proxies), assume values are different
-          valuesEqual = false;
-        }
-
-        if (!valuesEqual) {
+        if (!safeDeepEqual(oldValue, value)) {
           // Emit to parent property listeners
           const parentListeners = listeners[parentProp] || new Set<string>();
-          parentListeners.forEach((componentName: string) => {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:component-property-changed:${componentName}`
-              : `component-property-changed:${componentName}`;
-
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
-              value,
-              ctx: current
-            });
-          });
+          emitToListeners(parentListeners, eventPrefix, parentProp, { value, ctx: current });
 
           // Emit nested scope event if scope is provided
-          if (scope) {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:${scope}:${parentProp}.${String(prop)}`
-              : `${scope}:${parentProp}.${String(prop)}`;
-
-            eventDispatcher.emit(eventName, {
-              prop,
-              value,
-              oldValue,
-              parent: parentProp
-            });
-          }
+          emitScopeEvent(scope, eventPrefix, `${parentProp}.${String(prop)}`, {
+            prop,
+            value,
+            oldValue,
+            parent: parentProp
+          });
         }
 
         return result;
@@ -245,18 +300,122 @@ export class RuntimeContextHelpers {
         const result = Reflect.deleteProperty(proxyTarget, prop);
 
         if (result) {
-          // Emit to parent property listeners
           const parentListeners = listeners[parentProp] || new Set<string>();
-          parentListeners.forEach((componentName: string) => {
-            const eventName = eventPrefix
-              ? `${eventPrefix}:component-property-changed:${componentName}`
-              : `component-property-changed:${componentName}`;
+          emitToListeners(parentListeners, eventPrefix, parentProp, { ctx: current });
+        }
 
-            eventDispatcher.emit(eventName, {
-              prop: parentProp,
+        return result;
+      }
+    });
+  }
+
+  /**
+   * Create a proxy for arrays that tracks mutation methods.
+   *
+   * Arrays need special handling because methods like push, pop, splice
+   * mutate the array without triggering the set trap.
+   *
+   * @param target - Array to wrap
+   * @param config - Configuration including parent property name
+   * @returns Reactive proxy for array
+   */
+  private static createArrayProxy<T>(
+    target: T[],
+    config: NestedProxyConfig
+  ): T[] {
+    const { eventPrefix, scope, listeners, current, parentProp } = config;
+
+    // Array mutation methods that need to trigger updates
+    const mutationMethods = new Set(['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill', 'copyWithin']);
+
+    return new Proxy(target, {
+      get(proxyTarget, prop, receiver) {
+        const value = Reflect.get(proxyTarget, prop, receiver);
+
+        // Track access for dependency collection
+        if (current.name) {
+          if (!listeners[parentProp]) {
+            listeners[parentProp] = new Set<string>();
+          }
+          listeners[parentProp].add(current.name);
+        }
+
+        // Intercept mutation methods
+        if (typeof prop === 'string' && mutationMethods.has(prop) && typeof value === 'function') {
+          return function (this: T[], ...args: any[]) {
+            const oldArray = [...proxyTarget]; // Snapshot for comparison
+            const result = value.apply(proxyTarget, args);
+
+            // Emit change event after mutation
+            const parentListeners = listeners[parentProp] || new Set<string>();
+            emitToListeners(parentListeners, eventPrefix, parentProp, {
+              value: proxyTarget,
+              oldValue: oldArray,
+              mutation: prop,
               ctx: current
             });
+
+            // Emit scope event if scope is provided
+            emitScopeEvent(scope, eventPrefix, parentProp, {
+              prop: parentProp,
+              value: proxyTarget,
+              oldValue: oldArray,
+              mutation: prop
+            });
+
+            return result;
+          };
+        }
+
+        // Proxy nested objects/arrays within the array
+        if (typeof value === 'object' && value !== null) {
+          const indexKey = `${parentProp}[${String(prop)}]`;
+          if (Array.isArray(value)) {
+            return RuntimeContextHelpers.createArrayProxy(value, {
+              ...config,
+              parentProp: indexKey
+            });
+          }
+          return RuntimeContextHelpers.createNestedProxy(value, {
+            ...config,
+            parentProp: indexKey
           });
+        }
+
+        return value;
+      },
+
+      set(proxyTarget, prop, value, receiver) {
+        const oldValue = proxyTarget[prop as any];
+        const result = Reflect.set(proxyTarget, prop, value, receiver);
+
+        if (!safeDeepEqual(oldValue, value)) {
+          // Emit to parent property listeners
+          const parentListeners = listeners[parentProp] || new Set<string>();
+          emitToListeners(parentListeners, eventPrefix, parentProp, {
+            value: proxyTarget,
+            index: prop,
+            ctx: current
+          });
+
+          // Emit scope event if scope is provided
+          emitScopeEvent(scope, eventPrefix, parentProp, {
+            prop: parentProp,
+            value: proxyTarget,
+            index: prop,
+            oldValue
+          });
+        }
+
+        return result;
+      },
+
+      deleteProperty(proxyTarget, prop) {
+        const result = Reflect.deleteProperty(proxyTarget, prop);
+
+        if (result) {
+          const parentListeners = listeners[parentProp] || new Set<string>();
+          emitToListeners(parentListeners, eventPrefix, parentProp, { ctx: current });
         }
 
         return result;
