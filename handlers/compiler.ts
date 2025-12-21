@@ -43,106 +43,77 @@
  */
 
 import { validateHandlerCode } from '../utils/handler-validator';
+import * as acorn from 'acorn';
 
 // Re-export createHandlerScope for use in handler-executor
 export { createHandlerScope } from './handler-scope';
 
 /**
- * Checks if code has a top-level return statement.
- * Returns inside nested functions/callbacks are ignored.
- *
- * @param code - Handler code string
- * @returns true if there's a return at the top level (depth 0)
+ * Node types that indicate control flow requiring explicit return.
  */
-function hasTopLevelReturn(code: string): boolean {
-  let depth = 0;
-  let i = 0;
-
-  while (i < code.length) {
-    const char = code[i];
-
-    // Track nesting depth (braces for blocks, parens for arrow functions)
-    if (char === '{' || char === '(') {
-      depth++;
-    } else if (char === '}' || char === ')') {
-      depth--;
-    }
-    // Skip string literals
-    else if (char === '"' || char === "'" || char === '`') {
-      const quote = char;
-      i++;
-      while (i < code.length && code[i] !== quote) {
-        if (code[i] === '\\') i++; // Skip escaped chars
-        i++;
-      }
-    }
-    // Check for 'return' keyword at top level
-    else if (depth === 0 && code.slice(i, i + 6) === 'return') {
-      // Ensure it's a whole word (not part of another identifier)
-      const before = i === 0 ? ' ' : code[i - 1];
-      const after = code[i + 6] || ' ';
-      if (!/\w/.test(before) && !/\w/.test(after)) {
-        return true;
-      }
-    }
-
-    i++;
-  }
-
-  return false;
-}
+const CONTROL_FLOW_TYPES = new Set([
+  'IfStatement',
+  'ForStatement',
+  'ForInStatement',
+  'ForOfStatement',
+  'WhileStatement',
+  'DoWhileStatement',
+  'SwitchStatement',
+  'TryStatement',
+  'ThrowStatement',
+]);
 
 /**
- * Checks if code has top-level control flow that requires explicit return.
+ * Analyzes code AST to determine if implicit return should be added.
+ * Uses acorn for proper JavaScript parsing.
  *
  * @param code - Handler code string
- * @returns true if there's control flow at top level
+ * @returns Analysis result with flags for return and control flow
  */
-function hasTopLevelControlFlow(code: string): boolean {
-  let depth = 0;
-  let i = 0;
-  const keywords = ['if', 'for', 'while', 'switch', 'try', 'throw'];
+function analyzeCode(code: string): { hasTopLevelReturn: boolean; hasControlFlow: boolean; isMultiStatement: boolean } {
+  const trimmed = code.trim();
 
-  while (i < code.length) {
-    const char = code[i];
-
-    if (char === '{' || char === '(') {
-      depth++;
-    } else if (char === '}' || char === ')') {
-      depth--;
-    }
-    // Skip string literals
-    else if (char === '"' || char === "'" || char === '`') {
-      const quote = char;
-      i++;
-      while (i < code.length && code[i] !== quote) {
-        if (code[i] === '\\') i++;
-        i++;
-      }
-    }
-    // Check for control flow keywords at top level
-    else if (depth === 0) {
-      for (const keyword of keywords) {
-        if (code.slice(i, i + keyword.length) === keyword) {
-          const before = i === 0 ? ' ' : code[i - 1];
-          const after = code[i + keyword.length] || ' ';
-          if (!/\w/.test(before) && !/\w/.test(after)) {
-            return true;
-          }
-        }
-      }
-    }
-
-    i++;
+  if (!trimmed) {
+    return { hasTopLevelReturn: false, hasControlFlow: false, isMultiStatement: false };
   }
 
-  return false;
+  try {
+    // Parse as a script (not module) to allow return statements
+    // Wrap in function body to make it valid syntax for parsing
+    const wrappedCode = `(function() { ${trimmed} })`;
+    const ast = acorn.parse(wrappedCode, {
+      ecmaVersion: 'latest',
+      sourceType: 'script',
+    }) as any;
+
+    // Get the function body statements
+    const funcExpr = ast.body[0].expression;
+    const bodyStatements = funcExpr.body.body;
+
+    let hasTopLevelReturn = false;
+    let hasControlFlow = false;
+    const isMultiStatement = bodyStatements.length > 1;
+
+    // Check each top-level statement in the function body
+    for (const stmt of bodyStatements) {
+      if (stmt.type === 'ReturnStatement') {
+        hasTopLevelReturn = true;
+      }
+      if (CONTROL_FLOW_TYPES.has(stmt.type)) {
+        hasControlFlow = true;
+      }
+    }
+
+    return { hasTopLevelReturn, hasControlFlow, isMultiStatement };
+  } catch {
+    // If parsing fails, fall back to conservative behavior (no implicit return)
+    return { hasTopLevelReturn: true, hasControlFlow: false, isMultiStatement: false };
+  }
 }
 
 /**
  * Checks if code needs an implicit return added.
- * Returns true if the code is a simple expression without explicit top-level return.
- * Returns inside nested functions (callbacks) are ignored.
+ * Uses AST analysis to properly detect top-level returns vs nested returns in callbacks.
  *
  * @param code - Handler code string
  * @returns true if implicit return should be added
@@ -153,24 +124,16 @@ function needsImplicitReturn(code: string): boolean {
   // If empty, no return needed
   if (!trimmed) return false;
 
+  const analysis = analyzeCode(trimmed);
+
   // If has top-level return statement, don't add another
-  if (hasTopLevelReturn(trimmed)) return false;
+  if (analysis.hasTopLevelReturn) return false;
 
   // If has top-level control flow statements, require explicit return
-  if (hasTopLevelControlFlow(trimmed)) return false;
+  if (analysis.hasControlFlow) return false;
 
-  // Count top-level semicolons (not inside nested blocks)
-  let depth = 0;
-  let semicolonCount = 0;
-  for (let i = 0; i < trimmed.length; i++) {
-    const char = trimmed[i];
-    if (char === '{' || char === '(') depth++;
-    else if (char === '}' || char === ')') depth--;
-    else if (char === ';' && depth === 0) semicolonCount++;
-  }
-
-  // Multiple top-level statements require explicit return
-  if (semicolonCount > 1) return false;
+  // Multiple statements require explicit return
+  if (analysis.isMultiStatement) return false;
 
   // Single expression - add implicit return
   return true;
