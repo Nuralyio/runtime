@@ -65,12 +65,19 @@ Deep dive into Nuraly's architectural patterns:
 - **[Variable Scopes](/architecture/micro-apps/variable-scopes)** - Two-tier state management
 - **[RuntimeContext](/architecture/)** - Core runtime execution engine
 
+### [Security & Permissions](/security/)
+Authentication, authorization, and access control:
+- **[Resource Permissions](/security/resource-permissions)** - Fine-grained access control
+- **[Anonymous Access](/security/anonymous-access)** - Public page configuration
+- **[Role-Based Access](/security/role-based-access)** - RBAC system
+
 ## Next Steps
 
 Explore the documentation sections to learn more about:
 
 - [Components Reference](/components/) - Building UI with components
 - [Architecture](/architecture/) - System design and patterns
+- [Security & Permissions](/security/) - Access control and authentication
 - Development setup
 - Configuration options
 - Deployment strategies
