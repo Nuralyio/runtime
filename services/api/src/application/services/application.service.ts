@@ -43,9 +43,22 @@ export class ApplicationService {
     return await this.applicationRepository.findApplicationById(uuid);
   }
 
-  public async update(published: boolean, uuid: string, name: string, user_id: string): Promise<Application> {
-    const application: Application = new Application(published, name, uuid, user_id);
-    return await this.applicationRepository.update(uuid, application);
+  public async findApplicationBySubdomain(subdomain: string): Promise<Application | null> {
+    return await this.applicationRepository.findApplicationBySubdomain(subdomain);
+  }
+
+  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string): Promise<Application> {
+    // Get current application to preserve unchanged fields
+    const currentApp = await this.applicationRepository.findApplicationById(uuid!);
+
+    const application: Application = new Application(
+      published ?? currentApp.published ?? false,
+      name ?? currentApp.name,
+      uuid!,
+      user_id ?? currentApp.user_id,
+      subdomain !== undefined ? (subdomain === '' ? null : subdomain) : currentApp.subdomain
+    );
+    return await this.applicationRepository.update(uuid!, application);
   }
 
   public async delete(uuid: string): Promise<Application> {
