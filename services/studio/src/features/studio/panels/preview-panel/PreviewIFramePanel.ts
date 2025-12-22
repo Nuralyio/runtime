@@ -8,7 +8,7 @@ import { eventDispatcher } from '@nuraly/runtime/utils';
  * Message types for iframe communication
  */
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE';
   payload?: any;
 }
 
@@ -68,6 +68,9 @@ export class PreviewIFramePanel extends LitElement {
   @state() private isLoading = true;
   @state() private iframeReady = false;
 
+  // Track current page to avoid sending duplicate SET_PAGE messages
+  private currentPageId: string = '';
+
   @query('iframe') private readonly iframeElement: HTMLIFrameElement | null;
 
   private messageHandler: ((event: MessageEvent) => void) | null = null;
@@ -78,6 +81,7 @@ export class PreviewIFramePanel extends LitElement {
     this.setupMessageListener();
     this.setupComponentStoreSubscription();
     this.setupModeListener();
+    this.setupPageChangeListener();
   }
 
   disconnectedCallback() {
@@ -148,6 +152,26 @@ export class PreviewIFramePanel extends LitElement {
         type: 'SET_MODE',
         payload: mode
       });
+    });
+  }
+
+  private setupPageChangeListener() {
+    // Initialize with current page
+    this.currentPageId = ExecuteInstance.Vars.currentPage || '';
+
+    // Listen for page changes and send message to iframe (don't reload)
+    eventDispatcher.on('Vars:currentPage', () => {
+      const newPageId = ExecuteInstance.Vars.currentPage || '';
+      if (newPageId !== this.currentPageId) {
+        this.currentPageId = newPageId;
+        // Send page change to iframe instead of reloading
+        if (this.iframeReady) {
+          this.sendMessageToIframe({
+            type: 'SET_PAGE',
+            payload: newPageId
+          });
+        }
+      }
     });
   }
 
@@ -260,6 +284,8 @@ export class PreviewIFramePanel extends LitElement {
 
   private getPreviewUrl(): string {
     const appId = this.applicationId || $currentApplication.get()?.uuid || '';
+    // Use pageUrl prop or initial currentPage for first load only
+    // Page changes are handled via SET_PAGE message, not URL change
     const pageUrl = this.pageUrl || ExecuteInstance.Vars.currentPage || '';
     return `/app/preview/${appId}/${pageUrl}`;
   }

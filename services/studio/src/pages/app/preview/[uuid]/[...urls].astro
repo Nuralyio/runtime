@@ -6,10 +6,11 @@ import { $pages } from '../../../../features/runtime/redux//store/page'
 import { $components } from '../../../../features/runtime/redux//store/component/store';
 import { $applications } from '../../../../features/runtime/redux/store/apps';
 import { processHeaders } from '../../../../features/runtime/utils/api-calls-utils';
-import { fetchAllApplications, fetchApplicationPagesById, fetchApplicationComponentById } from '../../../../services';
+import { fetchApplicationById, fetchApplicationPagesById, fetchApplicationComponentById } from '../../../../services';
 import { ApplicationNotFound } from '../../../../services/applications/exceptions/ApplicationNotFound';
 
 const { title, uuid, urls = "" } = Astro.params;
+
 const functionAppUUID = process.env.FUNCTION_APP_UUID;
 const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
 const files_modules_config = process.env.FILES_MODULES_CONFIG;
@@ -31,10 +32,10 @@ let pageData, componentData, applications, application;
 let occurredError = null;
 
 try {
-  const [pageRequest, componentResponse, applicationsRequest] = await Promise.all([
+  const [pageRequest, componentResponse, applicationRequest] = await Promise.all([
     fetchApplicationPagesById(processedHeaders, uuid),
     fetchApplicationComponentById(processedHeaders, uuid),
-    fetchAllApplications(processedHeaders)
+    fetchApplicationById(processedHeaders, uuid)
   ]);
 
   pageData = pageRequest.data;
@@ -43,13 +44,13 @@ try {
   componentData = componentResponse.data.map((component) => component.component);
   $components.set({ [uuid]: componentData });
 
-  applications = applicationsRequest.data;
+  // For anonymous preview, we fetch the specific application instead of all applications
+  application = applicationRequest.data;
+  applications = application ? [application] : [];
   $applications.set(applications);
-  application = applications.find((application) => application.uuid === uuid);
 
 } catch (error) {
   if (error instanceof ApplicationNotFound) {
-    console.error("Application not found:", error);
     occurredError = "not-found";
   }
 }
@@ -70,7 +71,9 @@ try {
   window.__FILES_APP_UUID__ = filesAppUUID;
   window.__FILES_PAGE_UUID__ = filesPageUUID;
   window.__URL__ = urls;
-  window.__IS_IFRAME_PREVIEW__ = true;
+  // Check if this is a standalone view (not inside studio iframe) - hide editor overlays
+  window.__IS_IFRAME_PREVIEW__ = window.parent !== window;
+  window.__IS_VIEW_MODE__ = window.parent === window;
 </script>
 
 <script>
