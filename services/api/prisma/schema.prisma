@@ -16,13 +16,12 @@ model Product {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  //applications  applications[]
+  id         String   @id @default(uuid())
+  keycloakId String?  @unique @map("keycloak_id") // Keycloak user UUID (sub claim)
+  name       String
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model applications {
@@ -33,6 +32,7 @@ model applications {
   user_id           String
   //user        User @relation(fields: [user_id], references: [id])
   default_page_uuid String?
+  subdomain         String?  @unique // Unique subdomain for accessing the app (e.g., "myapp" for myapp.domain.com)
 }
 
 // ============================================
