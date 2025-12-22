@@ -57,6 +57,37 @@ export class PageRepository implements IPageRepository {
         ));
     }
 
+    /**
+     * Find a page by URL slug within an application
+     * @param applicationId - The application UUID
+     * @param url - The page URL slug (e.g., "blog1", "about")
+     * @returns Page if found, null otherwise
+     */
+    public async findPageByUrlInApplication(applicationId: string, url: string): Promise<Page | null> {
+        const page = await prisma.pages.findFirst({
+            where: {
+                application_id: applicationId,
+                url: url
+            }
+        });
+
+        if (!page) {
+            return null;
+        }
+
+        return new Page(
+            page.name,
+            page.url,
+            page.description,
+            page.application_id,
+            page.user_id,
+            page.uuid,
+            page.need_authentification,
+            page.component_ids,
+            page.style
+        );
+    }
+
 
     
 

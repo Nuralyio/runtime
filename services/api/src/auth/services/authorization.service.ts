@@ -19,11 +19,13 @@ export class AuthorizationService {
   /**
    * Check if a user can access a specific resource with a given permission.
    *
-   * Permission Check Order (per architecture doc):
-   * 1. Check ResourcePermission (most specific - direct user/public/anonymous access)
+   * Permission Check Order:
+   * 1. Check ResourcePermission (direct user/public/anonymous access on resource)
    * 2. Check ApplicationMember role permissions (via application membership)
-   * 3. Check public/anonymous access
-   * 4. DENY if none match
+   * 3. DENY if none match
+   *
+   * For applications: applicationId = resourceId
+   * For pages/components: applicationId is looked up or passed explicitly
    */
   async canAccess(
     user: IUser,
@@ -32,11 +34,16 @@ export class AuthorizationService {
     permission: string,
     applicationId?: string
   ): Promise<boolean> {
+    // Extract base permission (e.g., 'page:read' -> 'read')
+    const basePermission = permission.includes(':')
+      ? permission.split(':')[1]
+      : permission;
+
     // 1. Check direct resource permissions (user, public, anonymous)
     const hasResourcePermission = await this.resourcePermissionService.hasAccess(
       resourceId,
       resourceType,
-      permission as PermissionType,
+      basePermission as PermissionType,
       user.anonymous ? undefined : user.uuid,
       user.anonymous
     );
@@ -45,12 +52,21 @@ export class AuthorizationService {
       return true;
     }
 
-    // 2. Check application membership (if applicationId provided)
-    if (applicationId && !user.anonymous) {
+    // 2. Check application membership
+    // For applications, the resource IS the application
+    // For pages/components, use the provided applicationId
+    const appId = resourceType === 'application' ? resourceId : applicationId;
+
+    if (appId && !user.anonymous) {
+      // Build permission string: 'read' -> 'page:read' or keep as-is if already prefixed
+      const fullPermission = permission.includes(':')
+        ? permission
+        : `${resourceType}:${permission}`;
+
       const hasRolePermission = await this.memberService.hasPermission(
         user.uuid,
-        applicationId,
-        permission
+        appId,
+        fullPermission
       );
 
       if (hasRolePermission) {
@@ -98,21 +114,6 @@ export class AuthorizationService {
     return Array.from(accessibleIds);
   }
 
-  /**
-   * Check if a user has a specific permission in an application context.
-   * This is used for operations within an application (pages, components, etc.)
-   */
-  async hasAppPermission(
-    user: IUser,
-    applicationId: string,
-    permission: string
-  ): Promise<boolean> {
-    if (user.anonymous) {
-      return false;
-    }
-
-    return this.memberService.hasPermission(user.uuid, applicationId, permission);
-  }
 
   /**
    * Check if a user is the owner of an application
@@ -155,16 +156,14 @@ export class AuthorizationService {
   }
 
   /**
-   * Ensure user has app-level permission, throw error if not
+   * Ensure user has app-level permission, throw error if not.
+   * Convenience method for requirePermission with resourceType='application'.
    */
   async requireAppPermission(
     user: IUser,
     applicationId: string,
     permission: string
   ): Promise<void> {
-    const hasPermission = await this.hasAppPermission(user, applicationId, permission);
-    if (!hasPermission) {
-      throw new Error(`Access denied: missing "${permission}" permission in application`);
-    }
+    return this.requirePermission(user, applicationId, 'application', permission);
   }
 }

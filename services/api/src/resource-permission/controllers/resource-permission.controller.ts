@@ -7,6 +7,7 @@ import { NRequest } from "../../shared/interfaces/NRequest.interface";
 import { GrantPermissionDto } from "../interfaces/resource-permission.interface";
 import { PageRepository } from "../../page/repositories/page.repository";
 import { ComponentRepository } from "../../component/repositories/component.repository";
+import { NotFoundException } from "../../exceptions/NotFoundException";
 
 interface PermissionResponse {
   id: number;
@@ -62,13 +63,14 @@ export class ResourcePermissionController extends Controller {
 
     if (applicationId) {
       // Check if user has permission to view/share in the application
-      const hasAppPermission = await this.authorizationService.hasAppPermission(
+      const canRead = await this.authorizationService.canAccess(
         request.user,
         applicationId,
+        'application',
         `${resourceType}:read`
       );
 
-      if (!hasAppPermission) {
+      if (!canRead) {
         this.setStatus(403);
         throw new Error('Access denied');
       }
@@ -325,12 +327,18 @@ export class ResourcePermissionController extends Controller {
   /**
    * Check if a resource allows anonymous access (public endpoint - no auth required)
    * Used by the gateway to determine if authentication should be bypassed
+   *
+   * Returns:
+   * - allowed: true if anonymous access is explicitly granted
+   * - restricted: true if the resource explicitly requires authentication (page-level)
+   * - permission: the permission level if allowed
    */
   @Get('{resourceType}/{resourceId}/check-anonymous')
   public async checkAnonymousAccess(
     @Path() resourceType: string,
     @Path() resourceId: string
-  ): Promise<{ allowed: boolean; permission: string | null }> {
+  ): Promise<{ allowed: boolean; restricted: boolean; permission: string | null }> {
+    // Check for explicit anonymous permission
     const hasAnonymousAccess = await this.permissionService.hasAccess(
       resourceId,
       resourceType,
@@ -340,10 +348,88 @@ export class ResourcePermissionController extends Controller {
     );
 
     if (hasAnonymousAccess) {
-      return { allowed: true, permission: 'read' };
+      return { allowed: true, restricted: false, permission: 'read' };
     }
 
-    return { allowed: false, permission: null };
+    // Pages without explicit anonymous permission are considered "restricted"
+    // They will NOT inherit anonymous access from the parent application
+    if (resourceType === 'page') {
+      return { allowed: false, restricted: true, permission: null };
+    }
+
+    // Non-page resources (components, etc.) can inherit from parent application
+    return { allowed: false, restricted: false, permission: null };
+  }
+
+  /**
+   * Check if a page allows anonymous access by URL slug within an application
+   * Used by the gateway for preview routes with URL slugs like /app/preview/{appId}/blog1
+   *
+   * This endpoint resolves the page by URL slug first, then checks anonymous access
+   *
+   * Returns:
+   * - allowed: true if anonymous access is explicitly granted
+   * - restricted: true if the resource explicitly requires authentication
+   * - permission: the permission level if allowed
+   * - pageUuid: the resolved page UUID (useful for further operations)
+   */
+  @Get('page/by-url/{applicationId}/{pageUrl}/check-anonymous')
+  public async checkAnonymousAccessByPageUrl(
+    @Path() applicationId: string,
+    @Path() pageUrl: string
+  ): Promise<{ allowed: boolean; restricted: boolean; permission: string | null; pageUuid: string | null }> {
+    // Validate applicationId format (UUID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(applicationId)) {
+      return { allowed: false, restricted: false, permission: null, pageUuid: null };
+    }
+
+    // Validate pageUrl format (alphanumeric, hyphens, underscores, or UUID)
+    const pageUrlRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!pageUrlRegex.test(pageUrl) && !uuidRegex.test(pageUrl)) {
+      return { allowed: false, restricted: false, permission: null, pageUuid: null };
+    }
+
+    // First, try to find the page by URL slug in the application
+    let page = await this.pageRepository.findPageByUrlInApplication(applicationId, pageUrl);
+
+    // If not found by URL, check if pageUrl is actually a UUID
+    if (!page) {
+      try {
+        page = await this.pageRepository.findPageByUUID(pageUrl);
+        // Verify the page belongs to this application
+        if (page && page.application_id !== applicationId) {
+          page = null;
+        }
+      } catch (error) {
+        // Only swallow NotFoundException, re-throw unexpected errors
+        if (!(error instanceof NotFoundException)) {
+          throw error;
+        }
+        page = null;
+      }
+    }
+
+    // If page still not found, return not allowed (gateway will require auth)
+    if (!page) {
+      return { allowed: false, restricted: false, permission: null, pageUuid: null };
+    }
+
+    // Check for explicit anonymous permission on this page
+    const hasAnonymousAccess = await this.permissionService.hasAccess(
+      page.uuid,
+      'page',
+      'read',
+      undefined,
+      true // isAnonymous
+    );
+
+    if (hasAnonymousAccess) {
+      return { allowed: true, restricted: false, permission: 'read', pageUuid: page.uuid };
+    }
+
+    // Page exists but doesn't have anonymous access - it's restricted
+    return { allowed: false, restricted: true, permission: null, pageUuid: page.uuid };
   }
 
   /**
