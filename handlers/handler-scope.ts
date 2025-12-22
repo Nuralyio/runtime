@@ -299,7 +299,12 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
         }
         // Try globalThis for built-ins
         if (propStr in globalThis) {
-          return (globalThis as any)[propStr];
+          const value = (globalThis as any)[propStr];
+          // Bind functions that need 'this' context (like fetch, setTimeout, etc.)
+          if (typeof value === 'function' && ['fetch', 'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'queueMicrotask'].includes(propStr)) {
+            return value.bind(globalThis);
+          }
+          return value;
         }
         return undefined;
       }
