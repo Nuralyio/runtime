@@ -132,13 +132,13 @@ export class AccessRolesDisplay extends BaseElementBlock {
     return this.inputHandlersValue?.value || this.inputHandlersValue || {};
   }
 
-  override async firstUpdated() {
+  override firstUpdated(): void {
     // Try to load permissions immediately if resource_id is already available
     const h = this.getValueInput();
     if (h.resource_id && h.resource_id !== this.lastLoadedResourceId) {
       console.log('[AccessRoles] firstUpdated: loading permissions for:', h.resource_id);
       this.lastLoadedResourceId = h.resource_id;
-      await this.loadPermissions();
+      void this.loadPermissions();
     }
 
     // Mark as initialized after first render to prevent initial change events
