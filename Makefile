@@ -12,7 +12,8 @@ KNATIVE_VERSION ?= 1.12.0
 .PHONY: help init init-dev dev prod stop clean logs shell test build deploy update status
 .PHONY: minikube-start minikube-stop minikube-delete minikube-status minikube-dashboard
 .PHONY: knative-install knative-install-serving knative-install-eventing knative-status knative-uninstall
-.PHONY: k8s-init k8s-clean
+.PHONY: knative-configure-domain knative-expose-kourier
+.PHONY: k8s-init k8s-clean k8s-setup-functions k8s-update-functions-config k8s-refresh
 
 # Default target
 help:
@@ -47,8 +48,15 @@ help:
 	@echo "  make knative-uninstall        - Remove Knative components"
 	@echo ""
 	@echo "Combined K8s Setup:"
-	@echo "  make k8s-init  - Full setup: minikube + Knative"
-	@echo "  make k8s-clean - Clean teardown of K8s environment"
+	@echo "  make k8s-init            - Full setup: minikube + Knative + functions config"
+	@echo "  make k8s-clean           - Clean teardown of K8s environment"
+	@echo "  make k8s-setup-functions - Setup functions service access to minikube"
+	@echo "  make k8s-refresh         - Refresh configs when minikube IP changes"
+	@echo ""
+	@echo "Knative Configuration:"
+	@echo "  make knative-configure-domain   - Configure sslip.io domain for external access"
+	@echo "  make knative-expose-kourier     - Expose Kourier via NodePort"
+	@echo "  make k8s-update-functions-config - Update functions app config with minikube settings"
 	@echo ""
 
 # Initialize submodules
@@ -288,6 +296,108 @@ knative-uninstall:
 	@kubectl delete -f https://github.com/knative/serving/releases/download/knative-v$(KNATIVE_VERSION)/serving-crds.yaml 2>/dev/null || true
 	@echo "✅ Knative uninstalled"
 
+# Configure Knative domain for external access using sslip.io
+knative-configure-domain:
+	@echo "Configuring Knative domain for external access..."
+	@MINIKUBE_IP=$$(minikube ip) && \
+	kubectl patch configmap/config-domain \
+		--namespace knative-serving \
+		--type merge \
+		--patch "{\"data\":{\"$$MINIKUBE_IP.sslip.io\":\"\",\"sslip.io\":\"\"}}"
+	@echo "✅ Knative domain configured with sslip.io"
+	@echo "Functions will be accessible at: <function-name>.<namespace>.<minikube-ip>.sslip.io"
+
+# Expose Kourier via NodePort for external access from Docker containers
+knative-expose-kourier:
+	@echo "Exposing Kourier via NodePort..."
+	@kubectl patch svc kourier -n kourier-system \
+		--type='json' \
+		-p='[{"op": "replace", "path": "/spec/type", "value": "NodePort"}, {"op": "add", "path": "/spec/ports/0/nodePort", "value": 32437}]' 2>/dev/null || \
+	kubectl patch svc kourier -n kourier-system \
+		--type='json' \
+		-p='[{"op": "replace", "path": "/spec/type", "value": "NodePort"}]'
+	@echo "✅ Kourier exposed via NodePort"
+	@echo "Kourier NodePort:"
+	@kubectl get svc kourier -n kourier-system -o jsonpath='{.spec.ports[0].nodePort}'
+	@echo ""
+
+# =============================================================================
+# Functions Service K8s Integration
+# =============================================================================
+
+# Generate kubeconfig for functions service to access minikube
+k8s-setup-functions:
+	@echo "Setting up functions service access to minikube..."
+	@mkdir -p services/functions/.kube
+	@MINIKUBE_IP=$$(minikube ip) && \
+	MINIKUBE_CA=$$(cat ~/.minikube/ca.crt | base64 | tr -d '\n') && \
+	MINIKUBE_CERT=$$(cat ~/.minikube/profiles/minikube/client.crt | base64 | tr -d '\n') && \
+	MINIKUBE_KEY=$$(cat ~/.minikube/profiles/minikube/client.key | base64 | tr -d '\n') && \
+	echo "apiVersion: v1" > services/functions/.kube/config && \
+	echo "kind: Config" >> services/functions/.kube/config && \
+	echo "clusters:" >> services/functions/.kube/config && \
+	echo "- cluster:" >> services/functions/.kube/config && \
+	echo "    certificate-authority-data: $$MINIKUBE_CA" >> services/functions/.kube/config && \
+	echo "    server: https://$$MINIKUBE_IP:8443" >> services/functions/.kube/config && \
+	echo "  name: minikube" >> services/functions/.kube/config && \
+	echo "contexts:" >> services/functions/.kube/config && \
+	echo "- context:" >> services/functions/.kube/config && \
+	echo "    cluster: minikube" >> services/functions/.kube/config && \
+	echo "    user: minikube" >> services/functions/.kube/config && \
+	echo "  name: minikube" >> services/functions/.kube/config && \
+	echo "current-context: minikube" >> services/functions/.kube/config && \
+	echo "users:" >> services/functions/.kube/config && \
+	echo "- name: minikube" >> services/functions/.kube/config && \
+	echo "  user:" >> services/functions/.kube/config && \
+	echo "    client-certificate-data: $$MINIKUBE_CERT" >> services/functions/.kube/config && \
+	echo "    client-key-data: $$MINIKUBE_KEY" >> services/functions/.kube/config
+	@echo "✅ Kubeconfig generated at services/functions/.kube/config"
+	@echo ""
+	@echo "Ensuring minikube Docker network exists..."
+	@docker network inspect minikube >/dev/null 2>&1 || docker network create minikube
+	@echo "Connecting minikube container to minikube network..."
+	@docker network connect minikube minikube 2>/dev/null || echo "Minikube already connected to network"
+	@echo "✅ Functions service can now access minikube"
+	@echo ""
+	@echo "Minikube IP: $$(minikube ip)"
+	@echo "Kourier Port: $$(kubectl get svc kourier -n kourier-system -o jsonpath='{.spec.ports[0].nodePort}' 2>/dev/null || echo 'Not exposed yet')"
+
+# Update functions service application.properties with correct minikube settings
+k8s-update-functions-config:
+	@echo "Updating functions service configuration..."
+	@MINIKUBE_IP=$$(minikube ip) && \
+	KOURIER_PORT=$$(kubectl get svc kourier -n kourier-system -o jsonpath='{.spec.ports[0].nodePort}') && \
+	sed -i.bak "s|nuraly-functions.gateway-host=.*|nuraly-functions.gateway-host=$$MINIKUBE_IP|" services/functions/src/main/resources/application.properties && \
+	sed -i.bak "s|nuraly-functions.port=.*|nuraly-functions.port=$$KOURIER_PORT|" services/functions/src/main/resources/application.properties && \
+	sed -i.bak "s|nuraly-functions.domain=.*|nuraly-functions.domain=default.$$MINIKUBE_IP.sslip.io|" services/functions/src/main/resources/application.properties && \
+	rm -f services/functions/src/main/resources/application.properties.bak
+	@echo "✅ Functions configuration updated"
+	@echo "  Gateway Host: $$(minikube ip)"
+	@echo "  Kourier Port: $$(kubectl get svc kourier -n kourier-system -o jsonpath='{.spec.ports[0].nodePort}')"
+	@echo "  Domain: default.$$(minikube ip).sslip.io"
+
+# Refresh all K8s-related configs when minikube IP changes
+k8s-refresh:
+	@echo "Refreshing K8s configuration for new minikube IP..."
+	@$(MAKE) knative-configure-domain
+	@$(MAKE) k8s-setup-functions
+	@$(MAKE) k8s-update-functions-config
+	@echo ""
+	@echo "============================================"
+	@echo "✅ K8s configuration refreshed!"
+	@echo "============================================"
+	@echo ""
+	@echo "New Configuration:"
+	@echo "  Minikube IP:    $$(minikube ip)"
+	@echo "  Kourier Port:   $$(kubectl get svc kourier -n kourier-system -o jsonpath='{.spec.ports[0].nodePort}')"
+	@echo "  Domain:         default.$$(minikube ip).sslip.io"
+	@echo ""
+	@echo "IMPORTANT: Restart the functions service to apply changes:"
+	@echo "  docker-compose -f docker-compose.dev.yml restart functions"
+	@echo ""
+	@echo "NOTE: Existing deployed functions will need to be redeployed"
+	@echo "      as their Knative services use the old domain."
+
 # =============================================================================
 # Combined K8s Targets
 # =============================================================================
@@ -298,15 +408,32 @@ k8s-init: minikube-start
 	@sleep 10
 	@$(MAKE) knative-install
 	@echo ""
+	@echo "Configuring Knative for external access..."
+	@sleep 5
+	@$(MAKE) knative-configure-domain
+	@$(MAKE) knative-expose-kourier
+	@echo ""
+	@echo "Setting up functions service integration..."
+	@$(MAKE) k8s-setup-functions
+	@$(MAKE) k8s-update-functions-config
+	@echo ""
 	@echo "============================================"
 	@echo "✅ Kubernetes environment ready!"
 	@echo "============================================"
+	@echo ""
+	@echo "Configuration Summary:"
+	@echo "  Minikube IP:    $$(minikube ip)"
+	@echo "  Kourier Port:   $$(kubectl get svc kourier -n kourier-system -o jsonpath='{.spec.ports[0].nodePort}')"
+	@echo "  Domain:         default.sslip.io"
 	@echo ""
 	@echo "Useful commands:"
 	@echo "  make minikube-status    - Check cluster status"
 	@echo "  make knative-status     - Check Knative status"
 	@echo "  make minikube-dashboard - Open K8s dashboard"
+	@echo "  make dev                - Start dev environment (functions will connect to minikube)"
 	@echo ""
 
 k8s-clean: knative-uninstall minikube-delete
+	@echo "Cleaning up functions kubeconfig..."
+	@rm -rf services/functions/.kube
 	@echo "✅ Kubernetes environment cleaned up"
