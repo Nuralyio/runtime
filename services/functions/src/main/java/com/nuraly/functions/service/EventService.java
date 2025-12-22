@@ -41,7 +41,7 @@ public class EventService {
     // RabbitMQ connection factory
     private ConnectionFactory createConnectionFactory() {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost"); // Replace with your RabbitMQ host
+        factory.setHost("rabbitmq"); // Docker service name
         factory.setPort(5672);        // Default RabbitMQ port
         factory.setUsername("guest"); // Replace with your username
         factory.setPassword("guest"); // Replace with your password

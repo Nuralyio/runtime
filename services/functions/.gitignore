@@ -43,3 +43,5 @@ nb-configuration.xml
 .mvn/.develocity
 .mvn/.gradle-enterprise/
 .quarkus
+# Kubernetes config (contains sensitive credentials)
+.kube/

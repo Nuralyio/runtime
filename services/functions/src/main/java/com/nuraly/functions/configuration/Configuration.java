@@ -21,4 +21,7 @@ public class Configuration {
     @ConfigProperty(name = "nuraly-functions.port")
     public String FunctionsPort;
 
+    @ConfigProperty(name = "nuraly-functions.gateway-host", defaultValue = "localhost")
+    public String FunctionsGatewayHost;
+
 }

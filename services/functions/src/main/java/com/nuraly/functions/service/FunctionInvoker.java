@@ -137,7 +137,8 @@ public class FunctionInvoker {
      * @return The created HTTP POST request.
      */
     private HttpPost createHttpRequest(String hostHeader, InvokeRequest payload) {
-        HttpPost request = new HttpPost("http://localhost:8080");
+        String gatewayUrl = "http://" + configuration.FunctionsGatewayHost + ":" + configuration.FunctionsPort;
+        HttpPost request = new HttpPost(gatewayUrl);
         request.addHeader("Host", hostHeader);
         request.addHeader("Content-Type", "application/json");
         request.setEntity(new StringEntity(payload.getData().toString(), ContentType.parse("UTF-8")));
