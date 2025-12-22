@@ -28,6 +28,14 @@ export class ComponentRepository implements IComponentRepository {
         });
         return components.map((pcomponent: any) => new Component(pcomponent.component, pcomponent.user_id, pcomponent.uuid, pcomponent.application_id));
     }
+
+    public async findComponentsByApplications(application_ids: string[]): Promise<Component[]> {
+        const components = await prisma.components.findMany({
+            where: { application_id: { in: application_ids } },
+            orderBy: { id: 'asc' }
+        });
+        return components.map((pcomponent: any) => new Component(pcomponent.component, pcomponent.user_id, pcomponent.uuid, pcomponent.application_id));
+    }
     public async findComponentByUuid(uuid: string): Promise<Component | null> {
         const component = await prisma.components.findFirst({
             where: { uuid }

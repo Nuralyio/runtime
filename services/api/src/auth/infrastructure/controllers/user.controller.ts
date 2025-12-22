@@ -1,5 +1,5 @@
 import { UserService } from "../../application/user.service";
-import { Body, Controller, Delete, Get, Path, Post, Put, Route, Security, Tags } from "tsoa";
+import { Controller, Delete, Get, Path, Put, Body, Route, Security, Tags } from "tsoa";
 import { UserRepositoryPrismaPgSQL } from "../user.repository";
 import { IResponseMessage } from "../../../exceptions/Response.message.interface";
 
@@ -12,17 +12,6 @@ export class UserController extends Controller {
         super();
         const userRepository = new UserRepositoryPrismaPgSQL();
         this.userService = new UserService(userRepository);
-    }
-
-    @Post()
-    @Security('bearerAuth')
-    public async create(
-        @Body() requestBody: { password: string, email: string, name: string }): Promise<IResponseMessage> {
-        const { name, email, password } = requestBody;
-        return {
-            statusCode: 200,
-            data: await this.userService.create(name, email, password)
-        };
     }
 
     @Get()
@@ -41,6 +30,32 @@ export class UserController extends Controller {
         return {
             statusCode: 200,
             data: await this.userService.findById(id)
+        };
+    }
+
+    /**
+     * Search for a user by email address
+     */
+    @Get('search/by-email/{email}')
+    @Security('bearerAuth')
+    public async findByEmail(
+        @Path() email: string): Promise<IResponseMessage> {
+        return {
+            statusCode: 200,
+            data: await this.userService.findUserByEmail(email)
+        };
+    }
+
+    /**
+     * Search for a user by Keycloak ID
+     */
+    @Get('search/by-keycloak/{keycloakId}')
+    @Security('bearerAuth')
+    public async findByKeycloakId(
+        @Path() keycloakId: string): Promise<IResponseMessage> {
+        return {
+            statusCode: 200,
+            data: await this.userService.findByKeycloakId(keycloakId)
         };
     }
 

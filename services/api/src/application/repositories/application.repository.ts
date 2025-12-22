@@ -10,10 +10,11 @@ export class ApplicationRepository implements IApplicationRepository {
   public async create(application: Application): Promise<Application> {
     return await prisma.applications.create({
       data: {
-        published:application.published,
+        published: application.published,
         user_id: application.user_id,
         name: application.name,
-        uuid: application.uuid
+        uuid: application.uuid,
+        subdomain: application.subdomain
       }
     })
   }
@@ -24,9 +25,9 @@ export class ApplicationRepository implements IApplicationRepository {
         in: applicationIds
       } } }
     );
-    return applications.map((application) => new Application(application.published ?? false, application.name, application.uuid, application.user_id));
+    return applications.map((application) => new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain));
   }
-  
+
   public async findApplicationById(uuid: string): Promise<Application> {
     const application = await prisma.applications.findFirst({
       where: { uuid }
@@ -34,27 +35,43 @@ export class ApplicationRepository implements IApplicationRepository {
     if(!application) {
       throw new ApplicationNotFound("Application not found");
     }
-    return new Application(application!.published ?? false, application!.name, application!.uuid, application!.user_id);
+    return new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain);
+  }
+
+  /**
+   * Find an application by its subdomain
+   * @param subdomain - The subdomain to search for (e.g., "myapp" for myapp.domain.com)
+   * @returns Application if found, null otherwise
+   */
+  public async findApplicationBySubdomain(subdomain: string): Promise<Application | null> {
+    const application = await prisma.applications.findFirst({
+      where: { subdomain }
+    });
+    if (!application) {
+      return null;
+    }
+    return new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain);
   }
 
   public async update(uuid: string, application: Application): Promise<Application> {
     const updatedApplication = await prisma.applications.update({
       where: { uuid },
       data: {
-        published :application.published,
+        published: application.published,
         name: application.name,
-        user_id: application.user_id
+        user_id: application.user_id,
+        subdomain: application.subdomain
       }
     });
-    return new Application(updatedApplication.published ?? false,updatedApplication.name, updatedApplication.uuid, updatedApplication.user_id);
+    return new Application(updatedApplication.published ?? false, updatedApplication.name, updatedApplication.uuid, updatedApplication.user_id, updatedApplication.subdomain);
   }
 
   public async delete(uuid: string ): Promise<Application> {
     const deleteApplication = await prisma.applications.delete({
       where: { uuid }
     });
-    return new Application(deleteApplication.published ?? false,deleteApplication.name, deleteApplication.uuid, deleteApplication.user_id);
+    return new Application(deleteApplication.published ?? false, deleteApplication.name, deleteApplication.uuid, deleteApplication.user_id, deleteApplication.subdomain);
   }
 
-  
+
 }
