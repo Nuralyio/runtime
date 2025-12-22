@@ -30,7 +30,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./services/api:/app
+      - ./services/api:/home/node/app
+      - /home/node/app/node_modules
     environment:
       - NODE_ENV=development
       - BACKEND_PORT=8000
