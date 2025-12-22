@@ -55,11 +55,15 @@ services:
       - "9000:9000"
     volumes:
       - ./services/functions:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./services/functions/.kube/config:/root/.kube/config:ro
     environment:
       - NODE_ENV=development
       - PORT=9000
       - DATABASE_URL=postgresql://postgres:password@postgres:5432/functions_dev
       - REDIS_URL=redis://redis:6379
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - KUBECONFIG=/root/.kube/config
     env_file:
       - config/dev.env
     depends_on:
@@ -67,6 +71,7 @@ services:
       - redis
     networks:
       - nuraly-network
+      - minikube
     restart: unless-stopped
 
   # API Gateway
@@ -153,6 +158,21 @@ services:
       - nuraly-network
     restart: unless-stopped
 
+  # RabbitMQ - Message Queue for Functions Events
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_dev_data:/var/lib/rabbitmq
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # pgAdmin - PostgreSQL Management
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -220,7 +240,10 @@ volumes:
   postgres_dev_data:
   redis_dev_data:
   pgadmin_dev_data:
+  rabbitmq_dev_data:
 
 networks:
   nuraly-network:
     driver: bridge
+  minikube:
+    external: true
