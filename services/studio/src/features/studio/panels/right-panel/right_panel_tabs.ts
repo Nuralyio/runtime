@@ -224,7 +224,7 @@ export default [
                         themes = ["select_component_styles_state_container", ...(config.themes || [])];
                     }
                 } else if(currentPageId) {
-                    parameters = ["page_info_container_block", "access_control_panel_block"];
+                    parameters = ["page_info_container_block", "access_control_panel_block", "app_settings_container_block", "app_access_control_panel_block"];
                     themes = ["PageThemeStudio"];
                 }
                 
