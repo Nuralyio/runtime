@@ -10,7 +10,7 @@ import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE';
   payload?: any;
 }
 
@@ -69,6 +69,9 @@ function handleParentMessage(event: MessageEvent) {
     case 'SET_MODE':
       handleSetMode(message.payload);
       break;
+    case 'SET_PAGE':
+      handleSetPage(message.payload);
+      break;
     case 'COMPONENTS_UPDATE':
       handleComponentsUpdate(message.payload);
       break;
@@ -84,6 +87,12 @@ function handleParentMessage(event: MessageEvent) {
 function handleSetMode(payload: string | undefined) {
   if (payload) {
     ExecuteInstance.VarsProxy.currentEditingMode = payload;
+  }
+}
+
+function handleSetPage(payload: string | undefined) {
+  if (payload) {
+    ExecuteInstance.VarsProxy.currentPage = payload;
   }
 }
 
