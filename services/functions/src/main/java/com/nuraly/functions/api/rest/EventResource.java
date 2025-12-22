@@ -4,6 +4,7 @@ import com.nuraly.functions.dto.EventDTO;
 import com.nuraly.functions.service.EventService;
 import com.nuraly.functions.exception.EventNotFoundException;
 
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -35,6 +36,11 @@ public class EventResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "read",
+            resourceType = "event",
+            resourceId = "*"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Events retrieved"),
             @APIResponse(responseCode = "500", description = "Internal server error")
@@ -48,6 +54,11 @@ public class EventResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "read",
+            resourceType = "event",
+            resourceId = "#{id}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Event retrieved"),
             @APIResponse(responseCode = "404", description = "Event not found")
@@ -61,6 +72,11 @@ public class EventResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "write",
+            resourceType = "event",
+            resourceId = "*"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "201", description = "Event created"),
             @APIResponse(responseCode = "400", description = "Invalid request payload")
@@ -75,6 +91,11 @@ public class EventResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "write",
+            resourceType = "event",
+            resourceId = "#{id}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Event updated"),
             @APIResponse(responseCode = "400", description = "Invalid request payload"),
@@ -88,6 +109,11 @@ public class EventResource {
 
     @DELETE
     @Path("/{id}")
+    @RequiresPermission(
+            permissionType = "delete",
+            resourceType = "event",
+            resourceId = "#{id}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Event deleted"),
             @APIResponse(responseCode = "404", description = "Event not found")

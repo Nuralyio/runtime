@@ -8,8 +8,7 @@ import com.nuraly.functions.service.Deployment;
 import com.nuraly.functions.service.FunctionService;
 import com.nuraly.functions.exception.FunctionNotFoundException;
 
-// Commented out for dev environment - permission library not available
-// import com.nuraly.library.permission.RequiresPermission;
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -48,6 +47,11 @@ public class FunctionResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "read",
+            resourceType = "function",
+            resourceId = "*"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Functions retrieved"),
             @APIResponse(responseCode = "500", description = "Internal server error")
@@ -61,6 +65,11 @@ public class FunctionResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "read",
+            resourceType = "function",
+            resourceId = "#{id}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Function retrieved"),
             @APIResponse(responseCode = "404", description = "Function not found")
@@ -74,6 +83,11 @@ public class FunctionResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "write",
+            resourceType = "function",
+            resourceId = "*"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "201", description = "Function created"),
             @APIResponse(responseCode = "400", description = "Invalid request payload")
@@ -88,6 +102,11 @@ public class FunctionResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "write",
+            resourceType = "function",
+            resourceId = "#{id}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Function updated"),
             @APIResponse(responseCode = "400", description = "Invalid request payload"),
@@ -101,6 +120,11 @@ public class FunctionResource {
 
     @DELETE
     @Path("/{id}")
+    @RequiresPermission(
+            permissionType = "delete",
+            resourceType = "function",
+            resourceId = "#{id}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Function deleted"),
             @APIResponse(responseCode = "404", description = "Function not found")
@@ -114,6 +138,11 @@ public class FunctionResource {
     @POST
     @Path("/build/{functionId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "function:build",
+            resourceType = "function",
+            resourceId = "#{functionId}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Docker image build started"),
             @APIResponse(responseCode = "400", description = "Invalid function ID"),
@@ -134,6 +163,11 @@ public class FunctionResource {
     @POST
     @Path("/deploy/{functionId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermission(
+            permissionType = "function:deploy",
+            resourceType = "function",
+            resourceId = "#{functionId}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Deployment started successfully"),
             @APIResponse(responseCode = "500", description = "Internal server error")
@@ -152,12 +186,11 @@ public class FunctionResource {
     @Path("/invoke/{functionId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    // Commented out for dev environment - permission library not available
-    // @RequiresPermission(
-    //         permissionType = "writes",
-    //         resourceType = "function",
-    //         resourceId = "functionid"
-    // )
+    @RequiresPermission(
+            permissionType = "execute",
+            resourceType = "function",
+            resourceId = "#{functionId}"
+    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Function invoked successfully"),
             @APIResponse(responseCode = "404", description = "Function not found"),
@@ -177,12 +210,11 @@ public class FunctionResource {
 
     @GET
     @Path("/invoke/{functionId}")
-    // Commented out for dev environment - permission library not available
-    // @RequiresPermission(
-    //         permissionType = "execute",
-    //         resourceType = "function",
-    //         resourceId = "#{functionId}"
-    // )
+    @RequiresPermission(
+            permissionType = "execute",
+            resourceType = "function",
+            resourceId = "#{functionId}"
+    )
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Invocation result retrieved successfully"),
