@@ -74,6 +74,12 @@ export class PreviewEditorPanel extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    // If this is a standalone view (not inside studio iframe), set mode to Preview to hide overlays
+    if ((window as any).__IS_VIEW_MODE__) {
+      this.mode = ViewMode.Preview;
+    }
+
     this.initializeSubscriptions();
 
     document.addEventListener("dragend", this.handleDragEnd);
@@ -143,9 +149,12 @@ export class PreviewEditorPanel extends LitElement {
   }
 
   private initializeSubscriptions() {
-    eventDispatcher.on('Vars:currentEditingMode', () => {
-      this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
-    });
+    // Don't subscribe to mode changes if in standalone view mode
+    if (!(window as any).__IS_VIEW_MODE__) {
+      eventDispatcher.on('Vars:currentEditingMode', () => {
+        this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
+      });
+    }
 
     $currentPageViewPort.subscribe(viewPort => {
       this.updateViewPort(viewPort);

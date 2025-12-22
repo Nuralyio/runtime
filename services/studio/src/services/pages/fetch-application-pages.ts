@@ -13,7 +13,11 @@ export async function fetchApplicationPagesById(headers: Record<string, string>,
   data?: any;
   error?: any
 }> {
-  const response = await fetch(APIS_URL.getApplicationPages(id), {
+  const url = APIS_URL.getApplicationPages(id);
+  console.log(`[fetchApplicationPagesById] Fetching pages for app: ${id}`);
+  console.log(`[fetchApplicationPagesById] URL: ${url}`);
+
+  const response = await fetch(url, {
     headers: {
       ...headers
     }

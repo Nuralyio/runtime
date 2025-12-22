@@ -65,8 +65,8 @@ export class PageContent extends LitElement {
       this.currentPlatform = currentPlatform;
     }
 
-    log.prefix("PageContent").info("refreshComponent");
     const currentPage = ExecuteInstance.Vars.currentPage;
+
     if(!currentPage){
       return;
     }
@@ -77,7 +77,9 @@ export class PageContent extends LitElement {
       const currentAppUuid = currentEditingApplication.value.uuid;
 
       this.currentPage = $currentPage(currentAppUuid, currentPage).get();
+
       const components = $applicationComponents(currentAppUuid).get();
+
       // Filter for components that belong to the current page and are root.
       const pageComponents = components.filter(
         component =>
@@ -211,11 +213,19 @@ export class PageContent extends LitElement {
       const pages = $applicationPages(currentApp.uuid).get();
 
       if (pages && pages.length > 0) {
-        // Try to find page by URL if available
+        // Try to find page by URL or UUID if available
         if ((window as any).__URL__) {
-          const pageByUrl = pages.find((page: PageElement) => page.url === (window as any).__URL__);
-          if (pageByUrl) {
-            ExecuteInstance.VarsProxy.currentPage = pageByUrl.uuid;
+          const urlParam = (window as any).__URL__;
+
+          // First try to match by URL (e.g., "blog1", "dashboard")
+          let targetPage = pages.find((page: PageElement) => page.url === urlParam);
+
+          // If not found by URL, try to match by UUID
+          if (!targetPage) {
+            targetPage = pages.find((page: PageElement) => page.uuid === urlParam);
+          }
+          if (targetPage) {
+            ExecuteInstance.VarsProxy.currentPage = targetPage.uuid;
             return;
           }
         }
