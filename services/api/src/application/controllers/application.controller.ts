@@ -70,11 +70,40 @@ export class ApplicationController extends Controller {
     return await this.applicationService.findApplicationById(uuid);
   }
 
+  /**
+   * Resolve an application by its subdomain (public endpoint - used by gateway)
+   * Returns application info including UUID for routing
+   */
+  @Get("by-subdomain/{subdomain}")
+  public async findApplicationBySubdomain(
+    @Path() subdomain: string
+  ): Promise<{ uuid: string; name: string; subdomain: string } | null> {
+    // Validate subdomain format (alphanumeric, hyphens only, 3-63 chars)
+    const subdomainRegex = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/i;
+    if (!subdomainRegex.test(subdomain)) {
+      this.setStatus(400);
+      throw new Error('Invalid subdomain format');
+    }
+
+    const application = await this.applicationService.findApplicationBySubdomain(subdomain);
+
+    if (!application) {
+      this.setStatus(404);
+      throw new Error('Application not found');
+    }
+
+    return {
+      uuid: application.uuid,
+      name: application.name,
+      subdomain: application.subdomain!
+    };
+  }
+
   @Put("{uuid}")
   public async update(
     @Request() request: NRequest,
     @Path() uuid: string,
-    @Body() requestBody: { published: boolean; name: string; user_id: string }
+    @Body() requestBody: { published?: boolean; name?: string; user_id?: string; subdomain?: string }
   ): Promise<Application> {
     // Check if user has write permission
     await this.authorizationService.requireAppPermission(
@@ -83,8 +112,18 @@ export class ApplicationController extends Controller {
       'application:write'
     );
 
-    const { published, name, user_id } = requestBody;
-    return await this.applicationService.update(published, uuid, name, user_id);
+    const { published, name, user_id, subdomain } = requestBody;
+
+    // Validate subdomain format if provided
+    if (subdomain !== undefined && subdomain !== null) {
+      const subdomainRegex = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/i;
+      if (subdomain !== '' && !subdomainRegex.test(subdomain)) {
+        this.setStatus(400);
+        throw new Error('Invalid subdomain format. Use lowercase alphanumeric characters and hyphens, 3-63 characters.');
+      }
+    }
+
+    return await this.applicationService.update(published, uuid, name, user_id, subdomain);
   }
 
   @Delete("{uuid}")
