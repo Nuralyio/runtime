@@ -224,6 +224,95 @@ local function checkAnonymousAccessByPageUrl(applicationId, pageUrl)
     return nil
 end
 
+-- Reserved subdomains that should not be routed to applications
+local RESERVED_SUBDOMAINS = {
+    ["www"] = true,
+    ["api"] = true,
+    ["auth"] = true,
+    ["app"] = true,
+    ["studio"] = true
+}
+
+-- Get the main domain from environment variable
+local function getMainDomain()
+    return os.getenv("MAIN_DOMAIN") or "localhost"
+end
+
+-- Extract subdomain from host header
+-- Returns subdomain string or nil if no valid subdomain
+local function extractSubdomain(host)
+    if not host then
+        return nil
+    end
+
+    local main_domain = getMainDomain()
+
+    -- Handle localhost:port case - strip port
+    local host_without_port = host:match("^([^:]+)")
+    if not host_without_port then
+        return nil
+    end
+
+    local subdomain = nil
+
+    -- Pattern: subdomain.domain.tld or subdomain.localhost
+    subdomain = host_without_port:match("^([^.]+)%." .. main_domain:gsub("%.", "%%.") .. "$")
+
+    -- If not matched, try generic pattern (first part before first dot)
+    if not subdomain and host_without_port:find("%.") then
+        subdomain = host_without_port:match("^([^.]+)")
+        -- Don't treat 'www' or main domain parts as subdomain
+        if subdomain == "www" or subdomain == main_domain:match("^([^.]+)") then
+            subdomain = nil
+        end
+    end
+
+    return subdomain
+end
+
+-- Check if a subdomain is reserved
+local function isReservedSubdomain(subdomain)
+    if not subdomain then
+        return true
+    end
+    return RESERVED_SUBDOMAINS[subdomain:lower()] == true
+end
+
+-- Resolve subdomain to application data via API
+-- Returns: { uuid: string, name: string, subdomain: string } or nil on error
+local function resolveSubdomainToApp(subdomain)
+    if not subdomain or subdomain == "" then
+        return nil, "Empty subdomain"
+    end
+
+    local http = require "resty.http"
+    local httpc = http.new()
+
+    local api_url = "http://api:8000/api/applications/by-subdomain/" .. ngx.escape_uri(subdomain)
+
+    local res, err = httpc:request_uri(api_url, {
+        method = "GET",
+        headers = { ["Content-Type"] = "application/json" }
+    })
+
+    if not res then
+        ngx.log(ngx.ERR, "Failed to resolve subdomain '" .. subdomain .. "': " .. (err or "unknown error"))
+        return nil, err or "HTTP request failed"
+    end
+
+    if res.status ~= 200 then
+        ngx.log(ngx.ERR, "Failed to resolve subdomain '" .. subdomain .. "': status " .. res.status)
+        return nil, "Application not found"
+    end
+
+    local ok, app_data = pcall(cjson.decode, res.body)
+    if not ok or not app_data or not app_data.uuid then
+        return nil, "Invalid response from API"
+    end
+
+    return app_data, nil
+end
+
 -- Authenticate with optional anonymous access using "pass" mode
 -- First tries Keycloak auth in pass mode, if no session then checks anonymous access
 -- Page-level restrictions OVERRIDE application-level anonymous access
@@ -282,10 +371,63 @@ local function authenticateWithOptionalAnonymous(resourceType, resourceId, appli
     authenticateWithKeycloak()
 end
 
+-- Handle subdomain routing - main entry point for nginx
+-- Extracts subdomain, resolves to app, authenticates, and redirects
+-- Returns true if handled (redirected), false if should fall through to normal routing
+local function handleSubdomainRouting()
+    local subdomain = extractSubdomain(ngx.var.host)
+
+    -- No subdomain or reserved - fall through to normal routing
+    if not subdomain or isReservedSubdomain(subdomain) then
+        return false
+    end
+
+    -- Resolve subdomain to application
+    local app_data, err = resolveSubdomainToApp(subdomain)
+    if not app_data then
+        ngx.status = 404
+        ngx.say("Application not found")
+        ngx.exit(ngx.HTTP_NOT_FOUND)
+        return true
+    end
+
+    -- Get the request URI path (e.g., "/blog1" or "/")
+    local uri = ngx.var.uri
+    local page_url = uri:match("^/(.*)$") or ""
+
+    -- If empty, use "_default" as placeholder (frontend will load default page)
+    if page_url == "" then
+        page_url = "_default"
+    end
+
+    -- Store app info in nginx variables (if defined)
+    if ngx.var.app_id ~= nil then
+        ngx.var.app_id = app_data.uuid
+    end
+    if ngx.var.page_id ~= nil then
+        ngx.var.page_id = page_url
+    end
+
+    -- Authenticate with optional anonymous access
+    authenticateWithOptionalAnonymous("page", page_url, app_data.uuid)
+
+    -- URL encode page_url for safe redirect
+    local safe_page_url = url_encode(page_url)
+
+    -- Internal redirect to the preview route
+    ngx.exec("/app/preview/" .. app_data.uuid .. "/" .. safe_page_url)
+    return true
+end
+
 return {
     authenticateWithKeycloak = authenticateWithKeycloak,
     authenticateWithKeycloakPass = authenticateWithKeycloakPass,
     authenticateWithOptionalAnonymous = authenticateWithOptionalAnonymous,
+    handleSubdomainRouting = handleSubdomainRouting,
+    extractSubdomain = extractSubdomain,
+    isReservedSubdomain = isReservedSubdomain,
+    resolveSubdomainToApp = resolveSubdomainToApp,
+    url_encode = url_encode,
     logout = logout
 }
 
