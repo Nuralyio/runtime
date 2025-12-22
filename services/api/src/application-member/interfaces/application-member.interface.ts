@@ -12,7 +12,8 @@ export interface IApplicationMemberRepository {
 }
 
 export interface InviteMemberDto {
-  userId: string;
+  userId?: string;
+  email?: string;
   roleId: number;
 }
 

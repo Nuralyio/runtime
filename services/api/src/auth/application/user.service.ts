@@ -1,7 +1,6 @@
 import { handleError } from '../../exceptions/handle.error';
-import { IUserRepository } from '../domain/interfaces/user.interface';
+import { IUserRepository, KeycloakUserInfo } from '../domain/interfaces/user.interface';
 import { User } from '../domain/user';
-import bcrypt from 'bcrypt';
 import { Logger } from 'tslog';
 import {NotFoundException} from "../../exceptions/NotFoundException";
 
@@ -14,10 +13,9 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
-    public async create(name: string, email: string, password: string): Promise<User> {
+    public async create(keycloakId: string, name: string, email: string): Promise<User> {
         try {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const user: User = new User(name, email, hashedPassword);
+            const user: User = new User(keycloakId, name, email);
             return await this.userRepository.create(user);
         } catch (error) {
             handleError(error, logger);
@@ -29,7 +27,7 @@ export class UserService {
         try {
             const users = await this.userRepository.findAll();
             if (!users) {
-                throw new NotFoundException('Users not founds');
+                throw new NotFoundException('Users not found');
             }
             return users;
         } catch (error) {
@@ -51,6 +49,19 @@ export class UserService {
         }
     }
 
+    public async findByKeycloakId(keycloakId: string): Promise<User> {
+        try {
+            const user = await this.userRepository.findByKeycloakId(keycloakId);
+            if (!user) {
+                throw new NotFoundException(`User with keycloakId ${keycloakId} not found.`);
+            }
+            return user;
+        } catch (error) {
+            handleError(error, logger);
+            throw error;
+        }
+    }
+
     public async findUserByEmail(email: string): Promise<User> {
         try {
             const user = await this.userRepository.findUserByEmail(email);
@@ -64,13 +75,12 @@ export class UserService {
         }
     }
 
-    public async findUserByEmailWithPassword(email: string): Promise<User> {
+    /**
+     * JIT (Just-In-Time) provisioning: Find or create user from Keycloak info
+     */
+    public async findOrCreateFromKeycloak(keycloakUser: KeycloakUserInfo): Promise<User> {
         try {
-            const user = await this.userRepository.findUserByEmailWithPassword(email);
-            if (!user) {
-                throw new NotFoundException('User not found');
-            }
-            return user;
+            return await this.userRepository.findOrCreateFromKeycloak(keycloakUser);
         } catch (error) {
             handleError(error, logger);
             throw error;
@@ -80,7 +90,7 @@ export class UserService {
     public async update(id: string, name: string, email: string): Promise<User> {
         try {
             const findUser = await this.findById(id);
-            const user = new User(name, email, findUser!.password);
+            const user = new User(findUser.keycloakId, name, email, id);
             return await this.userRepository.update(id, user);
         } catch (error) {
             handleError(error, logger);
