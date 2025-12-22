@@ -189,24 +189,29 @@ ALTER SEQUENCE public.databaseproviders_provider_id_seq OWNED BY public.database
 
 
 --
--- Name: ownership; Type: TABLE; Schema: public; Owner: postgres
+-- Name: application_roles; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.ownership (
+CREATE TABLE public.application_roles (
     id integer NOT NULL,
-    owner_id text NOT NULL,
-    resource_id text NOT NULL,
-    resource_type text NOT NULL
+    application_id text,
+    name text NOT NULL,
+    display_name text NOT NULL,
+    description text,
+    permissions jsonb NOT NULL,
+    is_system boolean DEFAULT false NOT NULL,
+    hierarchy integer DEFAULT 0 NOT NULL,
+    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
-ALTER TABLE public.ownership OWNER TO postgres;
+ALTER TABLE public.application_roles OWNER TO postgres;
 
 --
--- Name: ownership_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: application_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.ownership_id_seq
+CREATE SEQUENCE public.application_roles_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -215,13 +220,92 @@ CREATE SEQUENCE public.ownership_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.ownership_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.application_roles_id_seq OWNER TO postgres;
 
 --
--- Name: ownership_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: application_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.ownership_id_seq OWNED BY public.ownership.id;
+ALTER SEQUENCE public.application_roles_id_seq OWNED BY public.application_roles.id;
+
+
+--
+-- Name: application_members; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.application_members (
+    id integer NOT NULL,
+    user_id text NOT NULL,
+    application_id text NOT NULL,
+    role_id integer NOT NULL,
+    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.application_members OWNER TO postgres;
+
+--
+-- Name: application_members_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.application_members_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.application_members_id_seq OWNER TO postgres;
+
+--
+-- Name: application_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.application_members_id_seq OWNED BY public.application_members.id;
+
+
+--
+-- Name: resource_permissions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.resource_permissions (
+    id integer NOT NULL,
+    resource_id text NOT NULL,
+    resource_type text NOT NULL,
+    grantee_type text NOT NULL,
+    grantee_id text,
+    permission text NOT NULL,
+    granted_by text NOT NULL,
+    expires_at timestamp(3) without time zone,
+    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.resource_permissions OWNER TO postgres;
+
+--
+-- Name: resource_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.resource_permissions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.resource_permissions_id_seq OWNER TO postgres;
+
+--
+-- Name: resource_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.resource_permissions_id_seq OWNED BY public.resource_permissions.id;
 
 
 --
@@ -265,44 +349,6 @@ ALTER SEQUENCE public.pages_id_seq OWNER TO postgres;
 ALTER SEQUENCE public.pages_id_seq OWNED BY public.pages.id;
 
 
---
--- Name: permissions; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.permissions (
-    id integer NOT NULL,
-    user_id text NOT NULL,
-    resource_id text NOT NULL,
-    resource_type text NOT NULL,
-    public boolean NOT NULL,
-    permission_type text NOT NULL,
-    owner_id text NOT NULL,
-    allowed jsonb NOT NULL
-);
-
-
-ALTER TABLE public.permissions OWNER TO postgres;
-
---
--- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.permissions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.permissions_id_seq OWNER TO postgres;
-
---
--- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
 
 
 --
@@ -327,10 +373,24 @@ ALTER TABLE ONLY public.databaseproviders ALTER COLUMN provider_id SET DEFAULT n
 
 
 --
--- Name: ownership id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: application_roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.ownership ALTER COLUMN id SET DEFAULT nextval('public.ownership_id_seq'::regclass);
+ALTER TABLE ONLY public.application_roles ALTER COLUMN id SET DEFAULT nextval('public.application_roles_id_seq'::regclass);
+
+
+--
+-- Name: application_members id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.application_members ALTER COLUMN id SET DEFAULT nextval('public.application_members_id_seq'::regclass);
+
+
+--
+-- Name: resource_permissions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.resource_permissions ALTER COLUMN id SET DEFAULT nextval('public.resource_permissions_id_seq'::regclass);
 
 
 --
@@ -340,11 +400,6 @@ ALTER TABLE ONLY public.ownership ALTER COLUMN id SET DEFAULT nextval('public.ow
 ALTER TABLE ONLY public.pages ALTER COLUMN id SET DEFAULT nextval('public.pages_id_seq'::regclass);
 
 
---
--- Name: permissions id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.permissions ALTER COLUMN id SET DEFAULT nextval('public.permissions_id_seq'::regclass);
 
 
 --
@@ -924,38 +979,58 @@ COPY public.databaseproviders (provider_id, username, host, password, port, data
 
 
 --
--- Data for Name: ownership; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: application_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.ownership (id, owner_id, resource_id, resource_type) FROM stdin;
-1	550e8400-e29b-41d4-a716-446655440000	52eb1876-d5ac-48fd-a2c4-658fecb36e22	application
-2	550e8400-e29b-41d4-a716-446655440000	862d84a4-0be4-4cd0-8255-77f270094ff8	application
-3	550e8400-e29b-41d4-a716-446655440000	9430db5d-9789-4d63-be02-740378e3aba0	application
-4	550e8400-e29b-41d4-a716-446655440000	491b86f3-aa54-4c49-a584-24b96ec82c06	application
-5	550e8400-e29b-41d4-a716-446655440000	e5ea6ef3-f467-402c-bacf-199d68bdc63d	application
-6	550e8400-e29b-41d4-a716-446655440000	ea233575-39c5-436e-8816-ace0f689fed4	application
-7	550e8400-e29b-41d4-a716-446655440000	63349b85-ca54-4571-80de-a49ccfd330cf	application
-8	550e8400-e29b-41d4-a716-446655440000	8006ef96-a8a9-405f-9fb5-820678470167	application
-9	550e8400-e29b-41d4-a716-446655440000	80f4de2b-1900-42b0-b6e8-00c9c23c1f96	application
-10	550e8400-e29b-41d4-a716-446655440000	2e6cbbc8-59f5-445d-b8bb-542020b78dab	application
-11	550e8400-e29b-41d4-a716-446655440000	55ad68aa-7e8b-426b-b9da-9bc256e7264f	application
-12	550e8400-e29b-41d4-a716-446655440000	6553cbc0-92dc-4eb6-b827-882884e9303b	application
-13	550e8400-e29b-41d4-a716-446655440000	25545838-e001-4bad-932f-391eb9526e5f	application
-14	550e8400-e29b-41d4-a716-446655440000	efcc0168-3ba9-4152-ab22-92ee22e7d13d	application
-15	550e8400-e29b-41d4-a716-446655440000	57b1baad-7a38-4732-91d5-fce6f4621480	application
-16	550e8400-e29b-41d4-a716-446655440000	838669d8-92d2-4342-baba-5f32a40eef42	application
-17	550e8400-e29b-41d4-a716-446655440000	b6c03b4a-06b5-41a8-a47a-2f9284fc9e6e	application
-18	550e8400-e29b-41d4-a716-446655440000	31fe81f2-10ed-4ea2-b092-7ba3b39aae87	application
-19	550e8400-e29b-41d4-a716-446655440000	15c09429-60f0-4240-92be-2745ba27b60f	application
-20	550e8400-e29b-41d4-a716-446655440000	9632da77-caf2-42db-bce7-5248c5b13513	application
-21	550e8400-e29b-41d4-a716-446655440000	bbaa871c-ec19-4826-888e-5b6b258044fe	application
-22	550e8400-e29b-41d4-a716-446655440000	55f3a91a-3360-4c2c-97f0-ac3930688e77	application
-23	550e8400-e29b-41d4-a716-446655440000	f65aaeac-6259-4cb4-91fa-0f7c7f5fa69e	application
-24	550e8400-e29b-41d4-a716-446655440000	88089042-1725-4ed4-b48c-25001c4dd71d	application
-25	550e8400-e29b-41d4-a716-446655440000	85dfbb91-5dcf-4010-99e5-20255029b403	application
-26	550e8400-e29b-41d4-a716-446655440000	544d318f-25bc-44a2-9cfd-264946fc22c8	application
-27	550e8400-e29b-41d4-a716-446655440000	a6bcae0b-a78d-44c1-a023-a3c0770206c8	application
-28	550e8400-e29b-41d4-a716-446655440000	e58edd43-385c-4900-b322-dbfdd4f1dc77	application
+COPY public.application_roles (id, application_id, name, display_name, description, permissions, is_system, hierarchy, created_at) FROM stdin;
+1	\N	owner	Owner	Full access to all resources	["*"]	t	100	2025-01-01 00:00:00.000
+2	\N	admin	Administrator	Administrative access	["application:read", "application:write", "page:*", "component:*", "member:*", "role:read"]	t	80	2025-01-01 00:00:00.000
+3	\N	editor	Editor	Can edit content	["application:read", "page:*", "component:*", "member:read"]	t	60	2025-01-01 00:00:00.000
+4	\N	viewer	Viewer	Read-only access	["application:read", "page:read", "component:read", "member:read"]	t	40	2025-01-01 00:00:00.000
+\.
+
+
+--
+-- Data for Name: application_members; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.application_members (id, user_id, application_id, role_id, created_at, updated_at) FROM stdin;
+1	550e8400-e29b-41d4-a716-446655440000	52eb1876-d5ac-48fd-a2c4-658fecb36e22	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+2	550e8400-e29b-41d4-a716-446655440000	862d84a4-0be4-4cd0-8255-77f270094ff8	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+3	550e8400-e29b-41d4-a716-446655440000	9430db5d-9789-4d63-be02-740378e3aba0	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+4	550e8400-e29b-41d4-a716-446655440000	491b86f3-aa54-4c49-a584-24b96ec82c06	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+5	550e8400-e29b-41d4-a716-446655440000	e5ea6ef3-f467-402c-bacf-199d68bdc63d	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+6	550e8400-e29b-41d4-a716-446655440000	ea233575-39c5-436e-8816-ace0f689fed4	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+7	550e8400-e29b-41d4-a716-446655440000	63349b85-ca54-4571-80de-a49ccfd330cf	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+8	550e8400-e29b-41d4-a716-446655440000	8006ef96-a8a9-405f-9fb5-820678470167	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+9	550e8400-e29b-41d4-a716-446655440000	80f4de2b-1900-42b0-b6e8-00c9c23c1f96	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+10	550e8400-e29b-41d4-a716-446655440000	2e6cbbc8-59f5-445d-b8bb-542020b78dab	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+11	550e8400-e29b-41d4-a716-446655440000	55ad68aa-7e8b-426b-b9da-9bc256e7264f	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+12	550e8400-e29b-41d4-a716-446655440000	6553cbc0-92dc-4eb6-b827-882884e9303b	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+13	550e8400-e29b-41d4-a716-446655440000	25545838-e001-4bad-932f-391eb9526e5f	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+14	550e8400-e29b-41d4-a716-446655440000	efcc0168-3ba9-4152-ab22-92ee22e7d13d	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+15	550e8400-e29b-41d4-a716-446655440000	57b1baad-7a38-4732-91d5-fce6f4621480	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+16	550e8400-e29b-41d4-a716-446655440000	838669d8-92d2-4342-baba-5f32a40eef42	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+17	550e8400-e29b-41d4-a716-446655440000	b6c03b4a-06b5-41a8-a47a-2f9284fc9e6e	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+18	550e8400-e29b-41d4-a716-446655440000	31fe81f2-10ed-4ea2-b092-7ba3b39aae87	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+19	550e8400-e29b-41d4-a716-446655440000	15c09429-60f0-4240-92be-2745ba27b60f	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+20	550e8400-e29b-41d4-a716-446655440000	9632da77-caf2-42db-bce7-5248c5b13513	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+21	550e8400-e29b-41d4-a716-446655440000	bbaa871c-ec19-4826-888e-5b6b258044fe	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+22	550e8400-e29b-41d4-a716-446655440000	55f3a91a-3360-4c2c-97f0-ac3930688e77	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+23	550e8400-e29b-41d4-a716-446655440000	f65aaeac-6259-4cb4-91fa-0f7c7f5fa69e	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+24	550e8400-e29b-41d4-a716-446655440000	88089042-1725-4ed4-b48c-25001c4dd71d	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+25	550e8400-e29b-41d4-a716-446655440000	85dfbb91-5dcf-4010-99e5-20255029b403	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+26	550e8400-e29b-41d4-a716-446655440000	544d318f-25bc-44a2-9cfd-264946fc22c8	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+27	550e8400-e29b-41d4-a716-446655440000	a6bcae0b-a78d-44c1-a023-a3c0770206c8	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+28	550e8400-e29b-41d4-a716-446655440000	e58edd43-385c-4900-b322-dbfdd4f1dc77	1	2025-01-01 00:00:00.000	2025-01-01 00:00:00.000
+\.
+
+
+--
+-- Data for Name: resource_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.resource_permissions (id, resource_id, resource_type, grantee_type, grantee_id, permission, granted_by, expires_at, created_at) FROM stdin;
 \.
 
 
@@ -1018,12 +1093,6 @@ COPY public.pages (id, component_ids, name, url, application_id, user_id, uuid, 
 \.
 
 
---
--- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.permissions (id, user_id, resource_id, resource_type, public, permission_type, owner_id, allowed) FROM stdin;
-\.
 
 
 --
@@ -1048,10 +1117,24 @@ SELECT pg_catalog.setval('public.databaseproviders_provider_id_seq', 1, false);
 
 
 --
--- Name: ownership_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: application_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ownership_id_seq', 28, true);
+SELECT pg_catalog.setval('public.application_roles_id_seq', 4, true);
+
+
+--
+-- Name: application_members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.application_members_id_seq', 28, true);
+
+
+--
+-- Name: resource_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.resource_permissions_id_seq', 1, false);
 
 
 --
@@ -1061,11 +1144,6 @@ SELECT pg_catalog.setval('public.ownership_id_seq', 28, true);
 SELECT pg_catalog.setval('public.pages_id_seq', 63, true);
 
 
---
--- Name: permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.permissions_id_seq', 1, false);
 
 
 --
@@ -1117,11 +1195,27 @@ ALTER TABLE ONLY public.databaseproviders
 
 
 --
--- Name: ownership ownership_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: application_roles application_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.ownership
-    ADD CONSTRAINT ownership_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.application_roles
+    ADD CONSTRAINT application_roles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: application_members application_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.application_members
+    ADD CONSTRAINT application_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: resource_permissions resource_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.resource_permissions
+    ADD CONSTRAINT resource_permissions_pkey PRIMARY KEY (id);
 
 
 --
@@ -1133,11 +1227,27 @@ ALTER TABLE ONLY public.pages
 
 
 --
--- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: application_roles_application_id_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.permissions
-    ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.application_roles
+    ADD CONSTRAINT application_roles_application_id_name_key UNIQUE (application_id, name);
+
+
+--
+-- Name: application_members_user_id_application_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.application_members
+    ADD CONSTRAINT application_members_user_id_application_id_key UNIQUE (user_id, application_id);
+
+
+--
+-- Name: resource_permissions_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.resource_permissions
+    ADD CONSTRAINT resource_permissions_unique UNIQUE (resource_id, resource_type, grantee_type, grantee_id, permission);
 
 
 --
@@ -1166,6 +1276,56 @@ CREATE UNIQUE INDEX components_uuid_key ON public.components USING btree (uuid);
 --
 
 CREATE UNIQUE INDEX pages_uuid_key ON public.pages USING btree (uuid);
+
+
+--
+-- Name: application_roles_application_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX application_roles_application_id_idx ON public.application_roles USING btree (application_id);
+
+
+--
+-- Name: application_roles_is_system_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX application_roles_is_system_idx ON public.application_roles USING btree (is_system);
+
+
+--
+-- Name: application_members_application_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX application_members_application_id_idx ON public.application_members USING btree (application_id);
+
+
+--
+-- Name: application_members_user_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX application_members_user_id_idx ON public.application_members USING btree (user_id);
+
+
+--
+-- Name: resource_permissions_resource_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX resource_permissions_resource_idx ON public.resource_permissions USING btree (resource_id, resource_type);
+
+
+--
+-- Name: resource_permissions_grantee_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX resource_permissions_grantee_idx ON public.resource_permissions USING btree (grantee_id, grantee_type);
+
+
+--
+-- Name: application_members application_members_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.application_members
+    ADD CONSTRAINT application_members_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.application_roles(id) ON DELETE CASCADE;
 
 
 --

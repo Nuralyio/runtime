@@ -64,12 +64,13 @@ stop:
 	docker-compose -f docker-compose.dev.yml down
 	docker-compose -f docker-compose.prod.yml down
 
-# Clean up containers and volumes
+# Clean up containers and volumes (keeps images)
 clean:
 	@echo "Cleaning up containers and volumes..."
 	docker-compose -f docker-compose.dev.yml down -v --remove-orphans
 	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
-	docker system prune -f
+	docker container prune -f
+	docker volume prune -f
 
 # View logs
 logs:
