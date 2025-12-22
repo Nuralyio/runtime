@@ -2,30 +2,29 @@
 
 export class User {
   id?: string;
+  keycloakId?: string;
   name: string;
   email: string;
-  password: string;
 
-  constructor(name: string, email: string, password: string, id?: string) {
+  constructor(keycloakId: string | undefined | null, name: string, email: string, id?: string) {
     this.id = id;
+    this.keycloakId = keycloakId ?? undefined;
     this.name = name;
     this.email = email;
-    this.password = password;
   }
 }
 
 
 /**
- *  The NUser object contains the user’s information received from the gateway, which is authenticated by Keycloak.
+ * The NUser object contains the user's information received from the gateway, which is authenticated by Keycloak.
+ * Used in the new access control architecture.
  */
-export class NUser {
+export interface NUser {
   uuid: string;
-  roles : any[];
-
-  constructor(uuid: string, roles: string[]) {
-    this.uuid = uuid;
-    this.roles = roles;
-  }
+  username?: string;
+  email?: string;
+  roles: string[];
+  anonymous: boolean;
 }
 
 

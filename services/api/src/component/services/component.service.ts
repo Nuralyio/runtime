@@ -24,6 +24,13 @@ export class ComponentService {
     return await this.componentRepository.findComponentByApplication(application_id);
   }
 
+  public async findComponentsByApplications(application_ids: string[]): Promise<Component[]> {
+    if (application_ids.length === 0) {
+      return [];
+    }
+    return await this.componentRepository.findComponentsByApplications(application_ids);
+  }
+
   public async findComponentByUuid(uuid: string): Promise<Component | null> {
     return await this.componentRepository.findComponentByUuid(uuid);
   }
