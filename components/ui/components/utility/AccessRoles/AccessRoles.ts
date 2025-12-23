@@ -162,7 +162,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
     try {
       const response = await fetch(`/api/resources/${resourceType}/${resourceId}/permissions`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -231,18 +232,21 @@ export class AccessRolesDisplay extends BaseElementBlock {
     const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
 
     try {
-      if (checked) {
-        await fetch(`${baseUrl}/make-public`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ permission: 'read' })
-        });
-      } else {
-        await fetch(`${baseUrl}/make-public`, { method: 'DELETE' });
+      const response = checked
+        ? await fetch(`${baseUrl}/make-public`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ permission: 'read' })
+          })
+        : await fetch(`${baseUrl}/make-public`, { method: 'DELETE', credentials: 'include' });
+
+      if (!response.ok) {
+        console.error('[AccessRoles] Failed to update public access:', response.status, await response.text());
       }
       await this.loadPermissions();
     } catch (error) {
-      console.error('Failed to update public access:', error);
+      console.error('[AccessRoles] Failed to update public access:', error);
     }
 
     this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission: 'read' });
@@ -256,23 +260,28 @@ export class AccessRolesDisplay extends BaseElementBlock {
     if (!resourceId) return;
 
     const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
+    // For functions, grant 'execute' permission; for other resources, grant 'read'
+    const permission = resourceType === 'function' ? 'execute' : 'read';
 
     try {
-      if (checked) {
-        await fetch(`${baseUrl}/make-anonymous`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ permission: 'read' })
-        });
-      } else {
-        await fetch(`${baseUrl}/make-anonymous`, { method: 'DELETE' });
+      const response = checked
+        ? await fetch(`${baseUrl}/make-anonymous`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ permission })
+          })
+        : await fetch(`${baseUrl}/make-anonymous`, { method: 'DELETE', credentials: 'include' });
+
+      if (!response.ok) {
+        console.error('[AccessRoles] Failed to update anonymous access:', response.status, await response.text());
       }
       await this.loadPermissions();
     } catch (error) {
-      console.error('Failed to update anonymous access:', error);
+      console.error('[AccessRoles] Failed to update anonymous access:', error);
     }
 
-    this.emitChange('toggle_anonymous', { is_anonymous: checked, grantee_type: 'anonymous', permission: 'read' });
+    this.emitChange('toggle_anonymous', { is_anonymous: checked, grantee_type: 'anonymous', permission });
   }
 
   private async addRolePermission(role: any) {
@@ -289,6 +298,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
       await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ roleName: role.name, permission: this.selectedPermission })
       });
       await this.loadPermissions();
@@ -324,6 +334,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
       await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ roleName, permission: this.selectedPermission })
       });
       await this.loadPermissions();
@@ -350,11 +361,13 @@ export class AccessRolesDisplay extends BaseElementBlock {
     try {
       // Delete existing then add new
       await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission/${encodeURIComponent(roleName)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ roleName, permission })
       });
       await this.loadPermissions();
@@ -374,7 +387,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
 
     try {
       await fetch(`/api/resources/${resourceType}/${resourceId}/role-permission/${encodeURIComponent(roleName)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       await this.loadPermissions();
     } catch (error) {
